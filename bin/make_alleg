@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+open FH, "AL_work_pop.txt";
+open OUT, ">alleg.txt";
+while ( my $line = <FH> ) {
+  chomp $line;
+  for my $pos (73, 90, 92, 96, 99, 102) {
+    substr($line, $pos, 1) = "0" if substr($line, $pos, 1) eq " ";
+  }
+  print OUT "$line\n";
+}
+close FH;
+close OUT;
+exit;
+

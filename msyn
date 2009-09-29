@@ -1,0 +1,156 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+# make a synthetic population
+
+my $min_lat = 39.6;
+my $max_lat = 42.1;
+my $min_lon = 74.5;
+my $max_lon = 80.5;
+
+# in miles:
+my $width = 280;
+my $height = 160;
+
+my @home = ();
+my @school = ();
+my @work = ();
+my @pop = ();
+
+my $popsize = 1000000;
+my $adults = int($popsize * 0.6);
+my $students = int($popsize * 0.3);
+my $infants = int($popsize * 0.1);
+$adults += $popsize - $adults - $students - $infants;
+
+my $homes = int($popsize/3);
+my $schools = int($students/400);
+my $workplaces = int($adults * 0.9 / 50);
+if ($schools < 1) { $schools = 1 }
+if ($workplaces < 1) { $workplaces = 1 }
+
+my $id = 0;
+# make homes
+for my $h (0..$homes-1) {
+    my $x = 1 + rand($width-2);
+    my $y = 1 + rand($height-2);
+    $home[$h] = "$id H $x $y";
+    $id++;
+}
+
+# make schools
+for my $s (0..$schools-1) {
+    my $x = 1 + rand($width-2);
+    my $y = 1 + rand($height-2);
+    $school[$s] = "$id S $x $y";
+    $id++;
+}
+
+# make workplaces
+for my $w (0..$workplaces-1) {
+    my $x = 1 + rand($width-2);
+    my $y = 1 + rand($height-2);
+    $work[$w] = "$id W $x $y";
+    $id++;
+}
+
+open FH, ">loc.txt";
+print FH "Locations = ", scalar @home + scalar @school + scalar @work, "\n";
+print FH "$_\n" for @home;
+print FH "$_\n" for @school;
+print FH "$_\n" for @work;
+close FH;
+
+$id = 0;
+
+for (1..$infants) {
+    my $a = int(rand(5));
+    my $g = (rand(1)<0.5)? 'M' : 'F';
+    $pop[$id] = "$id $a $g";
+    $id++;
+}
+
+for (1..$students) {
+    my $a = 5 + int(rand(14));
+    my $g = (rand(1)<0.5)? 'M' : 'F';
+    $pop[$id] = "$id $a $g";
+    $id++;
+}
+
+for (1..$adults) {
+    my $a = 19 + int(rand(91));
+    my $g = (rand(1)<0.5)? 'M' : 'F';
+    $pop[$id] = "$id $a $g";
+    $id++;
+}
+
+open FH, ">pop.txt";
+print FH "Population = ", scalar @pop, "\n";
+print FH "$_\n" for @pop;
+close FH;
+
+# make schedule
+open FH, ">sched.txt";
+
+for my $i (0..$popsize-1) {
+    my $p = $pop[$i];
+    my $a = get_age($p);
+    my $h = int(rand $homes);
+    my $s = $homes + int(rand $schools);
+    my $w = $homes + $schools + int(rand $workplaces);
+    if ($a < 5) {
+	for my $d (0..6) {
+	    print FH "$i $d $h\n";
+	}
+    }
+    elsif ($a < 19) {
+	for my $d (0..4) {
+	    print FH "$i $d $h\n";
+	    print FH "$i $d $s\n";
+	}
+	for my $d (5..6) {
+	    print FH "$i $d $h\n";
+	}
+    }
+    else {
+	if (rand(1) < 0.8) {
+	    for my $d (0..4) {
+		print FH "$i $d $h\n";
+		print FH "$i $d $w\n";
+	    }
+	}
+	else {
+	    for my $d (0..4) {
+		print FH "$i $d $h\n";
+	    }
+	}
+	for my $d (5..6) {
+	    print FH "$i $d $h\n";
+	}
+    }
+}
+
+close FH;
+
+
+exit;
+
+sub get_age {
+    my $p = shift;
+    my ($id, $age, $sex) = split " ", $p;
+    return $age;
+}
+
+sub get_id {
+    my $p = shift;
+    my ($id, $age, $sex) = split " ", $p;
+    return $id;
+}
+
+sub get_sex {
+    my $p = shift;
+    my ($id, $age, $sex) = split " ", $p;
+    return $sex;
+}
+

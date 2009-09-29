@@ -1,0 +1,31 @@
+diseases = 1
+days = 10
+seed = 123
+runs = 2
+verbose = 1
+test = 1
+index_cases = 1
+popfile = pop.txt
+locfile = loc.txt
+schedfile = sched.txt
+
+diseases = 1
+trans.0 = 0.05
+symp.0 = 1.0
+days_latent.0 = 3       0.0 0.8 1.0
+days_incubating.0 = 4   0.0 0.3 0.8 1.0
+days_infectious.0 = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
+
+household_contacts = 10
+workplace_contacts = 5
+school_contacts = 20
+community_contacts = 20
+household_prob = 1.0
+workplace_prob = 1.0
+school_prob = 1.0
+community_prob = 1.0
+school_closure_policy = global
+school_closure_day = 10
+school_closure_inf_threshold = 0.1
+school_closure_period = 10
+school_closure_delay = 2

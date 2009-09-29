@@ -1,0 +1,29 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+my ($pop) = @ARGV;
+$pop = 1 if not $pop;
+chomp $pop;
+print "Population = $pop\n";
+for my $i (0..$pop-1) {
+  my ($a, $h, $w, $s, $g);
+  $a = int(rand(100));
+  $g = rand(1) < 0.5? "M":"F";
+  $h = int(rand ($pop/5));
+  $h = 0;
+  if ($a > 4 and $a < 19) { $s = int(rand ($pop/500)) }
+  else { $s = -1 }
+  $s = -1;
+  if ($a > 18) { $w = int(rand ($pop/50)) }
+  else { $w = -1 }
+  $w = -1;
+  print "$i $a $g $h $w $s\n";
+  my $d;
+  for $d (1..5) {
+    print "$d: 1 1 1\n";
+  }
+  for $d (6..7) {
+    print "$d: 1 0 0\n";
+  }
+}

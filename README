@@ -1,0 +1,119 @@
+SYNDEM: A New ABM for syndemics.
+
+COMPILING SYNDEM
+
+Change to SYNDEM directory and
+
+% make
+
+INPUT FILES
+
+SYNDEM requires the following files (default filename in brackets)
+
+Parameter file [ params ]
+	contains all run-time parameters in format:
+	name = value
+	dist_name = max_days <cdf>
+	where <cdf> is the cumulative distribution function,
+	      for day 0..max_days
+	
+Location File [loc.txt]
+	contains one line per location, with format:
+	place_id external_id type longitude latitude
+
+Population File [ pop.txt ]
+	one line per person with format:
+	agent_id age sex
+
+Schedule file [ sched.txt ]
+	 list of places visited by each agent for each day of week,
+	 with format:
+	 agent_id day_of_week place_id
+
+The default input files were created from the Allegheny County synthetic
+population files, as follows:
+
+% make_alleg
+% parse_alleg
+
+RUNNING SYNDEM
+
+% SYNDEM [ paramsfile ]
+
+With no argument, Syndem read "params" to get the runtime parameters.
+You can specify an alternative parameter file on the command line, e.g.
+
+% SYNDEM params.test
+
+The file "go" contains a shell script to run SYNDEM, process the output
+files and plot the epi curve (requires gnuplot).
+
+OUTPUT FILES
+
+SYNDEM produces two kinds of output files, where <n> is the run number
+(starting with 1):
+
+out<n>.txt: Daily S-E-I-R report for each disease.
+
+trace<n>.txt: One line per infected agent, with format:
+
+status agent_id age sex occ date_exposed date_infectious date_recovered
+       number_of_places type_of_place_infected place_id_infected
+       infector infectees
+
+
+PARAMETERS
+
+[ Coming soon. ]
+
+CLASSES
+
+Current Classes:
+- Disease
+- Place
+- Person
+
+Disease Class:
+- Prob of becoming symptomatic;
+- Transmissibility
+- Latentcy distribution
+- Incubation distribution
+- Infectious distribution
+
+Each distribution is represented as a cumulative distribution function,
+for example, if the length of time for being infectious is uniformly
+distributed between 1 and 5 days, the distribution is represented as {
+0.2, 0.4, 0.6, 0.8, 1.0 }.
+
+Place Class:
+- type (HOME, WORK, SCHOOL, COMMUNITY)
+- lat and lon
+- Number of potential visitors
+- for each disease:
+-- local transmissibility
+-- local contacts per day
+-- list of susceptible visitors
+-- list of infectious visitors
+-- counters for S and I
+
+
+Person Class:
+- Demographics: age, sex, occupation
+
+- For each disease:
+-- status: S, E, I, R
+-- dates for each status
+-- Vaccination status per vaccine (not implemented)
+-- status: vaccinated or not, dates of vaccination (not implemented)
+-- Place infected
+-- Infector agent
+-- Susceptibility
+-- Infectivity
+
+- List of places potentially visited (static)
+- Daily schedules: list of places to be visited each day of week
+- Rules for travel (not implemented)
+- Rules for changing schedules (not implemented)
+- Rules for compliance (not implemented)
+
+

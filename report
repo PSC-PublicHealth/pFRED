@@ -1,0 +1,93 @@
+#!/usr/bin/perl
+my ($n, $m) = @ARGV;
+$n = 1 if not $n;
+$m = $n if not $m;
+my @data = ();
+for my $i ($n..$m) {
+  my $file = "OUT/out$i.txt";
+  open FH, $file or die "Can't file file $file\n";
+  while (my $line = <FH>) {
+    chomp $line;
+    push @data, $line;
+  }
+}
+# print "@data";
+
+# find number of days in the file
+my $days = 0;
+for my $line (@data) {
+  my ($x1, $day, $y1, $dis, $x2, $S, $x3, $E, $x5, $I, $x6, $R, $x7, $N, $AR) =
+    split " ", $line;
+  # print "$day $S $E $I $R $N\n";
+  $days = $day if $day > $days;
+}
+# print "days = $days\n";
+
+open FH, ">report.out";
+for (my $d = 0; $d < $days; $d++) {
+  my @D = ();
+  # print "day $d\n";
+  for my $line (@data) {
+    my ($x1, $day, $y1, $dis, $x2, $S, $x3, $E, $x5, $I, $x6, $R, $x7, $N, $x8, $AR) =
+      split " ", $line;
+    # print "$day $S $E $I $R $N $AR\n" if $day == $d;
+    push @D, "$day $S $E $I $R $N $AR" if $day == $d;
+  }
+  # print "D:\n";
+  # print "$_\n" for @D;
+  stats(@D);
+  # print "\n\n\n";
+}
+close FH;
+exit;
+
+sub stats {
+  my @a = @_;
+  my @b = split " ", $a[0];
+  my $day = $b[0];
+  my $N = $b[5];
+  # chomp $tot;
+  # print "Day $day ";
+  # print_2Darray(@a);
+  print FH "Day $day ";
+  for my $j (1..4) {
+    my ($ave, $std) = get_stats_from_column($j, @a);
+    # printf "%.1f %.2f  ", $ave, $std;
+    printf FH "%.1f %.2f  ", $ave, $std;
+  }
+  my ($ave, $std) = get_stats_from_column(6, @a);
+  # printf "%.1f %.2f  ", $ave, $std;
+  printf FH "%.1f %.2f  ", $ave, $std;
+  # print "$N\n";
+  print FH "$N\n";
+}
+
+sub get_stats_from_column {
+  my ($j, @a) = @_;
+  my $n = scalar @a;
+  my $sum = 0;
+  my $sumsq = 0;
+  for (my $i = 0; $i < $n; $i++) {
+    my @b = split " ", $a[$i];
+    my $x = $b[$j];
+    $sum += $x;
+    $sumsq += $x*$x;
+  }
+  my $std = 0;
+  my $ave = 0;
+  $ave = $sum / $n if $n;
+  $std = sqrt(($n*$sumsq - $sum*$sum)/($n*($n-1))) if $n>1;
+  return ($ave, $std);
+}
+
+sub print_2Darray {
+    my (@a) = @_;
+    my $rows = scalar @a;
+    my $cols = scalar @{$a[0]};
+    for (my $i=0; $i < $rows; $i++) {
+	for (my $j=0; $j < $cols; $j++) {
+	    printf "%5d ", $a[$i][$j];
+	}
+	print "\n"; # newline after each row
+    }
+}
