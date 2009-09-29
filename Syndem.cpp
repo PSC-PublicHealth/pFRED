@@ -3,7 +3,7 @@
 // File: SynDem.cpp
 //
 
-#include "SynDem.hpp"
+#include "Syndem.hpp"
 
 // global runtime parameters
 int Verbose;
