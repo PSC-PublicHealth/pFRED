@@ -2,24 +2,27 @@
 
 #################  Compiler Flags ##############################
 CPP = g++
-# CPPFLAGS = -O2 -Wall
-CPPFLAGS = -g -Wall
+CPPFLAGS = -O2 -Wall
 
 ###############################################
 
 %.o:%.cpp %.hpp
 	$(CPP) $(CPPFLAGS) -c $< $(INCLUDES)
 
-ABM = Params.o Place.o Loc.o Person.o Pop.o Disease.o Random.o Household.o Community.o School.o Workplace.o
+OBJ = Params.o Place.o Loc.o Person.o Pop.o Disease.o Random.o \
+Household.o Community.o School.o Workplace.o Hospital.o
 
-SYNDEM: Syndem.cpp Syndem.hpp $(ABM)
-	$(CPP) $(CPPFLAGS) Syndem.cpp $(ABM) -o SYNDEM
+SRC = $(OBJ:.o=.cpp)
 
-print:
-	enscript Person.cpp Place.cpp Disease.cpp Loc.cpp Pop.cpp Syndem.cpp Random.cpp
-	enscript Person.hpp Place.hpp Disease.hpp Loc.hpp Pop.hpp Syndem.hpp Random.hpp
+HDR = $(OBJ:.o=.hpp)
+
+SYNDEM: Syndem.cpp Syndem.hpp $(OBJ)
+	$(CPP) $(CPPFLAGS) Syndem.cpp $(OBJ) -o SYNDEM
 
 ##############################################
+
+print:
+	enscript $(SRC) $(HDR)
 
 clean:
 	rm -f *.o *~ SYNDEM out* trace*
@@ -30,6 +33,10 @@ tar: clean
 
 dist:
 	make clean
-	(cd ..; tar cvf SYNDEM-`date +"%Y-%m-%d"`.tar SYNDEM/README SYNDEM/Makefile SYNDEM/*_alleg SYNDEM/*.cpp SYNDEM/*.hpp SYNDEM/params* SYNDEM/p SYNDEM/ch SYNDEM/go SYNDEM/report SYNDEM/sim.plt SYNDEM/loc.* SYNDEM/pop.* SYNDEM/sched.* ; cd SYNDEM)
+	(cd ..; tar cvf SYNDEM-`date +"%Y-%m-%d"`.tar SYNDEM/README \
+	SYNDEM/Makefile SYNDEM/*_alleg SYNDEM/*.cpp SYNDEM/*.hpp \
+	SYNDEM/params* SYNDEM/p SYNDEM/ch SYNDEM/go SYNDEM/report \
+	SYNDEM/LICENSE SYNDEM/sim.plt SYNDEM/loc.* SYNDEM/pop.* \
+	SYNDEM/sched.* ; cd SYNDEM)
 	make
 

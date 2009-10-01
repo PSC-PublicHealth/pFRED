@@ -1,3 +1,9 @@
+/*
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
+
 //
 //
 // File: Disease.cpp
@@ -12,20 +18,27 @@ int Diseases;
 void Disease::setup(int dis) {
   char s[80];
   id = dis;
+  int n;
 
-  sprintf(s, "trans.%d", id);
+  sprintf(s, "trans[%d]", id);
   get_param(s, &transmissibility);
 
-  sprintf(s, "symp.%d", id);
+  sprintf(s, "symp[%d]", id);
   get_param(s, &prob_symptomatic);
 
-  sprintf(s, "days_latent.%d", id);
+  sprintf(s, "days_latent[%d]", id);
+  get_param(s, &n);
+  days_latent = new double [n];
   max_days_latent = get_param_vector(s, days_latent) -1;
 
-  sprintf(s, "days_incubating.%d", id);
+  sprintf(s, "days_incubating[%d]", id);
+  get_param(s, &n);
+  days_incubating = new double [n];
   max_days_incubating = get_param_vector(s, days_incubating) -1;
 
-  sprintf(s, "days_infectious.%d", id);
+  sprintf(s, "days_infectious[%d]", id);
+  get_param(s, &n);
+  days_infectious = new double [n];
   max_days_infectious = get_param_vector(s, days_infectious) -1;
 
 }

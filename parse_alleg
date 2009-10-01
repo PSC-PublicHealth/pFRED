@@ -47,7 +47,7 @@ open HOS, "AL_hospitals.txt";
 while (<HOS>) {
   chomp;
   my ($hosp) = split;
-  $loc{$hosp} = "C 0 0";
+  $loc{$hosp} = "M 0 0";
 }
 close HOS;
 
@@ -68,8 +68,9 @@ close SCHOOL;
 
 # map loc id to array index
 my @place = ();
+push @place, "0 Community C 0 0";
 my %pmap = ();
-$id = 0;
+$id = 1;
 for my $key (sort keys %loc) {
   push @place, "$id $key $loc{$key}";
   $pmap{$key} = $id;
@@ -87,11 +88,11 @@ for (@data) {
   while (length $house < 4) { $house = "0$house" }
   my $houseid = $block . $house;
   for my $day (0..6) {
-    print SCHED "$id $day $pmap{$houseid}\n";
+    print SCHED "$id $day $pmap{$houseid} 1.0\n";
   }
   if ($school > 0) {
     for my $day (1..5) {
-      print SCHED "$id $day $pmap{$school}\n";
+      print SCHED "$id $day $pmap{$school} 1.0\n";
     }
   }
   if ($work > 0) {
@@ -99,7 +100,7 @@ for (@data) {
       $work = $school_map{$work} if exists $school_map{$work};
     }
     for my $day (1..5) {
-      print SCHED "$id $day $pmap{$work}\n";
+      print SCHED "$id $day $pmap{$work} 1.0\n";
     }
   }
   $id++;

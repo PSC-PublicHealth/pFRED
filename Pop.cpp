@@ -1,3 +1,9 @@
+/*
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
+
 //
 //
 // File: Pop.cpp
@@ -38,25 +44,25 @@ void setup_population() {
     fflush(Statusfp);
   }
 
-  Exposed = (set <int> *) malloc(Diseases*sizeof(set <int>));
+  Exposed = new (nothrow) set <int> [Diseases];
   if (Exposed == NULL) { printf("Help! Exposed allocation failure\n"); abort(); }
 
-  Infectious = (set <int> *) malloc(Diseases*sizeof(set <int>));
+  Infectious = new (nothrow) set <int> [Diseases];
   if (Infectious == NULL) { printf("Help! Infectious allocation failure\n"); abort(); }
 
-  S = (int *) malloc(Diseases*sizeof(int));
+  S = new (nothrow) int  [Diseases];
   if (S == NULL) { printf("Help! S allocation failure\n"); abort(); }
 
-  E = (int *) malloc(Diseases*sizeof(int));
+  E = new (nothrow) int  [Diseases];
   if (E == NULL) { printf("Help! E allocation failure\n"); abort(); }
 
-  I = (int *) malloc(Diseases*sizeof(int));
+  I = new (nothrow) int  [Diseases];
   if (I == NULL) { printf("Help! I allocation failure\n"); abort(); }
 
-  R = (int *) malloc(Diseases*sizeof(int));
+  R = new (nothrow) int  [Diseases];
   if (R == NULL) { printf("Help! R allocation failure\n"); abort(); }
 
-  Attack_rate = (double *) malloc(Diseases*sizeof(double));
+  Attack_rate = new (nothrow) double  [Diseases];
   if (Attack_rate == NULL) { printf("Help! Attack_rate allocation failure\n"); abort(); }
 
   // init population-disease lists
@@ -120,6 +126,7 @@ void read_population() {
 
 void read_schedules() {
   int id, day, loc;
+  double prob;
   FILE *fp = fopen(Schedfile, "r");
   if (fp == NULL) {
     fprintf(Statusfp, "Schedfile %s not found\n", Schedfile);
@@ -129,9 +136,9 @@ void read_schedules() {
     fprintf(Statusfp, "reading schedules\n");
     fflush(Statusfp);
   }
-  while (fscanf(fp, "%d %d %d", &id, &day, &loc) == 3) {
+  while (fscanf(fp, "%d %d %d %lf", &id, &day, &loc, &prob) == 4) {
     if (id < Population)
-      Pop[id].add_to_schedule(day, loc, Loc[loc]);
+      Pop[id].add_to_schedule(day, loc, Loc[loc], prob);
   }
   fclose(fp);
   if (Verbose) {

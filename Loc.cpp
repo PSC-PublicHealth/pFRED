@@ -1,3 +1,9 @@
+/*
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
+
 //
 //
 // File: Loc.cpp
@@ -23,10 +29,6 @@ void get_location_parameters() {
 
 void setup_locations() {
   FILE *fp;
-  int id;
-  char s[32];
-  char loctype;
-  float lon, lat;
 
   if (Verbose) {
     fprintf(Statusfp, "setup locations entered\n"); fflush(Statusfp);
@@ -45,12 +47,19 @@ void setup_locations() {
     fprintf(Statusfp, "Locations = %d\n", Locations); fflush(Statusfp);
   }
 
-  Loc = (Place **) malloc(Locations*sizeof(Place *));
+  Loc = new (nothrow) Place * [Locations];
   if (Loc == NULL) { printf("Help! Loc allocation failure\n"); abort(); }
 
   for (int loc = 0; loc < Locations; loc++) {
+    int id;
+    char s[32];
+    char loctype;
+    double lon, lat;
+    int container;
+
     // fprintf(Statusfp, "reading location %d\n", loc); fflush(Statusfp);
-    if (fscanf(fp, "%d %s %c %f %f",
+
+    if (fscanf(fp, "%d %s %c %lf %lf",
 	       &id, s, &loctype, &lat, &lon) != 5) {
       fprintf(Statusfp, "Help! Read failure for location %d\n", loc);
       abort();
@@ -63,16 +72,19 @@ void setup_locations() {
     // printf("loctype = %c\n", loctype); fflush(stdout);
     Place *place;
     if (loctype == HOUSEHOLD) {
-      place = new (nothrow) Household(id, s, lon, lat, Diseases);
+      place = new (nothrow) Household(id, s, lon, lat);
     }
     else if (loctype == SCHOOL) {
-      place = new (nothrow) School(id, s, lon, lat, Diseases);
+      place = new (nothrow) School(id, s, lon, lat);
     }
     else if (loctype == WORKPLACE) {
-      place = new (nothrow) Workplace(id, s, lon, lat, Diseases);
+      place = new (nothrow) Workplace(id, s, lon, lat);
+    }
+    else if (loctype == HOSPITAL) {
+      place = new (nothrow) Hospital(id, s, lon, lat);
     }
     else if (loctype == COMMUNITY) {
-      place = new (nothrow) Community(id, s, lon, lat, Diseases);
+      place = new (nothrow) Community(id, s, lon, lat);
     }
     else {
       printf ("Help! bad loctype = %c\n", loctype);

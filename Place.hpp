@@ -1,3 +1,9 @@
+/*
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
+
 //
 //
 // File: Place.hpp
@@ -6,8 +12,6 @@
 #ifndef _SYNDEM_PLACE_H
 #define _SYNDEM_PLACE_H
 
-
-#include <stack>
 #include <vector>
 #include <iostream>
 #include <stdio.h>
@@ -19,18 +23,45 @@ using namespace std;
 #include "Params.hpp"
 
 class Person;
+extern Person *Pop;
+extern Disease *Dis;
+extern int Diseases;
+extern int Verbose;
 
 #define HOUSEHOLD 'H'
 #define WORKPLACE 'W'
 #define SCHOOL 'S'
+#define HOSPITAL 'M'
 #define COMMUNITY 'C'
+#define OFFICE 'O'
+#define CLASSROOM 'c'
 
 class Place {
 
+protected:
+
+  int id;					// place id
+  char label[32];				// external id
+  char type;				// HOME, WORK, SCHOOL, COMMUNITY
+  double latitude;				// geo location
+  double longitude;				// geo location
+  int N;			   // total number of potential visitors
+  vector <int> *susceptibles;		 // list of susceptible visitors
+  vector <int> *infectious;		  // list of infectious visitors
+  int *S;					// susceptible count
+  int *I;					// infectious count
+  int *Sympt;					// symtomatics count
+  int close_date;			     // when to close this place
+  int open_date;			      // when to open this place
+  int indiv_types;			   // distinct types of visitors
+
+  // disease parameters
+  double *beta;	       // place-independent transmissibility per contact
+
 public:
-  Place();
+  Place() {};
   ~Place() {};
-  virtual void setup(int,char *,double,double,int);
+  void setup(int loc, char *lab, double lon, double lat);
   void reset();
   void print(int dis);
   void add_susceptible(int dis, int per);
@@ -41,8 +72,12 @@ public:
   void print_infectious(int dis);
   void spread_infection(int day);
   int is_open(int day);
-  int check_for_school_closure(int day ,int dis);
-  virtual int should_be_open(int day, int dis);
+
+  virtual void get_parameters() {};
+  virtual int get_group_type(int dis, int per) { return 0; }
+  virtual double get_transmission_prob(int dis, int i, int s) { return 1.0; }
+  virtual int should_be_open(int day, int dis) { return 1; }
+  virtual double get_contacts_per_day(int dis) { return 0; }
 
   // access functions
   int get_id() { return id; };
@@ -58,34 +93,12 @@ public:
   int get_open_date() { return open_date; }
 
   void set_id(int n) { id = n; };
-  void set_type(char n) { type = n; } ;
+  void set_type(char t) { type = t; } ;
   void set_latitude(double x) { latitude = x; } ;
   void set_longitude(double x) { longitude = x; } ;
-  void set_contact_prob(int dis, double x) { contact_prob[dis] = x; } ;
-  void set_contacts_per_day(int dis, int n) { contacts_per_day[dis] = n; } ;
   void set_close_date(int day) { close_date = day; }
   void set_open_date(int day) { open_date = day; }
 
-protected:
-
-  int id;					// place id
-  char label[32];				// external id
-  char type;				// HOME, WORK, SCHOOL, COMMUNITY
-  double latitude;				// geo location
-  double longitude;				// geo location
-  int N;			   // total number of potential visitors
-
-  double *beta;	       // place-independent transmissibility per contact
-  double *contact_prob;		   // local transmissibility per contact
-  int *contacts_per_day;		   // number of contacts per day
-  vector <int> *susceptibles;		 // list of susceptible visitors
-  vector <int> *infectious;		  // list of infectious visitors
-  int *S;				  // susceptible count
-  int *I;				  // infectious count
-  int *Sympt;				  // symtopmatics count
-
-  int close_date;		    // when to close this place
-  int open_date;		    // when to open this place
 };
 
 #endif // _SYNDEM_PLACE_H

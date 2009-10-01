@@ -1,3 +1,9 @@
+/*
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
+
 //
 //
 // File: Loc.hpp
@@ -16,6 +22,7 @@
 #include "Workplace.hpp"
 #include "Community.hpp"
 #include "Household.hpp"
+#include "Hospital.hpp"
 
 void setup_locations();
 void reset_locations(int run);

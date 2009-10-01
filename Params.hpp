@@ -1,3 +1,9 @@
+/*
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
+
 //
 //
 // File Params.hpp
@@ -11,7 +17,7 @@
 #include <string>
 
 #define MAX_PARAMS 1000
-#define MAX_PARAM_SIZE 80
+#define MAX_PARAM_SIZE 1024
 
 int get_param(char *s, int *p);
 int get_param(char *s, unsigned long *p);

@@ -1,3 +1,9 @@
+/*
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
+
 //
 //
 // File: Person.cpp
@@ -19,81 +25,88 @@ void Person::setup(int i, int a, char g) {
   sex = g;
   occupation = 'U';
 
-  disease_status = (char *) malloc(Diseases*sizeof(char));
+  disease_status = new (nothrow) char [Diseases];
   if (disease_status == NULL) {
     printf("Help! disease_status allocation failure\n");
     abort();
   }
 
-  latent_period = (int *) malloc(Diseases*sizeof(int));
+  latent_period = new (nothrow) int [Diseases];
   if (latent_period == NULL) {
     printf("Help! latent_period allocation failure\n");
     abort();
   }
 
-  infectious_period = (int *) malloc(Diseases*sizeof(int));
+  infectious_period = new (nothrow) int [Diseases];
   if (infectious_period == NULL) {
     printf("Help! infectious_period allocation failure\n");
     abort();
   }
 
-  exposure_date = (int *) malloc(Diseases*sizeof(int));
+  exposure_date = new (nothrow) int [Diseases];
   if (exposure_date == NULL) {
     printf("Help! exposure_date allocation failure\n");
     abort();
   }
 
-  infectious_date = (int *) malloc(Diseases*sizeof(int));
+  infectious_date = new (nothrow) int [Diseases];
   if (infectious_date == NULL) {
     printf("Help! infectious_date allocation failure\n");
     abort();
   }
 
-  recovered_date = (int *) malloc(Diseases*sizeof(int));
+  recovered_date = new (nothrow) int [Diseases];
   if (recovered_date == NULL) {
     printf("Help! recovered_date allocation failure\n");
     abort();
   }
 
-  infector = (int *) malloc(Diseases*sizeof(int));
+  infector = new (nothrow) int [Diseases];
   if (infector == NULL) {
     printf("Help! infector allocation failure\n");
     abort();
   }
 
-  infected_place = (int *) malloc(Diseases*sizeof(int));
+  infected_place = new (nothrow) int [Diseases];
   if (infected_place == NULL) {
     printf("Help! infected_place allocation failure\n");
     abort();
   }
 
-  infected_place_type = (char *) malloc(Diseases*sizeof(char));
+  infected_place_type = new (nothrow) char [Diseases];
   if (infected_place_type == NULL) {
     printf("Help! infected_place_type allocation failure\n");
     abort();
   }
 
-  infectees = (int *) malloc(Diseases*sizeof(int));
+  infectees = new (nothrow) int [Diseases];
   if (infectees == NULL) {
     printf("Help! infectees allocation failure\n");
     abort();
   }
 
-  susceptibility = (float *) malloc(Diseases*sizeof(float));
+  susceptibility = new (nothrow) double [Diseases];
   if (susceptibility == NULL) {
     printf("Help! susceptibility allocation failure\n");
     abort();
   }
 
-  infectivity = (float *) malloc(Diseases*sizeof(float));
+  infectivity = new (nothrow) double [Diseases];
   if (infectivity == NULL) {
     printf("Help! infectivity allocation failure\n");
+    abort();
+  }
+
+  role = new (nothrow) char [Diseases];
+  if (role == NULL) {
+    printf("Help! role allocation failure\n");
     abort();
   }
 
   for (int d = 0; d < Diseases; d++) {
     infected_place[d] = -1;
     infected_place_type[d] = 'X';
+    role[d] = NO_ROLE;
   }
 }
   
@@ -234,14 +247,17 @@ int Person::on_schedule(int day, int pl) {
   extern int Start_day;
   day = (day + Start_day) % DAYS_PER_WEEK;
   for (int p = 0; p < places; p++) {
-    if (schedule[day][p] == pl) { return 1; }
+    if (schedule[day][p] == pl) {
+      return (RANDOM() < visit_prob[day][p]);
+    }
   }
   return 0;
 }
 
-void Person::add_to_schedule(int day, int loc, Place *pl) {
+void Person::add_to_schedule(int day, int loc, Place *pl, double prob) {
   day = day % DAYS_PER_WEEK;
   schedule[day].push_back(loc);
+  visit_prob[day].push_back(prob);
 
   // add place list if needed
   int found = 0;

@@ -1,3 +1,9 @@
+/*
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
+
 //
 //
 // File Params.cpp
@@ -8,7 +14,7 @@
 char Param_name[MAX_PARAMS][MAX_PARAM_SIZE];
 char Param_value[MAX_PARAMS][MAX_PARAM_SIZE];
 int Params;
-int Param_debug = 1;
+int Param_debug = 0;
 
 int get_param(char *s, int *p) {
   int i;
@@ -22,6 +28,7 @@ int get_param(char *s, int *p) {
     }
   }
   if (Param_debug == 1) { printf("PARAMS: %s not found\n", s); fflush(stdout); }
+  abort();
   return 0;
 }
 
@@ -37,6 +44,7 @@ int get_param(char *s, unsigned long *p) {
     }
   }
   if (Param_debug == 1) { printf("PARAMS: %s not found\n", s); fflush(stdout); }
+  abort();
   return 0;
 }
 
@@ -52,6 +60,7 @@ int get_param(char *s, double *p) {
     }
   }
   if (Param_debug == 1) { printf("PARAMS: %s not found\n", s); fflush(stdout); }
+  abort();
   return 0;
 }
 
@@ -67,6 +76,7 @@ int get_param(char *s, float *p) {
     }
   }
   if (Param_debug == 1) { printf("PARAMS: %s not found\n", s); fflush(stdout); }
+  abort();
   return 0;
 }
 
@@ -82,6 +92,7 @@ int get_param(char *s, char *p) {
     }
   }
   if (Param_debug == 1) { printf("PARAMS: %s not found\n", s); fflush(stdout); }
+  abort();
   return 0;
 }
 
@@ -105,7 +116,6 @@ int read_parameters(char *paramfile) {
   return Params;
 }
 
-
 int get_param_vector(char *s, double *p) {
   char str[1024];
   int n;
@@ -122,6 +132,9 @@ int get_param_vector(char *s, double *p) {
       sscanf(pch, "%lf", &p[i]);
       // printf("p[%d] = %f\n",i,p[i]); fflush(stdout);
     }
+  }
+  else {
+    abort();
   }
   return n;
 }

@@ -1,3 +1,9 @@
+/*
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
+
 //
 //
 // File: Disease.hpp
@@ -13,9 +19,6 @@ using namespace std;
 #include "Random.hpp"
 #include "Params.hpp"
 
-#define MAX_LATENT_PERIOD 10
-#define MAX_INFECTIOUS_PERIOD 10
-
 class Disease {
   int id;
   double prob_symptomatic;
@@ -23,9 +26,9 @@ class Disease {
   int max_days_latent;
   int max_days_incubating;
   int max_days_infectious;
-  double days_latent[MAX_LATENT_PERIOD];
-  double days_incubating[MAX_LATENT_PERIOD];
-  double days_infectious[MAX_INFECTIOUS_PERIOD];
+  double *days_latent;
+  double *days_incubating;
+  double *days_infectious;
 
 public:
   void setup(int i);
