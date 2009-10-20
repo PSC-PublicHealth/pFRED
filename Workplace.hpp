@@ -15,18 +15,19 @@
 
 #include "Place.hpp"
 
-class Workplace : public Place {
+// From Disease.hpp
+int get_diseases();
+
+class Workplace: public Place {
 
 public: 
-
-  Workplace() {};
-  ~Workplace() {};
-  Workplace(int,char*,double,double);
-  void get_parameters();
+  Workplace() {}
+  ~Workplace() {}
+  Workplace(int,char*,double,double,int);
+  void get_parameters(int diseases);
   int get_group_type(int dis, int per);
   double get_transmission_prob(int dis, int i, int s);
   double get_contacts_per_day(int dis);
-
 };
 
 #endif // _SYNDEM_WORKPLACE_H

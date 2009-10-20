@@ -41,8 +41,12 @@ public:
 };
   
 void get_disease_parameters();
-void setup_diseases();
+void setup_diseases(int verbose);
 int draw_from_distribution(int n, double *dist);
-
+int get_diseases();
+double get_beta(int dis);
+double get_prob_symptomatic(int dis);
+int get_days_latent(int dis);
+int get_days_infectious(int dis);
 
 #endif // _SYNDEM_DISEASE_H

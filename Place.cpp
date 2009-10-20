@@ -10,53 +10,48 @@
 //
 
 #include "Place.hpp"
+extern int Verbose;
 
-void Place::setup(int loc, char *lab, double lon, double lat) {
 
+void Place::setup(int loc, char *lab, double lon, double lat, int cont) {
+
+  int diseases = get_diseases();
   id = loc;
+  container = cont;
   strcpy(label,lab);
   longitude = lon;
   latitude = lat;
-  beta = new (nothrow) double [Diseases];
-  if (beta == NULL) {
-    printf("Help! beta allocation failure\n");
-    abort();
-  }
 
-  susceptibles = new (nothrow) vector<int> [Diseases];
+  susceptibles = new (nothrow) vector<int> [diseases];
   if (susceptibles == NULL) {
     printf("Help! susceptibles allocation failure\n");
     abort();
   }
 
-  infectious = new (nothrow) vector<int> [Diseases];
+  infectious = new (nothrow) vector<int> [diseases];
   if (infectious == NULL) {
     printf("Help! infectious allocation failure\n");
     abort();
   }
 
-  S = new (nothrow) int [Diseases];
+  S = new (nothrow) int [diseases];
   if (S == NULL) {
     printf("Help! S allocation failure\n");
     abort();
   }
 
-  I = new (nothrow) int [Diseases];
+  I = new (nothrow) int [diseases];
   if (I == NULL) {
     printf("Help! I allocation failure\n");
     abort();
   }
 
-  Sympt = new (nothrow) int [Diseases];
+  Sympt = new (nothrow) int [diseases];
   if (Sympt == NULL) {
     printf("Help! Sympt allocation failure\n");
     abort();
   }
 
-  for (int d = 0; d < Diseases; d++) {
-    beta[d] = Dis[d].get_transmissibility();
-  }
-  
   indiv_types = 1;
   reset();
 }
@@ -64,7 +59,8 @@ void Place::setup(int loc, char *lab, double lon, double lat) {
 
 void Place::reset() {
   N = 0;
-  for (int d = 0; d < Diseases; d++) {
+  int diseases = get_diseases();
+  for (int d = 0; d < diseases; d++) {
     susceptibles[d].clear();
     infectious[d].clear();
     Sympt[d] = S[d] = I[d] = 0;
@@ -115,7 +111,7 @@ void Place::print_susceptibles(int dis) {
 void Place::add_infectious(int dis, int per) {
   infectious[dis].push_back(per);
   I[dis]++;
-  if (Pop[per].get_disease_status(dis) == 'I') {
+  if (get_disease_status(per, dis) == 'I') {
     Sympt[dis]++;
   }
 }
@@ -130,7 +126,7 @@ void Place::delete_infectious(int dis, int per) {
     }
   }
   I[dis]--;
-  if (Pop[per].get_disease_status(dis)=='I') {
+  if (get_disease_status(per, dis)=='I') {
     Sympt[dis]--;
   }
 }
@@ -147,7 +143,8 @@ void Place::print_infectious(int dis) {
 void Place::spread_infection(int day) {
   vector<int>::iterator itr;
 
-  for (int d = 0; d < Diseases; d++) {
+  int diseases = get_diseases();
+  for (int d = 0; d < diseases; d++) {
     if (Verbose > 1) { print(d); }
     if (N < 2) return;
     if (S[d] == 0) continue;
@@ -160,9 +157,9 @@ void Place::spread_infection(int day) {
     }
     
     // expected u.b. on number of contacts resulting in infection (per infective)
-    contacts *= beta[d];
+    contacts *= get_beta(d);
     if (Verbose > 1) {
-      printf("beta = %f\n", beta[d]);
+      printf("beta = %f\n", get_beta(d));
       printf("effective contacts = %f\n", contacts);
       fflush(stdout);
     }
@@ -171,12 +168,12 @@ void Place::spread_infection(int day) {
       int i = *itr;				// infectious indiv
 
       // skip if this infected did not visit today
-      if (!Pop[i].on_schedule(day, id)) continue;
+      if (!is_place_on_schedule_for_person(i, day, id)) continue;
 
       if (Verbose > 1) { printf("infected = %d\n", i); }
 
       // reduce number of infective contact events by my infectivity
-      double my_contacts = contacts * Pop[i].get_infectivity(d);
+      double my_contacts = contacts * get_infectivity(i,d);
       if (Verbose > 1) {
 	printf("my effective contacts = %f\n", my_contacts);
 	fflush(stdout);
@@ -197,18 +194,18 @@ void Place::spread_infection(int day) {
 	if (Verbose > 1) { printf("my possible victim = %d\n",s); }
 
 	// is the victim here today, and still susceptible?
-	if (Pop[s].on_schedule(day,id) && Pop[s].get_disease_status(d) == 'S') {
+	if (is_place_on_schedule_for_person(s,day,id) && get_disease_status(s,d) == 'S') {
 
 	  // compute transmission prob for this type of individuals
 	  double transmission_prob = get_transmission_prob(d,i,s);
 
 	  // get the victim's susceptibility
-	  double susceptibility = Pop[s].get_susceptibility(d);
+	  double susceptibility = get_susceptibility(s,d);
 
 	  if (RANDOM() < transmission_prob*susceptibility) {
 	    if (Verbose > 1) { printf("infection from %d to %d\n",i,s); }
-	    Pop[s].make_exposed(d, i, id, day);
-	    Pop[i].add_infectee(d);
+	    make_exposed(s, d, i, id, type, day);
+	    add_infectee(i,d);
 	  }
 	  else {
 	    if (Verbose > 1) { printf("no infection\n"); }
@@ -220,6 +217,12 @@ void Place::spread_infection(int day) {
 }
 
 int Place::is_open(int day) {
-  return (day < close_date || open_date <= day);
+  int get_open_status(int,int);
+  if (container > 0) {
+    return get_open_status(container, day);
+  }
+  else {
+    return (day < close_date || open_date <= day);
+  }
 }
 

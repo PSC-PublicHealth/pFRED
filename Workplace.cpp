@@ -15,22 +15,21 @@ double * Workplace_contacts_per_day;
 double *** Workplace_contact_prob;
 int Workplace_parameters_set = 0;
 
-Workplace::Workplace(int loc, char *lab, double lon, double lat) {
+Workplace::Workplace(int loc, char *lab, double lon, double lat, int container) {
   type = WORKPLACE;
-  setup(loc, lab, lon, lat);
-  get_parameters();
+  setup(loc, lab, lon, lat, container);
+  get_parameters(get_diseases());
 }
 
-void Workplace::get_parameters() {
-  extern int Diseases;
+void Workplace::get_parameters(int diseases) {
   char param_str[80];
 
   if (Workplace_parameters_set) return;
 
-  Workplace_contacts_per_day = new double [ Diseases ];
-  Workplace_contact_prob = new double** [ Diseases ];
+  Workplace_contacts_per_day = new double [ diseases ];
+  Workplace_contact_prob = new double** [ diseases ];
 
-  for (int d = 0; d < Diseases; d++) {
+  for (int d = 0; d < diseases; d++) {
     int n;
     sprintf(param_str, "workplace_contacts[%d]", d);
     get_param((char *) param_str, &Workplace_contacts_per_day[d]);

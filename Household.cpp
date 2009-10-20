@@ -11,26 +11,26 @@
 
 #include "Household.hpp"
 
+
 double * Household_contacts_per_day;
 double *** Household_contact_prob;
 int Household_parameters_set = 0;
 
-Household::Household(int loc, char *lab, double lon, double lat) {
+Household::Household(int loc, char *lab, double lon, double lat, int container) {
   type = HOUSEHOLD;
-  setup(loc, lab, lon, lat);
-  get_parameters();
+  setup(loc, lab, lon, lat, container);
+  get_parameters(get_diseases());
 }
 
-void Household::get_parameters() {
-  extern int Diseases;
+void Household::get_parameters(int diseases) {
   char param_str[80];
 
   if (Household_parameters_set) return;
 
-  Household_contacts_per_day = new double [ Diseases ];
-  Household_contact_prob = new double** [ Diseases ];
+  Household_contacts_per_day = new double [ diseases ];
+  Household_contact_prob = new double** [ diseases ];
 
-  for (int d = 0; d < Diseases; d++) {
+  for (int d = 0; d < diseases; d++) {
     int n;
     sprintf(param_str, "household_contacts[%d]", d);
     get_param((char *) param_str, &Household_contacts_per_day[d]);
@@ -69,7 +69,7 @@ void Household::get_parameters() {
 }
 
 int Household::get_group_type(int dis, int per) {
-  int age = Pop[per].get_age();
+  int age = get_age(per);
   if (age < 18) { return 0; }
   else { return 1; }
 }

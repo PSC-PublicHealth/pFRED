@@ -6,30 +6,36 @@
 
 //
 //
-// File: Household.hpp
+// File: Classroom.hpp
 //
 
-#ifndef _SYNDEM_HOUSEHOLD_H
-#define _SYNDEM_HOUSEHOLD_H
+#ifndef _SYNDEM_CLASSROOM_H
+#define _SYNDEM_CLASSROOM_H
 
 
 #include "Place.hpp"
+
+// From Loc.hpp
+int location_should_be_open(int loc, int dis, int day);
+
+// From Pop.hpp
 int get_age(int);
 
 // From Disease.hpp
 int get_diseases();
 
-class Household: public Place {
+class Classroom: public Place {
 
 public: 
-  Household() {}
-  ~Household() {}
-  Household(int,char*,double,double,int);
+  Classroom() {}
+  ~Classroom() {}
+  Classroom(int,char*,double,double,int);
   void get_parameters(int diseases);
   int get_group_type(int dis, int per);
   double get_transmission_prob(int dis, int i, int s);
+  int should_be_open(int day, int dis);
   double get_contacts_per_day(int dis);
 };
 
-#endif // _SYNDEM_HOUSEHOLD_H
+#endif // _SYNDEM_CLASSROOM_H
 

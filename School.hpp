@@ -15,19 +15,24 @@
 
 #include "Place.hpp"
 
-class School : public Place {
+// From Pop.hpp
+int get_age(int per);
+double get_attack_rate(int dis);
+
+// From Disease.hpp
+int get_diseases();
+
+class School: public Place {
 
 public: 
-
-  School() {};
-  ~School() {};
-  School(int,char*,double,double);
-  void get_parameters();
+  School() {}
+  ~School() {}
+  School(int,char*,double,double,int);
+  void get_parameters(int diseases);
   int get_group_type(int dis, int per);
   double get_transmission_prob(int dis, int i, int s);
   int should_be_open(int day, int dis);
   double get_contacts_per_day(int dis);
-
 };
 
 #endif // _SYNDEM_SCHOOL_H

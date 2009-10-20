@@ -15,22 +15,21 @@ double * Hospital_contacts_per_day;
 double *** Hospital_contact_prob;
 int Hospital_parameters_set = 0;
 
-Hospital::Hospital(int loc, char *lab, double lon, double lat) {
+Hospital::Hospital(int loc, char *lab, double lon, double lat, int container) {
   type = HOSPITAL;
-  setup(loc, lab, lon, lat);
-  get_parameters();
+  setup(loc, lab, lon, lat, container);
+  get_parameters(get_diseases());
 }
 
-void Hospital::get_parameters() {
-  extern int Diseases;
+void Hospital::get_parameters(int diseases) {
   char param_str[80];
 
   if (Hospital_parameters_set) return;
 
-  Hospital_contacts_per_day = new double [ Diseases ];
-  Hospital_contact_prob = new double** [ Diseases ];
+  Hospital_contacts_per_day = new double [ diseases ];
+  Hospital_contact_prob = new double** [ diseases ];
 
-  for (int d = 0; d < Diseases; d++) {
+  for (int d = 0; d < diseases; d++) {
     int n;
     sprintf(param_str, "hospital_contacts[%d]", d);
     get_param((char *) param_str, &Hospital_contacts_per_day[d]);
@@ -69,7 +68,7 @@ void Hospital::get_parameters() {
 }
 
 int Hospital::get_group_type(int dis, int per) {
-  int role = Pop[per].get_role(dis);
+  int role = get_role(per, dis);
   if (role == PATIENT) { return 0; }
   else { return 1; }
 }

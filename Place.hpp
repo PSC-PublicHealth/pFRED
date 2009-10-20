@@ -18,23 +18,33 @@
 using namespace std;
 
 #include "Random.hpp"
-#include "Person.hpp"
-#include "Disease.hpp"
 #include "Params.hpp"
-
-class Person;
-extern Person *Pop;
-extern Disease *Dis;
-extern int Diseases;
 extern int Verbose;
+extern FILE *Statusfp;
+
+// From Pop.cpp
+char get_disease_status(int per, int dis);
+int is_place_on_schedule_for_person(int per, int day, int loc);
+double get_infectivity(int per, int dis);
+double get_susceptibility(int per, int dis);
+void make_exposed(int per, int dis, int infector, int loc, char type, int day);
+void add_infectee(int per, int dis);
+int get_age(int per);
+int get_role(int per, int dis);
+
+// From Disease.hpp
+int get_diseases();
+double get_beta(int dis);
+
 
 #define HOUSEHOLD 'H'
-#define WORKPLACE 'W'
+#define NEIGHBORHOOD 'N'
 #define SCHOOL 'S'
-#define HOSPITAL 'M'
-#define COMMUNITY 'C'
+#define CLASSROOM 'C'
+#define WORKPLACE 'W'
 #define OFFICE 'O'
-#define CLASSROOM 'c'
+#define HOSPITAL 'M'
+#define COMMUNITY 'X'
 
 class Place {
 
@@ -43,6 +53,7 @@ protected:
   int id;					// place id
   char label[32];				// external id
   char type;				// HOME, WORK, SCHOOL, COMMUNITY
+  int container;				// id of container place
   double latitude;				// geo location
   double longitude;				// geo location
   int N;			   // total number of potential visitors
@@ -59,9 +70,9 @@ protected:
   double *beta;	       // place-independent transmissibility per contact
 
 public:
-  Place() {};
-  ~Place() {};
-  void setup(int loc, char *lab, double lon, double lat);
+  Place() {}
+  ~Place() {}
+  void setup(int loc, char *lab, double lon, double lat, int cont);
   void reset();
   void print(int dis);
   void add_susceptible(int dis, int per);
@@ -73,29 +84,29 @@ public:
   void spread_infection(int day);
   int is_open(int day);
 
-  virtual void get_parameters() {};
+  virtual void get_parameters() {}
   virtual int get_group_type(int dis, int per) { return 0; }
   virtual double get_transmission_prob(int dis, int i, int s) { return 1.0; }
   virtual int should_be_open(int day, int dis) { return 1; }
   virtual double get_contacts_per_day(int dis) { return 0; }
 
   // access functions
-  int get_id() { return id; };
-  char * get_label() { return label; };
-  int get_type() { return type; } ;
-  double get_latitude() { return latitude; } ;
-  double get_longitude() { return longitude; } ;
-  int get_S(int dis) { return S[dis]; } ;
-  int get_I(int dis) { return (int) (infectious[dis].size()); } ;
-  int get_symptomatic(int dis) { return Sympt[dis]; } ;
-  int get_size() { return N; } ;
+  int get_id() { return id; }
+  char * get_label() { return label; }
+  int get_type() { return type; }
+  double get_latitude() { return latitude; }
+  double get_longitude() { return longitude; }
+  int get_S(int dis) { return S[dis]; }
+  int get_I(int dis) { return (int) (infectious[dis].size()); }
+  int get_symptomatic(int dis) { return Sympt[dis]; }
+  int get_size() { return N; }
   int get_close_date() { return close_date; }
   int get_open_date() { return open_date; }
 
-  void set_id(int n) { id = n; };
-  void set_type(char t) { type = t; } ;
-  void set_latitude(double x) { latitude = x; } ;
-  void set_longitude(double x) { longitude = x; } ;
+  void set_id(int n) { id = n; }
+  void set_type(char t) { type = t; }
+  void set_latitude(double x) { latitude = x; }
+  void set_longitude(double x) { longitude = x; }
   void set_close_date(int day) { close_date = day; }
   void set_open_date(int day) { open_date = day; }
 

@@ -74,8 +74,7 @@ void get_disease_parameters() {
   get_param((char *) "diseases", &Diseases);
 }
 
-void setup_diseases() {
-  extern int Verbose;
+void setup_diseases(int verbose) {
   Dis = new (nothrow) Disease [Diseases];
   if (Dis == NULL) {
     printf("Help! Dis allocation failure\n");
@@ -83,7 +82,7 @@ void setup_diseases() {
   }
   for (int d = 0; d < Diseases; d++) {
     Dis[d].setup(d);
-    if (Verbose) Dis[d].print();
+    if (verbose) Dis[d].print();
   }
 }
 
@@ -102,4 +101,14 @@ int draw_from_distribution(int n, double *dist) {
     return -1;
   }
 }
+
+int get_diseases() { return Diseases; }
+
+double get_beta(int dis) { return Dis[dis].get_transmissibility(); }
+
+double get_prob_symptomatic(int dis) { return Dis[dis].get_prob_symptomatic(); }
+
+int get_days_latent(int dis) { return Dis[dis].get_days_latent(); }
+
+int get_days_infectious(int dis) {  return Dis[dis].get_days_infectious(); }
 

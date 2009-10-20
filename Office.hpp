@@ -6,30 +6,29 @@
 
 //
 //
-// File: Household.hpp
+// File: Office.hpp
 //
 
-#ifndef _SYNDEM_HOUSEHOLD_H
-#define _SYNDEM_HOUSEHOLD_H
+#ifndef _SYNDEM_OFFICE_H
+#define _SYNDEM_OFFICE_H
 
 
 #include "Place.hpp"
-int get_age(int);
 
 // From Disease.hpp
 int get_diseases();
 
-class Household: public Place {
+class Office: public Place {
 
 public: 
-  Household() {}
-  ~Household() {}
-  Household(int,char*,double,double,int);
+  Office() {}
+  ~Office() {}
+  Office(int,char*,double,double,int);
   void get_parameters(int diseases);
   int get_group_type(int dis, int per);
   double get_transmission_prob(int dis, int i, int s);
   double get_contacts_per_day(int dis);
 };
 
-#endif // _SYNDEM_HOUSEHOLD_H
+#endif // _SYNDEM_OFFICE_H
 

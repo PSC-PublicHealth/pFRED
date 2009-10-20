@@ -21,23 +21,22 @@ int School_closure_delay;
 int School_parameters_set = 0;
 
 
-School::School(int loc, char *lab, double lon, double lat) {
+School::School(int loc, char *lab, double lon, double lat, int container) {
   type = SCHOOL;
-  setup(loc, lab, lon, lat);
-  get_parameters();
+  setup(loc, lab, lon, lat, container);
+  get_parameters(get_diseases());
 }
 
 
-void School::get_parameters() {
-  extern int Diseases;
+void School::get_parameters(int diseases) {
   char param_str[80];
 
   if (School_parameters_set) return;
 
-  School_contacts_per_day = new double [ Diseases ];
-  School_contact_prob = new double** [ Diseases ];
+  School_contacts_per_day = new double [ diseases ];
+  School_contact_prob = new double** [ diseases ];
 
-  for (int d = 0; d < Diseases; d++) {
+  for (int d = 0; d < diseases; d++) {
     int n;
     sprintf(param_str, "school_contacts[%d]", d);
     get_param((char *) param_str, &School_contacts_per_day[d]);
@@ -82,7 +81,7 @@ void School::get_parameters() {
 }
 
 int School::get_group_type(int dis, int per) {
-  int age = Pop[per].get_age();
+  int age = get_age(per);
   if (age <12) { return 0; }
   else if (age < 16) { return 1; }
   else if (age < 19) { return 2; }
@@ -100,7 +99,6 @@ double School::get_transmission_prob(int dis, int i, int s) {
 }
 
 int School::should_be_open(int day, int dis) {
-  extern double * Attack_rate;
 
   if (strcmp(School_closure_policy, "global") == 0) {
     //
@@ -115,7 +113,7 @@ int School::should_be_open(int day, int dis) {
 
     // Close schools if the global attack rate has reached the threshold
     // (with a delay)
-    if (Attack_rate[dis] > School_closure_threshold) {
+    if (get_attack_rate(dis) > School_closure_threshold) {
       if (is_open(day))
 	close_date = day+School_closure_delay;
       open_date = day+School_closure_delay+School_closure_period;

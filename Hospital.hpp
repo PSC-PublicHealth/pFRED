@@ -14,15 +14,19 @@
 
 
 #include "Place.hpp"
+#include "Person.hpp"
+
+// From Disease.hpp
+int get_diseases();
 
 class Hospital : public Place {
 
 public: 
 
-  Hospital() {};
-  ~Hospital() {};
-  Hospital(int,char*,double,double);
-  void get_parameters();
+  Hospital() {}
+  ~Hospital() {}
+  Hospital(int,char*,double,double,int);
+  void get_parameters(int diseases);
   int get_group_type(int dis, int per);
   double get_transmission_prob(int dis, int i, int s);
   double get_contacts_per_day(int dis);

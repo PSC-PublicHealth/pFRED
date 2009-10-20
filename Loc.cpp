@@ -11,13 +11,7 @@
 
 #include "Loc.hpp"
 
-extern int Population;
-extern Person *Pop;
 extern set <int> *Infectious;
-extern int Diseases;
-extern int Verbose;
-extern FILE *Statusfp;
-extern int Start_day;
 
 char Locfile[80];
 Place ** Loc;
@@ -59,8 +53,8 @@ void setup_locations() {
 
     // fprintf(Statusfp, "reading location %d\n", loc); fflush(Statusfp);
 
-    if (fscanf(fp, "%d %s %c %lf %lf",
-	       &id, s, &loctype, &lat, &lon) != 5) {
+    if (fscanf(fp, "%d %s %c %lf %lf %d",
+	       &id, s, &loctype, &lat, &lon, &container) != 6) {
       fprintf(Statusfp, "Help! Read failure for location %d\n", loc);
       abort();
     }
@@ -72,19 +66,28 @@ void setup_locations() {
     // printf("loctype = %c\n", loctype); fflush(stdout);
     Place *place;
     if (loctype == HOUSEHOLD) {
-      place = new (nothrow) Household(id, s, lon, lat);
+      place = new (nothrow) Household(id, s, lon, lat, container);
+    }
+    else if (loctype == NEIGHBORHOOD) {
+      place = new (nothrow) Neighborhood(id, s, lon, lat, container);
     }
     else if (loctype == SCHOOL) {
-      place = new (nothrow) School(id, s, lon, lat);
+      place = new (nothrow) School(id, s, lon, lat, container);
+    }
+    else if (loctype == CLASSROOM) {
+      place = new (nothrow) Classroom(id, s, lon, lat, container);
     }
     else if (loctype == WORKPLACE) {
-      place = new (nothrow) Workplace(id, s, lon, lat);
+      place = new (nothrow) Workplace(id, s, lon, lat, container);
+    }
+    else if (loctype == OFFICE) {
+      place = new (nothrow) Office(id, s, lon, lat, container);
     }
     else if (loctype == HOSPITAL) {
-      place = new (nothrow) Hospital(id, s, lon, lat);
+      place = new (nothrow) Hospital(id, s, lon, lat, container);
     }
     else if (loctype == COMMUNITY) {
-      place = new (nothrow) Community(id, s, lon, lat);
+      place = new (nothrow) Community(id, s, lon, lat, container);
     }
     else {
       printf ("Help! bad loctype = %c\n", loctype);
@@ -181,6 +184,28 @@ void location_quality_control() {
   }
 
   if (Verbose) {
+    int count[50];
+    int total = 0;
+    // size distribution of classrooms
+    for (int c = 0; c < 50; c++) { count[c] = 0; }
+    for (int loc = 0; loc < Locations; loc++) {
+      if (Loc[loc]->get_type() == CLASSROOM) {
+	int s = Loc[loc]->get_size();
+	int n = s;
+	if (n < 50) { count[n]++; }
+	else { count[50-1]++; }
+	total++;
+      }
+    }
+    fprintf(Statusfp, "\nClassroom size distribution: %d classrooms\n", total);
+    for (int c = 0; c < 50; c++) {
+      fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
+	     c, count[c], (100.0*count[c])/total);
+    }
+    fprintf(Statusfp, "\n");
+  }
+
+  if (Verbose) {
     int count[20];
     int total = 0;
     // size distribution of workplaces
@@ -203,12 +228,35 @@ void location_quality_control() {
   }
 
   if (Verbose) {
+    int count[60];
+    int total = 0;
+    // size distribution of offices
+    for (int c = 0; c < 60; c++) { count[c] = 0; }
+    for (int loc = 0; loc < Locations; loc++) {
+      if (Loc[loc]->get_type() == OFFICE) {
+	int s = Loc[loc]->get_size();
+	int n = s;
+	if (n < 60) { count[n]++; }
+	else { count[60-1]++; }
+	total++;
+      }
+    }
+    fprintf(Statusfp, "\nOffice size distribution: %d offices\n", total);
+    for (int c = 0; c < 60; c++) {
+      fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
+	     c, count[c], (100.0*count[c])/total);
+    }
+    fprintf(Statusfp, "\n");
+  }
+
+  if (Verbose) {
     fprintf(Statusfp, "location quality control finished\n"); fflush(Statusfp);
   }
 }
 
 
 void process_infectious_locations(int day) {
+  extern int Start_day;
   set <int> places;
   set<int>::iterator itr;
 
@@ -217,7 +265,8 @@ void process_infectious_locations(int day) {
     fflush(Statusfp);
   }
 
-  for (int d = 0; d < Diseases; d++) {
+  int diseases = get_diseases();
+  for (int d = 0; d < diseases; d++) {
 
     if (Verbose > 3) {
       fprintf(Statusfp, "disease = %d  infectious = %d\n", d,
@@ -231,17 +280,20 @@ void process_infectious_locations(int day) {
 	fprintf(Statusfp, "day=%d p=%d\n", day, p);
 	fflush(Statusfp);
       }
-      int n = Pop[p].get_schedule_size(day+Start_day);
-      if (Verbose > 3) {
-	fprintf(Statusfp, "day=%d p=%d n=%d\n", day, p, n);
-	fflush(Statusfp);
-      }
+      int n;
+      int schedule[100];
+      update_schedule(p, day+Start_day);
+      get_schedule(p, &n, schedule);
+
+      /*
+      printf("size of schedule = %d\n", n); fflush(stdout);
       for (int j = 0; j < n; j++) {
-	int loc = Pop[p].get_schedule_location(day+Start_day,j);
-	if (Verbose > 3) {
-	  fprintf(Statusfp, "day=%d j=%d n=%d loc=%d\n", day, j,n,loc);
-	  fflush(Statusfp);
-	}
+	printf("schedule[%d] = %d\n", j, schedule[j]); fflush(stdout);
+      }
+      */
+
+      for (int j = 0; j < n; j++) {
+	int loc = schedule[j];
 	if (Loc[loc]->is_open(day) && Loc[loc]->should_be_open(day, d)) {
 	  places.insert(loc);
 	}
@@ -269,3 +321,46 @@ void process_infectious_locations(int day) {
 
 }
 
+int get_open_status(int loc, int day) {
+  return Loc[loc]->is_open(day);
+}
+
+void add_susceptible_to_place(int id, int dis, int per) {
+  Loc[id]->add_susceptible(dis, per);
+  if (Verbose > 2) {
+    fprintf(Statusfp, "place %d S %d\n", id, Loc[id]->get_S(dis));
+    fflush(Statusfp);
+  }
+}
+
+void delete_susceptible_from_place(int id, int dis, int per) {
+  Loc[id]->delete_susceptible(dis, per);
+  if (Verbose > 2) {
+    fprintf(Statusfp, "place %d S %d\n", id, Loc[id]->get_S(dis));
+    fflush(Statusfp);
+  }
+}
+
+void add_infectious_to_place(int id, int dis, int per) {
+  Loc[id]->add_infectious(dis, per);
+  if (Verbose > 2) {
+    fprintf(Statusfp, "place %d I %d\n", id, Loc[id]->get_I(dis));
+    fflush(Statusfp);
+  }
+}
+
+void delete_infectious_from_place(int id, int dis, int per) {
+  Loc[id]->delete_infectious(dis, per);
+  if (Verbose > 2) {
+    fprintf(Statusfp, "place %d I %d\n", id, Loc[id]->get_I(dis));
+    fflush(Statusfp);
+  }
+}
+
+char get_type_of_place(int id) {
+  return Loc[id]->get_type();
+}
+
+int location_should_be_open(int loc, int dis, int day) {
+  return Loc[loc]->should_be_open(day, dis);
+}

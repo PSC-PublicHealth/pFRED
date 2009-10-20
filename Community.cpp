@@ -15,22 +15,21 @@ double * Community_contacts_per_day;
 double *** Community_contact_prob;
 int Community_parameters_set = 0;
 
-Community::Community(int loc, char *lab, double lon, double lat) {
+Community::Community(int loc, char *lab, double lon, double lat, int container) {
   type = COMMUNITY;
-  setup(loc, lab, lon, lat);
-  get_parameters();
+  setup(loc, lab, lon, lat, container);
+  get_parameters(get_diseases());
 }
 
-void Community::get_parameters() {
-  extern int Diseases;
+void Community::get_parameters(int diseases) {
   char param_str[80];
 
   if (Community_parameters_set) return;
 
-  Community_contacts_per_day = new double [ Diseases ];
-  Community_contact_prob = new double** [ Diseases ];
+  Community_contacts_per_day = new double [ diseases ];
+  Community_contact_prob = new double** [ diseases ];
 
-  for (int d = 0; d < Diseases; d++) {
+  for (int d = 0; d < diseases; d++) {
     int n;
     sprintf(param_str, "community_contacts[%d]", d);
     get_param((char *) param_str, &Community_contacts_per_day[d]);
@@ -76,7 +75,7 @@ void Community::get_parameters() {
 }
 
 int Community::get_group_type(int dis, int per) {
-  int age = Pop[per].get_age();
+  int age = get_age(per);
   if (age < 18) { return 0; }
   else { return 1; }
 }

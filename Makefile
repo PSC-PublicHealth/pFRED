@@ -9,8 +9,9 @@ CPPFLAGS = -O2 -Wall
 %.o:%.cpp %.hpp
 	$(CPP) $(CPPFLAGS) -c $< $(INCLUDES)
 
-OBJ = Params.o Place.o Loc.o Person.o Pop.o Disease.o Random.o \
-Household.o Community.o School.o Workplace.o Hospital.o
+OBJ = Classroom.o Community.o Disease.o Hospital.o Household.o Loc.o \
+Neighborhood.o Office.o Params.o Place.o Person.o Pop.o Profile.o \
+Random.o School.o Workplace.o
 
 SRC = $(OBJ:.o=.cpp)
 
@@ -34,9 +35,8 @@ tar: clean
 dist:
 	make clean
 	(cd ..; tar cvf SYNDEM-`date +"%Y-%m-%d"`.tar SYNDEM/README \
-	SYNDEM/Makefile SYNDEM/*_alleg SYNDEM/*.cpp SYNDEM/*.hpp \
+	SYNDEM/Makefile SYNDEM/dc*.txt SYNDEM/profiles.txt SYNDEM/*.cpp SYNDEM/*.hpp \
 	SYNDEM/params* SYNDEM/p SYNDEM/ch SYNDEM/go SYNDEM/report \
-	SYNDEM/LICENSE SYNDEM/sim.plt SYNDEM/loc.* SYNDEM/pop.* \
-	SYNDEM/sched.* ; cd SYNDEM)
+	SYNDEM/LICENSE SYNDEM/sim.plt ; cd SYNDEM)
 	make
 

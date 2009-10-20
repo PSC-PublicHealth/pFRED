@@ -4,12 +4,6 @@
   See the file "LICENSE" for more information
 */
 
-/*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
-
 //
 //
 // File: SynDem.cpp
@@ -66,7 +60,7 @@ void setup(char *paramfile) {
   get_population_parameters();
   get_disease_parameters();
   get_location_parameters();
-  setup_diseases();
+  setup_diseases(Verbose);
   setup_locations();
   setup_population();
   population_quality_control();

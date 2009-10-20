@@ -11,99 +11,113 @@
 
 #include "Person.hpp";
 
-extern vector<Place*> Loc;
-extern Disease *Dis;
-extern int Diseases;
 extern FILE *Statusfp;
 extern FILE *Tracefp;
 extern int Test;
 extern int Verbose;
 
-void Person::setup(int i, int a, char g) {
+
+void Person::setup(int i, int a, char g, int m, int o, int p, int h,
+		   int n, int s, int c, int w, int off, int pro) 
+{
   id = i;
   age = a;
   sex = g;
   occupation = 'U';
+  marrital_status = m;
+  profession = p;
+  favorite_place[0] = h;
+  favorite_place[1] = n;
+  favorite_place[2] = s;
+  favorite_place[3] = c;
+  favorite_place[4] = w;
+  favorite_place[5] = off;
+  favorite_places = 6;
+  profile = pro;
 
-  disease_status = new (nothrow) char [Diseases];
+  schedule_updated = -1;
+  scheduled_places = 0;
+
+  int diseases = get_diseases();
+  disease_status = new (nothrow) char [diseases];
   if (disease_status == NULL) {
-    printf("Help! disease_status allocation failure\n");
+    printf("Help! disease_status allocation failure for Person %d\n", id);
     abort();
   }
 
-  latent_period = new (nothrow) int [Diseases];
+  latent_period = new (nothrow) int [diseases];
   if (latent_period == NULL) {
-    printf("Help! latent_period allocation failure\n");
+    printf("Help! latent_period allocation failure for Person %d\n", id);
     abort();
   }
 
-  infectious_period = new (nothrow) int [Diseases];
+  infectious_period = new (nothrow) int [diseases];
   if (infectious_period == NULL) {
-    printf("Help! infectious_period allocation failure\n");
+    printf("Help! infectious_period allocation failure for Person %d\n", id);
     abort();
   }
 
-  exposure_date = new (nothrow) int [Diseases];
+  exposure_date = new (nothrow) int [diseases];
   if (exposure_date == NULL) {
-    printf("Help! exposure_date allocation failure\n");
+    printf("Help! exposure_date allocation failure for Person %d\n", id);
     abort();
   }
 
-  infectious_date = new (nothrow) int [Diseases];
+  infectious_date = new (nothrow) int [diseases];
   if (infectious_date == NULL) {
-    printf("Help! infectious_date allocation failure\n");
+    printf("Help! infectious_date allocation failure for Person %d\n", id);
     abort();
   }
 
-  recovered_date = new (nothrow) int [Diseases];
+  recovered_date = new (nothrow) int [diseases];
   if (recovered_date == NULL) {
-    printf("Help! recovered_date allocation failure\n");
+    printf("Help! recovered_date allocation failure for Person %d\n", id);
     abort();
   }
 
-  infector = new (nothrow) int [Diseases];
+  infector = new (nothrow) int [diseases];
   if (infector == NULL) {
-    printf("Help! infector allocation failure\n");
+    printf("Help! infector allocation failure for Person %d\n", id);
     abort();
   }
 
-  infected_place = new (nothrow) int [Diseases];
+  infected_place = new (nothrow) int [diseases];
   if (infected_place == NULL) {
-    printf("Help! infected_place allocation failure\n");
+    printf("Help! infected_place allocation failure for Person %d\n", id);
     abort();
   }
 
-  infected_place_type = new (nothrow) char [Diseases];
+  infected_place_type = new (nothrow) char [diseases];
   if (infected_place_type == NULL) {
-    printf("Help! infected_place_type allocation failure\n");
+    printf("Help! infected_place_type allocation failure for Person %d\n", id);
     abort();
   }
 
-  infectees = new (nothrow) int [Diseases];
+  infectees = new (nothrow) int [diseases];
   if (infectees == NULL) {
-    printf("Help! infectees allocation failure\n");
+    printf("Help! infectees allocation failure for Person %d\n", id);
     abort();
   }
 
-  susceptibility = new (nothrow) double [Diseases];
+  susceptibility = new (nothrow) double [diseases];
   if (susceptibility == NULL) {
-    printf("Help! susceptibility allocation failure\n");
+    printf("Help! susceptibility allocation failure for Person %d\n", id);
     abort();
   }
 
-  infectivity = new (nothrow) double [Diseases];
+  infectivity = new (nothrow) double [diseases];
   if (infectivity == NULL) {
-    printf("Help! infectivity allocation failure\n");
+    printf("Help! infectivity allocation failure for Person %d\n", id);
     abort();
   }
 
-  role = new (nothrow) char [Diseases];
+  role = new (nothrow) char [diseases];
   if (role == NULL) {
-    printf("Help! role allocation failure\n");
+    printf("Help! role allocation failure for Person %d\n", id);
     abort();
   }
 
-  for (int d = 0; d < Diseases; d++) {
+  for (int d = 0; d < diseases; d++) {
     infected_place[d] = -1;
     infected_place_type[d] = 'X';
     role[d] = NO_ROLE;
@@ -114,8 +128,8 @@ void Person::print(int d) {
   fprintf(Tracefp, "%c id %7d  a %3d  s %c %c ",
 	  disease_status[d], id, age, sex, occupation);
   fprintf(Tracefp, "exp: %2d  inf: %2d  rem: %2d ",
-	 exposure_date[d], infectious_date[d], recovered_date[d]);
-  fprintf(Tracefp, "places %d ", places);
+	  exposure_date[d], infectious_date[d], recovered_date[d]);
+  fprintf(Tracefp, "places %d ", favorite_places);
   fprintf(Tracefp, "infected_at %c %6d ",
 	  infected_place_type[d], infected_place[d]);
   fprintf(Tracefp, "infector %d ", infector[d]);
@@ -125,31 +139,31 @@ void Person::print(int d) {
 
 void Person::print_out(int d) {
   printf("%c id %7d  a %3d  s %c %c ",
-	  disease_status[d], id, age, sex, occupation);
+	 disease_status[d], id, age, sex, occupation);
   printf("exp: %2d  inf: %2d  rem: %2d ",
 	 exposure_date[d], infectious_date[d], recovered_date[d]);
-  printf("places %d ", places);
+  printf("places %d ", favorite_places);
   printf("infected_at %c %6d ",
-	  infected_place_type[d], infected_place[d]);
+	 infected_place_type[d], infected_place[d]);
   printf("infector %d ", infector[d]);
   printf("infectees %d\n", infectees[d]);
   fflush(stdout);
 }
 
+
 void Person::print_schedule() {
   fprintf(Statusfp, "Schedule for person %d\n", id);
-  for (int day = 0; day < DAYS_PER_WEEK; day++) {
-    fprintf(Statusfp, "Day %d: ", day); 
-    for (int j = 0; j < (int) schedule[day].size(); j++) {
-      fprintf(Statusfp, "%d ", schedule[day][j]);
-    }
-    fprintf(Statusfp, "\n");
+  for (int j = 0; j < scheduled_places; j++) {
+    fprintf(Statusfp, "%d ", schedule[j]);
   }
+  fprintf(Statusfp, "\n");
+  fflush(Statusfp);
 }
-
+  
 void Person::make_susceptible() {
   if (Verbose > 2) { fprintf(Statusfp, "SUSCEPTIBLE person %d\n", id); }
-  for (int d = 0; d < Diseases; d++) {
+  int diseases = get_diseases();
+  for (int d = 0; d < diseases; d++) {
     disease_status[d] = 'S';
     exposure_date[d] = infectious_date[d] = recovered_date[d] = -1;
     infected_place[d] = -1;
@@ -159,13 +173,9 @@ void Person::make_susceptible() {
     susceptibility[d] = 1.0;
     infectivity[d] = 0.0;
 
-    for (int p = 0; p < places; p++) {
-      place[p]->add_susceptible(d, id);
-      if (Verbose > 2) {
-	fprintf(Statusfp, "place %d S %d\n",
-		place[p]->get_id(), place[p]->get_S(d));
-	fflush(Statusfp);
-      }
+    for (int p = 0; p < favorite_places; p++) {
+      if (favorite_place[p] == -1) continue;
+      add_susceptible_to_place(favorite_place[p], d, id);
     }
   }
 }
@@ -176,21 +186,21 @@ void Person::make_susceptible() {
 //
 ///////////////////////////////////////////////////////////////////////
 
-void Person::make_exposed(int dis, int person_id, int place_id, int day) {
+void Person::make_exposed(int dis, int per, int place, char type, int day) {
   if (Verbose > 1) { fprintf(Statusfp, "EXPOSED person %d\n", id); }
   disease_status[dis] = 'E';
   exposure_date[dis] = day;
-  latent_period[dis] = Dis[dis].get_days_latent();
-  infectious_period[dis] = Dis[dis].get_days_infectious();
+  latent_period[dis] = get_days_latent(dis);
+  infectious_period[dis] = get_days_infectious(dis);
   infectious_date[dis] = exposure_date[dis] + latent_period[dis];
   recovered_date[dis] = infectious_date[dis] + infectious_period[dis];
-  infector[dis] = person_id;
-  infected_place[dis] = place_id;
-  if (place_id == -1) { 
+  infector[dis] = per;
+  infected_place[dis] = place;
+  if (place == -1) { 
     infected_place_type[dis] = 'X';
   }
   else {
-    infected_place_type[dis] = Loc[place_id]->get_type();
+    infected_place_type[dis] = type;
   }
   susceptibility[dis] = 0.0;
   insert_into_exposed_list(dis, id);
@@ -199,8 +209,10 @@ void Person::make_exposed(int dis, int person_id, int place_id, int day) {
   
 void Person::make_infectious(int d) {
   if (Verbose > 2) {
-    fprintf(Statusfp, "INFECTIOUS person %d for disease %d\n", id, d); }
-  if (RANDOM() < Dis[d].get_prob_symptomatic()) {
+    fprintf(Statusfp, "INFECTIOUS person %d for disease %d\n", id, d);
+    fflush(Statusfp);
+  }
+  if (RANDOM() < get_prob_symptomatic(d)) {
     disease_status[d] = 'I';
     infectivity[d] = 1.0;
   }
@@ -210,64 +222,65 @@ void Person::make_infectious(int d) {
   }
   remove_from_exposed_list(d, id);
   insert_into_infectious_list(d, id);
-  for (int p = 0; p < places; p++) {
-    place[p]->delete_susceptible(d, id);
-    if (Verbose > 2) {
-      fprintf(Statusfp, "place %d S %d\n", place[p]->get_id(), place[p]->get_S(d));
-      fflush(Statusfp);
-    }
-    if (Test == 0 || exposure_date[d] == 0)
-      place[p]->add_infectious(d, id);
-    if (Verbose > 2) {
-      fprintf(Statusfp, "place %d I %d\n", place[p]->get_id(), place[p]->get_I(d));
-      fflush(Statusfp);
+  for (int p = 0; p < favorite_places; p++) {
+    if (favorite_place[p] == -1) continue;
+    delete_susceptible_from_place(favorite_place[p], d, id);
+    if (Test == 0 || exposure_date[d] == 0) {
+	add_infectious_to_place(favorite_place[p], d, id);
     }
   }
 }
-  
+
 void Person::make_recovered(int dis) {
   if (Verbose > 2) {
     fprintf(Statusfp, "REMOVED person %d for disease %d\n", id, dis);
   }
   disease_status[dis] = 'R';
   remove_from_infectious_list(dis, id);
-  for (int p = 0; p < places; p++) {
+  for (int p = 0; p < favorite_places; p++) {
+    if (favorite_place[p] == -1) continue;
     if (Test == 0 || exposure_date[dis] == 0)
-      place[p]->delete_infectious(dis, id);
-    if (Verbose > 2) {
-      fprintf(Statusfp, "place %d I %d\n", place[p]->get_id(), place[p]->get_I(dis));
-      fflush(Statusfp);
-    }
+      delete_infectious_from_place(favorite_place[p], dis, id);
   }
   // print recovered agents into Trace file
   print(dis);
 }
 
-int Person::on_schedule(int day, int pl) {
-  extern int Start_day;
-  day = (day + Start_day) % DAYS_PER_WEEK;
-  for (int p = 0; p < places; p++) {
-    if (schedule[day][p] == pl) {
-      return (RANDOM() < visit_prob[day][p]);
-    }
-  }
-  return 0;
+int Person::is_on_schedule(int day, int loc) {
+  // update_schedule(day);
+  int p = 0;
+  while (p < scheduled_places && schedule[p] != loc) p++;
+  return (p < scheduled_places);
 }
 
-void Person::add_to_schedule(int day, int loc, Place *pl, double prob) {
-  day = day % DAYS_PER_WEEK;
-  schedule[day].push_back(loc);
-  visit_prob[day].push_back(prob);
+void Person::update_schedule(int day) {
+  if (schedule_updated < day) {
+    schedule_updated = day;
+    day = day % DAYS_PER_WEEK;
+    scheduled_places = 0;
+    for (int p = 0; p < favorite_places; p++) {
+      on_schedule[p] = 0;
+      if (p == 3 || p == 5) {
+	if (on_schedule[p-1]) {
+	  on_schedule[p] = 1;
+	  schedule[scheduled_places++] = favorite_place[p];
+	}
+      }
+      else if (favorite_place[p] != -1 && is_visited(p, profile, day)) {
+	on_schedule[p] = 1;
+	schedule[scheduled_places++] = favorite_place[p];
+      }
+    }
+    //
+    // FUTURE: add ad hoc places to today's schedule here (e.g. travel destinations)
+    //
+  }
+}
 
-  // add place list if needed
-  int found = 0;
-  for (int p = 0; p < places; p++) {
-    if (place[p]->get_id() == loc) { found = 1; break; }
-  }
-  if (!found) {
-    place.push_back(pl);
-    places++;
-  }
+void Person::get_schedule(int *n, int *sched) {
+  *n = scheduled_places;
+  for (int i = 0; i < scheduled_places; i++)
+    sched[i] = schedule[i];
 }
 
 void Person::set_occupation() {
@@ -278,8 +291,9 @@ void Person::set_occupation() {
   else { occupation = 'R'; }
 
   // identify teachers
-  for (int p = 0; p < places; p++) {
-    if (age > 18 && place[p]->get_type() == 'S')
+  for (int p = 0; p < favorite_places; p++) {
+    if (favorite_place[p] == -1) continue;
+    if (age > 18 && (get_type_of_place(favorite_place[p]) == SCHOOL))
       occupation = 'T';
   }
 }
