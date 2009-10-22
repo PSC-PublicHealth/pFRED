@@ -27,8 +27,6 @@ int get_diseases();
 void get_population_parameters();
 void setup_population();
 void read_population();
-void read_schedules();
-void set_occupations();
 void reset_population(int run);
 void population_quality_control();
 void update_exposed_population(int day);

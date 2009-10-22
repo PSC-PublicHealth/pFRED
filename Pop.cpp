@@ -18,7 +18,6 @@ extern FILE *Outfp;
 
 char Popfile[80];
 char Profilefile[80];
-// char Schedfile[80];
 Person *Pop;
 int Population;
 int Index_cases;
@@ -34,7 +33,6 @@ double * Attack_rate;
 void get_population_parameters() {
   get_param((char *) "popfile", Popfile);
   get_param((char *) "profiles", Profilefile);
-  //  get_param((char *) "schedfile", Schedfile);
   get_param((char *) "index_cases", &Index_cases);
 }
 
@@ -76,8 +74,6 @@ void setup_population() {
 
   read_profiles(Profilefile);
   read_population();
-  // read_schedules();
-  // set_occupations();
 
   if (Verbose) {
     fprintf(Statusfp, "setup population completed\n");
@@ -131,51 +127,6 @@ void read_population() {
   }
 }
 
-
-void read_schedules() {
-  /*
-  int id, type, loc;
-  FILE *fp = fopen(Schedfile, "r");
-  if (fp == NULL) {
-    fprintf(Statusfp, "Schedfile %s not found\n", Schedfile);
-    exit(1);
-  }
-  if (Verbose) {
-    fprintf(Statusfp, "reading schedules\n");
-    fflush(Statusfp);
-  }
-  while (fscanf(fp, "%d %d %d", &id, &type, &loc) == 3) {
-    if (id < Population)
-      Pop[id].add_to_favorite_places(type, loc);
-  }
-  fclose(fp);
-  if (Verbose) {
-    fprintf(Statusfp, "finished reading schedules\n");
-    fflush(Statusfp);
-  }
-
-  // add each person to the susceptible list for each place visited
-  for (int p = 0; p < Population; p++){
-    Pop[p].make_susceptible();
-  }
-  if (Verbose) {
-    fprintf(Statusfp, "finished building susceptible lists\n");
-    fflush(Statusfp);
-  }
-  */
-}
-
-void set_occupations() {
-  /*
-  if (Verbose) {
-    fprintf(Statusfp, "setting occupations\n");
-    fflush(Statusfp);
-  }
-  for (int p = 0; p < Population; p++){
-    Pop[p].set_occupation();
-  }
-  */
-}
 
 
 void population_quality_control() {
