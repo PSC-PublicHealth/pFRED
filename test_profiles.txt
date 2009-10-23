@@ -1,0 +1,47 @@
+Profile 0 child
+Sun Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Mon Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Tue Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Wed Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Thu Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Fri Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Sat Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+
+Profile 1 older_student
+Sun Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Mon Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Tue Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Wed Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Thu Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Fri Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Sat Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+
+Profile 2 adult_worker
+Sun Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Mon Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Tue Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Wed Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Thu Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Fri Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Sat Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+
+Profile 3 weekend_worker
+Sun Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Mon Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Tue Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Wed Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Thu Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Fri Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Sat Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+
+Profile 4 retired/unemployed
+Sun Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Mon Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Tue Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Wed Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Thu Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Fri Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+Sat Home 1.0 Nbrhood 1.0 School 1.0 Work 1.0 Travel 1.0
+
+
+
