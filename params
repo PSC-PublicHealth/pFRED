@@ -1,12 +1,12 @@
 diseases = 1
-days = 10
+days = 50
 seed = 123
-runs = 2
-verbose = 1
+runs = 1
+verbose = 0
 test = 0
 index_cases = 100
-popfile = ../DC/pop.txt
-locfile = ../DC/loc.txt
+popfile = test_pop.txt
+locfile = test_loc.txt
 profiles = test_profiles.txt
 
 trans[0] = 0.5
