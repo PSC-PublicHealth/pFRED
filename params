@@ -8,6 +8,8 @@ index_cases = 100
 popfile = test_pop.txt
 locfile = test_loc.txt
 profiles = test_profiles.txt
+outfile = OUT/out
+tracefile = OUT/trace
 
 trans[0] = 0.5
 symp[0] = 1.0

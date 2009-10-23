@@ -18,6 +18,9 @@ int Runs;
 int Days;
 unsigned long Seed;
 int Start_day;
+char Outfilebase[80];
+char Tracefilebase[80];
+char Paramfile[80];
 
 // global file pointers
 FILE *Statusfp;
@@ -26,20 +29,21 @@ FILE *Tracefp;
 
 int main(int argc, char* argv[])
 {
-  char paramfile[80];
   if (argc > 1) {
-    strcpy(paramfile, argv[1]);
+    strcpy(Paramfile, argv[1]);
   }
   else {
-    strcpy(paramfile, "params");
+    strcpy(Paramfile, "params");
   }
-  printf("param file = %s\n", paramfile);
+  printf("param file = %s\n", Paramfile);
+  strcpy(Outfilebase, "OUT/out");
+  strcpy(Tracefilebase, "OUT/trace");
 
   // sprintf(filename, "status.txt");
   // Statusfp = fopen(filename, "w");
   Statusfp = stdout;
 
-  setup(paramfile);
+  setup(Paramfile);
   for (int run = 0; run < Runs; run++) {
     run_sim(run);
   }
@@ -53,6 +57,8 @@ void get_global_parameters() {
   get_param((char *) "runs", &Runs);
   get_param((char *) "days", &Days);
   get_param((char *) "seed", &Seed);
+  get_param((char *) "outfile", Outfilebase);
+  get_param((char *) "tracefile", Tracefilebase);
 }
 
 void setup(char *paramfile) {
@@ -72,14 +78,14 @@ void run_sim(int run) {
   char filename[80];
   unsigned long new_seed;
 
-  sprintf(filename, "OUT/out%d.txt", run+1);
+  sprintf(filename, "%s%d.txt", Outfilebase, run+1);
   Outfp = fopen(filename, "w");
   if (Outfp == NULL) {
     printf("Help! Can't open %s\n", filename);
     abort();
   }
 
-  sprintf(filename, "OUT/trace%d.txt", run+1);
+  sprintf(filename, "%s%d.txt", Tracefilebase, run+1);
   Tracefp = fopen(filename, "w");
   if (Tracefp == NULL) {
     printf("Help! Can't open %s\n", filename);
