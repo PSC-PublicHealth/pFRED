@@ -211,6 +211,14 @@ void Place::spread_infection(int day) {
 	    if (Verbose > 1) { printf("no infection\n"); }
 	  }
 	}
+	else {
+	  if (Verbose > 1) {
+	    printf("victim not here today, or not still susceptible\n");
+	    printf ("%s here", is_place_on_schedule_for_person(s,day,id)? "is": "is not");
+	    printf("disease status = %c\n", get_disease_status(s,d));
+	    fflush(stdout);
+	  }
+	}
       } // end contact loop
     } // end infectious list loop
   }  // end disease loop

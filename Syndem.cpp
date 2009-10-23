@@ -17,6 +17,7 @@ int Test;
 int Runs;
 int Days;
 unsigned long Seed;
+int Start_day;
 
 // global file pointers
 FILE *Statusfp;
@@ -73,9 +74,18 @@ void run_sim(int run) {
 
   sprintf(filename, "OUT/out%d.txt", run+1);
   Outfp = fopen(filename, "w");
+  if (Outfp == NULL) {
+    printf("Help! Can't open %s\n", filename);
+    abort();
+  }
 
   sprintf(filename, "OUT/trace%d.txt", run+1);
   Tracefp = fopen(filename, "w");
+  if (Tracefp == NULL) {
+    printf("Help! Can't open %s\n", filename);
+    abort();
+  }
+
 
   fprintf(Statusfp, "\nStarting run %d\n", run);
 
@@ -88,6 +98,8 @@ void run_sim(int run) {
 
   reset_locations(run);
   reset_population(run);
+  // start on a random day of the week
+  Start_day = IRAND(0, 6);
   start_outbreak();
   for (int day = 0; day < Days; day++) {
     printf("================\nsim day = %d\n", day); fflush(stdout);

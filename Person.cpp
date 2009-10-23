@@ -204,7 +204,7 @@ void Person::make_exposed(int dis, int per, int place, char type, int day) {
   }
   susceptibility[dis] = 0.0;
   insert_into_exposed_list(dis, id);
-  if (Verbose > 1) { print_out(dis); }
+  if (Verbose > 2) { print_out(dis); }
 }
   
 void Person::make_infectious(int d) {
@@ -233,7 +233,9 @@ void Person::make_infectious(int d) {
 
 void Person::make_recovered(int dis) {
   if (Verbose > 2) {
-    fprintf(Statusfp, "REMOVED person %d for disease %d\n", id, dis);
+    fprintf(Statusfp, "RECOVERED person %d for disease %d\n", id, dis);
+    print_out(dis);
+    fflush(Statusfp);
   }
   disease_status[dis] = 'R';
   remove_from_infectious_list(dis, id);
@@ -247,16 +249,19 @@ void Person::make_recovered(int dis) {
 }
 
 int Person::is_on_schedule(int day, int loc) {
-  // update_schedule(day);
   int p = 0;
+  if (schedule_updated < day) 
+    update_schedule(day);
   while (p < scheduled_places && schedule[p] != loc) p++;
   return (p < scheduled_places);
 }
 
 void Person::update_schedule(int day) {
+  int day_of_week;
+  extern int Start_day;
   if (schedule_updated < day) {
     schedule_updated = day;
-    day = day % DAYS_PER_WEEK;
+    day_of_week = (day+Start_day) % DAYS_PER_WEEK;
     scheduled_places = 0;
     for (int p = 0; p < favorite_places; p++) {
       on_schedule[p] = 0;
@@ -266,7 +271,7 @@ void Person::update_schedule(int day) {
 	  schedule[scheduled_places++] = favorite_place[p];
 	}
       }
-      else if (favorite_place[p] != -1 && is_visited(p, profile, day)) {
+      else if (favorite_place[p] != -1 && is_visited(p, profile, day_of_week)) {
 	on_schedule[p] = 1;
 	schedule[scheduled_places++] = favorite_place[p];
       }
@@ -274,6 +279,12 @@ void Person::update_schedule(int day) {
     //
     // FUTURE: add ad hoc places to today's schedule here (e.g. travel destinations)
     //
+    if (Verbose > 2) {
+      printf("update_schedule on day %d\n", day);
+      print_out(0);
+      print_schedule();
+      fflush(stdout);
+    }
   }
 }
 

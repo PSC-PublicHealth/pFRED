@@ -256,7 +256,6 @@ void location_quality_control() {
 
 
 void process_infectious_locations(int day) {
-  extern int Start_day;
   set <int> places;
   set<int>::iterator itr;
 
@@ -282,7 +281,7 @@ void process_infectious_locations(int day) {
       }
       int n;
       int schedule[100];
-      update_schedule(p, day+Start_day);
+      update_schedule(p, day);
       get_schedule(p, &n, schedule);
 
       /*
@@ -350,6 +349,12 @@ void add_infectious_to_place(int id, int dis, int per) {
 }
 
 void delete_infectious_from_place(int id, int dis, int per) {
+  if (Verbose > 2) {
+    fprintf(Statusfp, "delete infectious person %d from place %d I %d\n",
+	    per, id, Loc[id]->get_I(dis));
+    fprintf(Statusfp, "place %d I %d\n", id, Loc[id]->get_I(dis));
+    fflush(Statusfp);
+  }
   Loc[id]->delete_infectious(dis, per);
   if (Verbose > 2) {
     fprintf(Statusfp, "place %d I %d\n", id, Loc[id]->get_I(dis));

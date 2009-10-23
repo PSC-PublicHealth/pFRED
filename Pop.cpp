@@ -27,7 +27,6 @@ int *S;
 int *E;
 int *I;
 int *R;
-int Start_day;
 double * Attack_rate;
 
 void get_population_parameters() {
@@ -178,9 +177,6 @@ void population_quality_control() {
 
 
 void start_outbreak() {
-  // start on a random day of the week
-  Start_day = IRAND(0, 6);
-
   // create index cases
   for (int i = 0; i < Index_cases; i++) {
     int n = IRAND(0, Population-1);
@@ -265,13 +261,17 @@ void update_infectious_population(int day) {
 
     for (it = Infectious[d].begin(); it != Infectious[d].end(); it++) {
       p = *it;
+      // printf("inf = %d recov = %d\n", p, Pop[p].get_recovered_date(d));
+      // fflush(stdout);
       if (Pop[p].get_recovered_date(d) == day) {
 	TempList.push(p);
       }
     }
 
+    // printf("Templist size = %d\n", (int) TempList.size()); fflush(stdout);
     while (!TempList.empty()) {
       p = TempList.top();
+      // printf("top = %d\n", p ); fflush(stdout);
       Pop[p].make_recovered(d);
       TempList.pop();
     }
@@ -316,10 +316,10 @@ void print_population_stats(int day) {
   int diseases = get_diseases();
   for (int d = 0; d < diseases; d++) {
     int N = S[d]+E[d]+I[d]+R[d];
-    // fprintf(Outfp,
-    // "Day %3d  Dis %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n",
-    // day, d, S[d], E[d], I[d], R[d], N, Attack_rate[d]);
-    // fflush(Outfp);
+    fprintf(Outfp,
+	    "Day %3d  Dis %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n",
+	    day, d, S[d], E[d], I[d], R[d], N, Attack_rate[d]);
+    fflush(Outfp);
 
     if (Verbose) {
       fprintf(Statusfp,
@@ -349,7 +349,16 @@ void remove_from_exposed_list(int dis, int per) {
 }
 
 void remove_from_infectious_list(int dis, int per) {
+  if (Verbose > 2) {
+    printf("remove from infectious list person %d\n", per);
+    printf("current size of infectious list = %d\n", (int) Infectious[dis].size());
+    fflush(stdout);
+  }
   Infectious[dis].erase(per);
+  if (Verbose > 2) {
+    printf("final size of infectious list = %d\n", (int) Infectious[dis].size());
+    fflush(stdout);
+  }
 }
 
 int get_age(int per) {
