@@ -9,8 +9,8 @@
 // File: School.hpp
 //
 
-#ifndef _SYNDEM_SCHOOL_H
-#define _SYNDEM_SCHOOL_H
+#ifndef _FRED_SCHOOL_H
+#define _FRED_SCHOOL_H
 
 
 #include "Place.hpp"
@@ -35,5 +35,5 @@ public:
   double get_contacts_per_day(int dis);
 };
 
-#endif // _SYNDEM_SCHOOL_H
+#endif // _FRED_SCHOOL_H
 

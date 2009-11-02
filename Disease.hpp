@@ -9,8 +9,8 @@
 // File: Disease.hpp
 //
 
-#ifndef _SYNDEM_DISEASE_H
-#define _SYNDEM_DISEASE_H
+#ifndef _FRED_DISEASE_H
+#define _FRED_DISEASE_H
 
 #include <stdio.h>
 #include <new>
@@ -49,4 +49,4 @@ double get_prob_symptomatic(int dis);
 int get_days_latent(int dis);
 int get_days_infectious(int dis);
 
-#endif // _SYNDEM_DISEASE_H
+#endif // _FRED_DISEASE_H

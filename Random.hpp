@@ -9,8 +9,8 @@
 // File: Random.hpp
 //
 
-#ifndef _SYNDEM_RANDOM_H
-#define _SYNDEM_RANDOM_H
+#ifndef _FRED_RANDOM_H
+#define _FRED_RANDOM_H
 
 #include <math.h>
 
@@ -28,4 +28,4 @@ void init_genrand(unsigned long s);
 
 int draw_poisson(double lambda);
 
-#endif // _SYNDEM_RANDOM_H
+#endif // _FRED_RANDOM_H

@@ -9,8 +9,8 @@
 // File: Person.hpp
 //
 
-#ifndef _SYNDEM_PERSON_H
-#define _SYNDEM_PERSON_H
+#ifndef _FRED_PERSON_H
+#define _FRED_PERSON_H
 
 #define MAX_PLACES 6
 
@@ -110,4 +110,4 @@ public:
   void set_role(int dis, char r) { role[dis]= r; }
 };
 
-#endif // _SYNDEM_PERSON_H
+#endif // _FRED_PERSON_H

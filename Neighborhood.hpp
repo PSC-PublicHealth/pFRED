@@ -9,8 +9,8 @@
 // File: Neighborhood.hpp
 //
 
-#ifndef _SYNDEM_NEIGHBORHOOD_H
-#define _SYNDEM_NEIGHBORHOOD_H
+#ifndef _FRED_NEIGHBORHOOD_H
+#define _FRED_NEIGHBORHOOD_H
 
 
 #include "Place.hpp"
@@ -33,5 +33,5 @@ public:
 
 };
 
-#endif // _SYNDEM_NEIGHBORHOOD_H
+#endif // _FRED_NEIGHBORHOOD_H
 

@@ -9,8 +9,8 @@
 // File: Place.hpp
 //
 
-#ifndef _SYNDEM_PLACE_H
-#define _SYNDEM_PLACE_H
+#ifndef _FRED_PLACE_H
+#define _FRED_PLACE_H
 
 #include <vector>
 #include <iostream>
@@ -112,5 +112,5 @@ public:
 
 };
 
-#endif // _SYNDEM_PLACE_H
+#endif // _FRED_PLACE_H
 

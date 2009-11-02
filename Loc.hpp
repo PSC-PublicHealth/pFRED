@@ -9,8 +9,8 @@
 // File: Loc.hpp
 //
 
-#ifndef _SYNDEM_LOC_H
-#define _SYNDEM_LOC_H
+#ifndef _FRED_LOC_H
+#define _FRED_LOC_H
 
 #include <set>
 #include <new>
@@ -48,4 +48,4 @@ void remove_from_exposed_list(int d, int p);
 void remove_from_infectious_list(int d, int p);
 
 
-#endif // _SYNDEM_LOC_H
+#endif // _FRED_LOC_H

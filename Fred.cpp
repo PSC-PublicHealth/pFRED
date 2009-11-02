@@ -6,10 +6,10 @@
 
 //
 //
-// File: SynDem.cpp
+// File: Fred.cpp
 //
 
-#include "SynDem.hpp"
+#include "Fred.hpp"
 
 // global runtime parameters
 int Verbose;

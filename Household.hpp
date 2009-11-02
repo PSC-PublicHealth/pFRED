@@ -9,8 +9,8 @@
 // File: Household.hpp
 //
 
-#ifndef _SYNDEM_HOUSEHOLD_H
-#define _SYNDEM_HOUSEHOLD_H
+#ifndef _FRED_HOUSEHOLD_H
+#define _FRED_HOUSEHOLD_H
 
 
 #include "Place.hpp"
@@ -31,5 +31,5 @@ public:
   double get_contacts_per_day(int dis);
 };
 
-#endif // _SYNDEM_HOUSEHOLD_H
+#endif // _FRED_HOUSEHOLD_H
 

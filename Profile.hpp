@@ -9,8 +9,8 @@
 // File: Profile.hpp
 //
 
-#ifndef _SYNDEM_PROFILE_H
-#define _SYNDEM_PROFILE_H
+#ifndef _FRED_PROFILE_H
+#define _FRED_PROFILE_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,4 +34,4 @@ public:
 void read_profiles(char *filename);
 int is_visited(int pos, int prof, int day);
 
-#endif // _SYNDEM_PROFILE_H
+#endif // _FRED_PROFILE_H

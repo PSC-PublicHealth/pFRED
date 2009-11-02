@@ -9,8 +9,8 @@
 // File: Classroom.hpp
 //
 
-#ifndef _SYNDEM_CLASSROOM_H
-#define _SYNDEM_CLASSROOM_H
+#ifndef _FRED_CLASSROOM_H
+#define _FRED_CLASSROOM_H
 
 
 #include "Place.hpp"
@@ -37,5 +37,5 @@ public:
   double get_contacts_per_day(int dis);
 };
 
-#endif // _SYNDEM_CLASSROOM_H
+#endif // _FRED_CLASSROOM_H
 

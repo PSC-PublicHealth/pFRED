@@ -17,8 +17,8 @@ SRC = $(OBJ:.o=.cpp)
 
 HDR = $(OBJ:.o=.hpp)
 
-SYNDEM: Syndem.cpp Syndem.hpp $(OBJ)
-	$(CPP) $(CPPFLAGS) Syndem.cpp $(OBJ) -o SYNDEM
+FRED: Fred.cpp Fred.hpp $(OBJ)
+	$(CPP) $(CPPFLAGS) Fred.cpp $(OBJ) -o fred
 
 ##############################################
 
@@ -26,17 +26,17 @@ print:
 	enscript $(SRC) $(HDR)
 
 clean:
-	rm -f *.o *~ SYNDEM out* trace*
+	rm -f *.o *~ FRED out* trace*
 
 tar: clean
 	cd ..
-	tar cvf SYNDEM.tar SYNDEM
+	tar cvf FRED.tar FRED
 
 dist:
 	make clean
-	(cd ..; tar cvf SYNDEM-`date +"%Y-%m-%d"`.tar SYNDEM/README \
-	SYNDEM/Makefile SYNDEM/dc*.txt SYNDEM/profiles.txt SYNDEM/*.cpp SYNDEM/*.hpp \
-	SYNDEM/params* SYNDEM/p SYNDEM/ch SYNDEM/go SYNDEM/report \
-	SYNDEM/LICENSE SYNDEM/sim.plt ; cd SYNDEM)
+	(cd ..; tar cvf FRED-`date +"%Y-%m-%d"`.tar FRED/README \
+	FRED/Makefile FRED/dc*.txt FRED/profiles.txt FRED/*.cpp FRED/*.hpp \
+	FRED/params* FRED/p FRED/ch FRED/go FRED/report \
+	FRED/LICENSE FRED/sim.plt ; cd FRED)
 	make
 

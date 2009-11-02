@@ -6,11 +6,11 @@
 
 //
 //
-// File: SynDem.h
+// File: Fred.h
 //
 
-#ifndef _SYNDEM_H
-#define _SYNDEM_H
+#ifndef _FRED_H
+#define _FRED_H
 
 #include "Disease.hpp"
 #include "Pop.hpp"
@@ -22,4 +22,4 @@ void setup(char *paramfile);
 void cleanup(int run);
 void run_sim(int run);
 
-#endif // _SYNDEM_H
+#endif // _FRED_H

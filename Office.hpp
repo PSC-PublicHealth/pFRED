@@ -9,8 +9,8 @@
 // File: Office.hpp
 //
 
-#ifndef _SYNDEM_OFFICE_H
-#define _SYNDEM_OFFICE_H
+#ifndef _FRED_OFFICE_H
+#define _FRED_OFFICE_H
 
 
 #include "Place.hpp"
@@ -30,5 +30,5 @@ public:
   double get_contacts_per_day(int dis);
 };
 
-#endif // _SYNDEM_OFFICE_H
+#endif // _FRED_OFFICE_H
 

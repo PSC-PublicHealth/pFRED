@@ -9,8 +9,8 @@
 // File: Hospital.hpp
 //
 
-#ifndef _SYNDEM_HOSPITAL_H
-#define _SYNDEM_HOSPITAL_H
+#ifndef _FRED_HOSPITAL_H
+#define _FRED_HOSPITAL_H
 
 
 #include "Place.hpp"
@@ -33,5 +33,5 @@ public:
 
 };
 
-#endif // _SYNDEM_HOSPITAL_H
+#endif // _FRED_HOSPITAL_H
 

@@ -9,8 +9,8 @@
 // File: Pop.hpp
 //
 
-#ifndef _SYNDEM_POP_H
-#define _SYNDEM_POP_H
+#ifndef _FRED_POP_H
+#define _FRED_POP_H
 
 #include <stack>
 #include <set>
@@ -52,4 +52,4 @@ void update_schedule(int per, int day);
 void get_schedule(int per, int *n, int *schedule);
 double get_attack_rate(int dis);
 
-#endif // _SYNDEM_POP_H
+#endif // _FRED_POP_H

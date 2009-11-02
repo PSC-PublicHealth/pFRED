@@ -9,8 +9,8 @@
 // File: Community.hpp
 //
 
-#ifndef _SYNDEM_COMMUNITY_H
-#define _SYNDEM_COMMUNITY_H
+#ifndef _FRED_COMMUNITY_H
+#define _FRED_COMMUNITY_H
 
 
 #include "Place.hpp"
@@ -33,5 +33,5 @@ public:
 
 };
 
-#endif // _SYNDEM_COMMUNITY_H
+#endif // _FRED_COMMUNITY_H
 

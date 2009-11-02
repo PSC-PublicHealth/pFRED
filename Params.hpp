@@ -8,8 +8,8 @@
 //
 // File Params.hpp
 //
-#ifndef _SYNDEM_PARAMS_H
-#define _SYNDEM_PARAMS_H
+#ifndef _FRED_PARAMS_H
+#define _FRED_PARAMS_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -27,4 +27,4 @@ int get_param(char *s, char *p);
 int read_parameters(char *paramfile);
 int get_param_vector(char *s, double *p);
 
-#endif // _SYNDEM_PARAMS_H
+#endif // _FRED_PARAMS_H
