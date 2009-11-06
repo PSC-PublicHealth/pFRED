@@ -35,7 +35,7 @@ tar: clean
 dist:
 	make clean
 	(cd ..; tar cvf FRED-`date +"%Y-%m-%d"`.tar FRED/README \
-	FRED/Makefile FRED/dc*.txt FRED/profiles.txt FRED/*.cpp FRED/*.hpp \
+	FRED/Makefile FRED/profiles.txt FRED/*.cpp FRED/*.hpp \
 	FRED/params* FRED/p FRED/ch FRED/go FRED/report \
 	FRED/LICENSE FRED/sim.plt ; cd FRED)
 	make
