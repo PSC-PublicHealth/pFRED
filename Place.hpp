@@ -16,26 +16,9 @@
 #include <iostream>
 #include <stdio.h>
 using namespace std;
-
-#include "Random.hpp"
+#include "Global.hpp"
 #include "Params.hpp"
-extern int Verbose;
-extern FILE *Statusfp;
-
-// From Pop.cpp
-char get_disease_status(int per, int dis);
-int is_place_on_schedule_for_person(int per, int day, int loc);
-double get_infectivity(int per, int dis);
-double get_susceptibility(int per, int dis);
-void make_exposed(int per, int dis, int infector, int loc, char type, int day);
-void add_infectee(int per, int dis);
-int get_age(int per);
-int get_role(int per, int dis);
-
-// From Disease.hpp
-int get_diseases();
-double get_beta(int dis);
-
+#include "Random.hpp"
 
 #define HOUSEHOLD 'H'
 #define NEIGHBORHOOD 'N'

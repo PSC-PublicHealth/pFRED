@@ -12,18 +12,9 @@
 #ifndef _FRED_SCHOOL_H
 #define _FRED_SCHOOL_H
 
-
 #include "Place.hpp"
 
-// From Pop.hpp
-int get_age(int per);
-double get_attack_rate(int dis);
-
-// From Disease.hpp
-int get_diseases();
-
 class School: public Place {
-
 public: 
   School() {}
   ~School() {}

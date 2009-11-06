@@ -10,6 +10,7 @@
 //
 
 #include "Office.hpp"
+#include "Disease.hpp"
 
 double * Office_contacts_per_day;
 double *** Office_contact_prob;
@@ -18,7 +19,7 @@ int Office_parameters_set = 0;
 Office::Office(int loc, char *lab, double lon, double lat, int container) {
   type = OFFICE;
   setup(loc, lab, lon, lat, container);
-  get_parameters(get_diseases());
+  get_parameters(Disease::get_diseases());
 }
 
 void Office::get_parameters(int diseases) {

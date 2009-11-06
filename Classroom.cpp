@@ -10,6 +10,9 @@
 //
 
 #include "Classroom.hpp"
+#include "Population.hpp"
+#include "Locations.hpp"
+#include "Disease.hpp"
 
 double * Classroom_contacts_per_day;
 double *** Classroom_contact_prob;
@@ -24,7 +27,7 @@ int Classroom_parameters_set = 0;
 Classroom::Classroom(int loc, char *lab, double lon, double lat, int container) {
   type = CLASSROOM;
   setup(loc, lab, lon, lat, container);
-  get_parameters(get_diseases());
+  get_parameters(Disease::get_diseases());
 }
 
 
@@ -75,7 +78,7 @@ void Classroom::get_parameters(int diseases) {
 }
 
 int Classroom::get_group_type(int dis, int per) {
-  int age = get_age(per);
+  int age = Pop.get_age(per);
   if (age <12) { return 0; }
   else if (age < 16) { return 1; }
   else if (age < 19) { return 2; }
@@ -93,7 +96,7 @@ double Classroom::get_transmission_prob(int dis, int i, int s) {
 }
 
 int Classroom::should_be_open(int day, int dis) {
-  return location_should_be_open(container, day, dis);
+  return Loc.location_should_be_open(container, day, dis);
 }
 
 double Classroom::get_contacts_per_day(int dis) {

@@ -10,6 +10,7 @@
 //
 
 #include "Workplace.hpp"
+#include "Disease.hpp"
 
 double * Workplace_contacts_per_day;
 double *** Workplace_contact_prob;
@@ -18,7 +19,7 @@ int Workplace_parameters_set = 0;
 Workplace::Workplace(int loc, char *lab, double lon, double lat, int container) {
   type = WORKPLACE;
   setup(loc, lab, lon, lat, container);
-  get_parameters(get_diseases());
+  get_parameters(Disease::get_diseases());
 }
 
 void Workplace::get_parameters(int diseases) {

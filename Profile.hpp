@@ -12,12 +12,6 @@
 #ifndef _FRED_PROFILE_H
 #define _FRED_PROFILE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "Random.hpp"
-#include "Params.hpp"
-
-
 class Profile {
   int id;
   double prob_visit[7][20];

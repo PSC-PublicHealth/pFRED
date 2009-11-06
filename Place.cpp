@@ -10,12 +10,13 @@
 //
 
 #include "Place.hpp"
-extern int Verbose;
-
+#include "Population.hpp"
+#include "Disease.hpp"
+#include "Locations.hpp"
 
 void Place::setup(int loc, char *lab, double lon, double lat, int cont) {
 
-  int diseases = get_diseases();
+  int diseases = Disease::get_diseases();
   id = loc;
   container = cont;
   strcpy(label,lab);
@@ -59,7 +60,7 @@ void Place::setup(int loc, char *lab, double lon, double lat, int cont) {
 
 void Place::reset() {
   N = 0;
-  int diseases = get_diseases();
+  int diseases = Disease::get_diseases();
   for (int d = 0; d < diseases; d++) {
     susceptibles[d].clear();
     infectious[d].clear();
@@ -111,7 +112,7 @@ void Place::print_susceptibles(int dis) {
 void Place::add_infectious(int dis, int per) {
   infectious[dis].push_back(per);
   I[dis]++;
-  if (get_disease_status(per, dis) == 'I') {
+  if (Pop.get_disease_status(per, dis) == 'I') {
     Sympt[dis]++;
   }
 }
@@ -126,7 +127,7 @@ void Place::delete_infectious(int dis, int per) {
     }
   }
   I[dis]--;
-  if (get_disease_status(per, dis)=='I') {
+  if (Pop.get_disease_status(per, dis)=='I') {
     Sympt[dis]--;
   }
 }
@@ -143,7 +144,7 @@ void Place::print_infectious(int dis) {
 void Place::spread_infection(int day) {
   vector<int>::iterator itr;
 
-  int diseases = get_diseases();
+  int diseases = Disease::get_diseases();
   for (int d = 0; d < diseases; d++) {
     if (Verbose > 1) { print(d); }
     if (N < 2) return;
@@ -157,9 +158,9 @@ void Place::spread_infection(int day) {
     }
     
     // expected u.b. on number of contacts resulting in infection (per infective)
-    contacts *= get_beta(d);
+    contacts *= Disease::get_beta(d);
     if (Verbose > 1) {
-      printf("beta = %f\n", get_beta(d));
+      printf("beta = %f\n", Disease::get_beta(d));
       printf("effective contacts = %f\n", contacts);
       fflush(stdout);
     }
@@ -168,12 +169,12 @@ void Place::spread_infection(int day) {
       int i = *itr;				// infectious indiv
 
       // skip if this infected did not visit today
-      if (!is_place_on_schedule_for_person(i, day, id)) continue;
+      if (!Pop.is_place_on_schedule_for_person(i, day, id)) continue;
 
       if (Verbose > 1) { printf("infected = %d\n", i); }
 
       // reduce number of infective contact events by my infectivity
-      double my_contacts = contacts * get_infectivity(i,d);
+      double my_contacts = contacts * Pop.get_infectivity(i,d);
       if (Verbose > 1) {
 	printf("my effective contacts = %f\n", my_contacts);
 	fflush(stdout);
@@ -194,18 +195,18 @@ void Place::spread_infection(int day) {
 	if (Verbose > 1) { printf("my possible victim = %d\n",s); }
 
 	// is the victim here today, and still susceptible?
-	if (is_place_on_schedule_for_person(s,day,id) && get_disease_status(s,d) == 'S') {
+	if (Pop.is_place_on_schedule_for_person(s,day,id) && Pop.get_disease_status(s,d) == 'S') {
 
 	  // compute transmission prob for this type of individuals
 	  double transmission_prob = get_transmission_prob(d,i,s);
 
 	  // get the victim's susceptibility
-	  double susceptibility = get_susceptibility(s,d);
+	  double susceptibility = Pop.get_susceptibility(s,d);
 
 	  if (RANDOM() < transmission_prob*susceptibility) {
 	    if (Verbose > 1) { printf("infection from %d to %d\n",i,s); }
-	    make_exposed(s, d, i, id, type, day);
-	    add_infectee(i,d);
+	    Pop.make_exposed(s, d, i, id, type, day);
+	    Pop.add_infectee(i,d);
 	  }
 	  else {
 	    if (Verbose > 1) { printf("no infection\n"); }
@@ -214,8 +215,8 @@ void Place::spread_infection(int day) {
 	else {
 	  if (Verbose > 1) {
 	    printf("victim not here today, or not still susceptible\n");
-	    printf ("%s here", is_place_on_schedule_for_person(s,day,id)? "is": "is not");
-	    printf("disease status = %c\n", get_disease_status(s,d));
+	    printf ("%s here", Pop.is_place_on_schedule_for_person(s,day,id)? "is": "is not");
+	    printf("disease status = %c\n", Pop.get_disease_status(s,d));
 	    fflush(stdout);
 	  }
 	}
@@ -225,9 +226,8 @@ void Place::spread_infection(int day) {
 }
 
 int Place::is_open(int day) {
-  int get_open_status(int,int);
   if (container > 0) {
-    return get_open_status(container, day);
+    return Loc.get_open_status(container, day);
   }
   else {
     return (day < close_date || open_date <= day);

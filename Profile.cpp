@@ -10,9 +10,11 @@
 //
 
 #include "Profile.hpp"
-extern int Verbose;
-extern FILE * Statusfp;
-
+#include <stdio.h>
+#include <stdlib.h>
+#include "Random.hpp"
+#include "Params.hpp"
+#include "Global.hpp"
 
 Profile Prof[100];
 int Profiles = 0;

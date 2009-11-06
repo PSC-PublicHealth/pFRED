@@ -10,6 +10,8 @@
 //
 
 #include "Community.hpp"
+#include "Population.hpp"
+#include "Disease.hpp"
 
 double * Community_contacts_per_day;
 double *** Community_contact_prob;
@@ -18,7 +20,7 @@ int Community_parameters_set = 0;
 Community::Community(int loc, char *lab, double lon, double lat, int container) {
   type = COMMUNITY;
   setup(loc, lab, lon, lat, container);
-  get_parameters(get_diseases());
+  get_parameters(Disease::get_diseases());
 }
 
 void Community::get_parameters(int diseases) {
@@ -75,7 +77,7 @@ void Community::get_parameters(int diseases) {
 }
 
 int Community::get_group_type(int dis, int per) {
-  int age = get_age(per);
+  int age = Pop.get_age(per);
   if (age < 18) { return 0; }
   else { return 1; }
 }

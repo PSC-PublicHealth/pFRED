@@ -11,6 +11,13 @@
 
 #include "Disease.hpp"
 
+#include <stdio.h>
+#include <new>
+using namespace std;
+
+#include "Random.hpp"
+#include "Params.hpp"
+
 Disease *Dis;
 int Diseases;
 
@@ -69,12 +76,13 @@ int Disease::get_days_infectious() {
 }
 
 
-
-void get_disease_parameters() {
+// static
+void Disease::get_disease_parameters() {
   get_param((char *) "diseases", &Diseases);
 }
 
-void setup_diseases(int verbose) {
+// static
+void Disease::setup_diseases(int verbose) {
   Dis = new (nothrow) Disease [Diseases];
   if (Dis == NULL) {
     printf("Help! Dis allocation failure\n");
@@ -86,7 +94,8 @@ void setup_diseases(int verbose) {
   }
 }
 
-int draw_from_distribution(int n, double *dist) {
+// static
+int Disease::draw_from_distribution(int n, double *dist) {
   double r = RANDOM();
   int i = 0;
   while (i <= n && dist[i] < r) { i++; }
@@ -102,13 +111,17 @@ int draw_from_distribution(int n, double *dist) {
   }
 }
 
-int get_diseases() { return Diseases; }
+// static
+int Disease::get_diseases() { return Diseases; }
 
-double get_beta(int dis) { return Dis[dis].get_transmissibility(); }
+// static
+double Disease::get_beta(int dis) { return Dis[dis].get_transmissibility(); }
 
-double get_prob_symptomatic(int dis) { return Dis[dis].get_prob_symptomatic(); }
+// static
+double Disease::get_prob_symptomatic(int dis) { return Dis[dis].get_prob_symptomatic(); }
 
-int get_days_latent(int dis) { return Dis[dis].get_days_latent(); }
+// static
+int Disease::get_days_latent(int dis) { return Dis[dis].get_days_latent(); }
 
-int get_days_infectious(int dis) {  return Dis[dis].get_days_infectious(); }
-
+// static
+int Disease::get_days_infectious(int dis) {  return Dis[dis].get_days_infectious(); }

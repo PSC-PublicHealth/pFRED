@@ -10,6 +10,8 @@
 //
 
 #include "Household.hpp"
+#include "Population.hpp"
+#include "Disease.hpp"
 
 
 double * Household_contacts_per_day;
@@ -19,7 +21,7 @@ int Household_parameters_set = 0;
 Household::Household(int loc, char *lab, double lon, double lat, int container) {
   type = HOUSEHOLD;
   setup(loc, lab, lon, lat, container);
-  get_parameters(get_diseases());
+  get_parameters(Disease::get_diseases());
 }
 
 void Household::get_parameters(int diseases) {
@@ -69,7 +71,7 @@ void Household::get_parameters(int diseases) {
 }
 
 int Household::get_group_type(int dis, int per) {
-  int age = get_age(per);
+  int age = Pop.get_age(per);
   if (age < 18) { return 0; }
   else { return 1; }
 }

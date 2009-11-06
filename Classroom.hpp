@@ -12,17 +12,7 @@
 #ifndef _FRED_CLASSROOM_H
 #define _FRED_CLASSROOM_H
 
-
 #include "Place.hpp"
-
-// From Loc.hpp
-int location_should_be_open(int loc, int dis, int day);
-
-// From Pop.hpp
-int get_age(int);
-
-// From Disease.hpp
-int get_diseases();
 
 class Classroom: public Place {
 

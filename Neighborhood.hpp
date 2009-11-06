@@ -12,17 +12,10 @@
 #ifndef _FRED_NEIGHBORHOOD_H
 #define _FRED_NEIGHBORHOOD_H
 
-
 #include "Place.hpp"
-int get_age(int);
-
-// From Disease.hpp
-int get_diseases();
 
 class Neighborhood : public Place {
-
 public: 
-
   Neighborhood() {};
   ~Neighborhood() {};
   Neighborhood(int,char*,double,double,int);

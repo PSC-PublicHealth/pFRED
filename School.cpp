@@ -10,6 +10,8 @@
 //
 
 #include "School.hpp"
+#include "Population.hpp"
+#include "Disease.hpp"
 
 double * School_contacts_per_day;
 double *** School_contact_prob;
@@ -24,7 +26,7 @@ int School_parameters_set = 0;
 School::School(int loc, char *lab, double lon, double lat, int container) {
   type = SCHOOL;
   setup(loc, lab, lon, lat, container);
-  get_parameters(get_diseases());
+  get_parameters(Disease::get_diseases());
 }
 
 
@@ -81,7 +83,7 @@ void School::get_parameters(int diseases) {
 }
 
 int School::get_group_type(int dis, int per) {
-  int age = get_age(per);
+  int age = Pop.get_age(per);
   if (age <12) { return 0; }
   else if (age < 16) { return 1; }
   else if (age < 19) { return 2; }
@@ -113,7 +115,7 @@ int School::should_be_open(int day, int dis) {
 
     // Close schools if the global attack rate has reached the threshold
     // (with a delay)
-    if (get_attack_rate(dis) > School_closure_threshold) {
+    if (Pop.get_attack_rate(dis) > School_closure_threshold) {
       if (is_open(day))
 	close_date = day+School_closure_delay;
       open_date = day+School_closure_delay+School_closure_period;

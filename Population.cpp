@@ -1,4 +1,3 @@
-
 /*
   Copyright 2009 by the University of Pittsburgh
   Licensed under the Academic Free License version 3.0
@@ -7,47 +6,39 @@
 
 //
 //
-// File: Pop.cpp
+// File: Population.cpp
 //
 
-#include "Pop.hpp"
+#include "Population.hpp"
+#include "Person.hpp"
+#include <stdio.h>
+#include "Random.hpp"
+#include "Params.hpp"
+#include "Profile.hpp"
+#include <new>
+#include "Disease.hpp"
+#include "Global.hpp"
 
-extern int Verbose;
-extern FILE *Statusfp;
-extern FILE *Outfp;
 
-char Popfile[80];
-char Profilefile[80];
-Person *Pop;
-int Population;
-int Index_cases;
-set <int> *Exposed;
-set <int> *Infectious;
-int *S;
-int *E;
-int *I;
-int *R;
-double * Attack_rate;
-
-void get_population_parameters() {
-  get_param((char *) "popfile", Popfile);
-  get_param((char *) "profiles", Profilefile);
-  get_param((char *) "index_cases", &Index_cases);
+void Population::get_population_parameters() {
+  get_param((char *) "popfile", popfile);
+  get_param((char *) "profiles", profilefile);
+  get_param((char *) "index_cases", &index_cases);
 }
 
 
-void setup_population() {
+void Population::setup_population() {
   if (Verbose) {
     fprintf(Statusfp, "setup population entered\n");
     fflush(Statusfp);
   }
 
-  int diseases = get_diseases();
-  Exposed = new (nothrow) set <int> [diseases];
-  if (Exposed == NULL) { printf("Help! Exposed allocation failure\n"); abort(); }
+  int diseases = Disease::get_diseases();
+  exposed = new (nothrow) set <int> [diseases];
+  if (exposed == NULL) { printf("Help! exposed allocation failure\n"); abort(); }
 
-  Infectious = new (nothrow) set <int> [diseases];
-  if (Infectious == NULL) { printf("Help! Infectious allocation failure\n"); abort(); }
+  infectious = new (nothrow) set <int> [diseases];
+  if (infectious == NULL) { printf("Help! infectious allocation failure\n"); abort(); }
 
   S = new (nothrow) int  [diseases];
   if (S == NULL) { printf("Help! S allocation failure\n"); abort(); }
@@ -61,17 +52,17 @@ void setup_population() {
   R = new (nothrow) int  [diseases];
   if (R == NULL) { printf("Help! R allocation failure\n"); abort(); }
 
-  Attack_rate = new (nothrow) double  [diseases];
-  if (Attack_rate == NULL) { printf("Help! Attack_rate allocation failure\n"); abort(); }
+  attack_rate = new (nothrow) double  [diseases];
+  if (attack_rate == NULL) { printf("Help! attack_rate allocation failure\n"); abort(); }
 
   // init population-disease lists
   for (int d = 0; d < diseases; d++) {
-    Exposed[d].clear();
-    Infectious[d].clear();
-    Attack_rate[d] = 0.0;
+    exposed[d].clear();
+    infectious[d].clear();
+    attack_rate[d] = 0.0;
   }
 
-  read_profiles(Profilefile);
+  read_profiles(profilefile);
   read_population();
 
   if (Verbose) {
@@ -81,29 +72,29 @@ void setup_population() {
 }
 
 
-void read_population() {
+void Population::read_population() {
 
   if (Verbose) {
     fprintf(Statusfp, "read population entered\n"); fflush(Statusfp);
   }
 
   // read in population
-  FILE *fp = fopen(Popfile, "r");
+  FILE *fp = fopen(popfile, "r");
   if (fp == NULL) {
-    fprintf(Statusfp, "Popfile %s not found\n", Popfile);
+    fprintf(Statusfp, "popfile %s not found\n", popfile);
     exit(1);
   }
-  fscanf(fp, "Population = %d", &Population);
+  fscanf(fp, "Population = %d", &pop_size);
   if (Verbose) {
-    fprintf(Statusfp, "Population = %d\n", Population);
+    fprintf(Statusfp, "Population = %d\n", pop_size);
     fflush(Statusfp);
   }
 
   // allocate population array
-  Pop = new (nothrow) Person [Population];
-  if (Pop == NULL) { printf ("Help! Pop allocation failure\n"); exit(1); }
+  pop = new (nothrow) Person [pop_size];
+  if (pop == NULL) { printf ("Help! Pop allocation failure\n"); exit(1); }
 
-  for (int p = 0; p < Population; p++) {
+  for (int p = 0; p < pop_size; p++) {
     int id, age, married, occ, prof, house, hood;
     int school, classroom, work, office, profile;
     char sex;
@@ -115,20 +106,20 @@ void read_population() {
       fprintf(Statusfp, "Help! Read failure for person %d\n", p);
       abort();
     }
-    Pop[p].setup(id, age, sex, married, occ, prof, house, hood, school,
+    pop[p].setup(id, age, sex, married, occ, prof, house, hood, school,
 		 classroom, work, office, profile);
-    Pop[p].make_susceptible();
+    pop[p].make_susceptible();
   }
   fclose(fp);
   if (Verbose) {
-    fprintf(Statusfp, "finished reading population = %d\n", Population);
+    fprintf(Statusfp, "finished reading population = %d\n", pop_size);
     fflush(Statusfp);
   }
 }
 
 
 
-void population_quality_control() {
+void Population::population_quality_control() {
 
   if (Verbose) {
     fprintf(Statusfp, "population quality control check\n");
@@ -136,16 +127,16 @@ void population_quality_control() {
   }
 
   // check population
-  for (int p = 0; p < Population; p++) {
-    if (Pop[p].get_places() == 0) {
+  for (int p = 0; p < pop_size; p++) {
+    if (pop[p].get_places() == 0) {
       fprintf(Statusfp, "Help! Person %d has no home.\n",p);
-      Pop[p].print(0);
+      pop[p].print(0);
       continue;
     }
-    if (Pop[p].get_places() == 0) {
+    if (pop[p].get_places() == 0) {
       fprintf(Statusfp,
 	      "Help! Person %d has no place to go\n",p);
-      Pop[p].print(0);
+      pop[p].print(0);
     }
   }
 
@@ -154,8 +145,8 @@ void population_quality_control() {
     int total = 0;
     // age distribution
     for (int c = 0; c < 20; c++) { count[c] = 0; }
-    for (int p = 0; p < Population; p++) {
-      int a = Pop[p].get_age();
+    for (int p = 0; p < pop_size; p++) {
+      int a = pop[p].get_age();
       int n = a / 5;
       if (n < 20) { count[n]++; }
       else { count[19]++; }
@@ -176,15 +167,15 @@ void population_quality_control() {
 }
 
 
-void start_outbreak() {
+void Population::start_outbreak() {
   // create index cases
-  for (int i = 0; i < Index_cases; i++) {
-    int n = IRAND(0, Population-1);
-    Pop[n].make_exposed(0, -1, -1, 'X', 0);
+  for (int i = 0; i < index_cases; i++) {
+    int n = IRAND(0, pop_size-1);
+    pop[n].make_exposed(0, -1, -1, 'X', 0);
   }
 }
 
-void reset_population(int run) {
+void Population::reset_population(int run) {
 
   if (Verbose) {
     fprintf(Statusfp, "reset population entered for run %d\n", run);
@@ -192,16 +183,16 @@ void reset_population(int run) {
   }
 
   // init population-disease lists
-  int diseases = get_diseases();
+  int diseases = Disease::get_diseases();
   for (int d = 0; d < diseases; d++) {
-    Exposed[d].clear();
-    Infectious[d].clear();
-    Attack_rate[d] = 0.0;
+    exposed[d].clear();
+    infectious[d].clear();
+    attack_rate[d] = 0.0;
   }
 
   // add each person to the susceptible list for each place visited
-  for (int p = 0; p < Population; p++){
-    Pop[p].make_susceptible();
+  for (int p = 0; p < pop_size; p++){
+    pop[p].make_susceptible();
   }
 
   if (Verbose) {
@@ -210,7 +201,7 @@ void reset_population(int run) {
   }
 }
 
-void update_exposed_population(int day) {
+void Population::update_exposed_population(int day) {
   int p;
   set<int>::iterator it;
   stack <int> TempList;
@@ -220,12 +211,12 @@ void update_exposed_population(int day) {
     fflush(Statusfp);
   }
 
-  int diseases = get_diseases();
+  int diseases = Disease::get_diseases();
   for (int d = 0; d < diseases; d++) {
 
-    for (it = Exposed[d].begin(); it != Exposed[d].end(); it++) {
+    for (it = exposed[d].begin(); it != exposed[d].end(); it++) {
       p = *it;
-      if (Pop[p].get_infectious_date(d) == day) {
+      if (pop[p].get_infectious_date(d) == day) {
 	TempList.push(p);
       }
     }
@@ -239,14 +230,14 @@ void update_exposed_population(int day) {
 
     while (!TempList.empty()) {
       p = TempList.top();
-      Pop[p].make_infectious(d);
+      pop[p].make_infectious(d);
       TempList.pop();
     }
   }
 
 }
 
-void update_infectious_population(int day) {
+void Population::update_infectious_population(int day) {
   int p;
   set<int>::iterator it;
   stack <int> TempList;
@@ -256,14 +247,14 @@ void update_infectious_population(int day) {
     fflush(Statusfp);
   }
 
-  int diseases = get_diseases();
+  int diseases = Disease::get_diseases();
   for (int d = 0; d < diseases; d++) {
 
-    for (it = Infectious[d].begin(); it != Infectious[d].end(); it++) {
+    for (it = infectious[d].begin(); it != infectious[d].end(); it++) {
       p = *it;
-      // printf("inf = %d recov = %d\n", p, Pop[p].get_recovered_date(d));
+      // printf("inf = %d recov = %d\n", p, pop[p].get_recovered_date(d));
       // fflush(stdout);
-      if (Pop[p].get_recovered_date(d) == day) {
+      if (pop[p].get_recovered_date(d) == day) {
 	TempList.push(p);
       }
     }
@@ -272,7 +263,7 @@ void update_infectious_population(int day) {
     while (!TempList.empty()) {
       p = TempList.top();
       // printf("top = %d\n", p ); fflush(stdout);
-      Pop[p].make_recovered(d);
+      pop[p].make_recovered(d);
       TempList.pop();
     }
   }
@@ -285,122 +276,129 @@ void update_infectious_population(int day) {
 }
 
 
-void update_population_stats(int day) {
+void Population::update_population_behaviors(int day) {
+  for (int p = 0; p < pop_size; p++) {
+    pop[p].behave(day);
+  }
+}
+
+void Population::update_population_stats(int day) {
 
   if (Verbose > 1) {
     fprintf(Statusfp, "update pop stats\n"); 
     fflush(Statusfp);
   }
 
-  int diseases = get_diseases();
+  int diseases = Disease::get_diseases();
   for (int d = 0; d < diseases; d++) {
     S[d] = E[d] = I[d] = R[d] = 0;
-    for (int p = 0; p < Population; p++) {
-      char status = Pop[p].get_disease_status(d);
+    for (int p = 0; p < pop_size; p++) {
+      char status = pop[p].get_disease_status(d);
       S[d] += (status == 'S');
       E[d] += (status == 'E');
       I[d] += (status == 'I') || (status == 'i');
       R[d] += (status == 'R');
     }
-    Attack_rate[d] = (100.0*(E[d]+I[d]+R[d]))/Population;
+    attack_rate[d] = (100.0*(E[d]+I[d]+R[d]))/pop_size;
   }
 }
 
-void print_population_stats(int day) {
+void Population::print_population_stats(int day) {
 
   if (Verbose > 1) {
     fprintf(Statusfp, "print pop stats for day %d\n", day);
     fflush(Statusfp);
   }
 
-  int diseases = get_diseases();
+  int diseases = Disease::get_diseases();
   for (int d = 0; d < diseases; d++) {
     int N = S[d]+E[d]+I[d]+R[d];
     fprintf(Outfp,
 	    "Day %3d  Dis %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n",
-	    day, d, S[d], E[d], I[d], R[d], N, Attack_rate[d]);
+	    day, d, S[d], E[d], I[d], R[d], N, attack_rate[d]);
     fflush(Outfp);
 
     if (Verbose) {
       fprintf(Statusfp,
 	      "Day %3d  Dis %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n\n",
-	      day, d, S[d], E[d], I[d], R[d], N, Attack_rate[d]);
+	      day, d, S[d], E[d], I[d], R[d], N, attack_rate[d]);
       fflush(Statusfp);
     }
   }
 }
 
-void print_population() {
-  for (int p = 0; p < Population; p++) {
-    Pop[p].print(0);
+void Population::print_population() {
+  for (int p = 0; p < pop_size; p++) {
+    pop[p].print(0);
   }
 }
 
-void insert_into_exposed_list(int dis, int per) {
-  Exposed[dis].insert(per);
+void Population::insert_into_exposed_list(int dis, int per) {
+  exposed[dis].insert(per);
 }
 
-void insert_into_infectious_list(int dis, int per) {
-  Infectious[dis].insert(per);
+void Population::insert_into_infectious_list(int dis, int per) {
+  infectious[dis].insert(per);
 }
 
-void remove_from_exposed_list(int dis, int per) {
-  Exposed[dis].erase(per);
+void Population::remove_from_exposed_list(int dis, int per) {
+  exposed[dis].erase(per);
 }
 
-void remove_from_infectious_list(int dis, int per) {
+void Population::remove_from_infectious_list(int dis, int per) {
   if (Verbose > 2) {
     printf("remove from infectious list person %d\n", per);
-    printf("current size of infectious list = %d\n", (int) Infectious[dis].size());
+    printf("current size of infectious list = %d\n", (int) infectious[dis].size());
     fflush(stdout);
   }
-  Infectious[dis].erase(per);
+  infectious[dis].erase(per);
   if (Verbose > 2) {
-    printf("final size of infectious list = %d\n", (int) Infectious[dis].size());
+    printf("final size of infectious list = %d\n", (int) infectious[dis].size());
     fflush(stdout);
   }
 }
 
-int get_age(int per) {
-  return Pop[per].get_age();
+int Population::get_age(int per) {
+  return pop[per].get_age();
 }
 
-int get_role(int per, int dis) {
-  return Pop[per].get_role(dis);
+int Population::get_role(int per, int dis) {
+  return pop[per].get_role(dis);
 }
 
-char get_disease_status(int per, int dis) {
-  return Pop[per].get_disease_status(dis);
+char Population::get_disease_status(int per, int dis) {
+  return pop[per].get_disease_status(dis);
 }
 
-int is_place_on_schedule_for_person(int per, int day, int loc) {
-  return Pop[per].is_on_schedule(day, loc);
+int Population::is_place_on_schedule_for_person(int per, int day, int loc) {
+  return pop[per].is_on_schedule(day, loc);
 }
 
-double get_infectivity(int per, int dis) {
-  return Pop[per].get_infectivity(dis);
+double Population::get_infectivity(int per, int dis) {
+  return pop[per].get_infectivity(dis);
 }
 
-double get_susceptibility(int per, int dis) {
-  return Pop[per].get_susceptibility(dis);
+double Population::get_susceptibility(int per, int dis) {
+  return pop[per].get_susceptibility(dis);
 }
 
-void make_exposed(int per, int dis, int infector, int loc, char type, int day) {
-  Pop[per].make_exposed(dis, infector, loc, type, day);
+void Population::make_exposed(int per, int dis, int infector, int loc, char type, int day) {
+  pop[per].make_exposed(dis, infector, loc, type, day);
 }
 
-void add_infectee(int per, int dis) {
-  Pop[per].add_infectee(dis);
+void Population::add_infectee(int per, int dis) {
+  pop[per].add_infectee(dis);
 }
 
-void update_schedule(int per, int day) {
-  Pop[per].update_schedule(day);
+void Population::update_schedule(int per, int day) {
+  pop[per].update_schedule(day);
 }
 
-void get_schedule(int per, int *n, int *schedule) {
-  Pop[per].get_schedule(n, schedule);
+void Population::get_schedule(int per, int *n, int *schedule) {
+  pop[per].get_schedule(n, schedule);
 }
 
-double get_attack_rate(int dis) {
-  return Attack_rate[dis];
+double Population::get_attack_rate(int dis) {
+  return attack_rate[dis];
 }
+

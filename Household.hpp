@@ -12,15 +12,9 @@
 #ifndef _FRED_HOUSEHOLD_H
 #define _FRED_HOUSEHOLD_H
 
-
 #include "Place.hpp"
-int get_age(int);
-
-// From Disease.hpp
-int get_diseases();
 
 class Household: public Place {
-
 public: 
   Household() {}
   ~Household() {}

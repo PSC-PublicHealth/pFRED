@@ -6,45 +6,55 @@
 
 //
 //
-// File: Loc.cpp
+// File: Locations.cpp
 //
 
-#include "Loc.hpp"
+#include "Locations.hpp"
 
-extern set <int> *Infectious;
+#include <set>
+#include <new>
+#include <iostream>
+#include "Population.hpp"
+#include "Disease.hpp"
+#include "Global.hpp"
+#include "Place.hpp"
+#include "School.hpp"
+#include "Classroom.hpp"
+#include "Workplace.hpp"
+#include "Office.hpp"
+#include "Community.hpp"
+#include "Neighborhood.hpp"
+#include "Household.hpp"
+#include "Hospital.hpp"
 
-char Locfile[80];
-Place ** Loc;
-int Locations;
-
-void get_location_parameters() {
+void Locations::get_location_parameters() {
 }
 
 
-void setup_locations() {
+void Locations::setup_locations() {
   FILE *fp;
 
   if (Verbose) {
     fprintf(Statusfp, "setup locations entered\n"); fflush(Statusfp);
   }
 
-  get_param((char *) "locfile", Locfile);
+  get_param((char *) "locfile", locfile);
 
-  fp = fopen(Locfile, "r");
+  fp = fopen(locfile, "r");
   if (fp == NULL) {
-    fprintf(Statusfp, "Locfile %s not found\n", Locfile);
+    fprintf(Statusfp, "locfile %s not found\n", locfile);
     abort();
   }
 
-  fscanf(fp, "Locations = %d", &Locations);
+  fscanf(fp, "Locations = %d", &locations);
   if (Verbose) {
-    fprintf(Statusfp, "Locations = %d\n", Locations); fflush(Statusfp);
+    fprintf(Statusfp, "Locations = %d\n", locations); fflush(Statusfp);
   }
 
-  Loc = new (nothrow) Place * [Locations];
-  if (Loc == NULL) { printf("Help! Loc allocation failure\n"); abort(); }
+  location = new (nothrow) Place * [locations];
+  if (location == NULL) { printf("Help! location array allocation failure\n"); abort(); }
 
-  for (int loc = 0; loc < Locations; loc++) {
+  for (int loc = 0; loc < locations; loc++) {
     int id;
     char s[32];
     char loctype;
@@ -94,24 +104,24 @@ void setup_locations() {
       abort();
     }
     if (place == NULL) { printf("Help! allocation failure for loc %d\n", loc); abort(); }
-    Loc[loc] = place;
+    location[loc] = place;
   }
   fclose(fp);
 
   if (Verbose) {
-    fprintf(Statusfp, "setup locations finished: Locations = %d\n", Locations);
+    fprintf(Statusfp, "setup locations finished: Locations = %d\n", locations);
     fflush(Statusfp);
   }
 }
 
-void reset_locations(int run) {
+void Locations::reset_locations(int run) {
 
   if (Verbose > 2) {
     fprintf(Statusfp, "reset locations entered\n"); fflush(Statusfp);
   }
 
-  for (int loc = 0; loc < Locations; loc++) {
-    Loc[loc]->reset();
+  for (int loc = 0; loc < locations; loc++) {
+    location[loc]->reset();
   }
 
   if (Verbose > 2) {
@@ -119,23 +129,23 @@ void reset_locations(int run) {
   }
 }
 
-void location_quality_control() {
+void Locations::location_quality_control() {
 
   if (Verbose) {
     fprintf(Statusfp, "location quality control check\n"); fflush(Statusfp);
   }
 
-  for (int loc = 0; loc < Locations; loc++) {
-    if (Loc[loc]->get_size() < 1) {
+  for (int loc = 0; loc < locations; loc++) {
+    if (location[loc]->get_size() < 1) {
       fprintf(Statusfp, "Help!  No one visits location %d\n", loc);
-      Loc[loc]->print(0);
+      location[loc]->print(0);
       continue;
     }
 
-    if (Loc[loc]->get_size() == 1) {
+    if (location[loc]->get_size() == 1) {
       if (Verbose > 2) {
 	fprintf(Statusfp, "Warning!  Only one visitor to location %d\n", loc);
-	Loc[loc]->print(0);
+	location[loc]->print(0);
       }
     }
   }
@@ -145,9 +155,9 @@ void location_quality_control() {
     int total = 0;
     // size distribution of households
     for (int c = 0; c < 15; c++) { count[c] = 0; }
-    for (int loc = 0; loc < Locations; loc++) {
-      if (Loc[loc]->get_type() == HOUSEHOLD) {
-	int n = Loc[loc]->get_size();
+    for (int loc = 0; loc < locations; loc++) {
+      if (location[loc]->get_type() == HOUSEHOLD) {
+	int n = location[loc]->get_size();
 	if (n < 15) { count[n]++; }
 	else { count[14]++; }
 	total++;
@@ -166,9 +176,9 @@ void location_quality_control() {
     int total = 0;
     // size distribution of schools
     for (int c = 0; c < 20; c++) { count[c] = 0; }
-    for (int loc = 0; loc < Locations; loc++) {
-      if (Loc[loc]->get_type() == SCHOOL) {
-	int s = Loc[loc]->get_size();
+    for (int loc = 0; loc < locations; loc++) {
+      if (location[loc]->get_type() == SCHOOL) {
+	int s = location[loc]->get_size();
 	int n = s / 50;
 	if (n < 20) { count[n]++; }
 	else { count[19]++; }
@@ -188,9 +198,9 @@ void location_quality_control() {
     int total = 0;
     // size distribution of classrooms
     for (int c = 0; c < 50; c++) { count[c] = 0; }
-    for (int loc = 0; loc < Locations; loc++) {
-      if (Loc[loc]->get_type() == CLASSROOM) {
-	int s = Loc[loc]->get_size();
+    for (int loc = 0; loc < locations; loc++) {
+      if (location[loc]->get_type() == CLASSROOM) {
+	int s = location[loc]->get_size();
 	int n = s;
 	if (n < 50) { count[n]++; }
 	else { count[50-1]++; }
@@ -210,9 +220,9 @@ void location_quality_control() {
     int total = 0;
     // size distribution of workplaces
     for (int c = 0; c < 20; c++) { count[c] = 0; }
-    for (int loc = 0; loc < Locations; loc++) {
-      if (Loc[loc]->get_type() == WORKPLACE) {
-	int s = Loc[loc]->get_size();
+    for (int loc = 0; loc < locations; loc++) {
+      if (location[loc]->get_type() == WORKPLACE) {
+	int s = location[loc]->get_size();
 	int n = s / 50;
 	if (n < 20) { count[n]++; }
 	else { count[19]++; }
@@ -232,9 +242,9 @@ void location_quality_control() {
     int total = 0;
     // size distribution of offices
     for (int c = 0; c < 60; c++) { count[c] = 0; }
-    for (int loc = 0; loc < Locations; loc++) {
-      if (Loc[loc]->get_type() == OFFICE) {
-	int s = Loc[loc]->get_size();
+    for (int loc = 0; loc < locations; loc++) {
+      if (location[loc]->get_type() == OFFICE) {
+	int s = location[loc]->get_size();
 	int n = s;
 	if (n < 60) { count[n]++; }
 	else { count[60-1]++; }
@@ -255,7 +265,7 @@ void location_quality_control() {
 }
 
 
-void process_infectious_locations(int day) {
+void Locations::process_infectious_locations(int day) {
   set <int> places;
   set<int>::iterator itr;
 
@@ -264,16 +274,16 @@ void process_infectious_locations(int day) {
     fflush(Statusfp);
   }
 
-  int diseases = get_diseases();
+  int diseases = Disease::get_diseases();
   for (int d = 0; d < diseases; d++) {
 
     if (Verbose > 3) {
       fprintf(Statusfp, "disease = %d  infectious = %d\n", d,
-	      (int) (Infectious[d].size())); fflush(Statusfp);
+	      (int) (Pop.infectious[d].size())); fflush(Statusfp);
     }
 
     // get list of infectious locations:
-    for (itr = Infectious[d].begin(); itr != Infectious[d].end(); itr++) {
+    for (itr = Pop.infectious[d].begin(); itr != Pop.infectious[d].end(); itr++) {
       int p = *itr;
       if (Verbose > 3) {
 	fprintf(Statusfp, "day=%d p=%d\n", day, p);
@@ -281,8 +291,8 @@ void process_infectious_locations(int day) {
       }
       int n;
       int schedule[100];
-      update_schedule(p, day);
-      get_schedule(p, &n, schedule);
+      Pop.update_schedule(p, day);
+      Pop.get_schedule(p, &n, schedule);
 
       /*
       printf("size of schedule = %d\n", n); fflush(stdout);
@@ -293,7 +303,7 @@ void process_infectious_locations(int day) {
 
       for (int j = 0; j < n; j++) {
 	int loc = schedule[j];
-	if (Loc[loc]->is_open(day) && Loc[loc]->should_be_open(day, d)) {
+	if (location[loc]->is_open(day) && location[loc]->should_be_open(day, d)) {
 	  places.insert(loc);
 	}
       }
@@ -310,7 +320,7 @@ void process_infectious_locations(int day) {
     if (Verbose > 1) {
       fprintf(Statusfp, "\nspread in location: %d\n", loc); fflush(Statusfp);
     }
-    Loc[loc]->spread_infection(day);
+    location[loc]->spread_infection(day);
   }
 
   if (Verbose) {
@@ -320,52 +330,52 @@ void process_infectious_locations(int day) {
 
 }
 
-int get_open_status(int loc, int day) {
-  return Loc[loc]->is_open(day);
+int Locations::get_open_status(int loc, int day) {
+  return location[loc]->is_open(day);
 }
 
-void add_susceptible_to_place(int id, int dis, int per) {
-  Loc[id]->add_susceptible(dis, per);
+void Locations::add_susceptible_to_place(int id, int dis, int per) {
+  location[id]->add_susceptible(dis, per);
   if (Verbose > 2) {
-    fprintf(Statusfp, "place %d S %d\n", id, Loc[id]->get_S(dis));
+    fprintf(Statusfp, "place %d S %d\n", id, location[id]->get_S(dis));
     fflush(Statusfp);
   }
 }
 
-void delete_susceptible_from_place(int id, int dis, int per) {
-  Loc[id]->delete_susceptible(dis, per);
+void Locations::delete_susceptible_from_place(int id, int dis, int per) {
+  location[id]->delete_susceptible(dis, per);
   if (Verbose > 2) {
-    fprintf(Statusfp, "place %d S %d\n", id, Loc[id]->get_S(dis));
+    fprintf(Statusfp, "place %d S %d\n", id, location[id]->get_S(dis));
     fflush(Statusfp);
   }
 }
 
-void add_infectious_to_place(int id, int dis, int per) {
-  Loc[id]->add_infectious(dis, per);
+void Locations::add_infectious_to_place(int id, int dis, int per) {
+  location[id]->add_infectious(dis, per);
   if (Verbose > 2) {
-    fprintf(Statusfp, "place %d I %d\n", id, Loc[id]->get_I(dis));
+    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(dis));
     fflush(Statusfp);
   }
 }
 
-void delete_infectious_from_place(int id, int dis, int per) {
+void Locations::delete_infectious_from_place(int id, int dis, int per) {
   if (Verbose > 2) {
     fprintf(Statusfp, "delete infectious person %d from place %d I %d\n",
-	    per, id, Loc[id]->get_I(dis));
-    fprintf(Statusfp, "place %d I %d\n", id, Loc[id]->get_I(dis));
+	    per, id, location[id]->get_I(dis));
+    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(dis));
     fflush(Statusfp);
   }
-  Loc[id]->delete_infectious(dis, per);
+  location[id]->delete_infectious(dis, per);
   if (Verbose > 2) {
-    fprintf(Statusfp, "place %d I %d\n", id, Loc[id]->get_I(dis));
+    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(dis));
     fflush(Statusfp);
   }
 }
 
-char get_type_of_place(int id) {
-  return Loc[id]->get_type();
+char Locations::get_type_of_place(int id) {
+  return location[id]->get_type();
 }
 
-int location_should_be_open(int loc, int dis, int day) {
-  return Loc[loc]->should_be_open(day, dis);
+int Locations::location_should_be_open(int loc, int dis, int day) {
+  return location[loc]->should_be_open(day, dis);
 }

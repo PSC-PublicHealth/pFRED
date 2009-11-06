@@ -10,6 +10,9 @@
 //
 
 #include "Hospital.hpp"
+#include "Population.hpp"
+#include "Person.hpp"
+#include "Disease.hpp"
 
 double * Hospital_contacts_per_day;
 double *** Hospital_contact_prob;
@@ -18,7 +21,7 @@ int Hospital_parameters_set = 0;
 Hospital::Hospital(int loc, char *lab, double lon, double lat, int container) {
   type = HOSPITAL;
   setup(loc, lab, lon, lat, container);
-  get_parameters(get_diseases());
+  get_parameters(Disease::get_diseases());
 }
 
 void Hospital::get_parameters(int diseases) {
@@ -68,7 +71,7 @@ void Hospital::get_parameters(int diseases) {
 }
 
 int Hospital::get_group_type(int dis, int per) {
-  int role = get_role(per, dis);
+  int role = Pop.get_role(per, dis);
   if (role == PATIENT) { return 0; }
   else { return 1; }
 }

@@ -10,6 +10,8 @@
 //
 
 #include "Neighborhood.hpp"
+#include "Population.hpp"
+#include "Disease.hpp"
 
 double * Neighborhood_contacts_per_day;
 double *** Neighborhood_contact_prob;
@@ -19,7 +21,7 @@ Neighborhood::Neighborhood(int loc, char *lab, double lon,
 			   double lat, int container) {
   type = NEIGHBORHOOD;
   setup(loc, lab, lon, lat, container);
-  get_parameters(get_diseases());
+  get_parameters(Disease::get_diseases());
 }
 
 void Neighborhood::get_parameters(int diseases) {
@@ -77,7 +79,7 @@ void Neighborhood::get_parameters(int diseases) {
 }
 
 int Neighborhood::get_group_type(int dis, int per) {
-  int age = get_age(per);
+  int age = Pop.get_age(per);
   if (age < 18) { return 0; }
   else { return 1; }
 }

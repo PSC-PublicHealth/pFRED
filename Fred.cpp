@@ -10,22 +10,14 @@
 //
 
 #include "Fred.hpp"
+#include "Global.cpp"
+#include "Disease.hpp"
+#include "Population.hpp"
+#include "Locations.hpp"
+#include "Params.hpp"
+#include "Random.hpp"
 
-// global runtime parameters
-int Verbose;
-int Test;
-int Runs;
-int Days;
-unsigned long Seed;
-int Start_day;
-char Outfilebase[80];
-char Tracefilebase[80];
 char Paramfile[80];
-
-// global file pointers
-FILE *Statusfp;
-FILE *Outfp;
-FILE *Tracefp;
 
 int main(int argc, char* argv[])
 {
@@ -51,27 +43,17 @@ int main(int argc, char* argv[])
   return 0;
 }
 
-void get_global_parameters() {
-  get_param((char *) "verbose", &Verbose);
-  get_param((char *) "test", &Test);
-  get_param((char *) "runs", &Runs);
-  get_param((char *) "days", &Days);
-  get_param((char *) "seed", &Seed);
-  get_param((char *) "outfile", Outfilebase);
-  get_param((char *) "tracefile", Tracefilebase);
-}
-
 void setup(char *paramfile) {
   read_parameters(paramfile);
   get_global_parameters();
-  get_population_parameters();
-  get_disease_parameters();
-  get_location_parameters();
-  setup_diseases(Verbose);
-  setup_locations();
-  setup_population();
-  population_quality_control();
-  location_quality_control();
+  Pop.get_population_parameters();
+  Disease::get_disease_parameters();
+  Loc.get_location_parameters();
+  Disease::setup_diseases(Verbose);
+  Loc.setup_locations();
+  Pop.setup_population();
+  Pop.population_quality_control();
+  Loc.location_quality_control();
 }
 
 void run_sim(int run) {
@@ -92,30 +74,27 @@ void run_sim(int run) {
     abort();
   }
 
-
   fprintf(Statusfp, "\nStarting run %d\n", run);
-
   // allow us to replicate individual runs
   if (run > 0) { new_seed = Seed * 100 + run; }
   else { new_seed = Seed; }
-
   fprintf(Statusfp, "seed = %lu\n", new_seed);
   INIT_RANDOM(new_seed);
-
-  reset_locations(run);
-  reset_population(run);
+  Loc.reset_locations(run);
+  Pop.reset_population(run);
   // start on a random day of the week
   Start_day = IRAND(0, 6);
-  start_outbreak();
+  Pop.start_outbreak();
   for (int day = 0; day < Days; day++) {
     printf("================\nsim day = %d\n", day); fflush(stdout);
-    update_exposed_population(day);
-    update_infectious_population(day);
-    process_infectious_locations(day);
-    update_population_stats(day);
-    print_population_stats(day);
+    Pop.update_exposed_population(day);
+    Pop.update_infectious_population(day);
+    Pop.update_population_behaviors(day);
+    Loc.process_infectious_locations(day);
+    Pop.update_population_stats(day);
+    Pop.print_population_stats(day);
   }
-  // print_population();
+  // Pop.print_population();
   fclose(Outfp);
   fclose(Tracefp);
 }

@@ -12,14 +12,9 @@
 #ifndef _FRED_OFFICE_H
 #define _FRED_OFFICE_H
 
-
 #include "Place.hpp"
 
-// From Disease.hpp
-int get_diseases();
-
 class Office: public Place {
-
 public: 
   Office() {}
   ~Office() {}

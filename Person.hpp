@@ -22,16 +22,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "Loc.hpp"
-
-// From Disease.hpp
-int get_diseases();
-double get_prob_symptomatic(int dis);
-int get_days_latent(int dis);
-int get_days_infectious(int dis);
-
-// From Loc.hpp
-int is_visited(int,int,int);
 
 class Person {
   int id;
@@ -83,6 +73,8 @@ public:
   void make_exposed(int d, int person_id, int loc, char place_type, int day);
   void make_infectious(int d);
   void make_recovered(int d);
+  void behave(int day);
+  int is_symptomatic();
 
   // access functions:
   int get_id() { return id; }

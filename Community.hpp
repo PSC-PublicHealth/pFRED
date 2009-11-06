@@ -12,17 +12,10 @@
 #ifndef _FRED_COMMUNITY_H
 #define _FRED_COMMUNITY_H
 
-
 #include "Place.hpp"
-int get_age(int);
-
-// From Disease.hpp
-int get_diseases();
 
 class Community : public Place {
-
 public: 
-
   Community() {};
   ~Community() {};
   Community(int,char*,double,double,int);
@@ -30,7 +23,6 @@ public:
   int get_group_type(int dis, int per);
   double get_transmission_prob(int dis, int i, int s);
   double get_contacts_per_day(int dis);
-
 };
 
 #endif // _FRED_COMMUNITY_H
