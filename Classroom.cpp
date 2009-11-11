@@ -10,8 +10,10 @@
 //
 
 #include "Classroom.hpp"
+#include "Global.hpp"
+#include "Params.hpp"
+#include "Random.hpp"
 #include "Population.hpp"
-#include "Locations.hpp"
 #include "Disease.hpp"
 
 double * Classroom_contacts_per_day;

@@ -60,6 +60,7 @@ void Population::setup_population() {
     exposed[d].clear();
     infectious[d].clear();
     attack_rate[d] = 0.0;
+    S[d] = E[d] = I[d] = R[d] = 0;
   }
 
   read_profiles(profilefile);
@@ -173,6 +174,7 @@ void Population::start_outbreak() {
     int n = IRAND(0, pop_size-1);
     pop[n].make_exposed(0, -1, -1, 'X', 0);
   }
+  E[0] = index_cases;
 }
 
 void Population::reset_population(int run) {
@@ -188,6 +190,7 @@ void Population::reset_population(int run) {
     exposed[d].clear();
     infectious[d].clear();
     attack_rate[d] = 0.0;
+    S[d] = E[d] = I[d] = R[d] = 0;
   }
 
   // add each person to the susceptible list for each place visited
@@ -401,4 +404,3 @@ void Population::get_schedule(int per, int *n, int *schedule) {
 double Population::get_attack_rate(int dis) {
   return attack_rate[dis];
 }
-

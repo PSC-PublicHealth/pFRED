@@ -5,8 +5,6 @@
 
 #include "Global.hpp"
 #include "Params.hpp"
-#include "Population.hpp"
-#include "Locations.hpp"
 
 // global runtime parameters
 int Verbose;
@@ -33,6 +31,7 @@ void get_global_parameters() {
   get_param((char *) "runs", &Runs);
   get_param((char *) "days", &Days);
   get_param((char *) "seed", &Seed);
+  get_param((char *) "start_day", &Start_day);
   get_param((char *) "outfile", Outfilebase);
   get_param((char *) "tracefile", Tracefilebase);
 }

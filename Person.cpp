@@ -18,8 +18,6 @@
 #include "Place.hpp"
 #include "Locations.hpp"
 
-double Prob_stay_home_if_sick = 0.5;
-
 void Person::setup(int i, int a, char g, int m, int o, int p, int h,
 		   int n, int s, int c, int w, int off, int pro) 
 {
@@ -175,12 +173,15 @@ void Person::make_susceptible() {
     infectees[d] = 0;
     susceptibility[d] = 1.0;
     infectivity[d] = 0.0;
+    role[d] = NO_ROLE;
 
     for (int p = 0; p < favorite_places; p++) {
       if (favorite_place[p] == -1) continue;
       Loc.add_susceptible_to_place(favorite_place[p], d, id);
     }
   }
+  schedule_updated = -1;
+  scheduled_places = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -271,15 +272,15 @@ void Person::update_schedule(int day) {
 
     // probably stay at home if symptomatic
     if (is_symptomatic()) {
-      if (RANDOM() < Prob_stay_home_if_sick) {
+      if (RANDOM() < Disease::get_prob_stay_home()) {
 	scheduled_places = 1;
 	schedule[0] = favorite_place[0];
 	on_schedule[0] = 1;
       }
     }
 
-    // if not staying home, decide if traveling
 #if NOT_IMPLEMENTED
+    // if not staying home, decide if traveling
     if (scheduled_places == 0) {
       if (is_traveling(profile, day_of_week)) {
 	// pick a favorite destination

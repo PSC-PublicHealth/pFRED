@@ -10,9 +10,12 @@
 //
 
 #include "Hospital.hpp"
+#include "Global.hpp"
+#include "Params.hpp"
+#include "Random.hpp"
 #include "Population.hpp"
-#include "Person.hpp"
 #include "Disease.hpp"
+#include "Person.hpp"
 
 double * Hospital_contacts_per_day;
 double *** Hospital_contact_prob;

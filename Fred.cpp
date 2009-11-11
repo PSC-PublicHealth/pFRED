@@ -18,9 +18,11 @@
 #include "Random.hpp"
 
 char Paramfile[80];
+int Random_start_day;
 
 int main(int argc, char* argv[])
 {
+  time_t clock;		      // current date
   if (argc > 1) {
     strcpy(Paramfile, argv[1]);
   }
@@ -35,6 +37,10 @@ int main(int argc, char* argv[])
   // Statusfp = fopen(filename, "w");
   Statusfp = stdout;
 
+  fprintf(Statusfp, "FRED started  ");
+  time(&clock);
+  fprintf(Statusfp, "%s", ctime(&clock));
+
   setup(Paramfile);
   for (int run = 0; run < Runs; run++) {
     run_sim(run);
@@ -46,6 +52,7 @@ int main(int argc, char* argv[])
 void setup(char *paramfile) {
   read_parameters(paramfile);
   get_global_parameters();
+  Random_start_day = (Start_day > 6);
   Pop.get_population_parameters();
   Disease::get_disease_parameters();
   Loc.get_location_parameters();
@@ -59,6 +66,7 @@ void setup(char *paramfile) {
 void run_sim(int run) {
   char filename[80];
   unsigned long new_seed;
+  time_t clock;		      // current date
 
   sprintf(filename, "%s%d.txt", Outfilebase, run+1);
   Outfp = fopen(filename, "w");
@@ -75,6 +83,10 @@ void run_sim(int run) {
   }
 
   fprintf(Statusfp, "\nStarting run %d\n", run);
+  fprintf(Statusfp, "FRED started  ");
+  time(&clock);
+  fprintf(Statusfp, "%s", ctime(&clock));
+
   // allow us to replicate individual runs
   if (run > 0) { new_seed = Seed * 100 + run; }
   else { new_seed = Seed; }
@@ -82,8 +94,10 @@ void run_sim(int run) {
   INIT_RANDOM(new_seed);
   Loc.reset_locations(run);
   Pop.reset_population(run);
-  // start on a random day of the week
-  Start_day = IRAND(0, 6);
+  if (Random_start_day) {
+    // start on a random day of the week
+    Start_day = IRAND(0, 6);
+  }
   Pop.start_outbreak();
   for (int day = 0; day < Days; day++) {
     printf("================\nsim day = %d\n", day); fflush(stdout);
@@ -93,6 +107,9 @@ void run_sim(int run) {
     Loc.process_infectious_locations(day);
     Pop.update_population_stats(day);
     Pop.print_population_stats(day);
+    fprintf(Statusfp, "day %d finished  ", day);
+    time(&clock);
+    fprintf(Statusfp, "%s", ctime(&clock));
   }
   // Pop.print_population();
   fclose(Outfp);

@@ -30,6 +30,7 @@ public:
   static double get_prob_symptomatic(int dis);
   static int get_days_latent(int dis);
   static int get_days_infectious(int dis);
+  static double get_prob_stay_home();
 
 private:
   int id;

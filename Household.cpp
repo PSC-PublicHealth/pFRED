@@ -10,9 +10,11 @@
 //
 
 #include "Household.hpp"
+#include "Global.hpp"
+#include "Params.hpp"
+#include "Random.hpp"
 #include "Population.hpp"
 #include "Disease.hpp"
-
 
 double * Household_contacts_per_day;
 double *** Household_contact_prob;

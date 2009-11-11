@@ -26,6 +26,7 @@
 #include "Neighborhood.hpp"
 #include "Household.hpp"
 #include "Hospital.hpp"
+#include "Params.hpp"
 
 void Locations::get_location_parameters() {
 }

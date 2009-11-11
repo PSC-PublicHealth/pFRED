@@ -20,7 +20,7 @@ using namespace std;
 
 Disease *Dis;
 int Diseases;
-
+double Prob_stay_home;
 
 void Disease::setup(int dis) {
   char s[80];
@@ -47,7 +47,6 @@ void Disease::setup(int dis) {
   get_param(s, &n);
   days_infectious = new double [n];
   max_days_infectious = get_param_vector(s, days_infectious) -1;
-
 }
 
 void Disease::print() {
@@ -79,6 +78,7 @@ int Disease::get_days_infectious() {
 // static
 void Disease::get_disease_parameters() {
   get_param((char *) "diseases", &Diseases);
+  get_param((char *) "prob_stay_home", &Prob_stay_home);
 }
 
 // static
@@ -125,3 +125,6 @@ int Disease::get_days_latent(int dis) { return Dis[dis].get_days_latent(); }
 
 // static
 int Disease::get_days_infectious(int dis) {  return Dis[dis].get_days_infectious(); }
+
+// static
+double Disease::get_prob_stay_home() { return Prob_stay_home; }

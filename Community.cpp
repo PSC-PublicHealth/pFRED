@@ -10,6 +10,9 @@
 //
 
 #include "Community.hpp"
+#include "Global.hpp"
+#include "Params.hpp"
+#include "Random.hpp"
 #include "Population.hpp"
 #include "Disease.hpp"
 

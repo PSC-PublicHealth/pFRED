@@ -29,9 +29,12 @@ extern FILE *Outfp;
 extern FILE *Tracefp;
 
 // global singleton objects
-class Population;
+#include "Population.hpp"
+// class Population;
 extern Population Pop;
-class Locations;
+
+#include "Locations.hpp"
+// class Locations;
 extern Locations Loc;
 
 void get_global_parameters();

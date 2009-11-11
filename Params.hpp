@@ -16,9 +16,6 @@
 #include <string.h>
 #include <string>
 
-#define MAX_PARAMS 1000
-#define MAX_PARAM_SIZE 1024
-
 int get_param(char *s, int *p);
 int get_param(char *s, unsigned long *p);
 int get_param(char *s, double *p);

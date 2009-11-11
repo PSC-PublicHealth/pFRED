@@ -10,9 +10,11 @@
 //
 
 #include "Place.hpp"
+#include "Global.hpp"
+#include "Params.hpp"
+#include "Random.hpp"
 #include "Population.hpp"
 #include "Disease.hpp"
-#include "Locations.hpp"
 
 void Place::setup(int loc, char *lab, double lon, double lat, int cont) {
 
@@ -74,9 +76,8 @@ void Place::reset() {
 }
 
 void Place::print(int dis) {
-  printf("Place %d label %s type %c\n", id, label, type);
-  //   printf("contacts %d contact_p %f S %d I %d N %d\n",
-  // contacts_per_day[dis], contact_prob[dis], S[dis], I[dis], N);
+  printf("Place %d label %s type %c ", id, label, type);
+  printf("S %d I %d N %d\n", S[dis], I[dis], N);
   fflush(stdout);
 }
 
@@ -168,6 +169,8 @@ void Place::spread_infection(int day) {
     for (itr = infectious[d].begin(); itr != infectious[d].end(); itr++) {
       int i = *itr;				// infectious indiv
 
+      if (Verbose > 1) { printf("infectious %d here?\n", i); }
+
       // skip if this infected did not visit today
       if (!Pop.is_place_on_schedule_for_person(i, day, id)) continue;
 
@@ -176,23 +179,27 @@ void Place::spread_infection(int day) {
       // reduce number of infective contact events by my infectivity
       double my_contacts = contacts * Pop.get_infectivity(i,d);
       if (Verbose > 1) {
+	printf("infectivity = %f\n", Pop.get_infectivity(i,d));
 	printf("my effective contacts = %f\n", my_contacts);
 	fflush(stdout);
       }
 
       // randomly round off the expected value of the contact counts
       int contact_count = (int) my_contacts;
-      if (RANDOM() < my_contacts - contact_count) contact_count++;
+      double r = RANDOM();
+      if (r < my_contacts - contact_count) contact_count++;
       if (Verbose > 1) {
-	printf("my contact_count = %d\n", contact_count);
+	printf("my contact_count = %d  r = %f\n", contact_count, r);
 	fflush(stdout);
       }
 
       // get susceptible target for each contact resulting in infection
       for (int c = 0; c < contact_count; c++) {
-	int pos = IRAND(0, S[d]-1);
+	double r = RANDOM();
+	// int pos = IRAND(0, S[d]-1);
+	int pos = (int) (r*S[d]);
 	int s = susceptibles[d][pos];
-	if (Verbose > 1) { printf("my possible victim = %d\n",s); }
+	if (Verbose > 1) { printf("my possible victim = %d  r = %f  pos = %d  S[d] = %d\n",s, r, pos, S[d]); }
 
 	// is the victim here today, and still susceptible?
 	if (Pop.is_place_on_schedule_for_person(s,day,id) && Pop.get_disease_status(s,d) == 'S') {
@@ -203,8 +210,9 @@ void Place::spread_infection(int day) {
 	  // get the victim's susceptibility
 	  double susceptibility = Pop.get_susceptibility(s,d);
 
-	  if (RANDOM() < transmission_prob*susceptibility) {
-	    if (Verbose > 1) { printf("infection from %d to %d\n",i,s); }
+	  double r = RANDOM();
+	  if (r < transmission_prob*susceptibility) {
+	    if (Verbose > 1) { printf("infection from %d to %d  r = %f\n",i,s,r); }
 	    Pop.make_exposed(s, d, i, id, type, day);
 	    Pop.add_infectee(i,d);
 	  }

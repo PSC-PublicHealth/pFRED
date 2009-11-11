@@ -11,6 +11,9 @@
 
 #include "Params.hpp"
 
+#define MAX_PARAMS 1000
+#define MAX_PARAM_SIZE 1024
+
 char Param_name[MAX_PARAMS][MAX_PARAM_SIZE];
 char Param_value[MAX_PARAMS][MAX_PARAM_SIZE];
 int Params;

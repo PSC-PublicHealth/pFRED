@@ -16,9 +16,6 @@
 #include <iostream>
 #include <stdio.h>
 using namespace std;
-#include "Global.hpp"
-#include "Params.hpp"
-#include "Random.hpp"
 
 #define HOUSEHOLD 'H'
 #define NEIGHBORHOOD 'N'
