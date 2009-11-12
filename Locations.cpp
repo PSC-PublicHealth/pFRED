@@ -154,7 +154,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     int count[20];
     int total = 0;
-    // size straintribution of households
+    // size distribution of households
     for (int c = 0; c < 15; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == HOUSEHOLD) {
@@ -164,7 +164,7 @@ void Locations::location_quality_control() {
 	total++;
       }
     }
-    fprintf(Statusfp, "\nHousehold size straintribution: %d households\n", total);
+    fprintf(Statusfp, "\nHousehold size distribution: %d households\n", total);
     for (int c = 0; c < 15; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     c, count[c], (100.0*count[c])/total);
@@ -175,7 +175,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     int count[20];
     int total = 0;
-    // size straintribution of schools
+    // size distribution of schools
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == SCHOOL) {
@@ -186,7 +186,7 @@ void Locations::location_quality_control() {
 	total++;
       }
     }
-    fprintf(Statusfp, "\nSchool size straintribution: %d schools\n", total);
+    fprintf(Statusfp, "\nSchool size distribution: %d schools\n", total);
     for (int c = 0; c < 20; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     (c+1)*50, count[c], (100.0*count[c])/total);
@@ -197,7 +197,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     int count[50];
     int total = 0;
-    // size straintribution of classrooms
+    // size distribution of classrooms
     for (int c = 0; c < 50; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == CLASSROOM) {
@@ -208,7 +208,7 @@ void Locations::location_quality_control() {
 	total++;
       }
     }
-    fprintf(Statusfp, "\nClassroom size straintribution: %d classrooms\n", total);
+    fprintf(Statusfp, "\nClassroom size distribution: %d classrooms\n", total);
     for (int c = 0; c < 50; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     c, count[c], (100.0*count[c])/total);
@@ -219,7 +219,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     int count[20];
     int total = 0;
-    // size straintribution of workplaces
+    // size distribution of workplaces
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == WORKPLACE) {
@@ -230,7 +230,7 @@ void Locations::location_quality_control() {
 	total++;
       }
     }
-    fprintf(Statusfp, "\nWorkplace size straintribution: %d workplaces\n", total);
+    fprintf(Statusfp, "\nWorkplace size distribution: %d workplaces\n", total);
     for (int c = 0; c < 20; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     (c+1)*50, count[c], (100.0*count[c])/total);
@@ -241,7 +241,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     int count[60];
     int total = 0;
-    // size straintribution of offices
+    // size distribution of offices
     for (int c = 0; c < 60; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == OFFICE) {
@@ -252,7 +252,7 @@ void Locations::location_quality_control() {
 	total++;
       }
     }
-    fprintf(Statusfp, "\nOffice size straintribution: %d offices\n", total);
+    fprintf(Statusfp, "\nOffice size distribution: %d offices\n", total);
     for (int c = 0; c < 60; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     c, count[c], (100.0*count[c])/total);

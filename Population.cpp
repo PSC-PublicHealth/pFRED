@@ -144,7 +144,7 @@ void Population::population_quality_control() {
   if (Verbose) {
     int count[20];
     int total = 0;
-    // age straintribution
+    // age distribution
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int p = 0; p < pop_size; p++) {
       int a = pop[p].get_age();
@@ -153,7 +153,7 @@ void Population::population_quality_control() {
       else { count[19]++; }
       total++;
     }
-    fprintf(Statusfp, "\nAge straintribution: %d people\n", total);
+    fprintf(Statusfp, "\nAge distribution: %d people\n", total);
     for (int c = 0; c < 20; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     (c+1)*5, count[c], (100.0*count[c])/total);

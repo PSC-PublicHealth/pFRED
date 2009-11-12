@@ -64,13 +64,13 @@ void Strain::print() {
 
 int Strain::get_days_latent() {
   int days = 0;
-  days = draw_from_straintribution(max_days_latent, days_latent);
+  days = draw_from_distribution(max_days_latent, days_latent);
   return days;
 }
 
 int Strain::get_days_infectious() {
   int days = 0;
-  days = draw_from_straintribution(max_days_infectious, days_infectious);
+  days = draw_from_distribution(max_days_infectious, days_infectious);
   return days;
 }
 
@@ -95,14 +95,14 @@ void Strain::setup_strains(int verbose) {
 }
 
 // static
-int Strain::draw_from_straintribution(int n, double *straint) {
+int Strain::draw_from_distribution(int n, double *straint) {
   double r = RANDOM();
   int i = 0;
   while (i <= n && straint[i] < r) { i++; }
   if (i <= n) { return i; }
   else {
-    printf("Help! draw from straintribution failed.\n");
-    printf("Is straintribution properly formed? (should end with 1.0)\n");
+    printf("Help! draw from distribution failed.\n");
+    printf("Is distribution properly formed? (should end with 1.0)\n");
     for (int i = 0; i <= n; i++) {
       printf("%f ", straint[i]);
     }
