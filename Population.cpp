@@ -16,7 +16,7 @@
 #include "Params.hpp"
 #include "Profile.hpp"
 #include <new>
-#include "Disease.hpp"
+#include "Strain.hpp"
 #include "Global.hpp"
 
 
@@ -33,30 +33,30 @@ void Population::setup_population() {
     fflush(Statusfp);
   }
 
-  int diseases = Disease::get_diseases();
-  exposed = new (nothrow) set <int> [diseases];
+  int strains = Strain::get_strains();
+  exposed = new (nothrow) set <int> [strains];
   if (exposed == NULL) { printf("Help! exposed allocation failure\n"); abort(); }
 
-  infectious = new (nothrow) set <int> [diseases];
+  infectious = new (nothrow) set <int> [strains];
   if (infectious == NULL) { printf("Help! infectious allocation failure\n"); abort(); }
 
-  S = new (nothrow) int  [diseases];
+  S = new (nothrow) int  [strains];
   if (S == NULL) { printf("Help! S allocation failure\n"); abort(); }
 
-  E = new (nothrow) int  [diseases];
+  E = new (nothrow) int  [strains];
   if (E == NULL) { printf("Help! E allocation failure\n"); abort(); }
 
-  I = new (nothrow) int  [diseases];
+  I = new (nothrow) int  [strains];
   if (I == NULL) { printf("Help! I allocation failure\n"); abort(); }
 
-  R = new (nothrow) int  [diseases];
+  R = new (nothrow) int  [strains];
   if (R == NULL) { printf("Help! R allocation failure\n"); abort(); }
 
-  attack_rate = new (nothrow) double  [diseases];
+  attack_rate = new (nothrow) double  [strains];
   if (attack_rate == NULL) { printf("Help! attack_rate allocation failure\n"); abort(); }
 
-  // init population-disease lists
-  for (int d = 0; d < diseases; d++) {
+  // init population-strain lists
+  for (int d = 0; d < strains; d++) {
     exposed[d].clear();
     infectious[d].clear();
     attack_rate[d] = 0.0;
@@ -144,7 +144,7 @@ void Population::population_quality_control() {
   if (Verbose) {
     int count[20];
     int total = 0;
-    // age distribution
+    // age straintribution
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int p = 0; p < pop_size; p++) {
       int a = pop[p].get_age();
@@ -153,7 +153,7 @@ void Population::population_quality_control() {
       else { count[19]++; }
       total++;
     }
-    fprintf(Statusfp, "\nAge distribution: %d people\n", total);
+    fprintf(Statusfp, "\nAge straintribution: %d people\n", total);
     for (int c = 0; c < 20; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     (c+1)*5, count[c], (100.0*count[c])/total);
@@ -184,9 +184,9 @@ void Population::reset_population(int run) {
     fflush(Statusfp);
   }
 
-  // init population-disease lists
-  int diseases = Disease::get_diseases();
-  for (int d = 0; d < diseases; d++) {
+  // init population-strain lists
+  int strains = Strain::get_strains();
+  for (int d = 0; d < strains; d++) {
     exposed[d].clear();
     infectious[d].clear();
     attack_rate[d] = 0.0;
@@ -214,8 +214,8 @@ void Population::update_exposed_population(int day) {
     fflush(Statusfp);
   }
 
-  int diseases = Disease::get_diseases();
-  for (int d = 0; d < diseases; d++) {
+  int strains = Strain::get_strains();
+  for (int d = 0; d < strains; d++) {
 
     for (it = exposed[d].begin(); it != exposed[d].end(); it++) {
       p = *it;
@@ -226,7 +226,7 @@ void Population::update_exposed_population(int day) {
 
     if (Verbose > 1) {
       fprintf(Statusfp,
-	      "update_the_exposed: new infectious for day %d disease %d = %d\n",
+	      "update_the_exposed: new infectious for day %d strain %d = %d\n",
 	      day, d, (int) TempList.size());
       fflush(Statusfp);
     }
@@ -250,8 +250,8 @@ void Population::update_infectious_population(int day) {
     fflush(Statusfp);
   }
 
-  int diseases = Disease::get_diseases();
-  for (int d = 0; d < diseases; d++) {
+  int strains = Strain::get_strains();
+  for (int d = 0; d < strains; d++) {
 
     for (it = infectious[d].begin(); it != infectious[d].end(); it++) {
       p = *it;
@@ -292,11 +292,11 @@ void Population::update_population_stats(int day) {
     fflush(Statusfp);
   }
 
-  int diseases = Disease::get_diseases();
-  for (int d = 0; d < diseases; d++) {
+  int strains = Strain::get_strains();
+  for (int d = 0; d < strains; d++) {
     S[d] = E[d] = I[d] = R[d] = 0;
     for (int p = 0; p < pop_size; p++) {
-      char status = pop[p].get_disease_status(d);
+      char status = pop[p].get_strain_status(d);
       S[d] += (status == 'S');
       E[d] += (status == 'E');
       I[d] += (status == 'I') || (status == 'i');
@@ -313,17 +313,17 @@ void Population::print_population_stats(int day) {
     fflush(Statusfp);
   }
 
-  int diseases = Disease::get_diseases();
-  for (int d = 0; d < diseases; d++) {
+  int strains = Strain::get_strains();
+  for (int d = 0; d < strains; d++) {
     int N = S[d]+E[d]+I[d]+R[d];
     fprintf(Outfp,
-	    "Day %3d  Dis %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n",
+	    "Day %3d  Str %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n",
 	    day, d, S[d], E[d], I[d], R[d], N, attack_rate[d]);
     fflush(Outfp);
 
     if (Verbose) {
       fprintf(Statusfp,
-	      "Day %3d  Dis %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n\n",
+	      "Day %3d  Str %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n\n",
 	      day, d, S[d], E[d], I[d], R[d], N, attack_rate[d]);
       fflush(Statusfp);
     }
@@ -336,27 +336,27 @@ void Population::print_population() {
   }
 }
 
-void Population::insert_into_exposed_list(int dis, int per) {
-  exposed[dis].insert(per);
+void Population::insert_into_exposed_list(int strain, int per) {
+  exposed[strain].insert(per);
 }
 
-void Population::insert_into_infectious_list(int dis, int per) {
-  infectious[dis].insert(per);
+void Population::insert_into_infectious_list(int strain, int per) {
+  infectious[strain].insert(per);
 }
 
-void Population::remove_from_exposed_list(int dis, int per) {
-  exposed[dis].erase(per);
+void Population::remove_from_exposed_list(int strain, int per) {
+  exposed[strain].erase(per);
 }
 
-void Population::remove_from_infectious_list(int dis, int per) {
+void Population::remove_from_infectious_list(int strain, int per) {
   if (Verbose > 2) {
     printf("remove from infectious list person %d\n", per);
-    printf("current size of infectious list = %d\n", (int) infectious[dis].size());
+    printf("current size of infectious list = %d\n", (int) infectious[strain].size());
     fflush(stdout);
   }
-  infectious[dis].erase(per);
+  infectious[strain].erase(per);
   if (Verbose > 2) {
-    printf("final size of infectious list = %d\n", (int) infectious[dis].size());
+    printf("final size of infectious list = %d\n", (int) infectious[strain].size());
     fflush(stdout);
   }
 }
@@ -365,32 +365,32 @@ int Population::get_age(int per) {
   return pop[per].get_age();
 }
 
-int Population::get_role(int per, int dis) {
-  return pop[per].get_role(dis);
+int Population::get_role(int per, int strain) {
+  return pop[per].get_role(strain);
 }
 
-char Population::get_disease_status(int per, int dis) {
-  return pop[per].get_disease_status(dis);
+char Population::get_strain_status(int per, int strain) {
+  return pop[per].get_strain_status(strain);
 }
 
 int Population::is_place_on_schedule_for_person(int per, int day, int loc) {
   return pop[per].is_on_schedule(day, loc);
 }
 
-double Population::get_infectivity(int per, int dis) {
-  return pop[per].get_infectivity(dis);
+double Population::get_infectivity(int per, int strain) {
+  return pop[per].get_infectivity(strain);
 }
 
-double Population::get_susceptibility(int per, int dis) {
-  return pop[per].get_susceptibility(dis);
+double Population::get_susceptibility(int per, int strain) {
+  return pop[per].get_susceptibility(strain);
 }
 
-void Population::make_exposed(int per, int dis, int infector, int loc, char type, int day) {
-  pop[per].make_exposed(dis, infector, loc, type, day);
+void Population::make_exposed(int per, int strain, int infector, int loc, char type, int day) {
+  pop[per].make_exposed(strain, infector, loc, type, day);
 }
 
-void Population::add_infectee(int per, int dis) {
-  pop[per].add_infectee(dis);
+void Population::add_infectee(int per, int strain) {
+  pop[per].add_infectee(strain);
 }
 
 void Population::update_schedule(int per, int day) {
@@ -401,6 +401,6 @@ void Population::get_schedule(int per, int *n, int *schedule) {
   pop[per].get_schedule(n, schedule);
 }
 
-double Population::get_attack_rate(int dis) {
-  return attack_rate[dis];
+double Population::get_attack_rate(int strain) {
+  return attack_rate[strain];
 }

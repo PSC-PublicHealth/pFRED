@@ -6,13 +6,13 @@
 
 //
 //
-// File: Disease.hpp
+// File: Strain.hpp
 //
 
-#ifndef _FRED_DISEASE_H
-#define _FRED_DISEASE_H
+#ifndef _FRED_STRAIN_H
+#define _FRED_STRAIN_H
 
-class Disease {
+class Strain {
 public:
   void setup(int i);
   void print();
@@ -22,14 +22,14 @@ public:
   double get_transmissibility() { return transmissibility; };
   double get_prob_symptomatic() { return prob_symptomatic; };
 
-  static void get_disease_parameters();
-  static void setup_diseases(int verbose);
-  static int draw_from_distribution(int n, double *dist);
-  static int get_diseases();
-  static double get_beta(int dis);
-  static double get_prob_symptomatic(int dis);
-  static int get_days_latent(int dis);
-  static int get_days_infectious(int dis);
+  static void get_strain_parameters();
+  static void setup_strains(int verbose);
+  static int draw_from_straintribution(int n, double *straint);
+  static int get_strains();
+  static double get_beta(int strain);
+  static double get_prob_symptomatic(int strain);
+  static int get_days_latent(int strain);
+  static int get_days_infectious(int strain);
   static double get_prob_stay_home();
 
 private:
@@ -47,4 +47,4 @@ private:
   
 
 
-#endif // _FRED_DISEASE_H
+#endif // _FRED_STRAIN_H

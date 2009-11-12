@@ -14,7 +14,7 @@
 #include "Params.hpp"
 #include "Random.hpp"
 #include "Population.hpp"
-#include "Disease.hpp"
+#include "Strain.hpp"
 
 double * Office_contacts_per_day;
 double *** Office_contact_prob;
@@ -23,18 +23,18 @@ int Office_parameters_set = 0;
 Office::Office(int loc, char *lab, double lon, double lat, int container) {
   type = OFFICE;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Disease::get_diseases());
+  get_parameters(Strain::get_strains());
 }
 
-void Office::get_parameters(int diseases) {
+void Office::get_parameters(int strains) {
   char param_str[80];
 
   if (Office_parameters_set) return;
 
-  Office_contacts_per_day = new double [ diseases ];
-  Office_contact_prob = new double** [ diseases ];
+  Office_contacts_per_day = new double [ strains ];
+  Office_contact_prob = new double** [ strains ];
 
-  for (int d = 0; d < diseases; d++) {
+  for (int d = 0; d < strains; d++) {
     int n;
     sprintf(param_str, "office_contacts[%d]", d);
     get_param((char *) param_str, &Office_contacts_per_day[d]);
@@ -72,22 +72,21 @@ void Office::get_parameters(int diseases) {
   Office_parameters_set = 1;
 }
 
-int Office::get_group_type(int dis, int per) {
+int Office::get_group_type(int strain, int per) {
   return 0;
 }
 
-double Office::get_transmission_prob(int dis, int i, int s) {
-  // dis = disease
+double Office::get_transmission_prob(int strain, int i, int s) {
   // i = infected agent
   // s = susceptible agent
-  int row = get_group_type(dis, i);
-  int col = get_group_type(dis, s);
-  double tr_pr = Office_contact_prob[dis][row][col];
+  int row = get_group_type(strain, i);
+  int col = get_group_type(strain, s);
+  double tr_pr = Office_contact_prob[strain][row][col];
   return tr_pr;
 }
 
-double Office::get_contacts_per_day(int dis) {
-  return Office_contacts_per_day[dis];
+double Office::get_contacts_per_day(int strain) {
+  return Office_contacts_per_day[strain];
 }
 
 

@@ -14,7 +14,7 @@
 #include "Params.hpp"
 #include "Random.hpp"
 #include "Population.hpp"
-#include "Disease.hpp"
+#include "Strain.hpp"
 
 double * Classroom_contacts_per_day;
 double *** Classroom_contact_prob;
@@ -29,19 +29,19 @@ int Classroom_parameters_set = 0;
 Classroom::Classroom(int loc, char *lab, double lon, double lat, int container) {
   type = CLASSROOM;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Disease::get_diseases());
+  get_parameters(Strain::get_strains());
 }
 
 
-void Classroom::get_parameters(int diseases) {
+void Classroom::get_parameters(int strains) {
   char param_str[80];
 
   if (Classroom_parameters_set) return;
 
-  Classroom_contacts_per_day = new double [ diseases ];
-  Classroom_contact_prob = new double** [ diseases ];
+  Classroom_contacts_per_day = new double [ strains ];
+  Classroom_contact_prob = new double** [ strains ];
 
-  for (int d = 0; d < diseases; d++) {
+  for (int d = 0; d < strains; d++) {
     int n;
     sprintf(param_str, "classroom_contacts[%d]", d);
     get_param((char *) param_str, &Classroom_contacts_per_day[d]);
@@ -79,7 +79,7 @@ void Classroom::get_parameters(int diseases) {
   Classroom_parameters_set = 1;
 }
 
-int Classroom::get_group_type(int dis, int per) {
+int Classroom::get_group_type(int strain, int per) {
   int age = Pop.get_age(per);
   if (age <12) { return 0; }
   else if (age < 16) { return 1; }
@@ -87,21 +87,20 @@ int Classroom::get_group_type(int dis, int per) {
   else return 3;
 }
 
-double Classroom::get_transmission_prob(int dis, int i, int s) {
-  // dis = disease
+double Classroom::get_transmission_prob(int strain, int i, int s) {
   // i = infected agent
   // s = susceptible agent
-  int row = get_group_type(dis, i);
-  int col = get_group_type(dis, s);
-  double tr_pr = Classroom_contact_prob[dis][row][col];
+  int row = get_group_type(strain, i);
+  int col = get_group_type(strain, s);
+  double tr_pr = Classroom_contact_prob[strain][row][col];
   return tr_pr;
 }
 
-int Classroom::should_be_open(int day, int dis) {
-  return Loc.location_should_be_open(container, day, dis);
+int Classroom::should_be_open(int day, int strain) {
+  return Loc.location_should_be_open(container, day, strain);
 }
 
-double Classroom::get_contacts_per_day(int dis) {
-  return Classroom_contacts_per_day[dis];
+double Classroom::get_contacts_per_day(int strain) {
+  return Classroom_contacts_per_day[strain];
 }
 

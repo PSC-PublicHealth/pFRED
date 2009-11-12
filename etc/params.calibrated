@@ -1,4 +1,4 @@
-diseases = 1
+strains = 1
 days = 240
 seed = 123456
 runs = 10

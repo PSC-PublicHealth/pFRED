@@ -13,7 +13,7 @@
 #include "Global.hpp"
 #include "Profile.hpp"
 #include "Population.hpp"
-#include "Disease.hpp"
+#include "Strain.hpp"
 #include "Random.hpp"
 #include "Place.hpp"
 #include "Locations.hpp"
@@ -39,86 +39,86 @@ void Person::setup(int i, int a, char g, int m, int o, int p, int h,
   schedule_updated = -1;
   scheduled_places = 0;
 
-  int diseases = Disease::get_diseases();
-  disease_status = new (nothrow) char [diseases];
-  if (disease_status == NULL) {
-    printf("Help! disease_status allocation failure for Person %d\n", id);
+  int strains = Strain::get_strains();
+  strain_status = new (nothrow) char [strains];
+  if (strain_status == NULL) {
+    printf("Help! strain_status allocation failure for Person %d\n", id);
     abort();
   }
 
-  latent_period = new (nothrow) int [diseases];
+  latent_period = new (nothrow) int [strains];
   if (latent_period == NULL) {
     printf("Help! latent_period allocation failure for Person %d\n", id);
     abort();
   }
 
-  infectious_period = new (nothrow) int [diseases];
+  infectious_period = new (nothrow) int [strains];
   if (infectious_period == NULL) {
     printf("Help! infectious_period allocation failure for Person %d\n", id);
     abort();
   }
 
-  exposure_date = new (nothrow) int [diseases];
+  exposure_date = new (nothrow) int [strains];
   if (exposure_date == NULL) {
     printf("Help! exposure_date allocation failure for Person %d\n", id);
     abort();
   }
 
-  infectious_date = new (nothrow) int [diseases];
+  infectious_date = new (nothrow) int [strains];
   if (infectious_date == NULL) {
     printf("Help! infectious_date allocation failure for Person %d\n", id);
     abort();
   }
 
-  recovered_date = new (nothrow) int [diseases];
+  recovered_date = new (nothrow) int [strains];
   if (recovered_date == NULL) {
     printf("Help! recovered_date allocation failure for Person %d\n", id);
     abort();
   }
 
-  infector = new (nothrow) int [diseases];
+  infector = new (nothrow) int [strains];
   if (infector == NULL) {
     printf("Help! infector allocation failure for Person %d\n", id);
     abort();
   }
 
-  infected_place = new (nothrow) int [diseases];
+  infected_place = new (nothrow) int [strains];
   if (infected_place == NULL) {
     printf("Help! infected_place allocation failure for Person %d\n", id);
     abort();
   }
 
-  infected_place_type = new (nothrow) char [diseases];
+  infected_place_type = new (nothrow) char [strains];
   if (infected_place_type == NULL) {
     printf("Help! infected_place_type allocation failure for Person %d\n", id);
     abort();
   }
 
-  infectees = new (nothrow) int [diseases];
+  infectees = new (nothrow) int [strains];
   if (infectees == NULL) {
     printf("Help! infectees allocation failure for Person %d\n", id);
     abort();
   }
 
-  susceptibility = new (nothrow) double [diseases];
+  susceptibility = new (nothrow) double [strains];
   if (susceptibility == NULL) {
     printf("Help! susceptibility allocation failure for Person %d\n", id);
     abort();
   }
 
-  infectivity = new (nothrow) double [diseases];
+  infectivity = new (nothrow) double [strains];
   if (infectivity == NULL) {
     printf("Help! infectivity allocation failure for Person %d\n", id);
     abort();
   }
 
-  role = new (nothrow) char [diseases];
+  role = new (nothrow) char [strains];
   if (role == NULL) {
     printf("Help! role allocation failure for Person %d\n", id);
     abort();
   }
 
-  for (int d = 0; d < diseases; d++) {
+  for (int d = 0; d < strains; d++) {
     infected_place[d] = -1;
     infected_place_type[d] = 'X';
     role[d] = NO_ROLE;
@@ -127,7 +127,7 @@ void Person::setup(int i, int a, char g, int m, int o, int p, int h,
   
 void Person::print(int d) {
   fprintf(Tracefp, "%c id %7d  a %3d  s %c %c ",
-	  disease_status[d], id, age, sex, occupation);
+	  strain_status[d], id, age, sex, occupation);
   fprintf(Tracefp, "exp: %2d  inf: %2d  rem: %2d ",
 	  exposure_date[d], infectious_date[d], recovered_date[d]);
   fprintf(Tracefp, "places %d ", favorite_places);
@@ -140,7 +140,7 @@ void Person::print(int d) {
 
 void Person::print_out(int d) {
   printf("%c id %7d  a %3d  s %c %c ",
-	 disease_status[d], id, age, sex, occupation);
+	 strain_status[d], id, age, sex, occupation);
   printf("exp: %2d  inf: %2d  rem: %2d ",
 	 exposure_date[d], infectious_date[d], recovered_date[d]);
   printf("places %d ", favorite_places);
@@ -163,9 +163,9 @@ void Person::print_schedule() {
   
 void Person::make_susceptible() {
   if (Verbose > 2) { fprintf(Statusfp, "SUSCEPTIBLE person %d\n", id); }
-  int diseases = Disease::get_diseases();
-  for (int d = 0; d < diseases; d++) {
-    disease_status[d] = 'S';
+  int strains = Strain::get_strains();
+  for (int d = 0; d < strains; d++) {
+    strain_status[d] = 'S';
     exposure_date[d] = infectious_date[d] = recovered_date[d] = -1;
     infected_place[d] = -1;
     infected_place_type[d] = 'X';
@@ -190,38 +190,38 @@ void Person::make_susceptible() {
 //
 ///////////////////////////////////////////////////////////////////////
 
-void Person::make_exposed(int dis, int per, int place, char type, int day) {
+void Person::make_exposed(int strain, int per, int place, char type, int day) {
   if (Verbose > 1) { fprintf(Statusfp, "EXPOSED person %d\n", id); }
-  disease_status[dis] = 'E';
-  exposure_date[dis] = day;
-  latent_period[dis] = Disease::get_days_latent(dis);
-  infectious_period[dis] = Disease::get_days_infectious(dis);
-  infectious_date[dis] = exposure_date[dis] + latent_period[dis];
-  recovered_date[dis] = infectious_date[dis] + infectious_period[dis];
-  infector[dis] = per;
-  infected_place[dis] = place;
+  strain_status[strain] = 'E';
+  exposure_date[strain] = day;
+  latent_period[strain] = Strain::get_days_latent(strain);
+  infectious_period[strain] = Strain::get_days_infectious(strain);
+  infectious_date[strain] = exposure_date[strain] + latent_period[strain];
+  recovered_date[strain] = infectious_date[strain] + infectious_period[strain];
+  infector[strain] = per;
+  infected_place[strain] = place;
   if (place == -1) { 
-    infected_place_type[dis] = 'X';
+    infected_place_type[strain] = 'X';
   }
   else {
-    infected_place_type[dis] = type;
+    infected_place_type[strain] = type;
   }
-  susceptibility[dis] = 0.0;
-  Pop.insert_into_exposed_list(dis, id);
-  if (Verbose > 2) { print_out(dis); }
+  susceptibility[strain] = 0.0;
+  Pop.insert_into_exposed_list(strain, id);
+  if (Verbose > 2) { print_out(strain); }
 }
   
 void Person::make_infectious(int d) {
   if (Verbose > 2) {
-    fprintf(Statusfp, "INFECTIOUS person %d for disease %d\n", id, d);
+    fprintf(Statusfp, "INFECTIOUS person %d for strain %d\n", id, d);
     fflush(Statusfp);
   }
-  if (RANDOM() < Disease::get_prob_symptomatic(d)) {
-    disease_status[d] = 'I';
+  if (RANDOM() < Strain::get_prob_symptomatic(d)) {
+    strain_status[d] = 'I';
     infectivity[d] = 1.0;
   }
   else {
-    disease_status[d] = 'i';
+    strain_status[d] = 'i';
     infectivity[d] = 0.5;
   }
   Pop.remove_from_exposed_list(d, id);
@@ -235,21 +235,21 @@ void Person::make_infectious(int d) {
   }
 }
 
-void Person::make_recovered(int dis) {
+void Person::make_recovered(int strain) {
   if (Verbose > 2) {
-    fprintf(Statusfp, "RECOVERED person %d for disease %d\n", id, dis);
-    print_out(dis);
+    fprintf(Statusfp, "RECOVERED person %d for strain %d\n", id, strain);
+    print_out(strain);
     fflush(Statusfp);
   }
-  disease_status[dis] = 'R';
-  Pop.remove_from_infectious_list(dis, id);
+  strain_status[strain] = 'R';
+  Pop.remove_from_infectious_list(strain, id);
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == -1) continue;
-    if (Test == 0 || exposure_date[dis] == 0)
-      Loc.delete_infectious_from_place(favorite_place[p], dis, id);
+    if (Test == 0 || exposure_date[strain] == 0)
+      Loc.delete_infectious_from_place(favorite_place[p], strain, id);
   }
   // print recovered agents into Trace file
-  print(dis);
+  print(strain);
 }
 
 int Person::is_on_schedule(int day, int loc) {
@@ -272,7 +272,7 @@ void Person::update_schedule(int day) {
 
     // probably stay at home if symptomatic
     if (is_symptomatic()) {
-      if (RANDOM() < Disease::get_prob_stay_home()) {
+      if (RANDOM() < Strain::get_prob_stay_home()) {
 	scheduled_places = 1;
 	schedule[0] = favorite_place[0];
 	on_schedule[0] = 1;
@@ -338,9 +338,9 @@ void Person::set_occupation() {
 }
 
 int Person::is_symptomatic() {
-  int diseases = Disease::get_diseases();
-  for (int d = 0; d < diseases; d++) {
-    if (disease_status[d] == 'I')
+  int strains = Strain::get_strains();
+  for (int d = 0; d < strains; d++) {
+    if (strain_status[d] == 'I')
       return 1;
   }
   return 0;

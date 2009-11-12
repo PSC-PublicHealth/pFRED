@@ -14,7 +14,7 @@
 #include "Params.hpp"
 #include "Random.hpp"
 #include "Population.hpp"
-#include "Disease.hpp"
+#include "Strain.hpp"
 
 double * Neighborhood_contacts_per_day;
 double *** Neighborhood_contact_prob;
@@ -24,18 +24,18 @@ Neighborhood::Neighborhood(int loc, char *lab, double lon,
 			   double lat, int container) {
   type = NEIGHBORHOOD;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Disease::get_diseases());
+  get_parameters(Strain::get_strains());
 }
 
-void Neighborhood::get_parameters(int diseases) {
+void Neighborhood::get_parameters(int strains) {
   char param_str[80];
 
   if (Neighborhood_parameters_set) return;
 
-  Neighborhood_contacts_per_day = new double [ diseases ];
-  Neighborhood_contact_prob = new double** [ diseases ];
+  Neighborhood_contacts_per_day = new double [ strains ];
+  Neighborhood_contact_prob = new double** [ strains ];
 
-  for (int d = 0; d < diseases; d++) {
+  for (int d = 0; d < strains; d++) {
     int n;
     sprintf(param_str, "neighborhood_contacts[%d]", d);
     get_param((char *) param_str, &Neighborhood_contacts_per_day[d]);
@@ -81,24 +81,23 @@ void Neighborhood::get_parameters(int diseases) {
   Neighborhood_parameters_set = 1;
 }
 
-int Neighborhood::get_group_type(int dis, int per) {
+int Neighborhood::get_group_type(int strain, int per) {
   int age = Pop.get_age(per);
   if (age < 18) { return 0; }
   else { return 1; }
 }
 
-double Neighborhood::get_transmission_prob(int dis, int i, int s) {
-  // dis = disease
+double Neighborhood::get_transmission_prob(int strain, int i, int s) {
   // i = infected agent
   // s = susceptible agent
-  int row = get_group_type(dis, i);
-  int col = get_group_type(dis, s);
-  double tr_pr = Neighborhood_contact_prob[dis][row][col];
+  int row = get_group_type(strain, i);
+  int col = get_group_type(strain, s);
+  double tr_pr = Neighborhood_contact_prob[strain][row][col];
   return tr_pr;
 }
 
-double Neighborhood::get_contacts_per_day(int dis) {
-  return Neighborhood_contacts_per_day[dis];
+double Neighborhood::get_contacts_per_day(int strain) {
+  return Neighborhood_contacts_per_day[strain];
 }
 
 

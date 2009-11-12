@@ -6,10 +6,10 @@
 
 //
 //
-// File: Disease.cpp
+// File: Strain.cpp
 //
 
-#include "Disease.hpp"
+#include "Strain.hpp"
 
 #include <stdio.h>
 #include <new>
@@ -18,13 +18,13 @@ using namespace std;
 #include "Random.hpp"
 #include "Params.hpp"
 
-Disease *Dis;
-int Diseases;
+Strain *Str;
+int Strains;
 double Prob_stay_home;
 
-void Disease::setup(int dis) {
+void Strain::setup(int strain) {
   char s[80];
-  id = dis;
+  id = strain;
   int n;
 
   sprintf(s, "trans[%d]", id);
@@ -49,8 +49,8 @@ void Disease::setup(int dis) {
   max_days_infectious = get_param_vector(s, days_infectious) -1;
 }
 
-void Disease::print() {
-  printf("disease %d sym %.3f trans %e\n",
+void Strain::print() {
+  printf("strain %d sym %.3f trans %e\n",
 	 id, prob_symptomatic, transmissibility);
   printf("days latent: ");
   for (int i = 0; i <= max_days_latent; i++)
@@ -62,49 +62,49 @@ void Disease::print() {
   printf("\n");
 }
 
-int Disease::get_days_latent() {
+int Strain::get_days_latent() {
   int days = 0;
-  days = draw_from_distribution(max_days_latent, days_latent);
+  days = draw_from_straintribution(max_days_latent, days_latent);
   return days;
 }
 
-int Disease::get_days_infectious() {
+int Strain::get_days_infectious() {
   int days = 0;
-  days = draw_from_distribution(max_days_infectious, days_infectious);
+  days = draw_from_straintribution(max_days_infectious, days_infectious);
   return days;
 }
 
 
 // static
-void Disease::get_disease_parameters() {
-  get_param((char *) "diseases", &Diseases);
+void Strain::get_strain_parameters() {
+  get_param((char *) "strains", &Strains);
   get_param((char *) "prob_stay_home", &Prob_stay_home);
 }
 
 // static
-void Disease::setup_diseases(int verbose) {
-  Dis = new (nothrow) Disease [Diseases];
-  if (Dis == NULL) {
-    printf("Help! Dis allocation failure\n");
+void Strain::setup_strains(int verbose) {
+  Str = new (nothrow) Strain [Strains];
+  if (Str == NULL) {
+    printf("Help! Str allocation failure\n");
     abort();
   }
-  for (int d = 0; d < Diseases; d++) {
-    Dis[d].setup(d);
-    if (verbose) Dis[d].print();
+  for (int d = 0; d < Strains; d++) {
+    Str[d].setup(d);
+    if (verbose) Str[d].print();
   }
 }
 
 // static
-int Disease::draw_from_distribution(int n, double *dist) {
+int Strain::draw_from_straintribution(int n, double *straint) {
   double r = RANDOM();
   int i = 0;
-  while (i <= n && dist[i] < r) { i++; }
+  while (i <= n && straint[i] < r) { i++; }
   if (i <= n) { return i; }
   else {
-    printf("Help! draw from distribution failed.\n");
-    printf("Is distribution properly formed? (should end with 1.0)\n");
+    printf("Help! draw from straintribution failed.\n");
+    printf("Is straintribution properly formed? (should end with 1.0)\n");
     for (int i = 0; i <= n; i++) {
-      printf("%f ", dist[i]);
+      printf("%f ", straint[i]);
     }
     printf("\n");
     return -1;
@@ -112,19 +112,19 @@ int Disease::draw_from_distribution(int n, double *dist) {
 }
 
 // static
-int Disease::get_diseases() { return Diseases; }
+int Strain::get_strains() { return Strains; }
 
 // static
-double Disease::get_beta(int dis) { return Dis[dis].get_transmissibility(); }
+double Strain::get_beta(int strain) { return Str[strain].get_transmissibility(); }
 
 // static
-double Disease::get_prob_symptomatic(int dis) { return Dis[dis].get_prob_symptomatic(); }
+double Strain::get_prob_symptomatic(int strain) { return Str[strain].get_prob_symptomatic(); }
 
 // static
-int Disease::get_days_latent(int dis) { return Dis[dis].get_days_latent(); }
+int Strain::get_days_latent(int strain) { return Str[strain].get_days_latent(); }
 
 // static
-int Disease::get_days_infectious(int dis) {  return Dis[dis].get_days_infectious(); }
+int Strain::get_days_infectious(int strain) {  return Str[strain].get_days_infectious(); }
 
 // static
-double Disease::get_prob_stay_home() { return Prob_stay_home; }
+double Strain::get_prob_stay_home() { return Prob_stay_home; }

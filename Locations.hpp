@@ -22,12 +22,12 @@ public:
   void process_infectious_locations(int day);
   void get_location_parameters();
   int get_open_status(int loc, int day);
-  void add_susceptible_to_place(int id, int dis, int per);
-  void delete_susceptible_from_place(int id, int dis, int per);
-  void add_infectious_to_place(int id, int dis, int per);
-  void delete_infectious_from_place(int id, int dis, int per);
+  void add_susceptible_to_place(int id, int strain, int per);
+  void delete_susceptible_from_place(int id, int strain, int per);
+  void add_infectious_to_place(int id, int strain, int per);
+  void delete_infectious_from_place(int id, int strain, int per);
   char get_type_of_place(int id);
-  int location_should_be_open(int loc, int dis, int day);
+  int location_should_be_open(int loc, int strain, int day);
 
 private:
   char locfile[80];

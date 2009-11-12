@@ -14,7 +14,7 @@
 #include "Params.hpp"
 #include "Random.hpp"
 #include "Population.hpp"
-#include "Disease.hpp"
+#include "Strain.hpp"
 
 double * Workplace_contacts_per_day;
 double *** Workplace_contact_prob;
@@ -23,18 +23,18 @@ int Workplace_parameters_set = 0;
 Workplace::Workplace(int loc, char *lab, double lon, double lat, int container) {
   type = WORKPLACE;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Disease::get_diseases());
+  get_parameters(Strain::get_strains());
 }
 
-void Workplace::get_parameters(int diseases) {
+void Workplace::get_parameters(int strains) {
   char param_str[80];
 
   if (Workplace_parameters_set) return;
 
-  Workplace_contacts_per_day = new double [ diseases ];
-  Workplace_contact_prob = new double** [ diseases ];
+  Workplace_contacts_per_day = new double [ strains ];
+  Workplace_contact_prob = new double** [ strains ];
 
-  for (int d = 0; d < diseases; d++) {
+  for (int d = 0; d < strains; d++) {
     int n;
     sprintf(param_str, "workplace_contacts[%d]", d);
     get_param((char *) param_str, &Workplace_contacts_per_day[d]);
@@ -72,22 +72,21 @@ void Workplace::get_parameters(int diseases) {
   Workplace_parameters_set = 1;
 }
 
-int Workplace::get_group_type(int dis, int per) {
+int Workplace::get_group_type(int strain, int per) {
   return 0;
 }
 
-double Workplace::get_transmission_prob(int dis, int i, int s) {
-  // dis = disease
+double Workplace::get_transmission_prob(int strain, int i, int s) {
   // i = infected agent
   // s = susceptible agent
-  int row = get_group_type(dis, i);
-  int col = get_group_type(dis, s);
-  double tr_pr = Workplace_contact_prob[dis][row][col];
+  int row = get_group_type(strain, i);
+  int col = get_group_type(strain, s);
+  double tr_pr = Workplace_contact_prob[strain][row][col];
   return tr_pr;
 }
 
-double Workplace::get_contacts_per_day(int dis) {
-  return Workplace_contacts_per_day[dis];
+double Workplace::get_contacts_per_day(int strain) {
+  return Workplace_contacts_per_day[strain];
 }
 
 

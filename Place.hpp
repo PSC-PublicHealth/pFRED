@@ -44,9 +44,9 @@ protected:
   int *Sympt;					// symtomatics count
   int close_date;			     // when to close this place
   int open_date;			      // when to open this place
-  int indiv_types;			   // distinct types of visitors
+  int indiv_types;			   // straintinct types of visitors
 
-  // disease parameters
+  // strain parameters
   double *beta;	       // place-independent transmissibility per contact
 
 public:
@@ -54,21 +54,21 @@ public:
   ~Place() {}
   void setup(int loc, char *lab, double lon, double lat, int cont);
   void reset();
-  void print(int dis);
-  void add_susceptible(int dis, int per);
-  void delete_susceptible(int dis, int per);
-  void print_susceptibles(int dis);
-  void add_infectious(int dis, int per);
-  void delete_infectious(int dis, int per);
-  void print_infectious(int dis);
+  void print(int strain);
+  void add_susceptible(int strain, int per);
+  void delete_susceptible(int strain, int per);
+  void print_susceptibles(int strain);
+  void add_infectious(int strain, int per);
+  void delete_infectious(int strain, int per);
+  void print_infectious(int strain);
   void spread_infection(int day);
   int is_open(int day);
 
   virtual void get_parameters() {}
-  virtual int get_group_type(int dis, int per) { return 0; }
-  virtual double get_transmission_prob(int dis, int i, int s) { return 1.0; }
-  virtual int should_be_open(int day, int dis) { return 1; }
-  virtual double get_contacts_per_day(int dis) { return 0; }
+  virtual int get_group_type(int strain, int per) { return 0; }
+  virtual double get_transmission_prob(int strain, int i, int s) { return 1.0; }
+  virtual int should_be_open(int day, int strain) { return 1; }
+  virtual double get_contacts_per_day(int strain) { return 0; }
 
   // access functions
   int get_id() { return id; }
@@ -76,9 +76,9 @@ public:
   int get_type() { return type; }
   double get_latitude() { return latitude; }
   double get_longitude() { return longitude; }
-  int get_S(int dis) { return S[dis]; }
-  int get_I(int dis) { return (int) (infectious[dis].size()); }
-  int get_symptomatic(int dis) { return Sympt[dis]; }
+  int get_S(int strain) { return S[strain]; }
+  int get_I(int strain) { return (int) (infectious[strain].size()); }
+  int get_symptomatic(int strain) { return Sympt[strain]; }
   int get_size() { return N; }
   int get_close_date() { return close_date; }
   int get_open_date() { return open_date; }

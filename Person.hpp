@@ -39,7 +39,7 @@ class Person {
   int scheduled_places;		 // number places actually visited today
   int schedule_updated;			 // date of last schedule update
 
-  char *disease_status;
+  char *strain_status;
   int *latent_period;
   int *infectious_period;
   int *exposure_date;
@@ -82,9 +82,9 @@ public:
   char get_sex() { return sex; }
   char get_occupation() { return occupation; }
   int get_places() { return favorite_places; }
-  char get_role(int dis) { return role[dis]; }
+  char get_role(int strain) { return role[strain]; }
 
-  char get_disease_status(int d) { return disease_status[d]; }
+  char get_strain_status(int d) { return strain_status[d]; }
   double get_susceptibility(int d) { return susceptibility[d]; }
   double get_infectivity(int d) { return infectivity[d]; }
   int get_exposure_date(int d) { return exposure_date[d]; }
@@ -95,11 +95,11 @@ public:
   char get_infected_place_type(int d) { return infected_place_type[d]; }
   int get_infectees(int d) { return infectees[d]; }
   int add_infectee(int d) { return ++infectees[d]; }
-  void set_disease_status(int d, char s) { disease_status[d] = s; }
+  void set_strain_status(int d, char s) { strain_status[d] = s; }
   void set_susceptibility(int d, double x) { susceptibility[d] = x; }
   void set_infectivity(int d, double x) { infectivity[d] = x; }
   void set_infector(int d, int id) { infector[d] = id; }
-  void set_role(int dis, char r) { role[dis]= r; }
+  void set_role(int strain, char r) { role[strain]= r; }
 };
 
 #endif // _FRED_PERSON_H

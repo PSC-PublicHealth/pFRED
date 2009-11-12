@@ -15,7 +15,7 @@
 #include <new>
 #include <iostream>
 #include "Population.hpp"
-#include "Disease.hpp"
+#include "Strain.hpp"
 #include "Global.hpp"
 #include "Place.hpp"
 #include "School.hpp"
@@ -154,7 +154,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     int count[20];
     int total = 0;
-    // size distribution of households
+    // size straintribution of households
     for (int c = 0; c < 15; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == HOUSEHOLD) {
@@ -164,7 +164,7 @@ void Locations::location_quality_control() {
 	total++;
       }
     }
-    fprintf(Statusfp, "\nHousehold size distribution: %d households\n", total);
+    fprintf(Statusfp, "\nHousehold size straintribution: %d households\n", total);
     for (int c = 0; c < 15; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     c, count[c], (100.0*count[c])/total);
@@ -175,7 +175,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     int count[20];
     int total = 0;
-    // size distribution of schools
+    // size straintribution of schools
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == SCHOOL) {
@@ -186,7 +186,7 @@ void Locations::location_quality_control() {
 	total++;
       }
     }
-    fprintf(Statusfp, "\nSchool size distribution: %d schools\n", total);
+    fprintf(Statusfp, "\nSchool size straintribution: %d schools\n", total);
     for (int c = 0; c < 20; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     (c+1)*50, count[c], (100.0*count[c])/total);
@@ -197,7 +197,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     int count[50];
     int total = 0;
-    // size distribution of classrooms
+    // size straintribution of classrooms
     for (int c = 0; c < 50; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == CLASSROOM) {
@@ -208,7 +208,7 @@ void Locations::location_quality_control() {
 	total++;
       }
     }
-    fprintf(Statusfp, "\nClassroom size distribution: %d classrooms\n", total);
+    fprintf(Statusfp, "\nClassroom size straintribution: %d classrooms\n", total);
     for (int c = 0; c < 50; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     c, count[c], (100.0*count[c])/total);
@@ -219,7 +219,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     int count[20];
     int total = 0;
-    // size distribution of workplaces
+    // size straintribution of workplaces
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == WORKPLACE) {
@@ -230,7 +230,7 @@ void Locations::location_quality_control() {
 	total++;
       }
     }
-    fprintf(Statusfp, "\nWorkplace size distribution: %d workplaces\n", total);
+    fprintf(Statusfp, "\nWorkplace size straintribution: %d workplaces\n", total);
     for (int c = 0; c < 20; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     (c+1)*50, count[c], (100.0*count[c])/total);
@@ -241,7 +241,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     int count[60];
     int total = 0;
-    // size distribution of offices
+    // size straintribution of offices
     for (int c = 0; c < 60; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == OFFICE) {
@@ -252,7 +252,7 @@ void Locations::location_quality_control() {
 	total++;
       }
     }
-    fprintf(Statusfp, "\nOffice size distribution: %d offices\n", total);
+    fprintf(Statusfp, "\nOffice size straintribution: %d offices\n", total);
     for (int c = 0; c < 60; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     c, count[c], (100.0*count[c])/total);
@@ -275,11 +275,11 @@ void Locations::process_infectious_locations(int day) {
     fflush(Statusfp);
   }
 
-  int diseases = Disease::get_diseases();
-  for (int d = 0; d < diseases; d++) {
+  int strains = Strain::get_strains();
+  for (int d = 0; d < strains; d++) {
 
     if (Verbose > 3) {
-      fprintf(Statusfp, "disease = %d  infectious = %d\n", d,
+      fprintf(Statusfp, "strain = %d  infectious = %d\n", d,
 	      (int) (Pop.infectious[d].size())); fflush(Statusfp);
     }
 
@@ -335,40 +335,40 @@ int Locations::get_open_status(int loc, int day) {
   return location[loc]->is_open(day);
 }
 
-void Locations::add_susceptible_to_place(int id, int dis, int per) {
-  location[id]->add_susceptible(dis, per);
+void Locations::add_susceptible_to_place(int id, int strain, int per) {
+  location[id]->add_susceptible(strain, per);
   if (Verbose > 2) {
-    fprintf(Statusfp, "place %d S %d\n", id, location[id]->get_S(dis));
+    fprintf(Statusfp, "place %d S %d\n", id, location[id]->get_S(strain));
     fflush(Statusfp);
   }
 }
 
-void Locations::delete_susceptible_from_place(int id, int dis, int per) {
-  location[id]->delete_susceptible(dis, per);
+void Locations::delete_susceptible_from_place(int id, int strain, int per) {
+  location[id]->delete_susceptible(strain, per);
   if (Verbose > 2) {
-    fprintf(Statusfp, "place %d S %d\n", id, location[id]->get_S(dis));
+    fprintf(Statusfp, "place %d S %d\n", id, location[id]->get_S(strain));
     fflush(Statusfp);
   }
 }
 
-void Locations::add_infectious_to_place(int id, int dis, int per) {
-  location[id]->add_infectious(dis, per);
+void Locations::add_infectious_to_place(int id, int strain, int per) {
+  location[id]->add_infectious(strain, per);
   if (Verbose > 2) {
-    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(dis));
+    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(strain));
     fflush(Statusfp);
   }
 }
 
-void Locations::delete_infectious_from_place(int id, int dis, int per) {
+void Locations::delete_infectious_from_place(int id, int strain, int per) {
   if (Verbose > 2) {
     fprintf(Statusfp, "delete infectious person %d from place %d I %d\n",
-	    per, id, location[id]->get_I(dis));
-    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(dis));
+	    per, id, location[id]->get_I(strain));
+    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(strain));
     fflush(Statusfp);
   }
-  location[id]->delete_infectious(dis, per);
+  location[id]->delete_infectious(strain, per);
   if (Verbose > 2) {
-    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(dis));
+    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(strain));
     fflush(Statusfp);
   }
 }
@@ -377,6 +377,6 @@ char Locations::get_type_of_place(int id) {
   return location[id]->get_type();
 }
 
-int Locations::location_should_be_open(int loc, int dis, int day) {
-  return location[loc]->should_be_open(day, dis);
+int Locations::location_should_be_open(int loc, int strain, int day) {
+  return location[loc]->should_be_open(day, strain);
 }

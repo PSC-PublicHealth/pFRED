@@ -11,7 +11,7 @@
 
 #include "Fred.hpp"
 #include "Global.cpp"
-#include "Disease.hpp"
+#include "Strain.hpp"
 #include "Population.hpp"
 #include "Locations.hpp"
 #include "Params.hpp"
@@ -54,9 +54,9 @@ void setup(char *paramfile) {
   get_global_parameters();
   Random_start_day = (Start_day > 6);
   Pop.get_population_parameters();
-  Disease::get_disease_parameters();
+  Strain::get_strain_parameters();
   Loc.get_location_parameters();
-  Disease::setup_diseases(Verbose);
+  Strain::setup_strains(Verbose);
   Loc.setup_locations();
   Pop.setup_population();
   Pop.population_quality_control();

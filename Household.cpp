@@ -14,7 +14,7 @@
 #include "Params.hpp"
 #include "Random.hpp"
 #include "Population.hpp"
-#include "Disease.hpp"
+#include "Strain.hpp"
 
 double * Household_contacts_per_day;
 double *** Household_contact_prob;
@@ -23,18 +23,18 @@ int Household_parameters_set = 0;
 Household::Household(int loc, char *lab, double lon, double lat, int container) {
   type = HOUSEHOLD;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Disease::get_diseases());
+  get_parameters(Strain::get_strains());
 }
 
-void Household::get_parameters(int diseases) {
+void Household::get_parameters(int strains) {
   char param_str[80];
 
   if (Household_parameters_set) return;
 
-  Household_contacts_per_day = new double [ diseases ];
-  Household_contact_prob = new double** [ diseases ];
+  Household_contacts_per_day = new double [ strains ];
+  Household_contact_prob = new double** [ strains ];
 
-  for (int d = 0; d < diseases; d++) {
+  for (int d = 0; d < strains; d++) {
     int n;
     sprintf(param_str, "household_contacts[%d]", d);
     get_param((char *) param_str, &Household_contacts_per_day[d]);
@@ -72,24 +72,23 @@ void Household::get_parameters(int diseases) {
   Household_parameters_set = 1;
 }
 
-int Household::get_group_type(int dis, int per) {
+int Household::get_group_type(int strain, int per) {
   int age = Pop.get_age(per);
   if (age < 18) { return 0; }
   else { return 1; }
 }
 
-double Household::get_transmission_prob(int dis, int i, int s) {
-  // dis = disease
+double Household::get_transmission_prob(int strain, int i, int s) {
   // i = infected agent
   // s = susceptible agent
-  int row = get_group_type(dis, i);
-  int col = get_group_type(dis, s);
-  double tr_pr = Household_contact_prob[dis][row][col];
+  int row = get_group_type(strain, i);
+  int col = get_group_type(strain, s);
+  double tr_pr = Household_contact_prob[strain][row][col];
   return tr_pr;
 }
 
-double Household::get_contacts_per_day(int dis) {
-  return Household_contacts_per_day[dis];
+double Household::get_contacts_per_day(int strain) {
+  return Household_contacts_per_day[strain];
 }
 
 
