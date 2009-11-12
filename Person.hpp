@@ -53,6 +53,12 @@ class Person {
   double *infectivity;
   char *role;
 
+  // Health Behavior Model
+  double perceived_susceptibility;
+  double perceived_severity;
+  double perceived_barrier;
+  double perceived_benefit;
+
 public:
   Person() {}
   void setup(int i, int a, char g, int m, int o, int p, int h,
@@ -60,9 +66,6 @@ public:
   void print(int d);
   void print_out(int d);
 
-  void add_to_favorite_places(int p, int loc) {
-    favorite_place[p] = loc; favorite_places++;
-  }
   void update_schedule(int day);
   void get_schedule(int *n, int *sched);
   int is_on_schedule(int day, int loc);
@@ -75,6 +78,12 @@ public:
   void make_recovered(int d);
   void behave(int day);
   int is_symptomatic();
+
+  // Health Behavior Model
+  void update_perceived_susceptibility();
+  void update_perceived_severity();
+  void update_perceived_barrier();
+  void update_perceived_benefit();
 
   // access functions:
   int get_id() { return id; }

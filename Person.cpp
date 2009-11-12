@@ -348,3 +348,9 @@ int Person::is_symptomatic() {
 
 void Person::behave(int day) {}
 
+  // Health Behavior Model
+void Person::update_perceived_susceptibility() {};
+void Person::update_perceived_severity() {};
+void Person::update_perceived_barrier() {};
+void Person::update_perceived_benefit() {};
+
