@@ -19,16 +19,13 @@ days_incubating[0] = 4   0.0 0.3 0.8 1.0
 days_infectious[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
 prob_stay_home = 0.5
 
-household_contacts[0] = 0.3975
-neighborhood_contacts[0] = 265
+household_contacts[0] = 0.38
+neighborhood_contacts[0] = 145
 community_contacts[0] = 1
-
-workplace_contacts[0] = 0.53
-office_contacts[0] = 11.66
-
 school_contacts[0] = 2
-classroom_contacts[0] = 14
-
+classroom_contacts[0] = 15
+workplace_contacts[0] = 1
+office_contacts[0] = 8.5
 hospital_contacts[0] = 0
 
 #groups = children adults
