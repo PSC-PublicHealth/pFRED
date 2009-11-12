@@ -34,13 +34,13 @@ void Community::get_parameters(int strains) {
   Community_contacts_per_day = new double [ strains ];
   Community_contact_prob = new double** [ strains ];
 
-  for (int d = 0; d < strains; d++) {
+  for (int s = 0; s < strains; s++) {
     int n;
-    sprintf(param_str, "community_contacts[%d]", d);
-    get_param((char *) param_str, &Community_contacts_per_day[d]);
-    // printf("Community_contacts_per_day[%d]= %f\n",d,Community_contacts_per_day[d]);
+    sprintf(param_str, "community_contacts[%d]", s);
+    get_param((char *) param_str, &Community_contacts_per_day[s]);
+    // printf("Community_contacts_per_day[%d]= %f\n",d,Community_contacts_per_day[s]);
 
-    sprintf(param_str, "community_prob[%d]", d);
+    sprintf(param_str, "community_prob[%d]", s);
     n = 0;
     get_param((char *) param_str, &n);
     // printf("n = %d\n", n);
@@ -53,13 +53,13 @@ void Community::get_parameters(int strains) {
 
       n = (int) sqrt((double) n);
       // printf("\nCommunity_contact_prob:\n");
-      Community_contact_prob[d] = new double * [n];
+      Community_contact_prob[s] = new double * [n];
       for (int i  = 0; i < n; i++) 
-	Community_contact_prob[d][i] = new double [n];
+	Community_contact_prob[s][i] = new double [n];
       for (int i  = 0; i < n; i++) {
 	for (int j  = 0; j < n; j++) {
-	  Community_contact_prob[d][i][j] = tmp[i*n+j];
-	  // printf("%f ",Community_contact_prob[d][i][j]);
+	  Community_contact_prob[s][i][j] = tmp[i*n+j];
+	  // printf("%f ",Community_contact_prob[s][i][j]);
 	}
 	// printf("\n");
       }
@@ -69,7 +69,7 @@ void Community::get_parameters(int strains) {
 	printf("\nCommunity_contact_prob:\n");
 	for (int i  = 0; i < n; i++)  {
 	  for (int j  = 0; j < n; j++) {
-	    printf("%f ", Community_contact_prob[d][i][j]);
+	    printf("%f ", Community_contact_prob[s][i][j]);
 	  }
 	  printf("\n");
 	}

@@ -34,12 +34,12 @@ void Household::get_parameters(int strains) {
   Household_contacts_per_day = new double [ strains ];
   Household_contact_prob = new double** [ strains ];
 
-  for (int d = 0; d < strains; d++) {
+  for (int s = 0; s < strains; s++) {
     int n;
-    sprintf(param_str, "household_contacts[%d]", d);
-    get_param((char *) param_str, &Household_contacts_per_day[d]);
+    sprintf(param_str, "household_contacts[%d]", s);
+    get_param((char *) param_str, &Household_contacts_per_day[s]);
 
-    sprintf(param_str, "household_prob[%d]", d);
+    sprintf(param_str, "household_prob[%d]", s);
     n = 0;
     get_param((char *) param_str, &n);
     if (n) {
@@ -47,12 +47,12 @@ void Household::get_parameters(int strains) {
       tmp = new double [n];
       get_param_vector((char *) param_str, tmp);
       n = (int) sqrt((double) n);
-      Household_contact_prob[d] = new double * [n];
+      Household_contact_prob[s] = new double * [n];
       for (int i  = 0; i < n; i++) 
-	Household_contact_prob[d][i] = new double [n];
+	Household_contact_prob[s][i] = new double [n];
       for (int i  = 0; i < n; i++) {
 	for (int j  = 0; j < n; j++) {
-	  Household_contact_prob[d][i][j] = tmp[i*n+j];
+	  Household_contact_prob[s][i][j] = tmp[i*n+j];
 	}
       }
       delete tmp;
@@ -61,7 +61,7 @@ void Household::get_parameters(int strains) {
 	printf("\nHousehold_contact_prob:\n");
 	for (int i  = 0; i < n; i++)  {
 	  for (int j  = 0; j < n; j++) {
-	    printf("%f ", Household_contact_prob[d][i][j]);
+	    printf("%f ", Household_contact_prob[s][i][j]);
 	  }
 	  printf("\n");
 	}
@@ -90,7 +90,6 @@ double Household::get_transmission_prob(int strain, int i, int s) {
 double Household::get_contacts_per_day(int strain) {
   return Household_contacts_per_day[strain];
 }
-
 
 
 

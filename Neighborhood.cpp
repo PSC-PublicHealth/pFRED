@@ -35,14 +35,14 @@ void Neighborhood::get_parameters(int strains) {
   Neighborhood_contacts_per_day = new double [ strains ];
   Neighborhood_contact_prob = new double** [ strains ];
 
-  for (int d = 0; d < strains; d++) {
+  for (int s = 0; s < strains; s++) {
     int n;
-    sprintf(param_str, "neighborhood_contacts[%d]", d);
-    get_param((char *) param_str, &Neighborhood_contacts_per_day[d]);
+    sprintf(param_str, "neighborhood_contacts[%d]", s);
+    get_param((char *) param_str, &Neighborhood_contacts_per_day[s]);
     // printf("Neighborhood_contacts_per_day[%d]= %f\n",
-    // d,Neighborhood_contacts_per_day[d]);
+    // s,Neighborhood_contacts_per_day[s]);
 
-    sprintf(param_str, "neighborhood_prob[%d]", d);
+    sprintf(param_str, "neighborhood_prob[%d]", s);
     n = 0;
     get_param((char *) param_str, &n);
     // printf("n = %d\n", n);
@@ -55,13 +55,13 @@ void Neighborhood::get_parameters(int strains) {
 
       n = (int) sqrt((double) n);
       // printf("\nNeighborhood_contact_prob:\n");
-      Neighborhood_contact_prob[d] = new double * [n];
+      Neighborhood_contact_prob[s] = new double * [n];
       for (int i  = 0; i < n; i++) 
-	Neighborhood_contact_prob[d][i] = new double [n];
+	Neighborhood_contact_prob[s][i] = new double [n];
       for (int i  = 0; i < n; i++) {
 	for (int j  = 0; j < n; j++) {
-	  Neighborhood_contact_prob[d][i][j] = tmp[i*n+j];
-	  // printf("%f ",Neighborhood_contact_prob[d][i][j]);
+	  Neighborhood_contact_prob[s][i][j] = tmp[i*n+j];
+	  // printf("%f ",Neighborhood_contact_prob[s][i][j]);
 	}
 	// printf("\n");
       }
@@ -71,7 +71,7 @@ void Neighborhood::get_parameters(int strains) {
 	printf("\nNeighborhood_contact_prob:\n");
 	for (int i  = 0; i < n; i++)  {
 	  for (int j  = 0; j < n; j++) {
-	    printf("%f ", Neighborhood_contact_prob[d][i][j]);
+	    printf("%f ", Neighborhood_contact_prob[s][i][j]);
 	  }
 	  printf("\n");
 	}

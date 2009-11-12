@@ -35,12 +35,12 @@ void Hospital::get_parameters(int strains) {
   Hospital_contacts_per_day = new double [ strains ];
   Hospital_contact_prob = new double** [ strains ];
 
-  for (int d = 0; d < strains; d++) {
+  for (int s = 0; s < strains; s++) {
     int n;
-    sprintf(param_str, "hospital_contacts[%d]", d);
-    get_param((char *) param_str, &Hospital_contacts_per_day[d]);
+    sprintf(param_str, "hospital_contacts[%d]", s);
+    get_param((char *) param_str, &Hospital_contacts_per_day[s]);
 
-    sprintf(param_str, "hospital_prob[%d]", d);
+    sprintf(param_str, "hospital_prob[%d]", s);
     n = 0;
     get_param((char *) param_str, &n);
     if (n) {
@@ -48,12 +48,12 @@ void Hospital::get_parameters(int strains) {
       tmp = new double [n];
       get_param_vector((char *) param_str, tmp);
       n = (int) sqrt((double) n);
-      Hospital_contact_prob[d] = new double * [n];
+      Hospital_contact_prob[s] = new double * [n];
       for (int i  = 0; i < n; i++) 
-	Hospital_contact_prob[d][i] = new double [n];
+	Hospital_contact_prob[s][i] = new double [n];
       for (int i  = 0; i < n; i++) {
 	for (int j  = 0; j < n; j++) {
-	  Hospital_contact_prob[d][i][j] = tmp[i*n+j];
+	  Hospital_contact_prob[s][i][j] = tmp[i*n+j];
 	}
       }
       delete tmp;
@@ -62,7 +62,7 @@ void Hospital::get_parameters(int strains) {
 	printf("\nHospital_contact_prob:\n");
 	for (int i  = 0; i < n; i++)  {
 	  for (int j  = 0; j < n; j++) {
-	    printf("%f ", Hospital_contact_prob[d][i][j]);
+	    printf("%f ", Hospital_contact_prob[s][i][j]);
 	  }
 	  printf("\n");
 	}

@@ -276,15 +276,15 @@ void Locations::process_infectious_locations(int day) {
   }
 
   int strains = Strain::get_strains();
-  for (int d = 0; d < strains; d++) {
+  for (int s = 0; s < strains; s++) {
 
     if (Verbose > 3) {
-      fprintf(Statusfp, "strain = %d  infectious = %d\n", d,
-	      (int) (Pop.infectious[d].size())); fflush(Statusfp);
+      fprintf(Statusfp, "strain = %d  infectious = %d\n", s,
+	      (int) (Pop.infectious[s].size())); fflush(Statusfp);
     }
 
     // get list of infectious locations:
-    for (itr = Pop.infectious[d].begin(); itr != Pop.infectious[d].end(); itr++) {
+    for (itr = Pop.infectious[s].begin(); itr != Pop.infectious[s].end(); itr++) {
       int p = *itr;
       if (Verbose > 3) {
 	fprintf(Statusfp, "day=%d p=%d\n", day, p);
@@ -304,7 +304,7 @@ void Locations::process_infectious_locations(int day) {
 
       for (int j = 0; j < n; j++) {
 	int loc = schedule[j];
-	if (location[loc]->is_open(day) && location[loc]->should_be_open(day, d)) {
+	if (location[loc]->is_open(day) && location[loc]->should_be_open(day, s)) {
 	  places.insert(loc);
 	}
       }

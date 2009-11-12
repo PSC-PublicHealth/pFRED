@@ -118,10 +118,10 @@ void Person::setup(int i, int a, char g, int m, int o, int p, int h,
     abort();
   }
 
-  for (int d = 0; d < strains; d++) {
-    infected_place[d] = -1;
-    infected_place_type[d] = 'X';
-    role[d] = NO_ROLE;
+  for (int s = 0; s < strains; s++) {
+    infected_place[s] = -1;
+    infected_place_type[s] = 'X';
+    role[s] = NO_ROLE;
   }
 }
   
@@ -164,20 +164,20 @@ void Person::print_schedule() {
 void Person::make_susceptible() {
   if (Verbose > 2) { fprintf(Statusfp, "SUSCEPTIBLE person %d\n", id); }
   int strains = Strain::get_strains();
-  for (int d = 0; d < strains; d++) {
-    strain_status[d] = 'S';
-    exposure_date[d] = infectious_date[d] = recovered_date[d] = -1;
-    infected_place[d] = -1;
-    infected_place_type[d] = 'X';
-    infector[d] = -1;
-    infectees[d] = 0;
-    susceptibility[d] = 1.0;
-    infectivity[d] = 0.0;
-    role[d] = NO_ROLE;
+  for (int s = 0; s < strains; s++) {
+    strain_status[s] = 'S';
+    exposure_date[s] = infectious_date[s] = recovered_date[s] = -1;
+    infected_place[s] = -1;
+    infected_place_type[s] = 'X';
+    infector[s] = -1;
+    infectees[s] = 0;
+    susceptibility[s] = 1.0;
+    infectivity[s] = 0.0;
+    role[s] = NO_ROLE;
 
     for (int p = 0; p < favorite_places; p++) {
       if (favorite_place[p] == -1) continue;
-      Loc.add_susceptible_to_place(favorite_place[p], d, id);
+      Loc.add_susceptible_to_place(favorite_place[p], s, id);
     }
   }
   schedule_updated = -1;
@@ -339,8 +339,8 @@ void Person::set_occupation() {
 
 int Person::is_symptomatic() {
   int strains = Strain::get_strains();
-  for (int d = 0; d < strains; d++) {
-    if (strain_status[d] == 'I')
+  for (int s = 0; s < strains; s++) {
+    if (strain_status[s] == 'I')
       return 1;
   }
   return 0;
