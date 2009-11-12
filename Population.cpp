@@ -56,11 +56,11 @@ void Population::setup_population() {
   if (attack_rate == NULL) { printf("Help! attack_rate allocation failure\n"); abort(); }
 
   // init population-strain lists
-  for (int d = 0; d < strains; d++) {
-    exposed[d].clear();
-    infectious[d].clear();
-    attack_rate[d] = 0.0;
-    S[d] = E[d] = I[d] = R[d] = 0;
+  for (int s = 0; s < strains; s++) {
+    exposed[s].clear();
+    infectious[s].clear();
+    attack_rate[s] = 0.0;
+    S[s] = E[s] = I[s] = R[s] = 0;
   }
 
   read_profiles(profilefile);
@@ -186,11 +186,11 @@ void Population::reset_population(int run) {
 
   // init population-strain lists
   int strains = Strain::get_strains();
-  for (int d = 0; d < strains; d++) {
-    exposed[d].clear();
-    infectious[d].clear();
-    attack_rate[d] = 0.0;
-    S[d] = E[d] = I[d] = R[d] = 0;
+  for (int s = 0; s < strains; s++) {
+    exposed[s].clear();
+    infectious[s].clear();
+    attack_rate[s] = 0.0;
+    S[s] = E[s] = I[s] = R[s] = 0;
   }
 
   // add each person to the susceptible list for each place visited
@@ -215,11 +215,11 @@ void Population::update_exposed_population(int day) {
   }
 
   int strains = Strain::get_strains();
-  for (int d = 0; d < strains; d++) {
+  for (int s = 0; s < strains; s++) {
 
-    for (it = exposed[d].begin(); it != exposed[d].end(); it++) {
+    for (it = exposed[s].begin(); it != exposed[s].end(); it++) {
       p = *it;
-      if (pop[p].get_infectious_date(d) == day) {
+      if (pop[p].get_infectious_date(s) == day) {
 	TempList.push(p);
       }
     }
@@ -227,13 +227,13 @@ void Population::update_exposed_population(int day) {
     if (Verbose > 1) {
       fprintf(Statusfp,
 	      "update_the_exposed: new infectious for day %d strain %d = %d\n",
-	      day, d, (int) TempList.size());
+	      day, s, (int) TempList.size());
       fflush(Statusfp);
     }
 
     while (!TempList.empty()) {
       p = TempList.top();
-      pop[p].make_infectious(d);
+      pop[p].make_infectious(s);
       TempList.pop();
     }
   }
@@ -251,13 +251,13 @@ void Population::update_infectious_population(int day) {
   }
 
   int strains = Strain::get_strains();
-  for (int d = 0; d < strains; d++) {
+  for (int s = 0; s < strains; s++) {
 
-    for (it = infectious[d].begin(); it != infectious[d].end(); it++) {
+    for (it = infectious[s].begin(); it != infectious[s].end(); it++) {
       p = *it;
-      // printf("inf = %d recov = %d\n", p, pop[p].get_recovered_date(d));
+      // printf("inf = %d recov = %d\n", p, pop[p].get_recovered_date(s));
       // fflush(stdout);
-      if (pop[p].get_recovered_date(d) == day) {
+      if (pop[p].get_recovered_date(s) == day) {
 	TempList.push(p);
       }
     }
@@ -266,7 +266,7 @@ void Population::update_infectious_population(int day) {
     while (!TempList.empty()) {
       p = TempList.top();
       // printf("top = %d\n", p ); fflush(stdout);
-      pop[p].make_recovered(d);
+      pop[p].make_recovered(s);
       TempList.pop();
     }
   }
@@ -293,16 +293,16 @@ void Population::update_population_stats(int day) {
   }
 
   int strains = Strain::get_strains();
-  for (int d = 0; d < strains; d++) {
-    S[d] = E[d] = I[d] = R[d] = 0;
+  for (int s = 0; s < strains; s++) {
+    S[s] = E[s] = I[s] = R[s] = 0;
     for (int p = 0; p < pop_size; p++) {
-      char status = pop[p].get_strain_status(d);
-      S[d] += (status == 'S');
-      E[d] += (status == 'E');
-      I[d] += (status == 'I') || (status == 'i');
-      R[d] += (status == 'R');
+      char status = pop[p].get_strain_status(s);
+      S[s] += (status == 'S');
+      E[s] += (status == 'E');
+      I[s] += (status == 'I') || (status == 'i');
+      R[s] += (status == 'R');
     }
-    attack_rate[d] = (100.0*(E[d]+I[d]+R[d]))/pop_size;
+    attack_rate[s] = (100.0*(E[s]+I[s]+R[s]))/pop_size;
   }
 }
 
@@ -314,17 +314,17 @@ void Population::print_population_stats(int day) {
   }
 
   int strains = Strain::get_strains();
-  for (int d = 0; d < strains; d++) {
-    int N = S[d]+E[d]+I[d]+R[d];
+  for (int s = 0; s < strains; s++) {
+    int N = S[s]+E[s]+I[s]+R[s];
     fprintf(Outfp,
 	    "Day %3d  Str %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n",
-	    day, d, S[d], E[d], I[d], R[d], N, attack_rate[d]);
+	    day, s, S[s], E[s], I[s], R[s], N, attack_rate[s]);
     fflush(Outfp);
 
     if (Verbose) {
       fprintf(Statusfp,
 	      "Day %3d  Str %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n\n",
-	      day, d, S[d], E[d], I[d], R[d], N, attack_rate[d]);
+	      day, s, S[s], E[s], I[s], R[s], N, attack_rate[s]);
       fflush(Statusfp);
     }
   }

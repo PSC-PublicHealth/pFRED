@@ -63,10 +63,10 @@ void Place::setup(int loc, char *lab, double lon, double lat, int cont) {
 void Place::reset() {
   N = 0;
   int strains = Strain::get_strains();
-  for (int d = 0; d < strains; d++) {
-    susceptibles[d].clear();
-    infectious[d].clear();
-    Sympt[d] = S[d] = I[d] = 0;
+  for (int s = 0; s < strains; s++) {
+    susceptibles[s].clear();
+    infectious[s].clear();
+    Sympt[s] = S[s] = I[s] = 0;
   }
   if (Verbose > 2) {
     printf("reset place: %d\n", id);
@@ -146,27 +146,27 @@ void Place::spread_infection(int day) {
   vector<int>::iterator itr;
 
   int strains = Strain::get_strains();
-  for (int d = 0; d < strains; d++) {
-    if (Verbose > 1) { print(d); }
+  for (int s = 0; s < strains; s++) {
+    if (Verbose > 1) { print(s); }
     if (N < 2) return;
-    if (S[d] == 0) continue;
+    if (S[s] == 0) continue;
 
     // expected number of susceptible contacts for each infectious person
-    double contacts = get_contacts_per_day(d) * ((double) S[d]) / ((double) (N-1));
+    double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
     if (Verbose > 1) {
       printf("expected suscept contacts = %f\n", contacts);
       fflush(stdout);
     }
     
     // expected u.b. on number of contacts resulting in infection (per infective)
-    contacts *= Strain::get_beta(d);
+    contacts *= Strain::get_beta(s);
     if (Verbose > 1) {
-      printf("beta = %f\n", Strain::get_beta(d));
+      printf("beta = %f\n", Strain::get_beta(s));
       printf("effective contacts = %f\n", contacts);
       fflush(stdout);
     }
 
-    for (itr = infectious[d].begin(); itr != infectious[d].end(); itr++) {
+    for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
       int i = *itr;				// infectious indiv
 
       if (Verbose > 1) { printf("infectious %d here?\n", i); }
@@ -177,9 +177,9 @@ void Place::spread_infection(int day) {
       if (Verbose > 1) { printf("infected = %d\n", i); }
 
       // reduce number of infective contact events by my infectivity
-      double my_contacts = contacts * Pop.get_infectivity(i,d);
+      double my_contacts = contacts * Pop.get_infectivity(i,s);
       if (Verbose > 1) {
-	printf("infectivity = %f\n", Pop.get_infectivity(i,d));
+	printf("infectivity = %f\n", Pop.get_infectivity(i,s));
 	printf("my effective contacts = %f\n", my_contacts);
 	fflush(stdout);
       }
@@ -196,25 +196,28 @@ void Place::spread_infection(int day) {
       // get susceptible target for each contact resulting in infection
       for (int c = 0; c < contact_count; c++) {
 	double r = RANDOM();
-	// int pos = IRAND(0, S[d]-1);
-	int pos = (int) (r*S[d]);
-	int s = susceptibles[d][pos];
-	if (Verbose > 1) { printf("my possible victim = %d  r = %f  pos = %d  S[d] = %d\n",s, r, pos, S[d]); }
+	// int pos = IRAND(0, S[s]-1);
+	int pos = (int) (r*S[s]);
+	int sus = susceptibles[s][pos];
+	if (Verbose > 1) {
+	  printf("my possible victim = %d  r = %f  pos = %d  S[d] = %d\n",
+		 sus, r, pos, S[s]);
+	}
 
 	// is the victim here today, and still susceptible?
-	if (Pop.is_place_on_schedule_for_person(s,day,id) && Pop.get_strain_status(s,d) == 'S') {
+	if (Pop.is_place_on_schedule_for_person(sus,day,id) && Pop.get_strain_status(sus,s) == 'S') {
 
 	  // compute transmission prob for this type of individuals
-	  double transmission_prob = get_transmission_prob(d,i,s);
+	  double transmission_prob = get_transmission_prob(s,i,sus);
 
 	  // get the victim's susceptibility
-	  double susceptibility = Pop.get_susceptibility(s,d);
+	  double susceptibility = Pop.get_susceptibility(sus,s);
 
 	  double r = RANDOM();
 	  if (r < transmission_prob*susceptibility) {
-	    if (Verbose > 1) { printf("infection from %d to %d  r = %f\n",i,s,r); }
-	    Pop.make_exposed(s, d, i, id, type, day);
-	    Pop.add_infectee(i,d);
+	    if (Verbose > 1) { printf("infection from %d to %d  r = %f\n",i,sus,r); }
+	    Pop.make_exposed(sus, s, i, id, type, day);
+	    Pop.add_infectee(i,s);
 	  }
 	  else {
 	    if (Verbose > 1) { printf("no infection\n"); }
@@ -223,8 +226,8 @@ void Place::spread_infection(int day) {
 	else {
 	  if (Verbose > 1) {
 	    printf("victim not here today, or not still susceptible\n");
-	    printf ("%s here", Pop.is_place_on_schedule_for_person(s,day,id)? "is": "is not");
-	    printf("strain status = %c\n", Pop.get_strain_status(s,d));
+	    printf ("%s here", Pop.is_place_on_schedule_for_person(sus,day,id)? "is": "is not");
+	    printf("strain status = %c\n", Pop.get_strain_status(sus,s));
 	    fflush(stdout);
 	  }
 	}
