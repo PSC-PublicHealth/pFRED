@@ -19,14 +19,16 @@
 #include "Demographics.hpp";
 #include "Behavior.hpp"
 #include "Health.hpp"
+#include "Perceptions.hpp"
 
 void Person::setup(int i, int a, char g, int m, int o, int p, Place *h,
 		   Place *n, Place *s, Place *c, Place *w, Place *off, int pro) 
 {
   id = i;
   demographics = new Demographics(a,g,'U',m,p);
-  behavior = new Behavior(h,n,s,c,w,off,pro);
   health = new Health(id);
+  behavior = new Behavior(h,n,s,c,w,off,pro);
+  perceptions = new Perceptions();
 }
   
 void Person::print(int strain) {
@@ -73,12 +75,6 @@ void Person::make_susceptible() {
     behavior->make_susceptible(id, s);
   }
 }
-
-///////////////////////////////////////////////////////////////////////
-//
-// Determines the transition dates for this person.
-//
-///////////////////////////////////////////////////////////////////////
 
 void Person::make_exposed(int strain, int per, int place, char type, int day) {
   health->make_exposed(id, strain, per, place, type, day);

@@ -19,12 +19,14 @@ class Place;
 class Demographics;
 class Health;
 class Behavior;
+class Perceptions;
 
 class Person {
   int id;
   Demographics * demographics;
   Health * health;
   Behavior * behavior;
+  Perceptions * perceptions;
 
 public:
   Person() {}
