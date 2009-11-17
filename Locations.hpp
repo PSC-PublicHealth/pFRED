@@ -28,11 +28,12 @@ public:
   void delete_infectious_from_place(int id, int strain, int per);
   char get_type_of_place(int id);
   int location_should_be_open(int loc, int strain, int day);
+  Place * get_location(int loc);
 
 private:
   char locfile[80];
-  int locations;
   Place ** location;
+  int locations;
 };
 
 

@@ -16,6 +16,7 @@
 #include "Population.hpp"
 #include "Strain.hpp"
 #include "Person.hpp"
+#include "Behavior.hpp"
 
 double * Hospital_contacts_per_day;
 double *** Hospital_contact_prob;

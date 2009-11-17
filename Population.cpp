@@ -100,15 +100,21 @@ void Population::read_population() {
     int school, classroom, work, office, profile;
     char sex;
 
-    // fprintf(Statusfp, "reading person %d\n", p); fflush(Statusfp);
+    // fprintf(Statusfp, "reading person %d\n", p); fflush(Statusfp); // DEBUG
     if (fscanf(fp, "%d %d %c %d %d %d %d %d %d %d %d %d %d",
 	       &id, &age, &sex, &married, &occ, &prof, &house, &hood, &school,
 	       &classroom, &work, &office, &profile) != 13) {
       fprintf(Statusfp, "Help! Read failure for person %d\n", p);
       abort();
     }
-    pop[p].setup(id, age, sex, married, occ, prof, house, hood, school,
-		 classroom, work, office, profile);
+    pop[p].setup(id, age, sex, married, occ, prof,
+		 Loc.get_location(house),
+		 Loc.get_location(hood),
+		 Loc.get_location(school),
+		 Loc.get_location(classroom),
+		 Loc.get_location(work),
+		 Loc.get_location(office),
+		 profile);
     pop[p].make_susceptible();
   }
   fclose(fp);
@@ -366,7 +372,8 @@ int Population::get_age(int per) {
 }
 
 int Population::get_role(int per, int strain) {
-  return pop[per].get_role(strain);
+  // return pop[per].get_role(strain);
+  return 0;
 }
 
 char Population::get_strain_status(int per, int strain) {

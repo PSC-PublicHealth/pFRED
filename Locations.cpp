@@ -286,8 +286,8 @@ void Locations::process_infectious_locations(int day) {
     // get list of infectious locations:
     for (itr = Pop.infectious[s].begin(); itr != Pop.infectious[s].end(); itr++) {
       int p = *itr;
-      if (Verbose > 3) {
-	fprintf(Statusfp, "day=%d p=%d\n", day, p);
+      if (Verbose > 1) {
+	fprintf(Statusfp, "day %d infectious person %d \n", day, p);
 	fflush(Statusfp);
       }
       int n;
@@ -379,4 +379,11 @@ char Locations::get_type_of_place(int id) {
 
 int Locations::location_should_be_open(int loc, int strain, int day) {
   return location[loc]->should_be_open(day, strain);
+}
+
+Place * Locations::get_location(int loc) {
+  if (0 <= loc && loc < locations)
+    return location[loc];
+  else
+    return NULL;
 }

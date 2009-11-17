@@ -9,7 +9,7 @@ CPPFLAGS = -O2 -Wall
 %.o:%.cpp %.hpp
 	$(CPP) $(CPPFLAGS) -c $< $(INCLUDES)
 
-OBJ = Classroom.o Community.o Hospital.o Household.o Locations.o \
+OBJ = Behavior.o Classroom.o Community.o Demographics.o Health.o Hospital.o Household.o Locations.o \
 Neighborhood.o Office.o Params.o Place.o Person.o Population.o Profile.o \
 Random.o School.o Strain.o Workplace.o
 
