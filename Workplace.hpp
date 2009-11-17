@@ -20,8 +20,8 @@ public:
   ~Workplace() {}
   Workplace(int,char*,double,double,int);
   void get_parameters(int strains);
-  int get_group_type(int strain, int per);
-  double get_transmission_prob(int strain, int i, int s);
+  int get_group_type(int strain, Person * per);
+  double get_transmission_prob(int strain, Person * i, Person * s);
   double get_contacts_per_day(int strain);
 };
 

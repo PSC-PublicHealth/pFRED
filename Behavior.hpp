@@ -21,6 +21,7 @@
 #define DOCTOR 'D'
 
 class Place;
+class Person;
 
 class Behavior {
 public:
@@ -30,9 +31,9 @@ public:
   int is_on_schedule(int id, int day, int loc, int sympt);
   void print_schedule(int id);
   int get_favorite_places() { return favorite_places; }
-  void make_susceptible(int id, int strain);
-  void make_infectious(int id, int strain, int exposure_date);
-  void make_recovered(int id, int strain, int exposure_date);
+  void make_susceptible(Person * per, int strain);
+  void make_infectious(Person * per, int strain, int exposure_date);
+  void make_recovered(Person * per, int strain, int exposure_date);
 
 private:
   int profile;				 // index of usual visit pattern

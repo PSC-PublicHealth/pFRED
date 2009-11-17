@@ -26,6 +26,8 @@ using namespace std;
 #define HOSPITAL 'M'
 #define COMMUNITY 'X'
 
+class Person;
+
 class Place {
 
 protected:
@@ -37,14 +39,14 @@ protected:
   double latitude;				// geo location
   double longitude;				// geo location
   int N;			   // total number of potential visitors
-  vector <int> *susceptibles;		 // list of susceptible visitors
-  vector <int> *infectious;		  // list of infectious visitors
+  vector <Person *> *susceptibles;	 // list of susceptible visitors
+  vector <Person *> *infectious;	  // list of infectious visitors
   int *S;					// susceptible count
   int *I;					// infectious count
   int *Sympt;					// symtomatics count
   int close_date;			     // when to close this place
   int open_date;			      // when to open this place
-  int indiv_types;			   // straintinct types of visitors
+  int indiv_types;			   // distinct types of visitors
 
   // strain parameters
   double *beta;	       // place-independent transmissibility per contact
@@ -55,18 +57,18 @@ public:
   void setup(int loc, char *lab, double lon, double lat, int cont);
   void reset();
   void print(int strain);
-  void add_susceptible(int strain, int per);
-  void delete_susceptible(int strain, int per);
+  void add_susceptible(int strain, Person * per);
+  void delete_susceptible(int strain, Person * per);
   void print_susceptibles(int strain);
-  void add_infectious(int strain, int per);
-  void delete_infectious(int strain, int per);
+  void add_infectious(int strain, Person * per);
+  void delete_infectious(int strain, Person * per);
   void print_infectious(int strain);
   void spread_infection(int day);
   int is_open(int day);
 
   virtual void get_parameters() {}
-  virtual int get_group_type(int strain, int per) { return 0; }
-  virtual double get_transmission_prob(int strain, int i, int s) { return 1.0; }
+  virtual int get_group_type(int strain, Person * per) { return 0; }
+  virtual double get_transmission_prob(int strain, Person * i, Person * s) { return 1.0; }
   virtual int should_be_open(int day, int strain) { return 1; }
   virtual double get_contacts_per_day(int strain) { return 0; }
 
@@ -89,7 +91,6 @@ public:
   void set_longitude(double x) { longitude = x; }
   void set_close_date(int day) { close_date = day; }
   void set_open_date(int day) { open_date = day; }
-
 };
 
 #endif // _FRED_PLACE_H

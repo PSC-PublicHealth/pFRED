@@ -13,7 +13,7 @@
 #include "Global.hpp"
 #include "Params.hpp"
 #include "Random.hpp"
-#include "Population.hpp"
+#include "Person.hpp"
 #include "Strain.hpp"
 
 double * Household_contacts_per_day;
@@ -72,13 +72,13 @@ void Household::get_parameters(int strains) {
   Household_parameters_set = 1;
 }
 
-int Household::get_group_type(int strain, int per) {
-  int age = Pop.get_age(per);
+int Household::get_group_type(int strain, Person * per) {
+  int age = per->get_age();
   if (age < 18) { return 0; }
   else { return 1; }
 }
 
-double Household::get_transmission_prob(int strain, int i, int s) {
+double Household::get_transmission_prob(int strain, Person * i, Person * s) {
   // i = infected agent
   // s = susceptible agent
   int row = get_group_type(strain, i);

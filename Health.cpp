@@ -106,6 +106,12 @@ void Health::make_susceptible(int id, int strain) {
   infectivity[strain] = 0.0;
 }
 
+///////////////////////////////////////////////////////////////////////
+//
+// Determines the transition dates for this person.
+//
+///////////////////////////////////////////////////////////////////////
+
 void Health::make_exposed(int id, int strain, int per, int place, char type, int day) {
   if (Verbose > 1) { fprintf(Statusfp, "EXPOSED person %d\n", id); }
   strain_status[strain] = 'E';

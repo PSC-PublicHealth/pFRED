@@ -15,6 +15,7 @@
 #include "Place.hpp"
 #include "Random.hpp"
 #include "Strain.hpp"
+#include "Person.hpp"
 
 Behavior::Behavior (Place *h, Place *n, Place *s, Place *c, Place *w, Place *off, int pro) {
   favorite_place = new Place * [MAX_PLACES];
@@ -31,10 +32,10 @@ Behavior::Behavior (Place *h, Place *n, Place *s, Place *c, Place *w, Place *off
   scheduled_places = 0;
 }
 
-void Behavior::make_susceptible(int id, int strain) {
+void Behavior::make_susceptible(Person *per, int strain) {
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
-    favorite_place[p]->add_susceptible(strain, id);
+    favorite_place[p]->add_susceptible(strain, per);;
   }
   schedule_updated = -1;
   scheduled_places = 0;
@@ -124,21 +125,21 @@ void Behavior::get_schedule(int *n, int *sched) {
     sched[i] = schedule[i]->get_id();
 }
 
-void Behavior::make_infectious(int id, int strain, int exposure_date) {
+void Behavior::make_infectious(Person * per, int strain, int exposure_date) {
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
-    favorite_place[p]->delete_susceptible(strain, id);
+    favorite_place[p]->delete_susceptible(strain, per);
     if (Test == 0 || exposure_date == 0) {
-      favorite_place[p]->add_infectious(strain, id);
+      favorite_place[p]->add_infectious(strain, per);
     }
   }
 }
 
-void Behavior::make_recovered(int id, int strain, int exposure_date) {
+void Behavior::make_recovered(Person * per, int strain, int exposure_date) {
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
     if (Test == 0 || exposure_date == 0)
-      favorite_place[p]->delete_infectious(strain, id);
+      favorite_place[p]->delete_infectious(strain, per);
   }
 }
 

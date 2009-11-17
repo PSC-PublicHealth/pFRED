@@ -13,7 +13,7 @@
 #include "Global.hpp"
 #include "Params.hpp"
 #include "Random.hpp"
-#include "Population.hpp"
+#include "Person.hpp"
 #include "Strain.hpp"
 
 double * Office_contacts_per_day;
@@ -72,11 +72,11 @@ void Office::get_parameters(int strains) {
   Office_parameters_set = 1;
 }
 
-int Office::get_group_type(int strain, int per) {
+int Office::get_group_type(int strain, Person * per) {
   return 0;
 }
 
-double Office::get_transmission_prob(int strain, int i, int s) {
+double Office::get_transmission_prob(int strain, Person * i, Person * s) {
   // i = infected agent
   // s = susceptible agent
   int row = get_group_type(strain, i);

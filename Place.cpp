@@ -13,7 +13,7 @@
 #include "Global.hpp"
 #include "Params.hpp"
 #include "Random.hpp"
-#include "Population.hpp"
+#include "Person.hpp"
 #include "Strain.hpp"
 
 void Place::setup(int loc, char *lab, double lon, double lat, int cont) {
@@ -25,13 +25,13 @@ void Place::setup(int loc, char *lab, double lon, double lat, int cont) {
   longitude = lon;
   latitude = lat;
 
-  susceptibles = new (nothrow) vector<int> [strains];
+  susceptibles = new (nothrow) vector<Person *> [strains];
   if (susceptibles == NULL) {
     printf("Help! susceptibles allocation failure\n");
     abort();
   }
 
-  infectious = new (nothrow) vector<int> [strains];
+  infectious = new (nothrow) vector<Person *> [strains];
   if (infectious == NULL) {
     printf("Help! infectious allocation failure\n");
     abort();
@@ -81,16 +81,16 @@ void Place::print(int strain) {
   fflush(stdout);
 }
 
-void Place::add_susceptible(int strain, int per) {
+void Place::add_susceptible(int strain, Person * per) {
   susceptibles[strain].push_back(per);
   S[strain]++;
   if (strain == 0) { N++; }
 }
 
 
-void Place::delete_susceptible(int strain, int per) {
+void Place::delete_susceptible(int strain, Person * per) {
   int s = (int) susceptibles[strain].size();
-  int last = susceptibles[strain][s-1];
+  Person * last = susceptibles[strain][s-1];
   for (int i = 0; i < s; i++) {
     if (susceptibles[strain][i] == per) {
       susceptibles[strain][i] = last;
@@ -101,26 +101,26 @@ void Place::delete_susceptible(int strain, int per) {
 }
 
 void Place::print_susceptibles(int strain) {
-  vector<int>::iterator itr;
+  vector<Person *>::iterator itr;
   for (itr = susceptibles[strain].begin();
        itr != susceptibles[strain].end(); itr++) {
-    printf(" %d", *itr);
+    printf(" %d", (*itr)->get_id());
   }
   printf("\n");
 }
 
 
-void Place::add_infectious(int strain, int per) {
+void Place::add_infectious(int strain, Person * per) {
   infectious[strain].push_back(per);
   I[strain]++;
-  if (Pop.get_strain_status(per, strain) == 'I') {
+  if (per->get_strain_status(strain) == 'I') {
     Sympt[strain]++;
   }
 }
 
-void Place::delete_infectious(int strain, int per) {
+void Place::delete_infectious(int strain, Person * per) {
   int s = (int) infectious[strain].size();
-  int last = infectious[strain][s-1];
+  Person * last = infectious[strain][s-1];
   for (int i = 0; i < s; i++) {
     if (infectious[strain][i] == per) {
       infectious[strain][i] = last;
@@ -128,22 +128,22 @@ void Place::delete_infectious(int strain, int per) {
     }
   }
   I[strain]--;
-  if (Pop.get_strain_status(per, strain)=='I') {
+  if (per->get_strain_status(strain)=='I') {
     Sympt[strain]--;
   }
 }
 
 void Place::print_infectious(int strain) {
-  vector<int>::iterator itr;
+  vector<Person *>::iterator itr;
   for (itr = infectious[strain].begin();
        itr != infectious[strain].end(); itr++) {
-    printf(" %d", *itr);
+    printf(" %d", (*itr)->get_id());
   }
   printf("\n");
 }
 
 void Place::spread_infection(int day) {
-  vector<int>::iterator itr;
+  vector<Person *>::iterator itr;
 
   int strains = Strain::get_strains();
   for (int s = 0; s < strains; s++) {
@@ -167,19 +167,19 @@ void Place::spread_infection(int day) {
     }
 
     for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
-      int i = *itr;				// infectious indiv
+      Person * i = *itr;				// infectious indiv
 
-      if (Verbose > 1) { printf("infectious %d here?\n", i); }
+      if (Verbose > 1) { printf("infectious %d here?\n", i->get_id()); }
 
       // skip if this infected did not visit today
-      if (!Pop.is_place_on_schedule_for_person(i, day, id)) continue;
+      if (!i->is_on_schedule(day, id)) continue;
 
-      if (Verbose > 1) { printf("infected = %d\n", i); }
+      if (Verbose > 1) { printf("infected = %d\n", i->get_id()); }
 
       // reduce number of infective contact events by my infectivity
-      double my_contacts = contacts * Pop.get_infectivity(i,s);
+      double my_contacts = contacts * i->get_infectivity(s);
       if (Verbose > 1) {
-	printf("infectivity = %f\n", Pop.get_infectivity(i,s));
+	printf("infectivity = %f\n", i->get_infectivity(s));
 	printf("my effective contacts = %f\n", my_contacts);
 	fflush(stdout);
       }
@@ -196,28 +196,31 @@ void Place::spread_infection(int day) {
       // get susceptible target for each contact resulting in infection
       for (int c = 0; c < contact_count; c++) {
 	double r = RANDOM();
-	// int pos = IRAND(0, S[s]-1);
 	int pos = (int) (r*S[s]);
-	int sus = susceptibles[s][pos];
+	// int pos = IRAND(0, S[s]-1);
+	Person * sus = susceptibles[s][pos];
 	if (Verbose > 1) {
 	  printf("my possible victim = %d  r = %f  pos = %d  S[d] = %d\n",
-		 sus, r, pos, S[s]);
+		 sus->get_id(), r, pos, S[s]);
 	}
 
 	// is the victim here today, and still susceptible?
-	if (Pop.is_place_on_schedule_for_person(sus,day,id) && Pop.get_strain_status(sus,s) == 'S') {
+	if (sus->is_on_schedule(day,id) && sus->get_strain_status(s) == 'S') {
 
 	  // compute transmission prob for this type of individuals
 	  double transmission_prob = get_transmission_prob(s,i,sus);
 
 	  // get the victim's susceptibility
-	  double susceptibility = Pop.get_susceptibility(sus,s);
+	  double susceptibility = sus->get_susceptibility(s);
 
 	  double r = RANDOM();
 	  if (r < transmission_prob*susceptibility) {
-	    if (Verbose > 1) { printf("infection from %d to %d  r = %f\n",i,sus,r); }
-	    Pop.make_exposed(sus, s, i, id, type, day);
-	    Pop.add_infectee(i,s);
+	    if (Verbose > 1) {
+	      printf("infection from %d to %d  r = %f\n",
+		     i->get_id(),sus->get_id(),r);
+	    }
+	    sus->make_exposed(s, i->get_id(), id, type, day);
+	    i->add_infectee(s);
 	  }
 	  else {
 	    if (Verbose > 1) { printf("no infection\n"); }
@@ -226,8 +229,8 @@ void Place::spread_infection(int day) {
 	else {
 	  if (Verbose > 1) {
 	    printf("victim not here today, or not still susceptible\n");
-	    printf ("%s here", Pop.is_place_on_schedule_for_person(sus,day,id)? "is": "is not");
-	    printf("strain status = %c\n", Pop.get_strain_status(sus,s));
+	    printf ("%s here", sus->is_on_schedule(day,id)? "is": "is not");
+	    printf("strain status = %c\n", sus->get_strain_status(s));
 	    fflush(stdout);
 	  }
 	}

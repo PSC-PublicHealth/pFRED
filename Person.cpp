@@ -72,20 +72,20 @@ void Person::make_susceptible() {
   int strains = Strain::get_strains();
   for (int s = 0; s < strains; s++) {
     health->make_susceptible(id, s);
-    behavior->make_susceptible(id, s);
+    behavior->make_susceptible(this, s);
   }
 }
 
 void Person::make_exposed(int strain, int per, int place, char type, int day) {
   health->make_exposed(id, strain, per, place, type, day);
-  Pop.insert_into_exposed_list(strain, id);
+  Pop.insert_into_exposed_list(strain, this);
 }
   
 void Person::make_infectious(int strain) {
   health->make_infectious(id, strain);
-  behavior->make_infectious(id, strain, health->get_exposure_date(strain));
-  Pop.remove_from_exposed_list(strain, id);
-  Pop.insert_into_infectious_list(strain, id);
+  behavior->make_infectious(this, strain, health->get_exposure_date(strain));
+  Pop.remove_from_exposed_list(strain, this);
+  Pop.insert_into_infectious_list(strain, this);
 }
 
 void Person::make_recovered(int strain) {
@@ -95,8 +95,8 @@ void Person::make_recovered(int strain) {
     print_out(strain);
     fflush(Statusfp);
   }
-  behavior->make_recovered(id, strain, health->get_exposure_date(strain));
-  Pop.remove_from_infectious_list(strain, id);
+  behavior->make_recovered(this, strain, health->get_exposure_date(strain));
+  Pop.remove_from_infectious_list(strain, this);
 
   // print recovered agents into Trace file
   print(strain);

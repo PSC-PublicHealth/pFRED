@@ -13,7 +13,7 @@
 #include "Global.hpp"
 #include "Params.hpp"
 #include "Random.hpp"
-#include "Population.hpp"
+#include "Person.hpp"
 #include "Strain.hpp"
 
 double * Classroom_contacts_per_day;
@@ -79,15 +79,15 @@ void Classroom::get_parameters(int strains) {
   Classroom_parameters_set = 1;
 }
 
-int Classroom::get_group_type(int strain, int per) {
-  int age = Pop.get_age(per);
+int Classroom::get_group_type(int strain, Person * per) {
+  int age = per->get_age();
   if (age <12) { return 0; }
   else if (age < 16) { return 1; }
   else if (age < 19) { return 2; }
   else return 3;
 }
 
-double Classroom::get_transmission_prob(int strain, int i, int s) {
+double Classroom::get_transmission_prob(int strain, Person * i, Person * s) {
   // i = infected agent
   // s = susceptible agent
   int row = get_group_type(strain, i);

@@ -27,6 +27,7 @@
 #include "Household.hpp"
 #include "Hospital.hpp"
 #include "Params.hpp"
+#include "Person.hpp"
 
 void Locations::get_location_parameters() {
 }
@@ -268,7 +269,8 @@ void Locations::location_quality_control() {
 
 void Locations::process_infectious_locations(int day) {
   set <int> places;
-  set<int>::iterator itr;
+  set<Person *>::iterator itr;
+  set<int>::iterator it;
 
   if (Verbose) {
     fprintf(Statusfp, "process infectious locations for day %d\n", day);
@@ -285,15 +287,15 @@ void Locations::process_infectious_locations(int day) {
 
     // get list of infectious locations:
     for (itr = Pop.infectious[s].begin(); itr != Pop.infectious[s].end(); itr++) {
-      int p = *itr;
+      Person * p = *itr;
       if (Verbose > 1) {
-	fprintf(Statusfp, "day %d infectious person %d \n", day, p);
+	fprintf(Statusfp, "day %d infectious person %d \n", day, p->get_id());
 	fflush(Statusfp);
       }
       int n;
       int schedule[100];
-      Pop.update_schedule(p, day);
-      Pop.get_schedule(p, &n, schedule);
+      p->update_schedule(day);
+      p->get_schedule(&n, schedule);
 
       /*
       printf("size of schedule = %d\n", n); fflush(stdout);
@@ -316,8 +318,8 @@ void Locations::process_infectious_locations(int day) {
   }
   
   // infect visitors to infectious locations:
-  for (itr = places.begin(); itr != places.end(); itr++ ) {
-    int loc = *itr;
+  for (it = places.begin(); it != places.end(); it++ ) {
+    int loc = *it;
     if (Verbose > 1) {
       fprintf(Statusfp, "\nspread in location: %d\n", loc); fflush(Statusfp);
     }
@@ -333,44 +335,6 @@ void Locations::process_infectious_locations(int day) {
 
 int Locations::get_open_status(int loc, int day) {
   return location[loc]->is_open(day);
-}
-
-void Locations::add_susceptible_to_place(int id, int strain, int per) {
-  location[id]->add_susceptible(strain, per);
-  if (Verbose > 2) {
-    fprintf(Statusfp, "place %d S %d\n", id, location[id]->get_S(strain));
-    fflush(Statusfp);
-  }
-}
-
-void Locations::delete_susceptible_from_place(int id, int strain, int per) {
-  location[id]->delete_susceptible(strain, per);
-  if (Verbose > 2) {
-    fprintf(Statusfp, "place %d S %d\n", id, location[id]->get_S(strain));
-    fflush(Statusfp);
-  }
-}
-
-void Locations::add_infectious_to_place(int id, int strain, int per) {
-  location[id]->add_infectious(strain, per);
-  if (Verbose > 2) {
-    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(strain));
-    fflush(Statusfp);
-  }
-}
-
-void Locations::delete_infectious_from_place(int id, int strain, int per) {
-  if (Verbose > 2) {
-    fprintf(Statusfp, "delete infectious person %d from place %d I %d\n",
-	    per, id, location[id]->get_I(strain));
-    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(strain));
-    fflush(Statusfp);
-  }
-  location[id]->delete_infectious(strain, per);
-  if (Verbose > 2) {
-    fprintf(Statusfp, "place %d I %d\n", id, location[id]->get_I(strain));
-    fflush(Statusfp);
-  }
 }
 
 char Locations::get_type_of_place(int id) {

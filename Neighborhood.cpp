@@ -13,7 +13,7 @@
 #include "Global.hpp"
 #include "Params.hpp"
 #include "Random.hpp"
-#include "Population.hpp"
+#include "Person.hpp"
 #include "Strain.hpp"
 
 double * Neighborhood_contacts_per_day;
@@ -81,13 +81,13 @@ void Neighborhood::get_parameters(int strains) {
   Neighborhood_parameters_set = 1;
 }
 
-int Neighborhood::get_group_type(int strain, int per) {
-  int age = Pop.get_age(per);
+int Neighborhood::get_group_type(int strain, Person * per) {
+  int age = per->get_age();
   if (age < 18) { return 0; }
   else { return 1; }
 }
 
-double Neighborhood::get_transmission_prob(int strain, int i, int s) {
+double Neighborhood::get_transmission_prob(int strain, Person * i, Person * s) {
   // i = infected agent
   // s = susceptible agent
   int row = get_group_type(strain, i);

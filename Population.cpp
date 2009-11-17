@@ -9,23 +9,21 @@
 // File: Population.cpp
 //
 
+#include <stdio.h>
+#include <new>
 #include "Population.hpp"
 #include "Person.hpp"
-#include <stdio.h>
 #include "Random.hpp"
 #include "Params.hpp"
 #include "Profile.hpp"
-#include <new>
 #include "Strain.hpp"
 #include "Global.hpp"
-
 
 void Population::get_population_parameters() {
   get_param((char *) "popfile", popfile);
   get_param((char *) "profiles", profilefile);
   get_param((char *) "index_cases", &index_cases);
 }
-
 
 void Population::setup_population() {
   if (Verbose) {
@@ -34,10 +32,10 @@ void Population::setup_population() {
   }
 
   int strains = Strain::get_strains();
-  exposed = new (nothrow) set <int> [strains];
+  exposed = new (nothrow) set <Person *> [strains];
   if (exposed == NULL) { printf("Help! exposed allocation failure\n"); abort(); }
 
-  infectious = new (nothrow) set <int> [strains];
+  infectious = new (nothrow) set <Person *> [strains];
   if (infectious == NULL) { printf("Help! infectious allocation failure\n"); abort(); }
 
   S = new (nothrow) int  [strains];
@@ -125,7 +123,6 @@ void Population::read_population() {
 }
 
 
-
 void Population::population_quality_control() {
 
   if (Verbose) {
@@ -211,9 +208,9 @@ void Population::reset_population(int run) {
 }
 
 void Population::update_exposed_population(int day) {
-  int p;
-  set<int>::iterator it;
-  stack <int> TempList;
+  Person * p;
+  set<Person *>::iterator it;
+  stack <Person *> TempList;
 
   if (Verbose > 1) {
     fprintf(Statusfp, "update_the_exposed for day %d\n", day);
@@ -225,7 +222,7 @@ void Population::update_exposed_population(int day) {
 
     for (it = exposed[s].begin(); it != exposed[s].end(); it++) {
       p = *it;
-      if (pop[p].get_infectious_date(s) == day) {
+      if (p->get_infectious_date(s) == day) {
 	TempList.push(p);
       }
     }
@@ -239,7 +236,7 @@ void Population::update_exposed_population(int day) {
 
     while (!TempList.empty()) {
       p = TempList.top();
-      pop[p].make_infectious(s);
+      p->make_infectious(s);
       TempList.pop();
     }
   }
@@ -247,9 +244,9 @@ void Population::update_exposed_population(int day) {
 }
 
 void Population::update_infectious_population(int day) {
-  int p;
-  set<int>::iterator it;
-  stack <int> TempList;
+  Person * p;
+  set<Person *>::iterator it;
+  stack <Person *> TempList;
 
   if (Verbose > 1) {
     fprintf(Statusfp, "update_the_infectious for day %d\n", day);
@@ -261,9 +258,9 @@ void Population::update_infectious_population(int day) {
 
     for (it = infectious[s].begin(); it != infectious[s].end(); it++) {
       p = *it;
-      // printf("inf = %d recov = %d\n", p, pop[p].get_recovered_date(s));
+      // printf("inf = %d recov = %d\n", p->get_id(), p->get_recovered_date(s));
       // fflush(stdout);
-      if (pop[p].get_recovered_date(s) == day) {
+      if (p->get_recovered_date(s) == day) {
 	TempList.push(p);
       }
     }
@@ -271,8 +268,8 @@ void Population::update_infectious_population(int day) {
     // printf("Templist size = %d\n", (int) TempList.size()); fflush(stdout);
     while (!TempList.empty()) {
       p = TempList.top();
-      // printf("top = %d\n", p ); fflush(stdout);
-      pop[p].make_recovered(s);
+      // printf("top = %d\n", p->get_id()); fflush(stdout);
+      p->make_recovered(s);
       TempList.pop();
     }
   }
@@ -342,21 +339,21 @@ void Population::print_population() {
   }
 }
 
-void Population::insert_into_exposed_list(int strain, int per) {
+void Population::insert_into_exposed_list(int strain, Person * per) {
   exposed[strain].insert(per);
 }
 
-void Population::insert_into_infectious_list(int strain, int per) {
+void Population::insert_into_infectious_list(int strain, Person * per) {
   infectious[strain].insert(per);
 }
 
-void Population::remove_from_exposed_list(int strain, int per) {
+void Population::remove_from_exposed_list(int strain, Person * per) {
   exposed[strain].erase(per);
 }
 
-void Population::remove_from_infectious_list(int strain, int per) {
+void Population::remove_from_infectious_list(int strain, Person * per) {
   if (Verbose > 2) {
-    printf("remove from infectious list person %d\n", per);
+    printf("remove from infectious list person %d\n", per->get_id());
     printf("current size of infectious list = %d\n", (int) infectious[strain].size());
     fflush(stdout);
   }
@@ -365,47 +362,6 @@ void Population::remove_from_infectious_list(int strain, int per) {
     printf("final size of infectious list = %d\n", (int) infectious[strain].size());
     fflush(stdout);
   }
-}
-
-int Population::get_age(int per) {
-  return pop[per].get_age();
-}
-
-int Population::get_role(int per, int strain) {
-  // return pop[per].get_role(strain);
-  return 0;
-}
-
-char Population::get_strain_status(int per, int strain) {
-  return pop[per].get_strain_status(strain);
-}
-
-int Population::is_place_on_schedule_for_person(int per, int day, int loc) {
-  return pop[per].is_on_schedule(day, loc);
-}
-
-double Population::get_infectivity(int per, int strain) {
-  return pop[per].get_infectivity(strain);
-}
-
-double Population::get_susceptibility(int per, int strain) {
-  return pop[per].get_susceptibility(strain);
-}
-
-void Population::make_exposed(int per, int strain, int infector, int loc, char type, int day) {
-  pop[per].make_exposed(strain, infector, loc, type, day);
-}
-
-void Population::add_infectee(int per, int strain) {
-  pop[per].add_infectee(strain);
-}
-
-void Population::update_schedule(int per, int day) {
-  pop[per].update_schedule(day);
-}
-
-void Population::get_schedule(int per, int *n, int *schedule) {
-  pop[per].get_schedule(n, schedule);
 }
 
 double Population::get_attack_rate(int strain) {
