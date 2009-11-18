@@ -25,17 +25,14 @@ public:
   void read_population();
   void reset_population(int run);
   void population_quality_control();
-  void update_exposed_population(int day);
-  void update_infectious_population(int day);
-  void update_population_behaviors(int day);
-  void update_population_stats(int day);
-  void print_population_stats(int day);
+  void start_outbreak();
+  void update(int day);
+  void report(int day);
   void print_population();
   void insert_into_exposed_list(int d, Person * p);
   void insert_into_infectious_list(int d, Person * p);
   void remove_from_exposed_list(int d, Person * p);
   void remove_from_infectious_list(int d, Person * p);
-  void start_outbreak();
   double get_attack_rate(int strain);
   set <Person *> *infectious;
 
@@ -51,6 +48,11 @@ private:
   int *I;
   int *R;
   double * attack_rate;
+  void update_exposed_population(int day);
+  void update_infectious_population(int day);
+  void update_population_behaviors(int day);
+  void update_population_stats(int day);
+  void print_population_stats(int day);
 };
 
 #endif // _FRED_POPULATION_H

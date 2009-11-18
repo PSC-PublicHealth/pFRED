@@ -219,7 +219,7 @@ void Place::spread_infection(int day) {
 	      printf("infection from %d to %d  r = %f\n",
 		     i->get_id(),sus->get_id(),r);
 	    }
-	    sus->make_exposed(s, i->get_id(), id, type, day);
+	    sus->become_exposed(s, i->get_id(), id, type, day);
 	    i->add_infectee(s);
 	  }
 	  else {

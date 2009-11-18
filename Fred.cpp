@@ -101,12 +101,8 @@ void run_sim(int run) {
   Pop.start_outbreak();
   for (int day = 0; day < Days; day++) {
     printf("================\nsim day = %d\n", day); fflush(stdout);
-    Pop.update_exposed_population(day);
-    Pop.update_infectious_population(day);
-    Pop.update_population_behaviors(day);
-    Loc.process_infectious_locations(day);
-    Pop.update_population_stats(day);
-    Pop.print_population_stats(day);
+    Pop.update(day);
+    Pop.report(day);
     fprintf(Statusfp, "day %d finished  ", day);
     time(&clock);
     fprintf(Statusfp, "%s", ctime(&clock));

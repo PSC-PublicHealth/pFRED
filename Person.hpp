@@ -26,7 +26,7 @@ class Person {
   Demographics * demographics;
   Health * health;
   Behavior * behavior;
-  Perceptions * perceptions;
+  // Perceptions * perceptions;
 
 public:
   Person() {}
@@ -40,10 +40,10 @@ public:
   int is_on_schedule(int day, int loc);
   void print_schedule();
 
-  void make_susceptible();
-  void make_exposed(int strain, int person_id, int loc, char place_type, int day);
-  void make_infectious(int strain);
-  void make_recovered(int strain);
+  void reset();
+  void become_exposed(int strain, int person_id, int loc, char place_type, int day);
+  void become_infectious(int strain);
+  void recover(int strain);
   void behave(int day);
   int is_symptomatic();
 

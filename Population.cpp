@@ -18,6 +18,7 @@
 #include "Profile.hpp"
 #include "Strain.hpp"
 #include "Global.hpp"
+#include "Locations.hpp"
 
 void Population::get_population_parameters() {
   get_param((char *) "popfile", popfile);
@@ -113,7 +114,7 @@ void Population::read_population() {
 		 Loc.get_location(work),
 		 Loc.get_location(office),
 		 profile);
-    pop[p].make_susceptible();
+    pop[p].reset();
   }
   fclose(fp);
   if (Verbose) {
@@ -175,7 +176,7 @@ void Population::start_outbreak() {
   // create index cases
   for (int i = 0; i < index_cases; i++) {
     int n = IRAND(0, pop_size-1);
-    pop[n].make_exposed(0, -1, -1, 'X', 0);
+    pop[n].become_exposed(0, -1, -1, 'X', 0);
   }
   E[0] = index_cases;
 }
@@ -198,7 +199,7 @@ void Population::reset_population(int run) {
 
   // add each person to the susceptible list for each place visited
   for (int p = 0; p < pop_size; p++){
-    pop[p].make_susceptible();
+    pop[p].reset();
   }
 
   if (Verbose) {
@@ -206,6 +207,19 @@ void Population::reset_population(int run) {
     fflush(Statusfp);
   }
 }
+
+void Population::update(int day) {
+  update_exposed_population(day);
+  update_infectious_population(day);
+  update_population_behaviors(day);
+  Loc.process_infectious_locations(day);
+}
+
+void Population::report(int day) {
+  update_population_stats(day);
+  print_population_stats(day);
+}
+
 
 void Population::update_exposed_population(int day) {
   Person * p;
@@ -236,7 +250,7 @@ void Population::update_exposed_population(int day) {
 
     while (!TempList.empty()) {
       p = TempList.top();
-      p->make_infectious(s);
+      p->become_infectious(s);
       TempList.pop();
     }
   }
@@ -269,7 +283,7 @@ void Population::update_infectious_population(int day) {
     while (!TempList.empty()) {
       p = TempList.top();
       // printf("top = %d\n", p->get_id()); fflush(stdout);
-      p->make_recovered(s);
+      p->recover(s);
       TempList.pop();
     }
   }

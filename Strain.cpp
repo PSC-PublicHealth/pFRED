@@ -95,16 +95,16 @@ void Strain::setup_strains(int verbose) {
 }
 
 // static
-int Strain::draw_from_distribution(int n, double *straint) {
+int Strain::draw_from_distribution(int n, double *dist) {
   double r = RANDOM();
   int i = 0;
-  while (i <= n && straint[i] < r) { i++; }
+  while (i <= n && dist[i] < r) { i++; }
   if (i <= n) { return i; }
   else {
     printf("Help! draw from distribution failed.\n");
     printf("Is distribution properly formed? (should end with 1.0)\n");
     for (int i = 0; i <= n; i++) {
-      printf("%f ", straint[i]);
+      printf("%f ", dist[i]);
     }
     printf("\n");
     return -1;

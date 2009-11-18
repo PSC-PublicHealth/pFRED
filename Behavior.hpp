@@ -26,14 +26,15 @@ class Person;
 class Behavior {
 public:
   Behavior (Place *h, Place *n, Place *s, Place *c, Place *w, Place *off, int pro);
+  void reset(Person * per);
   void update_schedule(int id, int day, int sympt);
   void get_schedule(int *n, int *sched);
   int is_on_schedule(int id, int day, int loc, int sympt);
   void print_schedule(int id);
   int get_favorite_places() { return favorite_places; }
   void make_susceptible(Person * per, int strain);
-  void make_infectious(Person * per, int strain, int exposure_date);
-  void make_recovered(Person * per, int strain, int exposure_date);
+  void become_infectious(Person * per, int strain, int exposure_date);
+  void recover(Person * per, int strain, int exposure_date);
 
 private:
   int profile;				 // index of usual visit pattern

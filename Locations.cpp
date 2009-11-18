@@ -117,16 +117,13 @@ void Locations::setup_locations() {
 }
 
 void Locations::reset_locations(int run) {
-
-  if (Verbose > 2) {
+  if (Verbose) {
     fprintf(Statusfp, "reset locations entered\n"); fflush(Statusfp);
   }
-
   for (int loc = 0; loc < locations; loc++) {
     location[loc]->reset();
   }
-
-  if (Verbose > 2) {
+  if (Verbose) {
     fprintf(Statusfp, "reset locations finished\n"); fflush(Statusfp);
   }
 }

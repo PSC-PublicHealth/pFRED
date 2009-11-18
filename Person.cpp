@@ -26,9 +26,9 @@ void Person::setup(int i, int a, char g, int m, int o, int p, Place *h,
 {
   id = i;
   demographics = new Demographics(a,g,'U',m,p);
-  health = new Health(id);
+  health = new Health();
   behavior = new Behavior(h,n,s,c,w,off,pro);
-  perceptions = new Perceptions();
+  // perceptions = new Perceptions();
 }
   
 void Person::print(int strain) {
@@ -67,35 +67,33 @@ void Person::print_schedule() {
   behavior->print_schedule(id);
 }
   
-void Person::make_susceptible() {
-  if (Verbose > 2) { fprintf(Statusfp, "SUSCEPTIBLE person %d\n", id); }
-  int strains = Strain::get_strains();
-  for (int s = 0; s < strains; s++) {
-    health->make_susceptible(id, s);
-    behavior->make_susceptible(this, s);
-  }
+void Person::reset() {
+  if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", id); }
+  demographics->reset();
+  health->reset();
+  behavior->reset(this);
 }
 
-void Person::make_exposed(int strain, int per, int place, char type, int day) {
-  health->make_exposed(id, strain, per, place, type, day);
+void Person::become_exposed(int strain, int per, int place, char type, int day) {
+  health->become_exposed(id, strain, per, place, type, day);
   Pop.insert_into_exposed_list(strain, this);
 }
   
-void Person::make_infectious(int strain) {
-  health->make_infectious(id, strain);
-  behavior->make_infectious(this, strain, health->get_exposure_date(strain));
+void Person::become_infectious(int strain) {
+  health->become_infectious(id, strain);
+  behavior->become_infectious(this, strain, health->get_exposure_date(strain));
   Pop.remove_from_exposed_list(strain, this);
   Pop.insert_into_infectious_list(strain, this);
 }
 
-void Person::make_recovered(int strain) {
-  health->make_recovered(id, strain);
+void Person::recover(int strain) {
+  health->recover(id, strain);
   if (Verbose > 2) {
     fprintf(Statusfp, "RECOVERED person %d for strain %d\n", id, strain);
     print_out(strain);
     fflush(Statusfp);
   }
-  behavior->make_recovered(this, strain, health->get_exposure_date(strain));
+  behavior->recover(this, strain, health->get_exposure_date(strain));
   Pop.remove_from_infectious_list(strain, this);
 
   // print recovered agents into Trace file

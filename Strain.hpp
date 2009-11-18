@@ -24,7 +24,7 @@ public:
 
   static void get_strain_parameters();
   static void setup_strains(int verbose);
-  static int draw_from_distribution(int n, double *straint);
+  static int draw_from_distribution(int n, double *dist);
   static int get_strains();
   static double get_beta(int strain);
   static double get_prob_symptomatic(int strain);
