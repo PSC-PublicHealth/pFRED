@@ -12,36 +12,27 @@
 #ifndef _FRED_BEHAVIOR_H
 #define _FRED_BEHAVIOR_H
 
-#define MAX_PLACES 6
-
-#define DAYS_PER_WEEK 7
-#define NO_ROLE 'N'
-#define HCW 'H'
-#define PATIENT 'P'
-#define DOCTOR 'D'
-
-class Place;
-class Person;
-
 class Behavior {
 public:
-  Behavior (Place *h, Place *n, Place *s, Place *c, Place *w, Place *off, int pro);
-  void reset(Person * per);
-  void update_schedule(int id, int day, int sympt);
+  Behavior (Person *person, Place *h, Place *n,
+	    Place *s, Place *c, Place *w, Place *off, int pro);
+  void reset();
   void get_schedule(int *n, int *sched);
-  int is_on_schedule(int id, int day, int loc, int sympt);
-  void print_schedule(int id);
+  int is_on_schedule(int day, int loc, int sympt);
+  void update_schedule(int day, int sympt);
+  void print_schedule();
+  void become_infectious(int strain, int exposure_date);
+  void recover(int strain, int exposure_date);
   int get_favorite_places() { return favorite_places; }
-  void make_susceptible(Person * per, int strain);
-  void become_infectious(Person * per, int strain, int exposure_date);
-  void recover(Person * per, int strain, int exposure_date);
 
 private:
+  Person * me;		 // pointer to person using having this behavior
+  int id;					// same as person's id
   int profile;				 // index of usual visit pattern
   Place ** favorite_place;		      // list of expected places
   int favorite_places;		   // number of places expected to visit
-  char on_schedule[MAX_PLACES]; // 1 = favorite place is on schedule; 0 o.w.
   Place ** schedule;	     // list of place ids actually visited today
+  char * on_schedule;	    // 1 = favorite place is on schedule; 0 o.w.
   int scheduled_places;		 // number places actually visited today
   int schedule_updated;			 // date of last schedule update
 };

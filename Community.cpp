@@ -23,7 +23,7 @@ int Community_parameters_set = 0;
 Community::Community(int loc, char *lab, double lon, double lat, int container) {
   type = COMMUNITY;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Strain::get_strains());
+  get_parameters(Strains);
 }
 
 void Community::get_parameters(int strains) {

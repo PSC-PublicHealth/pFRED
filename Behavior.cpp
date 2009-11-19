@@ -9,46 +9,49 @@
 // File: Behavior.cpp
 //
 
-#include "Behavior.hpp"
+#include "Person.hpp"
 #include "Global.hpp"
 #include "Profile.hpp"
 #include "Place.hpp"
 #include "Random.hpp"
 #include "Strain.hpp"
-#include "Person.hpp"
+#define DAYS_PER_WEEK 7
 
-Behavior::Behavior (Place *h, Place *n, Place *s, Place *c, Place *w, Place *off, int pro) {
-  favorite_place = new Place * [MAX_PLACES];
-  schedule = new Place * [MAX_PLACES];
+Person::Behavior::Behavior (Person *person, Place *h, Place *n, Place *s, Place *c,
+		    Place *w, Place *off, int pro) {
+  me = person;
+  id = me->get_id();
+  favorite_places = 6;
+  favorite_place = new Place * [favorite_places];
   favorite_place[0] = h;
   favorite_place[1] = n;
   favorite_place[2] = s;
   favorite_place[3] = c;
   favorite_place[4] = w;
   favorite_place[5] = off;
-  favorite_places = 6;
   profile = pro;
+  schedule = new Place * [favorite_places];
+  on_schedule = new char [favorite_places];
   schedule_updated = -1;
   scheduled_places = 0;
 }
 
-void Behavior::reset(Person * per) {
-  int strains = Strain::get_strains();
+void Person::Behavior::reset() {
+  // add me to the susceptible lists at my favorite places
+  int strains = Pop.get_strains();
   for (int strain = 0; strain < strains; strain++) {
-    make_susceptible(per, strain);
+    for (int p = 0; p < favorite_places; p++) {
+      if (favorite_place[p] == NULL) continue;
+      favorite_place[p]->add_susceptible(strain, me);
+    }
   }
+
+  // reset the daily schedule
   schedule_updated = -1;
   scheduled_places = 0;
 }
 
-void Behavior::make_susceptible(Person *per, int strain) {
-  for (int p = 0; p < favorite_places; p++) {
-    if (favorite_place[p] == NULL) continue;
-    favorite_place[p]->add_susceptible(strain, per);;
-  }
-}
-
-void Behavior::print_schedule(int id) {
+void Person::Behavior::print_schedule() {
   fprintf(Statusfp, "Schedule for person %d\n", id);
   for (int j = 0; j < scheduled_places; j++) {
     fprintf(Statusfp, "%d ", schedule[j]->get_id());
@@ -57,15 +60,15 @@ void Behavior::print_schedule(int id) {
   fflush(Statusfp);
 }
   
-int Behavior::is_on_schedule(int id, int day, int loc, int is_symptomatic) {
+int Person::Behavior::is_on_schedule(int day, int loc, int is_symptomatic) {
   int p = 0;
   if (schedule_updated < day) 
-    update_schedule(id, day, is_symptomatic);
+    update_schedule(day, is_symptomatic);
   while (p < scheduled_places && schedule[p]->get_id() != loc) p++;
   return (p < scheduled_places);
 }
 
-void Behavior::update_schedule(int id, int day, int is_symptomatic) {
+void Person::Behavior::update_schedule(int day, int is_symptomatic) {
   int day_of_week;
   if (schedule_updated < day) {
     schedule_updated = day;
@@ -79,26 +82,10 @@ void Behavior::update_schedule(int id, int day, int is_symptomatic) {
     if (is_symptomatic) {
       if (RANDOM() < Strain::get_prob_stay_home()) {
 	scheduled_places = 1;
-	if (favorite_place[0] == NULL) {
-	  printf("Help! home is null!\n"); abort();
-	}
-	else {
-	  // printf("favorite_place[0] = %d\n", favorite_place[0]->get_id()); fflush(stdout);
-	}
 	schedule[0] = favorite_place[0];
 	on_schedule[0] = 1;
       }
     }
-
-#if NOT_IMPLEMENTED
-    // if not staying home, decide if traveling
-    if (scheduled_places == 0) {
-      if (is_traveling(profile, day_of_week)) {
-	// pick a favorite destination
-	int dest = IRAND(0, favorite_destinations);
-      }
-    }
-#endif
 
     // if not staying home or traveling, consult usual schedule
     if (scheduled_places == 0) {
@@ -120,33 +107,33 @@ void Behavior::update_schedule(int id, int day, int is_symptomatic) {
 
     if (Verbose > 2) {
       printf("update_schedule on day %d\n", day);
-      print_schedule(id);
+      print_schedule();
       fflush(stdout);
     }
   }
 }
 
-void Behavior::get_schedule(int *n, int *sched) {
+void Person::Behavior::get_schedule(int *n, int *sched) {
   *n = scheduled_places;
   for (int i = 0; i < scheduled_places; i++)
     sched[i] = schedule[i]->get_id();
 }
 
-void Behavior::become_infectious(Person * per, int strain, int exposure_date) {
+void Person::Behavior::become_infectious(int strain, int exposure_date) {
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
-    favorite_place[p]->delete_susceptible(strain, per);
+    favorite_place[p]->delete_susceptible(strain, me);
     if (Test == 0 || exposure_date == 0) {
-      favorite_place[p]->add_infectious(strain, per);
+      favorite_place[p]->add_infectious(strain, me);
     }
   }
 }
 
-void Behavior::recover(Person * per, int strain, int exposure_date) {
+void Person::Behavior::recover(int strain, int exposure_date) {
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
     if (Test == 0 || exposure_date == 0)
-      favorite_place[p]->delete_infectious(strain, per);
+      favorite_place[p]->delete_infectious(strain, me);
   }
 }
 
