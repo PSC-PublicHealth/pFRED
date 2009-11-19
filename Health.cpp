@@ -15,8 +15,9 @@
 #include "Infection.hpp"
 #include "Global.hpp"
 
-Person::Health::Health (int person_id) {
-  id = person_id;
+Person::Health::Health (Person * person) {
+  me = person;
+  id = me->get_id();;
   int strains = Pop.get_strains();
   infection = new vector <Infection *> [strains];
   reset();
@@ -32,16 +33,20 @@ void Person::Health::reset() {
 void Person::Health::become_exposed(Strain * strain, int infector, int place, char type, int day) {
   int strain_id = strain->get_id();
   infection[strain_id].push_back(new Infection(id, strain, infector, place, type, day));
+  strain->insert_into_exposed_list(me);
 }
 
 void Person::Health::become_infectious(Strain * strain) {
   int strain_id = strain->get_id();
   infection[strain_id][0]->become_infectious(id, strain);
+  strain->remove_from_exposed_list(me);
+  strain->insert_into_infectious_list(me);
 }
 
 void Person::Health::recover(Strain * strain) {
   int strain_id = strain->get_id();
   infection[strain_id][0]->recover(id, strain);
+  strain->remove_from_infectious_list(me);
 }
 
 int Person::Health::is_symptomatic() {

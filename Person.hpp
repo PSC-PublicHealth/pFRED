@@ -25,8 +25,8 @@ class Person {
 public:
   Person() {}
 
-  void setup(int i, int a, char g, int m, int o, int p, Place *h,
-	     Place *n, Place *s, Place *c, Place *w, Place *off, int pro);
+  void setup(int,int,char,int,int,int,Place*,Place*,Place*,
+	     Place*,Place*,Place*,int);
   void print(int strain);
   void print_out(int strain);
   void reset();
@@ -36,7 +36,8 @@ public:
   int is_on_schedule(int day, int loc);
   void print_schedule();
 
-  void become_exposed(Strain * strain, int person_id, int loc, char place_type, int day);
+  void become_exposed(Strain * strain, int infector,
+		      int loc, char place_type, int day);
   void become_infectious(Strain * strain);
   void recover(Strain * strain);
   void behave(int day);
@@ -64,7 +65,6 @@ public:
   int add_infectee(int strain);
 
 private:
-
   // member classes:
   #include "Demographics.hpp"
   #include "Health.hpp"

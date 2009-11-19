@@ -15,13 +15,15 @@
 #include "Strain.hpp"
 #include "Place.hpp"
 
-void Person::setup(int i, int a, char g, int m, int o, int p, Place *h,
-		   Place *n, Place *s, Place *c, Place *w, Place *off, int pro) 
+void Person::setup(int index, int age, char sex, int marital, int occ,
+		   int profession, Place *house, Place *neigh,
+		   Place *school, Place *classroom, Place *work,
+		   Place *office, int profile) 
 {
-  id = i;
-  demographics = new Demographics(a,g,'U',m,p);
-  health = new Health(id);
-  behavior = new Behavior(this,h,n,s,c,w,off,pro);
+  id = index;
+  demographics = new Demographics(age,sex,'U',marital,profession);
+  health = new Health(this);
+  behavior = new Behavior(this,house,neigh,school,classroom,work,office,profile);
   perceptions = new Perceptions(this);
 }
   
@@ -71,36 +73,34 @@ void Person::reset() {
 void Person::become_exposed(Strain * strain, int infector,
 			    int place, char type, int day) {
   health->become_exposed(strain, infector, place, type, day);
-  strain->insert_into_exposed_list(this);
 }
   
 void Person::become_infectious(Strain * strain) {
+  int strain_id = strain->get_id();
   health->become_infectious(strain);
-  behavior->become_infectious(strain->get_id(), health->get_exposure_date(strain->get_id()));
-  strain->remove_from_exposed_list(this);
-  strain->insert_into_infectious_list(this);
+  behavior->become_infectious(strain_id);
 }
 
 void Person::recover(Strain * strain) {
+  int strain_id = strain->get_id();
   health->recover(strain);
-  if (Verbose > 2) {
-    fprintf(Statusfp, "RECOVERED person %d for strain %d\n", id, strain->get_id());
-    print_out(strain->get_id());
-    fflush(Statusfp);
-  }
-  behavior->recover(strain->get_id(), health->get_exposure_date(strain->get_id()));
-  strain->remove_from_infectious_list(this);
+  behavior->recover(strain_id);
 
   // print recovered agents into Trace file
-  print(strain->get_id());
+  print(strain_id);
+  if (Verbose > 2) {
+    fprintf(Statusfp, "RECOVERED person %d for strain %d\n", id, strain_id);
+    print_out(strain_id);
+    fflush(Statusfp);
+  }
 }
 
 int Person::is_on_schedule(int day, int loc) {
-  return behavior->is_on_schedule(day, loc, is_symptomatic());
+  return behavior->is_on_schedule(day, loc);
 }
 
 void Person::update_schedule(int day) {
-  return behavior->update_schedule(day, is_symptomatic());
+  return behavior->update_schedule(day);
 }
 
 void Person::get_schedule(int *n, int *sched) {

@@ -18,11 +18,11 @@ public:
 	    Place *s, Place *c, Place *w, Place *off, int pro);
   void reset();
   void get_schedule(int *n, int *sched);
-  int is_on_schedule(int day, int loc, int sympt);
-  void update_schedule(int day, int sympt);
+  int is_on_schedule(int day, int loc);
+  void update_schedule(int day);
   void print_schedule();
-  void become_infectious(int strain, int exposure_date);
-  void recover(int strain, int exposure_date);
+  void become_infectious(int strain);
+  void recover(int strain);
   int get_favorite_places() { return favorite_places; }
 
 private:

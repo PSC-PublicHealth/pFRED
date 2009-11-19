@@ -14,7 +14,7 @@
 
 class Health {
 public:
-  Health(int person_id);
+  Health(Person * person);
   void reset();
   void become_exposed(Strain * strain, int person_id, int loc, char place_type, int day);
   void become_infectious(Strain * strain);
@@ -33,6 +33,7 @@ public:
   double get_infectivity(int strain);
 
 private:
+  Person * me;
   int id;
   vector <Infection *> *infection;
 };

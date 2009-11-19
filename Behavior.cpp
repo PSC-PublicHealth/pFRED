@@ -60,15 +60,15 @@ void Person::Behavior::print_schedule() {
   fflush(Statusfp);
 }
   
-int Person::Behavior::is_on_schedule(int day, int loc, int is_symptomatic) {
-  int p = 0;
+int Person::Behavior::is_on_schedule(int day, int loc) {
   if (schedule_updated < day) 
-    update_schedule(day, is_symptomatic);
-  while (p < scheduled_places && schedule[p]->get_id() != loc) p++;
+    update_schedule(day);
+  int p = 0; 
+  while (p < scheduled_places && (schedule[p]->get_id() != loc)) p++;
   return (p < scheduled_places);
 }
 
-void Person::Behavior::update_schedule(int day, int is_symptomatic) {
+void Person::Behavior::update_schedule(int day) {
   int day_of_week;
   if (schedule_updated < day) {
     schedule_updated = day;
@@ -79,6 +79,7 @@ void Person::Behavior::update_schedule(int day, int is_symptomatic) {
     day_of_week = (day+Start_day) % DAYS_PER_WEEK;
 
     // probably stay at home if symptomatic
+    int is_symptomatic = me->is_symptomatic();
     if (is_symptomatic) {
       if (RANDOM() < Strain::get_prob_stay_home()) {
 	scheduled_places = 1;
@@ -119,21 +120,22 @@ void Person::Behavior::get_schedule(int *n, int *sched) {
     sched[i] = schedule[i]->get_id();
 }
 
-void Person::Behavior::become_infectious(int strain, int exposure_date) {
+void Person::Behavior::become_infectious(int strain) {
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
     favorite_place[p]->delete_susceptible(strain, me);
-    if (Test == 0 || exposure_date == 0) {
+    if (Test == 0 || me->get_exposure_date(strain) == 0) {
       favorite_place[p]->add_infectious(strain, me);
     }
   }
 }
 
-void Person::Behavior::recover(int strain, int exposure_date) {
+void Person::Behavior::recover(int strain) {
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
-    if (Test == 0 || exposure_date == 0)
+    if (Test == 0 || me->get_exposure_date(strain) == 0) {
       favorite_place[p]->delete_infectious(strain, me);
+    }
   }
 }
 
