@@ -13,6 +13,7 @@
 #define _FRED_STRAIN_H
 
 #include <set>
+#include <stack>
 using namespace std;
 #include "Person.hpp"
 

@@ -12,10 +12,6 @@
 #ifndef _FRED_POPULATION_H
 #define _FRED_POPULATION_H
 
-#include <set>
-#include <stack>
-using namespace std;
-
 class Person;
 class Strain;
 

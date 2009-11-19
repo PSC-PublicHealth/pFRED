@@ -15,6 +15,7 @@
 #include "Random.hpp"
 #include "Person.hpp"
 #include "Strain.hpp"
+#include "Infection.hpp"
 
 void Place::setup(int loc, char *lab, double lon, double lat, int cont) {
   int strains = Pop.get_strains();
@@ -219,7 +220,10 @@ void Place::spread_infection(int day) {
 	      printf("infection from %d to %d  r = %f\n",
 		     i->get_id(),sus->get_id(),r);
 	    }
-	    sus->become_exposed(str, i->get_id(), id, type, day);
+	    Infection * infection = new Infection(str, i->get_id(), id, type, day);
+
+	    // sus->become_exposed(str, i->get_id(), id, type, day);
+	    sus->become_exposed(infection);
 	    i->add_infectee(s);
 	  }
 	  else {

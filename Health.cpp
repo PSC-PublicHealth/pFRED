@@ -30,22 +30,46 @@ void Person::Health::reset() {
   }
 }
 
-void Person::Health::become_exposed(Strain * strain, int infector, int place, char type, int day) {
+void Person::Health::become_exposed(Infection * infection_ptr) {
+  Strain * strain = infection_ptr->get_strain();
   int strain_id = strain->get_id();
-  infection[strain_id].push_back(new Infection(id, strain, infector, place, type, day));
+  if (Verbose > 1) {
+    fprintf(Statusfp, "EXPOSED person %d to strain %d\n", id, strain_id);
+  }
+  infection[strain_id].push_back(infection_ptr);
   strain->insert_into_exposed_list(me);
 }
 
+/*
+void Person::Health::become_exposed(Strain * strain, int infector, int place, char type, int day) {
+  int strain_id = strain->get_id();
+  if (Verbose > 1) {
+    fprintf(Statusfp, "EXPOSED person %d to strain %d\n", id, strain_id);
+  }
+  infection[strain_id].push_back(new Infection(strain, infector, place, type, day));
+  strain->insert_into_exposed_list(me);
+}
+*/
+
 void Person::Health::become_infectious(Strain * strain) {
   int strain_id = strain->get_id();
-  infection[strain_id][0]->become_infectious(id, strain);
+  if (Verbose > 2) {
+    fprintf(Statusfp, "INFECTIOUS person %d for strain %d\n", id, strain_id);
+    fflush(Statusfp);
+  }
+  infection[strain_id][0]->become_infectious();
   strain->remove_from_exposed_list(me);
   strain->insert_into_infectious_list(me);
+  if (Verbose > 2) {
+    fprintf(Statusfp, "INFECTIOUS person %d for strain %d has status %c\n",
+	    id, strain_id, get_strain_status(strain_id));
+    fflush(Statusfp);
+  }
 }
 
 void Person::Health::recover(Strain * strain) {
   int strain_id = strain->get_id();
-  infection[strain_id][0]->recover(id, strain);
+  infection[strain_id][0]->recover();
   strain->remove_from_infectious_list(me);
 }
 

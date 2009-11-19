@@ -70,10 +70,16 @@ void Person::reset() {
   behavior->reset();
 }
 
+void Person::become_exposed(Infection * infection) {
+  health->become_exposed(infection);
+}
+
+/*
 void Person::become_exposed(Strain * strain, int infector,
 			    int place, char type, int day) {
   health->become_exposed(strain, infector, place, type, day);
 }
+*/
   
 void Person::become_infectious(Strain * strain) {
   int strain_id = strain->get_id();

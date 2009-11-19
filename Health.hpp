@@ -16,7 +16,8 @@ class Health {
 public:
   Health(Person * person);
   void reset();
-  void become_exposed(Strain * strain, int person_id, int loc, char place_type, int day);
+  // void become_exposed(Strain * strain, int person_id, int loc, char place_type, int day);
+  void become_exposed(Infection *inf);
   void become_infectious(Strain * strain);
   void recover(Strain * strain);
   int is_symptomatic();

@@ -16,13 +16,12 @@ class Strain;
 
 class Infection {
 public:
-  Infection(int id, Strain * strain, int person_id, int loc, char place_type, int day);
-  void become_infectious(int id, Strain * strain);
-  void recover(int id, Strain * strain);
+  Infection(Strain * strain, int person, int place, char place_type, int day);
+  void become_infectious();
+  void recover();
   int is_symptomatic();
+  Strain * get_strain() { return strain; }
   char get_strain_status() { return strain_status; }
-  double get_susceptibility() { return susceptibility; }
-  double get_infectivity() { return infectivity; }
   int get_exposure_date() { return exposure_date; }
   int get_infectious_date() { return infectious_date; }
   int get_recovered_date() { return recovered_date; }
@@ -31,8 +30,11 @@ public:
   char get_infected_place_type() { return infected_place_type; }
   int get_infectees() { return infectees; }
   int add_infectee() { return ++infectees; }
+  double get_susceptibility() { return susceptibility; }
+  double get_infectivity() { return infectivity; }
 
 private:
+  Strain * strain;
   char strain_status;
   int latent_period;
   int infectious_period;

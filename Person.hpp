@@ -36,8 +36,8 @@ public:
   int is_on_schedule(int day, int loc);
   void print_schedule();
 
-  void become_exposed(Strain * strain, int infector,
-		      int loc, char place_type, int day);
+  // void become_exposed(Strain * strain, int infector,int loc, char place_type, int day);
+  void become_exposed(Infection *infection);
   void become_infectious(Strain * strain);
   void recover(Strain * strain);
   void behave(int day);

@@ -18,6 +18,7 @@ using namespace std;
 #include "Params.hpp"
 #include "Person.hpp"
 #include "Global.hpp"
+#include "Infection.hpp"
 double Prob_stay_home;
 
 Strain::Strain() {
@@ -123,7 +124,9 @@ void Strain::start_outbreak(Person *pop, int pop_size) {
   // create index cases
   for (int i = 0; i < index_cases; i++) {
     int n = IRAND(0, pop_size-1);
-    pop[n].become_exposed(this, -1, -1, 'X', 0);
+    // pop[n].become_exposed(this, -1, -1, 'X', 0);
+    Infection * infection = new Infection(this, -1, -1, 'X', 0);
+    pop[n].become_exposed(infection);
   }
   E = index_cases;
 }
