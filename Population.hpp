@@ -17,15 +17,14 @@ class Strain;
 
 class Population {
 public:
-  void get_population_parameters();
-  void setup_population();
-  void read_population();
-  void reset_population(int run);
+  void get_parameters();
+  void setup();
   void population_quality_control();
+  void print();
   void start_outbreak();
+  void reset(int run);
   void update(int day);
   void report(int day);
-  void print_population();
   Strain * get_strain(int s);
   int get_strains() { return strains; }
 
@@ -36,11 +35,7 @@ private:
   int pop_size;
   Strain *strain;
   int strains;
-  void update_exposed_population(int day);
-  void update_infectious_population(int day);
-  void update_population_behaviors(int day);
-  void update_population_stats(int day);
-  void print_population_stats(int day);
+  void read_population();
 };
 
 #endif // _FRED_POPULATION_H

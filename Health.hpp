@@ -1,3 +1,4 @@
+// -*- C++ -*-
 /*
   Copyright 2009 by the University of Pittsburgh
   Licensed under the Academic Free License version 3.0
@@ -12,11 +13,18 @@
 #ifndef _FRED_HEALTH_H
 #define _FRED_HEALTH_H
 
+#include <vector>
+using namespace std;
+
+class Person;
+class Infection;
+class Strain;
+
 class Health {
 public:
   Health(Person * person);
   void reset();
-  // void become_exposed(Strain * strain, int person_id, int loc, char place_type, int day);
+  void update(int day);
   void become_exposed(Infection *inf);
   void become_infectious(Strain * strain);
   void recover(Strain * strain);
@@ -34,8 +42,8 @@ public:
   double get_infectivity(int strain);
 
 private:
-  Person * me;
-  int id;
+  Person * self;
+  int strains;
   vector <Infection *> *infection;
 };
 

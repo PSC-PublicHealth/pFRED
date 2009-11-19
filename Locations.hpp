@@ -19,10 +19,8 @@ public:
   void setup_locations();
   void reset_locations(int run);
   void location_quality_control();
-  void process_infectious_locations(int day);
   void get_location_parameters();
   int get_open_status(int loc, int day);
-  char get_type_of_place(int id);
   int location_should_be_open(int loc, int strain, int day);
   Place * get_location(int loc);
 

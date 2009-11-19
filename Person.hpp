@@ -20,23 +20,24 @@ using namespace std;
 class Place;
 class Infection;
 class Strain;
+class Demographics;
+class Health;
+class Perceptions;
+class Behavior;
 
 class Person {
 public:
   Person() {}
-
   void setup(int,int,char,int,int,int,Place*,Place*,Place*,
 	     Place*,Place*,Place*,int);
+  void reset();
+  void update(int day);
   void print(int strain);
   void print_out(int strain);
-  void reset();
-
   void update_schedule(int day);
   void get_schedule(int *n, int *sched);
   int is_on_schedule(int day, int loc);
   void print_schedule();
-
-  // void become_exposed(Strain * strain, int infector,int loc, char place_type, int day);
   void become_exposed(Infection *infection);
   void become_infectious(Strain * strain);
   void recover(Strain * strain);
@@ -51,7 +52,6 @@ public:
   char get_marital_status();
   int get_profession();
   int get_places();
-
   char get_strain_status(int strain);
   double get_susceptibility(int strain);
   double get_infectivity(int strain);
@@ -65,12 +65,6 @@ public:
   int add_infectee(int strain);
 
 private:
-  // member classes:
-  #include "Demographics.hpp"
-  #include "Health.hpp"
-  #include "Behavior.hpp"
-  #include "Perceptions.hpp"
-
   int id;
   Demographics * demographics;
   Health * health;

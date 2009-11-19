@@ -53,10 +53,10 @@ void setup(char *paramfile) {
   read_parameters(paramfile);
   get_global_parameters();
   Random_start_day = (Start_day > 6);
-  Pop.get_population_parameters();
+  Pop.get_parameters();
   Loc.get_location_parameters();
   Loc.setup_locations();
-  Pop.setup_population();
+  Pop.setup();
   Pop.population_quality_control();
   Loc.location_quality_control();
 }
@@ -91,7 +91,7 @@ void run_sim(int run) {
   fprintf(Statusfp, "seed = %lu\n", new_seed);
   INIT_RANDOM(new_seed);
   Loc.reset_locations(run);
-  Pop.reset_population(run);
+  Pop.reset(run);
   if (Random_start_day) {
     // start on a random day of the week
     Start_day = IRAND(0, 6);
@@ -105,7 +105,7 @@ void run_sim(int run) {
     time(&clock);
     fprintf(Statusfp, "%s", ctime(&clock));
   }
-  // Pop.print_population();
+  // Pop.print();
   fclose(Outfp);
   fclose(Tracefp);
 }

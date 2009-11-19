@@ -12,11 +12,15 @@
 #ifndef _FRED_BEHAVIOR_H
 #define _FRED_BEHAVIOR_H
 
+class Person;
+class Place;
+
 class Behavior {
 public:
   Behavior (Person *person, Place *h, Place *n,
 	    Place *s, Place *c, Place *w, Place *off, int pro);
   void reset();
+  void update(int day);
   void get_schedule(int *n, int *sched);
   int is_on_schedule(int day, int loc);
   void update_schedule(int day);
@@ -26,8 +30,7 @@ public:
   int get_favorite_places() { return favorite_places; }
 
 private:
-  Person * me;		 // pointer to person using having this behavior
-  int id;					// same as person's id
+  Person * self;	 // pointer to person using having this behavior
   int profile;				 // index of usual visit pattern
   Place ** favorite_place;		      // list of expected places
   int favorite_places;		   // number of places expected to visit

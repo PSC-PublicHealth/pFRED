@@ -19,7 +19,7 @@ public:
   Infection(Strain * strain, int person, int place, char place_type, int day);
   void become_infectious();
   void recover();
-  int is_symptomatic();
+  int is_symptomatic() { return (symptoms > 0); }
   Strain * get_strain() { return strain; }
   char get_strain_status() { return strain_status; }
   int get_exposure_date() { return exposure_date; }
@@ -32,6 +32,7 @@ public:
   int add_infectee() { return ++infectees; }
   double get_susceptibility() { return susceptibility; }
   double get_infectivity() { return infectivity; }
+  double get_symptoms() { return symptoms; }
 
 private:
   Strain * strain;
@@ -45,8 +46,10 @@ private:
   int infected_place;
   char infected_place_type;
   int infectees;
+  int will_be_symptomatic;
   double susceptibility;
   double infectivity;
+  double symptoms;
 };
 
 #endif // _FRED_INFECTION_H

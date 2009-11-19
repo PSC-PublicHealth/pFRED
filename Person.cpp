@@ -14,6 +14,10 @@
 #include "Population.hpp"
 #include "Strain.hpp"
 #include "Place.hpp"
+#include "Demographics.hpp"
+#include "Behavior.hpp"
+#include "Health.hpp"
+#include "Perceptions.hpp"
 
 void Person::setup(int index, int age, char sex, int marital, int occ,
 		   int profession, Place *house, Place *neigh,
@@ -70,17 +74,17 @@ void Person::reset() {
   behavior->reset();
 }
 
+void Person::update(int day) {
+  demographics->update(day);
+  health->update(day);
+  perceptions->update(day);
+  behavior->update(day);
+}
+
 void Person::become_exposed(Infection * infection) {
   health->become_exposed(infection);
 }
 
-/*
-void Person::become_exposed(Strain * strain, int infector,
-			    int place, char type, int day) {
-  health->become_exposed(strain, infector, place, type, day);
-}
-*/
-  
 void Person::become_infectious(Strain * strain) {
   int strain_id = strain->get_id();
   health->become_infectious(strain);

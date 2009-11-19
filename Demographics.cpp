@@ -9,10 +9,11 @@
 // File: Demographics.cpp
 //
 
+#include "Demographics.hpp"
 #include "Person.hpp"
 #include "Random.hpp"
 
-Person::Demographics::Demographics(int a, char s, char occ, int mar, int prof) {
+Demographics::Demographics(int a, char s, char occ, int mar, int prof) {
   init_age = a;
   sex = s;
   init_occupation = occ;
@@ -22,17 +23,17 @@ Person::Demographics::Demographics(int a, char s, char occ, int mar, int prof) {
   reset();
 }
 
-void Person::Demographics::reset() {
+void Demographics::update(int day) {
+}
+
+void Demographics::reset() {
   age = init_age;
   occupation = init_occupation;
   marital_status = init_marital_status;
   profession = init_profession;
 }
 
-void Person::Demographics::update(int day) {
-}
-
-void Person::Demographics::set_occupation() {
+void Demographics::set_occupation() {
   // set occupation by age
   if (age < 5) { occupation = 'C'; }
   else if (age < 19) { occupation = 'S'; }
@@ -40,5 +41,9 @@ void Person::Demographics::set_occupation() {
   else { occupation = 'R'; }
 }
 
-void Person::Demographics::print() {
+void Demographics::print() {
+}
+
+int Demographics::get_age(int day) { 
+  return (int) ((day-birthday)/365.0);
 }

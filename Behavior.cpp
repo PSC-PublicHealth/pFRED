@@ -9,6 +9,7 @@
 // File: Behavior.cpp
 //
 
+#include "Behavior.hpp"
 #include "Person.hpp"
 #include "Global.hpp"
 #include "Profile.hpp"
@@ -17,10 +18,9 @@
 #include "Strain.hpp"
 #define DAYS_PER_WEEK 7
 
-Person::Behavior::Behavior (Person *person, Place *h, Place *n, Place *s, Place *c,
+Behavior::Behavior (Person *person, Place *h, Place *n, Place *s, Place *c,
 		    Place *w, Place *off, int pro) {
-  me = person;
-  id = me->get_id();
+  self = person;
   favorite_places = 6;
   favorite_place = new Place * [favorite_places];
   favorite_place[0] = h;
@@ -36,23 +36,25 @@ Person::Behavior::Behavior (Person *person, Place *h, Place *n, Place *s, Place 
   scheduled_places = 0;
 }
 
-void Person::Behavior::reset() {
-  // add me to the susceptible lists at my favorite places
+void Behavior::reset() {
+  // add myself to the susceptible lists at my favorite places
   int strains = Pop.get_strains();
   for (int strain = 0; strain < strains; strain++) {
     for (int p = 0; p < favorite_places; p++) {
       if (favorite_place[p] == NULL) continue;
-      favorite_place[p]->add_susceptible(strain, me);
+      favorite_place[p]->add_susceptible(strain, self);
     }
   }
-
   // reset the daily schedule
   schedule_updated = -1;
   scheduled_places = 0;
 }
 
-void Person::Behavior::print_schedule() {
-  fprintf(Statusfp, "Schedule for person %d\n", id);
+void Behavior::update(int day) {
+}
+
+void Behavior::print_schedule() {
+  fprintf(Statusfp, "Schedule for person %d\n", self->get_id());
   for (int j = 0; j < scheduled_places; j++) {
     fprintf(Statusfp, "%d ", schedule[j]->get_id());
   }
@@ -60,7 +62,7 @@ void Person::Behavior::print_schedule() {
   fflush(Statusfp);
 }
   
-int Person::Behavior::is_on_schedule(int day, int loc) {
+int Behavior::is_on_schedule(int day, int loc) {
   if (schedule_updated < day) 
     update_schedule(day);
   int p = 0; 
@@ -68,7 +70,7 @@ int Person::Behavior::is_on_schedule(int day, int loc) {
   return (p < scheduled_places);
 }
 
-void Person::Behavior::update_schedule(int day) {
+void Behavior::update_schedule(int day) {
   int day_of_week;
   if (schedule_updated < day) {
     schedule_updated = day;
@@ -79,7 +81,7 @@ void Person::Behavior::update_schedule(int day) {
     day_of_week = (day+Start_day) % DAYS_PER_WEEK;
 
     // probably stay at home if symptomatic
-    int is_symptomatic = me->is_symptomatic();
+    int is_symptomatic = self->is_symptomatic();
     if (is_symptomatic) {
       if (RANDOM() < Strain::get_prob_stay_home()) {
 	scheduled_places = 1;
@@ -114,27 +116,27 @@ void Person::Behavior::update_schedule(int day) {
   }
 }
 
-void Person::Behavior::get_schedule(int *n, int *sched) {
+void Behavior::get_schedule(int *n, int *sched) {
   *n = scheduled_places;
   for (int i = 0; i < scheduled_places; i++)
     sched[i] = schedule[i]->get_id();
 }
 
-void Person::Behavior::become_infectious(int strain) {
+void Behavior::become_infectious(int strain) {
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
-    favorite_place[p]->delete_susceptible(strain, me);
-    if (Test == 0 || me->get_exposure_date(strain) == 0) {
-      favorite_place[p]->add_infectious(strain, me);
+    favorite_place[p]->delete_susceptible(strain, self);
+    if (Test == 0 || self->get_exposure_date(strain) == 0) {
+      favorite_place[p]->add_infectious(strain, self);
     }
   }
 }
 
-void Person::Behavior::recover(int strain) {
+void Behavior::recover(int strain) {
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
-    if (Test == 0 || me->get_exposure_date(strain) == 0) {
-      favorite_place[p]->delete_infectious(strain, me);
+    if (Test == 0 || self->get_exposure_date(strain) == 0) {
+      favorite_place[p]->delete_infectious(strain, self);
     }
   }
 }

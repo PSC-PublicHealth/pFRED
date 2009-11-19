@@ -12,9 +12,12 @@
 #ifndef _FRED_PERCEPTIONS_H
 #define _FRED_PERCEPTIONS_H
 
+class Person;
+
 class Perceptions {
 public:
   Perceptions(Person *p);
+  void update(int day) {}
 
 private:
   Person * me;

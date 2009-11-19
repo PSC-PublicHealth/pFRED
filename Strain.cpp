@@ -19,18 +19,16 @@ using namespace std;
 #include "Person.hpp"
 #include "Global.hpp"
 #include "Infection.hpp"
+#include "Locations.hpp"
 double Prob_stay_home;
 
 Strain::Strain() {
   get_param((char *) "prob_stay_home", &Prob_stay_home);
-  // get_param((char *) "index_cases", &index_cases);
+  spread = new Spread(this);
 }
 
 void Strain::reset() {
-  exposed.clear();
-  infectious.clear();
-  attack_rate = 0.0;
-  S = E = I = R = 0;
+  spread->reset();
 }
 
 void Strain::setup(int strain) {
@@ -46,9 +44,6 @@ void Strain::setup(int strain) {
 
   sprintf(s, "resistant[%d]", id);
   // get_param(s, &prob_resistant);
-
-  sprintf(s, "index_cases[%d]", id);
-  get_param(s, &index_cases);
 
   sprintf(s, "days_latent[%d]", id);
   get_param(s, &n);
@@ -120,114 +115,28 @@ int Strain::draw_from_distribution(int n, double *dist) {
   }
 }
 
+int Strain::get_symptoms() {
+  return (RANDOM() < prob_symptomatic);
+}
+
+int Strain::get_index_cases() {
+  return spread->get_index_cases();
+}
+
+double Strain::get_attack_rate() {
+  return spread->get_attack_rate();
+}
+
 void Strain::start_outbreak(Person *pop, int pop_size) {
-  // create index cases
-  for (int i = 0; i < index_cases; i++) {
-    int n = IRAND(0, pop_size-1);
-    // pop[n].become_exposed(this, -1, -1, 'X', 0);
-    Infection * infection = new Infection(this, -1, -1, 'X', 0);
-    pop[n].become_exposed(infection);
-  }
-  E = index_cases;
-}
-
-void Strain::update_exposed(int day) {
-  Person * p;
-  set<Person *>::iterator it;
-  stack <Person *> TempList;
-
-  if (Verbose > 1) {
-    fprintf(Statusfp, "update_exposed for strain %d day %d\n", id, day);
-    fflush(Statusfp);
-  }
-
-  for (it = exposed.begin(); it != exposed.end(); it++) {
-    p = *it;
-    if (p->get_infectious_date(id) == day) {
-      TempList.push(p);
-    }
-  }
-  
-  if (Verbose > 1) {
-    fprintf(Statusfp,
-	    "update_exposed: new infectious for day %d strain %d = %d\n",
-	    day, id, (int) TempList.size());
-    fflush(Statusfp);
-  }
-  
-  while (!TempList.empty()) {
-    p = TempList.top();
-    p->become_infectious(this);
-    TempList.pop();
-  }
-
-  if (Verbose > 1) {
-    fprintf(Statusfp,
-	    "update_exposed finished for day %d strain %d = %d\n",
-	    day, id, (int) TempList.size());
-    fflush(Statusfp);
-  }
-  
-}
-
-void Strain::update_infectious(int day) {
-  Person * p;
-  set<Person *>::iterator it;
-  stack <Person *> TempList;
-
-  if (Verbose > 1) {
-    fprintf(Statusfp, "update_infectious for strain %d day %d\n", id, day);
-    fflush(Statusfp);
-  }
-
-  for (it = infectious.begin(); it != infectious.end(); it++) {
-    p = *it;
-    // printf("inf = %d recov = %d\n", p->get_id(), p->get_recovered_date(s));
-    // fflush(stdout);
-    if (p->get_recovered_date(id) == day) {
-      TempList.push(p);
-    }
-  }
-
-  // printf("Templist size = %d\n", (int) TempList.size()); fflush(stdout);
-  while (!TempList.empty()) {
-    p = TempList.top();
-    // printf("top = %d\n", p->get_id()); fflush(stdout);
-    p->recover(this);
-    TempList.pop();
-  }
-
-  if (Verbose > 1) {
-    fprintf(Statusfp, "update_infectious for day %d complete\n", day);
-    fflush(Statusfp);
-  }
+  spread->start_outbreak(pop, pop_size);
 }
 
 void Strain::update_stats(Person *pop, int pop_size, int day) {
-  S = E = I = R = 0;
-  for (int p = 0; p < pop_size; p++) {
-    char status = pop[p].get_strain_status(id);
-    S += (status == 'S');
-    E += (status == 'E');
-    I += (status == 'I') || (status == 'i');
-    R += (status == 'R');
-  }
-  attack_rate = (100.0*(E+I+R))/pop_size;
+  spread->update_stats(pop, pop_size, day);
 }
 
 void Strain::print_stats(int day) {
-  int N = S+E+I+R;
-  fprintf(Outfp,
-	  "Day %3d  Str %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n",
-	  day, id, S, E, I, R, N, attack_rate);
-  fflush(Outfp);
-  
-  if (Verbose) {
-    fprintf(Statusfp,
-	    "Day %3d  Str %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n\n",
-	    day, id, S, E, I, R, N, attack_rate);
-    fflush(Statusfp);
-  }
+  spread->print_stats(day);
 }
 
 // static
@@ -239,18 +148,25 @@ void Strain::get_strain_parameters() {
 }
 
 void Strain::insert_into_exposed_list(Person * per) {
-  exposed.insert(per);
+  spread->insert_into_exposed_list(per);
+  // exposed.insert(per);
 }
 
 void Strain::insert_into_infectious_list(Person * per) {
-  infectious.insert(per);
+  spread->insert_into_infectious_list(per);
+  // infectious.insert(per);
 }
 
 void Strain::remove_from_exposed_list(Person * per) {
-  exposed.erase(per);
+  spread->remove_from_exposed_list(per);
+  // exposed.erase(per);
 }
 
 void Strain::remove_from_infectious_list(Person * per) {
-  infectious.erase(per);
+  spread->remove_from_infectious_list(per);
+  // infectious.erase(per);
 }
 
+void Strain::update(int day) {
+  spread->update(day);
+}

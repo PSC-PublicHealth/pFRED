@@ -26,6 +26,7 @@ Infection::Infection (Strain * s, int person, int place, char type, int day) {
   latent_period = strain->get_days_latent();
   infectious_period = strain->get_days_infectious();
   infectious_date = exposure_date + latent_period;
+  will_be_symptomatic = strain->get_symptoms();
   recovered_date = infectious_date + infectious_period;
   infector = person;
   infected_place = place;
@@ -37,17 +38,20 @@ Infection::Infection (Strain * s, int person, int place, char type, int day) {
   }
   infectivity = 0.0;
   susceptibility = 0.0;
+  symptoms = 0.0;
   infectees = 0;
 }
 
 void Infection::become_infectious() {
-  if (RANDOM() < strain->get_prob_symptomatic()) {
+  if (will_be_symptomatic) {
     strain_status = 'I';
     infectivity = 1.0;
+    symptoms = 1.0;
   }
   else {
     strain_status = 'i';
     infectivity = 0.5;
+    symptoms = 0.0;
   }
 }
 
@@ -55,12 +59,6 @@ void Infection::recover() {
   strain_status = 'R';
   infectivity = 0.0;
   susceptibility = 0.0;
-}
-
-int Infection::is_symptomatic() {
-  if (strain_status == 'I')
-    return 1;
-  else
-    return 0;
+  symptoms = 0.0;
 }
 

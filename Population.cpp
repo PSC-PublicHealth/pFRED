@@ -18,7 +18,7 @@
 #include "Locations.hpp"
 #include "Strain.hpp"
 
-void Population::get_population_parameters() {
+void Population::get_parameters() {
   get_param((char *) "popfile", popfile);
   get_param((char *) "profiles", profilefile);
   get_param((char *) "strains", &strains);
@@ -26,7 +26,7 @@ void Population::get_population_parameters() {
   Strains = strains;
 }
 
-void Population::setup_population() {
+void Population::setup() {
   if (Verbose) {
     fprintf(Statusfp, "setup population entered\n");
     fflush(Statusfp);
@@ -35,16 +35,13 @@ void Population::setup_population() {
   for (int s = 0; s < strains; s++) {
     strain[s].setup(s);
   }
-
   read_profiles(profilefile);
   read_population();
-
   if (Verbose) {
-    fprintf(Statusfp, "setup population completed\n");
+    fprintf(Statusfp, "setup population completed, strains = %d\n", strains);
     fflush(Statusfp);
   }
 }
-
 
 void Population::read_population() {
   if (Verbose) {
@@ -96,6 +93,58 @@ void Population::read_population() {
   }
 }
 
+void Population::start_outbreak() {
+  for (int s = 0; s < strains; s++) {
+    strain[s].start_outbreak(pop, pop_size);
+  }
+}
+
+void Population::reset(int run) {
+  if (Verbose) {
+    fprintf(Statusfp, "reset population entered for run %d\n", run);
+    fflush(Statusfp);
+  }
+  // reset population level infections
+  for (int s = 0; s < strains; s++) {
+    strain[s].reset();
+  }
+
+  // reset each person (adds her to the susc list for each favorite place)
+  for (int p = 0; p < pop_size; p++){
+    pop[p].reset();
+  }
+  if (Verbose) {
+    fprintf(Statusfp, "reset population completed\n");
+    fflush(Statusfp);
+  }
+}
+
+void Population::update(int day) {
+  for (int p = 0; p < pop_size; p++){
+    pop[p].update(day);
+  }
+  for (int s = 0; s < strains; s++) {
+    strain[s].update(day);
+  }
+}
+
+void Population::report(int day) {
+  for (int s = 0; s < strains; s++) {
+    strain[s].update_stats(pop, pop_size, day);
+    strain[s].print_stats(day);
+  }
+}
+
+void Population::print() {
+  for (int p = 0; p < pop_size; p++) {
+    pop[p].print(0);
+  }
+}
+
+Strain * Population::get_strain(int s) {
+  return &strain[s];
+}
+
 void Population::population_quality_control() {
   if (Verbose) {
     fprintf(Statusfp, "population quality control check\n");
@@ -141,89 +190,3 @@ void Population::population_quality_control() {
     fflush(Statusfp);
   }
 }
-
-
-void Population::start_outbreak() {
-  for (int s = 0; s < strains; s++) {
-    strain[s].start_outbreak(pop, pop_size);
-  }
-}
-
-
-void Population::reset_population(int run) {
-
-  if (Verbose) {
-    fprintf(Statusfp, "reset population entered for run %d\n", run);
-    fflush(Statusfp);
-  }
-
-  // reset population level infections
-  for (int s = 0; s < strains; s++) {
-    strain[s].reset();
-  }
-
-  // add each person to the susceptible list for each place visited
-  for (int p = 0; p < pop_size; p++){
-    pop[p].reset();
-  }
-
-  if (Verbose) {
-    fprintf(Statusfp, "reset population completed\n");
-    fflush(Statusfp);
-  }
-}
-
-void Population::update(int day) {
-  update_exposed_population(day);
-  update_infectious_population(day);
-  update_population_behaviors(day);
-  Loc.process_infectious_locations(day);
-}
-
-void Population::report(int day) {
-  update_population_stats(day);
-  print_population_stats(day);
-}
-
-
-void Population::update_exposed_population(int day) {
-  for (int s = 0; s < strains; s++) {
-    strain[s].update_exposed(day);
-  }
-}
-
-void Population::update_infectious_population(int day) {
-  for (int s = 0; s < strains; s++) {
-    strain[s].update_infectious(day);
-  }
-}
-
-
-void Population::update_population_behaviors(int day) {
-  for (int p = 0; p < pop_size; p++) {
-    pop[p].behave(day);
-  }
-}
-
-void Population::update_population_stats(int day) {
-  for (int s = 0; s < strains; s++) {
-    strain[s].update_stats(pop, pop_size, day);
-  }
-}
-
-void Population::print_population_stats(int day) {
-  for (int s = 0; s < strains; s++) {
-    strain[s].print_stats(day);
-  }
-}
-
-void Population::print_population() {
-  for (int p = 0; p < pop_size; p++) {
-    pop[p].print(0);
-  }
-}
-
-Strain * Population::get_strain(int s) {
-  return &strain[s];
-}
-

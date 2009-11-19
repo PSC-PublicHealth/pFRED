@@ -12,13 +12,15 @@
 #ifndef _FRED_DEMOGRAPHICS_H
 #define _FRED_DEMOGRAPHICS_H
 
+#include "Demographics.hpp"
+
 class Demographics {
 public:
   Demographics(int,char,char,int,int);
   void reset();
   void update(int day);
-  // int get_age(int day) { return (int) ((day-birthday)/365.0); }
   int get_age() { return age; }
+  int get_age(int day);
   char get_sex() { return sex; }
   char get_occupation() { return occupation; }
   int get_marital_status() { return marital_status; }
