@@ -6,7 +6,7 @@
 
 //
 //
-// File: Person.cpp
+// File: Person.cc
 //
 
 #include "Person.h";

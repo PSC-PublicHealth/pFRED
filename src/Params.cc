@@ -6,7 +6,7 @@
 
 //
 //
-// File Params.cpp
+// File Params.cc
 //
 
 #include "Params.h"

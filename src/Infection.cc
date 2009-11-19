@@ -6,7 +6,7 @@
 
 //
 //
-// File: Infection.cpp
+// File: Infection.cc
 //
 
 #include "Infection.h"

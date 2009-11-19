@@ -6,7 +6,7 @@
 
 //
 //
-// File: Place.cpp
+// File: Place.cc
 //
 
 #include "Place.h"

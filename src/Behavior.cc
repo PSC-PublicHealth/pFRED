@@ -6,7 +6,7 @@
 
 //
 //
-// File: Behavior.cpp
+// File: Behavior.cc
 //
 
 #include "Behavior.h"

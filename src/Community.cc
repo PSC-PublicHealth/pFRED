@@ -6,7 +6,7 @@
 
 //
 //
-// File: Community.cpp
+// File: Community.cc
 //
 
 #include "Community.h"

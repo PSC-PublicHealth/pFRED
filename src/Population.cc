@@ -6,7 +6,7 @@
 
 //
 //
-// File: Population.cpp
+// File: Population.cc
 //
 
 #include <stdio.h>

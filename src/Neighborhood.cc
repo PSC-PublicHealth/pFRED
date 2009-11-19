@@ -6,7 +6,7 @@
 
 //
 //
-// File: Neighborhood.cpp
+// File: Neighborhood.cc
 //
 
 #include "Neighborhood.h"

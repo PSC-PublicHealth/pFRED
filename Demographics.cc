@@ -6,7 +6,7 @@
 
 //
 //
-// File: Demographics.cpp
+// File: Demographics.cc
 //
 
 #include "Demographics.h"

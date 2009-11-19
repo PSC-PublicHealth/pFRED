@@ -6,7 +6,7 @@
 
 //
 //
-// File: Hospital.cpp
+// File: Hospital.cc
 //
 
 #include "Hospital.h"

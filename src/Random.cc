@@ -6,7 +6,7 @@
 
 //
 //
-// File: Random.cpp
+// File: Random.cc
 //
 
 #include "Random.h"

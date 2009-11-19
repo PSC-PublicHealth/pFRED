@@ -6,7 +6,7 @@
 
 //
 //
-// File: Fred.cpp
+// File: Fred.cc
 //
 
 #include "Fred.h"

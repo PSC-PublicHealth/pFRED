@@ -6,7 +6,7 @@
 
 //
 //
-// File: Household.cpp
+// File: Household.cc
 //
 
 #include "Household.h"

@@ -6,7 +6,7 @@
 
 //
 //
-// File: School.cpp
+// File: School.cc
 //
 
 #include "School.h"

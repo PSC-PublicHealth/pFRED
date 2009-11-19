@@ -1,6 +1,6 @@
 //
 //
-// File: Global.cpp
+// File: Global.cc
 //
 
 #include "Global.h"

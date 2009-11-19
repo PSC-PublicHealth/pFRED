@@ -6,7 +6,7 @@
 
 //
 //
-// File: Office.cpp
+// File: Office.cc
 //
 
 #include "Office.h"

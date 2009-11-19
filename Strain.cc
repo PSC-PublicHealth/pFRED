@@ -6,7 +6,7 @@
 
 //
 //
-// File: Strain.cpp
+// File: Strain.cc
 //
 
 #include "Strain.h"

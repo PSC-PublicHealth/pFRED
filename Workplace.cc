@@ -6,7 +6,7 @@
 
 //
 //
-// File: Workplace.cpp
+// File: Workplace.cc
 //
 
 #include "Workplace.h"

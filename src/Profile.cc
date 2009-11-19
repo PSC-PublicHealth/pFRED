@@ -6,7 +6,7 @@
 
 //
 //
-// File: Profile.cpp
+// File: Profile.cc
 //
 
 #include "Profile.h"

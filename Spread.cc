@@ -6,7 +6,7 @@
 
 //
 //
-// File: Spread.cpp
+// File: Spread.cc
 //
 
 #include "Spread.h"
