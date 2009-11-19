@@ -23,7 +23,7 @@ int Household_parameters_set = 0;
 Household::Household(int loc, char *lab, double lon, double lat, int container) {
   type = HOUSEHOLD;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Strain::get_strains());
+  get_parameters(Strains);
 }
 
 void Household::get_parameters(int strains) {

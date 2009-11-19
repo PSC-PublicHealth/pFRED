@@ -24,6 +24,7 @@ FILE *Tracefp;
 // global singleton objects
 Population Pop;
 Locations Loc;
+int Strains;
 
 void get_global_parameters() {
   get_param((char *) "verbose", &Verbose);

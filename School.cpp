@@ -29,7 +29,7 @@ int School_parameters_set = 0;
 School::School(int loc, char *lab, double lon, double lat, int container) {
   type = SCHOOL;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Strain::get_strains());
+  get_parameters(Strains);
 }
 
 
@@ -117,7 +117,8 @@ int School::should_be_open(int day, int strain) {
 
     // Close schools if the global attack rate has reached the threshold
     // (with a delay)
-    if (Pop.get_attack_rate(strain) > School_closure_threshold) {
+    Strain * str = Pop.get_strain(strain);
+    if (str->get_attack_rate() > School_closure_threshold) {
       if (is_open(day))
 	close_date = day+School_closure_delay;
       open_date = day+School_closure_delay+School_closure_period;

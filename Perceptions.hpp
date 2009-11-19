@@ -14,9 +14,10 @@
 
 class Perceptions {
 public:
-  Perceptions();
+  Perceptions(Person *p);
 
 private:
+  Person * me;
 };
 
 #endif // _FRED_PERCEPTIONS_H

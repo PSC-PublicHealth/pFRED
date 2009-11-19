@@ -17,6 +17,7 @@
 using namespace std;
 
 class Person;
+class Strain;
 
 class Population {
 public:
@@ -29,25 +30,16 @@ public:
   void update(int day);
   void report(int day);
   void print_population();
-  void insert_into_exposed_list(int d, Person * p);
-  void insert_into_infectious_list(int d, Person * p);
-  void remove_from_exposed_list(int d, Person * p);
-  void remove_from_infectious_list(int d, Person * p);
-  double get_attack_rate(int strain);
-  set <Person *> *infectious;
+  Strain * get_strain(int s);
+  int get_strains() { return strains; }
 
 private:
   char popfile[80];
   char profilefile[80];
   Person *pop;
   int pop_size;
-  int index_cases;
-  set <Person *> *exposed;
-  int *S;
-  int *E;
-  int *I;
-  int *R;
-  double * attack_rate;
+  Strain *strain;
+  int strains;
   void update_exposed_population(int day);
   void update_infectious_population(int day);
   void update_population_behaviors(int day);

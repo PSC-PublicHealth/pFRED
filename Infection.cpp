@@ -20,12 +20,12 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
-Infection::Infection (int id, int strain, int per, int place, char type, int day) {
+Infection::Infection (int id, Strain * strain, int per, int place, char type, int day) {
   if (Verbose > 1) { fprintf(Statusfp, "EXPOSED person %d\n", id); }
   strain_status = 'E';
   exposure_date = day;
-  latent_period = Strain::get_days_latent(strain);
-  infectious_period = Strain::get_days_infectious(strain);
+  latent_period = strain->get_days_latent();
+  infectious_period = strain->get_days_infectious();
   infectious_date = exposure_date + latent_period;
   recovered_date = infectious_date + infectious_period;
   infector = per;
@@ -40,12 +40,12 @@ Infection::Infection (int id, int strain, int per, int place, char type, int day
   infectees = 0;
 }
 
-void Infection::become_infectious(int id, int strain) {
+void Infection::become_infectious(int id, Strain * strain) {
   if (Verbose > 2) {
-    fprintf(Statusfp, "INFECTIOUS person %d for strain %d\n", id, strain);
+    fprintf(Statusfp, "INFECTIOUS person %d for strain %d\n", id, strain->get_id());
     fflush(Statusfp);
   }
-  if (RANDOM() < Strain::get_prob_symptomatic(strain)) {
+  if (RANDOM() < strain->get_prob_symptomatic()) {
     strain_status = 'I';
     infectivity = 1.0;
   }
@@ -53,9 +53,13 @@ void Infection::become_infectious(int id, int strain) {
     strain_status = 'i';
     infectivity = 0.5;
   }
+  if (Verbose > 2) {
+    fprintf(Statusfp, "INFECTIOUS person %d for strain %d has status %c\n", id, strain->get_id(), strain_status);
+    fflush(Statusfp);
+  }
 }
 
-void Infection::recover(int id, int strain) {
+void Infection::recover(int id, Strain * strain) {
   strain_status = 'R';
 }
 

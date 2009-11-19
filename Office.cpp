@@ -23,7 +23,7 @@ int Office_parameters_set = 0;
 Office::Office(int loc, char *lab, double lon, double lat, int container) {
   type = OFFICE;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Strain::get_strains());
+  get_parameters(Strains);
 }
 
 void Office::get_parameters(int strains) {

@@ -24,7 +24,7 @@ Neighborhood::Neighborhood(int loc, char *lab, double lon,
 			   double lat, int container) {
   type = NEIGHBORHOOD;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Strain::get_strains());
+  get_parameters(Strains);
 }
 
 void Neighborhood::get_parameters(int strains) {

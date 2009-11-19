@@ -274,16 +274,16 @@ void Locations::process_infectious_locations(int day) {
     fflush(Statusfp);
   }
 
-  int strains = Strain::get_strains();
+  int strains = Pop.get_strains();
   for (int s = 0; s < strains; s++) {
-
+    Strain * str = Pop.get_strain(s);
     if (Verbose > 3) {
       fprintf(Statusfp, "strain = %d  infectious = %d\n", s,
-	      (int) (Pop.infectious[s].size())); fflush(Statusfp);
+	      (int) (str->infectious.size())); fflush(Statusfp);
     }
 
     // get list of infectious locations:
-    for (itr = Pop.infectious[s].begin(); itr != Pop.infectious[s].end(); itr++) {
+    for (itr = str->infectious.begin(); itr != str->infectious.end(); itr++) {
       Person * p = *itr;
       if (Verbose > 1) {
 	fprintf(Statusfp, "day %d infectious person %d \n", day, p->get_id());

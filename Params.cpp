@@ -17,7 +17,7 @@
 char Param_name[MAX_PARAMS][MAX_PARAM_SIZE];
 char Param_value[MAX_PARAMS][MAX_PARAM_SIZE];
 int Params;
-int Param_debug = 0;
+int Param_debug = 1;
 
 int get_param(char *s, int *p) {
   int i;

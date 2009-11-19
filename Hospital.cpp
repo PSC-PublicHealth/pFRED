@@ -25,7 +25,7 @@ int Hospital_parameters_set = 0;
 Hospital::Hospital(int loc, char *lab, double lon, double lat, int container) {
   type = HOSPITAL;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Strain::get_strains());
+  get_parameters(Strains);
 }
 
 void Hospital::get_parameters(int strains) {

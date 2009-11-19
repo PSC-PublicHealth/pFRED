@@ -5,7 +5,6 @@ runs = 10
 verbose = 1
 test = 0
 start_day = 0
-index_cases = 100
 popfile = ../DC/pop.txt
 locfile = ../DC/loc.txt
 profiles = profiles.txt
@@ -14,6 +13,7 @@ tracefile = OUT/trace
 
 trans[0] = 1.0
 symp[0] = 0.67
+index_cases[0] = 100
 days_latent[0] = 3       0.0 0.8 1.0
 days_incubating[0] = 4   0.0 0.3 0.8 1.0
 days_infectious[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0

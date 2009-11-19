@@ -12,21 +12,13 @@
 #ifndef _FRED_HEALTH_H
 #define _FRED_HEALTH_H
 
-#include <stdlib.h>
-#include <vector>
-using namespace std;
-
-#define MAX_STRAINS 2
-
-class Infection;
-
 class Health {
 public:
-  Health();
+  Health(int person_id);
   void reset();
-  void become_exposed(int id, int strain, int person_id, int loc, char place_type, int day);
-  void become_infectious(int id, int strain);
-  void recover(int id, int strain);
+  void become_exposed(Strain * strain, int person_id, int loc, char place_type, int day);
+  void become_infectious(Strain * strain);
+  void recover(Strain * strain);
   int is_symptomatic();
   char get_strain_status(int strain);
   int add_infectee(int strain);
@@ -41,6 +33,7 @@ public:
   double get_infectivity(int strain);
 
 private:
+  int id;
   vector <Infection *> *infection;
 };
 

@@ -54,9 +54,7 @@ void setup(char *paramfile) {
   get_global_parameters();
   Random_start_day = (Start_day > 6);
   Pop.get_population_parameters();
-  Strain::get_strain_parameters();
   Loc.get_location_parameters();
-  Strain::setup_strains(Verbose);
   Loc.setup_locations();
   Pop.setup_population();
   Pop.population_quality_control();

@@ -12,11 +12,13 @@
 #ifndef _FRED_INFECTION_H
 #define _FRED_INFECTION_H
 
+class Strain;
+
 class Infection {
 public:
-  Infection(int id, int d, int person_id, int loc, char place_type, int day);
-  void become_infectious(int id, int strain);
-  void recover(int id, int strain);
+  Infection(int id, Strain * strain, int person_id, int loc, char place_type, int day);
+  void become_infectious(int id, Strain * strain);
+  void recover(int id, Strain * strain);
   int is_symptomatic();
   char get_strain_status() { return strain_status; }
   double get_susceptibility() { return susceptibility; }

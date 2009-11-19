@@ -17,8 +17,7 @@
 #include "Strain.hpp"
 
 void Place::setup(int loc, char *lab, double lon, double lat, int cont) {
-
-  int strains = Strain::get_strains();
+  int strains = Pop.get_strains();
   id = loc;
   container = cont;
   strcpy(label,lab);
@@ -62,7 +61,7 @@ void Place::setup(int loc, char *lab, double lon, double lat, int cont) {
 
 void Place::reset() {
   N = 0;
-  int strains = Strain::get_strains();
+  int strains = Pop.get_strains();
   for (int s = 0; s < strains; s++) {
     susceptibles[s].clear();
     infectious[s].clear();
@@ -90,6 +89,7 @@ void Place::add_susceptible(int strain, Person * per) {
 
 void Place::delete_susceptible(int strain, Person * per) {
   int s = (int) susceptibles[strain].size();
+  if (s == 0) { printf("Help! can't delete from empty list!\n"); abort(); };
   Person * last = susceptibles[strain][s-1];
   for (int i = 0; i < s; i++) {
     if (susceptibles[strain][i] == per) {
@@ -144,9 +144,9 @@ void Place::print_infectious(int strain) {
 
 void Place::spread_infection(int day) {
   vector<Person *>::iterator itr;
-
-  int strains = Strain::get_strains();
+  int strains = Pop.get_strains();
   for (int s = 0; s < strains; s++) {
+    Strain * str = Pop.get_strain(s);
     if (Verbose > 1) { print(s); }
     if (N < 2) return;
     if (S[s] == 0) continue;
@@ -159,9 +159,9 @@ void Place::spread_infection(int day) {
     }
     
     // expected u.b. on number of contacts resulting in infection (per infective)
-    contacts *= Strain::get_beta(s);
+    contacts *= str->get_transmissibility();
     if (Verbose > 1) {
-      printf("beta = %f\n", Strain::get_beta(s));
+      printf("beta = %f\n", str->get_transmissibility());
       printf("effective contacts = %f\n", contacts);
       fflush(stdout);
     }
@@ -219,7 +219,7 @@ void Place::spread_infection(int day) {
 	      printf("infection from %d to %d  r = %f\n",
 		     i->get_id(),sus->get_id(),r);
 	    }
-	    sus->become_exposed(s, i->get_id(), id, type, day);
+	    sus->become_exposed(str, i->get_id(), id, type, day);
 	    i->add_infectee(s);
 	  }
 	  else {

@@ -11,24 +11,18 @@
 
 #include "Person.hpp";
 #include "Global.hpp"
-#include "Profile.hpp"
 #include "Population.hpp"
 #include "Strain.hpp"
-#include "Random.hpp"
 #include "Place.hpp"
-#include "Demographics.hpp";
-#include "Behavior.hpp"
-#include "Health.hpp"
-#include "Perceptions.hpp"
 
 void Person::setup(int i, int a, char g, int m, int o, int p, Place *h,
 		   Place *n, Place *s, Place *c, Place *w, Place *off, int pro) 
 {
   id = i;
   demographics = new Demographics(a,g,'U',m,p);
-  health = new Health();
-  behavior = new Behavior(h,n,s,c,w,off,pro);
-  // perceptions = new Perceptions();
+  health = new Health(id);
+  behavior = new Behavior(this,h,n,s,c,w,off,pro);
+  perceptions = new Perceptions(this);
 }
   
 void Person::print(int strain) {
@@ -64,48 +58,49 @@ void Person::print_out(int strain) {
 }
 
 void Person::print_schedule() {
-  behavior->print_schedule(id);
+  behavior->print_schedule();
 }
   
 void Person::reset() {
   if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", id); }
   demographics->reset();
   health->reset();
-  behavior->reset(this);
+  behavior->reset();
 }
 
-void Person::become_exposed(int strain, int per, int place, char type, int day) {
-  health->become_exposed(id, strain, per, place, type, day);
-  Pop.insert_into_exposed_list(strain, this);
+void Person::become_exposed(Strain * strain, int infector,
+			    int place, char type, int day) {
+  health->become_exposed(strain, infector, place, type, day);
+  strain->insert_into_exposed_list(this);
 }
   
-void Person::become_infectious(int strain) {
-  health->become_infectious(id, strain);
-  behavior->become_infectious(this, strain, health->get_exposure_date(strain));
-  Pop.remove_from_exposed_list(strain, this);
-  Pop.insert_into_infectious_list(strain, this);
+void Person::become_infectious(Strain * strain) {
+  health->become_infectious(strain);
+  behavior->become_infectious(strain->get_id(), health->get_exposure_date(strain->get_id()));
+  strain->remove_from_exposed_list(this);
+  strain->insert_into_infectious_list(this);
 }
 
-void Person::recover(int strain) {
-  health->recover(id, strain);
+void Person::recover(Strain * strain) {
+  health->recover(strain);
   if (Verbose > 2) {
-    fprintf(Statusfp, "RECOVERED person %d for strain %d\n", id, strain);
-    print_out(strain);
+    fprintf(Statusfp, "RECOVERED person %d for strain %d\n", id, strain->get_id());
+    print_out(strain->get_id());
     fflush(Statusfp);
   }
-  behavior->recover(this, strain, health->get_exposure_date(strain));
-  Pop.remove_from_infectious_list(strain, this);
+  behavior->recover(strain->get_id(), health->get_exposure_date(strain->get_id()));
+  strain->remove_from_infectious_list(this);
 
   // print recovered agents into Trace file
-  print(strain);
+  print(strain->get_id());
 }
 
 int Person::is_on_schedule(int day, int loc) {
-  return behavior->is_on_schedule(id, day, loc, is_symptomatic());
+  return behavior->is_on_schedule(day, loc, is_symptomatic());
 }
 
 void Person::update_schedule(int day) {
-  return behavior->update_schedule(id, day, is_symptomatic());
+  return behavior->update_schedule(day, is_symptomatic());
 }
 
 void Person::get_schedule(int *n, int *sched) {

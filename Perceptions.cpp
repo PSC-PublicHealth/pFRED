@@ -9,9 +9,10 @@
 // File: Perceptions.cpp
 //
 
-#include "Perceptions.hpp"
+#include "Person.hpp"
 
-Perceptions::Perceptions () {
+Person::Perceptions::Perceptions(Person *p) {
+  me = p;
 }
 
 

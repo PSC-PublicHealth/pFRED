@@ -14,36 +14,31 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
+using namespace std;
 
 class Place;
-class Demographics;
-class Health;
-class Behavior;
-class Perceptions;
+class Infection;
+class Strain;
 
 class Person {
-  int id;
-  Demographics * demographics;
-  Health * health;
-  Behavior * behavior;
-  // Perceptions * perceptions;
-
 public:
   Person() {}
+
   void setup(int i, int a, char g, int m, int o, int p, Place *h,
 	     Place *n, Place *s, Place *c, Place *w, Place *off, int pro);
   void print(int strain);
   void print_out(int strain);
+  void reset();
 
   void update_schedule(int day);
   void get_schedule(int *n, int *sched);
   int is_on_schedule(int day, int loc);
   void print_schedule();
 
-  void reset();
-  void become_exposed(int strain, int person_id, int loc, char place_type, int day);
-  void become_infectious(int strain);
-  void recover(int strain);
+  void become_exposed(Strain * strain, int person_id, int loc, char place_type, int day);
+  void become_infectious(Strain * strain);
+  void recover(Strain * strain);
   void behave(int day);
   int is_symptomatic();
 
@@ -67,6 +62,20 @@ public:
   char get_infected_place_type(int strain);
   int get_infectees(int strain);
   int add_infectee(int strain);
+
+private:
+
+  // member classes:
+  #include "Demographics.hpp"
+  #include "Health.hpp"
+  #include "Behavior.hpp"
+  #include "Perceptions.hpp"
+
+  int id;
+  Demographics * demographics;
+  Health * health;
+  Behavior * behavior;
+  Perceptions * perceptions;
 };
 
 #endif // _FRED_PERSON_H

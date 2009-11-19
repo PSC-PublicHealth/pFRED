@@ -27,6 +27,7 @@ using namespace std;
 #define COMMUNITY 'X'
 
 class Person;
+extern int Strains;
 
 class Place {
 

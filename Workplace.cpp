@@ -23,7 +23,7 @@ int Workplace_parameters_set = 0;
 Workplace::Workplace(int loc, char *lab, double lon, double lat, int container) {
   type = WORKPLACE;
   setup(loc, lab, lon, lat, container);
-  get_parameters(Strain::get_strains());
+  get_parameters(Strains);
 }
 
 void Workplace::get_parameters(int strains) {
