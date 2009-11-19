@@ -6,7 +6,7 @@ CPPFLAGS = -O2 -Wall
 
 ###############################################
 
-%.o:%.cpp %.hpp
+%.o:%.c %.h
 	$(CPP) $(CPPFLAGS) -c $< $(INCLUDES)
 
 OBJ = Behavior.o Classroom.o Community.o Demographics.o Health.o \
@@ -14,12 +14,12 @@ OBJ = Behavior.o Classroom.o Community.o Demographics.o Health.o \
 	Params.o Place.o Perceptions.o Person.o Population.o Profile.o \
 	Random.o School.o Spread.o Strain.o Workplace.o
 
-SRC = $(OBJ:.o=.cpp)
+SRC = $(OBJ:.o=.cc)
 
-HDR = $(OBJ:.o=.hpp)
+HDR = $(OBJ:.o=.h)
 
-FRED: Fred.cpp Fred.hpp $(OBJ)
-	$(CPP) $(CPPFLAGS) Fred.cpp $(OBJ) -o fred
+FRED: Fred.cc Fred.h $(OBJ)
+	$(CPP) $(CPPFLAGS) Fred.cc $(OBJ) -o fred
 
 ##############################################
 
@@ -36,7 +36,7 @@ tar: clean
 dist:
 	make clean
 	(cd ..; tar cvf FRED-`date +"%Y-%m-%d"`.tar FRED/README \
-	FRED/Makefile FRED/profiles.txt FRED/*.cpp FRED/*.hpp \
+	FRED/Makefile FRED/profiles.txt FRED/*.cc FRED/*.h \
 	FRED/params* FRED/p FRED/ch FRED/go FRED/report FRED/test_* \
 	FRED/LICENSE FRED/sim.plt FRED/TEST/* ; cd FRED)
 	make
