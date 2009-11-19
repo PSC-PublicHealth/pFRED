@@ -17,6 +17,7 @@
 #include "Global.hpp"
 #include "Locations.hpp"
 #include "Strain.hpp"
+#include "Person.hpp"
 
 void Population::get_parameters() {
   get_param((char *) "popfile", popfile);

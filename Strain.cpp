@@ -20,6 +20,8 @@ using namespace std;
 #include "Global.hpp"
 #include "Infection.hpp"
 #include "Locations.hpp"
+#include "Spread.hpp"
+
 double Prob_stay_home;
 
 Strain::Strain() {

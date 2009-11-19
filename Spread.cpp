@@ -9,6 +9,7 @@
 // File: Spread.cpp
 //
 
+#include "Spread.hpp"
 #include "Strain.hpp"
 
 #include <stdio.h>
@@ -22,7 +23,7 @@ using namespace std;
 #include "Locations.hpp"
 #include "Place.hpp"
 
-Strain::Spread::Spread(Strain *str) {
+Spread::Spread(Strain *str) {
   char s[80];
   strain = str;
   id = strain->get_id();
@@ -30,14 +31,14 @@ Strain::Spread::Spread(Strain *str) {
   get_param(s, &index_cases);
 }
 
-void Strain::Spread::reset() {
+void Spread::reset() {
   exposed.clear();
   infectious.clear();
   attack_rate = 0.0;
   S = E = I = R = 0;
 }
 
-void Strain::Spread::start_outbreak(Person *pop, int pop_size) {
+void Spread::start_outbreak(Person *pop, int pop_size) {
   // create index cases
   for (int i = 0; i < index_cases; i++) {
     int n = IRAND(0, pop_size-1);
@@ -47,7 +48,7 @@ void Strain::Spread::start_outbreak(Person *pop, int pop_size) {
   E = index_cases;
 }
 
-void Strain::Spread::update_stats(Person *pop, int pop_size, int day) {
+void Spread::update_stats(Person *pop, int pop_size, int day) {
   S = E = I = R = 0;
   for (int p = 0; p < pop_size; p++) {
     char status = pop[p].get_strain_status(id);
@@ -59,7 +60,7 @@ void Strain::Spread::update_stats(Person *pop, int pop_size, int day) {
   attack_rate = (100.0*(E+I+R))/pop_size;
 }
 
-void Strain::Spread::print_stats(int day) {
+void Spread::print_stats(int day) {
   int N = S+E+I+R;
   fprintf(Outfp,
 	  "Day %3d  Str %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n",
@@ -74,23 +75,23 @@ void Strain::Spread::print_stats(int day) {
   }
 }
 
-void Strain::Spread::insert_into_exposed_list(Person * per) {
+void Spread::insert_into_exposed_list(Person * per) {
   exposed.insert(per);
 }
 
-void Strain::Spread::insert_into_infectious_list(Person * per) {
+void Spread::insert_into_infectious_list(Person * per) {
   infectious.insert(per);
 }
 
-void Strain::Spread::remove_from_exposed_list(Person * per) {
+void Spread::remove_from_exposed_list(Person * per) {
   exposed.erase(per);
 }
 
-void Strain::Spread::remove_from_infectious_list(Person * per) {
+void Spread::remove_from_infectious_list(Person * per) {
   infectious.erase(per);
 }
 
-void Strain::Spread::update(int day) {
+void Spread::update(int day) {
   set <int> places;
   set<Person *>::iterator itr;
   set<int>::iterator it;
@@ -113,17 +114,19 @@ void Strain::Spread::update(int day) {
 	places.insert(loc);
       }
     }
-    if (Verbose) {
-      fprintf(Statusfp, "Number of infectious places = %d\n", (int) places.size());
+  }
+
+  if (Verbose) {
+    fprintf(Statusfp, "Number of infectious places = %d\n", (int) places.size());
+  }
+
+  // infect visitors to infectious locations:
+  for (it = places.begin(); it != places.end(); it++ ) {
+    int loc = *it;
+    Place * place = Loc.get_location(loc);
+    if (Verbose > 1) {
+      fprintf(Statusfp, "\nspread in location: %d\n", loc); fflush(Statusfp);
     }
-    // infect visitors to infectious locations:
-    for (it = places.begin(); it != places.end(); it++ ) {
-      int loc = *it;
-      Place * place = Loc.get_location(loc);
-      if (Verbose > 1) {
-	fprintf(Statusfp, "\nspread in location: %d\n", loc); fflush(Statusfp);
-      }
-      place->spread_infection(day);
-    }
+    place->spread_infection(day);
   }
 }

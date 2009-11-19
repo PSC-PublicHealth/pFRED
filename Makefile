@@ -12,7 +12,7 @@ CPPFLAGS = -O2 -Wall
 OBJ = Behavior.o Classroom.o Community.o Demographics.o Health.o \
 	Hospital.o Household.o Infection.o Locations.o Neighborhood.o Office.o \
 	Params.o Place.o Perceptions.o Person.o Population.o Profile.o \
-	Random.o School.o Strain.o Workplace.o
+	Random.o School.o Spread.o Strain.o Workplace.o
 
 SRC = $(OBJ:.o=.cpp)
 

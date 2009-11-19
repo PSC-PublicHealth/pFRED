@@ -12,6 +12,12 @@
 #ifndef _FRED_SPREAD_H
 #define _FRED_SPREAD_H
 
+#include <set>
+using namespace std;
+
+class Strain;
+class Person;
+
 class Spread {
 public:
   Spread(Strain * str);

@@ -15,7 +15,9 @@
 #include <set>
 #include <stack>
 using namespace std;
-#include "Person.hpp"
+
+class Person;
+class Spread;
 
 class Strain {
 public:
@@ -34,10 +36,10 @@ public:
   double get_prob_resistant() { return prob_resistant; }
   int get_index_cases();
   double get_attack_rate();
-  void insert_into_exposed_list(Person * per);
-  void insert_into_infectious_list(Person * per);
-  void remove_from_exposed_list(Person * per);
-  void remove_from_infectious_list(Person * per);
+  void insert_into_exposed_list(Person *person);
+  void insert_into_infectious_list(Person *person);
+  void remove_from_exposed_list(Person *person);
+  void remove_from_infectious_list(Person *person);
   static int draw_from_distribution(int n, double *dist);
   static double get_prob_stay_home();
   static void get_strain_parameters();
@@ -56,9 +58,7 @@ private:
   double *days_latent;
   double *days_incubating;
   double *days_infectious;
-
-  #include "Spread.hpp"
-  Spread * spread;
+  Spread *spread;
 };
   
 
