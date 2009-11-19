@@ -12,8 +12,6 @@
 #ifndef _FRED_DEMOGRAPHICS_H
 #define _FRED_DEMOGRAPHICS_H
 
-#include "Demographics.hpp"
-
 class Demographics {
 public:
   Demographics(int,char,char,int,int);
