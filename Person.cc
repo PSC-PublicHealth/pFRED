@@ -9,15 +9,15 @@
 // File: Person.cc
 //
 
-#include "Person.h";
-#include "Global.h"
-#include "Population.h"
-#include "Strain.h"
-#include "Place.h"
-#include "Demographics.h"
+#include "Person.h"
+
 #include "Behavior.h"
+#include "Demographics.h"
+#include "Global.h"
 #include "Health.h"
 #include "Perceptions.h"
+#include "Place.h"
+#include "Strain.h"
 
 void Person::setup(int index, int age, char sex, int marital, int occ,
 		   int profession, Place *house, Place *neigh,

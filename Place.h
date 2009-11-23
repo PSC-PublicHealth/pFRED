@@ -30,28 +30,6 @@ class Person;
 extern int Strains;
 
 class Place {
-
-protected:
-
-  int id;					// place id
-  char label[32];				// external id
-  char type;				// HOME, WORK, SCHOOL, COMMUNITY
-  int container;				// id of container place
-  double latitude;				// geo location
-  double longitude;				// geo location
-  int N;			   // total number of potential visitors
-  vector <Person *> *susceptibles;	 // list of susceptible visitors
-  vector <Person *> *infectious;	  // list of infectious visitors
-  int *S;					// susceptible count
-  int *I;					// infectious count
-  int *Sympt;					// symtomatics count
-  int close_date;			     // when to close this place
-  int open_date;			      // when to open this place
-  int indiv_types;			   // distinct types of visitors
-
-  // strain parameters
-  double *beta;	       // place-independent transmissibility per contact
-
 public:
   Place() {}
   ~Place() {}
@@ -92,6 +70,27 @@ public:
   void set_longitude(double x) { longitude = x; }
   void set_close_date(int day) { close_date = day; }
   void set_open_date(int day) { open_date = day; }
+
+protected:
+
+  int id;					// place id
+  char label[32];				// external id
+  char type;				// HOME, WORK, SCHOOL, COMMUNITY
+  int container;				// id of container place
+  double latitude;				// geo location
+  double longitude;				// geo location
+  int N;			   // total number of potential visitors
+  vector <Person *> *susceptibles;	 // list of susceptible visitors
+  vector <Person *> *infectious;	  // list of infectious visitors
+  int *S;					// susceptible count
+  int *I;					// infectious count
+  int *Sympt;					// symtomatics count
+  int close_date;			     // when to close this place
+  int open_date;			      // when to open this place
+  int indiv_types;			   // distinct types of visitors
+
+  // strain parameters
+  double *beta;	       // place-independent transmissibility per contact
 };
 
 #endif // _FRED_PLACE_H

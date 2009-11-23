@@ -90,15 +90,25 @@ void Place::add_susceptible(int strain, Person * per) {
 
 void Place::delete_susceptible(int strain, Person * per) {
   int s = (int) susceptibles[strain].size();
-  if (s == 0) { printf("Help! can't delete from empty list!\n"); abort(); };
+  if (s == 0) {
+    printf("Help! can't delete from empty list! "
+	   "Susceptibles for strain %i place %i\n", strain, id); 
+    abort();
+  }
   Person * last = susceptibles[strain][s-1];
+  
   for (int i = 0; i < s; i++) {
     if (susceptibles[strain][i] == per) {
       susceptibles[strain][i] = last;
+      // BUG - "i" can run off the end of this vector if we keep looping after pop_back
+      // so I break here, but there are cases where the same person can appear in this
+      // vector more than once.  This is a bug in the generation of the population file,
+      // and will be fixed there.
       susceptibles[strain].pop_back();
+      S[strain]--;
+      break;
     }
   }
-  S[strain]--;
 }
 
 void Place::print_susceptibles(int strain) {
@@ -124,13 +134,15 @@ void Place::delete_infectious(int strain, Person * per) {
   Person * last = infectious[strain][s-1];
   for (int i = 0; i < s; i++) {
     if (infectious[strain][i] == per) {
+      // BUG - same thing here as in delete_susceptible
       infectious[strain][i] = last;
       infectious[strain].pop_back();
+      I[strain]--;
+      if (per->get_strain_status(strain)=='I') {
+	Sympt[strain]--;
+      }
+      break;
     }
-  }
-  I[strain]--;
-  if (per->get_strain_status(strain)=='I') {
-    Sympt[strain]--;
   }
 }
 
@@ -205,14 +217,19 @@ void Place::spread_infection(int day) {
 		 sus->get_id(), r, pos, S[s]);
 	}
 
+	// TODO(alona) this is where the mutation will take place.
+	Infection * infection = new Infection(str, i->get_id(), id, type, day);
+	// If it mutated, the strain's id will not be s
+	int cur_strain = infection->get_strain()->get_id();
+
 	// is the victim here today, and still susceptible?
-	if (sus->is_on_schedule(day,id) && sus->get_strain_status(s) == 'S') {
+	if (sus->is_on_schedule(day,id) && sus->get_strain_status(cur_strain) == 'S') {
 
 	  // compute transmission prob for this type of individuals
-	  double transmission_prob = get_transmission_prob(s,i,sus);
+	  double transmission_prob = get_transmission_prob(cur_strain, i, sus);
 
 	  // get the victim's susceptibility
-	  double susceptibility = sus->get_susceptibility(s);
+	  double susceptibility = sus->get_susceptibility(cur_strain);
 
 	  double r = RANDOM();
 	  if (r < transmission_prob*susceptibility) {
@@ -220,11 +237,8 @@ void Place::spread_infection(int day) {
 	      printf("infection from %d to %d  r = %f\n",
 		     i->get_id(),sus->get_id(),r);
 	    }
-	    Infection * infection = new Infection(str, i->get_id(), id, type, day);
-
-	    // sus->become_exposed(str, i->get_id(), id, type, day);
 	    sus->become_exposed(infection);
-	    i->add_infectee(s);
+	    i->add_infectee(cur_strain);
 	  }
 	  else {
 	    if (Verbose > 1) { printf("no infection\n"); }

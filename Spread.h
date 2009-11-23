@@ -35,7 +35,6 @@ public:
 
 private:
   Strain * strain;
-  int id;
   int index_cases;
   double attack_rate;
   set <Person *> exposed;

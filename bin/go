@@ -1,4 +1,4 @@
 #!/bin/csh -f
-SYNDEM > syn.out
-report
+./FRED params.test > syn.out
+./report
 gnuplot sim.plt

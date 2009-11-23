@@ -35,6 +35,7 @@ private:
   int pop_size;
   Strain *strain;
   int strains;
+  double **mutation_prob;
   void read_population();
 };
 

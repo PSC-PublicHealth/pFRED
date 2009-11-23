@@ -17,19 +17,21 @@
 #include <vector>
 using namespace std;
 
-class Place;
-class Infection;
-class Strain;
+class Behavior;
 class Demographics;
 class Health;
+class Infection;
 class Perceptions;
-class Behavior;
+class Place;
+class Strain;
 
 class Person {
 public:
   Person() {}
-  void setup(int,int,char,int,int,int,Place*,Place*,Place*,
-	     Place*,Place*,Place*,int);
+  void setup(int index, int age, char sex, int marital, int occ,
+	     int profession, Place *house, Place *neigh,
+	     Place *school, Place *classroom, Place *work,
+	     Place *office, int profile);
   void reset();
   void update(int day);
   void print(int strain);

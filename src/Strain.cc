@@ -14,25 +14,26 @@
 #include <stdio.h>
 #include <new>
 using namespace std;
-#include "Random.h"
-#include "Params.h"
-#include "Person.h"
-#include "Global.h"
+
+e#include "Global.h"
 #include "Infection.h"
 #include "Locations.h"
+#include "Params.h"
+#include "Person.h"
+#include "Population.h"
+#include "Random.h"
 #include "Spread.h"
 
 double Prob_stay_home;
 
 Strain::Strain() {
-  get_param((char *) "prob_stay_home", &Prob_stay_home);
 }
 
 void Strain::reset() {
   spread->reset();
 }
 
-void Strain::setup(int strain) {
+void Strain::setup(int strain, Population *pop) {
   char s[80];
   id = strain;
   int n;
@@ -61,6 +62,8 @@ void Strain::setup(int strain) {
   days_infectious = new double [n];
   max_days_infectious = get_param_vector(s, days_infectious) -1;
   printf("Strain setup finished\n"); fflush(stdout);
+
+  get_param((char *) "prob_stay_home", &Prob_stay_home);
   spread = new Spread(this);
 }
 

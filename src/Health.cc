@@ -26,6 +26,9 @@ Health::Health (Person * person) {
 
 void Health::reset() {
   for (int strain = 0; strain < strains; strain++) {
+    for (std::size_t i = 0; i < infection[strain].size(); ++i) {
+      delete infection[strain][i];
+    }
     infection[strain].clear();
   }
 }

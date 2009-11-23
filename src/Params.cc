@@ -11,6 +11,8 @@
 
 #include "Params.h"
 
+#include <math.h>
+
 #define MAX_PARAMS 1000
 #define MAX_PARAM_SIZE 1024
 
@@ -142,3 +144,29 @@ int get_param_vector(char *s, double *p) {
   return n;
 }
 
+int get_param_matrix(char *s, double ***p) {
+  int n = 0;
+  get_param((char *) s, &n);
+  if (n) {
+    double *tmp;
+    tmp = new double [n];
+    get_param_vector((char *)s, tmp);
+    int temp_n = (int) sqrt((double) n);
+    if (n != temp_n * temp_n) {
+      printf("Improper matrix dimensions: matricies must be square,"
+	     " found dimension %i", n);
+      abort();
+    }
+    (*p) = new double * [n];
+    for (int i  = 0; i < n; i++) 
+      (*p)[i] = new double [n];
+    for (int i  = 0; i < n; i++) {
+      for (int j  = 0; j < n; j++) {
+	(*p)[i][j] = tmp[i*n+j];
+      }
+    }
+    delete tmp;
+    return n;
+  }
+  return -1;
+}

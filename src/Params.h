@@ -23,5 +23,6 @@ int get_param(char *s, float *p);
 int get_param(char *s, char *p);
 int read_parameters(char *paramfile);
 int get_param_vector(char *s, double *p);
+int get_param_matrix(char *s, double ***p);
 
 #endif // _FRED_PARAMS_H

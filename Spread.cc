@@ -26,8 +26,7 @@ using namespace std;
 Spread::Spread(Strain *str) {
   char s[80];
   strain = str;
-  id = strain->get_id();
-  sprintf(s, "index_cases[%d]", id);
+  sprintf(s, "index_cases[%d]", strain->get_id());
   get_param(s, &index_cases);
 }
 
@@ -51,7 +50,7 @@ void Spread::start_outbreak(Person *pop, int pop_size) {
 void Spread::update_stats(Person *pop, int pop_size, int day) {
   S = E = I = R = 0;
   for (int p = 0; p < pop_size; p++) {
-    char status = pop[p].get_strain_status(id);
+    char status = pop[p].get_strain_status(strain->get_id());
     S += (status == 'S');
     E += (status == 'E');
     I += (status == 'I') || (status == 'i');
@@ -64,13 +63,13 @@ void Spread::print_stats(int day) {
   int N = S+E+I+R;
   fprintf(Outfp,
 	  "Day %3d  Str %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n",
-	  day, id, S, E, I, R, N, attack_rate);
+	  day, strain->get_id(), S, E, I, R, N, attack_rate);
   fflush(Outfp);
   
   if (Verbose) {
     fprintf(Statusfp,
 	    "Day %3d  Str %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n\n",
-	    day, id, S, E, I, R, N, attack_rate);
+	    day, strain->get_id(), S, E, I, R, N, attack_rate);
     fflush(Statusfp);
   }
 }
@@ -110,7 +109,7 @@ void Spread::update(int day) {
     for (int j = 0; j < n; j++) {
       int loc = schedule[j];
       Place * place = Loc.get_location(loc);
-      if (place->is_open(day) && place->should_be_open(day, id)) {
+      if (place->is_open(day) && place->should_be_open(day, strain->get_id())) {
 	places.insert(loc);
       }
     }

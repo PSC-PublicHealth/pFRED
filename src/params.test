@@ -19,6 +19,8 @@ days_incubating[0] = 4   0.0 0.3 0.8 1.0
 days_infectious[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
 prob_stay_home = 0.5
 
+mutation_prob = 1 0.0
+
 household_contacts[0] = 0.38
 neighborhood_contacts[0] = 145
 community_contacts[0] = 1

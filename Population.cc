@@ -25,6 +25,24 @@ void Population::get_parameters() {
   get_param((char *) "strains", &strains);
   extern int Strains;
   Strains = strains;
+
+  int num_mutation_params =
+    get_param_matrix((char *) "mutation_prob", &mutation_prob);
+  if (num_mutation_params != strains*strains) {
+    fprintf(Statusfp, "Improper mutation matrix: expected %i elements, found %i",
+	    strains*strains, num_mutation_params);
+    exit(1);
+  }
+  if (Verbose > 1) {
+    printf("\nmutation_prob:\n");
+    for (int i  = 0; i < strains; i++)  {
+      for (int j  = 0; j < strains; j++) {
+	printf("%f ", mutation_prob[i][j]);
+      }
+      printf("\n");
+    }
+  }
+
 }
 
 void Population::setup() {
@@ -34,7 +52,7 @@ void Population::setup() {
   }
   strain = new Strain [strains];
   for (int s = 0; s < strains; s++) {
-    strain[s].setup(s);
+    strain[s].setup(s, this);
   }
   read_profiles(profilefile);
   read_population();

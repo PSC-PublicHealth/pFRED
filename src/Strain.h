@@ -17,13 +17,14 @@
 using namespace std;
 
 class Person;
+class Population;
 class Spread;
 
 class Strain {
 public:
   Strain();
   void reset();
-  void setup(int s);
+  void setup(int s, Population *pop);
   void print();
   void update(int day);
   int get_days_latent();
@@ -59,6 +60,9 @@ private:
   double *days_incubating;
   double *days_infectious;
   Spread *spread;
+
+  // Vars that are not strain-specific (for updating global stats).
+  Population *population;
 };
   
 
