@@ -26,7 +26,6 @@ double Prob_stay_home;
 
 Strain::Strain() {
   get_param((char *) "prob_stay_home", &Prob_stay_home);
-  spread = new Spread(this);
 }
 
 void Strain::reset() {
@@ -62,6 +61,7 @@ void Strain::setup(int strain) {
   days_infectious = new double [n];
   max_days_infectious = get_param_vector(s, days_infectious) -1;
   printf("Strain setup finished\n"); fflush(stdout);
+  spread = new Spread(this);
 }
 
 void Strain::print() {
