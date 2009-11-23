@@ -15,7 +15,7 @@
 #include <new>
 using namespace std;
 
-e#include "Global.h"
+#include "Global.h"
 #include "Infection.h"
 #include "Locations.h"
 #include "Params.h"
