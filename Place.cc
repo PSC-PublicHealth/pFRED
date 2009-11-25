@@ -217,28 +217,26 @@ void Place::spread_infection(int day) {
 		 sus->get_id(), r, pos, S[s]);
 	}
 
-	// TODO(alona) this is where the mutation will take place.
-	Infection * infection = new Infection(str, i->get_id(), id, type, day);
-	// If it mutated, the strain's id will not be s
-	int cur_strain = infection->get_strain()->get_id();
-
 	// is the victim here today, and still susceptible?
-	if (sus->is_on_schedule(day,id) && sus->get_strain_status(cur_strain) == 'S') {
-
+	if (sus->is_on_schedule(day,id) && sus->get_strain_status(s) == 'S') {
+	  
 	  // compute transmission prob for this type of individuals
-	  double transmission_prob = get_transmission_prob(cur_strain, i, sus);
-
+	  double transmission_prob = get_transmission_prob(s,i,sus);
+	  
 	  // get the victim's susceptibility
-	  double susceptibility = sus->get_susceptibility(cur_strain);
-
+	  double susceptibility = sus->get_susceptibility(s);
+	  
 	  double r = RANDOM();
 	  if (r < transmission_prob*susceptibility) {
 	    if (Verbose > 1) {
 	      printf("infection from %d to %d  r = %f\n",
 		     i->get_id(),sus->get_id(),r);
 	    }
+	    Infection * infection = new Infection(str, i->get_id(), id, type, day);
+	    
+	    // sus->become_exposed(str, i->get_id(), id, type, day);
 	    sus->become_exposed(infection);
-	    i->add_infectee(cur_strain);
+	    i->add_infectee(s);
 	  }
 	  else {
 	    if (Verbose > 1) { printf("no infection\n"); }
