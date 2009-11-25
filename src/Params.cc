@@ -118,6 +118,23 @@ int read_parameters(char *paramfile) {
     printf("Help!  Can't read paramfile %s\n", paramfile);
     abort();
   }
+  fclose(fp);
+
+  fp = fopen("params.def", "r");
+  if (fp != NULL) {
+    // while (fscanf(fp, "%s = %s", Param_name[Params], Param_value[Params]) == 2) {
+    while (fscanf(fp, "%s = %[^\n]", Param_name[Params], Param_value[Params]) == 2) {
+      if (Param_debug == 1) {
+	printf("READ PARAMS: %s = %s\n", Param_name[Params], Param_value[Params]);
+      }
+      Params++;
+    }
+  }
+  else {
+    printf("Help!  Can't read paramfile %s\n", "params.def");
+    abort();
+  }
+  fclose(fp);
   return Params;
 }
 
