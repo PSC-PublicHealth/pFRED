@@ -39,40 +39,15 @@ void Community::get_parameters(int strains) {
     sprintf(param_str, "community_contacts[%d]", s);
     get_param((char *) param_str, &Community_contacts_per_day[s]);
     // printf("Community_contacts_per_day[%d]= %f\n",d,Community_contacts_per_day[s]);
-
     sprintf(param_str, "community_prob[%d]", s);
-    n = 0;
-    get_param((char *) param_str, &n);
-    // printf("n = %d\n", n);
-    if (n) {
-      double *tmp;
-      tmp = new double [n];
-      get_param_vector((char *) param_str, tmp);
-      // printf("tmp:\n");
-      // for (int i = 0; i < n; i++) printf("%f ", tmp[i]); printf("\n");
-
-      n = (int) sqrt((double) n);
-      // printf("\nCommunity_contact_prob:\n");
-      Community_contact_prob[s] = new double * [n];
-      for (int i  = 0; i < n; i++) 
-	Community_contact_prob[s][i] = new double [n];
-      for (int i  = 0; i < n; i++) {
+    n = get_param_matrix(param_str, &Community_contact_prob[s]);
+    if (Verbose > 1) {
+      printf("\nCommunity_contact_prob:\n");
+      for (int i  = 0; i < n; i++)  {
 	for (int j  = 0; j < n; j++) {
-	  Community_contact_prob[s][i][j] = tmp[i*n+j];
-	  // printf("%f ",Community_contact_prob[s][i][j]);
+	  printf("%f ", Community_contact_prob[s][i][j]);
 	}
-	// printf("\n");
-      }
-      delete tmp;
-
-      if (Verbose > 1) {
-	printf("\nCommunity_contact_prob:\n");
-	for (int i  = 0; i < n; i++)  {
-	  for (int j  = 0; j < n; j++) {
-	    printf("%f ", Community_contact_prob[s][i][j]);
-	  }
-	  printf("\n");
-	}
+	printf("\n");
       }
     }
   }

@@ -28,9 +28,10 @@ void Population::get_parameters() {
 
   int num_mutation_params =
     get_param_matrix((char *) "mutation_prob", &mutation_prob);
-  if (num_mutation_params != strains*strains) {
-    fprintf(Statusfp, "Improper mutation matrix: expected %i elements, found %i",
-	    strains*strains, num_mutation_params);
+  if (num_mutation_params != strains) {
+    fprintf(Statusfp,
+	    "Improper mutation matrix: expected square matrix of %i rows, found %i",
+	    strains, num_mutation_params);
     exit(1);
   }
   if (Verbose > 1) {
@@ -52,7 +53,7 @@ void Population::setup() {
   }
   strain = new Strain [strains];
   for (int s = 0; s < strains; s++) {
-    strain[s].setup(s, this);
+    strain[s].setup(s, this, mutation_prob[s]);
   }
   read_profiles(profilefile);
   read_population();

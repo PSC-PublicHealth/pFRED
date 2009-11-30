@@ -43,38 +43,14 @@ void Neighborhood::get_parameters(int strains) {
     // s,Neighborhood_contacts_per_day[s]);
 
     sprintf(param_str, "neighborhood_prob[%d]", s);
-    n = 0;
-    get_param((char *) param_str, &n);
-    // printf("n = %d\n", n);
-    if (n) {
-      double *tmp;
-      tmp = new double [n];
-      get_param_vector((char *) param_str, tmp);
-      // printf("tmp:\n");
-      // for (int i = 0; i < n; i++) printf("%f ", tmp[i]); printf("\n");
-
-      n = (int) sqrt((double) n);
-      // printf("\nNeighborhood_contact_prob:\n");
-      Neighborhood_contact_prob[s] = new double * [n];
-      for (int i  = 0; i < n; i++) 
-	Neighborhood_contact_prob[s][i] = new double [n];
-      for (int i  = 0; i < n; i++) {
+    n = get_param_matrix(param_str, &Neighborhood_contact_prob[s]);
+    if (Verbose > 1) {
+      printf("\nNeighborhood_contact_prob:\n");
+      for (int i  = 0; i < n; i++)  {
 	for (int j  = 0; j < n; j++) {
-	  Neighborhood_contact_prob[s][i][j] = tmp[i*n+j];
-	  // printf("%f ",Neighborhood_contact_prob[s][i][j]);
+	  printf("%f ", Neighborhood_contact_prob[s][i][j]);
 	}
-	// printf("\n");
-      }
-      delete tmp;
-
-      if (Verbose > 1) {
-	printf("\nNeighborhood_contact_prob:\n");
-	for (int i  = 0; i < n; i++)  {
-	  for (int j  = 0; j < n; j++) {
-	    printf("%f ", Neighborhood_contact_prob[s][i][j]);
-	  }
-	  printf("\n");
-	}
+	printf("\n");
       }
     }
   }

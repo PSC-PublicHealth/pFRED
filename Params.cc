@@ -171,9 +171,10 @@ int get_param_matrix(char *s, double ***p) {
     int temp_n = (int) sqrt((double) n);
     if (n != temp_n * temp_n) {
       printf("Improper matrix dimensions: matricies must be square,"
-	     " found dimension %i", n);
+	     " found dimension %i\n", n);
       abort();
     }
+    n = temp_n;
     (*p) = new double * [n];
     for (int i  = 0; i < n; i++) 
       (*p)[i] = new double [n];
@@ -182,7 +183,7 @@ int get_param_matrix(char *s, double ***p) {
 	(*p)[i][j] = tmp[i*n+j];
       }
     }
-    delete tmp;
+    delete[] tmp;
     return n;
   }
   return -1;

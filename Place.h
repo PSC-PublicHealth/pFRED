@@ -33,7 +33,7 @@ class Place {
 public:
   Place() {}
   ~Place() {}
-  void setup(int loc, char *lab, double lon, double lat, int cont);
+  void setup(int loc_id, char *lab, double lon, double lat, int cont);
   void reset();
   void print(int strain);
   void add_susceptible(int strain, Person * per);

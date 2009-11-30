@@ -40,31 +40,14 @@ void Household::get_parameters(int strains) {
     get_param((char *) param_str, &Household_contacts_per_day[s]);
 
     sprintf(param_str, "household_prob[%d]", s);
-    n = 0;
-    get_param((char *) param_str, &n);
-    if (n) {
-      double *tmp;
-      tmp = new double [n];
-      get_param_vector((char *) param_str, tmp);
-      n = (int) sqrt((double) n);
-      Household_contact_prob[s] = new double * [n];
-      for (int i  = 0; i < n; i++) 
-	Household_contact_prob[s][i] = new double [n];
-      for (int i  = 0; i < n; i++) {
+    n = get_param_matrix(param_str, &Household_contact_prob[s]);
+    if (Verbose > 1) {
+      printf("\nHousehold_contact_prob:\n");
+      for (int i  = 0; i < n; i++)  {
 	for (int j  = 0; j < n; j++) {
-	  Household_contact_prob[s][i][j] = tmp[i*n+j];
+	  printf("%f ", Household_contact_prob[s][i][j]);
 	}
-      }
-      delete tmp;
-
-      if (Verbose > 1) {
-	printf("\nHousehold_contact_prob:\n");
-	for (int i  = 0; i < n; i++)  {
-	  for (int j  = 0; j < n; j++) {
-	    printf("%f ", Household_contact_prob[s][i][j]);
-	  }
-	  printf("\n");
-	}
+	printf("\n");
       }
     }
   }

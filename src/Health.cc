@@ -34,6 +34,20 @@ void Health::reset() {
 }
 
 void Health::update(int day) {
+  // Possibly mutate each active strain
+  for (int s = 0; s < strains; s++) {
+    char status = get_strain_status(s);
+    if (status == 'S' || status == 'R')
+      continue;
+    if (infection[s][0]->possibly_mutate(day)) {
+      if (Verbose > 1) {
+	fprintf(Statusfp, "INFECTIOUS person %d strain %d mutated on day %i\n",
+		self->get_id(), s, day);
+	fflush(Statusfp);
+      }
+    }
+  }
+
   for (int s = 0; s < strains; s++) {
     char status = get_strain_status(s);
     if (status == 'S')
@@ -125,7 +139,7 @@ int Health::get_infected_place(int strain) {
   if (infection[strain].empty()) 
     return -1;
   else
-    return infection[strain][0]->get_infected_place();
+    return infection[strain][0]->get_infected_place_id();
 }
 
 char Health::get_infected_place_type(int strain) {

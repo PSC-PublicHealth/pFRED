@@ -20,6 +20,7 @@ using namespace std;
 #include "Locations.h"
 #include "Params.h"
 #include "Person.h"
+#include "Place.h"
 #include "Population.h"
 #include "Random.h"
 #include "Spread.h"
@@ -33,7 +34,7 @@ void Strain::reset() {
   spread->reset();
 }
 
-void Strain::setup(int strain, Population *pop) {
+void Strain::setup(int strain, Population *pop, double *mut_prob) {
   char s[80];
   id = strain;
   int n;
@@ -65,6 +66,9 @@ void Strain::setup(int strain, Population *pop) {
 
   get_param((char *) "prob_stay_home", &Prob_stay_home);
   spread = new Spread(this);
+
+  mutation_prob = mut_prob;
+  population = pop;
 }
 
 void Strain::print() {
@@ -82,6 +86,62 @@ void Strain::print() {
   for (int i = 0; i <= max_days_infectious; i++)
     printf("%.3f ", days_infectious[i]);
   printf("\n");
+}
+
+bool Strain::attempt_infection(Person* infector, Person* infectee, Place* place, int exposure_date) {
+  // is the victim here today, and still susceptible?
+  if (infectee->is_on_schedule(exposure_date, place->get_id()) &&
+      infectee->get_strain_status(id) == 'S') {
+
+    // get the victim's susceptibility
+    double susceptibility = infectee->get_susceptibility(id);
+    double transmission_prob;
+    if (place && infector) {
+      transmission_prob = place->get_transmission_prob(id, infector, infectee);
+    } else {
+      transmission_prob = 1.0;
+    }
+
+    double r = RANDOM();
+    if (r < transmission_prob*susceptibility) {
+      Infection* i = new Infection(this, infector, infectee, place, exposure_date);
+      infectee->become_exposed(i);
+      if (infector)
+	infector->add_infectee(id);
+      return true;
+    }
+    return false;
+  }
+  return false;
+}
+
+Strain* Strain::should_mutate_to() {
+  int num_strains = population->get_strains();
+  // Pick a random index to consider mutations from, so that mutating to all strains is
+  // dependent only on muation_prob, and not on the order of the strains.
+  int strain_start = IRAND(0, num_strains-1);
+  // By default, create an infection with this strain.
+  int infection_id = id;
+
+  // Try and mutate to other strains.
+  for (int strain_i = strain_start; strain_i < num_strains; ++strain_i) {
+    if (strain_i == id) continue;
+    double r = RANDOM();
+    if (r < mutation_prob[strain_i]) {
+      return population->get_strain(strain_i);
+    }
+  }
+  if (infection_id == id) {
+    // Didn't mutate yet.
+    for (int strain_i = 0; strain_i < strain_start; ++strain_i) {
+      if (strain_i == id) continue;
+      double r = RANDOM();
+      if (r < mutation_prob[strain_i]) {
+	return population->get_strain(strain_i);
+      }
+    }
+  }
+  return NULL;
 }
 
 int Strain::get_days_latent() {

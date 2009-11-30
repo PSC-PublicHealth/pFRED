@@ -17,9 +17,9 @@
 #include "Strain.h"
 #include "Infection.h"
 
-void Place::setup(int loc, char *lab, double lon, double lat, int cont) {
+void Place::setup(int loc_id, char *lab, double lon, double lat, int cont) {
   int strains = Pop.get_strains();
-  id = loc;
+  id = loc_id;
   container = cont;
   strcpy(label,lab);
   longitude = lon;
@@ -73,6 +73,8 @@ void Place::reset() {
     print(0);
     fflush(stdout);
   }
+  close_date = INT_MAX;
+  open_date = 0;
 }
 
 void Place::print(int strain) {
@@ -100,10 +102,6 @@ void Place::delete_susceptible(int strain, Person * per) {
   for (int i = 0; i < s; i++) {
     if (susceptibles[strain][i] == per) {
       susceptibles[strain][i] = last;
-      // BUG - "i" can run off the end of this vector if we keep looping after pop_back
-      // so I break here, but there are cases where the same person can appear in this
-      // vector more than once.  This is a bug in the generation of the population file,
-      // and will be fixed there.
       susceptibles[strain].pop_back();
       S[strain]--;
       break;
@@ -134,7 +132,6 @@ void Place::delete_infectious(int strain, Person * per) {
   Person * last = infectious[strain][s-1];
   for (int i = 0; i < s; i++) {
     if (infectious[strain][i] == per) {
-      // BUG - same thing here as in delete_susceptible
       infectious[strain][i] = last;
       infectious[strain].pop_back();
       I[strain]--;
@@ -210,44 +207,19 @@ void Place::spread_infection(int day) {
       for (int c = 0; c < contact_count; c++) {
 	double r = RANDOM();
 	int pos = (int) (r*S[s]);
-	// int pos = IRAND(0, S[s]-1);
 	Person * sus = susceptibles[s][pos];
 	if (Verbose > 1) {
 	  printf("my possible victim = %d  r = %f  pos = %d  S[d] = %d\n",
 		 sus->get_id(), r, pos, S[s]);
 	}
-
-	// is the victim here today, and still susceptible?
-	if (sus->is_on_schedule(day,id) && sus->get_strain_status(s) == 'S') {
-	  
-	  // compute transmission prob for this type of individuals
-	  double transmission_prob = get_transmission_prob(s,i,sus);
-	  
-	  // get the victim's susceptibility
-	  double susceptibility = sus->get_susceptibility(s);
-	  
-	  double r = RANDOM();
-	  if (r < transmission_prob*susceptibility) {
-	    if (Verbose > 1) {
-	      printf("infection from %d to %d  r = %f\n",
-		     i->get_id(),sus->get_id(),r);
-	    }
-	    Infection * infection = new Infection(str, i->get_id(), id, type, day);
-	    
-	    // sus->become_exposed(str, i->get_id(), id, type, day);
-	    sus->become_exposed(infection);
-	    i->add_infectee(s);
-	  }
-	  else {
-	    if (Verbose > 1) { printf("no infection\n"); }
-	  }
-	}
-	else {
+	if (str->attempt_infection(i, sus, this, day)) {
 	  if (Verbose > 1) {
-	    printf("victim not here today, or not still susceptible\n");
-	    printf ("%s here", sus->is_on_schedule(day,id)? "is": "is not");
-	    printf("strain status = %c\n", sus->get_strain_status(s));
-	    fflush(stdout);
+	    printf("infection from %d to %d\n",
+		   i->get_id(),sus->get_id());
+	  }
+	} else {
+	  if (Verbose > 1) { 
+	    printf("no infection\n");
 	  }
 	}
       } // end contact loop

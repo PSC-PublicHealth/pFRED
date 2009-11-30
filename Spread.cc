@@ -41,7 +41,10 @@ void Spread::start_outbreak(Person *pop, int pop_size) {
   // create index cases
   for (int i = 0; i < index_cases; i++) {
     int n = IRAND(0, pop_size-1);
-    Infection * infection = new Infection(strain, -1, -1, 'X', 0);
+    // Seed infections are a special case - we don't initialize using
+    // Strain::attempt_infection() meaning we don't roll the dice to see if 
+    // we'll expose the person.  We just do it.
+    Infection * infection = new Infection(strain, NULL, &pop[n], NULL, 0);
     pop[n].become_exposed(infection);
   }
   E = index_cases;
