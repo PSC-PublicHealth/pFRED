@@ -1,54 +1,16 @@
-strains = 1
-days = 240
-seed = 123456
-runs = 2
-verbose = 1
-test = 0
-start_day = 0
+runs = 10
 popfile = alleg_pop.txt
 locfile = alleg_loc.txt
-profiles = profiles.txt
-outfile = OUT/out
-tracefile = OUT/trace
 
 trans[0] = 1.0
 symp[0] = 0.67
-index_cases[0] = 100
-days_latent[0] = 3       0.0 0.8 1.0
-days_incubating[0] = 4   0.0 0.3 0.8 1.0
-days_infectious[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
-prob_stay_home = 0.5
-mutation_prob = 1 0.0
 
 household_contacts[0] = 0.38
 neighborhood_contacts[0] = 145
 community_contacts[0] = 1
 school_contacts[0] = 2
-classroom_contacts[0] = 15
+classroom_contacts[0] = 30
 workplace_contacts[0] = 1
-office_contacts[0] = 8.5
+office_contacts[0] = 6
 hospital_contacts[0] = 0
 
-#groups = children adults
-household_prob[0] = 4 0.6 0.3 0.3 0.4
-
-#groups = adult_workers
-workplace_prob[0] = 1 0.0575
-office_prob[0] = 1 0.0575
-
-#groups = patients HCWs
-hospital_prob[0] = 4 0.0 0.01 0.01 0.0575
-
-#groups = elem_students mid_students high_students teachers
-school_prob[0] = 16 0.0435 0 0 0 0 0.0375 0 0 0 0 0.0315 0 0 0 0 0.0575
-classroom_prob[0] = 16 0.0435 0 0 0 0 0.0375 0 0 0 0 0.0315 0 0 0 0 0.0575
-
-#goups = children adults
-community_prob[0] = 4 3.175e-5 1.8125e-4 3.175e-5 1.8125e-4
-neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
-
-school_closure_policy = none
-school_closure_day = 10
-school_closure_threshold = 0.1
-school_closure_period = 10
-school_closure_delay = 2
