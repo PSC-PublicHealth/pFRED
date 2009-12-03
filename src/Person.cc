@@ -71,6 +71,7 @@ void Person::reset() {
   if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", id); }
   demographics->reset();
   health->reset();
+  perceptions->reset();
   behavior->reset();
 }
 
