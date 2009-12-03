@@ -29,21 +29,21 @@ workplace_contacts[0] = 1
 office_contacts[0] = 8.5
 hospital_contacts[0] = 0
 
-#groups = children adults
+# groups = children adults
 household_prob[0] = 4 0.6 0.3 0.3 0.4
 
-#groups = adult_workers
+# groups = adult_workers
 workplace_prob[0] = 1 0.0575
 office_prob[0] = 1 0.0575
 
-#groups = patients HCWs
+# groups = patients HCWs
 hospital_prob[0] = 4 0.0 0.01 0.01 0.0575
 
-#groups = elem_students mid_students high_students teachers
+# groups = elem_students mid_students high_students teachers
 school_prob[0] = 16 0.0435 0 0 0 0 0.0375 0 0 0 0 0.0315 0 0 0 0 0.0575
 classroom_prob[0] = 16 0.0435 0 0 0 0 0.0375 0 0 0 0 0.0315 0 0 0 0 0.0575
 
-#goups = children adults
+# goups = children adults
 community_prob[0] = 4 3.175e-5 1.8125e-4 3.175e-5 1.8125e-4
 neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 
