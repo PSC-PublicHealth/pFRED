@@ -156,7 +156,7 @@ void Place::spread_infection(int day) {
   vector<Person *>::iterator itr;
   int strains = Pop.get_strains();
   for (int s = 0; s < strains; s++) {
-    Strain * str = Pop.get_strain(s);
+    Strain * strain = Pop.get_strain(s);
     if (Verbose > 1) { print(s); }
     if (N < 2) return;
     if (S[s] == 0) continue;
@@ -168,28 +168,28 @@ void Place::spread_infection(int day) {
       fflush(stdout);
     }
     
-    // expected u.b. on number of contacts resulting in infection (per infective)
-    contacts *= str->get_transmissibility();
+    // expected upper bound on number of contacts resulting in infection (per infective)
+    contacts *= strain->get_transmissibility();
     if (Verbose > 1) {
-      printf("beta = %f\n", str->get_transmissibility());
+      printf("beta = %f\n", strain->get_transmissibility());
       printf("effective contacts = %f\n", contacts);
       fflush(stdout);
     }
 
     for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
-      Person * i = *itr;				// infectious indiv
+      Person * infector = *itr;			// infectious indiv
 
-      if (Verbose > 1) { printf("infectious %d here?\n", i->get_id()); }
+      if (Verbose > 1) { printf("is infector %d here?\n", infector->get_id()); }
 
-      // skip if this infected did not visit today
-      if (!i->is_on_schedule(day, id)) continue;
+      // skip if this infector did not visit today
+      if (!infector->is_on_schedule(day, id)) continue;
 
-      if (Verbose > 1) { printf("infected = %d\n", i->get_id()); }
+      if (Verbose > 1) { printf("infected = %d\n", infector->get_id()); }
 
       // reduce number of infective contact events by my infectivity
-      double my_contacts = contacts * i->get_infectivity(s);
+      double my_contacts = contacts * infector->get_infectivity(s);
       if (Verbose > 1) {
-	printf("infectivity = %f\n", i->get_infectivity(s));
+	printf("infectivity = %f\n", infector->get_infectivity(s));
 	printf("my effective contacts = %f\n", my_contacts);
 	fflush(stdout);
       }
@@ -207,15 +207,15 @@ void Place::spread_infection(int day) {
       for (int c = 0; c < contact_count; c++) {
 	double r = RANDOM();
 	int pos = (int) (r*S[s]);
-	Person * sus = susceptibles[s][pos];
+	Person * infectee = susceptibles[s][pos];
 	if (Verbose > 1) {
 	  printf("my possible victim = %d  r = %f  pos = %d  S[d] = %d\n",
-		 sus->get_id(), r, pos, S[s]);
+		 infectee->get_id(), r, pos, S[s]);
 	}
-	if (str->attempt_infection(i, sus, this, day)) {
+	if (strain->attempt_infection(infector, infectee, this, day)) {
 	  if (Verbose > 1) {
 	    printf("infection from %d to %d\n",
-		   i->get_id(),sus->get_id());
+		   infector->get_id(),infectee->get_id());
 	  }
 	} else {
 	  if (Verbose > 1) { 
