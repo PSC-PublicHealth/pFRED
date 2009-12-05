@@ -1,5 +1,5 @@
 #!/bin/csh -f
-./FRED params.test > /dev/null
+./FRED params.test > out 
 cmp OUT/out1.txt TEST/out1.txt
 cmp OUT/out2.txt TEST/out2.txt
 cmp OUT/trace1.txt TEST/trace1.txt

@@ -15,6 +15,7 @@
 class Person;
 class Place;
 class Strain;
+class Antiviral;
 
 class Infection {
 public:
@@ -41,6 +42,10 @@ public:
   double get_infectivity() { return infectivity; }
   double get_symptoms() { return symptoms; }
 
+  //Modifiers
+  void modify_susceptibility(double multp){ susceptibility*=multp; }
+  void modify_infectivity(double multp){ infectivity*=multp; }
+  void modify_infectious_period(double multp){ infectious_period*=multp; }
   // May result in a mutation, which causes a new infection of a different
   // strain type in this host.  May also alter the course of this infection
   // (shortening or lengthening the duration).  
@@ -72,6 +77,9 @@ private:
   double susceptibility;
   double infectivity;
   double symptoms;
+  //AV Stuff
+  //int antiviral_date;
+  //Antiviral* av;
 };
 
 #endif // _FRED_INFECTION_H

@@ -61,6 +61,7 @@ void Population::setup() {
     fprintf(Statusfp, "setup population completed, strains = %d\n", strains);
     fflush(Statusfp);
   }
+  AVs.setup();
 }
 
 void Population::read_population() {
@@ -133,6 +134,9 @@ void Population::reset(int run) {
   for (int p = 0; p < pop_size; p++){
     pop[p].reset();
   }
+
+  AVs.reset();
+
   if (Verbose) {
     fprintf(Statusfp, "reset population completed\n");
     fflush(Statusfp);
@@ -140,6 +144,9 @@ void Population::reset(int run) {
 }
 
 void Population::update(int day) {
+  //if(AV.number_antivirals > 0)
+  //  AV.update(strains,pop,pop_size,day); // This allows me to put a set of medication for each population
+                                      // This will be the place the "manager" can allocate AVs
   for (int p = 0; p < pop_size; p++){
     pop[p].update(day);
   }

@@ -19,6 +19,8 @@ using namespace std;
 class Person;
 class Infection;
 class Strain;
+class Antiviral;
+class Antivirals;
 
 class Health {
 public:
@@ -40,11 +42,27 @@ public:
   int get_infectees(int strain);
   double get_susceptibility(int strain);
   double get_infectivity(int strain);
+  int is_on_av(int day,int strain); // Returns position in array of av if applicable
+  //Medication operators
+  int take(Antiviral *av, int day); //Return 1 if taken
 
+  //Modifiers
+  void modify_susceptibility(int strain, double multp);
+  void modify_infectivity(int strain, double multp);
+  void modify_infectious_period(int strain, double multp);
+
+  //int set_antiviral_date(int day); // returns 1 if can't be set.
+  //void set_av(Antiviral *AV) { av = AV; }
+  
 private:
   Person * self;
   int strains;
   vector <Infection *> *infection;
+  // help!!!
+  int number_av_taken;
+  Antivirals * AVs;
+  vector < int > antiviral_start_date;
+  vector < Antiviral * > avs;
 };
 
 #endif // _FRED_HEALTH_H

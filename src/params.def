@@ -52,3 +52,5 @@ school_closure_day = 10
 school_closure_threshold = 0.1
 school_closure_period = 10
 school_closure_delay = 2
+
+number_antivirals = 0

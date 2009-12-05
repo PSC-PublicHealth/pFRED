@@ -66,6 +66,9 @@ public:
   int get_infectees(int strain);
   int add_infectee(int strain);
 
+  //Health *get_health() { return health;}
+  
+
 private:
   int id;
   Demographics * demographics;

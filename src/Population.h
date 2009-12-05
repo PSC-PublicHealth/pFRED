@@ -11,9 +11,11 @@
 
 #ifndef _FRED_POPULATION_H
 #define _FRED_POPULATION_H
+#include "Antivirals.h"
 
 class Person;
 class Strain;
+class Antivirals;
 
 class Population {
 public:
@@ -27,13 +29,17 @@ public:
   void report(int day);
   Strain * get_strain(int s);
   int get_strains() { return strains; }
-
+  Person *get_pop() { return pop; }
+  int get_pop_size() { return pop_size; }
+  Antivirals *get_AVs() { return &AVs; }
+  
 private:
   char popfile[80];
   char profilefile[80];
   Person *pop;
   int pop_size;
   Strain *strain;
+  Antivirals AVs;
   int strains;
   double **mutation_prob;
   void read_population();

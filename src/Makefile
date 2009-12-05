@@ -1,15 +1,15 @@
 ##################### SynDEM src makefile ###########################
 
 #################  Compiler Flags ##############################
-CPP = g++
-CPPFLAGS = -O2 -Wall
+CPP = g++ 
+CPPFLAGS = -m64 -O2 -Wall
 
 ###############################################
 
 %.o:%.c %.h
 	$(CPP) $(CPPFLAGS) -c $< $(INCLUDES)
 
-OBJ = Behavior.o Classroom.o Community.o Demographics.o Health.o \
+OBJ =  Antiviral.o Antivirals.o Behavior.o Classroom.o Community.o Demographics.o Health.o \
 	Hospital.o Household.o Infection.o Locations.o Neighborhood.o Office.o \
 	Params.o Place.o Perceptions.o Person.o Population.o Profile.o \
 	Random.o School.o Spread.o Strain.o Workplace.o
@@ -19,7 +19,7 @@ SRC = $(OBJ:.o=.cc)
 HDR = $(OBJ:.o=.h)
 
 FRED: Fred.cc Fred.h $(OBJ)
-	$(CPP) $(CPPFLAGS) Fred.cc $(OBJ) -o fred
+	$(CPP) $(CPPFLAGS) Fred.cc $(OBJ) -o FRED
 
 ##############################################
 

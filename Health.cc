@@ -14,17 +14,21 @@
 #include "Person.h"
 #include "Strain.h"
 #include "Infection.h"
+#include "Antiviral.h"
 #include "Population.h"
+#include "Random.h"
 #include "Global.h"
 
 Health::Health (Person * person) {
   self = person;
   strains = Pop.get_strains();
+  AVs = Pop.get_AVs();
   infection = new vector <Infection *> [strains];
   reset();
 }
 
 void Health::reset() {
+  number_av_taken=0;
   for (int strain = 0; strain < strains; strain++) {
     for (std::size_t i = 0; i < infection[strain].size(); ++i) {
       delete infection[strain][i];
@@ -35,6 +39,7 @@ void Health::reset() {
 
 void Health::update(int day) {
   // Possibly mutate each active strain
+  //  AVs->print();
   for (int s = 0; s < strains; s++) {
     char status = get_strain_status(s);
     if (status == 'S' || status == 'R')
@@ -64,9 +69,56 @@ void Health::update(int day) {
 	self->recover(strain);
       }
     }
+    //We must decide whether someone is going to take the AV
+    // As a first cut, we will only give it to a percentage of sympt
+    // This will emulate hospitalization
+    if(AVs->do_av() && AVs->get_total_current_stock() > 0){
+      if( status == 'I' ){
+	if(day == get_infectious_date(s)+1){
+	  // Roll to see if they get one (only do once!!!)
+	  // This will be replaced by hospitilazation
+	  
+	  double r = RANDOM()*100.;
+	  if(r < AVs->get_percent_symptomatics_given()){
+	    int av_to_give = AVs->give_which_AV(s);
+	    if(av_to_give != -1){
+	      if(Verbose > 0)
+		cout << "\nPerson " << self->get_id() << " Taking AV "<< av_to_give 
+		     << " on day "<<day;
+	      take(AVs->get_AV(av_to_give),day);
+	    }
+	  }
+	}
+	if(Verbose > 0)
+	  cout << "\nNumber of AVs left = " << AVs->get_total_current_stock() 
+	       << " " << AVs->get_AV(0)->get_stock();
+      }
+      
+      int iav = is_on_av(day,s);
+      if(iav != -1){
+	if(day == antiviral_start_date[iav]){
+	  if(Verbose > 0)
+	    cout << "\nAV altering "<<self->get_id() << " down from " 
+		 << self->get_susceptibility(s) << " " << self->get_infectivity(s) 
+		 << " " << self->get_recovered_date(s);
+	  modify_susceptibility(s,avs[iav]->get_reduce_susceptibility());
+	  modify_infectivity(s,avs[iav]->get_reduce_infectivity());
+	  modify_infectious_period(s,avs[iav]->get_reduce_infectious_period());
+	  cout << " to " << self->get_susceptibility(s) << " " << self->get_infectivity(s) 
+	       << " " << self->get_recovered_date(s);
+	  
+	}
+	else if(day == antiviral_start_date[iav]+avs[iav]->get_course_length()-1){
+	  if(Verbose > 1)
+	    cout << "\nAV altering "<<self->get_id() << " up";
+	  modify_susceptibility(s,1.0/avs[iav]->get_reduce_susceptibility());
+	  modify_infectivity(s,1.0/avs[iav]->get_reduce_infectivity());
+	  modify_infectious_period(s,1.0/avs[iav]->get_reduce_infectious_period());
+	}
+      }
+    }
   }
 }
-
 void Health::become_exposed(Infection * infection_ptr) {
   Strain * strain = infection_ptr->get_strain();
   int strain_id = strain->get_id();
@@ -183,3 +235,54 @@ double Health::get_infectivity(int strain) {
   else
     return infection[strain][0]->get_infectivity();
 }
+
+
+//Modify Operators
+void Health::modify_susceptibility(int strain, double multp){
+  infection[strain][0]->modify_susceptibility(multp);
+}
+
+void Health::modify_infectivity(int strain, double multp){
+  infection[strain][0]->modify_infectivity(multp);
+}
+
+void Health::modify_infectious_period(int strain, double multp){
+  infection[strain][0]->modify_infectious_period(multp);
+}
+
+//Medication operators
+int Health::take(Antiviral *av, int day){
+  antiviral_start_date.push_back(day);
+  avs.push_back(av);
+  number_av_taken++;
+  // Check for efficacy ( or resistance)
+  if(av->roll_efficacy()!=0){
+    av->add_ineff_given_out(1);
+  }
+  av->add_given_out(1);
+  av->reduce_stock(1);
+  return 1;
+}
+
+ int Health::is_on_av(int day, int s){
+  if(number_av_taken ==0){
+    return -1;
+  }
+  //loop through to see if they are on any avs
+  else{
+    for(int iav=0; iav<number_av_taken; iav++){
+      if(avs[iav]->get_strain() == s){
+	if(day < antiviral_start_date[iav]+avs[iav]->get_course_length()){
+	  return iav;
+	}
+      }
+    }
+  }
+  return -1;
+ }
+ 
+//int replace(Antiviral *av, int nav, int day){
+//  if(number_av_taken==
+  
+    
+  
