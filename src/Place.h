@@ -15,6 +15,7 @@
 #include <vector>
 #include <iostream>
 #include <stdio.h>
+#include <limits.h> 
 using namespace std;
 
 #define HOUSEHOLD 'H'
