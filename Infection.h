@@ -51,6 +51,10 @@ public:
   // (shortening or lengthening the duration).  
   bool possibly_mutate(int day);
 
+  // Returns an infection for the given host and strain with exposed date and
+  // recovered date both equal to day (instant resistance to the given strain);
+  static Infection* get_dummy_infection(Strain *s, Person* host, int day);
+
 private:
   // Change the future course of this infection.  Changing parameters such
   // that past transition dates are affected is invalid.  Invalid actions:

@@ -122,15 +122,18 @@ void Infection::reset_infection_course(int num_latent_days, int num_infectious_d
 }
 
 bool Infection::possibly_mutate(int day) {
+  if (day > recovered_date) {
+    printf("Cannot mutate a recovered infection "
+	   "strain %i person %i on date %i status is %c recovered date is %i\n",
+	   strain->get_id(), host->get_id(), day, strain_status, recovered_date);
+    fflush(stdout);
+    abort();
+  }
   Strain* new_strain = strain->should_mutate_to();
   if (new_strain == NULL) {
     return false;
   }
   else {
-    char status = host->get_strain_status(new_strain->get_id());
-    if (status != 'S') {
-      return false;
-    }
     if (Verbose) {
       fprintf(Statusfp,"Person %i will mutate from strain %i to strain %i \n", host->get_id(),
 	      strain->get_id(), new_strain->get_id());
@@ -138,7 +141,8 @@ bool Infection::possibly_mutate(int day) {
     }
     Infection* new_infection = new Infection(new_strain, host, host, NULL, day);
     // Reset the new infection to take this infection's place
-    printf("new strain's course: latent %i recovered %i \n", 0, recovered_date - day);
+    printf("person %i new strain's course: latent %i recovered %i \n", host->get_id(),
+	   0, recovered_date - day);
     new_infection->reset_infection_course(0, recovered_date - day, will_be_symptomatic, day);
 
     host->become_exposed(new_infection);
@@ -146,7 +150,16 @@ bool Infection::possibly_mutate(int day) {
 
     // Update this infection so that we recover today.
     infectious_period = day - infectious_date;
+    infectious_date = day;
     recovered_date = day;
     return true;
   }
+}
+
+
+// static 
+Infection* Infection::get_dummy_infection(Strain *s, Person* host, int day) {
+  Infection* i = new Infection(s, NULL, host, NULL, day);
+  i->reset_infection_course(0, 0, false, day);
+  return i;
 }

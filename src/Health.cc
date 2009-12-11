@@ -38,8 +38,10 @@ void Health::reset() {
 }
 
 void Health::update(int day) {
-  // Possibly mutate each active strain
   //  AVs->print();
+  // Possibly mutate each active strain
+  // TODO(alona) should consider strains in random order, but that
+  // is not relevant right now (only 1 or 2 strains)
   for (int s = 0; s < strains; s++) {
     char status = get_strain_status(s);
     if (status == 'S' || status == 'R')
@@ -50,6 +52,7 @@ void Health::update(int day) {
 		self->get_id(), s, day);
 	fflush(Statusfp);
       }
+      break;
     }
   }
 
@@ -125,8 +128,38 @@ void Health::become_exposed(Infection * infection_ptr) {
   if (Verbose > 1) {
     fprintf(Statusfp, "EXPOSED person %d to strain %d\n", self->get_id(), strain_id);
   }
-  infection[strain_id].push_back(infection_ptr);
+  if (!infection[strain_id].empty()) {
+    if (infection[strain_id][0]->get_strain_status() != 'R') {
+      printf("WARNING! Attempted double exposure for strain %i in person %i. "
+	     "Double infection is not supported.\n",
+	     strain_id, self->get_id());
+      delete infection_ptr;
+      return;
+    }
+    delete infection[strain_id][0];
+    infection[strain_id][0] = infection_ptr;
+  } else {
+    infection[strain_id].push_back(infection_ptr);
+  }
   strain->insert_into_exposed_list(self);
+
+  if (strains > 1) {
+    // HACK - this is probably NOT how we want to do this.  But strain
+    // representation/mutation is still a very open problem for us.
+    // become immune to equivalent strains.
+    for (int i = 0; i < strains; i++) {
+      if (!infection[i].empty())
+	continue;
+      // Could also check some sort of antigenic status here, but for now,
+      // just assume all strains are antigenically identical.
+      Strain* s = Pop.get_strain(i);
+      Infection* dummy_i =
+	Infection::get_dummy_infection(s, self, infection_ptr->get_exposure_date());
+      self->become_exposed(dummy_i);
+      self->become_infectious(s);
+      self->recover(s);
+    }
+  }
 }
 
 void Health::become_infectious(Strain * strain) {
@@ -264,7 +297,7 @@ int Health::take(Antiviral *av, int day){
   return 1;
 }
 
- int Health::is_on_av(int day, int s){
+int Health::is_on_av(int day, int s){
   if(number_av_taken ==0){
     return -1;
   }
@@ -279,7 +312,7 @@ int Health::take(Antiviral *av, int day){
     }
   }
   return -1;
- }
+}
  
 //int replace(Antiviral *av, int nav, int day){
 //  if(number_av_taken==

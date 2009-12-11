@@ -94,12 +94,14 @@ bool Strain::attempt_infection(Person* infector, Person* infectee, Place* place,
       infectee->get_strain_status(id) == 'S') {
 
     // get the victim's susceptibility
-    double susceptibility = infectee->get_susceptibility(id);
+    double susceptibility;
     double transmission_prob;
     if (place && infector) {
       transmission_prob = place->get_transmission_prob(id, infector, infectee);
+      susceptibility = infectee->get_susceptibility(id);
     } else {
-      transmission_prob = 1.0;
+      // This isn't a regular transmission - it's a seed case or a mutation.
+      transmission_prob = susceptibility = 1.0;
     }
 
     double r = RANDOM();
