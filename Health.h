@@ -45,7 +45,8 @@ public:
   int is_on_av(int day,int strain); // Returns position in array of av if applicable
   //Medication operators
   int take(Antiviral *av, int day); //Return 1 if taken
-
+  int get_number_av_taken(void){ return number_av_taken;}
+  int get_antiviral_start_date(int i){ return antiviral_start_date[i];}
   //Modifiers
   void modify_susceptibility(int strain, double multp);
   void modify_infectivity(int strain, double multp);
@@ -53,7 +54,7 @@ public:
 
   //int set_antiviral_date(int day); // returns 1 if can't be set.
   //void set_av(Antiviral *AV) { av = AV; }
-  
+   
 private:
   Person * self;
   int strains;
