@@ -17,9 +17,10 @@
 #include <vector>
 using namespace std;
 
-class Behavior;
+#include "Behavior.h"
+#include "Health.h"
+
 class Demographics;
-class Health;
 class Infection;
 class Perceptions;
 class Place;
@@ -38,7 +39,10 @@ public:
   void print_out(int strain);
   void update_schedule(int day);
   void get_schedule(int *n, int *sched);
-  int is_on_schedule(int day, int loc);
+  inline int is_on_schedule(int day, int loc) {
+    return behavior->is_on_schedule(day, loc);
+  }
+
   void print_schedule();
   void become_exposed(Infection *infection);
   void become_infectious(Strain * strain);
@@ -54,7 +58,9 @@ public:
   char get_marital_status();
   int get_profession();
   int get_places();
-  char get_strain_status(int strain);
+  inline char get_strain_status(int strain) {
+    return health->get_strain_status(strain);
+  }
   double get_susceptibility(int strain);
   double get_infectivity(int strain);
   int get_exposure_date(int strain);

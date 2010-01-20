@@ -93,9 +93,10 @@ void Place::add_susceptible(int strain, Person * per) {
 void Place::delete_susceptible(int strain, Person * per) {
   int s = (int) susceptibles[strain].size();
   if (s == 0) {
-    printf("Warning! can't delete from empty list! "
-	   "Susceptible %i for strain %i place %i\n",
-	   per->get_id(), strain, id); 
+    if (Verbose > 2)
+      printf("Warning! can't delete from empty list! "
+	     "Susceptible %i for strain %i place %i\n",
+	     per->get_id(), strain, id); 
     return;
   }
   Person * last = susceptibles[strain][s-1];
@@ -130,6 +131,13 @@ void Place::add_infectious(int strain, Person * per) {
 
 void Place::delete_infectious(int strain, Person * per) {
   int s = (int) infectious[strain].size();
+  if (s == 0) {
+    if (Verbose > 2)
+      printf("Warning! can't delete from empty list! "
+	     "Infectious %i for strain %i place %i\n",
+	     per->get_id(), strain, id); 
+    return;
+  }
   Person * last = infectious[strain][s-1];
   for (int i = 0; i < s; i++) {
     if (infectious[strain][i] == per) {

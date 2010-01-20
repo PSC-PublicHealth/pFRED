@@ -16,6 +16,8 @@
 #include <vector>
 using namespace std;
 
+#include "Infection.h"
+
 class Person;
 class Infection;
 class Strain;
@@ -31,7 +33,13 @@ public:
   void become_infectious(Strain * strain);
   void recover(Strain * strain);
   int is_symptomatic();
-  char get_strain_status(int strain);
+  inline char get_strain_status(int strain) {
+    if (infection[strain].empty())
+      return 'S';
+    else 
+      return infection[strain][0]->get_strain_status();
+  }
+
   int add_infectee(int strain);
   int get_exposure_date(int strain);
   int get_infectious_date(int strain);

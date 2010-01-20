@@ -111,10 +111,6 @@ void Person::recover(Strain * strain) {
   }
 }
 
-int Person::is_on_schedule(int day, int loc) {
-  return behavior->is_on_schedule(day, loc);
-}
-
 void Person::update_schedule(int day) {
   return behavior->update_schedule(day);
 }
@@ -151,10 +147,6 @@ int Person::get_profession() {
 
 int Person::get_places() {
   return behavior->get_favorite_places();
-}
-
-char Person::get_strain_status(int strain) {
-  return health->get_strain_status(strain);
 }
 
 double Person::get_susceptibility(int strain) {

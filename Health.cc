@@ -64,12 +64,13 @@ void Health::update(int day) {
     if (status == 'E') {
       if (day == get_infectious_date(s)) {
 	self->become_infectious(strain);
+	status = get_strain_status(s);
       }
     }
-    status = get_strain_status(s);
     if (status == 'I' || status == 'i') {
       if (day == get_recovered_date(s)) {
 	self->recover(strain);
+	status = get_strain_status(s);
       }
     }
     //We must decide whether someone is going to take the AV
@@ -155,8 +156,7 @@ void Health::become_exposed(Infection * infection_ptr) {
       Strain* s = Pop.get_strain(i);
       Infection* dummy_i =
 	Infection::get_dummy_infection(s, self, infection_ptr->get_exposure_date());
-      self->become_exposed(dummy_i);
-      self->become_infectious(s);
+      infection[i].push_back(dummy_i);
       self->recover(s);
     }
   }
@@ -171,7 +171,7 @@ void Health::become_infectious(Strain * strain) {
   infection[strain_id][0]->become_infectious();
   strain->remove_from_exposed_list(self);
   strain->insert_into_infectious_list(self);
-  if (Verbose > 2) {
+  if (Verbose > 1) {
     fprintf(Statusfp, "INFECTIOUS person %d for strain %d has status %c\n",
 	    self->get_id(), strain_id, get_strain_status(strain_id));
     fflush(Statusfp);
@@ -246,13 +246,6 @@ int Health::add_infectee(int strain) {
     return 0;
   else
     return infection[strain][0]->add_infectee();
-}
-
-char Health::get_strain_status(int strain) {
-  if (infection[strain].empty())
-    return 'S';
-  else
-    return infection[strain][0]->get_strain_status();
 }
 
 double Health::get_susceptibility(int strain) {
