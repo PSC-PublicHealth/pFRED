@@ -13,6 +13,9 @@
 #define _FRED_SPREAD_H
 
 #include <set>
+#include <map>
+#include <vector>
+
 using namespace std;
 
 class Strain;
@@ -39,12 +42,13 @@ private:
   double attack_rate;
   set <Person *> exposed;
   set <Person *> infectious;
+  vector <Person *> not_yet_exposed;
+  map <int, int> new_cases_map;
+  int new_cases;
   int S;
   int E;
   int I;
   int R;
 };
   
-
-
 #endif // _FRED_SPREAD_H
