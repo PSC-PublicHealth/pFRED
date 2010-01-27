@@ -45,7 +45,10 @@ public:
   //Modifiers
   void modify_susceptibility(double multp){ susceptibility*=multp; }
   void modify_infectivity(double multp){ infectivity*=multp; }
-  void modify_infectious_period(double multp){ infectious_period*=multp; }
+  
+  // Current day is needed to modify infectious period, because we can't cause this
+  // infection to recover in the past.
+  void modify_infectious_period(double multp, int cur_day);
   // May result in a mutation, which causes a new infection of a different
   // strain type in this host.  May also alter the course of this infection
   // (shortening or lengthening the duration).  

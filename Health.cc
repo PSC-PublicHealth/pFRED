@@ -107,7 +107,7 @@ void Health::update(int day) {
 		 << " " << self->get_recovered_date(s);
 	  modify_susceptibility(s,avs[iav]->get_reduce_susceptibility());
 	  modify_infectivity(s,avs[iav]->get_reduce_infectivity());
-	  modify_infectious_period(s,avs[iav]->get_reduce_infectious_period());
+	  modify_infectious_period(s,avs[iav]->get_reduce_infectious_period(), day);
 	  cout << " to " << self->get_susceptibility(s) << " " << self->get_infectivity(s) 
 	       << " " << self->get_recovered_date(s);
 	  
@@ -117,7 +117,7 @@ void Health::update(int day) {
 	    cout << "\nAV altering "<<self->get_id() << " up";
 	  modify_susceptibility(s,1.0/avs[iav]->get_reduce_susceptibility());
 	  modify_infectivity(s,1.0/avs[iav]->get_reduce_infectivity());
-	  modify_infectious_period(s,1.0/avs[iav]->get_reduce_infectious_period());
+	  modify_infectious_period(s,1.0/avs[iav]->get_reduce_infectious_period(), day);
 	}
       }
     }
@@ -272,8 +272,8 @@ void Health::modify_infectivity(int strain, double multp){
   infection[strain][0]->modify_infectivity(multp);
 }
 
-void Health::modify_infectious_period(int strain, double multp){
-  infection[strain][0]->modify_infectious_period(multp);
+void Health::modify_infectious_period(int strain, double multp, int cur_day){
+  infection[strain][0]->modify_infectious_period(multp, cur_day);
 }
 
 //Medication operators

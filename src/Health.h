@@ -58,7 +58,10 @@ public:
   //Modifiers
   void modify_susceptibility(int strain, double multp);
   void modify_infectivity(int strain, double multp);
-  void modify_infectious_period(int strain, double multp);
+
+  // Current day is needed to modify infectious period, because we can't cause this
+  // infection to recover in the past.
+  void modify_infectious_period(int strain, double multp, int cur_day);
 
   //int set_antiviral_date(int day); // returns 1 if can't be set.
   //void set_av(Antiviral *AV) { av = AV; }

@@ -172,3 +172,13 @@ Infection* Infection::get_dummy_infection(Strain *s, Person* host, int day) {
   i->reset_infection_course(0, 0, false, day);
   return i;
 }
+
+
+void Infection::modify_infectious_period(double multp, int cur_day){ 
+  infectious_period*=multp; 
+  recovered_date = infectious_date + infectious_period; 
+  if (recovered_date < cur_day + 1) {
+    recovered_date = cur_day + 1;
+    infectious_period = recovered_date - infectious_date;
+  }
+}
