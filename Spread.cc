@@ -217,7 +217,7 @@ void Spread::update(int day) {
     if (Verbose > 1) {
       fprintf(Statusfp, "\nspread in location: %d\n", loc); fflush(Statusfp);
     }
-    place->spread_infection(day);
+    place->spread_infection(day, strain->get_id());
   }
 
 }

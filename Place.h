@@ -43,7 +43,7 @@ public:
   void add_infectious(int strain, Person * per);
   void delete_infectious(int strain, Person * per);
   void print_infectious(int strain);
-  void spread_infection(int day);
+  void spread_infection(int day, int strain);
   int is_open(int day);
 
   virtual void get_parameters() {}

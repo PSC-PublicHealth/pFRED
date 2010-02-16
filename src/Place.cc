@@ -161,79 +161,76 @@ void Place::print_infectious(int strain) {
   printf("\n");
 }
 
-void Place::spread_infection(int day) {
+void Place::spread_infection(int day, int s) {
   vector<Person *>::iterator itr;
-  int strains = Pop.get_strains();
-  for (int s = 0; s < strains; s++) {
-    Strain * strain = Pop.get_strain(s);
-    if (Verbose > 1) { print(s); }
-    if (N < 2) return;
-    if (S[s] == 0) continue;
-
-    // expected number of susceptible contacts for each infectious person
-    double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
-    if (Verbose > 1) {
-      printf("expected suscept contacts = %f\n", contacts);
-      fflush(stdout);
-    }
+  Strain * strain = Pop.get_strain(s);
+  if (Verbose > 1) { print(s); }
+  if (N < 2) return;
+  if (S[s] == 0) return;
+  
+  // expected number of susceptible contacts for each infectious person
+  double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
+  if (Verbose > 1) {
+    printf("expected suscept contacts = %f\n", contacts);
+    fflush(stdout);
+  }
     
-    // expected upper bound on number of contacts resulting in infection (per infective)
-    contacts *= strain->get_transmissibility();
+  // expected upper bound on number of contacts resulting in infection (per infective)
+  contacts *= strain->get_transmissibility();
+  if (Verbose > 1) {
+    printf("beta = %f\n", strain->get_transmissibility());
+    printf("effective contacts = %f\n", contacts);
+    fflush(stdout);
+  }
+
+  for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
+    Person * infector = *itr;			// infectious indiv
+
+    if (Verbose > 1) { printf("is infector %d here?\n", infector->get_id()); }
+
+    // skip if this infector did not visit today
+    if (!infector->is_on_schedule(day, id)) continue;
+
+    if (Verbose > 1) { printf("infected = %d\n", infector->get_id()); }
+
+    // reduce number of infective contact events by my infectivity
+    double my_contacts = contacts * infector->get_infectivity(s);
     if (Verbose > 1) {
-      printf("beta = %f\n", strain->get_transmissibility());
-      printf("effective contacts = %f\n", contacts);
+      printf("infectivity = %f\n", infector->get_infectivity(s));
+      printf("my effective contacts = %f\n", my_contacts);
       fflush(stdout);
     }
 
-    for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
-      Person * infector = *itr;			// infectious indiv
+    // randomly round off the expected value of the contact counts
+    int contact_count = (int) my_contacts;
+    double r = RANDOM();
+    if (r < my_contacts - contact_count) contact_count++;
+    if (Verbose > 1) {
+      printf("my contact_count = %d  r = %f\n", contact_count, r);
+      fflush(stdout);
+    }
 
-      if (Verbose > 1) { printf("is infector %d here?\n", infector->get_id()); }
-
-      // skip if this infector did not visit today
-      if (!infector->is_on_schedule(day, id)) continue;
-
-      if (Verbose > 1) { printf("infected = %d\n", infector->get_id()); }
-
-      // reduce number of infective contact events by my infectivity
-      double my_contacts = contacts * infector->get_infectivity(s);
-      if (Verbose > 1) {
-	printf("infectivity = %f\n", infector->get_infectivity(s));
-	printf("my effective contacts = %f\n", my_contacts);
-	fflush(stdout);
-      }
-
-      // randomly round off the expected value of the contact counts
-      int contact_count = (int) my_contacts;
+    // get susceptible target for each contact resulting in infection
+    for (int c = 0; c < contact_count; c++) {
       double r = RANDOM();
-      if (r < my_contacts - contact_count) contact_count++;
+      int pos = (int) (r*S[s]);
+      Person * infectee = susceptibles[s][pos];
       if (Verbose > 1) {
-	printf("my contact_count = %d  r = %f\n", contact_count, r);
-	fflush(stdout);
+	printf("my possible victim = %d  r = %f  pos = %d  S[d] = %d\n",
+	       infectee->get_id(), r, pos, S[s]);
       }
-
-      // get susceptible target for each contact resulting in infection
-      for (int c = 0; c < contact_count; c++) {
-	double r = RANDOM();
-	int pos = (int) (r*S[s]);
-	Person * infectee = susceptibles[s][pos];
+      if (strain->attempt_infection(infector, infectee, this, day)) {
 	if (Verbose > 1) {
-	  printf("my possible victim = %d  r = %f  pos = %d  S[d] = %d\n",
-		 infectee->get_id(), r, pos, S[s]);
+	  printf("infection from %d to %d\n",
+		 infector->get_id(),infectee->get_id());
 	}
-	if (strain->attempt_infection(infector, infectee, this, day)) {
-	  if (Verbose > 1) {
-	    printf("infection from %d to %d\n",
-		   infector->get_id(),infectee->get_id());
-	  }
-	} else {
-	  if (Verbose > 1) { 
-	    printf("no infection\n");
-	  }
+      } else {
+	if (Verbose > 1) { 
+	  printf("no infection\n");
 	}
-      } // end contact loop
-    } // end infectious list loop
-  }  // end strain loop
+      }
+    } // end contact loop
+  } // end infectious list loop
 }
 
 int Place::is_open(int day) {
