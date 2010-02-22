@@ -16,48 +16,26 @@
 #include <assert.h>
 #include <iostream>
 #include "Random.h"
-#include "Vaccine.h"
-#include "VaccineDose.h"
+
+class Vaccine;
+class VaccineDose;
+class Health;
 
 class Vaccine_Status {
  public:
   //Creation Operations
-  Vaccine_Status(void){
-    vaccination_day           = -1;
-    vaccination_effective_day = -1;
-    current_dose              =0;
-    days_to_next_dose         = -1;
-  }
-  
-  Vaccine_Status(int day, Vaccine* vacc, int age){
-    assert(day >=0);
-    
-    vaccine = vacc;
-    vaccination_day       = day;
-    double efficacy       = vacc->get_dose(0)->get_efficacy(age);
-    double efficacy_delay = vacc->get_dose(0)->get_efficacy_delay(age);
-    
-    vaccination_effective_day = -1;
-    if(RANDOM() < efficacy){
-      vaccination_effective_day = day+efficacy_delay;
-    }
-    current_dose =0;
-    days_to_next_dose = -1;
-    if(vacc->get_number_doses() > 1){
-      days_to_next_dose = day + vacc->get_dose(0)->get_days_between_doses();
-    }
-  }
-  
+  Vaccine_Status(void);
+  Vaccine_Status(int day, Vaccine* vacc, int age, Health* h);
   
   // Access Members
   int get_vaccination_day(void)           { return vaccination_day; }
   int get_vaccination_effective_day(void) { return vaccination_effective_day; }
+  int is_effective(void)                  { if(vaccination_effective_day != -1) return 1; else return 0;}
   Vaccine* get_vaccine(void)              { return vaccine; }
   int get_current_dose(void)              { return current_dose; }
   int get_days_to_next_dose(void)         { return days_to_next_dose; }
   // Modifiers
   void set_vaccination_day(int day) { 
-    assert(day >= 0);
     if(vaccination_day ==-1){
       vaccination_day = day; 
     }
@@ -66,18 +44,18 @@ class Vaccine_Status {
       cout << "\nWARNING! Vaccination Status, setting vaccine day of someone who has already been vaccinated";
     }
   }
- 
+  
   //Utility Functions
-  void print(void){
-    cout << "\nVaccine Status";
-}
+  void print(void);
+  void printTrace(void);
       
  private:
   int vaccination_day;             // On which day did you get the vaccine
   int vaccination_effective_day;   // On which day is the vaccine effective
   Vaccine* vaccine;                // Which vaccine did you take
-  int current_dose;
-  int days_to_next_dose;
+  int current_dose;                // Current Dose that the agent is on
+  int days_to_next_dose;           // How long between doses
+  Health* health;                  // The health object this belongs to.
 };
 
 #endif
