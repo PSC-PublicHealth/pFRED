@@ -26,6 +26,7 @@ public:
   void update_schedule(int day);
   void print_schedule();
   void become_infectious(int strain);
+  void become_exposed(int strain);
   void recover(int strain);
   int get_favorite_places() { return favorite_places; }
 

@@ -32,8 +32,8 @@ void Person::setup(int index, int age, char sex, int marital, int occ,
 }
   
 void Person::print(int strain) {
-  fprintf(Tracefp, "%c id %7d  a %3d  s %c %c ",
-	  health->get_strain_status(strain), id,
+  fprintf(Tracefp, "%i %c id %7d  a %3d  s %c %c ",
+	  strain, health->get_strain_status(strain), id,
 	  demographics->get_age(),
 	  demographics->get_sex(),
 	  demographics->get_occupation());
@@ -89,6 +89,7 @@ void Person::update(int day) {
 
 void Person::become_exposed(Infection * infection) {
   health->become_exposed(infection);
+  behavior->become_exposed(infection->get_strain()->get_id());
 }
 
 void Person::become_infectious(Strain * strain) {
@@ -123,6 +124,10 @@ void Person::behave(int day) {}
 
 int Person::is_symptomatic() {
   return health->is_symptomatic();
+}
+
+const Antiviral* Person::get_av(int strain, int day) {
+  return health->get_av(strain, day);
 }
 
 int Person::get_age() {

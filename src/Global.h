@@ -15,6 +15,7 @@
 
 // global runtime parameters
 extern int Verbose;
+extern int Debug;
 extern int Test;
 extern int Runs;
 extern int Days;

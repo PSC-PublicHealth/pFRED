@@ -8,6 +8,7 @@
 
 // global runtime parameters
 int Verbose;
+int Debug;
 int Test;
 int Runs;
 int Days;
@@ -28,6 +29,7 @@ int Strains;
 
 void get_global_parameters() {
   get_param((char *) "verbose", &Verbose);
+  get_param((char *) "debug", &Debug);
   get_param((char *) "test", &Test);
   get_param((char *) "runs", &Runs);
   get_param((char *) "days", &Days);

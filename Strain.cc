@@ -45,8 +45,11 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   sprintf(s, "symp[%d]", id);
   get_param(s, &prob_symptomatic);
 
-  sprintf(s, "resistant[%d]", id);
-  // get_param(s, &prob_resistant);
+  sprintf(s, "symp_infectivity[%d]", id);
+  get_param(s, &symp_infectivity);
+
+  sprintf(s, "asymp_infectivity[%d]", id);
+  get_param(s, &asymp_infectivity);
 
   sprintf(s, "days_latent[%d]", id);
   get_param(s, &n);
@@ -58,22 +61,38 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   days_incubating = new double [n];
   max_days_incubating = get_param_vector(s, days_incubating) -1;
 
+  // This check disallows deprecated strain params
   sprintf(s, "days_infectious[%d]", id);
+  if (does_param_exist(s)) {
+    printf("***** Found deprecated parameter ***** %s\n"
+	   "New parameters are days_asymp and days_symp "
+	   "Aborting\n", s);
+    abort();
+  }
+
+  sprintf(s, "days_asymp[%d]", id);
   get_param(s, &n);
-  days_infectious = new double [n];
-  max_days_infectious = get_param_vector(s, days_infectious) -1;
-  printf("Strain setup finished\n"); fflush(stdout);
+  days_asymp = new double [n];
+  max_days_asymp = get_param_vector(s, days_asymp) -1;
+
+  sprintf(s, "days_symp[%d]", id);
+  get_param(s, &n);
+  days_symp = new double [n];
+  max_days_symp = get_param_vector(s, days_symp) -1;
 
   get_param((char *) "prob_stay_home", &Prob_stay_home);
   spread = new Spread(this);
 
   mutation_prob = mut_prob;
   population = pop;
+
+  printf("Strain setup finished\n"); fflush(stdout);
+  if (Verbose) print();
 }
 
 void Strain::print() {
-  printf("strain %d symp %.3f resist %.3f trans %e\n",
-	 id, prob_symptomatic, prob_resistant, transmissibility);
+  printf("strain %d symp %.3f resist %.3f trans %e symp_infectivity %.3f asymp_infectivity %.3f\n",
+	 id, prob_symptomatic, prob_resistant, transmissibility, symp_infectivity, asymp_infectivity);
   printf("days latent: ");
   for (int i = 0; i <= max_days_latent; i++)
     printf("%.3f ", days_latent[i]);
@@ -82,13 +101,18 @@ void Strain::print() {
   for (int i = 0; i <= max_days_incubating; i++)
     printf("%.3f ", days_incubating[i]);
   printf("\n");
-  printf("days infectious: ");
-  for (int i = 0; i <= max_days_infectious; i++)
-    printf("%.3f ", days_infectious[i]);
+  printf("days symp: ");
+  for (int i = 0; i <= max_days_symp; i++)
+    printf("%.3f ", days_symp[i]);
+  printf("\n");
+  printf("days asymp: ");
+  for (int i = 0; i <= max_days_asymp; i++)
+    printf("%.3f ", days_asymp[i]);
   printf("\n");
 }
 
-bool Strain::attempt_infection(Person* infector, Person* infectee, Place* place, int exposure_date) {
+bool Strain::attempt_infection(Person* infector, Person* infectee,
+			       Place* place, int exposure_date) {
   // is the victim here today, and still susceptible?
   if (infectee->is_on_schedule(exposure_date, place->get_id()) &&
       infectee->get_strain_status(id) == 'S') {
@@ -158,28 +182,16 @@ int Strain::get_days_incubating() {
   return days;
 }
 
-int Strain::get_days_infectious() {
+int Strain::get_days_asymp() {
   int days = 0;
-  days = draw_from_distribution(max_days_infectious, days_infectious);
+  days = draw_from_distribution(max_days_asymp, days_asymp);
   return days;
 }
 
-
-// static
-int Strain::draw_from_distribution(int n, double *dist) {
-  double r = RANDOM();
-  int i = 0;
-  while (i <= n && dist[i] < r) { i++; }
-  if (i <= n) { return i; }
-  else {
-    printf("Help! draw from distribution failed.\n");
-    printf("Is distribution properly formed? (should end with 1.0)\n");
-    for (int i = 0; i <= n; i++) {
-      printf("%f ", dist[i]);
-    }
-    printf("\n");
-    return -1;
-  }
+int Strain::get_days_symp() {
+  int days = 0;
+  days = draw_from_distribution(max_days_symp, days_symp);
+  return days;
 }
 
 int Strain::get_symptoms() {

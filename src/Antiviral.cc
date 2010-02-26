@@ -16,25 +16,35 @@
 #include "Infection.h"
 #include "Strain.h"
 
-Antiviral::Antiviral(int s, int cl, double ri, double rs, double rip, 
-		     int st, double eff){
+Antiviral::Antiviral(int s, int cl, double ri, double rs, double reduce_asymp_per, double reduce_symp_per,
+		     double prob_symp, int st, double eff, double* av_start, int max_av_start){
   strain = s;
   course_length = cl;
   reduce_infectivity = ri;
   reduce_susceptibility = rs;
-  reduce_infectious_period = rip;
+  reduce_asymp_period = reduce_asymp_per;
+  reduce_symp_period = reduce_symp_per;
+  prob_symptoms = prob_symp;
   //percent_symptomatics = ps;
   stock = st;
   initial_stock = st;
   efficacy = eff;
+  av_start_day = av_start;
+  max_av_start_day = max_av_start;
 }
 
-//int Antiviral::roll_sympt(void){
-//  return (RANDOM() < percent_symptomatics/100.0);
-//}
+int Antiviral::roll_will_have_symp(void) const {
+  return (RANDOM() < prob_symptoms);
+}
 
-int Antiviral::roll_efficacy(void){
+int Antiviral::roll_efficacy(void) const {
   return (RANDOM() < efficacy);
+}
+
+int Antiviral::roll_start_day(void) const {
+ int days = 0;
+ days = draw_from_distribution(max_av_start_day, av_start_day);
+ return days;
 }
 
 
@@ -47,7 +57,14 @@ void Antiviral::print(void){
   cout << "\n Reduces:";
   cout << "\n\tInfectivity:\t"<<reduce_infectivity;
   cout << "\n\tSusceptibility\t"<<reduce_susceptibility;
-  cout << "\n\tInfectious Period\t"<<reduce_infectious_period;
+  cout << "\n\tAymptomatic Period\t" << reduce_asymp_period;
+  cout << "\n\tSymptomatic Period\t" << reduce_symp_period;
+  cout << "\n\tProbability of symptoms:\t" << prob_symptoms;
+  cout << "\n\tAV start day (max " << max_av_start_day << "): ";
+  for (int i = 0; i <= max_av_start_day; i++) {
+    cout << av_start_day[i] << " ";
+  }
+  cout << "\n";
 }
 
 void Antiviral::reset(void){

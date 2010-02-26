@@ -51,6 +51,11 @@ public:
   double get_susceptibility(int strain);
   double get_infectivity(int strain);
   int is_on_av(int day,int strain); // Returns position in array of av if applicable
+
+  // Returns a pointer to the Antiviral, if it's currently being taken.  Otherwise,
+  // returns NULL.
+  const Antiviral* get_av(int day, int strain);
+
   //Medication operators
   int take(Antiviral *av, int day); //Return 1 if taken
   int get_number_av_taken(void){ return number_av_taken;}
@@ -61,8 +66,13 @@ public:
 
   // Current day is needed to modify infectious period, because we can't cause this
   // infection to recover in the past.
+  // Modifying infectious period is equivalent to modifying symptomatic and asymptomatic
+  // periods by the same amount.
   void modify_infectious_period(int strain, double multp, int cur_day);
-
+  void modify_symptomatic_period(int strain, double multp, int cur_day);
+  void modify_asymptomatic_period(int strain, double multp, int cur_day);
+  // Can't change develops_symptoms if this person is not asymptomatic ('i' or 'E')
+  void modify_develops_symptoms(int strain, bool symptoms, int cur_day);
   //int set_antiviral_date(int day); // returns 1 if can't be set.
   //void set_av(Antiviral *AV) { av = AV; }
    
@@ -75,6 +85,7 @@ private:
   Antivirals * AVs;
   vector < int > antiviral_start_date;
   vector < Antiviral * > avs;
+  vector<double>* susceptibility_multp;
 };
 
 #endif // _FRED_HEALTH_H

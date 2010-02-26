@@ -49,6 +49,7 @@ public:
   void recover(Strain * strain);
   void behave(int day);
   int is_symptomatic();
+  const Antiviral* get_av(int strain, int day);
 
   // access functions:
   int get_id() { return id; }

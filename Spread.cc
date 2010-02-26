@@ -82,7 +82,7 @@ void Spread::reset() {
   infectious.clear();
   not_yet_exposed.clear();
   attack_rate = 0.0;
-  S = E = I = R = 0;
+  S = E = I = I_s = R = 0;
 }
 
 void Spread::start_outbreak(Person *pop, int pop_size) {
@@ -103,12 +103,13 @@ void Spread::start_outbreak(Person *pop, int pop_size) {
 }
 
 void Spread::update_stats(Person *pop, int pop_size, int day) {
-  S = E = I = R = 0;
+  S = E = I = I_s = R = 0;
   for (int p = 0; p < pop_size; p++) {
     char status = pop[p].get_strain_status(strain->get_id());
     S += (status == 'S');
     E += (status == 'E');
     I += (status == 'I') || (status == 'i');
+    I_s += (status == 'I');
     R += (status == 'R');
   }
   attack_rate = (100.0*(E+I+R))/pop_size;
@@ -117,14 +118,14 @@ void Spread::update_stats(Person *pop, int pop_size, int day) {
 void Spread::print_stats(int day) {
   int N = S+E+I+R;
   fprintf(Outfp,
-	  "Day %3d  Str %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n",
-	  day, strain->get_id(), S, E, I, R, N, attack_rate);
+	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  N %7d  AR %5.2f\n",
+	  day, strain->get_id(), S, E, I, I_s, R, N, attack_rate);
   fflush(Outfp);
   
   if (Verbose) {
     fprintf(Statusfp,
-	    "Day %3d  Str %d  S %7d  E %7d  I %7d  R %7d  N %7d  AR %5.2f\n\n",
-	    day, strain->get_id(), S, E, I, R, N, attack_rate);
+	    "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  N %7d  AR %5.2f\n\n",
+	    day, strain->get_id(), S, E, I, I_s, R, N, attack_rate);
     fflush(Statusfp);
   }
 }
@@ -174,9 +175,9 @@ void Spread::update(int day) {
 	    // New infections are a special case - we don't initialize using
 	    // Strain::attempt_infection() meaning we don't roll the dice to see if
 	    // we'll expose the person.  We just do it.
-		Person * temp = not_yet_exposed.back();
+	    Person * temp = not_yet_exposed.back();
 	    Infection * infection = new Infection(strain, NULL, temp, NULL, day);
-	    temp -> become_exposed(infection);
+	    temp->become_exposed(infection);
 	    exposed = true;
 	  }
 
@@ -215,7 +216,7 @@ void Spread::update(int day) {
     int loc = *it;
     Place * place = Loc.get_location(loc);
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread in location: %d\n", loc); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), loc); fflush(Statusfp);
     }
     place->spread_infection(day, strain->get_id());
   }

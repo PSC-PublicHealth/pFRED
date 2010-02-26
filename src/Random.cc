@@ -10,6 +10,7 @@
 //
 
 #include "Random.h"
+#include <stdio.h>
 
 /*
 algorithm poisson random number (Knuth):
@@ -22,6 +23,22 @@ algorithm poisson random number (Knuth):
     return k − 1.
 */
 
+// static
+int draw_from_distribution(int n, double *dist) {
+  double r = RANDOM();
+  int i = 0;
+  while (i <= n && dist[i] < r) { i++; }
+  if (i <= n) { return i; }
+  else {
+    printf("Help! draw from distribution failed.\n");
+    printf("Is distribution properly formed? (should end with 1.0)\n");
+    for (int i = 0; i <= n; i++) {
+      printf("%f ", dist[i]);
+    }
+    printf("\n");
+    return -1;
+  }
+}
 
 int draw_poisson(double lambda) {
   if (lambda <= 0.0) return 0;

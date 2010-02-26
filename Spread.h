@@ -48,6 +48,7 @@ private:
   int S;
   int E;
   int I;
+  int I_s;
   int R;
 };
   

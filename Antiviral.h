@@ -23,22 +23,27 @@ class Health;
 class Antiviral {
  public:
   //Creation 
-  Antiviral(int s, int cl, double ri, double rs, double rip, 
-	    int st, double eff);
-  // int administer(Health *h, int day);  //returns 1 if already on treatment;
-  //Strain *get_strain {return str
-  int     get_strain() { return strain;}
-  double  get_reduce_infectivity() { return reduce_infectivity;}
-  double  get_reduce_susceptibility() { return reduce_susceptibility;}
-  double  get_reduce_infectious_period() { return reduce_infectious_period;}
-  int     get_course_length() { return course_length; }
-  double  get_percent_symptomatics() { return percent_symptomatics;}
-  double  get_efficacy() { return efficacy; }
+  Antiviral(int s, int cl, double ri, double rs, double reduce_asymp_period,
+	    double reduce_symp_period, double prob_symptoms,
+	    int st, double eff, double* av_start_day, int max_av_start_day);
+
+  ~Antiviral() {delete av_start_day;}
+
+  int     get_strain() const { return strain;}
+  double  get_reduce_infectivity() const { return reduce_infectivity;}
+  double  get_reduce_susceptibility() const { return reduce_susceptibility;}
+  double  get_reduce_asymp_period() const { return reduce_asymp_period;}
+  double  get_reduce_symp_period() const { return reduce_symp_period;}
+  double  get_prob_symptoms() const { return prob_symptoms;}
+  int     get_course_length() const { return course_length; }
+  double  get_percent_symptomatics() const { return percent_symptomatics;}
+  double  get_efficacy() const { return efficacy; }
   
 
   // Roll operators
-  int roll_sympt();
-  int roll_efficacy();
+  int roll_will_have_symp() const;
+  int roll_efficacy() const;
+  int roll_start_day() const;
   
   // Can define these as operators;
   void reduce_stock(int amount) { stock --;}
@@ -58,9 +63,14 @@ class Antiviral {
   int course_length;              // How many days mush one take the AV
   double reduce_infectivity;      // What percentage does it reduce infectivity
   double reduce_susceptibility;   // What percentage does it reduce susceptability
-  double reduce_infectious_period;// What percentage does it reduce the infectous period
+  double reduce_infectious_period;
   double percent_symptomatics;    // Percentage of symptomatics recieving this drug
+  double reduce_asymp_period;     // What percentage does it reduce the asymptomatic period
+  double reduce_symp_period;      // What percentage does it reduce the symptomatic period
+  double prob_symptoms;           // What is the probability of being symptomatic
   double efficacy;                // The effectiveness of the AV (resistance)
+  double* av_start_day;           // Probabilistic AV start
+  int max_av_start_day;
 
   int initial_stock;
   int stock;

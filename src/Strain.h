@@ -35,10 +35,14 @@ public:
   // the infection is successful and attempt_infection returns true.
   bool attempt_infection(Person* infector, Person* infectee, Place* place, int exposure_date);
 
+  // These methods draw from the underlying distributions to randomly determine some aspect of the infection.
   int get_days_latent();
   int get_days_incubating();
-  int get_days_infectious();
+  int get_days_asymp();
+  int get_days_symp();
   int get_symptoms();
+  double get_asymp_infectivity() {return asymp_infectivity;}
+  double get_symp_infectivity() {return symp_infectivity;}
 
   int get_id() { return id; }
   double get_transmissibility() { return transmissibility; }
@@ -59,7 +63,6 @@ public:
   void update_stats(Person *pop, int pop_size, int day);
   void print_stats(int day);
 
-  static int draw_from_distribution(int n, double *dist);
   static double get_prob_stay_home();
   static void get_strain_parameters();
 
@@ -68,12 +71,16 @@ private:
   double transmissibility;
   double prob_symptomatic;
   double prob_resistant;
+  double asymp_infectivity;
+  double symp_infectivity;
   int max_days_latent;
   int max_days_incubating;
-  int max_days_infectious;
+  int max_days_asymp;
+  int max_days_symp;
   double *days_latent;
   double *days_incubating;
-  double *days_infectious;
+  double *days_asymp;
+  double *days_symp;
   double *mutation_prob;
   Spread *spread;
 

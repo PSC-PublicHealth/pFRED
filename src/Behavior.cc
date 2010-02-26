@@ -122,11 +122,17 @@ void Behavior::get_schedule(int *n, int *sched) {
     sched[i] = schedule[i]->get_id();
 }
 
-void Behavior::become_infectious(int strain) {
+void Behavior::become_exposed(int strain) {
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
     favorite_place[p]->delete_susceptible(strain, self);
-    if (Test == 0 || self->get_exposure_date(strain) == 0) {
+  }
+}
+
+void Behavior::become_infectious(int strain) {
+  for (int p = 0; p < favorite_places; p++) {
+    if (favorite_place[p] == NULL) continue;
+    if (Test == 0 || self->get_infectious_date(strain) == 0) {
       favorite_place[p]->add_infectious(strain, self);
     }
   }

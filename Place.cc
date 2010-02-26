@@ -86,6 +86,12 @@ void Place::print(int strain) {
 void Place::add_susceptible(int strain, Person * per) {
   susceptibles[strain].push_back(per);
   S[strain]++;
+  if (Debug &&
+      susceptibles[strain].size() !=  static_cast<unsigned int>(S[strain])) {
+    printf("inconsistent sizes vec %i recorded %i \n",
+	   (int) susceptibles[strain].size(),  S[strain]);
+    abort();
+  }
   if (strain == 0) { N++; }
 }
 
@@ -100,7 +106,6 @@ void Place::delete_susceptible(int strain, Person * per) {
     return;
   }
   Person * last = susceptibles[strain][s-1];
-  
   for (int i = 0; i < s; i++) {
     if (susceptibles[strain][i] == per) {
       susceptibles[strain][i] = last;
@@ -108,6 +113,12 @@ void Place::delete_susceptible(int strain, Person * per) {
       S[strain]--;
       break;
     }
+  }
+  if (Debug &&
+      susceptibles[strain].size() !=  static_cast<unsigned int>(S[strain])) {
+    printf("while deleting: inconsistent sizes vec %i recorded %i \n",
+	   (int) susceptibles[strain].size(),  S[strain]);
+    abort();
   }
 }
 
@@ -167,24 +178,32 @@ void Place::spread_infection(int day, int s) {
   if (Verbose > 1) { print(s); }
   if (N < 2) return;
   if (S[s] == 0) return;
-  
+
   // expected number of susceptible contacts for each infectious person
   double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
   if (Verbose > 1) {
-    printf("expected suscept contacts = %f\n", contacts);
+    printf("Strain %i, expected suscept contacts = %.3f * %i / %i = %f\n",
+	   s, get_contacts_per_day(s), S[s], (N-1), contacts);
     fflush(stdout);
   }
     
-  // expected upper bound on number of contacts resulting in infection (per infective)
+  // expected upper bound on number of contacts resulting in infection
+  // (per infective)
   contacts *= strain->get_transmissibility();
   if (Verbose > 1) {
-    printf("beta = %f\n", strain->get_transmissibility());
+    printf("beta = %.10f\n", strain->get_transmissibility());
     printf("effective contacts = %f\n", contacts);
     fflush(stdout);
   }
-
   for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
+    if (S[s] == 0) break;
     Person * infector = *itr;			// infectious indiv
+    if (Debug && infector->get_strain_status(s) != 'I' &&
+	infector->get_strain_status(s) != 'i') {
+      printf("Non-infectious person on infectious list: person %i day %i\n",
+	     infector->get_id(), day);
+      abort();
+    }
 
     if (Verbose > 1) { printf("is infector %d here?\n", infector->get_id()); }
 
@@ -212,17 +231,33 @@ void Place::spread_infection(int day, int s) {
 
     // get susceptible target for each contact resulting in infection
     for (int c = 0; c < contact_count; c++) {
+      // This check for S[s] == 0 looks redundant, because it's also done
+      // in the outer loop - but this inner loop can itself change S[s]
+      // so we need to check within the loop too.
+      if (S[s] == 0)
+	break;
       double r = RANDOM();
       int pos = (int) (r*S[s]);
       Person * infectee = susceptibles[s][pos];
+      if (Debug && infectee->get_strain_status(s) != 'S') {
+	printf("Non-susceptible person on susceptible list for "
+	       "strain %i: person %i day %i\n",
+	       s, infectee->get_id(), day);
+	abort();
+      }
       if (Verbose > 1) {
 	printf("my possible victim = %d  r = %f  pos = %d  S[d] = %d\n",
 	       infectee->get_id(), r, pos, S[s]);
       }
       if (strain->attempt_infection(infector, infectee, this, day)) {
 	if (Verbose > 1) {
-	  printf("infection from %d to %d\n",
-		 infector->get_id(),infectee->get_id());
+	  if (infector->get_exposure_date(s) == 0) {
+	    printf("SEED infection day %i from %d to %d\n",
+		   day, infector->get_id(),infectee->get_id());
+	  } else {
+	    printf("infection day %i of strain %i from %d to %d\n",
+		   day, s, infector->get_id(),infectee->get_id());
+	  }
 	}
       } else {
 	if (Verbose > 1) { 
