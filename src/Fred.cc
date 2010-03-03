@@ -86,7 +86,7 @@ void run_sim(int run) {
   fprintf(Statusfp, "%s", ctime(&clock));
 
   // allow us to replicate individual runs
-  if (run > 0) { new_seed = Seed * 100 + run; }
+  if (run > 0 && Reseed_day == -1) { new_seed = Seed * 100 + run; }
   else { new_seed = Seed; }
   fprintf(Statusfp, "seed = %lu\n", new_seed);
   INIT_RANDOM(new_seed);
@@ -98,6 +98,10 @@ void run_sim(int run) {
   }
   Pop.start_outbreak();
   for (int day = 0; day < Days; day++) {
+    if (day == Reseed_day) {
+      printf("************** reseed day = %d\n", day); fflush(stdout);
+      INIT_RANDOM(new_seed + run);
+    }
     printf("================\nsim day = %d\n", day); fflush(stdout);
     Pop.update(day);
     Pop.report(day);
