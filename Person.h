@@ -44,6 +44,7 @@ public:
   }
 
   void print_schedule();
+  void become_susceptible(int strain);
   void become_exposed(Infection *infection);
   void become_infectious(Strain * strain);
   void recover(Strain * strain);

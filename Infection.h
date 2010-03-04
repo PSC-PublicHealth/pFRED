@@ -23,7 +23,7 @@ public:
   // Create an infection of type s, for person infectee, starting
   // on date day.
   // Place and infector may be null if this is a seed infection.
-  // Place may be null if this is a infection due to a mutation event.
+  // Place may be null if this is an infection due to a mutation event.
   Infection(Strain * s, Person* infector, Person* infectee,
 	    Place* place, int day);
   void become_infectious();

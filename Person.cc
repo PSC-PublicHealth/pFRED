@@ -87,6 +87,11 @@ void Person::update(int day) {
   behavior->update(day);
 }
 
+void Person::become_susceptible(int strain) {
+  health->become_susceptible(strain);
+  behavior->become_susceptible(strain);
+}
+
 void Person::become_exposed(Infection * infection) {
   health->become_exposed(infection);
   behavior->become_exposed(infection->get_strain()->get_id());
