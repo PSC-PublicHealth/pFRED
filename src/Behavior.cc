@@ -122,7 +122,16 @@ void Behavior::get_schedule(int *n, int *sched) {
     sched[i] = schedule[i]->get_id();
 }
 
+void Behavior::become_susceptible(int strain) {
+  // add me to susceptible list at my favorite places
+  for (int p = 0; p < favorite_places; p++) {
+    if (favorite_place[p] == NULL) continue;
+    favorite_place[p]->add_susceptible(strain, self);
+  }
+}
+
 void Behavior::become_exposed(int strain) {
+  // remove me from susceptible list at my favorite places
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
     favorite_place[p]->delete_susceptible(strain, self);
@@ -130,6 +139,7 @@ void Behavior::become_exposed(int strain) {
 }
 
 void Behavior::become_infectious(int strain) {
+  // add me to infectious list at my favorite places
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
     if (Test == 0 || self->get_infectious_date(strain) == 0) {
@@ -139,6 +149,7 @@ void Behavior::become_infectious(int strain) {
 }
 
 void Behavior::recover(int strain) {
+  // remove me from infectious list at my favorite places
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
     if (Test == 0 || self->get_exposure_date(strain) == 0) {

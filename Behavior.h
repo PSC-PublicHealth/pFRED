@@ -25,6 +25,7 @@ public:
   int is_on_schedule(int day, int loc);
   void update_schedule(int day);
   void print_schedule();
+  void become_susceptible(int strain);
   void become_infectious(int strain);
   void become_exposed(int strain);
   void recover(int strain);

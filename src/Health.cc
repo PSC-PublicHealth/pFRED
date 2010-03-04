@@ -23,7 +23,10 @@ Health::Health (Person * person) {
   self = person;
   strains = Pop.get_strains();
   AVs = Pop.get_AVs();
-  infection = new vector <Infection *> [strains];
+  infection = new Infection * [strains];
+  for (int strain = 0; strain < strains; strain++) {
+    infection[strain] = NULL;
+  }
   susceptibility_multp = new vector<double>();
   reset();
 }
@@ -32,12 +35,16 @@ void Health::reset() {
   number_av_taken=0;
   susceptibility_multp->clear();
   for (int strain = 0; strain < strains; strain++) {
-    for (std::size_t i = 0; i < infection[strain].size(); ++i) {
-      delete infection[strain][i];
-    }
-    infection[strain].clear();
-    susceptibility_multp->push_back(1.0);
+    become_susceptible(strain);
   }
+}
+
+void Health::become_susceptible(int strain) {
+  if (infection[strain] != NULL) {
+    delete infection[strain];
+  }
+  infection[strain] = NULL;
+  susceptibility_multp->push_back(1.0);
 }
 
 void Health::update(int day) {
@@ -54,7 +61,7 @@ void Health::update(int day) {
 	fprintf(Statusfp, "person %d IS ON AV on day %i\n", self->get_id(), day-1);
 	fflush(Statusfp);
       }
-      if (infection[s][0]->possibly_mutate(this, day)) {
+      if (infection[s]->possibly_mutate(this, day)) {
 	if (Verbose > 1) {
 	  fprintf(Statusfp, "person %d strain %d mutated on day %i\n",
 		  self->get_id(), s, day);
@@ -69,7 +76,7 @@ void Health::update(int day) {
     char status = self->get_strain_status(s);
     if (status == 'S')
       continue;
-    infection[s][0]->update(day);
+    infection[s]->update(day);
   }
 
   for (int s = 0; s < strains; s++) {
@@ -78,7 +85,7 @@ void Health::update(int day) {
     // As a first cut, we will only give it to a percentage of sympt
     // This will emulate hospitalization
     if(AVs->do_av() && AVs->get_total_current_stock() > 0){
-      if(AVs->get_prophylaxis_start_date() == -1 && status == 'I' && day == infection[s][0]->get_symptomatic_date()){
+      if(AVs->get_prophylaxis_start_date() == -1 && status == 'I' && day == infection[s]->get_symptomatic_date()){
 	// Roll to see if they get one (only do once!!!)
 	// This will be replaced by hospitilazation
 	
@@ -155,18 +162,17 @@ void Health::become_exposed(Infection * infection_ptr) {
     else
       fprintf(Statusfp, "EXPOSED person %d to strain %d\n", self->get_id(), strain_id);
   }
-  if (!infection[strain_id].empty()) {
-    if (infection[strain_id][0]->get_strain_status() != 'R') {
+  if (infection[strain_id] != NULL) {
+    if (infection[strain_id]->get_strain_status() != 'R') {
       printf("WARNING! Attempted double exposure for strain %i in person %i. "
 	     "Double infection is not supported.\n",
 	     strain_id, self->get_id());
-      delete infection_ptr;
-      return;
+      abort();
     }
-    delete infection[strain_id][0];
-    infection[strain_id][0] = infection_ptr;
+    delete infection[strain_id];
+    infection[strain_id] = infection_ptr;
   } else {
-    infection[strain_id].push_back(infection_ptr);
+    infection[strain_id] = infection_ptr;
   }
   strain->insert_into_exposed_list(self);
 
@@ -175,16 +181,16 @@ void Health::become_exposed(Infection * infection_ptr) {
     // representation/mutation is still a very open problem for us.
     // become immune to equivalent strains.
     for (int i = 0; i < strains; i++) {
-      if (!infection[i].empty())
-	continue;
-      // Could also check some sort of antigenic status here, but for now,
-      // just assume all strains are antigenically identical.
-      Strain* s = Pop.get_strain(i);
-      Infection* dummy_i =
-	Infection::get_dummy_infection(s, self, infection_ptr->get_exposure_date());
-      self->become_exposed(dummy_i);
-      self->become_infectious(s);
-      self->recover(s);
+      if (infection[i] == NULL) {
+	// Could also check some sort of antigenic status here, but for now,
+	// just assume all strains are antigenically identical.
+	Strain* s = Pop.get_strain(i);
+	Infection* dummy_i =
+	  Infection::get_dummy_infection(s, self, infection_ptr->get_exposure_date());
+	self->become_exposed(dummy_i);
+	self->become_infectious(s);
+	self->recover(s);
+      }
     }
   }
 }
@@ -195,7 +201,7 @@ void Health::become_infectious(Strain * strain) {
     fprintf(Statusfp, "INFECTIOUS person %d for strain %d\n", self->get_id(), strain_id);
     fflush(Statusfp);
   }
-  infection[strain_id][0]->become_infectious();
+  infection[strain_id]->become_infectious();
   strain->remove_from_exposed_list(self);
   strain->insert_into_infectious_list(self);
   if (Verbose > 1) {
@@ -207,88 +213,88 @@ void Health::become_infectious(Strain * strain) {
 
 void Health::recover(Strain * strain) {
   int strain_id = strain->get_id();
-  infection[strain_id][0]->recover();
+  infection[strain_id]->recover();
   strain->remove_from_infectious_list(self);
 }
 
 int Health::is_symptomatic() {
   for (int strain = 0; strain < strains; strain++) {
-    if (!infection[strain].empty() && infection[strain][0]->is_symptomatic())
+    if (infection[strain] != NULL && infection[strain]->is_symptomatic())
       return 1;
   }
   return 0;
 }
 
 int Health::get_exposure_date(int strain) {
-  if (infection[strain].empty()) 
+  if (infection[strain] == NULL) 
     return -1;
   else
-    return infection[strain][0]->get_exposure_date();
+    return infection[strain]->get_exposure_date();
 }
 
 int Health::get_infectious_date(int strain) {
-  if (infection[strain].empty()) 
+  if (infection[strain] == NULL) 
     return -1;
   else
-    return infection[strain][0]->get_infectious_date();
+    return infection[strain]->get_infectious_date();
 }
 
 int Health::get_recovered_date(int strain) {
-  if (infection[strain].empty()) 
+  if (infection[strain] == NULL) 
     return -1;
   else
-    return infection[strain][0]->get_recovered_date();
+    return infection[strain]->get_recovered_date();
 }
 
 int Health::get_infector(int strain) {
-  if (infection[strain].empty()) 
+  if (infection[strain] == NULL) 
     return -1;
   else
-    return infection[strain][0]->get_infector();
+    return infection[strain]->get_infector();
 }
 
 int Health::get_infected_place(int strain) {
-  if (infection[strain].empty()) 
+  if (infection[strain] == NULL) 
     return -1;
   else
-    return infection[strain][0]->get_infected_place_id();
+    return infection[strain]->get_infected_place_id();
 }
 
 char Health::get_infected_place_type(int strain) {
-  if (infection[strain].empty()) 
+  if (infection[strain] == NULL) 
     return 'X';
   else
-    return infection[strain][0]->get_infected_place_type();
+    return infection[strain]->get_infected_place_type();
 }
 
 int Health::get_infectees(int strain) {
-  if (infection[strain].empty()) 
+  if (infection[strain] == NULL) 
     return 0;
   else
-    return infection[strain][0]->get_infectees();
+    return infection[strain]->get_infectees();
 }
 
 int Health::add_infectee(int strain) {
-  if (infection[strain].empty())
+  if (infection[strain] == NULL)
     return 0;
   else
-    return infection[strain][0]->add_infectee();
+    return infection[strain]->add_infectee();
 }
 
 double Health::get_susceptibility(int strain) {
   double suscep_multp = (*susceptibility_multp)[strain];
 
-  if (infection[strain].empty())
+  if (infection[strain] == NULL)
     return suscep_multp;
   else
-    return infection[strain][0]->get_susceptibility() * suscep_multp;
+    return infection[strain]->get_susceptibility() * suscep_multp;
 }
 
 double Health::get_infectivity(int strain) {
-  if (infection[strain].empty())
+  if (infection[strain] == NULL)
     return 0.0;
   else
-    return infection[strain][0]->get_infectivity();
+    return infection[strain]->get_infectivity();
 }
 
 
@@ -298,30 +304,30 @@ void Health::modify_susceptibility(int strain, double multp){
 }
 
 void Health::modify_infectivity(int strain, double multp){
-  if (! infection[strain].empty())
-    infection[strain][0]->modify_infectivity(multp);
+  if (infection[strain] != NULL)
+    infection[strain]->modify_infectivity(multp);
 }
 
 void Health::modify_infectious_period(int strain, double multp, int cur_day){
-  if (! infection[strain].empty())
-    infection[strain][0]->modify_infectious_period(multp, cur_day);
+  if (infection[strain] != NULL)
+    infection[strain]->modify_infectious_period(multp, cur_day);
 }
 
 void Health::modify_asymptomatic_period(int strain, double multp, int cur_day){
-  if (! infection[strain].empty())
-    infection[strain][0]->modify_asymptomatic_period(multp, cur_day);
+  if (infection[strain] != NULL)
+    infection[strain]->modify_asymptomatic_period(multp, cur_day);
 }
 
 void Health::modify_symptomatic_period(int strain, double multp, int cur_day){
-  if (! infection[strain].empty())
-    infection[strain][0]->modify_symptomatic_period(multp, cur_day);
+  if (infection[strain] != NULL)
+    infection[strain]->modify_symptomatic_period(multp, cur_day);
 }
 
 void Health::modify_develops_symptoms(int strain, bool symptoms, int cur_day){
-  if (! infection[strain].empty() &&
-      (infection[strain][0]->get_strain_status() == 'i' ||
-       infection[strain][0]->get_strain_status() == 'E'))
-    infection[strain][0]->modify_develops_symptoms(symptoms, cur_day);
+  if (infection[strain] != NULL &&
+      (infection[strain]->get_strain_status() == 'i' ||
+       infection[strain]->get_strain_status() == 'E'))
+    infection[strain]->modify_develops_symptoms(symptoms, cur_day);
 }
 
 //Medication operators
