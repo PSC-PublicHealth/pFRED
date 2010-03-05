@@ -23,6 +23,7 @@ extern unsigned long Seed;
 extern int Start_day;
 extern char Outfilebase[80];
 extern char Tracefilebase[80];
+extern int All_strains_antigenically_identical;
 
 // global file pointers
 extern FILE *Statusfp;

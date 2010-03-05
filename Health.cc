@@ -176,7 +176,7 @@ void Health::become_exposed(Infection * infection_ptr) {
   }
   strain->insert_into_exposed_list(self);
 
-  if (strains > 1) {
+  if (All_strains_antigenically_identical) {
     // HACK - this is probably NOT how we want to do this.  But strain
     // representation/mutation is still a very open problem for us.
     // become immune to equivalent strains.

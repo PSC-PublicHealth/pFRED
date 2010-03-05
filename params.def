@@ -1,4 +1,5 @@
 strains = 1
+all_strains_antigenically_identical = 1
 days = 240
 seed = 123456
 runs = 2
