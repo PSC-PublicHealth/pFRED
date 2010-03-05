@@ -44,7 +44,6 @@ Spread::Spread(Strain *str) {
       while (fscanf(fp, "%i %i", &day, &new_cases) == 2) {
         new_cases_map.insert(pair<int, int>(day, new_cases));
       }
-
       fclose(fp);
     } else {
       printf("Help!  Can't read new_cases_file %s\n", filename);
@@ -83,6 +82,7 @@ void Spread::reset() {
   not_yet_exposed.clear();
   attack_rate = 0.0;
   S = E = I = I_s = R = 0;
+  total_incidents = 0;
 }
 
 void Spread::start_outbreak(Person *pop, int pop_size) {
@@ -103,16 +103,21 @@ void Spread::start_outbreak(Person *pop, int pop_size) {
 }
 
 void Spread::update_stats(Person *pop, int pop_size, int day) {
+  int strain_id = strain->get_id();
+  int incidents = 0;
   S = E = I = I_s = R = 0;
   for (int p = 0; p < pop_size; p++) {
-    char status = pop[p].get_strain_status(strain->get_id());
+    char status = pop[p].get_strain_status(strain_id);
     S += (status == 'S');
     E += (status == 'E');
     I += (status == 'I') || (status == 'i');
     I_s += (status == 'I');
     R += (status == 'R');
+    incidents += pop[p].is_new_case(day, strain_id);
   }
-  attack_rate = (100.0*(E+I+R))/pop_size;
+  total_incidents += incidents;
+  attack_rate = (100.0*total_incidents)/pop_size;
+  // attack_rate = (100.0*(E+I+R))/pop_size;
 }
 
 void Spread::print_stats(int day) {

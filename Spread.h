@@ -50,6 +50,7 @@ private:
   int I;
   int I_s;
   int R;
+  int total_incidents;
 };
   
 #endif // _FRED_SPREAD_H

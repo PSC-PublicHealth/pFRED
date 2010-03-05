@@ -80,6 +80,9 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   days_symp = new double [n];
   max_days_symp = get_param_vector(s, days_symp) -1;
 
+  sprintf(s, "immunity_loss_rate[%d]", id);
+  get_param(s, &immunity_loss_rate);
+
   get_param((char *) "prob_stay_home", &Prob_stay_home);
   spread = new Spread(this);
 
@@ -191,6 +194,18 @@ int Strain::get_days_asymp() {
 int Strain::get_days_symp() {
   int days = 0;
   days = draw_from_distribution(max_days_symp, days_symp);
+  return days;
+}
+
+int Strain::get_days_recovered() {
+  int days;
+  if (immunity_loss_rate == 0.0) {
+    days = -1;
+  }
+  else {
+    // draw from exponential distribution
+    days = floor(0.5 + draw_exponential(immunity_loss_rate));
+  }
   return days;
 }
 

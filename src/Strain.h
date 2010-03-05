@@ -40,6 +40,7 @@ public:
   int get_days_incubating();
   int get_days_asymp();
   int get_days_symp();
+  int get_days_recovered();
   int get_symptoms();
   double get_asymp_infectivity() {return asymp_infectivity;}
   double get_symp_infectivity() {return symp_infectivity;}
@@ -81,6 +82,7 @@ private:
   double *days_incubating;
   double *days_asymp;
   double *days_symp;
+  double immunity_loss_rate;
   double *mutation_prob;
   Spread *spread;
 

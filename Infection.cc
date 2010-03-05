@@ -52,6 +52,7 @@ Infection::Infection (Strain * s, Person* person_infector,
   infectious_date = exposure_date + latent_period;
   symptomatic_date = infectious_date + asymp_period;
   recovered_date = symptomatic_date + symp_period;
+  susceptible_date = recovered_date + strain->get_days_recovered();
   infector = person_infector;
   infected_place = place;
   host = infectee;
@@ -110,6 +111,9 @@ void Infection::update(int day) {
   if (status == 'I' && day == get_recovered_date()) {
     host->recover(strain);
     status = get_strain_status();
+  }
+  if (status == 'R' && day == get_susceptible_date()) {
+    host->become_susceptible(strain->get_id());
   }
 }
 

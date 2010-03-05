@@ -27,6 +27,7 @@ void init_genrand(unsigned long s);
 #define URAND(LOW,HIGH) ((double)((LOW)+(((HIGH)-(LOW))*RANDOM())))
 
 int draw_poisson(double lambda);
+double draw_exponential(double lambda);
 int draw_from_distribution(int n, double *dist);
 
 #endif // _FRED_RANDOM_H

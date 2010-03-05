@@ -198,3 +198,7 @@ int Person::get_infectees(int strain) {
 int Person::add_infectee(int strain) {
   return health->add_infectee(strain);
 }
+
+int Person::is_new_case(int day, int strain) {
+  return (health->get_exposure_date(strain) == day);
+}

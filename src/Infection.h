@@ -39,6 +39,7 @@ public:
   int get_infectious_date() { return infectious_date; }
   int get_symptomatic_date() {return symptomatic_date; }
   int get_recovered_date() { return recovered_date; }
+  int get_susceptible_date() { return susceptible_date; }
   int get_infector();
   int get_infected_place_id();
   char get_infected_place_type();
@@ -91,6 +92,7 @@ private:
   int infectious_date;
   int symptomatic_date;
   int recovered_date;
+  int susceptible_date;
   Person* infector;
   Person* host;
   Place* infected_place;

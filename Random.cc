@@ -12,17 +12,6 @@
 #include "Random.h"
 #include <stdio.h>
 
-/*
-algorithm poisson random number (Knuth):
-  init:
-  Let L = exp(−lambda), k = 0 and p = 1.
-  do:
-         k = k + 1.
-	   Generate uniform random number u in [0,1] and let p = p × u.
-	   while p > L.
-    return k − 1.
-*/
-
 // static
 int draw_from_distribution(int n, double *dist) {
   double r = RANDOM();
@@ -39,6 +28,22 @@ int draw_from_distribution(int n, double *dist) {
     return -1;
   }
 }
+
+double draw_exponential(double lambda) {
+  double u = RANDOM();
+  return (-log(u)/lambda);
+}
+
+/*
+algorithm poisson random number (Knuth):
+  init:
+  Let L = exp(−lambda), k = 0 and p = 1.
+  do:
+         k = k + 1.
+	   Generate uniform random number u in [0,1] and let p = p × u.
+	   while p > L.
+    return k − 1.
+*/
 
 int draw_poisson(double lambda) {
   if (lambda <= 0.0) return 0;

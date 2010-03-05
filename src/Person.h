@@ -73,6 +73,7 @@ public:
   char get_infected_place_type(int strain);
   int get_infectees(int strain);
   int add_infectee(int strain);
+  int is_new_case(int day, int strain);
 
   //Health *get_health() { return health;}
   
