@@ -47,6 +47,17 @@ void Health::become_susceptible(int strain) {
 }
 
 void Health::update(int day) {
+  update_mutations(day);
+  for (int s = 0; s < strains; s++) {
+    char status = self->get_strain_status(s);
+    if (status == 'S')
+      continue;
+    infection[s]->update(day);
+  }
+  update_antivirals(day);
+}
+
+void Health::update_mutations(int day) {
   //  AVs->print();
   // Possibly mutate each active strain
   // TODO(alona) should consider strains in random order, but that
@@ -70,14 +81,9 @@ void Health::update(int day) {
       }
     }
   }
+}
 
-  for (int s = 0; s < strains; s++) {
-    char status = self->get_strain_status(s);
-    if (status == 'S')
-      continue;
-    infection[s]->update(day);
-  }
-
+void Health::update_antivirals(int day) {
   for (int s = 0; s < strains; s++) {
     char status = self->get_strain_status(s);
     //We must decide whether someone is going to take the AV

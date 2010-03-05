@@ -29,6 +29,8 @@ public:
   Health(Person * person);
   void reset();
   void update(int day);
+  void update_mutations(int day);
+  void update_antivirals(int day);
   void become_susceptible(int strain);
   void become_exposed(Infection *inf);
   void become_infectious(Strain * strain);
