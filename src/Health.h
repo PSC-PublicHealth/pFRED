@@ -86,7 +86,7 @@ private:
   Antivirals * AVs;
   vector < int > antiviral_start_date;
   vector < Antiviral * > avs;
-  vector<double>* susceptibility_multp;
+  double *susceptibility_multp;
 };
 
 #endif // _FRED_HEALTH_H

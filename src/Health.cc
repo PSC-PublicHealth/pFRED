@@ -27,13 +27,12 @@ Health::Health (Person * person) {
   for (int strain = 0; strain < strains; strain++) {
     infection[strain] = NULL;
   }
-  susceptibility_multp = new vector<double>();
+  susceptibility_multp = new double [strains];
   reset();
 }
 
 void Health::reset() {
   number_av_taken=0;
-  susceptibility_multp->clear();
   for (int strain = 0; strain < strains; strain++) {
     become_susceptible(strain);
   }
@@ -44,7 +43,7 @@ void Health::become_susceptible(int strain) {
     delete infection[strain];
   }
   infection[strain] = NULL;
-  susceptibility_multp->push_back(1.0);
+  susceptibility_multp[strain] = 1.0;
 }
 
 void Health::update(int day) {
@@ -282,7 +281,7 @@ int Health::add_infectee(int strain) {
 }
 
 double Health::get_susceptibility(int strain) {
-  double suscep_multp = (*susceptibility_multp)[strain];
+  double suscep_multp = susceptibility_multp[strain];
 
   if (infection[strain] == NULL)
     return suscep_multp;
@@ -300,7 +299,7 @@ double Health::get_infectivity(int strain) {
 
 //Modify Operators
 void Health::modify_susceptibility(int strain, double multp){
-  (*susceptibility_multp)[strain] *= multp;
+  susceptibility_multp[strain] *= multp;
 }
 
 void Health::modify_infectivity(int strain, double multp){
