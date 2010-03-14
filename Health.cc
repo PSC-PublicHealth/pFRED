@@ -170,8 +170,9 @@ void Health::become_exposed(Infection * infection_ptr) {
   if (infection[strain_id] != NULL) {
     if (infection[strain_id]->get_strain_status() != 'R') {
       printf("WARNING! Attempted double exposure for strain %i in person %i. "
+	     "Current status is %c "
 	     "Double infection is not supported.\n",
-	     strain_id, self->get_id());
+	     strain_id, self->get_id(), infection[strain_id]->get_strain_status());
       abort();
     }
     delete infection[strain_id];

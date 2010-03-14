@@ -94,8 +94,8 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
 }
 
 void Strain::print() {
-  printf("strain %d symp %.3f resist %.3f trans %e symp_infectivity %.3f asymp_infectivity %.3f\n",
-	 id, prob_symptomatic, prob_resistant, transmissibility, symp_infectivity, asymp_infectivity);
+  printf("strain %d symp %.3f trans %e symp_infectivity %.3f asymp_infectivity %.3f\n",
+	 id, prob_symptomatic, transmissibility, symp_infectivity, asymp_infectivity);
   printf("days latent: ");
   for (int i = 0; i <= max_days_latent; i++)
     printf("%.3f ", days_latent[i]);
@@ -199,12 +199,11 @@ int Strain::get_days_symp() {
 
 int Strain::get_days_recovered() {
   int days;
-  if (immunity_loss_rate == 0.0) {
-    days = -1;
-  }
-  else {
+  if (immunity_loss_rate > 0.0) {
     // draw from exponential distribution
     days = floor(0.5 + draw_exponential(immunity_loss_rate));
+  } else {
+    days = -1;
   }
   return days;
 }

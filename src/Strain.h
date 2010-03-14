@@ -48,7 +48,6 @@ public:
   int get_id() { return id; }
   double get_transmissibility() { return transmissibility; }
   double get_prob_symptomatic() { return prob_symptomatic; }
-  double get_prob_resistant() { return prob_resistant; }
   int get_index_cases();
   double get_attack_rate();
   
@@ -71,7 +70,6 @@ private:
   int id;
   double transmissibility;
   double prob_symptomatic;
-  double prob_resistant;
   double asymp_infectivity;
   double symp_infectivity;
   int max_days_latent;
