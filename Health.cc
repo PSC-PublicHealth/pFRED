@@ -27,6 +27,7 @@ Health::Health (Person * person) {
   for (int strain = 0; strain < strains; strain++) {
     infection[strain] = NULL;
   }
+  immunity.assign(strains,0);
   susceptibility_multp = new double [strains];
   reset();
 }
@@ -50,7 +51,7 @@ void Health::update(int day) {
   update_mutations(day);
   for (int s = 0; s < strains; s++) {
     char status = self->get_strain_status(s);
-    if (status == 'S')
+    if (status == 'S' || status == 'M')
       continue;
     infection[s]->update(day);
   }
@@ -221,6 +222,13 @@ void Health::recover(Strain * strain) {
   int strain_id = strain->get_id();
   infection[strain_id]->recover();
   strain->remove_from_infectious_list(self);
+}
+
+void Health::immunize(Strain* strain){
+  int strain_id = strain->get_id();
+  if(get_strain_status(strain_id) == 'S'){
+    immunity[strain_id] = 1;
+  }
 }
 
 int Health::is_symptomatic() {

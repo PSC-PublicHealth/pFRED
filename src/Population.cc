@@ -11,6 +11,8 @@
 
 #include <stdio.h>
 #include <new>
+#include <string>
+#include <sstream>
 #include "Population.h"
 #include "Params.h"
 #include "Profile.h"
@@ -18,6 +20,10 @@
 #include "Locations.h"
 #include "Strain.h"
 #include "Person.h"
+#include "AgeMap.h"
+#include "Random.h"
+
+using namespace std; 
 
 void Population::get_parameters() {
   get_param((char *) "popfile", popfile);
@@ -52,8 +58,8 @@ void Population::setup() {
     fflush(Statusfp);
   }
   strain = new Strain [strains];
-  for (int s = 0; s < strains; s++) {
-    strain[s].setup(s, this, mutation_prob[s]);
+  for (int is = 0; is < strains; is++) {
+    strain[is].setup(is, this, mutation_prob[is]);
   }
   read_profiles(profilefile);
   read_population();
@@ -62,6 +68,20 @@ void Population::setup() {
     fflush(Statusfp);
   }
   AVs.setup();
+  char s[80];
+  
+  for(int is = 0; is< strains; is++){
+    sprintf(s,"residual_immunity_ages[%d]",is);
+    if(does_param_exist(s)){
+      residual_immunity = new AgeMap("Residual Immunity");
+      stringstream ss; 
+      ss << "residual_immunity[" << is<< "]";
+      residual_immunity->read_from_input(ss.str());
+      residual_immunity->print();
+      apply_residual_immunity(strain[is]);
+    }
+  }
+  cout << "\n";
 }
 
 void Population::read_population() {
@@ -146,10 +166,18 @@ void Population::reset(int run) {
 void Population::update(int day) {
   //if(AV.number_antivirals > 0)
   //  AV.update(strains,pop,pop_size,day); // This allows me to put a set of medication for each population
-                                      // This will be the place the "manager" can allocate AVs
+  // This will be the place the "manager" can allocate AVs
+  int imm = 0;
   for (int p = 0; p < pop_size; p++){
+    if(pop[p].get_strain_status(0)=='M'){
+      imm++;
+    }
     pop[p].update(day);
   }
+  if(DEBUG == 1){
+    cout << "residual immunity on day " << day << " is " << imm << "\n";
+  }
+  
   for (int s = 0; s < strains; s++) {
     strain[s].update(day);
   }
@@ -217,3 +245,21 @@ void Population::population_quality_control() {
     fflush(Statusfp);
   }
 }
+
+void Population::apply_residual_immunity(Strain strain){
+  int numimmune = 0;
+  for( int ip = 0; ip < pop_size; ip++){
+    Person* p = &pop[ip];
+    int age = p->get_age();
+    int value = residual_immunity->find_value(age);
+    //cout << "\n Age = "<<age << " Value = "<<value;
+    if(RANDOM()*100. < value){
+      p->get_health()->immunize(&strain);
+      numimmune++;
+    }
+  }
+  
+  cout << "\nNumber of People made immune from residual immunity " << numimmune;
+}
+
+      

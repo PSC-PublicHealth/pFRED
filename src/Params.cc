@@ -262,6 +262,56 @@ int get_param(char *s, char *p) {
   return 0;
 }
 
+int get_param_vector(char *s, vector < int > &p){
+  char str[1024];
+  int n;
+  char *pch;
+  int v;
+  get_param(s,str);
+  pch = strtok(str," ");
+  if(sscanf(pch,"%d",&n) == 1){
+    for (int i=0;i<n;i++){
+      pch = strtok(NULL," ");
+      if(pch == NULL) {
+        printf("Help! bad param vector: %s\n", s);
+        abort();
+      }
+      sscanf(pch,"%d",&v);
+      p.push_back(v);
+    }
+  }
+  else {
+    printf("Incorrect format for vector %s\n",s);
+    abort();
+  }
+  return n;
+}
+
+int get_param_vector(char *s, vector < double > &p){
+  char str[1024];
+  int n;
+  char *pch;
+  double v;
+  get_param(s, str);
+  pch = strtok(str," ");
+  if (sscanf(pch, "%d", &n) == 1) {
+    for (int i = 0; i < n; i++) {
+      pch = strtok (NULL, " ");
+      if (pch == NULL) {
+        printf("Help! bad param vector: %s\n", s);
+        abort();
+      }
+      sscanf(pch, "%lf", &v);
+      p.push_back(v);
+    }
+  }
+  else {
+    printf("Incorrect format for vector %s\n",s);
+    abort();
+  }
+  return n;
+}
+
 int get_param_vector(char *s, double *p) {
   char str[1024];
   int n;

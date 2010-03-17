@@ -35,12 +35,18 @@ public:
   void become_exposed(Infection *inf);
   void become_infectious(Strain * strain);
   void recover(Strain * strain);
+  void immunize(Strain* strain);
   int is_symptomatic();
   inline char get_strain_status(int strain) {
-    if (infection[strain] == NULL)
-      return 'S';
-    else 
-      return infection[strain]->get_strain_status();
+    if(immunity[strain] == 1){
+      return 'M';
+    }
+    else{
+      if (infection[strain] == NULL)
+	return 'S';
+      else 
+	return infection[strain]->get_strain_status();
+    }
   }
 
   int add_infectee(int strain);
@@ -83,6 +89,7 @@ private:
   Person * self;
   int strains;
   Infection ** infection;
+  vector < int > immunity;
   // help!!!
   int number_av_taken;
   Antivirals * AVs;

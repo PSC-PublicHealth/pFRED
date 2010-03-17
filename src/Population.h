@@ -16,6 +16,7 @@
 class Person;
 class Strain;
 class Antivirals;
+class AgeMap;
 
 class Population {
 public:
@@ -33,6 +34,9 @@ public:
   int get_pop_size() { return pop_size; }
   Antivirals *get_AVs() { return &AVs; }
   
+  // Modifiers on the entire pop;
+  void apply_residual_immunity(Strain strain);
+  
 private:
   char popfile[80];
   char profilefile[80];
@@ -43,6 +47,7 @@ private:
   int strains;
   double **mutation_prob;
   void read_population();
+  AgeMap* residual_immunity;
 };
 
 #endif // _FRED_POPULATION_H

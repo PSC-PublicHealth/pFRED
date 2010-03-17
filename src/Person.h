@@ -75,7 +75,7 @@ public:
   int add_infectee(int strain);
   int is_new_case(int day, int strain);
 
-  //Health *get_health() { return health;}
+  Health *get_health() { return health;}
   
 
 private:
