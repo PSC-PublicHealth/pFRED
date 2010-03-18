@@ -200,6 +200,15 @@ void Population::print() {
   }
 }
 
+void Population::end_of_run() {
+  for (int p = 0; p < pop_size; p++) {
+    for (int s = 0; s < strains; s++) {
+      if (pop[p].get_strain_status(s) != 'R')
+	pop[p].print(s);
+    }
+  }
+}
+
 Strain * Population::get_strain(int s) {
   return &strain[s];
 }

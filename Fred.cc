@@ -109,7 +109,7 @@ void run_sim(int run) {
     time(&clock);
     fprintf(Statusfp, "%s", ctime(&clock));
   }
-  // Pop.print();
+  Pop.end_of_run();
   fclose(Outfp);
   fclose(Tracefp);
 }
