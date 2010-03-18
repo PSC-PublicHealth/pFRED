@@ -250,7 +250,7 @@ void Place::spread_infection(int day, int s) {
 	       infectee->get_id(), r, pos, S[s]);
       }
       if (strain->attempt_infection(infector, infectee, this, day)) {
-	if (Verbose >= 1) {
+	if (Verbose > 1) {
 	  if (infector->get_exposure_date(s) == 0) {
 	    printf("SEED infection day %i from %d to %d\n",
 		   day, infector->get_id(),infectee->get_id());

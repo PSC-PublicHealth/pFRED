@@ -162,7 +162,7 @@ void Health::update_antivirals(int day) {
 void Health::become_exposed(Infection * infection_ptr) {
   Strain * strain = infection_ptr->get_strain();
   int strain_id = strain->get_id();
-  if (Verbose > 0) {
+  if (Verbose > 1) {
     if (infection_ptr->get_infected_place_id() == -1)
       fprintf(Statusfp, "EXPOSED_DUMMY person %d to strain %d\n", self->get_id(), strain_id);
     else
