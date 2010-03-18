@@ -17,7 +17,6 @@ my $line = `grep "^$x" params.def`;
 die "$param not a valid parameter\n" if not $line;
 
 # set locking semaphore
-
 my $SEMAPHORE = ".params.lck";
 open(S, ">$SEMAPHORE") || die "ch failed to obtain semaphore: ($!)\n";
 flock(S, LOCK_EX);

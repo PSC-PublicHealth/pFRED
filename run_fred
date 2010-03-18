@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use Env;
+use Fcntl qw(:flock);
 
 # use DBI;
 
@@ -10,35 +11,50 @@ use Env;
 # Created: Jan 12, 2010
 # Updated: Mar 4, 2010
 
+my $fred_home = $ENV{FRED_HOME};
+die "Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $fred_home;
+chdir $fred_home or die "Can't change to FRED directory $fred_home\n";
+
+my $fred_results = $ENV{FRED_RESULTS};
+die "Please set environmental variable FRED_RESULTS to location of FRED RESULTS directory\n" if not $fred_results;
+
+# set locking semaphore
+my $SEMAPHORE = ".results.lck";
+open(SEM, ">$SEMAPHORE") || die "run_fred failed to obtain semaphore: ($!)\n";
+flock(SEM, LOCK_EX);
+
 # create RESULTS directory if needed
-if (not -d "RESULTS") {
-  mkdir "RESULTS" or die "Can't create RESULTS directory\n";
+if (not -d $fred_results) {
+  mkdir "$fred_results" or (close SEM and die "Can't create RESULTS directory\n");
 }
 
 # create RESULTS/EXP directory if needed
-if (not -d "RESULTS/EXP") {
-  mkdir "RESULTS/EXP" or die "Can't create RESULTS/EXP directory\n";
+if (not -d "$fred_results/EXP") {
+  mkdir "$fred_results/EXP" or (close SEM and die "Can't create $fred_results/EXP directory\n");
 }
 
-# create RESULTS/ID file if needed
-if (not -e "RESULTS/ID") {
-  open FH, ">RESULTS/ID" or die "Can't create file RESULTS/ID\n";
+# create $fred_results/ID file if needed
+if (not -e "$fred_results/ID") {
+  open FH, ">$fred_results/ID" or (close SEM and die "Can't create file $fred_results/ID\n");
   print FH "1\n";
   close FH;
 }
 
 # get index for this experiment
-open FH, "RESULTS/ID" or die "Can't read RESULTS/ID\n";
+open FH, "$fred_results/ID" or (close SEM and die "Can't read $fred_results/ID\n");
 my $id = <FH>;
 chomp $id;
 # print "id = |$id|\n";
 close FH;
 my $new_id = $id + 1;
-open FH, ">RESULTS/ID";
+open FH, ">$fred_results/ID";
 print FH "$new_id\n";
 close FH;
 
-my $dir = "RESULTS/EXP/$id";
+# release semaphore
+close SEM;
+
+my $dir = "$fred_results/EXP/$id";
 mkdir $dir or die "Can't make directory $dir\n";
 
 my $meta = "$dir/META";
@@ -51,38 +67,36 @@ my $out = "$data/OUT";
 mkdir $out or die "Can't make directory $out\n";
 
 my $datefile = "$meta/DATE";
-system "date > $datefile"; 
+`date > $datefile`; 
 
 my $userfile = "$meta/USER";
 my $user = $ENV{USER};
-system "echo $user > $userfile";
+`echo $user > $userfile`;
 
-system "hostname > $meta/WHERE";
+`hostname > $meta/WHERE`;
 
 my ($params) = @ARGV;
 $params = "params" if not $params;
 
-system "cp $params params_tmp.$id";
+`cp $params params_tmp.$id`;
 $params = "params_tmp.$id";
 
-system "./ch outfile $out/out $params > /dev/null";
-system "./ch tracefile $out/trace $params > /dev/null";
+`./ch outfile $out/out $params > /dev/null`;
+`./ch tracefile $out/trace $params > /dev/null`;
 
 my $cmd = "./FRED @ARGV";
 $cmd =~ s/ *$//;
 # print "|$cmd|\n";
 
 my $cmdfile = "$meta/COMMAND";
-system "echo $cmd > $cmdfile"; 
+`echo $cmd > $cmdfile`; 
 
 my $version = "$meta/VERSION";
 mkdir $version or die "Can't make directory $version\n";
-system "cp -p Makefile profiles.txt *.cc *.h params* p ch go report test_* LICENSE sim.plt $version";
+`cp -p Makefile profiles.txt *.cc *.h params* p ch go report test_* LICENSE sim.plt $version`;
 
 my $logfile = "$meta/LOG";
-$cmd = "./fred $params > $logfile";
-
-system "$cmd";
+system "./fred $params | tee -a $logfile";
 unlink $params;
 
 print "$id\n";
