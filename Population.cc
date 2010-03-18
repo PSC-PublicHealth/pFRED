@@ -78,10 +78,9 @@ void Population::setup() {
       ss << "residual_immunity[" << is<< "]";
       residual_immunity->read_from_input(ss.str());
       residual_immunity->print();
-      apply_residual_immunity(strain[is]);
+      
     }
   }
-  cout << "\n";
 }
 
 void Population::read_population() {
@@ -154,6 +153,10 @@ void Population::reset(int run) {
   for (int p = 0; p < pop_size; p++){
     pop[p].reset();
   }
+  
+  for(int is =0;is < strains; is++){
+    apply_residual_immunity(strain[is]);
+  }
 
   AVs.reset();
 
@@ -174,7 +177,7 @@ void Population::update(int day) {
     }
     pop[p].update(day);
   }
-  if(DEBUG == 1){
+  if(Debug == 1){
     cout << "residual immunity on day " << day << " is " << imm << "\n";
   }
   
