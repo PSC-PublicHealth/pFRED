@@ -154,10 +154,11 @@ void Population::reset(int run) {
     pop[p].reset();
   }
   
-  for(int is =0;is < strains; is++){
-    apply_residual_immunity(strain[is]);
+  if(residual_immunity != NULL){
+    for(int is =0;is < strains; is++){
+      apply_residual_immunity(strain[is]);
+    }
   }
-
   AVs.reset();
 
   if (Verbose) {
