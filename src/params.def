@@ -14,27 +14,27 @@ profiles = profiles.txt
 outfile = OUT/out
 tracefile = OUT/trace
 
+# parameters for strain 0
+primary_cases_file[0] = primary_case_schedule-0.txt
 trans[0] = 1.0
 symp[0] = 0.67
-index_cases[0] = 100
 days_latent[0] = 3       0.0 0.8 1.0
 days_incubating[0] = 4   0.0 0.3 0.8 1.0
 days_asymp[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
 days_symp[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
 immunity_loss_rate[0] = 0
 symp_infectivity[0] = 1.0
-asymp_infectivity[0] = 0.1
+asymp_infectivity[0] = 0.5
 prob_stay_home = 0.5
 mutation_prob = 1 0.0
 
-household_contacts[0] = 0.38
-neighborhood_contacts[0] = 145
-community_contacts[0] = 1
-school_contacts[0] = 2
-classroom_contacts[0] = 15
-workplace_contacts[0] = 1
-office_contacts[0] = 8.5
-hospital_contacts[0] = 0
+household_contacts[0] = 0.30
+neighborhood_contacts[0] = 83
+community_contacts[0] = 0
+school_contacts[0] = 4.2
+classroom_contacts[0] = 12.2
+workplace_contacts[0] = 2.1
+office_contacts[0] = 3.1
 
 # groups = children adults
 household_prob[0] = 4 0.6 0.3 0.3 0.4

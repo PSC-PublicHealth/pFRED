@@ -84,10 +84,10 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   get_param(s, &immunity_loss_rate);
 
   get_param((char *) "prob_stay_home", &Prob_stay_home);
-  spread = new Spread(this);
 
   mutation_prob = mut_prob;
   population = pop;
+  spread = new Spread(this);
 
   printf("Strain setup finished\n"); fflush(stdout);
   if (Verbose) print();
@@ -212,20 +212,12 @@ int Strain::get_symptoms() {
   return (RANDOM() < prob_symptomatic);
 }
 
-int Strain::get_index_cases() {
-  return spread->get_index_cases();
-}
-
 double Strain::get_attack_rate() {
   return spread->get_attack_rate();
 }
 
-void Strain::start_outbreak(Person *pop, int pop_size) {
-  spread->start_outbreak(pop, pop_size);
-}
-
-void Strain::update_stats(Person *pop, int pop_size, int day) {
-  spread->update_stats(pop, pop_size, day);
+void Strain::update_stats(int day) {
+  spread->update_stats(day);
 }
 
 void Strain::print_stats(int day) {

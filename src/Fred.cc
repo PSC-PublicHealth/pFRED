@@ -96,7 +96,6 @@ void run_sim(int run) {
     // start on a random day of the week
     Start_day = IRAND(0, 6);
   }
-  Pop.start_outbreak();
   for (int day = 0; day < Days; day++) {
     if (day == Reseed_day) {
       printf("************** reseed day = %d\n", day); fflush(stdout);

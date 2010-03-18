@@ -29,81 +29,51 @@ Spread::Spread(Strain *str) {
   char param_name[80];
 
   FILE *fp;
-  int day, new_cases;
+  int day, cases;
 
   strain = str;
 
-  sprintf(param_name, "new_cases_file[%d]", strain->get_id());
-
-  //First see if the new_cases_file parameter exists
-  if(does_param_exist(param_name)) {
-    get_param(param_name, filename);
-
-    fp = fopen(filename, "r");
-    if (fp != NULL) {
-      while (fscanf(fp, "%i %i", &day, &new_cases) == 2) {
-        new_cases_map.insert(pair<int, int>(day, new_cases));
-      }
-      fclose(fp);
-    } else {
-      printf("Help!  Can't read new_cases_file %s\n", filename);
-      abort();
+  // Read primary_cases file that indicates the number of externally infections
+  // occur each day.
+  // Note: infectees are chosen at random, and previously infected individuals
+  // are not affected, so the number of new cases may be less than specified in
+  // the file.
+  sprintf(param_name, "primary_cases_file[%d]", strain->get_id());
+  get_param(param_name, filename);
+  fp = fopen(filename, "r");
+  if (fp != NULL) {
+    while (fscanf(fp, "%d %d", &day, &cases) == 2) {
+      primary_cases_map.insert(pair<int, int>(day, cases));
     }
-
+    fclose(fp);
   } else {
-    //Just use the old parameter index_cases[%d] to create the map
-    int temp_indx_cases;
-
-    sprintf(param_name, "index_cases[%d]", strain->get_id());
-    get_param(param_name, &temp_indx_cases);
-
-    //insert the index_cases in the 0 position in the map
-    new_cases_map.insert(pair<int, int>(0, temp_indx_cases));
-    //insert 0 in the 1 position in the map to indicate that no more
-    //new cases should be added
-    new_cases_map.insert(pair<int, int>(1, 0));
+    printf("Help!  Can't read primary_cases_file %s\n", filename);
+    abort();
   }
+  map<int,int>::iterator primary_cases_map_itr;
 
-  map<int,int>::iterator new_cases_map_itr;
-
-  //See if there are index cases (i.e. people exposed on day 0)
-  new_cases_map_itr = new_cases_map.find(0);
-  if(new_cases_map_itr != new_cases_map.end()) {
-	  new_cases = index_cases = new_cases_map_itr -> second;
+  // set number of primary cases per day
+  primary_cases_map_itr = primary_cases_map.find(0);
+  if (primary_cases_map_itr != primary_cases_map.end()) {
+    primary_cases_per_day = primary_cases_map_itr -> second;
   }
   else {
-	  new_cases = index_cases = 0;
+    primary_cases_per_day = 0;
   }
 }
 
 void Spread::reset() {
   exposed.clear();
   infectious.clear();
-  not_yet_exposed.clear();
   attack_rate = 0.0;
   S = E = I = I_s = R = 0;
   total_incidents = 0;
 }
 
-void Spread::start_outbreak(Person *pop, int pop_size) {
-
-  for(int i = 0; i < pop_size; i++) {
-	  not_yet_exposed.push_back(&pop[i]);
-  }
-
-  // shuffle the not_yet_exposed vector
-  for(int i = 0; i < pop_size; i++) {
-	  int n = IRAND(i, pop_size - 1);
-
-	  //switch current value with the random one
-	  Person * hold = not_yet_exposed[i];
-	  not_yet_exposed[i] = not_yet_exposed[n];
-	  not_yet_exposed[n] = hold;
-  }
-}
-
-void Spread::update_stats(Person *pop, int pop_size, int day) {
+void Spread::update_stats(int day) {
   int strain_id = strain->get_id();
+  Person *pop = strain->get_population()->get_pop();
+  int pop_size = strain->get_population()->get_pop_size();
   int incidents = 0;
   S = E = I = I_s = R = 0;
   for (int p = 0; p < pop_size; p++) {
@@ -117,7 +87,6 @@ void Spread::update_stats(Person *pop, int pop_size, int day) {
   }
   total_incidents += incidents;
   attack_rate = (100.0*total_incidents)/pop_size;
-  // attack_rate = (100.0*(E+I+R))/pop_size;
 }
 
 void Spread::print_stats(int day) {
@@ -155,41 +124,30 @@ void Spread::update(int day) {
   set <int> places;
   set<Person *>::iterator itr;
   set<int>::iterator it;
+  Person *pop = strain->get_population()->get_pop();
+  int pop_size = strain->get_population()->get_pop_size();
 
-  /*
-   * Check to see if there are any new cases that we are simply force adding
-   */
-  // See if there is a change in the number of new cases from the new_cases_map
-  map<int,int>::iterator new_cases_map_itr;
-  new_cases_map_itr = new_cases_map.find(day);
-  if(new_cases_map_itr != new_cases_map.end()) {
-	  new_cases = new_cases_map_itr -> second;
+  // See if there are changes to primary_cases_per_day from primary_cases_map
+  map<int,int>::iterator primary_cases_map_itr;
+  primary_cases_map_itr = primary_cases_map.find(day);
+  if (primary_cases_map_itr != primary_cases_map.end()) {
+    primary_cases_per_day = primary_cases_map_itr -> second;
   }
 
-  // Force expose the new cases as long as there are still people susceptible
-  int i = 0;
-  while(i < new_cases && !not_yet_exposed.empty())
-  {
-	bool exposed = false;
-	while(!exposed && !not_yet_exposed.empty())
-    {
-      Person * temp = not_yet_exposed.back();
-
-	  if((temp -> get_strain_status(strain -> get_id())) == 'S')
-	  {
-	    // New infections are a special case - we don't initialize using
-	    // Strain::attempt_infection() meaning we don't roll the dice to see if
-	    // we'll expose the person.  We just do it.
-	    Person * temp = not_yet_exposed.back();
-	    Infection * infection = new Infection(strain, NULL, temp, NULL, day);
-	    temp->become_exposed(infection);
-	    exposed = true;
-	  }
-
-	  not_yet_exposed.pop_back();
-	}
-
-	i++;
+  // Attempt to infect primary_cases_per_day.
+  // This represents external sources of infection.
+  // Note: infectees are chosen at random, and previously infected individuals
+  // are not affected, so the number of new cases may be less than specified in
+  // the file.
+  for (int i = 0; i < primary_cases_per_day; i++) {
+    int n = IRAND(0, pop_size-1);
+    if (pop[n].get_strain_status(strain->get_id()) == 'S') {
+      // primary infections are a special case that bypasses
+      // Strain::attempt_infection(), meaning we don't roll the dice to see if 
+      // we'll expose the person.  We just do it.
+      Infection * infection = new Infection(strain, NULL, &pop[n], NULL, 0);
+      pop[n].become_exposed(infection);
+    }
   }
 
   // get list of infectious locations:

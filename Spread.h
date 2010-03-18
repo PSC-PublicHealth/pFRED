@@ -25,26 +25,22 @@ class Spread {
 public:
   Spread(Strain * str);
   void reset();
-  void start_outbreak(Person *pop, int pop_size);
-  void update_stats(Person *pop, int pop_size, int day);
+  void update_stats(int day);
   void print_stats(int day);
   void insert_into_exposed_list(Person * person);
   void insert_into_infectious_list(Person * person);
   void remove_from_exposed_list(Person * person);
   void remove_from_infectious_list(Person * person);
-  int get_index_cases() { return index_cases; }
   double get_attack_rate() { return attack_rate; }
   void update(int day);
 
 private:
   Strain * strain;
-  int index_cases;
   double attack_rate;
   set <Person *> exposed;
   set <Person *> infectious;
-  vector <Person *> not_yet_exposed;
-  map <int, int> new_cases_map;
-  int new_cases;
+  map <int, int> primary_cases_map;
+  int primary_cases_per_day;
   int S;
   int E;
   int I;

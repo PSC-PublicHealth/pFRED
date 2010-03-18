@@ -25,7 +25,6 @@ public:
   void population_quality_control();
   void print();
   void end_of_run();
-  void start_outbreak();
   void reset(int run);
   void update(int day);
   void report(int day);

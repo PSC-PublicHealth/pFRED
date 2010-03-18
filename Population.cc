@@ -133,12 +133,6 @@ void Population::read_population() {
   }
 }
 
-void Population::start_outbreak() {
-  for (int s = 0; s < strains; s++) {
-    strain[s].start_outbreak(pop, pop_size);
-  }
-}
-
 void Population::reset(int run) {
   if (Verbose) {
     fprintf(Statusfp, "reset population entered for run %d\n", run);
@@ -189,7 +183,7 @@ void Population::update(int day) {
 
 void Population::report(int day) {
   for (int s = 0; s < strains; s++) {
-    strain[s].update_stats(pop, pop_size, day);
+    strain[s].update_stats(day);
     strain[s].print_stats(day);
   }
 }

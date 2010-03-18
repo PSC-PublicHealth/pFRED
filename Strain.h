@@ -48,7 +48,6 @@ public:
   int get_id() { return id; }
   double get_transmissibility() { return transmissibility; }
   double get_prob_symptomatic() { return prob_symptomatic; }
-  int get_index_cases();
   double get_attack_rate();
   
   // Draws from this strain's mutation probability distribution, and returns
@@ -59,12 +58,12 @@ public:
   void insert_into_infectious_list(Person *person);
   void remove_from_exposed_list(Person *person);
   void remove_from_infectious_list(Person *person);
-  void start_outbreak(Person *pop, int pop_size);
-  void update_stats(Person *pop, int pop_size, int day);
+  void update_stats(int day);
   void print_stats(int day);
 
   static double get_prob_stay_home();
   static void get_strain_parameters();
+  Population * get_population() { return population; }
 
 private:
   int id;
