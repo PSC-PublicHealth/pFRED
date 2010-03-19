@@ -234,15 +234,15 @@ void Population::population_quality_control() {
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int p = 0; p < pop_size; p++) {
       int a = pop[p].get_age();
-      int n = a / 5;
+      int n = a / 10;
       if (n < 20) { count[n]++; }
       else { count[19]++; }
       total++;
     }
     fprintf(Statusfp, "\nAge distribution: %d people\n", total);
-    for (int c = 0; c < 20; c++) {
-      fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
-	     (c+1)*5, count[c], (100.0*count[c])/total);
+    for (int c = 0; c < 10; c++) {
+      fprintf(Statusfp, "age %2d to %d: %6d (%.2f%%)\n",
+	      10*c, 10*(c+1)-1, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
   }
