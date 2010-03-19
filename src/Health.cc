@@ -35,6 +35,7 @@ Health::Health (Person * person) {
 void Health::reset() {
   number_av_taken=0;
   for (int strain = 0; strain < strains; strain++) {
+    immunity[strain] = 0;
     become_susceptible(strain);
   }
 }
