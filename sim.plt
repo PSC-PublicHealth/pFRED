@@ -1,4 +1,4 @@
-set title "FRED: DC Model"
+set title "FRED: Allegheny County Model"
 set term aqua
 set grid
 set yrange [0:*]
