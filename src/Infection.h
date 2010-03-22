@@ -17,6 +17,7 @@ class Person;
 class Place;
 class Strain;
 class Antiviral;
+class Health;
 
 class Infection {
 public:
@@ -52,10 +53,12 @@ public:
   //Modifiers
   void modify_susceptibility(double multp){ susceptibility*=multp; }
   void modify_infectivity(double multp){ infectivity_multp = multp; }
+  
   // Current day is needed to modify infectious/symptomatic periods,
   // because we can't cause this infection to recover in the past.
   void modify_asymptomatic_period(double multp, int cur_day);
   void modify_symptomatic_period(double multp, int cur_day);
+  
   // Modifying infectious period is equivalent to modifying asymptomatic and
   // symptomatic period by the same factor (in that order).
   void modify_infectious_period(double multp, int cur_day);
@@ -86,6 +89,7 @@ private:
   Strain * strain;
   char strain_status;
   int latent_period;
+  int infectious_period;
   int asymp_period;
   int symp_period;
   int exposure_date;

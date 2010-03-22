@@ -20,126 +20,117 @@ using namespace std;
 #include "Health.h"
 extern int Strains;
 
-int Antivirals::prophylaxis_start_date = -1;
-
 Antivirals::Antivirals(void){
-}
-
-void Antivirals::setup(void){
   char s[80];
   int nav;
   
   sprintf(s,"number_antivirals");
-  //get_param(s, &nav);
   get_param((char *) "number_antivirals",&nav);
-  //AVs = new (nothrow) vector < Antiviral > [nav];
-  //if(AVs == NULL){
-  //  printf("Help! AVs vector allocation failure\n");
-  //  abort();
-  //}
-
- 
   
-  if(nav !=0){
-    sprintf(s,"av_percent_symptomatics_given");
-    get_param(s,&percent_symptomatics_given);
-
-    sprintf(s,"av_prophylaxis_start_day");
-    prophylaxis_start_date = -1;
+  for(int iav=0;iav<nav;iav++){
+    int Strain, CorLength, InitSt, TotAvail, PerDay;
+    double RedInf, RedSusc, RedASympPer, RedSympPer, ProbSymp, Eff, PerSympt;
+    int StrtDay, Proph;
+    
+    // Check for deprecated params
+    sprintf(s,"av_reduce_infectious_period[%d]",iav);
     if (does_param_exist(s)) {
-      get_param(s, &prophylaxis_start_date);
+      printf("***** Found deprecated parameter ***** %s\n"
+	     "New parameters are av_reduce_asymptomatic_period and "
+	     "av_reduce_symptomatic_period \n"
+	     "Aborting\n", s);
+      abort();
     }
-
-
-
-    for(int iav=0;iav<nav;iav++){
-      int sr, cl, st;
-      double ri, rs, reduce_asymp_period, reduce_symp_period, reduce_prob_symptoms, eff;
-        
-      // Check for deprecated params
-      sprintf(s,"av_reduce_infectious_period[%d]",iav);
-      if (does_param_exist(s)) {
-	printf("***** Found deprecated parameter ***** %s\n"
-	       "New parameters are av_reduce_asymptomatic_period and "
-	       "av_reduce_symptomatic_period \n"
-	       "Aborting\n", s);
-	abort();
-      }
-
-      sprintf(s,"av_strain[%d]",iav);
-      get_param(s,&sr);
-      
-      sprintf(s,"av_initial_stock[%d]",iav);
-      get_param(s,&st);
-      
-      sprintf(s,"av_percent_resistance[%d]",iav);
-      get_param(s,&eff);
-      
-      sprintf(s,"av_course_length[%d]",iav);
-      get_param(s,&cl);
-
-      sprintf(s,"av_reduce_infectivity[%d]",iav);
-      get_param(s,&ri);
-      
-      sprintf(s,"av_reduce_susceptibility[%d]",iav);
-      get_param(s,&rs);
-      
-      sprintf(s,"av_reduce_symptomatic_period[%d]",iav);
-      get_param(s, &reduce_symp_period);
-
-      sprintf(s,"av_reduce_asymptomatic_period[%d]",iav);
-      get_param(s, &reduce_asymp_period);
-
-      sprintf(s,"av_prob_symptoms[%d]",iav);
-      get_param(s, &reduce_prob_symptoms);
-
-      sprintf(s, "av_start_day[%d]", iav);
-      int n;
-      get_param(s, &n);
-      double* av_start_day = new double [n];
-      int max_av_start_day = get_param_vector(s, av_start_day) -1;
-      
-      AVs.push_back(new Antiviral(sr,cl,ri,rs, reduce_asymp_period, reduce_symp_period,
-				  reduce_prob_symptoms, st, eff, av_start_day, max_av_start_day));
-      AVs[AVs.size() - 1]->print();
-    }
-    quality_control(Strains);
+    
+    sprintf(s,"av_strain[%d]",iav);
+    get_param(s,&Strain);
+    
+    sprintf(s,"av_initial_stock[%d]",iav);
+    get_param(s,&InitSt);
+    
+    sprintf(s,"av_total_avail[%d]",iav);
+    get_param(s,&TotAvail);
+    
+    sprintf(s,"av_additional_per_day[%d]",iav);
+    get_param(s,&PerDay);
+    
+    sprintf(s,"av_percent_resistance[%d]",iav);
+    get_param(s,&Eff);
+    
+    sprintf(s,"av_course_length[%d]",iav);
+    get_param(s,&CorLength);
+    
+    sprintf(s,"av_reduce_infectivity[%d]",iav);
+    get_param(s,&RedInf);
+    
+    sprintf(s,"av_reduce_susceptibility[%d]",iav);
+    get_param(s,&RedSusc);
+    
+    sprintf(s,"av_reduce_symptomatic_period[%d]",iav);
+    get_param(s, &RedSympPer);
+    
+    sprintf(s,"av_reduce_asymptomatic_period[%d]",iav);
+    get_param(s, &RedASympPer);
+    
+    sprintf(s,"av_prob_symptoms[%d]",iav);
+    get_param(s, &ProbSymp);
+    
+    sprintf(s, "av_start_day[%d]", iav);
+    get_param(s, &StrtDay);
+    
+    sprintf(s, "av_prophylaxis[%d]", iav);
+    get_param(s, &Proph);
+    
+    sprintf(s, "av_percent_symptomatics[%d]",iav);
+    get_param(s, &PerSympt);
+    
+    sprintf(s, "av_course_start_day[%d]", iav);
+    int n;
+    get_param(s, &n);
+    double* AVCourseSt= new double [n];
+    int MaxAVCourseSt = get_param_vector(s, AVCourseSt) -1;
+    
+    AVs.push_back(new Antiviral(Strain, CorLength, RedInf, 
+				RedSusc, RedASympPer, RedSympPer,
+				ProbSymp, InitSt, TotAvail, PerDay, 
+				Eff, AVCourseSt, MaxAVCourseSt,
+				StrtDay, Proph, PerSympt) );
+    
   }
+  print();
+  quality_control(Strains);
 }
 
-//void Antivirals::update(Person *pop, int pop_size, int day){
-
-int Antivirals::give_which_AV(int strain){
+vector < Antiviral* > Antivirals::find_applicable_AVs(int strain){
+  vector <Antiviral* > avs;
   for(unsigned int iav=0;iav< AVs.size();iav++){
-    if(AVs[iav]->get_strain() == strain && AVs[iav]->get_stock() != 0){
-      return iav;
+    if(AVs[iav]->get_strain() == strain && AVs[iav]->get_current_stock() != 0){
+      avs.push_back(AVs[iav]);
     }
   }
-  return -1;
+  return avs;
 }
 
-  // Based on the percentage of persons 
+vector < Antiviral* > Antivirals::prophylaxis_AVs(void){
+  vector <Antiviral*> avs;
+  for(unsigned int iav=0;iav< AVs.size();iav++){
+    if(AVs[iav]->is_prophylaxis()){
+      avs.push_back(AVs[iav]);
+    }
+  }
+  return avs;
+}
+
 void Antivirals::print(void){
   cout << "\n Antivirals Printout";
   cout << "\n There are "<< AVs.size() << " antivirals to choose from";
-  cout << "\n These will be given to \t\t"<< percent_symptomatics_given;
   for(unsigned int iav=0;iav<AVs.size(); iav++){
     AVs[iav]->print();
   }
   cout << "\n\n";
 }
 
-void Antivirals::reset(void){
-  for(unsigned int iav = 0; iav < AVs.size();iav++)
-    AVs[iav]->reset();
-}
-
-void Antivirals::quality_control(int nstrains){
-  
-  if(percent_symptomatics_given < 0 || percent_symptomatics_given > 100){
-    cout << "\nHelp! AVs percent symptomatics_given is wrong\n";
-    exit (1);
-  }
+void Antivirals::quality_control(int nstrains){  
   for(unsigned int iav = 0;iav < AVs.size();iav++) {
     if (Verbose > 1) {
       AVs[iav]->print();
@@ -151,3 +142,20 @@ void Antivirals::quality_control(int nstrains){
   }
 }
 
+void Antivirals::update(int day){
+  for(unsigned int iav =0;iav < AVs.size(); iav++)
+    AVs[iav]->update(day);
+}
+
+void Antivirals::reset(void){
+  for(unsigned int iav = 0; iav < AVs.size(); iav++)
+    AVs[iav]->reset();
+}
+
+void Antivirals::print_stocks(void){
+  for(unsigned int iav = 0; iav < AVs.size(); iav++){
+    cout <<"\n Antiviral #" << iav;
+    AVs[iav]->print_stocks();
+    cout <<"\n";
+  }
+}

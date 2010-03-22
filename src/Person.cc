@@ -18,17 +18,21 @@
 #include "Perceptions.h"
 #include "Place.h"
 #include "Strain.h"
+#include "Population.h"
+#include "VaccineStatus.h"
+#include "AV_Status.h"
 
 void Person::setup(int index, int age, char sex, int marital, int occ,
 		   int profession, Place *house, Place *neigh,
 		   Place *school, Place *classroom, Place *work,
-		   Place *office, int profile) 
+		   Place *office, int profile, Population* Pop) 
 {
   id = index;
   demographics = new Demographics(age,sex,'U',marital,profession);
   health = new Health(this);
   behavior = new Behavior(this,house,neigh,school,classroom,work,office,profile);
   perceptions = new Perceptions(this);
+  pop = Pop;
 }
   
 void Person::print(int strain) {
@@ -44,12 +48,19 @@ void Person::print(int strain) {
 	  health->get_infected_place_type(strain), health->get_infected_place(strain));
   fprintf(Tracefp, "infector %d ", health->get_infector(strain));
   fprintf(Tracefp, "infectees %d ", health->get_infectees(strain));
+  
+
   fprintf(Tracefp, "antivirals: %2d ",health->get_number_av_taken());
   for(int i=0;i<health->get_number_av_taken();i++)
-    fprintf(Tracefp," %2d",health->get_antiviral_start_date(i));
-  
+    fprintf(Tracefp," %2d",health->get_av_stat(i)->get_av_start_day());
+
+
+  // fprintf(Tracefp, "vaccines: %2d", health->get_number_vaccines_taken());
+//   for(int i=0;i<health->get_number_vaccines_taken();i++)
+//     fprintf(Tracefp," %2d %2d %2d",health->get_vaccine_stat(i)->get_vaccination_day(),
+// 	    health->get_vaccine_stat(i)->is_effective(),health->get_vaccine_stat(i)->get_current_dose());
   fprintf(Tracefp,"\n");
-  fflush(Tracefp);
+//   fflush(Tracefp);
 }
 
 void Person::print_out(int strain) {
@@ -129,10 +140,6 @@ void Person::behave(int day) {}
 
 int Person::is_symptomatic() {
   return health->is_symptomatic();
-}
-
-const Antiviral* Person::get_av(int strain, int day) {
-  return health->get_av(strain, day);
 }
 
 int Person::get_age() {

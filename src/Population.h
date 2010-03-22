@@ -12,10 +12,14 @@
 #ifndef _FRED_POPULATION_H
 #define _FRED_POPULATION_H
 #include "Antivirals.h"
+//#include "Manager.h"
+//#include "AV_Manager.h"
 
 class Person;
 class Strain;
 class Antivirals;
+class AV_Manager;
+class Vaccine_Manager;
 class AgeMap;
 
 class Population {
@@ -32,8 +36,10 @@ public:
   int get_strains() { return strains; }
   Person *get_pop() { return pop; }
   int get_pop_size() { return pop_size; }
-  Antivirals *get_AVs() { return &AVs; }
-  
+  //Mitigation Managers
+  AV_Manager *get_av_manager(){ return av_manager; }
+  Vaccine_Manager *get_vaccine_manager() { return vacc_manager;}
+
   // Modifiers on the entire pop;
   void apply_residual_immunity(Strain strain);
   
@@ -43,7 +49,12 @@ private:
   Person *pop;
   int pop_size;
   Strain *strain;
-  Antivirals AVs;
+  
+  //Mitigation Managers
+  AV_Manager *av_manager;
+  Vaccine_Manager *vacc_manager;
+  //double vaccine_compliance;  // to be replaced by vaccine_manager
+
   int strains;
   double **mutation_prob;
   void read_population();

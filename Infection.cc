@@ -17,6 +17,7 @@
 #include "Place.h"
 #include "Random.h"
 #include "Strain.h"
+#include "Health.h"
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -29,23 +30,13 @@ Infection::Infection (Strain * s, Person* person_infector,
   strain = s;
   strain_status = 'E';
   exposure_date = day;
-  const Antiviral* av = infectee->get_av(day, s->get_id());
-  double symp_period_multp = 1.0;
-  double asymp_period_multp = 1.0;
   infectivity_multp = 1.0;
-  if (av) {
-    will_be_symptomatic = av->roll_will_have_symp();
-    symp_period_multp = av->get_reduce_symp_period();
-    asymp_period_multp = av->get_reduce_asymp_period();
-    infectivity_multp = av->get_reduce_infectivity();
-  } else {
-    will_be_symptomatic = strain->get_symptoms();
-  }
-
+  will_be_symptomatic = strain->get_symptoms();
+  
   latent_period = strain->get_days_latent();
-  asymp_period = strain->get_days_asymp() * asymp_period_multp;
+  asymp_period = strain->get_days_asymp();// * asymp_period_multp;
   if (will_be_symptomatic)
-    symp_period = strain->get_days_symp() * symp_period_multp;
+    symp_period = strain->get_days_symp();// * symp_period_multp;
   else 
     symp_period = 0;
 
@@ -243,14 +234,12 @@ bool Infection::possibly_mutate(Health* health, int day) {
   }
 }
 
-
 // static 
 Infection* Infection::get_dummy_infection(Strain *s, Person* host, int day) {
   Infection* i = new Infection(s, NULL, host, NULL, day);
   i->reset_infection_course(0, 0, false, day);
   return i;
 }
-
 
 void Infection::modify_symptomatic_period(double multp, int cur_day){ 
   if (symp_period == 0) return;
@@ -295,17 +284,15 @@ void Infection::modify_develops_symptoms(bool symptoms, int cur_day) {
       if (!will_be_symptomatic) {
 	symp_period = 0;
 	recovered_date = symptomatic_date;
-      } else {
-	const Antiviral* av = host->get_av(cur_day, strain->get_id());
-	double symp_period_multp = 1.0;
-	if (av) {
-	  symp_period_multp = av->get_reduce_symp_period();
-	}
-	symp_period = strain->get_days_symp() * symp_period_multp;
+      } 
+      else {
+	// Relagating the modification of the symptomatic period to the other function.
+	symp_period = strain->get_days_symp();
 	recovered_date = symptomatic_date + symp_period;
       }
     }
-  } else {
+  }
+  else {
     if (Verbose > 1) {
       printf("Infection from strain %i: attempt to change symptomaticity "
 	     " person %i is already symptomatic.  Symptomatic "

@@ -24,11 +24,13 @@ extern int Start_day;
 extern char Outfilebase[80];
 extern char Tracefilebase[80];
 extern int All_strains_antigenically_identical;
+extern char VaccineTracefilebase[80];
 
 // global file pointers
 extern FILE *Statusfp;
 extern FILE *Outfp;
 extern FILE *Tracefp;
+extern FILE *VaccineTracefp;
 
 // global singleton objects
 #include "Population.h"

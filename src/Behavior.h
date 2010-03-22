@@ -30,6 +30,8 @@ public:
   void become_exposed(int strain);
   void recover(int strain);
   int get_favorite_places() { return favorite_places; }
+  int compliance_to_vaccination(void); // This will currently look up the global vaccine compliance.
+                                       // This is really a place holder for a more sophistocated model.
 
 private:
   Person * self;	 // pointer to person using having this behavior

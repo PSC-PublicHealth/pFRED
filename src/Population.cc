@@ -20,6 +20,9 @@
 #include "Locations.h"
 #include "Strain.h"
 #include "Person.h"
+#include "Manager.h"
+#include "AV_Manager.h"
+#include "Vaccine_Manager.h"
 #include "AgeMap.h"
 #include "Random.h"
 
@@ -67,7 +70,14 @@ void Population::setup() {
     fprintf(Statusfp, "setup population completed, strains = %d\n", strains);
     fflush(Statusfp);
   }
-  AVs.setup();
+
+  //STB - need to clean up so that it just uses strings
+  char vaccfile[255];
+  get_param((char*)"vaccine_file",vaccfile);
+   
+  vacc_manager = new Vaccine_Manager(this);
+  av_manager = new AV_Manager(this);
+  if(Verbose > 1) av_manager->print();
   char s[80];
   
   for(int is = 0; is< strains; is++){
@@ -123,7 +133,7 @@ void Population::read_population() {
 		 Loc.get_location(classroom),
 		 Loc.get_location(work),
 		 Loc.get_location(office),
-		 profile);
+		 profile,this);
     pop[p].reset();
   }
   fclose(fp);
@@ -153,7 +163,8 @@ void Population::reset(int run) {
       apply_residual_immunity(strain[is]);
     }
   }
-  AVs.reset();
+  av_manager->reset();
+  vacc_manager->reset();
 
   if (Verbose) {
     fprintf(Statusfp, "reset population completed\n");
@@ -162,23 +173,18 @@ void Population::reset(int run) {
 }
 
 void Population::update(int day) {
-  //if(AV.number_antivirals > 0)
-  //  AV.update(strains,pop,pop_size,day); // This allows me to put a set of medication for each population
-  // This will be the place the "manager" can allocate AVs
-  int imm = 0;
+  vacc_manager->update(day);
+  av_manager->update(day);
+  
   for (int p = 0; p < pop_size; p++){
-    if(pop[p].get_strain_status(0)=='M'){
-      imm++;
-    }
     pop[p].update(day);
   }
-  if(Debug == 1){
-    cout << "residual immunity on day " << day << " is " << imm << "\n";
-  }
-  
+
   for (int s = 0; s < strains; s++) {
     strain[s].update(day);
   }
+  
+  av_manager->disseminate(day);
 }
 
 void Population::report(int day) {

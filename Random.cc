@@ -9,6 +9,7 @@
 // File: Random.cc
 //
 
+#include <vector>
 #include "Random.h"
 #include <stdio.h>
 
@@ -34,6 +35,7 @@ double draw_exponential(double lambda) {
   return (-log(u)/lambda);
 }
 
+using namespace std;
 /*
 algorithm poisson random number (Knuth):
   init:

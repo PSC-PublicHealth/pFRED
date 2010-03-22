@@ -18,11 +18,13 @@ int Reseed_day;
 char Outfilebase[80];
 char Tracefilebase[80];
 int All_strains_antigenically_identical;
+char VaccineTracefilebase[80];
 
 // global file pointers
 FILE *Statusfp;
 FILE *Outfp;
 FILE *Tracefp;
+FILE *VaccineTracefp;
 
 // global singleton objects
 Population Pop;
@@ -41,5 +43,6 @@ void get_global_parameters() {
   get_param((char *) "outfile", Outfilebase);
   get_param((char *) "tracefile", Tracefilebase);
   get_param((char *) "all_strains_antigenically_identical", &All_strains_antigenically_identical);
+  get_param((char *) "vaccine_tracefile",VaccineTracefilebase);
 }
 

@@ -13,6 +13,9 @@
 #define _FRED_RANDOM_H
 
 #include <math.h>
+#include <vector>
+
+using namespace std;
 
 //*************** RANDOM NUMBER GENERATOR UTILITIES
 
@@ -29,5 +32,20 @@ void init_genrand(unsigned long s);
 int draw_poisson(double lambda);
 double draw_exponential(double lambda);
 int draw_from_distribution(int n, double *dist);
+
+//template <typename T> 
+//void FYShuffle( vector <T> &array){
+//  int m,randIndx;
+//  T tmp;
+//  unsigned int n = array.size();
+//  m=n;
+//  while (m > 0){
+//    randIndx = (int)(RANDOM()*n);
+//    m--;
+//    tmp = array[m];
+//    array[m] = array[randIndx];
+//    array[randIndx] = tmp;
+//  }
+//}
 
 #endif // _FRED_RANDOM_H

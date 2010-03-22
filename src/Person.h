@@ -25,6 +25,7 @@ class Infection;
 class Perceptions;
 class Place;
 class Strain;
+class Population;
 
 class Person {
 public:
@@ -32,7 +33,7 @@ public:
   void setup(int index, int age, char sex, int marital, int occ,
 	     int profession, Place *house, Place *neigh,
 	     Place *school, Place *classroom, Place *work,
-	     Place *office, int profile);
+	     Place *office, int profile, Population* pop);
   void reset();
   void update(int day);
   void print(int strain);
@@ -50,7 +51,6 @@ public:
   void recover(Strain * strain);
   void behave(int day);
   int is_symptomatic();
-  const Antiviral* get_av(int strain, int day);
 
   // access functions:
   int get_id() { return id; }
@@ -75,11 +75,16 @@ public:
   int add_infectee(int strain);
   int is_new_case(int day, int strain);
 
-  Health *get_health() { return health;}
-  
+  Health *get_health()             {return health;}
+  Behavior* get_behavior()         {return behavior;}
+  Demographics* get_demographics() {return demographics;}
+  Perceptions* get_perceptions()   {return perceptions;}
+
+  Population* get_population()     {return pop;}
 
 private:
   int id;
+  Population *pop;
   Demographics * demographics;
   Health * health;
   Behavior * behavior;

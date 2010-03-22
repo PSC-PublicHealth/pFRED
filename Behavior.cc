@@ -16,6 +16,9 @@
 #include "Place.h"
 #include "Random.h"
 #include "Strain.h"
+#include "Params.h"
+#include "Vaccine_Manager.h"
+#include "Manager.h"
 #define DAYS_PER_WEEK 7
 
 Behavior::Behavior (Person *person, Place *h, Place *n, Place *s, Place *c,
@@ -158,3 +161,11 @@ void Behavior::recover(int strain) {
   }
 }
 
+int Behavior::compliance_to_vaccination(void){
+  // Get the populations compliance
+  double compliance = self->get_population()->get_vaccine_manager()->get_vaccine_compliance();
+  if(RANDOM()*100. < compliance){
+    return 1;
+  }
+  return 0;
+}

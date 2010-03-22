@@ -61,3 +61,5 @@ school_closure_period = 10
 school_closure_delay = 2
 
 number_antivirals = 0
+vaccine_file = none
+vaccine_tracefile = OUT/vacctr

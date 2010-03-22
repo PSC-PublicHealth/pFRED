@@ -16,6 +16,7 @@
 #include "Locations.h"
 #include "Params.h"
 #include "Random.h"
+#include "Vaccine_Manager.h"
 
 char Paramfile[80];
 int Random_start_day;
@@ -32,6 +33,7 @@ int main(int argc, char* argv[])
   printf("param file = %s\n", Paramfile);
   strcpy(Outfilebase, "OUT/out");
   strcpy(Tracefilebase, "OUT/trace");
+  strcpy(VaccineTracefilebase, "OUT/vacctrace");
 
   // sprintf(filename, "status.txt");
   // Statusfp = fopen(filename, "w");
@@ -80,6 +82,13 @@ void run_sim(int run) {
     abort();
   }
 
+  sprintf(filename, "%s%d.txt", VaccineTracefilebase, run+1);
+  VaccineTracefp = fopen(filename, "w");
+  if (VaccineTracefp == NULL) {
+    printf("Help! Can't open %s\n", filename);
+    abort();
+  }
+  
   fprintf(Statusfp, "\nStarting run %d\n", run);
   fprintf(Statusfp, "FRED started  ");
   time(&clock);
@@ -96,6 +105,7 @@ void run_sim(int run) {
     // start on a random day of the week
     Start_day = IRAND(0, 6);
   }
+
   for (int day = 0; day < Days; day++) {
     if (day == Reseed_day) {
       printf("************** reseed day = %d\n", day); fflush(stdout);
