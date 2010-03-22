@@ -11,6 +11,8 @@
 
 #include "Params.h"
 #include <math.h>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -224,6 +226,34 @@ int get_param(char *s, float *p) {
   if (found) {
     if (Param_verbose) {
       printf("PARAMS: %s = %f\n", s, *p);
+      fflush( stdout);
+    }
+    return 1;
+  } else {
+    if (Param_verbose) {
+      printf("PARAMS: %s not found\n", s);
+      fflush( stdout);
+    }
+    abort();
+  }
+  return 0;
+}
+
+int get_param(char *s, string &p){
+  int found = 0;
+  for (int i = 0; i < Params; i++) {
+    if (strcmp(Param_name[i], s) == 0) {
+      stringstream ss;
+      ss << Param_value[i];
+      if(ss.str().size() > 0){
+      p = ss.str();
+      found = 1;
+      }
+    }
+  }
+  if (found) {
+    if (Param_verbose) {
+      printf("PARAMS: %s = %s\n", s, p.c_str());
       fflush( stdout);
     }
     return 1;

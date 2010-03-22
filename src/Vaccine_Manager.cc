@@ -25,14 +25,15 @@ Vaccine_Manager::Vaccine_Manager(Population *P):
   Manager(P){
   Pop = P;
   
-  char vaccfile[255];
-  get_param((char*)"vaccine_file",vaccfile);
+  //char vaccfile[255];
+  string vfile;
+  get_param((char*)"vaccine_file",vfile);
+  cout <<"\nVFile = "<< vfile << "\n";
   //if(strcmp(vaccfile,"none")!=0){
-  string vfile(vaccfile);
-  
+    
   if(vfile.substr(0,4)!="none"){
     get_param((char*)"vaccine_compliance",&vaccine_compliance); // to be put in vaccine_manager
-    Vaccs = new Vaccines(vfile.substr(0,vfile.size()-1));  
+    Vaccs = new Vaccines(vfile);  
     Vaccs->print();
     do_vacc = 1;
   }
@@ -121,6 +122,7 @@ void Vaccine_Manager::reset(void){
     Fill_Queues();
     Vaccs->reset();
   }
+  cout << "\n";
 }
 
 void Vaccine_Manager::print(void){
