@@ -23,6 +23,8 @@ SRC = $(OBJ:.o=.cc)
 
 HDR = $(OBJ:.o=.h)
 
+all:	FRED
+
 FRED: Fred.cc Fred.h $(OBJ)
 	$(CPP) $(CPPFLAGS) Fred.cc $(OBJ) -o FRED
 
@@ -46,3 +48,5 @@ dist:
 	FRED/LICENSE FRED/sim.plt FRED/TEST/* ; cd FRED)
 	make
 
+tags:
+	find . -name \*.[ch]* | xargs etags
