@@ -32,7 +32,7 @@ class Vaccine{
   
   int get_strain(void)             const { return strain; }
   int get_ID(void)                 const { return id; }
-  int get_number_doses(void)       const { return number_doses; }
+  int get_number_doses(void)       const { return doses.size(); }
   int get_low_age(void) const;
   int get_high_age(void) const;
   Vaccine_Dose* get_dose(int i)    const { return doses[i]; }

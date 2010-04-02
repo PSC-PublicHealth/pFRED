@@ -21,6 +21,7 @@
 #include "Population.h"
 //#include "Vaccine_Health.h"
 #include "AV_Health.h"
+#include "Age_Map.h"
 
 void Person::setup(int index, int age, char sex, int marital, int occ,
 		   int profession, Place *house, Place *neigh,
@@ -89,6 +90,16 @@ void Person::reset() {
   health->reset();
   perceptions->reset();
   behavior->reset();
+  
+  for(int strain = 0; strain < Pop.get_strains(); strain++){
+    Strain* s = Pop.get_strain(strain);
+    if(s->get_residual_immunity()->get_num_ages()!=0){
+      double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
+      if(RANDOM()*100. < residual_immunity_prob){
+ 	become_immune(s);
+      }
+    }
+  }
 }
 
 void Person::update(int day) {

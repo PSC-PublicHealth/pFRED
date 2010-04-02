@@ -60,19 +60,19 @@ void Health::reset() {
   immunity.assign(immunity.size(),false);
   
   for (int strain = 0; strain < strains; strain++) {
-    Strain* s = Pop.get_strain(strain);
-    if(s->get_residual_immunity()->get_num_ages()!=0){
-      double residual_immunity_prob = s->get_residual_immunity()->find_value(self->get_age());
-      if(RANDOM()*100. < residual_immunity_prob){
-	self->become_immune(s);
-      }
-      else{
-	become_susceptible(strain);
-      }
-    }
-    else{
+//     Strain* s = Pop.get_strain(strain);
+//     if(s->get_residual_immunity()->get_num_ages()!=0){
+//       double residual_immunity_prob = s->get_residual_immunity()->find_value(self->get_age());
+//       if(RANDOM()*100. < residual_immunity_prob){
+// 	self->become_immune(s);
+//       }
+//       else{
+// 	become_susceptible(strain);
+//       }
+//     }
+//     else{
       become_susceptible(strain);
-    }
+      //    }
   }
   
   //Clean out the stats objects

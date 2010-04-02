@@ -54,7 +54,8 @@ void Vaccine_Health::update(int day, int age){
   if(is_effective()){
     if(day >= vaccination_effective_day){
       // Going out to Person, so that behavior can be accessed
-      health->get_self()->become_immune(0); 
+      Strain* s = health->get_self()->get_population()->get_strain(0);
+      health->get_self()->become_immune(s);
     }
   }
   

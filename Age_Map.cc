@@ -61,7 +61,7 @@ void Age_Map::read_from_input(string Input) {
   
   get_param_vector(values_string,values);
   
-  print();
+  //print();
   if(quality_control() != true)
     abort();
   return;
@@ -88,14 +88,12 @@ double Age_Map::find_value(int age) {
 
 
 void Age_Map::print(void) {
-  cout << Name << "\n";
-  cout << "--------------------------------------------------------\n";
+  cout << "\n" << Name << "\n";
   for(unsigned int i=0;i<ages.size();i++){
-    cout << setw(8) << ages[i][0] << setw(8) << ages[i][1] << setw(10) << setprecision(2) << values[i] << "\n";
+    cout << "age "<< setw(2) << ages[i][0] << " to " << setw(3) << ages[i][1] << ": " 
+	 << setw(7) << setprecision(2) << fixed << values[i] << "\n";
   }
-  
-  cout << "--------------------------------------------------------\n";
-
+  cout << "\n";
 }
 
 bool Age_Map::quality_control(void) {

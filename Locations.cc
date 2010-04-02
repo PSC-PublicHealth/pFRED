@@ -66,7 +66,6 @@ void Locations::setup_locations() {
       fprintf(Statusfp, "Help! Read index %d for location %d\n", id, loc);
       abort();
     }
-
     // printf("loctype = %c\n", loctype); fflush(stdout);
     Place *place;
     if (loctype == HOUSEHOLD) {
