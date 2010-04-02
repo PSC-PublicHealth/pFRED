@@ -96,7 +96,7 @@ mkdir $version or die "Can't make directory $version\n";
 `cp -p Makefile profiles.txt *.cc *.h params* p ch go report test_* LICENSE sim.plt $version`;
 
 my $logfile = "$meta/LOG";
-system "./fred $params | tee -a $logfile";
+system "./FRED $params | tee -a $logfile";
 unlink $params;
 
 print "$id\n";
