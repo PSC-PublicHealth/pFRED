@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <new>
+
 using namespace std;
 #include "Antivirals.h"
 #include "Antiviral.h"
@@ -30,8 +31,8 @@ Antivirals::Antivirals(void){
   for(int iav=0;iav<nav;iav++){
     int Strain, CorLength, InitSt, TotAvail, PerDay;
     double RedInf, RedSusc, RedASympPer, RedSympPer, ProbSymp, Eff, PerSympt;
-    int StrtDay, Proph;
-    
+    int StrtDay,Proph;
+    bool isProph;
     // Check for deprecated params
     sprintf(s,"av_reduce_infectious_period[%d]",iav);
     if (does_param_exist(s)) {
@@ -80,6 +81,8 @@ Antivirals::Antivirals(void){
     
     sprintf(s, "av_prophylaxis[%d]", iav);
     get_param(s, &Proph);
+    if(Proph == 1) isProph= true;
+    else isProph = false;
     
     sprintf(s, "av_percent_symptomatics[%d]",iav);
     get_param(s, &PerSympt);
@@ -94,11 +97,17 @@ Antivirals::Antivirals(void){
 				RedSusc, RedASympPer, RedSympPer,
 				ProbSymp, InitSt, TotAvail, PerDay, 
 				Eff, AVCourseSt, MaxAVCourseSt,
-				StrtDay, Proph, PerSympt) );
+				StrtDay, isProph, PerSympt) );
     
   }
   print();
   quality_control(Strains);
+}
+
+int Antivirals::get_total_current_stock(void) const {
+  int sum = 0;
+  for(unsigned int i=0;i<AVs.size();i++) sum += AVs[i]->get_current_stock();
+  return sum;
 }
 
 vector < Antiviral* > Antivirals::find_applicable_AVs(int strain){
@@ -130,6 +139,14 @@ void Antivirals::print(void){
   cout << "\n\n";
 }
 
+void Antivirals::print_stocks(void){
+  for(unsigned int iav = 0; iav < AVs.size(); iav++){
+    cout <<"\n Antiviral #" << iav;
+    AVs[iav]->print_stocks();
+    cout <<"\n";
+  }
+}
+
 void Antivirals::quality_control(int nstrains){  
   for(unsigned int iav = 0;iav < AVs.size();iav++) {
     if (Verbose > 1) {
@@ -147,15 +164,12 @@ void Antivirals::update(int day){
     AVs[iav]->update(day);
 }
 
+void Antivirals::report(int day){
+  // STB - To Do
+}
+
 void Antivirals::reset(void){
   for(unsigned int iav = 0; iav < AVs.size(); iav++)
     AVs[iav]->reset();
 }
 
-void Antivirals::print_stocks(void){
-  for(unsigned int iav = 0; iav < AVs.size(); iav++){
-    cout <<"\n Antiviral #" << iav;
-    AVs[iav]->print_stocks();
-    cout <<"\n";
-  }
-}

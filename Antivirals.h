@@ -14,25 +14,23 @@
 #include <stdio.h>
 #include <iomanip>
 #include <vector>
+
 using namespace std;
-#include "Antiviral.h"
 
 class Antiviral;
 
 class Antivirals {
+  // Antivirals is a class to contain a group of Antiviral classes
  public:
-  Antivirals(void); // This is created from input
-  int do_av(void) { return AVs.size() > 0; }
+  // Creation Operations
+  Antivirals(void);          // This is created from input
   
-  int get_number_antivirals() { return AVs.size(); }
-  int get_percent_symptomatics_given() { return percent_symptomatics_given;}
-  int get_total_current_stock(){
-    int sum = 0;
-    for(unsigned int i=0;i<AVs.size();i++) sum += AVs[i]->get_current_stock();
-    return sum;
-  }
-  vector <Antiviral *> get_AV_vector(void){ return AVs; }
-  Antiviral* get_AV(int nav){ return AVs[nav]; }
+  //Paramter Access Members
+  bool do_av(void)                         const { return AVs.size() > 0; } 
+  int get_number_antivirals(void)          const { return AVs.size(); }
+  int get_total_current_stock(void)        const;
+  vector <Antiviral *> get_AV_vector(void) const { return AVs; }
+  Antiviral* get_AV(int nav)               const { return AVs[nav]; }
   
   // Utility Functions
   void print(void);
@@ -41,13 +39,13 @@ class Antivirals {
   void update(int day);
   void report(int day);
   void quality_control(int nstrains);
+
+  // Polling the collection 
   vector < Antiviral*> find_applicable_AVs(int strain);
   vector < Antiviral*> prophylaxis_AVs(void);
 
  private:
-  vector < Antiviral* > AVs;
-  int percent_symptomatics_given;
-  FILE* reportFile;  // Create an AV report file
+  vector < Antiviral* > AVs;  // A Vector to hold the AVs in the collection
+  FILE* reportFile;           // Create an AV report file, to be deprecated
 };
-
 #endif // _FRED_ANTIVIRALS_H

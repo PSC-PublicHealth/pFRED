@@ -3,7 +3,7 @@
 #################  Compiler Flags ##############################
 CPP = g++ 
 CPPFLAGS = -m64 -O2 -Wall
-# CPPFLAGS = -g -pg -O0 -Wall
+#CPPFLAGS = -pg -g -O0 -Wall
 
 ###############################################
 
@@ -11,8 +11,8 @@ CPPFLAGS = -m64 -O2 -Wall
 	$(CPP) $(CPPFLAGS) -c $< $(INCLUDES)
 
 OBJ =   Decision.o Policy.o Manager.o \
-        AV_Decisions.o AV_Policies.o AV_Manager.o AV_Status.o \
-        AgeMap.o VaccineStatus.o VaccineDose.o Vaccine.o Vaccines.o \
+        AV_Decisions.o AV_Policies.o AV_Manager.o AV_Health.o \
+        Age_Map.o Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
         Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \
 	Antiviral.o Antivirals.o Behavior.o Classroom.o Community.o Demographics.o Health.o \
         Hospital.o Household.o Infection.o Locations.o Neighborhood.o Office.o \

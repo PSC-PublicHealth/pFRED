@@ -16,34 +16,36 @@
 #include <string>
 #include <sstream>
 #include <vector>
+
 using namespace std;
 
 #include "Vaccines.h"
 #include "Vaccine.h"
-#include "VaccineDose.h"
+#include "Vaccine_Dose.h"
 #include "Random.h"
+#include "Age_Map.h"
 
-Vaccines::Vaccines(string vaccFile){
+void Vaccines::setup(string _vaccine_file) {
   
-  ifstream vaccinput;
-  vaccinput.open(vaccFile.c_str());
+  ifstream vaccine_input;
+  vaccine_input.open(_vaccine_file.c_str());
   
-  if(!vaccinput.is_open()){
-    cout << "\nHelp!Vaccines input file " << vaccFile << " cannot be open";
+  if(!vaccine_input.is_open()){
+    cout << "Help!Vaccines input file " << _vaccine_file << " cannot be open\n";
     abort();
   }
   
   string lline;
-  getline(vaccinput,lline);
+  getline(vaccine_input,lline);
   istringstream vstr(lline);
   
   // Get Comment line
-  getline(vaccinput,lline);
+  getline(vaccine_input,lline);
   
   int number_vacc;
   vstr >> number_vacc;
   
-  for(int iv=0;iv<number_vacc;iv++){
+  for(int iv=0;iv<number_vacc;iv++) {
     int la;
     int ha;
     int ta;
@@ -51,95 +53,92 @@ Vaccines::Vaccines(string vaccFile){
     int std;
     int num_doses;
     
-    getline(vaccinput,lline);
+    getline(vaccine_input,lline);
     istringstream vvstr(lline);
     vvstr >> la >> ha >> num_doses >> ta >> apd >> std;
     
     stringstream name;
     name << "Vaccine#"<<iv+1;
-    cout <<"\nta = " << ta;
-    vaccines.push_back(Vaccine(name.str(),iv,0,la,ha,ta,apd,std));
+    vaccines.push_back(new Vaccine(name.str(),iv,0,la,ha,ta,apd,std));
     
-    for(int id=0;id<num_doses;id++){
+    for(int id=0;id<num_doses;id++) {
       
-      AgeMap effmap("Dose Efficacy");
-      AgeMap effdmap("Dose Delay");
+      Age_Map* efficacy_map = new Age_Map("Dose Efficacy");
+      Age_Map* efficacy_delay_map = new Age_Map("Dose Delay");
       
       int naggroups;
       int tbd;
-      int redi;
+      double redi;
       
       // Read in the first dose line
-      getline(vaccinput,lline);
+      getline(vaccine_input,lline);
       istringstream dstr(lline);
       
       dstr >> naggroups >> redi >> tbd;
-      
-      for(int ig=0;ig<naggroups;ig++){
+      cout << "dstr = "<< naggroups << " " << redi << " " << tbd << "\n";
+      for(int ig=0;ig<naggroups;ig++) {
 	int age1, age2;
 	double eff, effd;
 	
 	// read in dose efficacy line
-	getline(vaccinput,lline);
+	getline(vaccine_input,lline);
 	istringstream ddstr(lline);
 	
 	ddstr >> age1 >> age2 >> eff >> effd;
 	
-	effmap.add_value(age1,age2,eff);
-	effdmap.add_value(age1,age2,effd);
+	efficacy_map->add_value(age1,age2,eff);
+	efficacy_delay_map->add_value(age1,age2,effd);
       }
-      Vaccine_Dose vd(effmap,effdmap,tbd);
-      vaccines[iv].Add_dose(vd);
+      //Vaccine_Dose vd(effmap,effdmap,tbd);
+      vaccines[iv]->add_dose(new Vaccine_Dose(efficacy_map,efficacy_delay_map,tbd));
     }
   }
 }	
 
-void Vaccines::print(void){
-  cout <<"\nVaccine Package Information";
-  cout <<"\nThere are "<<vaccines.size() <<" vaccines in the package";
+void Vaccines::print(void) {
+  cout <<"Vaccine Package Information\n";
+  cout <<"There are "<<vaccines.size() <<" vaccines in the package\n";
   fflush(stdout);
   for(unsigned int i=0;i<vaccines.size(); i++){
-    vaccines[i].print();
+    vaccines[i]->print();
   }
   fflush(stdout);
-  //abort();
 }
 
-void Vaccines::print_current_stocks(void){
-  cout << "\nVaccine Stockk Information";
-  cout << "\n\nVaccines# " << "Current Stock      " << "Current Reserve    ";
-  for(unsigned int i=0; i<vaccines.size(); i++){
-    cout << "\n" << setw(10) << i+1 << setw(20) << vaccines[i].get_current_stock()
-	 << setw(20) << vaccines[i].get_current_reserve();
-  }
-  cout << "\n";
-}
-
-void Vaccines::update(int day){
-  for(unsigned int i=0;i<vaccines.size(); i++){
-    vaccines[i].update(day);
+void Vaccines::print_current_stocks(void) {
+  cout << "Vaccine Stockk Information\n";
+  cout << "\nVaccines# " << "Current Stock      " << "Current Reserve    \n";
+  for(unsigned int i=0; i<vaccines.size(); i++) {
+    cout << setw(10) << i+1 << setw(20) << vaccines[i]->get_current_stock()
+	 << setw(20) << vaccines[i]->get_current_reserve() << "\n";
   }
 }
 
-void Vaccines::reset(void){
-  for(unsigned int i=0;i<vaccines.size();i++){
-    vaccines[i].reset();
+void Vaccines::update(int day) {
+  for(unsigned int i=0;i<vaccines.size(); i++) {
+    vaccines[i]->update(day);
+  }
+}
+
+void Vaccines::reset(void) {
+  for(unsigned int i=0;i<vaccines.size();i++) {
+    vaccines[i]->reset();
   }
 }
 
 
-int Vaccines::pick_from_applicable_vaccines(int age){
+int Vaccines::pick_from_applicable_vaccines(int age) {
   vector <int> app_vaccs;
   for(unsigned int i=0;i<vaccines.size();i++){
     // if first dose is applicable, add to vector.
-    if(vaccines[i].get_dose(0)->is_within_age(age) &&
-       vaccines[i].get_current_stock() > 0){
+    if(vaccines[i]->get_dose(0)->is_within_age(age) &&
+       vaccines[i]->get_current_stock() > 0){
       app_vaccs.push_back(i);
     }
   }
   
   if(app_vaccs.size() == 0){ return -1; }
-
+  
   int randnum = 0;
   if(app_vaccs.size() > 1){
     randnum = (int)(RANDOM()*app_vaccs.size());
@@ -150,7 +149,7 @@ int Vaccines::pick_from_applicable_vaccines(int age){
 int Vaccines::get_total_vaccines_avail_today(void){
   int total=0;
   for(unsigned int i=0;i<vaccines.size();i++){
-    total += vaccines[i].get_current_stock();
+    total += vaccines[i]->get_current_stock();
   }
   return total;
 }

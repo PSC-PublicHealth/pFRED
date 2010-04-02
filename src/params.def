@@ -25,6 +25,8 @@ days_symp[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
 immunity_loss_rate[0] = 0
 symp_infectivity[0] = 1.0
 asymp_infectivity[0] = 0.5
+residual_immunity_ages[0] = 0
+residual_immunity_values[0] = 0
 prob_stay_home = 0.5
 mutation_prob = 1 0.0
 

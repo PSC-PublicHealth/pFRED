@@ -14,6 +14,9 @@
 
 #include "Antivirals.h"
 
+#define AV_POLICY_PERCENT_SYMPT 0
+#define AV_POLICY_GIVE_EVERYONE 1
+
 class Manager;
 class Population;
 class Person;
@@ -21,20 +24,19 @@ class Policy;
 
 class AV_Manager: public Manager {
  public:
-  AV_Manager(Population *P);
+  AV_Manager(Population *_pop);
 
   //Parameters
-  int do_antivirals(void) { return do_av;}
-  int get_percent_symptomatics_given(){return percent_symptomatics_given;}
-  int get_overall_start_day() { return overall_start_day;}
-  Antiviral* get_current_av() { return current_av; }
+  bool do_antivirals(void)             const { return do_av;}
+  int get_overall_start_day()          const { return overall_start_day;}
+  Antiviral* get_current_av()          const { return current_av; }
     
   //Paramters
-  Antivirals* get_antivirals(void) { return AVs; }
-  int get_num_antivirals(void) { return AVs->get_number_antivirals();}
+  Antivirals* get_antivirals(void)     const { return av_package; }
+  int get_num_antivirals(void)         const { return av_package->get_number_antivirals();}
 
   // Manager Functions
-  void disseminate(int day);
+  void disseminate(int day);      // Push member needed for prophylaxis
   
   // Utility Functions
   void update(int day);
@@ -42,14 +44,13 @@ class AV_Manager: public Manager {
   void print(void);
 
  private:
-  int do_av;
-  Antivirals* AVs;     // The AV manager needs to know how much AV is available
-  // Parameters
-  int percent_symptomatics_given;
-  int overall_start_day;
-  void set_policies(void);
+  bool do_av;                      //Whether or not antivirals are being disseminated
+  Antivirals* av_package;          //The package of avs available to this manager
+  // Parameters 
+  int overall_start_day;           //Day to start the av procedure
+  void set_policies(void);         //member to set the policy of all of the avs
   
-  Antiviral* current_av;
+  Antiviral* current_av;           //NEED TO ELIMINATE, HIDDEN to IMPLEMENTATION
 };
 
 #endif

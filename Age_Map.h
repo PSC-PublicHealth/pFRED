@@ -18,13 +18,18 @@
 using namespace std;
 #include "Params.h"
 
-class AgeMap{
+class Age_Map{
+  //Age_Map is a class that holds a set of age specific ranged values
+  // The age ranges much be mutually exclusive.
  public:
-  AgeMap(string Name);
-  AgeMap();
+  //Creation Operators
+  Age_Map(string Name);
+  Age_Map();
   
-  //Additional Creation Operations
-  int read_from_input(string Input);
+  int get_num_ages(void){ return ages.size();}
+  
+  //Additional Creation Operations for building an Age Map
+  void read_from_input(string Input);
   void add_value(int lower_age,int upper_age,double val);
   
   //Operations
@@ -32,12 +37,12 @@ class AgeMap{
   
   //Utility functions
   void print(void);
+  bool quality_control(void);
   
  private:
   string Name;
-  vector < vector <int> > ages;
-  vector < double > values;
-  
+  vector < vector <int> > ages;  // Vector to hold the age ranges
+  vector < double > values;      // Vector to hold the values for each age range
 };
 
 #endif

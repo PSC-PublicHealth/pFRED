@@ -10,36 +10,39 @@
 //
 
 #include "Antiviral.h"
-#include "AV_Status.h"
+#include "AV_Health.h"
 #include "Random.h"
 #include "Person.h"
 #include "Health.h"
 #include "Infection.h"
 #include "Strain.h"
+#include "Global.h"
 
-Antiviral::Antiviral(int Strain, int CorLength, double RedInf, 
-		     double RedSuc, double RedASympPer, double RedSympPer,
-		     double ProbSymp, int InitSt, int TotAvail, int PerDay, double Eff, 
-		     double* AVCourseSt, int MaxAVCourseSt,
-		     int StrtDay, int Proph, double PerSympt){
-  strain = Strain;
-  course_length                 = CorLength;
-  reduce_infectivity            = RedInf;
-  reduce_susceptibility         = RedSuc;
-  reduce_asymp_period           = RedASympPer;
-  reduce_symp_period            = RedSympPer;
-  prob_symptoms                 = ProbSymp;
-  stock                         = InitSt;
-  initial_stock                 = InitSt;
-  reserve                       = TotAvail-InitSt;
-  total_avail                   = TotAvail;
-  additional_per_day            = PerDay;
-  efficacy                      = Eff;
-  av_course_start_day           = AVCourseSt;
-  max_av_course_start_day       = MaxAVCourseSt;
-  start_day                     = StrtDay;
-  prophylaxis                   = Proph;
-  percent_symptomatics          = PerSympt;
+Antiviral::Antiviral(int _strain, int _course_length, double _reduce_infectivity,
+		     double _reduce_susceptibility, double _reduce_asymp_period,
+		     double _reduce_symp_period, double _prob_symptoms,
+		     int _initial_stock, int _total_avail, int _additional_per_day,
+		     double _efficacy, double* _av_course_start_day, 
+		     int _max_av_course_start_day, int _start_day, bool _prophylaxis,
+		     double _percent_symptomatics){
+  strain                        = _strain;
+  course_length                 = _course_length;
+  reduce_infectivity            = _reduce_infectivity;
+  reduce_susceptibility         = _reduce_susceptibility;
+  reduce_asymp_period           = _reduce_asymp_period;
+  reduce_symp_period            = _reduce_symp_period;
+  prob_symptoms                 = _prob_symptoms;
+  stock                         = _initial_stock;
+  initial_stock                 = _initial_stock;
+  reserve                       = _total_avail - _initial_stock;
+  total_avail                   = _total_avail;
+  additional_per_day            = _additional_per_day;
+  efficacy                      = _efficacy;
+  av_course_start_day           = _av_course_start_day;
+  max_av_course_start_day       = _max_av_course_start_day;
+  start_day                     = _start_day;
+  prophylaxis                   = _prophylaxis;
+  percent_symptomatics          = _percent_symptomatics;
 }
 
 int Antiviral::roll_will_have_symp(void) const {
@@ -56,49 +59,47 @@ int Antiviral::roll_course_start_day(void) const {
  return days;
 }
 
-void Antiviral::print(void){
-  cout << "\n Effective for Strain \t\t"<< strain;
-  //cout << "\n Percent of Symptomatics Recieving\t" << percent_symptomatics;
-  cout << "\n Current Stock\t\t\t"<<stock<< " out of "<< total_avail;
-  cout << "\n What is left =\t\t\t"<< reserve;
-  cout << "\n Additional Per Day = \t\t"<< additional_per_day;
-  cout << "\n Percent Resistance\t\t"<<efficacy;
-  cout << "\n Reduces:";
-  cout << "\n\tInfectivity:\t\t\t"<<reduce_infectivity;
-  cout << "\n\tSusceptibility\t\t\t"<<reduce_susceptibility;
-  cout << "\n\tAymptomatic Period\t\t" << reduce_asymp_period;
-  cout << "\n\tSymptomatic Period\t\t" << reduce_symp_period;
-  cout << "\n\tProbability of symptoms:\t" << prob_symptoms;
+void Antiviral::update(int day){
+  if(day >= start_day) add_stock(additional_per_day);
+}
+
+void Antiviral::print(void) {
+  cout << "Effective for Strain \t\t"<< strain << "\n";
+  cout << "Current Stock\t\t\t"<<stock<< " out of "<< total_avail << "\n";
+  cout << "What is left =\t\t\t"<< reserve << "\n";
+  cout << "Additional Per Day = \t\t"<< additional_per_day << "\n";
+  cout << "Percent Resistance\t\t"<<efficacy << "\n";
+  cout << "Reduces:" << "\n";
+  cout << "\tInfectivity:\t\t\t"<<reduce_infectivity << "\n";
+  cout << "\tSusceptibility\t\t\t"<<reduce_susceptibility << "\n";
+  cout << "\tAymptomatic Period\t\t" << reduce_asymp_period << "\n";
+  cout << "\tSymptomatic Period\t\t" << reduce_symp_period << "\n";
+  cout << "\tProbability of symptoms:\t" << prob_symptoms << "\n";
   if(prophylaxis==1)
-    cout <<"\n\tCan be given as prophylaxis";
+    cout <<"\tCan be given as prophylaxis" << "\n";
   if(percent_symptomatics != 0)
-    cout << "\n\tGiven to percent symptomatics:\t" << percent_symptomatics;
+    cout << "\tGiven to percent symptomatics:\t" << percent_symptomatics << "\n";
   
   
-  cout << "\n\tAV Course start day (max " << max_av_course_start_day << "):";
+  cout << "\n\tAV Course start day (max " << max_av_course_start_day << "):" << "\n";
   for (int i = 0; i <= max_av_course_start_day; i++) {
-    if((i%5)==0) cout << "\n\t\t\t";
-    cout << av_course_start_day[i] << " ";
+    if((i%5)==0) cout << "\n\t\t\t" << "\n";
+    cout << av_course_start_day[i] << " " << "\n";
   }
-  cout << "\n";
 }
 
-void Antiviral::print_stocks(void){
-  cout << "\n Current: "<< stock << " Reserve: "<<reserve << " TAvail: "<< total_avail;
-}
-
-void Antiviral::reset(void){
+void Antiviral::reset(void) { 
   stock = initial_stock;
   reserve = total_avail-initial_stock;
 }
 
-void Antiviral::report(int day){
-  //Don't know what to do yet
-  cout << "\nNeed to write a report function";
+void Antiviral::print_stocks(void) {
+  cout << "Current: "<< stock << " Reserve: "<<reserve << " TAvail: "<< total_avail << "\n";
 }
 
-void Antiviral::update(int day){
-  if(day >= start_day) add_stock(additional_per_day);
+void Antiviral::report(int day) {
+  //STB - Need add a report utility
+  cout << "\nNeed to write a report function";
 }
 
 
@@ -135,41 +136,39 @@ int Antiviral::quality_control(int nstrains){
   return 0;
 }
 
-void Antiviral::effect(Health *h, int cur_day, AV_Status* av_stats){
+void Antiviral::effect(Health *health, int cur_day, AV_Health* av_health){
   // We need to calculate the effect of the AV on all strains it is applicable to
-  int nstrains = h->get_num_strains();
-  for(int is=0;is<nstrains;is++){
+  int nstrains = health->get_num_strains();
+  for(int is=0;is<nstrains;is++) {
     if(is == strain){ //Is this antiviral applicable to this strain
       // If this is the first day of AV Course
-      //cout <<"\nIn effect is = " << is << " av start day = "<< av_stats->get_av_start_day() << " cur_day = "<<cur_day;
-      if(cur_day == av_stats->get_av_start_day()){
-	h->modify_susceptibility(is,reduce_susceptibility);
+      if(cur_day == av_health->get_av_start_day()) {
+	health->modify_susceptibility(is,reduce_susceptibility);
 	// If you are already exposed, we need to modify your infection
-	if((h->get_exposure_date(is) > -1) && (cur_day > h->get_exposure_date(is))){
-	  cout << "\nreducing an already exposed person";
-	  h->modify_infectivity(is,reduce_infectivity);
-	  h->modify_develops_symptoms(is,roll_will_have_symp(), cur_day);
-	  h->modify_asymptomatic_period(is,reduce_asymp_period,cur_day);
-	  h->modify_symptomatic_period(is,reduce_symp_period,cur_day);
+	if((health->get_exposure_date(is) > -1) && (cur_day > health->get_exposure_date(is))){
+	  cout << "reducing an already exposed person\n";
+	  health->modify_infectivity(is,reduce_infectivity);
+	  health->modify_develops_symptoms(is,roll_will_have_symp(), cur_day);
+	  health->modify_asymptomatic_period(is,reduce_asymp_period,cur_day);
+	  health->modify_symptomatic_period(is,reduce_symp_period,cur_day);
 	}
       }
       // If today is the day you got exposed, prophilaxis
-      if(cur_day == h->get_exposure_date(is)){ 
-	cout << "\nreducing agent on the day they are exposed";
-	h->modify_infectivity(is,reduce_infectivity);
-	h->modify_develops_symptoms(is,roll_will_have_symp(),cur_day);
-	h->modify_asymptomatic_period(is,reduce_asymp_period,cur_day);
-	h->modify_symptomatic_period(is,reduce_symp_period,cur_day);
+      if(cur_day == health->get_exposure_date(is)) { 
+	if(Debug > 3) cout << "reducing agent on the day they are exposed\n";
+	health->modify_infectivity(is,reduce_infectivity);
+	health->modify_develops_symptoms(is,roll_will_have_symp(),cur_day);
+	health->modify_asymptomatic_period(is,reduce_asymp_period,cur_day);
+	health->modify_symptomatic_period(is,reduce_symp_period,cur_day);
       }
       // If this is the last day of the course
-      if(cur_day == av_stats->get_av_end_day()){
-	cout << "\nresetting agent to original state";
-	h->modify_susceptibility(is,1.0/reduce_susceptibility);
-	if(cur_day >= h->get_exposure_date(is)){
-	  h->modify_infectivity(is,1.0/reduce_infectivity);
+      if(cur_day == av_health->get_av_end_day()) {
+	if(Debug > 3) cout << "resetting agent to original state\n";
+	health->modify_susceptibility(is,1.0/reduce_susceptibility);
+	if(cur_day >= health->get_exposure_date(is)) {
+	  health->modify_infectivity(is,1.0/reduce_infectivity);
 	}
       }  
     }
   }
-  cout <<"\n";
 }

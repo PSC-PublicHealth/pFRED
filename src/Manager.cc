@@ -18,7 +18,7 @@
 using namespace std;
 
 Manager::Manager(Population *P){
-  Pop = P;
+  pop = P;
   //current_person = Pop-> // need to figure out how to set this
   current_strain = 0;
   current_policy = 0;
@@ -29,6 +29,6 @@ int Manager::poll_manager(Person* p, int strain, int day){
   current_person = p;
   current_strain = strain;
   current_day = day;
-  int result = Policies[current_policy]->choose();
+  int result = policies[current_policy]->choose();
   return result;
 }

@@ -12,31 +12,30 @@
 #ifndef _FRED_VACCINES_H
 #define _FRED_VACCINES_H
 
-#include "Vaccine.h"
-#include "VaccineDose.h"
+class Vaccine;
+class Vaccine_Dose;
 
-//class Vaccine;
-//class Vaccine_Dose;
-
-class Vaccines{
+class Vaccines {
+  // Vaccines is a class used to describe a group of Vaccine Classes
  public:
-  Vaccines(string vaccFile);
+  // Creation Operations
+  Vaccines(void) { }
+  void setup(string _vaccince_file);
+
+  Vaccine *get_vaccine(int i) const { return vaccines[i];}
   
-  Vaccine *get_vaccine(int i){ return &vaccines[i];}
-    
-  void update(int day);
   vector <int> which_vaccines_applicable(int age);
   int pick_from_applicable_vaccines(int age);
-  int choose_vaccine(int age);
   int get_total_vaccines_avail_today(void);
   
   
   //utility Functions
   void print(void);
   void print_current_stocks(void);
+  void update(int day);
   void reset(void);
  private:
-  vector < Vaccine > vaccines;
+  vector < Vaccine* > vaccines;
 }; 
 
 #endif

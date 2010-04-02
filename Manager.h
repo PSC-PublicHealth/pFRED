@@ -23,9 +23,9 @@ class Decision;
 using namespace std;
 class Manager{
  protected:
-  vector <Policy * > Policies;
-  vector < int > Results;
-  Population *Pop;
+  vector <Policy * > policies;
+  vector < int > results;
+  Population *pop;
   Person* current_person;
   int current_strain;
   int current_policy;
@@ -37,7 +37,7 @@ class Manager{
   virtual int poll_manager(Person* p, int strain, int day);  // stain is here... and that sucks.
 
   // Parameters
-  Population* get_population(void){ return Pop;}
+  Population* get_population(void){ return pop;}
   Person* get_current_person(void) { return current_person; }
   int get_current_policy(void){return current_policy; }
   int get_current_strain(void){return current_strain; }

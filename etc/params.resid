@@ -1,6 +1,6 @@
 runs = 1
-popfile = alleg_pop.txt
-locfile = alleg_loc.txt
+popfile = test_pop.txt
+locfile = test_loc.txt
 
 trans[0] = 1.0
 symp[0] = 0.67
@@ -14,5 +14,5 @@ workplace_contacts[0] = 1
 office_contacts[0] = 6
 hospital_contacts[0] = 0
 
-residual_immunity_ages[0] = 16 0 4 5 14 15 24 25 49 50 64 65 74 75 79 79 100
+residual_immunity_ages[0] = 16 0 4 5 14 15 24 25 49 50 64 65 74 75 79 80 100
 residual_immunity_values[0] = 8 1.8 3.7 17.5 9.8 14.3 21.1 18.7 31.3 

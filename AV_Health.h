@@ -23,17 +23,17 @@ class Health;
 
 using namespace std;
 
-class AV_Status{
+class AV_Health{
  public:
   // Creation Operations
-  AV_Status(void);
-  AV_Status(int day, Antiviral* av, Health* h);
+  AV_Health(void);
+  AV_Health(int _av_day, Antiviral* _AV, Health* _health);
   
   //Access Members 
-  int get_av_start_day(void)     {return av_day;}
-  int get_av_end_day(void) {return av_end_day;}
-  Health* get_health(void) {return health;}
-  int get_strain(void) {return strain;}
+  int get_av_start_day(void)        const {return av_day;}
+  int get_av_end_day(void)          const {return av_end_day;}
+  Health* get_health(void)          const {return health;}
+  int get_strain(void)              const {return strain;}
   
   int is_on_av(int day)    {
     if((day >= av_day) && (day <= av_end_day)) return 1;
@@ -46,16 +46,17 @@ class AV_Status{
   }
 
   //Utility Functions
+  void update(int day);
   void print(void);
   void printTrace(void);
-  void update(int day);
+  
   
  private:
-  int av_day;
-  int av_end_day;
-  Health* health;
-  int strain;
-  Antiviral* AV; 
+  int av_day;           // Day on which the AV treatment starts
+  int av_end_day;       // Day on which the AV treatment ends
+  Health* health;       // Pointer to the health class for agent
+  int strain;           // Strain for this AV
+  Antiviral* AV;        // Pointer to the AV the person took
 };
 
 #endif

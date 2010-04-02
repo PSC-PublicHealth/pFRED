@@ -26,54 +26,48 @@ class Vaccines;
 class Person;
 class Policy;
 
-
-
 class Vaccine_Manager: public Manager {
-  Vaccines *Vaccs;
-  vector < Person * > Priority_Queue;
-  vector < Person * > Queue;
-  vector < Policy * > Queue_Policies;
-  
-  int current_priority_queue_position;
-  int current_reg_queue_position;
-
-  //Parameters from Input
-  int do_vacc;
-  int vaccine_compliance;
-  int vaccine_priority_scheme;
-  int vaccine_priority_only;
-
-  int vaccine_priority_age_low;
-  int vaccine_priority_age_high;
-
-  int vaccination_capacity;            // How many people can be vaccinated a day
-
  public:
-  Vaccine_Manager(Population *P);
+  Vaccine_Manager(Population *_pop);
   
-  //Parameters
-  int do_vaccination(void){ return do_vacc; }
-  Vaccines* get_vaccines(void) { return Vaccs; }
-  vector < Person * > *get_priority_queue(void) { return &Priority_Queue;}
-  vector < Person * > *get_queue(void) { return &Queue;}
-  int get_number_in_priority_queue(void) { return Priority_Queue.size(); }
-  int get_number_in_reg_queue(void) { return Queue.size(); }
+  //Parameters Access
+  bool do_vaccination(void)                     const { return do_vacc; }
+  Vaccines* get_vaccines(void)                  const { return vaccine_package; }
+  vector < Person* > get_priority_queue(void)   const { return priority_queue;}
+  vector < Person* > get_queue(void)            const { return queue;}
+  int get_number_in_priority_queue(void)        const { return priority_queue.size(); }
+  int get_number_in_reg_queue(void)             const { return queue.size(); }
  
-  // Let's do stuff 
-  void Fill_Queues(void);
-  int Vaccinate(void);
+  // Vaccination Specific Procedures
+  void fill_queues(void);
+  void vaccinate(void);
   
-  
-  //Get Paramters
-  int get_vaccine_compliance(void){return vaccine_compliance;}
-  int get_vaccine_priority_age_low(void){return vaccine_priority_age_low;}
-  int get_vaccine_priority_age_high(void){return vaccine_priority_age_high;}
+  //Paramters Access Members
+  int get_vaccine_compliance(void)        const {return vaccine_compliance;}
+  int get_vaccine_priority_age_low(void)  const {return vaccine_priority_age_low;}
+  int get_vaccine_priority_age_high(void) const {return vaccine_priority_age_high;}
   
   // Utility Members
   void update(int day);
   void reset(void);
   void print(void);
 
+ private:
+  Vaccines* vaccine_package;                     //Pointer to the vaccines that this manager oversees
+  vector < Person* > priority_queue;   //Queue for the priority agents
+  vector < Person* > queue;            //Queue for everyone else
+  
+  //Parameters from Input 
+  bool   do_vacc;                         //Is Vaccination being performed
+  double vaccine_compliance;              //Global compliance parameter
+  int    vaccine_priority_scheme;         //Priority policy to use (see defines above)
+  bool   vaccine_priority_only;           //True - Vaccinate only the priority
+  
+  int vaccine_priority_age_low;           //Age specific priority
+  int vaccine_priority_age_high;
+  
+  int vaccination_capacity;               // How many people can be vaccinated a day
+  
 };
 
 

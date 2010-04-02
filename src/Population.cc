@@ -23,7 +23,7 @@
 #include "Manager.h"
 #include "AV_Manager.h"
 #include "Vaccine_Manager.h"
-#include "AgeMap.h"
+#include "Age_Map.h"
 #include "Random.h"
 
 using namespace std; 
@@ -52,7 +52,6 @@ void Population::get_parameters() {
       printf("\n");
     }
   }
-
 }
 
 void Population::setup() {
@@ -70,27 +69,10 @@ void Population::setup() {
     fprintf(Statusfp, "setup population completed, strains = %d\n", strains);
     fflush(Statusfp);
   }
-
-  //STB - need to clean up so that it just uses strings
-  char vaccfile[255];
-  get_param((char*)"vaccine_file",vaccfile);
-   
-  vacc_manager = new Vaccine_Manager(this);
-  av_manager = new AV_Manager(this);
-  if(Verbose > 1) av_manager->print();
-  char s[80];
   
-  for(int is = 0; is< strains; is++){
-    sprintf(s,"residual_immunity_ages[%d]",is);
-    if(does_param_exist(s)){
-      residual_immunity = new AgeMap("Residual Immunity");
-      stringstream ss; 
-      ss << "residual_immunity[" << is<< "]";
-      residual_immunity->read_from_input(ss.str());
-      residual_immunity->print();
-      
-    }
-  }
+  vacc_manager = new Vaccine_Manager(this);
+  av_manager   = new AV_Manager(this);
+  if(Verbose > 1) av_manager->print();
 }
 
 void Population::read_population() {
@@ -133,6 +115,7 @@ void Population::read_population() {
 		 Loc.get_location(classroom),
 		 Loc.get_location(work),
 		 Loc.get_location(office),
+
 		 profile,this);
     pop[p].reset();
   }
@@ -157,15 +140,17 @@ void Population::reset(int run) {
   for (int p = 0; p < pop_size; p++){
     pop[p].reset();
   }
-  
-  if(residual_immunity != NULL){
-    for(int is =0;is < strains; is++){
-      apply_residual_immunity(strain[is]);
+  if(Verbose > 1){
+    int count = 0;
+    for(int p = 0; p < pop_size; p++){
+      Strain* s = &strain[0];
+      if(pop[p].get_health()->is_immune(s)) count++;
     }
+    cout << "Number of Residually Immune people = "<<count << "\n";
   }
   av_manager->reset();
   vacc_manager->reset();
-
+  
   if (Verbose) {
     fprintf(Statusfp, "reset population completed\n");
     fflush(Statusfp);
@@ -258,21 +243,4 @@ void Population::population_quality_control() {
     fflush(Statusfp);
   }
 }
-
-void Population::apply_residual_immunity(Strain strain){
-  int numimmune = 0;
-  for( int ip = 0; ip < pop_size; ip++){
-    Person* p = &pop[ip];
-    int age = p->get_age();
-    int value = residual_immunity->find_value(age);
-    //cout << "\n Age = "<<age << " Value = "<<value;
-    if(RANDOM()*100. < value){
-      p->get_health()->immunize(&strain);
-      numimmune++;
-    }
-  }
-  
-  cout << "\nNumber of People made immune from residual immunity " << numimmune;
-}
-
       

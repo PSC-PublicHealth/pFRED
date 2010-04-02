@@ -48,6 +48,7 @@ public:
   void become_susceptible(int strain);
   void become_exposed(Infection *infection);
   void become_infectious(Strain * strain);
+  void become_immune(Strain *strain);
   void recover(Strain * strain);
   void behave(int day);
   int is_symptomatic();
@@ -79,7 +80,6 @@ public:
   Behavior* get_behavior()         {return behavior;}
   Demographics* get_demographics() {return demographics;}
   Perceptions* get_perceptions()   {return perceptions;}
-
   Population* get_population()     {return pop;}
 
 private:

@@ -19,8 +19,8 @@
 #include "Place.h"
 #include "Strain.h"
 #include "Population.h"
-#include "VaccineStatus.h"
-#include "AV_Status.h"
+//#include "Vaccine_Health.h"
+#include "AV_Health.h"
 
 void Person::setup(int index, int age, char sex, int marital, int occ,
 		   int profession, Place *house, Place *neigh,
@@ -52,7 +52,7 @@ void Person::print(int strain) {
 
   fprintf(Tracefp, "antivirals: %2d ",health->get_number_av_taken());
   for(int i=0;i<health->get_number_av_taken();i++)
-    fprintf(Tracefp," %2d",health->get_av_stat(i)->get_av_start_day());
+    fprintf(Tracefp," %2d",health->get_av_health(i)->get_av_start_day());
 
 
   // fprintf(Tracefp, "vaccines: %2d", health->get_number_vaccines_taken());
@@ -114,6 +114,12 @@ void Person::become_infectious(Strain * strain) {
   behavior->become_infectious(strain_id);
 }
 
+void Person::become_immune(Strain* strain) {
+  int strain_id = strain->get_id();
+  health->become_immune(strain);
+  behavior->become_immune(strain_id);
+}
+  
 void Person::recover(Strain * strain) {
   int strain_id = strain->get_id();
   health->recover(strain);
@@ -209,3 +215,4 @@ int Person::add_infectee(int strain) {
 int Person::is_new_case(int day, int strain) {
   return (health->get_exposure_date(strain) == day);
 }
+

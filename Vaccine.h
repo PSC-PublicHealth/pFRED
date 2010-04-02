@@ -16,31 +16,33 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+
 using namespace std;
-//#include "AgeMap.h"
-//#include "VaccineDose.h"
 
 class Vaccine_Dose;
-class AgeMap;
 
 class Vaccine{
  public:
-  Vaccine(string nm, int id, int str, int low_age, int high_age, int totav, int addpday, int stday);
-  void Add_dose(Vaccine_Dose dose);
+  // Creation
+  Vaccine(string _name, int _id, int _strain, int _age0, int _age1, 
+	  int _total_avail, int _additional_per_day, int _start_day);
+  ~Vaccine(void);
   
-  int get_strain(void)   { return strain; }
-  int get_ID(void)       { return ID; }
-  int get_number_doses(void) { return number_doses; }
-  int get_low_age(void);
-  int get_high_age(void);
-  Vaccine_Dose *get_dose(int i){ return &Doses[i]; }
+  void add_dose(Vaccine_Dose* dose);
+  
+  int get_strain(void)             const { return strain; }
+  int get_ID(void)                 const { return id; }
+  int get_number_doses(void)       const { return number_doses; }
+  int get_low_age(void) const;
+  int get_high_age(void) const;
+  Vaccine_Dose* get_dose(int i)    const { return doses[i]; }
   
   // Logistics Functions
-  int get_initial_stock(void)     { return initial_stock; }
-  int get_total_avail(void)       { return total_avail; }
-  int get_current_reserve(void)   { return reserve; }
-  int get_current_stock(void)     { return stock; }
-  int get_additional_per_day(void){ return additional_per_day;}
+  int get_initial_stock(void)      const { return initial_stock; }
+  int get_total_avail(void)        const { return total_avail; }
+  int get_current_reserve(void)    const { return reserve; }
+  int get_current_stock(void)      const { return stock; }
+  int get_additional_per_day(void) const { return additional_per_day; }
   void add_stock( int add ){ 
     if(add <= reserve){
       stock   += add;
@@ -63,12 +65,12 @@ class Vaccine{
   void reset(void);
 
  private:
-  string Name;
-  int ID;                              // Which in the number of vaccines is it
+  string name;
+  int id;                              // Which in the number of vaccines is it
   int strain;                          // Which Strain is this vaccine for
   int number_doses;                    // How many doses does the vaccine need.
   int ages[2];                         // Applicable Ages
-  vector < Vaccine_Dose > Doses;       // Data structure to hold the efficacy of each dose.
+  vector < Vaccine_Dose* > doses;       // Data structure to hold the efficacy of each dose.
   
   int initial_stock;                   // How much available at the beginning
   int total_avail;                     // How much total in reserve

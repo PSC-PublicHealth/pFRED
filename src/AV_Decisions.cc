@@ -14,6 +14,7 @@
 #include "Manager.h"
 #include "AV_Manager.h"
 #include "Antivirals.h"
+#include "Antiviral.h"
 #include "Random.h"
 #include "Person.h"
 #include "Health.h"

@@ -151,6 +151,16 @@ void Behavior::become_infectious(int strain) {
   }
 }
 
+void Behavior::become_immune(int strain) {
+  // remove me from the susceptible list at my favorite places
+  // STB - While this is really the same as become_exposed, I thought it important to 
+  //       make sure there was a differentiation
+  for (int p = 0; p < favorite_places; p++) {
+    if (favorite_place[p] == NULL) continue;
+    favorite_place[p]->delete_susceptible(strain, self);
+  }
+}
+
 void Behavior::recover(int strain) {
   // remove me from infectious list at my favorite places
   for (int p = 0; p < favorite_places; p++) {

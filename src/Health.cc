@@ -20,10 +20,10 @@
 #include "Global.h"
 #include "Manager.h"
 #include "AV_Manager.h"
-#include "AV_Status.h"
+#include "AV_Health.h"
 #include "Vaccine.h"
-#include "VaccineDose.h"
-#include "VaccineStatus.h"
+#include "Vaccine_Dose.h"
+#include "Vaccine_Health.h"
 
 Health::Health (Person * person) {
   self = person;
@@ -33,31 +33,58 @@ Health::Health (Person * person) {
   for (int strain = 0; strain < strains; strain++) {
     infection[strain] = NULL;
   }
-  immunity.assign(strains,0);
   susceptibility_multp = new double [strains];
 
   // Immunity to the strains setting immunity to 0 
-  immunity.assign(strains,0);
-  checked_for_av.assign(strains,0);
+  int nav;
+  //get_param((char *) "number_antivirals",&nav);
+  nav = 4;  // Just put there to make sure there is space.  
+  // If  I call get_param, it prints out a line in the output 
+  // for every agent.  Need to fix.
+  //This actually allocates the space for these vectors
+  checked_for_av.assign(nav,false);
+  immunity.assign(strains,false);
   reset();
 }
 
 Health::~Health(void){
   delete infection;
-  for(unsigned int i=0;i<vaccine_stats.size();i++)
-    delete vaccine_stats[i];
-  for(unsigned int i=0;i<av_stats.size();i++)
-    delete av_stats[i];
+  for(unsigned int i=0;i<vaccine_health.size();i++)
+    delete vaccine_health[i];
+  for(unsigned int i=0;i<av_health.size();i++)
+    delete av_health[i];
 }
 
 void Health::reset() {
 
+  immunity.assign(immunity.size(),false);
+  
   for (int strain = 0; strain < strains; strain++) {
-    immunity[strain] = 0;
-    become_susceptible(strain);
+    Strain* s = Pop.get_strain(strain);
+    if(s->get_residual_immunity()->get_num_ages()!=0){
+      double residual_immunity_prob = s->get_residual_immunity()->find_value(self->get_age());
+      if(RANDOM()*100. < residual_immunity_prob){
+	self->become_immune(s);
+      }
+      else{
+	become_susceptible(strain);
+      }
+    }
+    else{
+      become_susceptible(strain);
+    }
   }
-  immunity.assign(immunity.size(),0);
-  checked_for_av.assign(checked_for_av.size(),0);
+  
+  //Clean out the stats objects
+  for(unsigned int i=0;i<vaccine_health.size();i++)
+    delete vaccine_health[i];
+  vaccine_health.clear();
+  
+  for(unsigned int i=0;i<av_health.size();i++)
+    delete av_health[i];
+  av_health.clear();
+
+  checked_for_av.assign(checked_for_av.size(),false);
 }
 
 void Health::become_susceptible(int strain) {
@@ -70,7 +97,7 @@ void Health::become_susceptible(int strain) {
 
 void Health::update(int day) {
   //Update Vaccine Status
-  for(unsigned int i=0;i<vaccine_stats.size();i++) vaccine_stats[i]->update(day, self->get_age());
+  for(unsigned int i=0;i<vaccine_health.size();i++) vaccine_health[i]->update(day, self->get_age());
     
   update_mutations(day);
   for (int s = 0; s < strains; s++) {
@@ -81,7 +108,7 @@ void Health::update(int day) {
   }
   
   //Update Antiviral Status
-  for(unsigned int i=0;i<av_stats.size();i++) av_stats[i]->update(day);
+  for(unsigned int i=0;i<av_health.size();i++) av_health[i]->update(day);
 }
 
 void Health::update_mutations(int day) {
@@ -93,7 +120,7 @@ void Health::update_mutations(int day) {
     char status = get_strain_status(s);
     if (status == 'S' || status == 'M' || status == 'R')
       continue;
-    if (is_on_av(day, s) != -1) {
+    if (is_on_av_for_strain(day, s) == true) {
       if (Verbose > 1) {
  	fprintf(Statusfp, "person %d IS ON AV on day %i\n", self->get_id(), day-1);
  	fflush(Statusfp);
@@ -170,17 +197,18 @@ void Health::become_infectious(Strain * strain) {
   }
 }
 
+void Health::become_immune(Strain* strain) {
+  int strain_id = strain->get_id();
+  if(get_strain_status(strain_id) == 'S'){
+    immunity[strain_id] = true; 
+  }
+}
+
+
 void Health::recover(Strain * strain) {
   int strain_id = strain->get_id();
   infection[strain_id]->recover();
   strain->remove_from_infectious_list(self);
-}
-
-void Health::immunize(Strain* strain){
-  int strain_id = strain->get_id();
-  if(get_strain_status(strain_id) == 'S'){
-    immunity[strain_id] = 1;
-  }
 }
 
 int Health::is_symptomatic() {
@@ -265,34 +293,39 @@ double Health::get_infectivity(int strain) {
 
 //Modify Operators
 void Health::modify_susceptibility(int strain, double multp) {
-  if(Debug > 2) cout << "\nModifying Agent " << self->get_id() << " susceptibility for strain " << strain << " by " << multp;
+  if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " susceptibility for strain " 
+		     << strain << " by " << multp << "\n";
   susceptibility_multp[strain] *= multp;
 }
 
 void Health::modify_infectivity(int strain, double multp) {
   if (infection[strain] != NULL) {
-    if(Debug > 2) cout << "\nModifying Agent " << self->get_id() << " infectivity for strain " << strain << " by " << multp;
+    if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " infectivity for strain " << strain 
+		       << " by " << multp << "\n";
     infection[strain]->modify_infectivity(multp);
   }
 }
 
 void Health::modify_infectious_period(int strain, double multp, int cur_day){
   if (infection[strain] != NULL) {
-    if(Debug > 2) cout << "\nModifying Agent " << self->get_id() << " infectivity for strain " << strain << " by " << multp;
+    if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " infectivity for strain " << strain 
+		       << " by " << multp << "\n";
     infection[strain]->modify_infectious_period(multp, cur_day);
   }
 }
 
 void Health::modify_asymptomatic_period(int strain, double multp, int cur_day) {
   if (infection[strain] != NULL) {
-    if(Debug > 2) cout << "\nModifying Agent " << self->get_id() << " asymptomatic period  for strain " << strain << " by " << multp;
+    if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " asymptomatic period  for strain " << strain 
+		       << " by " << multp << "\n";
     infection[strain]->modify_asymptomatic_period(multp, cur_day);
   }
 }
 
 void Health::modify_symptomatic_period(int strain, double multp, int cur_day) {
   if (infection[strain] != NULL) {
-    if(Debug > 2) cout << "\nModifying Agent " << self->get_id() << " symptomatic period  for strain " << strain << " by " << multp;
+    if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomatic period  for strain " << strain 
+		       << " by " << multp << "\n";
     infection[strain]->modify_symptomatic_period(multp, cur_day);
   }
 }
@@ -301,41 +334,35 @@ void Health::modify_develops_symptoms(int strain, bool symptoms, int cur_day) {
   if (infection[strain] != NULL &&
       (infection[strain]->get_strain_status() == 'i' ||
        infection[strain]->get_strain_status() == 'E')){
-    if(Debug > 2) cout << "\nModifying Agent " << self->get_id() << " symptomaticity  for strain " << strain << " to " << symptoms;
+    if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomaticity  for strain " << strain 
+		       << " to " << symptoms << "\n";
     infection[strain]->modify_develops_symptoms(symptoms, cur_day);
   }
 }
 
-void Health::immunize(int strain){
-  if(get_strain_status(strain) == 'S'){
-    immunity[strain] = 1;
-  }
-}
-  
 //Medication operators
-int Health::take(Antiviral *av, int day){
-  av_stats.push_back(new AV_Status(day,av,this));
-  return 1;
-}
-
-int Health::take(Vaccine *vacc, int day){
+void Health::take(Vaccine* vaccine, int day){
   // Compliance will be somewhere else
   int age = self->get_age();
-  vaccine_stats.push_back(new Vaccine_Status(day,vacc,age,this));
+  vaccine_health.push_back(new Vaccine_Health(day,vaccine,age,this));
   
-  fprintf(VaccineTracefp," id %7d vaccid %3d ",self->get_id(),vaccine_stats[vaccine_stats.size()-1]->get_vaccine()->get_ID());
-  vaccine_stats[vaccine_stats.size()-1]->printTrace();
-  fprintf(VaccineTracefp,"\n");
-  return 0;
+  fprintf(VaccineTracefp," id %7d vaccid %3d\n",self->get_id(),vaccine_health[vaccine_health.size()-1]->get_vaccine()->get_ID());
+  vaccine_health[vaccine_health.size()-1]->printTrace();
+  return;
 }
 
-int Health::is_on_av(int day, int s){
-  for(unsigned int iav = 0; iav < av_stats.size(); iav++){
-    if(av_stats[iav]->get_strain()==s &&
-       (day >= av_stats[iav]->get_av_start_day() &&
-	day <= av_stats[iav]->get_av_end_day())){
-      return 1;
+void Health::take(Antiviral* av, int day){
+  av_health.push_back(new AV_Health(day,av,this));
+  return;
+}
+
+bool Health::is_on_av_for_strain(int day, int s){
+  for(unsigned int iav = 0; iav < av_health.size(); iav++){
+    if(av_health[iav]->get_strain()==s &&
+       (day >= av_health[iav]->get_av_start_day() &&
+	day <= av_health[iav]->get_av_end_day())){
+      return true;
     }
   }
-  return -1;
+  return false;
 }

@@ -21,6 +21,7 @@ class Person;
 class Place;
 class Population;
 class Spread;
+class Age_Map;
 
 class Strain {
 public:
@@ -49,6 +50,8 @@ public:
   double get_transmissibility() { return transmissibility; }
   double get_prob_symptomatic() { return prob_symptomatic; }
   double get_attack_rate();
+  Age_Map* get_residual_immunity(void) const { return residual_immunity; }
+  
   
   // Draws from this strain's mutation probability distribution, and returns
   // the strain to mutate to, or NULL if no mutation should occur.
@@ -82,6 +85,7 @@ private:
   double immunity_loss_rate;
   double *mutation_prob;
   Spread *spread;
+  Age_Map *residual_immunity;
 
   // Vars that are not strain-specific (for updating global stats).
   Population *population;

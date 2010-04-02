@@ -16,12 +16,13 @@
 #include "AV_Policies.h"
 #include "Population.h"
 #include "Antivirals.h"
+#include "Antiviral.h"
 #include "Params.h"
 #include "Person.h"
 
-AV_Manager::AV_Manager(Population *P):
-  Manager(P){
-  Pop = P;
+AV_Manager::AV_Manager(Population *_pop):
+  Manager(_pop){
+  pop = _pop;
   
   char s[80];
   int nav;
@@ -31,28 +32,22 @@ AV_Manager::AV_Manager(Population *P):
   do_av=0;
   if(nav > 0){
     do_av = 1;
-    AVs = new Antivirals();
+    av_package = new Antivirals();
  
     // Gather relavent Input Parameters
-    sprintf(s,"av_percent_symptomatics_given");
-    percent_symptomatics_given = 100.0;
-    if(does_param_exist(s))
-      get_param(s,&percent_symptomatics_given);
-    
     sprintf(s,"av_overall_start_day");
     overall_start_day = 0;
     if(does_param_exist(s))
       get_param(s,&overall_start_day);
 
     // Need to fill the AV_Manager Policies
-    Policies.push_back(new AV_Policy_Distribute_To_Symptomatics(this)); 
-    Policies.push_back(new AV_Policy_Distribute_To_Everyone(this));
+    policies.push_back(new AV_Policy_Distribute_To_Symptomatics(this)); 
+    policies.push_back(new AV_Policy_Distribute_To_Everyone(this));
     
     // Need to run through the Antivirals and give them the appropriate policy
     set_policies();
   }
   else{
-    percent_symptomatics_given = -1.0;
     overall_start_day = -1;
   }
 }
@@ -60,9 +55,9 @@ AV_Manager::AV_Manager(Population *P):
 void AV_Manager::update(int day){
   if(do_av==1){
     current_day = day;
-    AVs->update(day);
+    av_package->update(day);
     //   if(Debug > 1){
-      AVs->print_stocks();
+      av_package->print_stocks();
       //}
   }
 }
@@ -72,23 +67,23 @@ void AV_Manager::reset(void){
   current_person = NULL;
   current_strain = -1;
   if(do_av==1){
-    AVs->reset();
+    av_package->reset();
   }
 }
 
 void AV_Manager::print(void){
   if(do_av == 1)
-    AVs->print();
+    av_package->print();
 }			
 
 void AV_Manager::set_policies(void){
-  vector < Antiviral* > avs = AVs->get_AV_vector();
+  vector < Antiviral* > avs = av_package->get_AV_vector();
   for(unsigned int iav = 0;iav<avs.size();iav++){
     if(avs[iav]->is_prophylaxis()){
-      avs[iav]->set_policy(Policies[1]);
+      avs[iav]->set_policy(policies[AV_POLICY_GIVE_EVERYONE]);
     }
     else{ 
-      avs[iav]->set_policy(Policies[0]);
+      avs[iav]->set_policy(policies[AV_POLICY_PERCENT_SYMPT]);
     }
   }
 }
@@ -96,11 +91,11 @@ void AV_Manager::set_policies(void){
 void AV_Manager::disseminate(int day){
   // There is no queue, only the whole population
   if(do_av==0) return;
-  Person* people = Pop->get_pop();
-  int npeople = Pop->get_pop_size();
+  Person* people = pop->get_pop();
+  int npeople = pop->get_pop_size();
   current_day = day;
-  // The AVs are in a priority based order, so lets loop over the AVs first
-  vector < Antiviral* > avs = AVs->get_AV_vector();
+  // The av_package are in a priority based order, so lets loop over the av_package first
+  vector < Antiviral* > avs = av_package->get_AV_vector();
   for(unsigned int iav = 0; iav<avs.size(); iav++){
     Antiviral * av = avs[iav];
     if(av->get_current_stock() > 0){

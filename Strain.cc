@@ -13,6 +13,8 @@
 
 #include <stdio.h>
 #include <new>
+#include <string>
+#include <sstream>
 using namespace std;
 
 #include "Global.h"
@@ -23,11 +25,13 @@ using namespace std;
 #include "Place.h"
 #include "Population.h"
 #include "Random.h"
+#include "Age_Map.h"
 #include "Spread.h"
 
 double Prob_stay_home;
 
 Strain::Strain() {
+  residual_immunity = NULL;
 }
 
 void Strain::reset() {
@@ -89,6 +93,14 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   population = pop;
   spread = new Spread(this);
 
+  // Define residual immunity
+  sprintf(s,"residual_immunity_ages[%d]",id);
+  residual_immunity = new Age_Map("Residual Immunity");
+  stringstream ss; 
+  ss << "residual_immunity[" << id << "]";
+  residual_immunity->read_from_input(ss.str());
+  residual_immunity->print();
+  
   printf("Strain setup finished\n"); fflush(stdout);
   if (Verbose) print();
 }

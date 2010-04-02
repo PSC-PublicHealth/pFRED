@@ -14,10 +14,10 @@
 #define _FRED_HEALTH_H
 
 #include <vector>
-#include "VaccineStatus.h"
 using namespace std;
 
 #include "Infection.h"
+#include "Strain.h"
 
 class Person;
 class Infection;
@@ -25,9 +25,9 @@ class Strain;
 class Antiviral;
 class Antivirals;
 class AV_Manager;
-class AV_Status;
+class AV_Health;
 class Vaccine;
-class Vaccine_Status;
+class Vaccine_Health;
 
 class Health {
 public:
@@ -39,9 +39,10 @@ public:
   void become_susceptible(int strain);
   void become_exposed(Infection *inf);
   void become_infectious(Strain * strain);
+  void become_immune(Strain* strain);
   void recover(Strain * strain);
-  void immunize(Strain* strain);
   int is_symptomatic();
+  bool is_immune(Strain* strain){ return immunity[strain->get_id()];}
   inline char get_strain_status(int strain) {
     if(immunity[strain] == 1){
       return 'M';
@@ -68,18 +69,21 @@ public:
   double get_susceptibility(int strain);
   double get_infectivity(int strain);
   Infection* get_infection(int strain) { return infection[strain]; }
-  int is_on_av(int day, int strain);
+  bool is_on_av_for_strain(int day, int strain);
 
   //Medication operators
-  int take(Antiviral *av, int day); //Return 1 if taken
-  int take(Vaccine *vacc, int day); 
-  int get_number_av_taken(void){ return av_stats.size();}
-  int get_checked_for_av(int s) { return checked_for_av[s]; }
-  void flip_checked_for_av(int s) { checked_for_av[s] = 1; }
-  AV_Status* get_av_stat(int i) { return av_stats[i];} 
-  int is_vaccinated(void) { if(vaccine_stats.size() > 0){return 1;} else {return 0;} } // no strain yet!!!!
-  int get_number_vaccines_taken(void) { return vaccine_stats.size();}
-  Vaccine_Status* get_vaccine_stat(int i){ return vaccine_stats[i];}
+  void take(Vaccine *vacc, int day);
+  void take(Antiviral *av, int day);
+  int get_number_av_taken(void)             const { return av_health.size();}
+  int get_checked_for_av(int s)             const { return checked_for_av[s]; }
+  void flip_checked_for_av(int s) { checked_for_av[s] = 1; } 
+  bool is_vaccinated(void) { 
+    if(vaccine_health.size() > 0){return true;} 
+    else {return false;} 
+  } // no strain yet!!!!
+  int get_number_vaccines_taken(void)        const { return vaccine_health.size();}
+  AV_Health* get_av_health(int i)            const { return av_health[i];}
+  Vaccine_Health* get_vaccine_health(int i)  const { return vaccine_health[i];}
 
   //Modifiers
   void modify_susceptibility(int strain, double multp);
@@ -94,17 +98,16 @@ public:
   void modify_asymptomatic_period(int strain, double multp, int cur_day);
   // Can't change develops_symptoms if this person is not asymptomatic ('i' or 'E')
   void modify_develops_symptoms(int strain, bool symptoms, int cur_day);
-  void immunize(int strain);
    
 private:
   Person * self;
   int strains;
   Infection ** infection;
-  vector < int > immunity;
+  vector < bool > immunity;
   double *susceptibility_multp;
-  vector <int > checked_for_av;
-  vector < AV_Status * > av_stats;
-  vector < Vaccine_Status * > vaccine_stats;
+  vector < bool > checked_for_av;
+  vector < AV_Health * > av_health;
+  vector < Vaccine_Health * > vaccine_health;
 };
 
 #endif // _FRED_HEALTH_H

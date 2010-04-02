@@ -11,16 +11,13 @@
 
 #ifndef _FRED_POPULATION_H
 #define _FRED_POPULATION_H
-#include "Antivirals.h"
-//#include "Manager.h"
-//#include "AV_Manager.h"
 
 class Person;
 class Strain;
 class Antivirals;
 class AV_Manager;
 class Vaccine_Manager;
-class AgeMap;
+class Age_Map;
 
 class Population {
 public:
@@ -58,7 +55,7 @@ private:
   int strains;
   double **mutation_prob;
   void read_population();
-  AgeMap* residual_immunity;
+  Age_Map* residual_immunity;
 };
 
 #endif // _FRED_POPULATION_H
