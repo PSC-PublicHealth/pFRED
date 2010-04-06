@@ -17,13 +17,13 @@ my @args = check_varlist($varlist);
 my $FRED = $ENV{FRED_HOME};
 die "Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
 my $bindir = "$FRED/bin";
-my $id = `$bindir/get_id $key`;
+my $id = `$bindir/fred_id $key`;
 chomp $id;
 die "fred_plot: UNKNOWN key: $key\n" if $id eq "UNKNOWN";
 
 die "fred_plot can't find gnuplot\n" if not -e "/usr/local/bin/gnuplot";
 
-my $status = `$bindir/get_status $key`;
+my $status = `$bindir/fred_status -k $key`;
 chomp $status;
 $status =~ s/\s.*//;
 die "fred_plot: bad status: $status\n" if $status ne "FINISHED";

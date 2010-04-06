@@ -2,21 +2,23 @@
 use strict;
 use warnings;
 use Env;
+use Getopt::Std;
+
+my %options = ();
+getopts("k:", \%options);
+my $key = "";
+$key = $options{k} if exists $options{k};
+die "usage: fred_AR -k key\n" if not $key;
 
 my $FRED = $ENV{FRED_HOME};
 die "Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
 
 my $bindir = "$FRED/bin";
-
-my @args = @ARGV;
-my ($key) = $args[0];
-die "usage: fred_AR key\n" if not $key;
-
-my $id = `$bindir/get_id $key`;
+my $id = `$bindir/fred_id $key`;
 chomp $id;
 die "fred_AR: UNKNOWN key: $key\n" if $id eq "UNKNOWN";
 
-my $status = `$bindir/get_status $key`;
+my $status = `$bindir/fred_status -k $key`;
 chomp $status;
 $status =~ s/\s.*//;
 die "fred_AR: bad status: $status\n" if $status ne "FINISHED";
