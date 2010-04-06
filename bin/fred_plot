@@ -28,8 +28,8 @@ chomp $status;
 $status =~ s/\s.*//;
 die "fred_plot: bad status: $status\n" if $status ne "FINISHED";
 
-my $reportsdir = "$FRED/RESULTS/EXP/$id/DATA/REPORTS";
-my $outdir = "$FRED/RESULTS/EXP/$id/DATA/OUT";
+my $reportsdir = "$FRED/RESULTS/RUN/$id/DATA/REPORTS";
+my $outdir = "$FRED/RESULTS/RUN/$id/DATA/OUT";
 
 chdir $reportsdir or die "Can't find REPORTS directory: $reportsdir\n";
 

@@ -21,7 +21,7 @@ die "Can't find directory $dir\n" if not -d $dir;
 my $id = get_id($mykey);
 die "NOT_FOUND\n" if $id eq "";
 
-my $status = `cat $dir/EXP/$id/META/STATUS`;
+my $status = `cat $dir/RUN/$id/META/STATUS`;
 chomp $status;
 $status .= " " . `date`;
 print $status;
@@ -29,7 +29,7 @@ print $status;
 if (defined $secs and $secs =~ /^\d+$/) {
   while ($status !~ /FINISHED/ and $status !~ /NOT_FOUND/) {
     sleep $secs;
-    $status = `cat $dir/EXP/$id/META/STATUS`;
+    $status = `cat $dir/RUN/$id/META/STATUS`;
     chomp $status;
     $status .= " " . `date`;
     print $status;

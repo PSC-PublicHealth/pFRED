@@ -24,12 +24,12 @@ chomp $status;
 $status =~ s/\s.*//;
 die "get_plot: bad status: $status\n" if $status ne "FINISHED";
 
-my $reports = "$FRED/RESULTS/EXP/$id/DATA/REPORTS";
+my $reports = "$FRED/RESULTS/RUN/$id/DATA/REPORTS";
 my $file = "$reports/chain-$run-$agent-$maxdepth.txt";
 if (not -e $file) {
 
   chdir $reports or die "Can't find REPORTS directory: $reports\n";
-  my $out = "$FRED/RESULTS/EXP/$id/DATA/OUT";
+  my $out = "$FRED/RESULTS/RUN/$id/DATA/OUT";
   open IN, "$out/trace$run.txt" or die "fred_chain: can't find $out/trace$run.txt\n";
   my %infects = ();
   my %line = ();

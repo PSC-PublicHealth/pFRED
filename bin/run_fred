@@ -52,9 +52,9 @@ if (not -d $fred_results) {
   mkdir "$fred_results" or (close SEM and die "Can't create RESULTS directory\n");
 }
 
-# create RESULTS/EXP directory if needed
-if (not -d "$fred_results/EXP") {
-  mkdir "$fred_results/EXP" or (close SEM and die "Can't create $fred_results/EXP directory\n");
+# create RESULTS/RUN directory if needed
+if (not -d "$fred_results/RUN") {
+  mkdir "$fred_results/RUN" or (close SEM and die "Can't create $fred_results/RUN directory\n");
 }
 
 # create $fred_results/ID file if needed
@@ -87,7 +87,7 @@ open FH, "$fred_results/KEY";
 while (<FH>) {
   chomp;
   my ($k, $id) = split;
-  if (same_params($params, "$fred_results/EXP/$id/META/PARAMS")) {
+  if (same_params($params, "$fred_results/RUN/$id/META/PARAMS")) {
     close FH;
 
     # add key-id pair
@@ -124,7 +124,7 @@ $key = $id if not defined $key;
 # release semaphore
 close SEM;
 
-my $dir = "$fred_results/EXP/$id";
+my $dir = "$fred_results/RUN/$id";
 die "run_fred: ID $id already used\n" if -d $dir;
 
 # make directory for this experiment
