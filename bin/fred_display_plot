@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Env;
+
+my $FRED = $ENV{FRED_HOME};
+die "Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
+
+system "open `$FRED/bin/fred_plot @ARGV`";
