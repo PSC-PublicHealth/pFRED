@@ -9,6 +9,10 @@
 // File: Fred.cc
 //
 
+#include <err.h>
+#include <errno.h>
+#include <sys/stat.h>
+
 #include "Fred.h"
 #include "Global.cc"
 #include "Strain.h"
@@ -52,6 +56,16 @@ int main(int argc, char* argv[])
 }
 
 void setup(char *paramfile) {
+  mode_t mask;        // the user's current umask
+  mode_t mode = 0777; // as a start
+
+  // create the "OUT" directory, if it does not already exist
+  mask = umask(0); // get the current mask, which reads and sets...
+  umask(mask);     // so now we have to put it back
+  mode ^= mask;    // apply the user's existing umask
+  if (0!=mkdir("OUT", mode) && EEXIST!=errno) // make it
+    err(errno, "mkdir(\"OUT\") failed");      // or die
+
   read_parameters(paramfile);
   get_global_parameters();
   Random_start_day = (Start_day > 6);
