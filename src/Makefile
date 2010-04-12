@@ -50,3 +50,9 @@ dist:
 
 tags:
 	find . -name \*.[ch]* | xargs etags
+
+test:	test_History
+
+History.cc:History.h
+test_History:	test_History.cc History.cc
+	$(CPP) $(CPPFLAGS) -o $@ $^
