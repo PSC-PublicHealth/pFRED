@@ -15,39 +15,65 @@
 #include <vector>
 using namespace std;
 
+#define HE_DAY_BITS 14
+#define HE_TYPE_BITS 4
+#define HE_V2_BITS  14 // put these before V1, to pack out the 1st 32 bits
+#define HE_V1_BITS  32 // !!! Note this must remain precisely 32 bits
+                       //     or we will be unable to store 'floats' !!!
+
 // the base-line event storage entity
 // (designed for a minimum storage footprint)
 struct history_event{
-  short int day:14;  // day of simulation when event occurred
-  short int type:4;  // enumerated type of event (different enum per context)
-  int val1:14;       // small values (like strain)
-  int val2:32;       // large values (like person/place ID)
+  unsigned int day:HE_DAY_BITS;   // day when event occurred
+  unsigned int type:HE_TYPE_BITS; // enumerated type of event
+                                  // (uses enum History_Type_*)
+  unsigned int val2:HE_V2_BITS;   // small values (like strain ID)
+  unsigned int val1:HE_V1_BITS;   // normal (larger) values
+                                  // (like person/place ID/floats)
 };
 
 // every class having a history must have an enumerated list of event types
-enum History_Type_Health {
-  HTH_NULL=0,         // every type shall have a NULL, to identify non-init values
-  HTH_INFECTION,      // event pertains to infection state
-  HTH_INFECTED_PLACE, // where first picked up
-  HTH_INFECTED_BY,    // first picked up from whom
-  HTH_IMMUNITY,       // event pertains to immunity state
-  HTH_ANTIVIRAL,      // event pertains to antiviral state
-  HTH_MAX};           // place-holder to identify out-of-range values
+enum History_Event_Type {
+  HE_NULL=0,         // begins with NULL, to identify non-init values
 
-// every class having a history must have a dedicated parser
-// to interpret the event structure
-// (allowing for varying numbers of stored values)
-ostream&  history_parser_health(ostream& os, struct history_event &event);
+// (Health events)
+  HE_INFECTION,      // event pertains to infection state
+  HE_INFECTED_PLACE, // where first picked up
+  HE_INFECTED_BY,    // first picked up from whom
+  HE_IMMUNITY,       // event pertains to immunity state
+  HE_ANTIVIRAL,      // event pertains to antiviral state
+  HE_MUTATION,       // strain mutated from one to another
+
+// (Behavior events)
+  HE_VISIT,          // visited a place
+  HE_FAVORITE,       // added a favorite
+
+// (Perception events)
+  HE_SUSCEPTIBILITY, // change in perceived susceptibility
+  HE_SEVERITY,       // change in perceived severity
+  HE_BENEFITS,       // change in perceived benefits
+  HE_BARRIERS,       // change in perceived barriers
+  HE_EFFICACY,       // change in perceived self-efficacy
+
+// keep a "max" enumerator, to help count these types
+  HE_MAX};           // place-holder to identify out-of-range values
 
 // the History class
 // designed to encapsulate all operations on the history_event vector
 class History{
 public:
-  History(void){parser=NULL; this->reset();}
-  ~History(void){this->reset();}
+  // default constructor
+  History(void);
 
-  // add an event
-  int add(int day, int type, int val1, int val2=0);
+  // default destructor
+  ~History(void);
+
+  // add an event (at least one integer value)
+  int add(unsigned int day, unsigned int type, int val1, int val2=0);
+
+  // add an event (one floating point value)
+  int add(unsigned int day, unsigned int type, float val1, int val2=0);
+  int add(unsigned int day, unsigned int type, double val1, int val2=0);
 
   // get the number of events in the history
   inline int get_num_events(void) const {return events.size();}
@@ -73,13 +99,13 @@ public:
   // (but do not clear the history parser function)
   inline void reset(void){events.clear();}
 
-  // utility function to dump the entire history contents to STDOUT
-  void dump(void);
-
   // store a parsing function for this History object
-  inline void set_parser(ostream& (*parser)(ostream &os, struct history_event &event)) {
+  inline void set_parser(ostream& (*parser)(ostream &os, const struct history_event &event)) {
     this->parser = parser;
   }
+
+  // override the default ostream (output) operator
+  friend ostream& operator<< (ostream &os, const History &h);
 
 private:
   // the history itslef
@@ -89,7 +115,7 @@ private:
   // the history parser function (pointer), stored per-object
   // It returns the ostream object, so that you can inline it.
   // !!! may change format in future revs !!!
-  ostream& (*parser)(ostream& os, struct history_event &event);
+  ostream& (*parser)(ostream& os, const struct history_event &event);
 };
 
 #endif // _FRED_HISTORY_H
