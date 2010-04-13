@@ -135,10 +135,6 @@ ostream& history_parser_default(ostream& os, const struct history_event &event){
   // everybody has a "day"
   os << "day " << event.day << " " << history_label[event.type] << " ";
 
-  // most events are per-strain, except these
-  if (!(HE_VISIT==event.type || HE_FAVORITE==event.type))
-    os << " strain " << (unsigned int)event.val2 << " ";
-
   // now, how to interpret the main data
   switch (event.type){
   case HE_INFECTED_PLACE:
@@ -171,6 +167,10 @@ ostream& history_parser_default(ostream& os, const struct history_event &event){
   default:
     break;
   }
+
+  // most events are per-strain, except these
+  if (!(HE_VISIT==event.type || HE_FAVORITE==event.type))
+    os << " strain " << (unsigned int)event.val2;
 
   return os;
 }
