@@ -1,21 +1,31 @@
 File: README
 Date: 6 Apr 2010
 
-To use the following scxripts, set the environmental variable $FRED_HOME
-to the location of your FRED source directory.
+To use the following scripts, set the environmental variable $FRED_HOME
+to the location of your FRED source directory.  Then add $FRED_HOME/bin
+to your path.
+
+NOTE: I also recommend starting with a fresh RESULTS directory, e.g.:
+% mv $FRED_HOME/RESULTS $FRED_HOME/RESULTS.OLD
+
+=====================================================================
 
 % run_fred [-p paramsfile | -k key]
 
 Runs FRED with the given parameter file in a working directory created
-in the $FRED_HOME/RESULTS directory, and asscoaited the working
+in the $FRED_HOME/RESULTS directory, and associates the working
 directory with the key.  If the -p option is omitted, the file "params"
 is assumed.  If the -k option is omitted, an internally generated key is
-generated.  In either case, the key is return, printed on standard
-output.  Will terminate if the user supplied key has already been used.
-If given a copy of a previous params file, run_fred associates the key
-with previous id, and does not re-run FRED.  The script sets the STATUS
-of the request (see fred_status below).  When FRED finishes, run_fred
-runs stats to collect data on S, E, I, R, I_s, M, and AR.
+generated.  In either case, a <key,id> pair is printed on standard
+output, where <id> is the identifier of directory associated with the
+run (i.e. $FRED_HOME/RESULTS/RUN/<id>).
+
+run_fred will terminate if the user supplied key has already been used.
+If the params file duplicates a previous params file, then run_fred
+associates the key with previous id, and does not re-run FRED.  The
+script sets the STATUS of the request (see fred_status below).  When
+FRED finishes, run_fred runs stats to collect data on S, E, I, R, I_s,
+M, and AR.
 
 % fred_status -k key [-s secs]
 
@@ -37,6 +47,14 @@ run's REPORT directory.  Prints the full path to the plot file.
 
 Runs fred_plot and then opens the resulting plot file (using Preview on
 Macs).
+
+% fred_plot_data -k key -v [S|E|I|R|s|M]
+
+Creates a plot of one of the indicated measures for the indicated run.
+Prints the data for plotting the graph to standard output, in space
+delimted format:
+
+day mean stdev
 
 % fred_chain -k key -r realization -a agent -d depth
 
