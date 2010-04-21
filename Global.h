@@ -24,6 +24,7 @@ extern int Start_day;
 extern char Outfilebase[80];
 extern char Tracefilebase[80];
 extern int All_strains_antigenically_identical;
+extern int SEiIR_model;
 extern char VaccineTracefilebase[80];
 
 // global file pointers

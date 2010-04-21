@@ -13,6 +13,7 @@ locfile = alleg_loc.txt
 profiles = profiles.txt
 outfile = OUT/out
 tracefile = OUT/trace
+SEiIR_model = 0
 
 # parameters for strain 0
 primary_cases_file[0] = primary_case_schedule-0.txt
@@ -30,13 +31,15 @@ residual_immunity_values[0] = 0
 prob_stay_home = 0.5
 mutation_prob = 1 0.0
 
-household_contacts[0] = 0.30
-neighborhood_contacts[0] = 83
+# the folowing contacts are calibrated for Allegheny County
+# using the original SEIR model (SEiIR = 0)
+household_contacts[0] = 0.4
+neighborhood_contacts[0] = 140
 community_contacts[0] = 0
-school_contacts[0] = 4.2
-classroom_contacts[0] = 12.2
-workplace_contacts[0] = 2.1
-office_contacts[0] = 3.1
+school_contacts[0] = 5
+classroom_contacts[0] = 25
+workplace_contacts[0] = 4
+office_contacts[0] = 5
 
 # groups = children adults
 household_prob[0] = 4 0.6 0.3 0.3 0.4

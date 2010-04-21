@@ -32,13 +32,27 @@ Infection::Infection (Strain * s, Person* person_infector,
   exposure_date = day;
   infectivity_multp = 1.0;
   will_be_symptomatic = strain->get_symptoms();
-  
   latent_period = strain->get_days_latent();
-  asymp_period = strain->get_days_asymp();// * asymp_period_multp;
-  if (will_be_symptomatic)
-    symp_period = strain->get_days_symp();// * symp_period_multp;
-  else 
-    symp_period = 0;
+  
+  if (SEiIR_model) {
+    // Determine health transition dates using SEiIR model
+    asymp_period = strain->get_days_asymp();// * asymp_period_multp;
+    if (will_be_symptomatic)
+      symp_period = strain->get_days_symp();// * asymp_period_multp;
+    else 
+      symp_period = 0;
+  }
+  else {
+    // Determine health transition dates using (SEIR or SEiR) model
+    if (will_be_symptomatic) {
+      symp_period = strain->get_days_symp(); // * symp_period_multp;
+      asymp_period = 0;
+    }
+    else {
+      symp_period = 0; 
+      asymp_period = strain->get_days_asymp(); // * asymp_period_multp;
+    }
+  }
 
   infectious_date = exposure_date + latent_period;
   symptomatic_date = infectious_date + asymp_period;
