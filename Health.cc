@@ -48,7 +48,7 @@ Health::Health (Person * person) {
 }
 
 Health::~Health(void){
-  delete infection;
+  if( infection != NULL )  delete infection;
   for(unsigned int i=0;i<vaccine_health.size();i++)
     delete vaccine_health[i];
   for(unsigned int i=0;i<av_health.size();i++)
@@ -60,19 +60,7 @@ void Health::reset() {
   immunity.assign(immunity.size(),false);
   
   for (int strain = 0; strain < strains; strain++) {
-//     Strain* s = Pop.get_strain(strain);
-//     if(s->get_residual_immunity()->get_num_ages()!=0){
-//       double residual_immunity_prob = s->get_residual_immunity()->find_value(self->get_age());
-//       if(RANDOM()*100. < residual_immunity_prob){
-// 	self->become_immune(s);
-//       }
-//       else{
-// 	become_susceptible(strain);
-//       }
-//     }
-//     else{
-      become_susceptible(strain);
-      //    }
+    become_susceptible(strain);
   }
   
   //Clean out the stats objects

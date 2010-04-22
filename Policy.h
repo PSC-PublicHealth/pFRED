@@ -21,26 +21,31 @@
 
 class Manager;
 class Decision;
+class Person;
 
 using namespace std;
 
 class Policy{
-  
- protected:
-  vector < Decision * > Decision_list;
-  string Name;
-  Manager* manager;
-
+ 
  public:
-  Policy(void) { }
+  Policy(void);
+  ~Policy(void);
+
   Policy(Manager* mgr);
   
-  virtual int choose(void) = 0;          // decision will return -1 if the decision is no
-                                        // or the integer result of the policies in the decision   
+  virtual int choose(Person* person, int strain, int current_day) = 0;         
+                               // decision will return -1 if the decision is no
+                               // or the integer result of the policies in the decision   
   
   Manager* get_manager(void){ return manager; }
   void print(void);
   void reset(void);
+
+ protected:
+  vector < Decision * > Decision_list;
+  string Name;
+  Manager* manager;
+  
 };
 
 #endif

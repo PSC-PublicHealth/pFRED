@@ -17,26 +17,25 @@
 #include <list>
 
 class Policy;
+class Person;
 
 using namespace std;
 
 class Decision{
 
  protected:
-  string Name;
-  string Type; 
+  string name;
+  string type; 
   Policy *policy;  // This is the policy that the decision belongs to
 
  public:
-  Decision(void){}
+  Decision(void);
   Decision(Policy *p);
+  ~Decision();
   
-  string get_name(void) { return Name; }
-  string get_type(void) { return Type; }
+  string get_name(void) { return name; }
+  string get_type(void) { return type; }
   
-  virtual int evaluate(void) = 0;  // There must be this funtion of all policies that 
-                                   // This represents the rule in which a manager makes a decision
-                                   // It can return a 0/1 for yes no decisions
-                                   // it can also return a int for a decision to deliver something
+  virtual int evaluate(Person* person, int strain, int current_day) = 0;  
 };
 #endif

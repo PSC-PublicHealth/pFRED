@@ -19,35 +19,38 @@
 #include "Health.h"
 #include <iostream>
 
+Vaccine_Priority_Decision_Specific_Age::Vaccine_Priority_Decision_Specific_Age(void):
+  Decision(){ }
 
 Vaccine_Priority_Decision_Specific_Age::Vaccine_Priority_Decision_Specific_Age(Policy *p):
   Decision(p){
-  Name = "Vaccine Priority Decision Specific Age";
-  Type = "Y/N";
+  name = "Vaccine Priority Decision Specific Age";
+  type = "Y/N";
   policy = p;
 }
 
-int Vaccine_Priority_Decision_Specific_Age::evaluate(void){
-  Person *p = policy->get_manager()->get_current_person();
+int Vaccine_Priority_Decision_Specific_Age::evaluate(Person* person, int strain, int day){
   Vaccine_Manager* vcm = dynamic_cast < Vaccine_Manager* >(policy->get_manager());
   int low_age = vcm->get_vaccine_priority_age_low();
   int high_age = vcm->get_vaccine_priority_age_high();
   
-  if(p->get_age() >= low_age && p->get_age() <= high_age){
+  if(person->get_age() >= low_age && person->get_age() <= high_age){
     return 1;
   }
   return -1;
 }
 
+Vaccine_Priority_Decision_No_Priority::Vaccine_Priority_Decision_No_Priority(void):
+  Decision() { }
+
 Vaccine_Priority_Decision_No_Priority::Vaccine_Priority_Decision_No_Priority(Policy *p):
   Decision(p){
-  Name = "Vaccine Priority Decision No Priority";
-  Type = "Y/N";
+  name = "Vaccine Priority Decision No Priority";
+  type = "Y/N";
   policy=p;
 }
 
-int Vaccine_Priority_Decision_No_Priority::evaluate(void){
-  //Basically, anyone is accepted into the normal queue
+int Vaccine_Priority_Decision_No_Priority::evaluate(Person* person, int strain, int day){  
   return -1;
 }
 

@@ -54,18 +54,14 @@ AV_Manager::AV_Manager(Population *_pop):
 
 void AV_Manager::update(int day){
   if(do_av==1){
-    current_day = day;
     av_package->update(day);
-    //   if(Debug > 1){
+    if(Debug > 1){
       av_package->print_stocks();
-      //}
+    }
   }
 }
 
 void AV_Manager::reset(void){
-  current_day = -1;
-  current_person = NULL;
-  current_strain = -1;
   if(do_av==1){
     av_package->reset();
   }
@@ -93,7 +89,7 @@ void AV_Manager::disseminate(int day){
   if(do_av==0) return;
   Person* people = pop->get_pop();
   int npeople = pop->get_pop_size();
-  current_day = day;
+  //current_day = day;
   // The av_package are in a priority based order, so lets loop over the av_package first
   vector < Antiviral* > avs = av_package->get_AV_vector();
   for(unsigned int iav = 0; iav<avs.size(); iav++){
@@ -103,17 +99,17 @@ void AV_Manager::disseminate(int day){
       Policy *p = av->get_policy();
       
       current_av = av;
-      current_strain = av->get_strain();
+      //current_strain = av->get_strain();
       
       for(int ip=0;ip<npeople;ip++){
 	if(av->get_current_stock()== 0) break;
-	current_person = &people[ip];
+	Person* current_person = &people[ip];
 	// Should the person get an av
-	int yeahorney = p->choose();
+	int yeahorney = p->choose(current_person,av->get_strain(),day);
 	if(yeahorney == 0){
 	  if(Debug > 2) cout << "Giving Antiviral for strain " << av->get_strain() << " to " <<ip << "\n";
 	  av->remove_stock(1);
-	  current_person->get_health()->take(av,current_day);
+	  current_person->get_health()->take(av,day);
 	}
       }
     }

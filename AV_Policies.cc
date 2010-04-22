@@ -29,11 +29,11 @@ AV_Policy_Distribute_To_Symptomatics::AV_Policy_Distribute_To_Symptomatics(AV_Ma
   //Decision_list.push_back(new AV_Decision_Give_One_Chance(this));
 }
 
-int AV_Policy_Distribute_To_Symptomatics::choose(void) {
+int AV_Policy_Distribute_To_Symptomatics::choose(Person* person, int strain, int day) {
   int result=-1;
   for(unsigned int i=0; i < Decision_list.size(); i++){
     
-    int new_result = Decision_list[i]->evaluate();
+    int new_result = Decision_list[i]->evaluate(person, strain, day);
     if(new_result == -1) return -1;
     else if(new_result > result) result = new_result;
   }
@@ -49,10 +49,10 @@ AV_Policy_Distribute_To_Everyone::AV_Policy_Distribute_To_Everyone(AV_Manager* a
   Decision_list.push_back(new AV_Decision_Allow_Only_One(this));
 }
 
-int AV_Policy_Distribute_To_Everyone::choose(void){
+int AV_Policy_Distribute_To_Everyone::choose(Person* person, int strain, int day){
   int result=-1;
   for(unsigned int i=0; i < Decision_list.size(); i++){   
-    int new_result = Decision_list[i]->evaluate();
+    int new_result = Decision_list[i]->evaluate(person, strain, day);
     if(new_result == -1) { return -1; }   
     if(new_result > result) result = new_result;
   }

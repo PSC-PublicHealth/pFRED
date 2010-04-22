@@ -36,7 +36,7 @@ class AV_Manager: public Manager {
   int get_num_antivirals(void)         const { return av_package->get_number_antivirals();}
 
   // Manager Functions
-  void disseminate(int day);      // Push member needed for prophylaxis
+  void disseminate(int day);      // push avs to agents, needed for prophylaxis
   
   // Utility Functions
   void update(int day);

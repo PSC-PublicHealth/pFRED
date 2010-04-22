@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <string>
+
 #include "Policy.h"
 
 class Decision;
@@ -31,7 +32,7 @@ class Vaccine_Priority_Policy_No_Priority: public Policy {
   Vaccine_Priority_Policy_No_Priority(void);
   Vaccine_Priority_Policy_No_Priority(Vaccine_Manager* vcm);
   
-  virtual int choose(void);
+  virtual int choose(Person* person, int strain, int day);
 };
 
 class Vaccine_Priority_Policy_Specific_Age:public Policy {
@@ -41,7 +42,7 @@ class Vaccine_Priority_Policy_Specific_Age:public Policy {
   Vaccine_Priority_Policy_Specific_Age(void);
   Vaccine_Priority_Policy_Specific_Age(Vaccine_Manager* vcm);
 
-  virtual int choose(void);
+  virtual int choose(Person* person, int strain, int day);
 };  
 
 #endif

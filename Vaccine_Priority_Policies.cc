@@ -6,11 +6,12 @@
 
 //
 //
-// File: Vaccine_Priority_Policies.h
+// File: Vaccine_Priority_Policies.cc
 //
 
 #include <iostream>
 #include <vector>
+
 #include "Decision.h"
 #include "Vaccine_Priority_Policies.h"
 #include "Vaccine_Priority_Decisions.h"
@@ -27,11 +28,11 @@ Vaccine_Priority_Policy_No_Priority::Vaccine_Priority_Policy_No_Priority(Vaccine
 }
 
 //This is generic, do not need this to be explicit.  NEED TO FIX
-int Vaccine_Priority_Policy_No_Priority:: choose(void){
+int Vaccine_Priority_Policy_No_Priority:: choose(Person* person,int strain,int day){
   int result=-1;
   for(unsigned int i=0; i < Decision_list.size(); i++){
     
-    int new_result = Decision_list[i]->evaluate();
+    int new_result = Decision_list[i]->evaluate(person,strain,day);
     if(new_result == -1) return -1;
     else if(new_result > result) result = new_result;
     //cout <<"\nResult for decision "<<i<< " is "<< result;
@@ -47,10 +48,10 @@ Vaccine_Priority_Policy_Specific_Age::Vaccine_Priority_Policy_Specific_Age(Vacci
 }
 
 //This is generic, do not need this to be explicit.  NEED TO FIX
-int Vaccine_Priority_Policy_Specific_Age:: choose(void){
+int Vaccine_Priority_Policy_Specific_Age:: choose(Person* person, int strain, int day){
   int result = -1;
   for(unsigned int i=0; i < Decision_list.size(); i++){
-    int new_result = Decision_list[i]->evaluate();
+    int new_result = Decision_list[i]->evaluate(person,strain,day);
     if(new_result == -1) return -1;
     else if(new_result > result) result = new_result;
     //cout <<"\nResult for decision "<<i<< " is "<< result;

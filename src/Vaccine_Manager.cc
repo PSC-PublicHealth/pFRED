@@ -6,7 +6,7 @@
 
 //
 //
-// File: AV_Manager.cpp
+// File: Vaccine_Manager.cpp
 //
 
 #include "Manager.h"
@@ -33,7 +33,7 @@ Vaccine_Manager::Vaccine_Manager(Population *_pop):
   
   vaccine_package = new Vaccines();
   if(vaccine_file.substr(0,4)!="none"){
-    get_param((char*)"vaccine_compliance",&vaccine_compliance); // to be put in vaccine_manager
+    get_param((char*)"vaccine_compliance",&vaccine_compliance);
     vaccine_package->setup(vaccine_file); 
     vaccine_package->print();
     do_vacc = 1;
@@ -64,11 +64,11 @@ Vaccine_Manager::Vaccine_Manager(Population *_pop):
   }
 
   get_param((char*)"vaccination_capacity",&vaccination_capacity);
-
+  
   // Need to fill the AV_Manager Policies
   policies.push_back(new Vaccine_Priority_Policy_No_Priority(this)); 
   policies.push_back(new Vaccine_Priority_Policy_Specific_Age(this));
-   
+  
 };
 
 void Vaccine_Manager::fill_queues(void){
@@ -79,8 +79,8 @@ void Vaccine_Manager::fill_queues(void){
   Person* people = pop->get_pop();
   
   for(int ip = 0; ip < popsize; ip++){
-    current_person = &people[ip];
-    if(policies[current_policy]->choose()==1){
+    Person* current_person = &people[ip];
+    if(policies[current_policy]->choose(current_person,0,0)==1){
       priority_queue.push_back(current_person);
     }
     else{
@@ -101,17 +101,13 @@ void Vaccine_Manager::fill_queues(void){
 
 void Vaccine_Manager::update(int day){
   if(do_vacc == 1){
-    current_day = day;
     vaccine_package->update(day);
     cout << "Current Vaccine Stock = " << vaccine_package->get_vaccine(0)->get_current_stock()  << "\n";
-    vaccinate();
+    vaccinate(day);
   }
 }
 
 void Vaccine_Manager::reset(void){
-  current_day = -1;
-  current_person = NULL;
-  current_strain = -1;
   priority_queue.clear();
   queue.clear();
   if(do_vacc){
@@ -124,20 +120,18 @@ void Vaccine_Manager::print(void){
   vaccine_package->print();
 }
 
-void Vaccine_Manager::vaccinate(void){
+void Vaccine_Manager::vaccinate(int day){
   
   if(!do_vacc) return;
   
   int number_vaccinated = 0;
   int n_p_vaccinated = 0;
   int n_r_vaccinated = 0;
-  //  int p_iter_flag = 0;
-  //  int q_iter_flag = 0;
   int total_vaccines_avail = vaccine_package->get_total_vaccines_avail_today();
   
   if(total_vaccines_avail == 0) {
     if(Debug > 1){
-      cout <<"No Vaccine Available on Day "<<current_day << "\n";
+      cout <<"No Vaccine Available on Day "<< day << "\n";
     }
     return;
   }
@@ -149,7 +143,7 @@ void Vaccine_Manager::vaccinate(void){
   
   // Run through the priority queue first 
   while(ip!=priority_queue.end()){
-    current_person = *ip;
+    Person* current_person = *ip;
     
     int vacc_app = vaccine_package->pick_from_applicable_vaccines(current_person->get_age());
     if(vacc_app > -1){
@@ -159,7 +153,7 @@ void Vaccine_Manager::vaccinate(void){
 	Vaccine* vacc = vaccine_package->get_vaccine(vacc_app);
 	vacc->remove_stock(1);
 	total_vaccines_avail--;
-	current_person->get_health()->take(vacc,current_day);
+	current_person->get_health()->take(vacc,day);
       }
       ip = priority_queue.erase(ip);  // remove a vaccinated person from the queue
     }
@@ -171,7 +165,7 @@ void Vaccine_Manager::vaccinate(void){
     if((total_vaccines_avail == 0) || (number_vaccinated >= vaccination_capacity)){
       if(Debug > 1) {
 	cout << "Vaccinated priority to capacity "<< n_p_vaccinated << " agents, for a total of "
-	     << number_vaccinated << " on day " << current_day << "\n";
+	     << number_vaccinated << " on day " << day << "\n";
 	cout << "Left in queues:  Priority ("<< priority_queue.size() << ")    Regular ("
 	     <<queue.size() << ")\n";
       }
@@ -182,13 +176,13 @@ void Vaccine_Manager::vaccinate(void){
   if(Verbose > 1) 
     cout << "Vaccinated priority to population " << n_p_vaccinated 
 	 << " agents, for a total of "<< number_vaccinated << " on day " 
-	 << current_day << "\n";
+	 << day << "\n";
     
     // Run now through the regular queue
   ip = queue.begin();
   
   while(ip != queue.end()){
-    current_person = *ip;
+    Person* current_person = *ip;
     
     int vacc_app = vaccine_package->pick_from_applicable_vaccines(current_person->get_age());
     if(vacc_app > -1){
@@ -198,7 +192,7 @@ void Vaccine_Manager::vaccinate(void){
 	Vaccine* vacc = vaccine_package->get_vaccine(vacc_app);
 	vacc->remove_stock(1);
 	total_vaccines_avail--;
-	current_person->get_health()->take(vacc,current_day);
+	current_person->get_health()->take(vacc,day);
       }
       ip = queue.erase(ip);  // remove a vaccinated person from the queue whether or not they are compliant.
     }
@@ -209,7 +203,7 @@ void Vaccine_Manager::vaccinate(void){
     if(total_vaccines_avail == 0 || number_vaccinated >= vaccination_capacity){
       if(Debug > 0){
 	cout << "Vaccinated regular to capacity "<< n_r_vaccinated << " agents, for a total of "
-	     << number_vaccinated << " on day " << current_day << "\n";
+	     << number_vaccinated << " on day " << day << "\n";
 	cout << "Left in queues:  priority ("<< priority_queue.size() << ")    Regular ("
 	     <<queue.size() << ")\n";
       }
@@ -218,7 +212,7 @@ void Vaccine_Manager::vaccinate(void){
   }
   if(Debug > 0){
     cout << "Vaccinated regular to population " << n_r_vaccinated 
-	 << " agents, for a total of "<< number_vaccinated << " on day " << current_day << "\n";
+	 << " agents, for a total of "<< number_vaccinated << " on day " << day << "\n";
     cout << "Left in queues:  priority ("<< priority_queue.size() << ")    Regular ("
 	 <<queue.size() << ")\n";
   }

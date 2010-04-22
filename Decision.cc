@@ -1,3 +1,4 @@
+
 /*
   Copyright 2009 by the University of Pittsburgh
   Licensed under the Academic Free License version 3.0
@@ -12,10 +13,18 @@
 #include "Policy.h"
 #include "Decision.h"
 
+Decision::Decision(void){
+  name = "";
+  type = "";
+  policy = NULL;
+}
+
+Decision::~Decision(void){ }
+
 Decision::Decision(Policy *p){
   policy = p;
-  Name = "Generic Decision";
-  Type = "Generic";
+  name = "Generic Decision";
+  type = "Generic";
 }
 
 

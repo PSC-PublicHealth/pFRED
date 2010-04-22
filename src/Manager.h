@@ -18,31 +18,33 @@
 class Policy;
 class Population;
 class Person;
+class Person;
 class Decision;
 
 using namespace std;
+
 class Manager{
+  // Manager is an abstract class that is the embodiment of a mitigation manager.
+  // The Manager: 
+  //    1. Handles a stock of mitigation supplies
+  //    2. Holds the policy for doling out a mitigation strategy
  protected:
-  vector <Policy * > policies;
-  vector < int > results;
-  Population *pop;
-  Person* current_person;
-  int current_strain;
-  int current_policy;
-  int current_day;
+  vector <Policy * > policies;   // vector to hold the policies this manager can apply
+  vector < int > results;        // DEPRICATE holds the results of the policies
+  Population *pop;               // Population in which this manager is tied to
+  int current_policy;            // The current policy this manager is using
 
  public:
-  Manager(void) {  }
-  Manager(Population *P);
-  virtual int poll_manager(Person* p, int strain, int day);  // stain is here... and that sucks.
+  Manager(void);
+  Manager(Population *_pop);
+  ~Manager(void);
+  virtual int poll_manager(Person* p, int strain, int day); //member to allow someone to see if they fit the current policy
 
   // Parameters
   Population* get_population(void){ return pop;}
-  Person* get_current_person(void) { return current_person; }
-  int get_current_policy(void){return current_policy; }
-  int get_current_strain(void){return current_strain; }
-  int get_current_day(void){return current_day;}
-  
+  int get_current_policy(void){return current_policy; } 
+
+  //Utility Members
   virtual void update(int day) { };
   virtual void reset(void) { };
   virtual void print(void) { };

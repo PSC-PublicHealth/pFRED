@@ -15,21 +15,20 @@
 #include "Decision.h"
 
 class Policy;
-
-// Vaccine_Decision_Policy_Specific_Age
+class Person;
 
 class Vaccine_Priority_Decision_Specific_Age: public Decision {
  public:
   Vaccine_Priority_Decision_Specific_Age(Policy* p);
-  Vaccine_Priority_Decision_Specific_Age();
-  int evaluate(void);
+  Vaccine_Priority_Decision_Specific_Age(void);
+  int evaluate(Person* person, int strain, int day);
 };
 
 class Vaccine_Priority_Decision_No_Priority: public Decision {
  public:
   Vaccine_Priority_Decision_No_Priority(Policy *p);
-  Vaccine_Priority_Decision_No_Priority();
-  int evaluate(void);
+  Vaccine_Priority_Decision_No_Priority(void);
+  int evaluate(Person* person, int strain, int day);
 };
 
 #endif

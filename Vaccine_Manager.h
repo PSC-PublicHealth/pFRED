@@ -27,6 +27,7 @@ class Person;
 class Policy;
 
 class Vaccine_Manager: public Manager {
+  //Vaccine_Manager handles a stock of vaccines
  public:
   Vaccine_Manager(Population *_pop);
   
@@ -40,7 +41,7 @@ class Vaccine_Manager: public Manager {
  
   // Vaccination Specific Procedures
   void fill_queues(void);
-  void vaccinate(void);
+  void vaccinate(int day);
   
   //Paramters Access Members
   int get_vaccine_compliance(void)        const {return vaccine_compliance;}
@@ -53,9 +54,9 @@ class Vaccine_Manager: public Manager {
   void print(void);
 
  private:
-  Vaccines* vaccine_package;                     //Pointer to the vaccines that this manager oversees
-  vector < Person* > priority_queue;   //Queue for the priority agents
-  vector < Person* > queue;            //Queue for everyone else
+  Vaccines* vaccine_package;              //Pointer to the vaccines that this manager oversees
+  vector < Person* > priority_queue;      //Queue for the priority agents
+  vector < Person* > queue;               //Queue for everyone else
   
   //Parameters from Input 
   bool   do_vacc;                         //Is Vaccination being performed

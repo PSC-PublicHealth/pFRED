@@ -15,16 +15,23 @@
 #include "Decision.h"
 #include "Manager.h"
 
+Policy::Policy(void) {
+  Name = "";
+  manager = NULL;
+}
+
+Policy::~Policy(void) { }
+
 Policy::Policy(Manager* mgr){
   Name = "Generic";
   manager = mgr;
 }
 
-int Policy::choose(void){
+int Policy::choose(Person* person, int strain, int current_day){
   int result=-1;
   for(unsigned int i=0; i < Decision_list.size(); i++){
     
-    int new_result = Decision_list[i]->evaluate();
+    int new_result = Decision_list[i]->evaluate(person,strain,current_day);
     if(new_result == -1) return -1;
     else if(new_result > result) result = new_result;
     cout <<"\nResult for decision "<<i<< " is "<< result;
