@@ -21,6 +21,8 @@ class Age_Map;
 
 class Population {
 public:
+  Population(void);
+  ~Population(void);
   void get_parameters();
   void setup();
   void population_quality_control();
@@ -55,7 +57,6 @@ private:
   int strains;
   double **mutation_prob;
   void read_population();
-  Age_Map* residual_immunity;
 };
 
 #endif // _FRED_POPULATION_H

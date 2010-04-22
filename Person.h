@@ -29,7 +29,8 @@ class Population;
 
 class Person {
 public:
-  Person() {}
+  Person(void);
+  ~Person(void);
   void setup(int index, int age, char sex, int marital, int occ,
 	     int profession, Place *house, Place *neigh,
 	     Place *school, Place *classroom, Place *work,
@@ -84,7 +85,7 @@ public:
 
 private:
   int id;
-  Population *pop;
+  Population* pop;
   Demographics * demographics;
   Health * health;
   Behavior * behavior;

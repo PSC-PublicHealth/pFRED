@@ -28,6 +28,25 @@
 
 using namespace std; 
 
+Population::Population(void) {
+  pop = NULL;
+  pop_size = -1;
+  strain = NULL;
+  av_manager = NULL;
+  vacc_manager = NULL;
+  strains = -1;
+  mutation_prob = NULL;
+}
+
+Population::~Population(void) {
+  if(pop != NULL) delete [] pop;
+  if(strain != NULL) delete [] strain;
+  if(vacc_manager != NULL) delete vacc_manager;
+  if(av_manager != NULL) delete av_manager;
+  if(mutation_prob != NULL) delete [] mutation_prob;
+}
+
+    
 void Population::get_parameters() {
   get_param((char *) "popfile", popfile);
   get_param((char *) "profiles", profilefile);

@@ -23,6 +23,22 @@
 #include "AV_Health.h"
 #include "Age_Map.h"
 
+Person::Person(void) { 
+  id = -1;
+  pop = NULL;
+  demographics = NULL;
+  health = NULL;
+  behavior = NULL;
+  perceptions = NULL;
+}
+
+Person::~Person(void) {
+  delete demographics;
+  delete health; 
+  delete behavior;
+  delete perceptions;
+}
+
 void Person::setup(int index, int age, char sex, int marital, int occ,
 		   int profession, Place *house, Place *neigh,
 		   Place *school, Place *classroom, Place *work,
