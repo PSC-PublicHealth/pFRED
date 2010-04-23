@@ -36,10 +36,10 @@ void read_profiles(char *filename) {
   while (fscanf(fp, " Profile %d %s ", &i, name) == 2) {
     for (int d = 0; d < 7; d++) {
       double h, n, s, w, t;
-      if (fscanf(fp,
-		 " %*s Home %lf Nbrhood %lf School %lf Work %lf Travel %lf ",
-		 &h, &n, &s, &w, &t) == 5) {
-	
+      int nr = fscanf(fp,
+		     " %*s Home %lf Nbrhood %lf School %lf Work %lf Travel %lf ",
+		     &h, &n, &s, &w, &t);
+      if (nr == 5) {
 	Prof[i].set_prob_visit(d, 0, h);
 	Prof[i].set_prob_visit(d, 1, n);
 	Prof[i].set_prob_visit(d, 2, s);
@@ -48,7 +48,7 @@ void read_profiles(char *filename) {
 	Profiles++;
       }
       else {
-	printf("Help! Bad format in profile %d\n", i);
+	printf("Help! Bad format in profile %d -- number read = %d\n", i, nr);
 	abort();
       }
     }

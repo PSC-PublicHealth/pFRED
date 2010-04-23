@@ -96,7 +96,9 @@ void Locations::setup_locations() {
       printf ("Help! bad loctype = %c\n", loctype);
       abort();
     }
-    if (place == NULL) { printf("Help! allocation failure for loc %d\n", loc); abort(); }
+    if (place == NULL) {
+      printf("Help! allocation failure for loc %d\n", loc); abort();
+    }
     location[loc] = place;
   }
   fclose(fp);
