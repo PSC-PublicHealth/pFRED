@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+my ($n) = @ARGV;
+$n = 1000000 if not $n;
+open FH, ">distr";
+my $z = 0;
+for my $i (1..20) {
+  if (-e "OUT/trace$i.txt") {
+    #print "distr for run $i\n";
+    `grep -v 'S id' OUT/trace$i.txt | grep -v 'M id' > tmp`;
+    $n = `wc -l tmp | awk '{print $1}'`;
+    my @places = qw/N H C S O W/;
+    my $tot = 0.0;
+    for my $p (@places) {
+      my $x = `grep "at $p" tmp | wc -l | awk '{print $1}' `;
+      my $ave = 100.0 * $x / $n;
+      $tot += $ave;
+      printf FH "%6.2f ", $ave;
+    }
+    printf FH "\n";
+    $z = $i;
+    unlink "tmp";
+  }
+}
+close FH;
+my $mean;
+my $std;
+($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 1`;
+printf "N %5.2f %4.2f %d\n", $mean, $std, $n;  
+($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 2`;
+printf "H %5.2f %4.2f %d\n", $mean, $std, $n;  
+($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 3`;
+printf "C %5.2f %4.2f %d\n", $mean, $std, $n;  
+($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 4`;
+printf "S %5.2f %4.2f %d\n", $mean, $std, $n;  
+($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 5`;
+printf "O %5.2f %4.2f %d\n", $mean, $std, $n;  
+($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 6`;
+printf "W %5.2f %4.2f %d\n", $mean, $std, $n;  
+
+
+
