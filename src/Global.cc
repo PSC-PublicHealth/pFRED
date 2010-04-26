@@ -20,6 +20,7 @@ char Tracefilebase[80];
 int All_strains_antigenically_identical;
 int SEiIR_model;
 char VaccineTracefilebase[80];
+int Show_cases;
 
 // global file pointers
 FILE *Statusfp;
@@ -45,6 +46,7 @@ void get_global_parameters() {
   get_param((char *) "tracefile", Tracefilebase);
   get_param((char *) "all_strains_antigenically_identical", &All_strains_antigenically_identical);
   get_param((char *) "SEiIR_model", &SEiIR_model);
+  get_param((char *) "show_cases", &Show_cases);
   get_param((char *) "vaccine_tracefile",VaccineTracefilebase);
 }
 

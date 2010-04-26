@@ -47,6 +47,7 @@ private:
   int I_s;
   int R;
   int M;
+  int incidents;
   int total_incidents;
 };
   
