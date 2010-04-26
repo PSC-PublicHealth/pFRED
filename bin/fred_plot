@@ -9,9 +9,9 @@ getopts("k:v:", \%options);
 my $key = "";
 my $varlist = "";
 $key = $options{k} if exists $options{k};
-die "usage: fred_plot -k key -v [S|E|I|R|s|M]\n" if not $key;
+die "usage: fred_plot -k key -v [C|S|E|I|R|s|M]\n" if not $key;
 $varlist = $options{v} if exists $options{v};
-die "usage: fred_plot -k key -v [S|E|I|R|s|M]\n" if not $varlist;
+die "usage: fred_plot -k key -v [C|S|E|I|R|s|M]\n" if not $varlist;
 my @args = check_varlist($varlist);
 
 my $FRED = $ENV{FRED_HOME};
@@ -50,6 +50,7 @@ EOF
 my $n = 0;
 for my $x (@args) {
   my $title;
+  $title = "Cases" if $x eq "C";
   $title = "Susceptible" if $x eq "S";
   $title = "Exposed" if $x eq "E";
   $title = "Infectious" if $x eq "I";
@@ -71,7 +72,7 @@ exit;
 sub check_varlist {
   my $v = shift;
   my @args = ();
-  my %mapping = (S=>'S', E=>'E', I=>'I', R=>'R', s=>'I_s', M=>'M');
+  my %mapping = (C=>'C', S=>'S', E=>'E', I=>'I', R=>'R', s=>'I_s', M=>'M');
   my @vars = split "", $v;
   for my $x (@vars) {
     if (exists $mapping{$x}) {
@@ -79,7 +80,7 @@ sub check_varlist {
     }
     else {
       print "bad arg: |$x|\n";
-      die "usage: fred_plot -k key -v [S|E|I|R|s|M|A]\n";
+      die "usage: fred_plot -k key -v [C|S|E|I|R|s|M|A]\n";
     }
   }
   return @args;

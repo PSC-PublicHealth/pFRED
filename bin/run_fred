@@ -191,7 +191,7 @@ system "./FRED $params > $logfile";
 # process output files
 system "$FRED/bin/stats $out/out* > $reports/stats.out";
 
-my @fields = qw/S E I R I_s M AR/;
+my @fields = qw/S E I R I_s M C AR/;
 for my $x (@fields) {
   open OUT, ">$reports/$x.dat";
   open IN, "$reports/stats.out";
@@ -218,6 +218,7 @@ exit;
 
 sub same_params {
   my ($p1, $p2) = @_;
+  return 0;
   my $diff = `diff -b -B -q $p1 $p2`;
   return 1 if $diff eq "";
   return 0;
