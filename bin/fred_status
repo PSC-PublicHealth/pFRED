@@ -23,6 +23,18 @@ die "NOT_FOUND\n" if $id eq "";
 
 my $status = `cat $dir/RUN/$id/META/STATUS`;
 chomp $status;
+
+if ($status =~ /RUNNING/) {
+  my $z = `grep 'runs =' $dir/RUN/$id/META/PARAMS`;
+  my ($x, $y, $runs) = split " ", $z;
+  chomp $runs;
+  my $finished = `ls $dir/RUN/$id/DATA/OUT/out* | wc -l`;
+  chomp $finished;
+  $finished =~ s/\s//g;
+  $finished--;
+  $status = sprintf "RUNNING-%02d", int(0.5+100*$finished/$runs);
+}
+
 $status .= " " . `date`;
 print $status;
 
@@ -31,6 +43,16 @@ if (defined $secs and $secs =~ /^\d+$/) {
     sleep $secs;
     $status = `cat $dir/RUN/$id/META/STATUS`;
     chomp $status;
+    if ($status =~ /RUNNING/) {
+      my $z = `grep 'runs =' $dir/RUN/$id/META/PARAMS`;
+      my ($x, $y, $runs) = split " ", $z;
+      chomp $runs;
+      my $finished = `ls $dir/RUN/$id/DATA/OUT/out* | wc -l`;
+      chomp $finished;
+      $finished =~ s/\s//g;
+      $finished--;
+      $status = sprintf "RUNNING-%02d", int(0.5+100*$finished/$runs);
+    }
     $status .= " " . `date`;
     print $status;
   }
