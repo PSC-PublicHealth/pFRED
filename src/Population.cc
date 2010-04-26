@@ -180,8 +180,16 @@ void Population::update(int day) {
   vacc_manager->update(day);
   av_manager->update(day);
   
+  // update adults first, so that they can make decisions for minors
   for (int p = 0; p < pop_size; p++){
-    pop[p].update(day);
+    if (pop[p].get_age() > 18)
+      pop[p].update(day);
+  }
+
+  // update minors, who may use adult's decisions
+  for (int p = 0; p < pop_size; p++){
+    if (pop[p].get_age() <= 18)
+      pop[p].update(day);
   }
 
   for (int s = 0; s < strains; s++) {
@@ -214,6 +222,7 @@ void Population::print() {
 }
 
 void Population::end_of_run() {
+  if (Test) return;
   for (int p = 0; p < pop_size; p++) {
     for (int s = 0; s < strains; s++) {
       if (pop[p].get_strain_status(s) != 'R')

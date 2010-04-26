@@ -178,6 +178,70 @@ void Locations::location_quality_control() {
   if (Verbose) {
     int count[20];
     int total = 0;
+    // adult distribution of households
+    for (int c = 0; c < 15; c++) { count[c] = 0; }
+    for (int loc = 0; loc < locations; loc++) {
+      if (location[loc]->get_type() == HOUSEHOLD) {
+	int n = location[loc]->get_adults();
+	if (n < 15) { count[n]++; }
+	else { count[14]++; }
+	total++;
+      }
+    }
+    fprintf(Statusfp, "\nHousehold adult size distribution: %d households\n", total);
+    for (int c = 0; c < 15; c++) {
+      fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
+	     c, count[c], (100.0*count[c])/total);
+    }
+    fprintf(Statusfp, "\n");
+  }
+
+  if (Verbose) {
+    int count[20];
+    int total = 0;
+    // children distribution of households
+    for (int c = 0; c < 15; c++) { count[c] = 0; }
+    for (int loc = 0; loc < locations; loc++) {
+      if (location[loc]->get_type() == HOUSEHOLD) {
+	int n = location[loc]->get_children();
+	if (n < 15) { count[n]++; }
+	else { count[14]++; }
+	total++;
+      }
+    }
+    fprintf(Statusfp, "\nHousehold children size distribution: %d households\n", total);
+    for (int c = 0; c < 15; c++) {
+      fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
+	     c, count[c], (100.0*count[c])/total);
+    }
+    fprintf(Statusfp, "\n");
+  }
+
+  if (Verbose) {
+    int count[20];
+    int total = 0;
+    // adult distribution of households with children
+    for (int c = 0; c < 15; c++) { count[c] = 0; }
+    for (int loc = 0; loc < locations; loc++) {
+      if (location[loc]->get_type() == HOUSEHOLD) {
+	if (location[loc]->get_children() == 0) continue;
+	int n = location[loc]->get_adults();
+	if (n < 15) { count[n]++; }
+	else { count[14]++; }
+	total++;
+      }
+    }
+    fprintf(Statusfp, "\nHousehold w/ children, adult size distribution: %d households\n", total);
+    for (int c = 0; c < 15; c++) {
+      fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
+	     c, count[c], (100.0*count[c])/total);
+    }
+    fprintf(Statusfp, "\n");
+  }
+
+  if (Verbose) {
+    int count[20];
+    int total = 0;
     // size distribution of schools
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {

@@ -67,6 +67,7 @@ void Place::reset() {
     susceptibles[s].clear();
     infectious[s].clear();
     Sympt[s] = S[s] = I[s] = 0;
+    adults = children = 0;
   }
   if (Verbose > 2) {
     printf("reset place: %d\n", id);
@@ -75,6 +76,7 @@ void Place::reset() {
   }
   close_date = INT_MAX;
   open_date = 0;
+  HoH = NULL;
 }
 
 void Place::print(int strain) {
@@ -92,7 +94,18 @@ void Place::add_susceptible(int strain, Person * per) {
 	   (int) susceptibles[strain].size(),  S[strain]);
     abort();
   }
-  if (strain == 0) { N++; }
+  if (strain == 0) {
+    N++;
+    if (per->get_age() < 19) {
+      children++;
+    }
+    else {
+      adults++;
+      if (adults == 1) {
+	HoH = per;
+      }
+    }
+  }
 }
 
 
