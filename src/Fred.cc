@@ -117,7 +117,8 @@ void run_sim(int run) {
   Pop.reset(run);
   if (Random_start_day) {
     // start on a random day of the week
-    Start_day = IRAND(0, 6);
+    // Start_day = IRAND(0, 6);
+    Start_day = run % 7;
   }
 
   for (int day = 0; day < Days; day++) {
