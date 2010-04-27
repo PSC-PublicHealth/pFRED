@@ -152,8 +152,6 @@ void Person::recover(Strain * strain) {
   health->recover(strain);
   behavior->recover(strain_id);
 
-  // print recovered agents into Trace file
-  print(strain_id);
   if (Verbose > 2) {
     fprintf(Statusfp, "RECOVERED person %d for strain %d\n", id, strain_id);
     print_out(strain_id);
@@ -243,3 +241,6 @@ int Person::is_new_case(int day, int strain) {
   return (health->get_exposure_date(strain) == day);
 }
 
+void Person::set_changed(void){
+  this->pop->set_changed(this);
+}

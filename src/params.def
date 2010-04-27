@@ -76,3 +76,9 @@ hbm_threshold = 0.5
 w1 = 1.0
 w2 = 1.0
 w3 = 1.0
+
+# set 0 for end-of-run trace printout only, non-zero to print every n-th day
+incremental_trace = 0
+
+# set non-zero to get headers printed in the trace file
+trace_headers = 0

@@ -130,6 +130,9 @@ void run_sim(int run) {
     Pop.update(day);
     Pop.report(day);
     fprintf(Statusfp, "day %d finished  ", day);
+    // incremental trace
+    if (Incremental_Trace && day && !(day%Incremental_Trace))
+      Pop.print(1, day);
     time(&clock);
     fprintf(Statusfp, "%s", ctime(&clock));
   }

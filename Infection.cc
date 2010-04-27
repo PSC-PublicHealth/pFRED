@@ -70,6 +70,7 @@ Infection::Infection (Strain * s, Person* person_infector,
   susceptibility = 0.0;
   symptoms = 0.0;
   infectees = 0;
+  host->set_changed(); // note that the infection state changed
 }
 
 // This logic shouldn't be here - we should have a dummy infected place
@@ -114,12 +115,14 @@ void Infection::become_infectious() {
       symptoms = 0.0;
     }
   }
+  host->set_changed(); // note that the infection state changed
 }
 
 void Infection::become_symptomatic() {
   strain_status = 'I';
   infectivity = strain->get_symp_infectivity();
   symptoms = 1.0;
+  host->set_changed(); // note that the infection state changed
 }
 
 void Infection::update(int day) {
@@ -155,6 +158,7 @@ void Infection::recover() {
   infectivity = 0.0;
   susceptibility = 0.0;
   symptoms = 0.0;
+  host->set_changed(); // note that the infection state changed
 }
 
 void Infection::reset_infection_course(int num_latent_days, int num_asymp_days,
@@ -217,6 +221,7 @@ void Infection::reset_infection_course(int num_latent_days, int num_asymp_days,
 	    infectious_date, recovered_date);
     fflush(Statusfp);
   }
+  host->set_changed(); // note that the infection state changed
 }
 
 bool Infection::possibly_mutate(Health* health, int day) {
@@ -266,6 +271,7 @@ bool Infection::possibly_mutate(Health* health, int day) {
 
     recovered_date = day;
     host->become_exposed(new_infection);
+    host->set_changed(); // note that the infection state changed
     return true;
   }
 }
@@ -291,6 +297,7 @@ void Infection::modify_symptomatic_period(double multp, int cur_day){
     recovered_date = cur_day + 1;
   }
   symp_period = recovered_date - symptomatic_date;
+  host->set_changed(); // note that the infection state changed
 }
 
 void Infection::modify_asymptomatic_period(double multp, int cur_day){ 
@@ -304,6 +311,7 @@ void Infection::modify_asymptomatic_period(double multp, int cur_day){
   symptomatic_date = cur_day + residual_asymp_period;
   asymp_period = symptomatic_date - infectious_date;
   recovered_date = symptomatic_date + symp_period;
+  host->set_changed(); // note that the infection state changed
 }
 
 void Infection::modify_infectious_period(double multp, int cur_day) {
@@ -325,6 +333,7 @@ void Infection::modify_develops_symptoms(bool symptoms, int cur_day) {
 	// Relagating the modification of the symptomatic period to the other function.
 	symp_period = strain->get_days_symp();
 	recovered_date = symptomatic_date + symp_period;
+	host->set_changed(); // note that the infection state changed
       }
     }
   }

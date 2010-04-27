@@ -155,9 +155,14 @@ void Population::reset(int run) {
     strain[s].reset();
   }
 
+  // empty out the incremental list of Person's who have changed
+  incremental_changes.clear();
+  never_changed.clear();
+
   // reset each person (adds her to the susc list for each favorite place)
   for (int p = 0; p < pop_size; p++){
     pop[p].reset();
+    never_changed[&(pop[p])]=true; // add all agents to this list at start
   }
   if(Verbose > 0){
     int count = 0;
@@ -215,20 +220,61 @@ void Population::report(int day) {
   }
 }
 
-void Population::print() {
-  for (int p = 0; p < pop_size; p++) {
-    pop[p].print(0);
+void Population::print(int incremental, int day) {
+  if (!incremental){
+    if (Trace_Headers) fprintf(Tracefp, "# All agents, by ID\n");
+    for (int p = 0; p < pop_size; p++) {
+      pop[p].print(0);
+    }
+  } else if (1==incremental){
+    ChangeMap::const_iterator iter;
+
+    if (Trace_Headers){
+      if (day<Days)
+	fprintf(Tracefp, "# Incremental Changes (every %d): Day %3d\n", incremental, day);
+      else
+	fprintf(Tracefp, "# End-of-simulation: Remaining unreported changes\n");
+
+      if (! incremental_changes.size()){
+	fprintf(Tracefp, "# <LIST-EMPTY>\n");
+	return;
+      }
+    }
+
+    for (iter = this->incremental_changes.begin();
+	 iter != this->incremental_changes.end();
+	 iter++){
+      (iter->first)->print(0); // the map key is a Person*
+    }
+  } else {
+    ChangeMap::const_iterator iter;
+    if (Trace_Headers){
+      fprintf(Tracefp, "# Agents that never changed\n");
+      if (! never_changed.size()){
+	fprintf(Tracefp, "# <LIST-EMPTY>\n");
+	return;
+      }
+    }
+
+    for (iter = this->never_changed.begin();
+	 iter != this->never_changed.end();
+	 iter++){
+      (iter->first)->print(0); // the map key is a Person*
+    }
   }
+
+  // empty out the incremental list of Person's who have changed
+  if (-1<incremental)
+    incremental_changes.clear();
 }
 
 void Population::end_of_run() {
-  if (Test) return;
-  for (int p = 0; p < pop_size; p++) {
-    for (int s = 0; s < strains; s++) {
-      if (pop[p].get_strain_status(s) != 'R')
-	pop[p].print(s);
-    }
-  }
+  // print out agents who have changes yet unreported
+  // (results from Incremental_Trace==0  || Days%Incremental_Trace!=0)
+  this->print(1, Days);
+
+  // print out all those agents who never changed
+  this->print(-1);
 }
 
 Strain * Population::get_strain(int s) {
@@ -280,4 +326,9 @@ void Population::population_quality_control() {
     fflush(Statusfp);
   }
 }
-      
+
+void Population::set_changed(Person *p){
+  incremental_changes[p]=true; // note that this element has been changed
+  never_changed.erase(p);      // remove it from this list 
+                               // (might already be gone, but this won't hurt)
+}

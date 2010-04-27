@@ -32,6 +32,8 @@ extern double HBM_threshold;
 extern double W1;
 extern double W2;
 extern double W3;
+extern int Incremental_Trace;
+extern int Trace_Headers;
 
 // global file pointers
 extern FILE *Statusfp;

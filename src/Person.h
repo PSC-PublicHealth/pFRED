@@ -83,6 +83,8 @@ public:
   Perceptions* get_perceptions()   {return perceptions;}
   Population* get_population()     {return pop;}
 
+  void set_changed(void); // notify the population that this Person has changed
+
 private:
   int id;
   Population* pop;

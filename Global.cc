@@ -26,6 +26,8 @@ double HBM_threshold;
 double W1;
 double W2;
 double W3;
+int Incremental_Trace;
+int Trace_Headers;
 
 // global file pointers
 FILE *Statusfp;
@@ -58,5 +60,7 @@ void get_global_parameters() {
   get_param((char *) "w1", &W1);
   get_param((char *) "w2", &W2);
   get_param((char *) "w3", &W3);
+  get_param((char *) "incremental_trace", &Incremental_Trace);
+  get_param((char *) "trace_headers", &Trace_Headers);
 }
 
