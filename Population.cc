@@ -231,7 +231,7 @@ void Population::print(int incremental, int day) {
 
     if (Trace_Headers){
       if (day<Days)
-	fprintf(Tracefp, "# Incremental Changes (every %d): Day %3d\n", incremental, day);
+	fprintf(Tracefp, "# Incremental Changes (every %d): Day %3d\n", Incremental_Trace, day);
       else
 	fprintf(Tracefp, "# End-of-simulation: Remaining unreported changes\n");
 
