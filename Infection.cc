@@ -97,9 +97,23 @@ int Infection::get_infector() {
 }
 
 void Infection::become_infectious() {
-  strain_status = 'i';
-  infectivity = strain->get_asymp_infectivity();
-  symptoms = 0.0;
+  if (SEiIR_model) {
+    strain_status = 'i';
+    infectivity = strain->get_asymp_infectivity();
+    symptoms = 0.0;
+  }
+  else {
+    if (will_be_symptomatic) {
+      strain_status = 'I';
+      infectivity = strain->get_symp_infectivity();
+      symptoms = 1.0;
+    }
+    else {
+      strain_status = 'i';
+      infectivity = strain->get_asymp_infectivity();
+      symptoms = 0.0;
+    }
+  }
 }
 
 void Infection::become_symptomatic() {
@@ -114,13 +128,21 @@ void Infection::update(int day) {
     host->become_infectious(strain);
     status = get_strain_status();
   }
-  if (status == 'i' && day == get_symptomatic_date()) {
-    become_symptomatic();
-    status = get_strain_status();
+  if (SEiIR_model) {
+    if (status == 'i' && day == get_symptomatic_date()) {
+      become_symptomatic();
+      status = get_strain_status();
+    }
+    if (status == 'I' && day == get_recovered_date()) {
+      host->recover(strain);
+      status = get_strain_status();
+    }
   }
-  if (status == 'I' && day == get_recovered_date()) {
-    host->recover(strain);
-    status = get_strain_status();
+  else {
+    if ((status == 'I' || status == 'i') && day == get_recovered_date()) {
+      host->recover(strain);
+      status = get_strain_status();
+    }
   }
   if (status == 'R' && day == get_susceptible_date()) {
     host->become_susceptible(strain->get_id());
