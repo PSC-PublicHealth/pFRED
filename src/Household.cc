@@ -24,6 +24,8 @@ Household::Household(int loc, char *lab, double lon, double lat, int container) 
   type = HOUSEHOLD;
   setup(loc, lab, lon, lat, container);
   get_parameters(Strains);
+  // adults = children = 0;
+  // HoH = NULL;
 }
 
 void Household::get_parameters(int strains) {
@@ -75,4 +77,16 @@ double Household::get_contacts_per_day(int strain) {
 }
 
 
-
+/*
+void Household::add_person(Person * per) {
+  if (per->get_age() < 19) {
+    children++;
+  }
+  else {
+    adults++;
+    if (adults == 1) {
+      HoH = per;
+    }
+  }
+}
+*/

@@ -19,14 +19,22 @@ public:
   Perceptions(Person *p);
   void reset();
   void update(int day);
+  // double get_perceived_susceptibility() { return perceived_susceptibility; }
+  // double get_perceived_severity() { return perceived_severity; }
+  // double get_perceived_benefits() { return perceived_benefits; }
+  // double get_perceived_barriers() { return perceived_barriers; }
+  // double get_self_efficacy() { return self_efficacy; }
+  int will_keep_kids_home() { return keep_kids_home; }
 
 private:
-  Person * me;
+  void HBM(int day);
+  Person * self;
   double perceived_susceptibility;
   double perceived_severity;
   double perceived_benefits;
   double perceived_barriers;
   double self_efficacy;
+  int keep_kids_home;
 };
 
 #endif // _FRED_PERCEPTIONS_H

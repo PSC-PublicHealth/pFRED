@@ -68,6 +68,8 @@ public:
   int get_children() { return children; }
   Person * get_HoH() { return HoH; }
   void set_HoH(Person * per) { HoH = per; }
+  int get_num_schools() { return num_schools; }
+  Place * get_school(int i) { return school[i]; }
 
   void set_id(int n) { id = n; }
   void set_type(char t) { type = t; }
@@ -96,6 +98,8 @@ protected:
   int adults;					// how many adults
   int children;					// how many children
   Person * HoH;					// head of household
+  Place * school[4];
+  int num_schools;
 
   // strain parameters
   double *beta;	       // place-independent transmissibility per contact

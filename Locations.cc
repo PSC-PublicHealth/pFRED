@@ -140,6 +140,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     fprintf(Statusfp, "location quality control check\n"); fflush(Statusfp);
   }
+
   for (int loc = 0; loc < locations; loc++) {
     if (location[loc]->get_size() < 1) {
       fprintf(Statusfp, "Help!  No one visits location %d\n", loc);
@@ -153,6 +154,21 @@ void Locations::location_quality_control() {
       }
     }
   }
+
+  /*
+  if (Verbose) {
+    for (int loc = 0; loc < locations; loc++) {
+      Place *p = location[loc];
+      if (p->get_type() == HOUSEHOLD) {
+	if (p->get_HoH() != NULL)
+	  { printf("household %d HoH %d age %d\n",p->get_id(),p->get_HoH()->get_id(),p->get_HoH()->get_age()); fflush(stdout);  }
+	else
+	  { printf("household %d HoH NULL\n", p->get_id()); fflush(stdout);  }
+      }
+    }
+  }
+  abort();
+  */
 
   if (Verbose) {
     int count[20];
@@ -235,6 +251,31 @@ void Locations::location_quality_control() {
     for (int c = 0; c < 15; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
 	     c, count[c], (100.0*count[c])/total);
+    }
+    fprintf(Statusfp, "\n");
+  }
+
+  if (Verbose) {
+    int count[20];
+    int total = 0;
+    // age distribution of heads of households with children
+    for (int c = 0; c < 20; c++) { count[c] = 0; }
+    for (int loc = 0; loc < locations; loc++) {
+      Person * per;
+      if (location[loc]->get_type() == HOUSEHOLD) {
+	if (location[loc]->get_children() == 0) continue;
+	if ((per = location[loc]->get_HoH()) == NULL) continue;
+	int a = per->get_age();
+	int n = a / 10;
+	if (n < 20) { count[n]++; }
+	else { count[19]++; }
+	total++;
+      }
+    }
+    fprintf(Statusfp, "\nAge distribution of heads of households with children: %d households\n", total);
+    for (int c = 0; c < 10; c++) {
+      fprintf(Statusfp, "age %2d to %d: %6d (%.2f%%)\n",
+	      10*c, 10*(c+1)-1, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
   }

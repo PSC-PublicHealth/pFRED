@@ -33,6 +33,9 @@ public:
   int get_favorite_places() { return favorite_places; }
   int compliance_to_vaccination(void); // This will currently look up the global vaccine compliance.
                                        // This is really a place holder for a more sophistocated model.
+  Person * get_HoH() { return HoH; }
+  Place * get_household() { return favorite_place[0]; }
+  Place * get_school() { return favorite_place[2]; }
 
 private:
   Person * self;	 // pointer to person using having this behavior
@@ -43,6 +46,7 @@ private:
   char * on_schedule;	    // 1 = favorite place is on schedule; 0 o.w.
   int scheduled_places;		 // number places actually visited today
   int schedule_updated;			 // date of last schedule update
+  Person * HoH;					// head of household
 };
 
 #endif // _FRED_BEHAVIOR_H

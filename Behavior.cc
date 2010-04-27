@@ -11,6 +11,7 @@
 
 #include "Behavior.h"
 #include "Person.h"
+#include "Perceptions.h"
 #include "Global.h"
 #include "Profile.h"
 #include "Place.h"
@@ -47,6 +48,10 @@ void Behavior::reset() {
       if (favorite_place[p] == NULL) continue;
       favorite_place[p]->add_susceptible(strain, self);
     }
+    if (self->get_age() > 18 && favorite_place[1]->get_adults() == 1) {
+      favorite_place[1]->set_HoH(self);
+    }
+    HoH = favorite_place[1]->get_HoH();
   }
   // reset the daily schedule
   schedule_updated = -1;
@@ -90,6 +95,18 @@ void Behavior::update_schedule(int day) {
 	scheduled_places = 1;
 	schedule[0] = favorite_place[0];
 	on_schedule[0] = 1;
+      }
+    }
+
+    // stay at home if your parent says so
+    if (0 < day_of_week && day_of_week < 6) {
+      if (scheduled_places == 0 && self->get_age() < 18) {
+	if (self->get_perceptions()->will_keep_kids_home()) {
+	  scheduled_places = 1;
+	  schedule[0] = favorite_place[0];
+	  on_schedule[0] = 1;
+	  printf("day %d age %d staying home\n",day,self->get_age()); fflush(stdout);
+	}
       }
     }
 
@@ -179,3 +196,4 @@ int Behavior::compliance_to_vaccination(void){
   }
   return 0;
 }
+

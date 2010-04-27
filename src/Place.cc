@@ -77,6 +77,7 @@ void Place::reset() {
   close_date = INT_MAX;
   open_date = 0;
   HoH = NULL;
+  num_schools = 0;
 }
 
 void Place::print(int strain) {
@@ -96,8 +97,19 @@ void Place::add_susceptible(int strain, Person * per) {
   }
   if (strain == 0) {
     N++;
-    if (per->get_age() < 19) {
+    if (per->get_age() < 18) {
       children++;
+      if (num_schools < 4) {
+	Place * sch = per->get_behavior()->get_school();
+	if (sch != NULL) {
+	  school[num_schools] = sch;
+	  if (school[num_schools] == NULL) {
+	    printf("Help! NULL school for person %d\n", per->get_id()); fflush(stdout);
+	    abort();
+	  }
+	  num_schools++;
+	}
+      }
     }
     else {
       adults++;
