@@ -29,7 +29,7 @@ Health::Health (Person * person) {
   self = person;
   strains = Pop.get_strains();
 
-  infection = new Infection * [strains];
+  infection = new Infection* [strains];
   for (int strain = 0; strain < strains; strain++) {
     infection[strain] = NULL;
   }
@@ -48,11 +48,16 @@ Health::Health (Person * person) {
 }
 
 Health::~Health(void){
-  if( infection != NULL )  delete infection;
+  if( infection != NULL ){
+    delete[] infection;
+    infection=NULL;
+  }
   for(unsigned int i=0;i<vaccine_health.size();i++)
     delete vaccine_health[i];
+  vaccine_health.clear();
   for(unsigned int i=0;i<av_health.size();i++)
     delete av_health[i];
+  av_health.clear();
 }
 
 void Health::reset() {
@@ -78,8 +83,8 @@ void Health::reset() {
 void Health::become_susceptible(int strain) {
   if (infection[strain] != NULL) {
     delete infection[strain];
+    infection[strain] = NULL;
   }
-  infection[strain] = NULL;
   susceptibility_multp[strain] = 1.0;
 }
 
