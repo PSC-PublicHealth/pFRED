@@ -20,6 +20,7 @@ using namespace std;
 
 class Strain;
 class Person;
+class Timestep_Map;
 
 class Spread {
 public:
@@ -39,8 +40,8 @@ private:
   double attack_rate;
   set <Person *> exposed;
   set <Person *> infectious;
-  map <int, int> primary_cases_map;
-  int primary_cases_per_day;
+  //map <int, int> primary_cases_map;
+  Timestep_Map* primary_cases_map;
   int S;
   int E;
   int I;

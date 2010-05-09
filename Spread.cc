@@ -23,6 +23,7 @@ using namespace std;
 #include "Infection.h"
 #include "Locations.h"
 #include "Place.h"
+#include "Timestep_Map.h"
 
 Spread::Spread(Strain *str) {
   char filename[80];
@@ -38,29 +39,11 @@ Spread::Spread(Strain *str) {
   // Note: infectees are chosen at random, and previously infected individuals
   // are not affected, so the number of new cases may be less than specified in
   // the file.
-  sprintf(param_name, "primary_cases_file[%d]", strain->get_id());
-  get_param(param_name, filename);
-  fp = fopen(filename, "r");
-  if (fp != NULL) {
-    while (fscanf(fp, "%d %d", &day, &cases) == 2) {
-      primary_cases_map.insert(pair<int, int>(day, cases));
-    }
-    fclose(fp);
-  } else {
-    printf("Help!  Can't read primary_cases_file %s\n", filename);
-    abort();
-  }
-  map<int,int>::iterator primary_cases_map_itr;
-
-  // set number of primary cases per day
-  primary_cases_map_itr = primary_cases_map.find(0);
-  if (primary_cases_map_itr != primary_cases_map.end()) {
-    primary_cases_per_day = primary_cases_map_itr -> second;
-  }
-  else {
-    primary_cases_per_day = 0;
-  }
-}
+  sprintf(param_name,"primary_cases[%d]",strain->get_id());
+  string param_name_str(param_name);
+  primary_cases_map = new Timestep_Map(param_name_str);
+  primary_cases_map->print(); 
+ }
 
 void Spread::reset() {
   exposed.clear();
@@ -144,12 +127,8 @@ void Spread::update(int day) {
   int pop_size = strain->get_population()->get_pop_size();
 
   // See if there are changes to primary_cases_per_day from primary_cases_map
-  map<int,int>::iterator primary_cases_map_itr;
-  primary_cases_map_itr = primary_cases_map.find(day);
-  if (primary_cases_map_itr != primary_cases_map.end()) {
-    primary_cases_per_day = primary_cases_map_itr -> second;
-  }
-
+  int primary_cases_per_day = primary_cases_map->get_value_for_timestep(day);
+  
   // Attempt to infect primary_cases_per_day.
   // This represents external sources of infection.
   // Note: infectees are chosen at random, and previously infected individuals
