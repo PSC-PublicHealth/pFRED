@@ -12,7 +12,7 @@ CPPFLAGS = -m64 -O2 -Wall
 
 OBJ =   Decision.o Policy.o Manager.o \
         AV_Decisions.o AV_Policies.o AV_Manager.o AV_Health.o \
-        Age_Map.o Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
+        Age_Map.o Timestep_Map.o Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
         Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \
 	Antiviral.o Antivirals.o Behavior.o Classroom.o Community.o Demographics.o Health.o \
         Hospital.o Household.o Infection.o Locations.o Neighborhood.o Office.o \

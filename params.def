@@ -69,6 +69,7 @@ school_closure_delay = 2
 number_antivirals = 0
 vaccine_file = none
 vaccine_tracefile = OUT/vacctr
+vaccination_capacity_file = none
 
 # Health Belief Model params
 use_hbm = 0

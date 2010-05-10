@@ -25,12 +25,16 @@ class Population;
 class Vaccines;
 class Person;
 class Policy;
+class Timestep_Map;
 
 class Vaccine_Manager: public Manager {
   //Vaccine_Manager handles a stock of vaccines
  public:
+  // Construction and Destruction
+  Vaccine_Manager(void);
   Vaccine_Manager(Population *_pop);
-  
+  ~Vaccine_Manager(void);
+
   //Parameters Access
   bool do_vaccination(void)                     const { return do_vacc; }
   Vaccines* get_vaccines(void)                  const { return vaccine_package; }
@@ -67,8 +71,7 @@ class Vaccine_Manager: public Manager {
   int vaccine_priority_age_low;           //Age specific priority
   int vaccine_priority_age_high;
   
-  int vaccination_capacity;               // How many people can be vaccinated a day
-  
+  Timestep_Map *vaccination_capacity_map;               // How many people can be vaccinated now, gets its value from the capacity change list
 };
 
 

@@ -22,6 +22,17 @@
 #include "Params.h"
 #include "Random.h"
 #include "Global.h"
+#include "Timestep_Map.h"
+
+Vaccine_Manager::Vaccine_Manager(void){
+  vaccine_package = NULL;
+  vaccine_compliance = 0.0;
+  vaccine_priority_scheme = -1;
+  vaccine_priority_age_low = -1;
+  vaccine_priority_age_high = -1;
+  vaccination_capacity_map = NULL;
+  do_vacc = false;
+}
 
 Vaccine_Manager::Vaccine_Manager(Population *_pop):
   Manager(_pop) {
@@ -42,7 +53,7 @@ Vaccine_Manager::Vaccine_Manager(Population *_pop):
     vaccine_priority_scheme = -1;
     vaccine_priority_age_low = -1;
     vaccine_priority_age_high = -1;
-    vaccination_capacity = -1;
+    vaccination_capacity_map = NULL;
     do_vacc = false;
     return;
   }
@@ -63,13 +74,21 @@ Vaccine_Manager::Vaccine_Manager(Population *_pop):
     vaccine_priority_age_high = 110;
   }
 
-  get_param((char*)"vaccination_capacity",&vaccination_capacity);
-  
-  // Need to fill the AV_Manager Policies
+  //get_param((char*)"vaccination_capacity",&vaccination_capacity);
+  vaccination_capacity_map = new Timestep_Map("vaccination_capacity");
+  if( Verbose > 1 )
+    vaccination_capacity_map->print();
+    
+  // Need to fill the Vaccine_Manager Policies
   policies.push_back(new Vaccine_Priority_Policy_No_Priority(this)); 
   policies.push_back(new Vaccine_Priority_Policy_Specific_Age(this));
   
 };
+
+Vaccine_Manager::~Vaccine_Manager(void){
+  if(vaccine_package != NULL) delete vaccine_package;
+  if(vaccination_capacity_map != NULL) delete vaccination_capacity_map;
+}
 
 void Vaccine_Manager::fill_queues(void){
   
@@ -128,7 +147,11 @@ void Vaccine_Manager::vaccinate(int day){
   int n_p_vaccinated = 0;
   int n_r_vaccinated = 0;
   int total_vaccines_avail = vaccine_package->get_total_vaccines_avail_today();
+  int vaccination_capacity = vaccination_capacity_map->get_value_for_timestep(day);
   
+  if(Debug > 1) 
+    cout << "Vaccine Capacity on Day "<<day << " = " << vaccination_capacity << "\n";
+
   if(total_vaccines_avail == 0) {
     if(Debug > 1){
       cout <<"No Vaccine Available on Day "<< day << "\n";
@@ -162,7 +185,16 @@ void Vaccine_Manager::vaccinate(int day){
       ++ip;
     }
 
-    if((total_vaccines_avail == 0) || (number_vaccinated >= vaccination_capacity)){
+    if(total_vaccines_avail == 0){
+      if(Debug > 1) {
+	cout << "Vaccinated priority to stock out "<< n_p_vaccinated << " agents, for a total of "
+	     << number_vaccinated << " on day " << day << "\n";
+	cout << "Left in queues:  Priority ("<< priority_queue.size() << ")    Regular ("
+	     <<queue.size() << ")\n";
+      }
+      return;
+    }
+    if(number_vaccinated >= vaccination_capacity){
       if(Debug > 1) {
 	cout << "Vaccinated priority to capacity "<< n_p_vaccinated << " agents, for a total of "
 	     << number_vaccinated << " on day " << day << "\n";
@@ -198,9 +230,17 @@ void Vaccine_Manager::vaccinate(int day){
     }
     else{
       ip++;
+    }   
+    if(total_vaccines_avail == 0) {
+      if(Debug > 0){
+	cout << "Vaccinated regular to stock out "<< n_r_vaccinated << " agents, for a total of "
+	     << number_vaccinated << " on day " << day << "\n";
+	cout << "Left in queues:  priority ("<< priority_queue.size() << ")    Regular ("
+	     <<queue.size() << ")\n";
+      }
+      return;
     }
-    
-    if(total_vaccines_avail == 0 || number_vaccinated >= vaccination_capacity){
+    if( number_vaccinated >= vaccination_capacity){
       if(Debug > 0){
 	cout << "Vaccinated regular to capacity "<< n_r_vaccinated << " agents, for a total of "
 	     << number_vaccinated << " on day " << day << "\n";
