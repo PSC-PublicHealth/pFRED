@@ -26,11 +26,11 @@ using namespace std;
 #include "Timestep_Map.h"
 
 Spread::Spread(Strain *str) {
-  char filename[80];
+  //char filename[80];
   char param_name[80];
 
-  FILE *fp;
-  int day, cases;
+  //  FILE *fp;
+  //  int day, cases;
 
   strain = str;
 
