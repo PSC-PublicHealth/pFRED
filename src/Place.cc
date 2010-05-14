@@ -230,17 +230,18 @@ void Place::spread_infection(int day, int s) {
       abort();
     }
 
-    if (Verbose > 1) { printf("is infector %d here?\n", infector->get_id()); }
-
     // skip if this infector did not visit today
-    if (!infector->is_on_schedule(day, id)) continue;
-
-    if (Verbose > 1) { printf("infected = %d\n", infector->get_id()); }
+    if (Verbose > 1) { printf("Is infector %d here?  ", infector->get_id()); }
+    if (!infector->is_on_schedule(day, id)) {
+      if (Verbose > 1) { printf("No\n"); }
+      continue;
+    }
+    if (Verbose > 1) { printf("Yes\n"); }
 
     // reduce number of infective contact events by my infectivity
     double my_contacts = contacts * infector->get_infectivity(s);
     if (Verbose > 1) {
-      printf("infectivity = %f\n", infector->get_infectivity(s));
+      printf("infectivity = %f so ", infector->get_infectivity(s));
       printf("my effective contacts = %f\n", my_contacts);
       fflush(stdout);
     }
@@ -271,8 +272,8 @@ void Place::spread_infection(int day, int s) {
 	abort();
       }
       if (Verbose > 1) {
-	printf("my possible victim = %d  r = %f  pos = %d  S[d] = %d\n",
-	       infectee->get_id(), r, pos, S[s]);
+	printf("my possible victim = %d  prof = %d r = %f  pos = %d  S[%d] = %d\n",
+	       infectee->get_id(), infectee->get_behavior()->get_profile(), r, pos, s, S[s]);
       }
       if (strain->attempt_infection(infector, infectee, this, day)) {
 	if (Verbose > 1) {
@@ -291,6 +292,7 @@ void Place::spread_infection(int day, int s) {
       }
     } // end contact loop
   } // end infectious list loop
+  if (Verbose > 1) { fflush(stdout); }
 }
 
 int Place::is_open(int day) {

@@ -131,6 +131,7 @@ bool Strain::attempt_infection(Person* infector, Person* infectee,
   // is the victim here today, and still susceptible?
   if (infectee->is_on_schedule(exposure_date, place->get_id()) &&
       infectee->get_strain_status(id) == 'S') {
+    if (Verbose > 1) { printf("Victim is here and is susceptible\n"); }
 
     // get the victim's susceptibility
     double susceptibility;
@@ -142,16 +143,26 @@ bool Strain::attempt_infection(Person* infector, Person* infectee,
       // This isn't a regular transmission - it's a seed case or a mutation.
       transmission_prob = susceptibility = 1.0;
     }
+    if (Verbose > 1) {
+      printf("trans_prob = %f  susceptibility = %f\n",
+	     transmission_prob, susceptibility);
+    }
 
     double r = RANDOM();
     if (r < transmission_prob*susceptibility) {
+      if (Verbose > 1) { printf("transmission succeeded: r = %f\n", r); }
       Infection* i = new Infection(this, infector, infectee, place, exposure_date);
       infectee->become_exposed(i);
       if (infector)
 	infector->add_infectee(id);
       return true;
     }
+    if (Verbose > 1) { printf("transmission failed: r = %f\n", r); }
     return false;
+  }
+  if (Verbose > 1) {
+    printf("Victim either not here or not susceptible, status = %c  exp_date = %d place_id = %d\n",
+	   infectee->get_strain_status(id), exposure_date, place->get_id());
   }
   return false;
 }
