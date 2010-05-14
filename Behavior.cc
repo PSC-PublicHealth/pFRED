@@ -62,9 +62,11 @@ void Behavior::update(int day) {
 }
 
 void Behavior::print_schedule() {
-  fprintf(Statusfp, "Schedule for person %d\n", self->get_id());
+  fprintf(Statusfp, "Schedule for person %d  ", self->get_id());
+  fprintf(Statusfp, "scheduled places %d\n", scheduled_places);
   for (int j = 0; j < scheduled_places; j++) {
     fprintf(Statusfp, "%d ", schedule[j]->get_id());
+    fflush(Statusfp);
   }
   fprintf(Statusfp, "\n");
   fflush(Statusfp);
@@ -99,6 +101,7 @@ void Behavior::update_schedule(int day) {
     }
 
     // stay at home if your parent says so
+    /*
     if (0 < day_of_week && day_of_week < 6) {
       if (scheduled_places == 0 && self->get_age() < 18) {
 	if (self->get_perceptions()->will_keep_kids_home()) {
@@ -109,18 +112,20 @@ void Behavior::update_schedule(int day) {
 	}
       }
     }
+    */
 
     // if not staying home or traveling, consult usual schedule
     if (scheduled_places == 0) {
       for (int p = 0; p < favorite_places; p++) {
 	// visit classroom or office iff going to school or work
-	if (p == 3 || p == 5) {
+	if ((p == 3 || p == 5)) {
 	  if (on_schedule[p-1]) {
 	    on_schedule[p] = 1;
 	    schedule[scheduled_places++] = favorite_place[p];
 	  }
 	}
-	else if (favorite_place[p] != NULL &&
+	else 
+	if (favorite_place[p] != NULL &&
 		 is_visited(p, profile, day_of_week)) {
 	  on_schedule[p] = 1;
 	  schedule[scheduled_places++] = favorite_place[p];
@@ -162,7 +167,12 @@ void Behavior::become_infectious(int strain) {
   // add me to infectious list at my favorite places
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
-    if (Test == 0 || self->get_infectious_date(strain) == 0) {
+    if (Test) {
+      if (self->get_exposure_date(strain) == 0) {
+	favorite_place[p]->add_infectious(strain, self);
+      }
+    }
+    else {
       favorite_place[p]->add_infectious(strain, self);
     }
   }
@@ -182,7 +192,12 @@ void Behavior::recover(int strain) {
   // remove me from infectious list at my favorite places
   for (int p = 0; p < favorite_places; p++) {
     if (favorite_place[p] == NULL) continue;
-    if (Test == 0 || self->get_exposure_date(strain) == 0) {
+    if (Test) {
+      if (self->get_exposure_date(strain) == 0) {
+	favorite_place[p]->delete_infectious(strain, self);
+      }
+    }
+    else {
       favorite_place[p]->delete_infectious(strain, self);
     }
   }
