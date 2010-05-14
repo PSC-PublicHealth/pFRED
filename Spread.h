@@ -48,8 +48,9 @@ private:
   int I_s;
   int R;
   int M;
-  int incidents;
+  int incident_infections;
   int total_incidents;
+  int clinical_incidents;
 };
   
 #endif // _FRED_SPREAD_H

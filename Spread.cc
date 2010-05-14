@@ -57,7 +57,8 @@ void Spread::update_stats(int day) {
   int strain_id = strain->get_id();
   Person *pop = strain->get_population()->get_pop();
   int pop_size = strain->get_population()->get_pop_size();
-  incidents = 0;
+  clinical_incidents = 0;
+  incident_infections = 0;
   S = E = I = I_s = R = M = 0;
   for (int p = 0; p < pop_size; p++) {
     char status = pop[p].get_strain_status(strain_id);
@@ -67,9 +68,10 @@ void Spread::update_stats(int day) {
     I_s += (status == 'I');
     R += (status == 'R');
     M += (status == 'M');
-    incidents += pop[p].is_new_case(day, strain_id);
+    incident_infections += pop[p].is_new_case(day, strain_id);
+    clinical_incidents += ((status=='I') && (pop[p].get_infectious_date(strain_id) == day));
   }
-  total_incidents += incidents;
+  total_incidents += incident_infections;
   attack_rate = (100.0*total_incidents)/pop_size;
 }
 
@@ -77,14 +79,14 @@ void Spread::print_stats(int day) {
   int N = S+E+I+R+M;
   if (Show_cases) {
     fprintf(Outfp,
-	    "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f\n",
-	    day, strain->get_id(), S, E, I, I_s, R, M, incidents, N, attack_rate);
+	    "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d\n",
+	    day, strain->get_id(), S, E, I, I_s, R, M, incident_infections, N, attack_rate, clinical_incidents);
     fflush(Outfp);
     
     if (Verbose) {
       fprintf(Statusfp,
-	      "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f\n",
-	      day, strain->get_id(), S, E, I, I_s, R, M, incidents, N, attack_rate);
+	      "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d\n",
+	      day, strain->get_id(), S, E, I, I_s, R, M, incident_infections, N, attack_rate, clinical_incidents);
       fflush(Statusfp);
     }
   }
