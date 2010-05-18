@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # automated redirection to a new repository
 # Nathan Stone (2010)
@@ -16,8 +16,8 @@ usage(){
     exit 0
 }
 
-if [ "$1" == "-r" ]; then revert=1 ; fi
-if [ "$1" == "-h" -o "$1" == "--help" ]; then usage ; fi
+if [ "$1" = "-r" ]; then revert=1 ; fi
+if [ "$1" = "-h" -o "$1" = "--help" ]; then usage ; fi
 
 if [ ! -e CVS/Repository ]; then usage ; fi
 repodir=`cat CVS/Repository 2>/dev/null`
@@ -38,7 +38,7 @@ if [ "$revert" != "1" ]; then
 fi
 
 # create a viable CVS/Root file in temp space
-tempfile=`mktemp`
+tempfile=.root
 echo "$username@$host:$path" > $tempfile
 
 # find all CVS/Root files and replace them
