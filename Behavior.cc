@@ -40,6 +40,10 @@ Behavior::Behavior (Person *person, Place *h, Place *n, Place *s, Place *c,
   scheduled_places = 0;
 }
 
+Person *Behavior::get_HoH() {
+	return favorite_place[0]->get_HoH();
+}
+
 void Behavior::reset() {
   // add myself to the susceptible lists at my favorite places
   int strains = Pop.get_strains();
@@ -48,11 +52,11 @@ void Behavior::reset() {
       if (favorite_place[p] == NULL) continue;
       favorite_place[p]->add_susceptible(strain, self);
     }
-    if (self->get_age() > 18 && favorite_place[1]->get_adults() == 1) {
-      favorite_place[1]->set_HoH(self);
-    }
-    HoH = favorite_place[1]->get_HoH();
   }
+
+  if (self->get_age() > 18 && !favorite_place[0]->get_HoH())
+      favorite_place[0]->set_HoH(self);
+
   // reset the daily schedule
   schedule_updated = -1;
   scheduled_places = 0;

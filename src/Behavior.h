@@ -34,7 +34,7 @@ public:
   int get_favorite_places() { return favorite_places; }
   int compliance_to_vaccination(void); // This will currently look up the global vaccine compliance.
                                        // This is really a place holder for a more sophistocated model.
-  Person * get_HoH() { return HoH; }
+  Person * get_HoH();
   Place * get_household() { return favorite_place[0]; }
   Place * get_school() { return favorite_place[2]; }
 
