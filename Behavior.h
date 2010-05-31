@@ -47,7 +47,6 @@ private:
   char * on_schedule;	    // 1 = favorite place is on schedule; 0 o.w.
   int scheduled_places;		 // number places actually visited today
   int schedule_updated;			 // date of last schedule update
-  Person * HoH;					// head of household
 };
 
 #endif // _FRED_BEHAVIOR_H

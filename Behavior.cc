@@ -54,7 +54,7 @@ void Behavior::reset() {
     }
   }
 
-  if (self->get_age() > 18 && !favorite_place[0]->get_HoH())
+  if (self->get_age() > 18 && favorite_place[0] && !favorite_place[0]->get_HoH())
       favorite_place[0]->set_HoH(self);
 
   // reset the daily schedule
