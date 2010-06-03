@@ -20,7 +20,10 @@ Policy::Policy(void) {
   manager = NULL;
 }
 
-Policy::~Policy(void) { }
+Policy::~Policy(void) { 
+  for(unsigned int i=0; i < decision_list.size(); i++) delete decision_list[i];
+  decision_list.clear();
+}
 
 Policy::Policy(Manager* mgr){
   Name = "Generic";
@@ -29,9 +32,9 @@ Policy::Policy(Manager* mgr){
 
 int Policy::choose(Person* person, int strain, int current_day){
   int result=-1;
-  for(unsigned int i=0; i < Decision_list.size(); i++){
+  for(unsigned int i=0; i < decision_list.size(); i++){
     
-    int new_result = Decision_list[i]->evaluate(person,strain,current_day);
+    int new_result = decision_list[i]->evaluate(person,strain,current_day);
     if(new_result == -1) return -1;
     else if(new_result > result) result = new_result;
     cout <<"\nResult for decision "<<i<< " is "<< result;
@@ -43,8 +46,8 @@ void Policy::print(void){
   cout << "\nPolicy List for Decision "<< Name;
   cout << "\n\n" << setw(40) << "Policy " << setw(20) << "Type";
   cout << "\n------------------------------------------------------------------\n";
-  for(unsigned int i=0;i<Decision_list.size(); ++i){
-    cout << setw(40) << Decision_list[i]->get_name() << setw(20) << Decision_list[i]->get_type() << "\n";
+  for(unsigned int i=0;i<decision_list.size(); ++i){
+    cout << setw(40) << decision_list[i]->get_name() << setw(20) << decision_list[i]->get_type() << "\n";
   } 
 }
 

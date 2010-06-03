@@ -29,7 +29,7 @@ class Vaccine_Priority_Policy_No_Priority: public Policy {
   Vaccine_Manager *vacc_manager;
   
  public:
-  Vaccine_Priority_Policy_No_Priority(void);
+  Vaccine_Priority_Policy_No_Priority(void){ }
   Vaccine_Priority_Policy_No_Priority(Vaccine_Manager* vcm);
   
   virtual int choose(Person* person, int strain, int day);

@@ -42,7 +42,7 @@ class Policy{
   void reset(void);
 
  protected:
-  vector < Decision * > Decision_list;
+  vector < Decision * > decision_list;
   string Name;
   Manager* manager;
   

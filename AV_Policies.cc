@@ -23,17 +23,17 @@ AV_Policy_Distribute_To_Symptomatics::AV_Policy_Distribute_To_Symptomatics(AV_Ma
   Name = "Distribute AVs to Symptomatics";
   
   // Need to add the policies in the decisio
-  Decision_list.push_back(new AV_Decision_Begin_AV_On_Day(this));
-  Decision_list.push_back(new AV_Decision_Give_to_Sympt(this));
-  Decision_list.push_back(new AV_Decision_Allow_Only_One(this));
+  decision_list.push_back(new AV_Decision_Begin_AV_On_Day(this));
+  decision_list.push_back(new AV_Decision_Give_to_Sympt(this));
+  decision_list.push_back(new AV_Decision_Allow_Only_One(this));
   //Decision_list.push_back(new AV_Decision_Give_One_Chance(this));
 }
 
 int AV_Policy_Distribute_To_Symptomatics::choose(Person* person, int strain, int day) {
   int result=-1;
-  for(unsigned int i=0; i < Decision_list.size(); i++){
+  for(unsigned int i=0; i < decision_list.size(); i++){
     
-    int new_result = Decision_list[i]->evaluate(person, strain, day);
+    int new_result = decision_list[i]->evaluate(person, strain, day);
     if(new_result == -1) return -1;
     else if(new_result > result) result = new_result;
   }
@@ -45,14 +45,14 @@ AV_Policy_Distribute_To_Everyone::AV_Policy_Distribute_To_Everyone(AV_Manager* a
   Name = "Distribute AVs to Symptomatics";
   
   // Need to add the policies in the decision
-  Decision_list.push_back(new AV_Decision_Begin_AV_On_Day(this));
-  Decision_list.push_back(new AV_Decision_Allow_Only_One(this));
+  decision_list.push_back(new AV_Decision_Begin_AV_On_Day(this));
+  decision_list.push_back(new AV_Decision_Allow_Only_One(this));
 }
 
 int AV_Policy_Distribute_To_Everyone::choose(Person* person, int strain, int day){
   int result=-1;
-  for(unsigned int i=0; i < Decision_list.size(); i++){   
-    int new_result = Decision_list[i]->evaluate(person, strain, day);
+  for(unsigned int i=0; i < decision_list.size(); i++){   
+    int new_result = decision_list[i]->evaluate(person, strain, day);
     if(new_result == -1) { return -1; }   
     if(new_result > result) result = new_result;
   }
