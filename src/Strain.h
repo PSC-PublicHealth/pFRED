@@ -25,7 +25,8 @@ class Age_Map;
 
 class Strain {
 public:
-  Strain();
+  Strain(void);
+  ~Strain(void);
   void reset();
   void setup(int s, Population *pop,  double *mut_prob);
   void print();
@@ -51,6 +52,7 @@ public:
   double get_prob_symptomatic() { return prob_symptomatic; }
   double get_attack_rate();
   Age_Map* get_residual_immunity(void) const { return residual_immunity; }
+  Age_Map* get_at_risk(void) const { return at_risk; }
   
   
   // Draws from this strain's mutation probability distribution, and returns
@@ -86,6 +88,8 @@ private:
   double *mutation_prob;
   Spread *spread;
   Age_Map *residual_immunity;
+  Age_Map *at_risk;
+
 
   // Vars that are not strain-specific (for updating global stats).
   Population *population;

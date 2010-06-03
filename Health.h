@@ -40,9 +40,11 @@ public:
   void become_exposed(Infection *inf);
   void become_infectious(Strain * strain);
   void become_immune(Strain* strain);
+  void declare_at_risk(Strain* strain);
   void recover(Strain * strain);
   int is_symptomatic();
-  bool is_immune(Strain* strain){ return immunity[strain->get_id()];}
+  bool is_immune(Strain* strain){ return immunity[strain->get_id()]; }
+  bool is_at_risk(Strain* strain) { return at_risk[strain->get_id()]; }
   inline char get_strain_status(int strain) {
     if(immunity[strain] == 1){
       return 'M';
@@ -104,6 +106,7 @@ private:
   int strains;
   Infection ** infection;
   vector < bool > immunity;
+  vector < bool > at_risk;                // Agent is/isn't at risk for severe complications
   double *susceptibility_multp;
   vector < bool > checked_for_av;
   vector < AV_Health * > av_health;

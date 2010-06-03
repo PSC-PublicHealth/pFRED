@@ -39,6 +39,7 @@ public:
   int get_strains() { return strains; }
   Person *get_pop() { return pop; }
   int get_pop_size() { return pop_size; }
+  Age_Map* get_pregnancy_prob(void) { return pregnancy_prob; }
   //Mitigation Managers
   AV_Manager *get_av_manager(){ return av_manager; }
   Vaccine_Manager *get_vaccine_manager() { return vacc_manager;}
@@ -68,6 +69,9 @@ private:
   int strains;
   double **mutation_prob;
   void read_population();
+
+  // Population specific Age Maps
+  Age_Map* pregnancy_prob;
 };
 
 #endif // _FRED_POPULATION_H

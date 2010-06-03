@@ -26,8 +26,7 @@ Timestep_Map::Timestep_Map(void){
 
 Timestep_Map::Timestep_Map(string _name){
   name = _name;
-  
-  
+
   char map_file_param[255];
   char map_file_name[255];
   // Need Special parsing if this is an array from input
@@ -75,7 +74,7 @@ Timestep_Map::Timestep_Map(string _name){
 }
 
 Timestep_Map::~Timestep_Map(void){
-  if(values!= NULL){
+  if(values != NULL){
     delete values;
   }
 }

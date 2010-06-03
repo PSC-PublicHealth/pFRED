@@ -20,6 +20,7 @@
 #include "Locations.h"
 #include "Strain.h"
 #include "Person.h"
+#include "Demographics.h"
 #include "Manager.h"
 #include "AV_Manager.h"
 #include "Vaccine_Manager.h"
@@ -36,6 +37,7 @@ Population::Population(void) {
   vacc_manager = NULL;
   strains = -1;
   mutation_prob = NULL;
+  pregnancy_prob = NULL;
 }
 
 Population::~Population(void) {
@@ -44,6 +46,7 @@ Population::~Population(void) {
   if(vacc_manager != NULL) delete vacc_manager;
   if(av_manager != NULL) delete av_manager;
   if(mutation_prob != NULL) delete [] mutation_prob;
+  if(pregnancy_prob != NULL) delete pregnancy_prob;
 }
 
     
@@ -71,6 +74,11 @@ void Population::get_parameters() {
       printf("\n");
     }
   }
+  
+  pregnancy_prob = new Age_Map("Pregnancy Probability");
+  pregnancy_prob->read_from_input("pregnancy_prob");
+  pregnancy_prob->print();
+  
 }
 
 void Population::setup() {
@@ -89,6 +97,7 @@ void Population::setup() {
     fflush(Statusfp);
   }
   
+  // Setup the pregnancy probabiliy map
   vacc_manager = new Vaccine_Manager(this);
   av_manager   = new AV_Manager(this);
   if(Verbose > 1) av_manager->print();
@@ -134,7 +143,6 @@ void Population::read_population() {
 		 Loc.get_location(classroom),
 		 Loc.get_location(work),
 		 Loc.get_location(office),
-
 		 profile,this);
     pop[p].reset();
   }
@@ -319,8 +327,50 @@ void Population::population_quality_control() {
 	      10*c, 10*(c+1)-1, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
-  }
 
+    if(pregnancy_prob->get_num_ages() > 0){
+      int pcount[20];
+      // Print out pregnancy distribution
+      for (int c = 0; c < 20; c++) { pcount[c] = 0; }
+      for (int p = 0; p < pop_size; p++) {
+	int a = pop[p].get_age();
+	int n = a / 10;
+	if(pop[p].get_demographics()->is_pregnant()==true) {
+	  if( n < 20 ) { pcount[n]++; }
+	  else { pcount[19]++; }
+	}
+      } 
+      fprintf(Statusfp, "\nAge Distribution of Pregnancy: %d people\n", total);
+      for(int c = 0; c < 10; c++) {
+	fprintf(Statusfp, "age %2d to %2d: %6d (%.2f%%)\n",
+		10*c, 10*(c+1)-1, pcount[c], (100.0*pcount[c])/total);
+      }
+      fprintf(Statusfp,"\n");
+    }
+    
+    // Print out At Risk distribution
+    for(int is = 0; is < strains; is++){
+      if(strain[is].get_at_risk()->get_num_ages() > 0){
+	Strain* s = &strain[is];
+	int rcount[20];
+	for (int c = 0; c < 20; c++) { rcount[c] = 0; }
+	for (int p = 0; p < pop_size; p++) {
+	  int a = pop[p].get_age();
+	  int n = a / 10;
+	  if(pop[p].get_health()->is_at_risk(s)==true) {
+	    if( n < 20 ) { rcount[n]++; }
+	    else { rcount[19]++; }
+	  }
+	}
+	fprintf(Statusfp, "\n Age Distribution of At Risk for Strain %d: %d people\n",is,total);
+	for(int c = 0; c < 10; c++ ) {
+	  fprintf(Statusfp, "age %2d to %2d: %6d (%.2f%%)\n",
+		  10*c, 10*(c+1)-1, rcount[c], (100.0*rcount[c])/total);
+	}
+	fprintf(Statusfp, "\n");
+      }
+    }
+  }
   if (Verbose) {
     fprintf(Statusfp, "population quality control finished\n");
     fflush(Statusfp);

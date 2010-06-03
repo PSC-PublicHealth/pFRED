@@ -44,12 +44,12 @@ void Person::setup(int index, int age, char sex, int marital, int occ,
 		   Place *school, Place *classroom, Place *work,
 		   Place *office, int profile, Population* Pop) 
 {
+  pop = Pop;
   id = index;
-  demographics = new Demographics(age,sex,'U',marital,profession);
+  demographics = new Demographics(this,age,sex,'U',marital,profession);
   health = new Health(this);
   behavior = new Behavior(this,house,neigh,school,classroom,work,office,profile);
   perceptions = new Perceptions(this);
-  pop = Pop;
 }
   
 void Person::print(int strain) {
@@ -109,7 +109,7 @@ void Person::reset() {
   
   for(int strain = 0; strain < Pop.get_strains(); strain++){
     Strain* s = Pop.get_strain(strain);
-    if(s->get_residual_immunity()->get_num_ages()!=0){
+    if(s->get_residual_immunity()->get_num_ages()>0){
       double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
       if(RANDOM()*100. < residual_immunity_prob){
  	become_immune(s);
@@ -146,7 +146,8 @@ void Person::become_immune(Strain* strain) {
   health->become_immune(strain);
   behavior->become_immune(strain_id);
 }
-  
+
+
 void Person::recover(Strain * strain) {
   int strain_id = strain->get_id();
   health->recover(strain);

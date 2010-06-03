@@ -31,9 +31,36 @@ using namespace std;
 double Prob_stay_home;
 
 Strain::Strain() {
+  transmissibility = -1.0;
+  prob_symptomatic = -1.0;
+  asymp_infectivity = -1.0;
+  symp_infectivity = -1.0;
+  max_days_latent = -1;
+  max_days_incubating = -1;
+  max_days_asymp = -1;
+  max_days_symp = -1;
+  days_latent = NULL;
+  days_incubating = NULL;
+  days_asymp = NULL;
+  days_symp = NULL;
+  immunity_loss_rate = -1.0;
+  mutation_prob = NULL;
   residual_immunity = NULL;
+  at_risk = NULL;
+  spread = NULL;
+  population = NULL;
 }
 
+Strain::~Strain() {
+  if(days_latent != NULL) delete [] days_latent;
+  if(days_incubating != NULL) delete [] days_incubating;
+  if(days_asymp != NULL) delete [] days_asymp;
+  if(days_symp != NULL) delete [] days_symp;
+  if(spread != NULL) delete spread;
+  if(residual_immunity != NULL) delete residual_immunity;
+  if(at_risk != NULL) delete at_risk;
+}
+  
 void Strain::reset() {
   spread->reset();
 }
@@ -101,6 +128,13 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   residual_immunity->read_from_input(ss.str());
   residual_immunity->print();
   
+  // Define at risk people
+  at_risk = new Age_Map("At Risk Population");
+  stringstream sss; 
+  sss << "at_risk[" << id << "]";
+  at_risk->read_from_input(sss.str());
+  at_risk->print();
+
   printf("Strain setup finished\n"); fflush(stdout);
   if (Verbose) print();
 }

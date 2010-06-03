@@ -25,6 +25,7 @@ class Timestep_Map;
 class Spread {
 public:
   Spread(Strain * str);
+  ~Spread(void);
   void reset();
   void update_stats(int day);
   void print_stats(int day);

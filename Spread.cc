@@ -45,6 +45,10 @@ Spread::Spread(Strain *str) {
   primary_cases_map->print(); 
  }
 
+Spread::~Spread(void) {
+  delete primary_cases_map;
+}
+
 void Spread::reset() {
   exposed.clear();
   infectious.clear();

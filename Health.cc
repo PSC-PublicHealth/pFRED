@@ -44,6 +44,7 @@ Health::Health (Person * person) {
   //This actually allocates the space for these vectors
   checked_for_av.assign(nav,false);
   immunity.assign(strains,false);
+  at_risk.assign(strains,false);
   reset();
 }
 
@@ -63,7 +64,7 @@ Health::~Health(void){
 void Health::reset() {
 
   immunity.assign(immunity.size(),false);
-  
+  at_risk.assign(at_risk.size(),false);
   for (int strain = 0; strain < strains; strain++) {
     become_susceptible(strain);
   }
@@ -78,6 +79,17 @@ void Health::reset() {
   av_health.clear();
 
   checked_for_av.assign(checked_for_av.size(),false);
+  
+  // Determine if the agent is at risk
+  for(int strain = 0; strain < strains; strain++) {
+    Strain* s = self->get_population()->get_strain(strain);
+    if(s->get_at_risk()->get_num_ages()>0){
+      double at_risk_prob = s->get_at_risk()->find_value(self->get_age());
+      if(RANDOM()*100. < at_risk_prob){
+	declare_at_risk(s);
+      }
+    }
+  }
 }
 
 void Health::become_susceptible(int strain) {
@@ -197,6 +209,10 @@ void Health::become_immune(Strain* strain) {
   }
 }
 
+void Health::declare_at_risk(Strain* strain) {
+  int strain_id = strain->get_id();
+  at_risk[strain_id] = true;
+}
 
 void Health::recover(Strain * strain) {
   int strain_id = strain->get_id();
