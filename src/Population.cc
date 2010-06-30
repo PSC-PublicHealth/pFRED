@@ -232,7 +232,8 @@ void Population::print(int incremental, int day) {
   if (!incremental){
     if (Trace_Headers) fprintf(Tracefp, "# All agents, by ID\n");
     for (int p = 0; p < pop_size; p++) {
-      pop[p].print(0);
+      for (int i=0; i<strains; i++)
+	pop[p].print(i);
     }
   } else if (1==incremental){
     ChangeMap::const_iterator iter;
