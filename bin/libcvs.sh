@@ -3,7 +3,7 @@
 #
 # This library implements cvs operations, see comments in coderev.sh
 #
-# $Id: libcvs.sh,v 1.1 2010-04-13 15:55:35 nstone Exp $
+# $Id: libcvs.sh,v 1.2 2010-07-01 21:29:51 nstone Exp $
 
 function cvs_get_banner
 {
@@ -28,14 +28,30 @@ function cvs_get_working_revision
     #
     local pathname="."
     [[ -n $1 ]] && [[ -z $2 ]] && pathname=$1
-    cvs st $pathname 2>/dev/null | grep 'Working revision:.*\.' | head -1 \
+    cvs -q st $pathname 2>/dev/null | grep 'Working revision:.*\.' | head -1 \
         | sed 's/.*Working revision://' | awk '{print $1}'
 }
 
 function cvs_get_active_list
 {
-    cvs st $@ | grep File: \
+    cvs -q st $@ | grep File: \
         | awk '$4 != "Up-to-date" && $4 != "Unknown" {print $2}'
+}
+
+function cvs_get_new_list
+{
+    outfile=$1
+    shift
+
+    for file in `cvs -qn up $@ |grep \\? | awk '{ print $2 }' 2>/dev/null` ; do
+	if [ ! -d $file ]; then
+	    echo -n "Include '$file' ? ['y' to accept] "
+	    read ANS
+	    if [ "$ANS" = "y" -o "$ANS" = "Y" ]; then
+		echo $file >> $outfile
+	    fi
+	fi
+    done
 }
 
 function cvs_get_diff

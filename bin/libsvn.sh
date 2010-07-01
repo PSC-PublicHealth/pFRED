@@ -3,7 +3,7 @@
 #
 # This library implements svn operations, see comments in coderev.sh
 #
-# $Id: libsvn.sh,v 1.1 2010-04-13 15:55:35 nstone Exp $
+# $Id: libsvn.sh,v 1.2 2010-07-01 21:29:51 nstone Exp $
 
 function svn_get_banner
 {
@@ -33,6 +33,22 @@ function svn_get_working_revision
 function svn_get_active_list
 {
     svn st $@ | grep '^[A-Z]' | cut -c8-
+}
+
+function svn_get_new_list
+{
+    outfile=$1
+    shift
+
+    for file in `svn stat $@ |grep \\? | awk '{ print $2 }' 2>/dev/null` ; do
+	if [ ! -d $file ]; then
+	    echo -n "Include '$file' ? ['y' to accept] "
+	    read ANS
+	    if [ "$ANS" = "y" -o "$ANS" = "Y" ]; then
+		echo $file >> $outfile
+	    fi
+	fi
+    done
 }
 
 function svn_get_diff

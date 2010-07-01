@@ -6,7 +6,7 @@
 # Generate code review page of <workspace> vs <workspace>@HEAD, by using
 # `codediff.py' - a standalone diff tool
 #
-# $Id: coderev.sh,v 1.1 2010-04-13 15:55:35 nstone Exp $
+# $Id: coderev.sh,v 1.2 2010-07-01 21:29:51 nstone Exp $
 
 if [[ -L $0 ]]; then
     # Note readlink is not compatible
@@ -162,6 +162,7 @@ function set_vcs_ops
     eval vcs_get_project_path=${ident}_get_project_path
     eval vcs_get_working_revision=${ident}_get_working_revision
     eval vcs_get_active_list=${ident}_get_active_list
+    eval vcs_get_new_list=${ident}_get_new_list
     eval vcs_get_diff=${ident}_get_diff
     eval vcs_get_diff_opt=${ident}_get_diff_opt
 }
@@ -172,6 +173,7 @@ function set_vcs_ops
 #   get_project_path                  - print project path without repository
 #   get_working_revision pathname ... - print working revision
 #   get_active_list pathname ...      - print active file list
+#   get_new_list pathname ...         - print list of new (not in VC) files
 #   get_diff [diff_opt] pathname ...  - get diffs for active files
 #   get_diff_opt                      - print diff option and args
 
@@ -193,6 +195,7 @@ set_vcs_ops $(detect_vcs)
 # Main Proc
 #
 COMMENT_FILE=
+AUTHOR=
 COMMENTS=
 OUTPUT_DIR=
 PATCH_LVL=0
@@ -200,17 +203,20 @@ REV_ARG=
 REVERSE_PATCH=false
 WRAP_NUM=
 OVERWRITE=false
+INCLUDE_NEWFILES=false
 
-while getopts "F:hm:o:p:r:w:y" op; do
+while getopts "F:hm:o:p:r:w:ya:n" op; do
     case $op in
         F) COMMENT_FILE="$OPTARG" ;;
         h) help; exit 0 ;;
+	a) AUTHOR="$OPTARG" ;;
         m) COMMENTS="$OPTARG" ;;
         o) OUTPUT_DIR="$OPTARG" ;;
         p) PATCH_LVL="$OPTARG" ;;
         r) REV_ARG="$OPTARG" ;;
         w) WRAP_NUM="$OPTARG" ;;
         y) OVERWRITE=true ;;
+	n) INCLUDE_NEWFILES=true ;;
         ?) help; exit 1 ;;
     esac
 done
@@ -244,6 +250,7 @@ echo "  * Working revision : $WS_REV"
 #
 TMPDIR=$(mktemp -d /tmp/coderev.XXXXXX) || exit 1
 ACTIVE_LIST="$TMPDIR/activelist"
+NEW_LIST="$TMPDIR/newlist"
 DIFF="$TMPDIR/diffs"
 BASE_SRC="$TMPDIR/$WS_NAME-base"
 
@@ -260,6 +267,9 @@ if $RECV_STDIN; then
     get_list_from_patch $DIFF $PATCH_LVL > $ACTIVE_LIST || exit 1
 else
     $vcs_get_active_list $PATHNAME > $ACTIVE_LIST || exit 1
+    if [ "$INCLUDE_NEWFILES" = "true" ]; then
+	$vcs_get_new_list $NEW_LIST $PATHNAME || exit 1
+    fi
 fi
 
 [[ -s "$ACTIVE_LIST" ]] || {
@@ -268,6 +278,11 @@ fi
 }
 echo -e "\nActive file list:"
 sed 's/^/  * /' $ACTIVE_LIST
+
+if [ -s "$NEW_LIST" ]; then
+    echo -e "\nNew file list:"
+    sed 's/^/  * /' $NEW_LIST
+fi
 
 # Generate $BASE_SRC
 #
@@ -287,7 +302,7 @@ if $RECV_STDIN; then
 else
     echo -e "\nRetrieving diffs..."
     VCS_REV_OPT=""
-    [[ -n $REV_ARG ]] && VCS_REV_OPT="$($vcs_get_diff_opt $REV_ARG)"
+    [[ -n $REV_ARG ]] && VCS_REV_OPT="$($vcs_get_diff_opt -v $REV_ARG)"
     $vcs_get_diff $VCS_REV_OPT $(cat $ACTIVE_LIST) > $DIFF || exit 1
     # PATCH_LVL default to 0
 fi
@@ -320,6 +335,12 @@ CODEDIFF_OPT+=" -o $CODEREV"
 TITLE="Coderev for $(basename $(pwd)) r$WS_REV"
 CODEDIFF_OPT+=" -t '$TITLE'"
 
+if [[ -z "$AUTHOR" ]]; then
+    CODEDIFF_OPT+=" -a $LOGNAME"
+else
+    CODEDIFF_OPT+=" -a '$AUTHOR'"
+fi
+
 if [[ -z "$COMMENTS" ]]; then
     [[ -n "$COMMENT_FILE" ]] || {
         COMMENT_FILE="$TMPDIR/comments-$$"
@@ -329,6 +350,10 @@ This line and those below will be ignored--"
         echo -e "\n(hint: use '-F' option for comment file)" >> $COMMENT_FILE
         echo -e "\nActive file list:" >> $COMMENT_FILE
         cat $ACTIVE_LIST | sed 's/^/  /' >> $COMMENT_FILE
+	if [ -s "$NEW_LIST" ]; then
+            echo -e "\nNewfile list:" >> $COMMENT_FILE
+	    cat $NEW_LIST |  sed 's/^/  /' >> $COMMENT_FILE
+	fi
         echo -e "\n# vim:set ft=svn:" >> $COMMENT_FILE
 
         [[ -n "$EDITOR" ]] || {
@@ -348,6 +373,11 @@ fi
 
 [[ -n "$WRAP_NUM" ]] && CODEDIFF_OPT+=" -w $WRAP_NUM"
 $OVERWRITE && CODEDIFF_OPT+=" -y"
+
+# add it to the other
+if [ -s $NEW_LIST ]; then
+    cat $NEW_LIST >> $ACTIVE_LIST
+fi
 
 # Generate coderev
 #
