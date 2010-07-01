@@ -91,8 +91,7 @@ Vaccine_Manager::~Vaccine_Manager(void){
 }
 
 void Vaccine_Manager::fill_queues(void){
-  
-  if(!do_vacc) return;
+    if(!do_vacc) return;
   // We need to loop over the entire population that the Manager oversees to put them in a queue.
   int popsize = pop->get_pop_size();
   Person* people = pop->get_pop();
@@ -107,15 +106,25 @@ void Vaccine_Manager::fill_queues(void){
     }
   }
   
-  FYShuffle<Person *>(queue);
-  FYShuffle<Person *>(priority_queue);  
+  // To Randomize the queues, it is far more efficient to allocate temporary memory for a vector
+  // and copy over the list to a vector.
+  vector <Person *> random_queue(queue.size());
+  copy(queue.begin(),queue.end(),random_queue.begin());
+  FYShuffle < Person *>(random_queue);
+  copy(random_queue.begin(), random_queue.end(),queue.begin());
   
+  vector <Person *> random_priority_queue(priority_queue.size());
+  copy(priority_queue.begin(),priority_queue.end(),random_priority_queue.begin());
+  FYShuffle <Person *> (random_priority_queue);
+  copy(random_priority_queue.begin(),random_priority_queue.end(),priority_queue.begin());
+   
   if(Verbose > 0) {
     cout << "Vaccine Queue Stats \n";
     cout << "   Number in Priority Queue      = "<< priority_queue.size() << "\n";
     cout << "   Number in Regular Queue       = "<< queue.size() << "\n";
     cout << "   Total Agents in Vaccine Queue = "<< priority_queue.size() +  queue.size() << "\n";
-  }
+    }
+  
 }
 
 void Vaccine_Manager::update(int day){
@@ -140,9 +149,11 @@ void Vaccine_Manager::print(void){
 }
 
 void Vaccine_Manager::vaccinate(int day){
-  
-  if(!do_vacc) return;
-  
+  cout << "\nVaccinatinG!!!!!!!";
+  if(!do_vacc){
+    cout << "No Vaccinating!!!!\n";
+    return;
+  }
   int number_vaccinated = 0;
   int n_p_vaccinated = 0;
   int n_r_vaccinated = 0;
@@ -161,7 +172,7 @@ void Vaccine_Manager::vaccinate(int day){
   
   // Start vaccinating Priority
   
-  vector < Person* >:: iterator ip;
+  list < Person* >:: iterator ip;
   ip = priority_queue.begin();
   
   // Run through the priority queue first 

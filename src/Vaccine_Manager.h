@@ -9,6 +9,7 @@
 // File: Vaccine_Manager.h
 //
 
+
 #ifndef _FRED_VACCINE_MANAGER_H
 #define _FRED_VACCINE_MANAGER_H
 
@@ -16,6 +17,7 @@
 #define VACC_AGE_PRIORITY 1
 
 #include <vector>
+#include <list>
 #include "Manager.h"
 
 using namespace std;
@@ -38,8 +40,8 @@ class Vaccine_Manager: public Manager {
   //Parameters Access
   bool do_vaccination(void)                     const { return do_vacc; }
   Vaccines* get_vaccines(void)                  const { return vaccine_package; }
-  vector < Person* > get_priority_queue(void)   const { return priority_queue;}
-  vector < Person* > get_queue(void)            const { return queue;}
+  list < Person* > get_priority_queue(void)     const { return priority_queue;}
+  list < Person* > get_queue(void)              const { return queue;}
   int get_number_in_priority_queue(void)        const { return priority_queue.size(); }
   int get_number_in_reg_queue(void)             const { return queue.size(); }
  
@@ -59,8 +61,8 @@ class Vaccine_Manager: public Manager {
 
  private:
   Vaccines* vaccine_package;              //Pointer to the vaccines that this manager oversees
-  vector < Person* > priority_queue;      //Queue for the priority agents
-  vector < Person* > queue;               //Queue for everyone else
+  list < Person* > priority_queue;      //Queue for the priority agents
+  list < Person* > queue;               //Queue for everyone else
   
   //Parameters from Input 
   bool   do_vacc;                         //Is Vaccination being performed

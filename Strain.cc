@@ -52,13 +52,13 @@ Strain::Strain() {
 }
 
 Strain::~Strain() {
-  if(days_latent != NULL) delete [] days_latent;
-  if(days_incubating != NULL) delete [] days_incubating;
-  if(days_asymp != NULL) delete [] days_asymp;
-  if(days_symp != NULL) delete [] days_symp;
-  if(spread != NULL) delete spread;
-  if(residual_immunity != NULL) delete residual_immunity;
-  if(at_risk != NULL) delete at_risk;
+  delete [] days_latent;
+  delete [] days_incubating;
+  delete [] days_asymp;
+  delete [] days_symp;
+  delete spread;
+  delete residual_immunity;
+  delete at_risk;
 }
   
 void Strain::reset() {
@@ -121,9 +121,9 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   spread = new Spread(this);
 
   // Define residual immunity
-  sprintf(s,"residual_immunity_ages[%d]",id);
+  //sprintf(s,"residual_immunity_ages[%d]",id);
   residual_immunity = new Age_Map("Residual Immunity");
-  stringstream ss; 
+  stringstream ss;
   ss << "residual_immunity[" << id << "]";
   residual_immunity->read_from_input(ss.str());
   residual_immunity->print();

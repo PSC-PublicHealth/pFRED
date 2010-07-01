@@ -30,25 +30,25 @@ class AV_Health{
   AV_Health(int _av_day, Antiviral* _AV, Health* _health);
   
   //Access Members 
-  int get_av_start_day(void)        const {return av_day;}
-  int get_av_end_day(void)          const {return av_end_day;}
+  int  get_av_start_day(void)        const {return av_day;}
+  int  get_av_end_day(void)          const {return av_end_day;}
   Health* get_health(void)          const {return health;}
   int get_strain(void)              const {return strain;}
   
-  int is_on_av(int day)    {
+  int is_on_av(int day)    const {
     if((day >= av_day) && (day <= av_end_day)) return 1;
     else return 0;
   }
   
-  int is_effective(void){
+  int is_effective(void) const {
     if(av_end_day !=-1) return 1;
     else return 0;
   }
 
   //Utility Functions
   void update(int day);
-  void print(void);
-  void printTrace(void);
+  void print(void) const;
+  void printTrace(void) const;
   
   
  private:

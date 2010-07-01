@@ -40,11 +40,11 @@ Vaccine::~Vaccine(void){
   for(unsigned int i = 0; i < doses.size(); i++) delete doses[i];
 }
     
-void Vaccine::add_dose(Vaccine_Dose* _vaccine_dose) {
+void  Vaccine::add_dose(Vaccine_Dose* _vaccine_dose) {
   doses.push_back(_vaccine_dose);
 }
 
-void Vaccine::print(void) {
+void  Vaccine::print(void) const {
   cout << "Name = \t\t\t\t" <<name << "\n";
   cout << "Applied to strain = \t\t" << strain << "\n";
   cout << "Initial Stock = \t\t" << initial_stock << "\n";
@@ -59,11 +59,11 @@ void Vaccine::print(void) {
   }
 }
 
-void Vaccine::reset(void) {
+void  Vaccine::reset(void) {
   stock = 0;
   reserve = total_avail;
 }
  
-void Vaccine::update(int day) {
+void  Vaccine::update(int day) {
   if(day >= start_day) add_stock(additional_per_day);
 }

@@ -33,12 +33,12 @@ AV_Health::AV_Health(int _av_day, Antiviral* _AV, Health* _health){
   av_end_day      = av_day + AV->get_course_length();
 } 
 
-void AV_Health::print(void){
+void AV_Health::print(void) const {
   // Need to figure out what to write here
   cout << "\nAV_Status";
 }
 
-void AV_Health::printTrace(void){
+void AV_Health::printTrace(void) const{
   fprintf(Tracefp," %2d %2d %2d",av_day,strain,is_effective());
 }
 

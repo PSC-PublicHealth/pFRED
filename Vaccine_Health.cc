@@ -28,7 +28,7 @@ Vaccine_Health::Vaccine_Health(int _vaccination_day, Vaccine* _vaccine, int _age
   double efficacy_delay = vaccine->get_dose(0)->get_efficacy_delay(_age);
   
   vaccination_effective_day = -1;
-  if(RANDOM()*100. < efficacy){
+  if(RANDOM() < efficacy){  // Now a probability <=1.0
     vaccination_effective_day = vaccination_day+efficacy_delay;
   }
   current_dose =0;
@@ -38,18 +38,18 @@ Vaccine_Health::Vaccine_Health(int _vaccination_day, Vaccine* _vaccine, int _age
   }
 }
 
-void Vaccine_Health::print(void){
+void  Vaccine_Health::print(void) const {
 
   // Need to make work :)
   cout << "\nVaccine_Status";
 }
 
-void Vaccine_Health::printTrace(void){
+void  Vaccine_Health::printTrace(void) const {
   fprintf(VaccineTracefp," %2d %2d %2d",vaccination_day,is_effective(),current_dose);
   fflush(Tracefp);
 }
 
-void Vaccine_Health::update(int day, int age){
+void  Vaccine_Health::update(int day, int age){
   // First check for immunity 
   if(is_effective()){
     if(day >= vaccination_effective_day){
@@ -69,7 +69,7 @@ void Vaccine_Health::update(int day, int age){
       if(!is_effective()){                     // If the first dose was not effective
 	double efficacy = vaccine->get_dose(current_dose)->get_efficacy(age);
 	double efficacy_delay = vaccine->get_dose(0)->get_efficacy_delay(age);
-	if(RANDOM()*100. < efficacy){
+	if(RANDOM() < efficacy){  // Now a probability <= 0
 	  vaccination_effective_day = day + efficacy_delay;
 	}
 	

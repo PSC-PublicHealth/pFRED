@@ -30,20 +30,20 @@ class Vaccine{
   
   void add_dose(Vaccine_Dose* dose);
   
-  int get_strain(void)             const { return strain; }
-  int get_ID(void)                 const { return id; }
-  int get_number_doses(void)       const { return doses.size(); }
-  int get_low_age(void) const;
-  int get_high_age(void) const;
-  Vaccine_Dose* get_dose(int i)    const { return doses[i]; }
+  int  get_strain(void)             const { return strain; }
+  int  get_ID(void)                 const { return id; }
+  int  get_number_doses(void)       const { return doses.size(); }
+  int  get_low_age(void)            const;
+  int  get_high_age(void)           const;
+  Vaccine_Dose* get_dose(int i)     const { return doses[i]; }
   
   // Logistics Functions
-  int get_initial_stock(void)      const { return initial_stock; }
-  int get_total_avail(void)        const { return total_avail; }
-  int get_current_reserve(void)    const { return reserve; }
-  int get_current_stock(void)      const { return stock; }
-  int get_additional_per_day(void) const { return additional_per_day; }
-  void add_stock( int add ){ 
+  int  get_initial_stock(void)      const { return initial_stock; }
+  int  get_total_avail(void)        const { return total_avail; }
+  int  get_current_reserve(void)    const { return reserve; }
+  int  get_current_stock(void)      const { return stock; }
+  int  get_additional_per_day(void) const { return additional_per_day; }
+  void  add_stock( int add ){ 
     if(add <= reserve){
       stock   += add;
       reserve -= add;
@@ -54,15 +54,15 @@ class Vaccine{
     }
   }
   
-  void remove_stock( int remove ) {
+  void  remove_stock( int remove ) {
     stock-=remove;
     if(stock < 0) stock = 0;
   }
   
   //Utility Functions
-  void print(void);
-  void update(int day);
-  void reset(void);
+  void  print(void)                const;
+  void  update(int day);
+  void  reset(void);
 
  private:
   string name;

@@ -37,9 +37,9 @@ class Timestep_Map {
   ~Timestep_Map();
   
   // Utility Members
-  int get_value_for_timestep(int ts); // returns the value for the given timestep
-  bool is_empty(void) { return values->empty(); }
-  void print(void);
+  int  get_value_for_timestep(int ts) const; // returns the value for the given timestep
+  bool is_empty(void) const { return values->empty(); }
+  void print(void) const;
  private:
   map <int, int>* values;  // Map structure that holds <ts, value>
   string name;             // Name of the map

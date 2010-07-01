@@ -52,7 +52,7 @@ void Person::setup(int index, int age, char sex, int marital, int occ,
   perceptions = new Perceptions(this);
 }
   
-void Person::print(int strain) {
+void Person::print(int strain) const {
   fprintf(Tracefp, "%i %c id %7d  a %3d  s %c %c ",
 	  strain, health->get_strain_status(strain), id,
 	  demographics->get_age(),
@@ -80,7 +80,7 @@ void Person::print(int strain) {
 //   fflush(Tracefp);
 }
 
-void Person::print_out(int strain) {
+void Person::print_out(int strain) const {
   fprintf(stdout, "%c id %7d  a %3d  s %c %c ",
 	  health->get_strain_status(strain), id,
 	  demographics->get_age(),
@@ -96,7 +96,7 @@ void Person::print_out(int strain) {
   fflush(stdout);
 }
 
-void Person::print_schedule() {
+void Person::print_schedule() const {
   behavior->print_schedule();
 }
   
@@ -109,9 +109,9 @@ void Person::reset() {
   
   for(int strain = 0; strain < Pop.get_strains(); strain++){
     Strain* s = Pop.get_strain(strain);
-    if(s->get_residual_immunity()->get_num_ages()>0){
+    if(!s->get_residual_immunity()->is_empty()){
       double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
-      if(RANDOM()*100. < residual_immunity_prob){
+      if(RANDOM()< residual_immunity_prob){ // Now Probability <= 1.0
  	become_immune(s);
       }
     }
@@ -164,73 +164,73 @@ void Person::update_schedule(int day) {
   return behavior->update_schedule(day);
 }
 
-void Person::get_schedule(int *n, int *sched) {
+void Person::get_schedule(int *n, int *sched) const {
   behavior->get_schedule(n, sched);
 }
 
 void Person::behave(int day) {}
 
-int Person::is_symptomatic() {
+int Person::is_symptomatic() const {
   return health->is_symptomatic();
 }
 
-int Person::get_age() {
+int Person::get_age() const {
   return demographics->get_age();
 }
 
-char Person::get_sex() {
+char Person::get_sex() const {
   return demographics->get_sex();
 }
 
-char Person::get_occupation() {
+char Person::get_occupation() const {
   return demographics->get_occupation();
 }
 
-char Person::get_marital_status() {
+char Person::get_marital_status() const {
   return demographics->get_marital_status();
 }
 
-int Person::get_profession() {
+int Person::get_profession() const {
   return demographics->get_profession();
 }
 
-int Person::get_places() {
+int Person::get_places() const {
   return behavior->get_favorite_places();
 }
 
-double Person::get_susceptibility(int strain) {
+double Person::get_susceptibility(int strain) const {
   return health->get_susceptibility(strain);
 }
 
-double Person::get_infectivity(int strain) {
+double Person::get_infectivity(int strain) const {
   return health->get_infectivity(strain);
 }
 
-int Person::get_exposure_date(int strain) {
+int Person::get_exposure_date(int strain) const {
   return health->get_exposure_date(strain);
 }
 
-int Person::get_infectious_date(int strain) {
+int Person::get_infectious_date(int strain) const {
   return health->get_infectious_date(strain);
 }
 
-int Person::get_recovered_date(int strain) {
+int Person::get_recovered_date(int strain) const {
   return health->get_recovered_date(strain);
 }
 
-int Person::get_infector(int strain) {
+int Person::get_infector(int strain) const {
   return health->get_infector(strain);
 }
 
-int Person::get_infected_place(int strain) {
+int Person::get_infected_place(int strain) const {
   return health->get_infected_place(strain);
 }
 
-char Person::get_infected_place_type(int strain) {
+char Person::get_infected_place_type(int strain) const {
   return health->get_infected_place_type(strain);
 }
 
-int Person::get_infectees(int strain) {
+int Person::get_infectees(int strain) const {
   return health->get_infectees(strain);
 }
 
@@ -238,7 +238,7 @@ int Person::add_infectee(int strain) {
   return health->add_infectee(strain);
 }
 
-int Person::is_new_case(int day, int strain) {
+int Person::is_new_case(int day, int strain) const {
   return (health->get_exposure_date(strain) == day);
 }
 

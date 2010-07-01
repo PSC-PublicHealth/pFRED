@@ -33,12 +33,12 @@ class Policy{
 
   Policy(Manager* mgr);
   
-  virtual int choose(Person* person, int strain, int current_day) = 0;         
+  virtual int choose(Person* person, int strain, int current_day);         
                                // decision will return -1 if the decision is no
                                // or the integer result of the policies in the decision   
   
-  Manager* get_manager(void){ return manager; }
-  void print(void);
+  Manager* get_manager(void) const{ return manager; }
+  void print(void) const;
   void reset(void);
 
  protected:

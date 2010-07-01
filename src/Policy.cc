@@ -42,7 +42,7 @@ int Policy::choose(Person* person, int strain, int current_day){
   return result;
 }   
 
-void Policy::print(void){
+void Policy::print(void) const{
   cout << "\nPolicy List for Decision "<< Name;
   cout << "\n\n" << setw(40) << "Policy " << setw(20) << "Type";
   cout << "\n------------------------------------------------------------------\n";
@@ -52,5 +52,5 @@ void Policy::print(void){
 }
 
 void Policy::reset(void) { 
-  cout << "Decision Reset not implemented yet";
+  cout << "Policy Reset not implemented yet";
 }

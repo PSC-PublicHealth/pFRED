@@ -41,8 +41,8 @@ class Manager{
   virtual int poll_manager(Person* p, int strain, int day); //member to allow someone to see if they fit the current policy
 
   // Parameters
-  Population* get_population(void){ return pop;}
-  int get_current_policy(void){return current_policy; } 
+  Population* get_population(void) const { return pop;}
+  int get_current_policy(void)     const {return current_policy; } 
 
   //Utility Members
   virtual void update(int day) { };

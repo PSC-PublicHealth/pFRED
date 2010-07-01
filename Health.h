@@ -42,10 +42,10 @@ public:
   void become_immune(Strain* strain);
   void declare_at_risk(Strain* strain);
   void recover(Strain * strain);
-  int is_symptomatic();
-  bool is_immune(Strain* strain){ return immunity[strain->get_id()]; }
-  bool is_at_risk(Strain* strain) { return at_risk[strain->get_id()]; }
-  inline char get_strain_status(int strain) {
+  int is_symptomatic() const;
+  bool is_immune(Strain* strain) const { return immunity[strain->get_id()]; }
+  bool is_at_risk(Strain* strain) const { return at_risk[strain->get_id()]; }
+  inline char get_strain_status(int strain) const {
     if(immunity[strain] == 1){
       return 'M';
     }
@@ -58,20 +58,20 @@ public:
     
   }
 
-  Person* get_self(){ return self;}
-  int get_num_strains(void) { return strains; }
+  Person* get_self() const { return self;}
+  int get_num_strains(void) const { return strains; }
   int add_infectee(int strain);
-  int get_exposure_date(int strain);
-  int get_infectious_date(int strain);
-  int get_recovered_date(int strain);
-  int get_infector(int strain);
-  int get_infected_place(int strain);
-  char get_infected_place_type(int strain);
-  int get_infectees(int strain);
-  double get_susceptibility(int strain);
-  double get_infectivity(int strain);
-  Infection* get_infection(int strain) { return infection[strain]; }
-  bool is_on_av_for_strain(int day, int strain);
+  int get_exposure_date(int strain) const;
+  int get_infectious_date(int strain) const;
+  int get_recovered_date(int strain) const;
+  int get_infector(int strain) const;
+  int get_infected_place(int strain) const;
+  char get_infected_place_type(int strain) const;
+  int get_infectees(int strain) const;
+  double get_susceptibility(int strain) const;
+  double get_infectivity(int strain) const;
+  Infection* get_infection(int strain) const { return infection[strain]; }
+  bool is_on_av_for_strain(int day, int strain) const;
 
   //Medication operators
   void take(Vaccine *vacc, int day);
@@ -79,7 +79,7 @@ public:
   int get_number_av_taken(void)             const { return av_health.size();}
   int get_checked_for_av(int s)             const { return checked_for_av[s]; }
   void flip_checked_for_av(int s) { checked_for_av[s] = 1; } 
-  bool is_vaccinated(void) { 
+  bool is_vaccinated(void) const { 
     if(vaccine_health.size() > 0){return true;} 
     else {return false;} 
   } // no strain yet!!!!

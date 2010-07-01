@@ -20,18 +20,18 @@ class Vaccines {
  public:
   // Creation Operations
   Vaccines(void) { }
-  void setup(string _vaccince_file);
+  void  setup(string _vaccince_file);
 
-  Vaccine *get_vaccine(int i) const { return vaccines[i];}
+  Vaccine* get_vaccine(int i) const { return vaccines[i];}
   
-  vector <int> which_vaccines_applicable(int age);
-  int pick_from_applicable_vaccines(int age);
-  int get_total_vaccines_avail_today(void);
+  vector <int> which_vaccines_applicable(int age) const;
+  int pick_from_applicable_vaccines(int age) const;
+  int get_total_vaccines_avail_today(void) const ;
   
   
   //utility Functions
-  void print(void);
-  void print_current_stocks(void);
+  void print(void) const;
+  void print_current_stocks(void) const;
   void update(int day);
   void reset(void);
  private:

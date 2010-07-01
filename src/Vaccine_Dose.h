@@ -27,16 +27,15 @@ class Vaccine_Dose {
   Age_Map* get_efficacy_map(void)       const { return efficacy;}
   Age_Map* get_efficacy_delay_map(void) const { return efficacy_delay;}
   
-  double  get_efficacy(int age)         const { return efficacy->find_value(age);  }
-  double  get_efficacy_delay(int age)   const { return efficacy_delay->find_value(age); }
-  int     get_days_between_doses(void)  const { return days_between_doses; }
+  double   get_efficacy(int age)         const { return efficacy->find_value(age);  }
+  double   get_efficacy_delay(int age)   const { return efficacy_delay->find_value(age); }
+  int      get_days_between_doses(void)  const { return days_between_doses; }
   
-  bool    is_within_age(int age);
+  bool     is_within_age(int age) const;
   
   //Utility Functions... no need for update or reset.
-  void print(void);
-  
-  
+  void print(void) const;
+ 
  private:
   Age_Map* efficacy;            // Age specific efficacy of vaccine, does the dose provide immunity
   Age_Map* efficacy_delay;      // Age specific delay to efficacy, how long does it take to develop immunity

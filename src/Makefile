@@ -2,7 +2,7 @@
 
 #################  Compiler Flags ##############################
 CPP = g++ 
-CPPFLAGS = -m64 -O2 -Wall
+CPPFLAGS = -m64 -O3 #-Wall
 #CPPFLAGS = -pg -g -O0 -Wall
 
 ###############################################

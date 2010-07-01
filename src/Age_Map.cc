@@ -76,7 +76,7 @@ void Age_Map::add_value(int lower_age, int upper_age,double val) {
 }
 
 
-double Age_Map::find_value(int age) {
+double Age_Map::find_value(int age) const {
 
   //  if(age >=0 && age < ages[0]) return values[0];
   for(unsigned int i=0;i<values.size();i++)
@@ -87,16 +87,16 @@ double Age_Map::find_value(int age) {
 }
 
 
-void Age_Map::print(void) {
+void Age_Map::print(void) const {
   cout << "\n" << Name << "\n";
   for(unsigned int i=0;i<ages.size();i++){
     cout << "age "<< setw(2) << ages[i][0] << " to " << setw(3) << ages[i][1] << ": " 
-	 << setw(7) << setprecision(2) << fixed << values[i] << "\n";
+	 << setw(7) << setprecision(4) << fixed << values[i] << "\n";
   }
   cout << "\n";
 }
 
-bool Age_Map::quality_control(void) {
+bool Age_Map::quality_control(void) const {
   // First check to see there are a proper number of values for each age
   if(ages.size()!=values.size()){
      cout <<"Help! Age_Map: " << Name << ": Must have the same number of age groups and values\n";

@@ -30,13 +30,13 @@ Vaccine_Dose::~Vaccine_Dose(){
   delete efficacy_delay;
 }
 
-void Vaccine_Dose::print(void){
+void  Vaccine_Dose::print(void) const {
   cout << "Time Between Doses:\t " << days_between_doses << "\n";
   efficacy->print();
   efficacy_delay->print();
 }
 
-bool Vaccine_Dose::is_within_age(int age){
+bool  Vaccine_Dose::is_within_age(int age) const{
   if(efficacy->find_value(age) != 0.0){
     return true;
   }

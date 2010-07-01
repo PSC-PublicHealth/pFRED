@@ -19,13 +19,9 @@
 
 using namespace std;
 
-Manager::Manager(void) {
-  
+Manager::Manager(void) {  
   pop = NULL;
-  //current_person = NULL;
-  //current_strain = -1;
   current_policy = -1;
-  //current_day = -1;
 }
 
 Manager::~Manager(void) {

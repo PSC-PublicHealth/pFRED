@@ -95,7 +95,7 @@ void Vaccines::setup(string _vaccine_file) {
   }
 }	
 
-void Vaccines::print(void) {
+void Vaccines::print(void) const {
   cout <<"Vaccine Package Information\n";
   cout <<"There are "<<vaccines.size() <<" vaccines in the package\n";
   fflush(stdout);
@@ -105,7 +105,7 @@ void Vaccines::print(void) {
   fflush(stdout);
 }
 
-void Vaccines::print_current_stocks(void) {
+void Vaccines::print_current_stocks(void) const {
   cout << "Vaccine Stockk Information\n";
   cout << "\nVaccines# " << "Current Stock      " << "Current Reserve    \n";
   for(unsigned int i=0; i<vaccines.size(); i++) {
@@ -127,7 +127,7 @@ void Vaccines::reset(void) {
 }
 
 
-int Vaccines::pick_from_applicable_vaccines(int age) {
+int Vaccines::pick_from_applicable_vaccines(int age) const {
   vector <int> app_vaccs;
   for(unsigned int i=0;i<vaccines.size();i++){
     // if first dose is applicable, add to vector.
@@ -146,7 +146,7 @@ int Vaccines::pick_from_applicable_vaccines(int age) {
   return app_vaccs[randnum];
 }
  
-int Vaccines::get_total_vaccines_avail_today(void){
+int Vaccines::get_total_vaccines_avail_today(void) const{
   int total=0;
   for(unsigned int i=0;i<vaccines.size();i++){
     total += vaccines[i]->get_current_stock();

@@ -60,7 +60,7 @@ void Demographics::reset() {
     Age_Map* preg_prob_map = self->get_population()->get_pregnancy_prob();
     if(preg_prob_map->get_num_ages() > 0){
       double preg_prob = preg_prob_map->find_value(age);
-      if(RANDOM()*100. < preg_prob)   pregnant = true;
+      if(RANDOM() < preg_prob)   pregnant = true;
     }
   }
 }

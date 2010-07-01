@@ -49,7 +49,7 @@ class Antiviral {
   double  get_percent_symptomatics()  const { return percent_symptomatics;}
   double  get_efficacy()              const { return efficacy; }
   int     get_start_day()             const { return start_day; }
-  bool     is_prophylaxis()           const { return prophylaxis;}
+  bool    is_prophylaxis()            const { return prophylaxis;}
   
   // Roll operators
   int roll_will_have_symp()           const;
@@ -81,19 +81,19 @@ class Antiviral {
   
   // Utility Functions
   void update(int day);
-  void print(void);
+  void print(void)                   const;
   void reset(void);
-  void report(int day);
-  int quality_control(int nstrains);
-  void print_stocks(void);
+  void report(int day)               const;
+  int  quality_control(int nstrains) const;
+  void print_stocks(void)            const ;
 
   //Effect the Health of Person
   void effect(Health *h, int cur_day, AV_Health* av_health);
 
   // Policies members
   // Antivirals need a policy associated with them to determine who gets them.
-  void set_policy(Policy* p)                {policy = p; }
-  Policy* get_policy() const                {return policy;}
+  void set_policy(Policy* p)       {policy = p; }
+  Policy* get_policy() const          {return policy;}
   
   // To Be depricated 
   void add_given_out(int amount)            {given_out+=amount;}

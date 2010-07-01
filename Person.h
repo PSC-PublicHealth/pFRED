@@ -37,51 +37,51 @@ public:
 	     Place *office, int profile, Population* pop);
   void reset();
   void update(int day);
-  void print(int strain);
-  void print_out(int strain);
+  void print(int strain) const;
+  void print_out(int strain) const;
   void update_schedule(int day);
-  void get_schedule(int *n, int *sched);
-  inline int is_on_schedule(int day, int loc) {
+  void get_schedule(int *n, int *sched) const;
+  inline int is_on_schedule(int day, int loc) const{
     return behavior->is_on_schedule(day, loc);
   }
 
-  void print_schedule();
+  void print_schedule() const ;
   void become_susceptible(int strain);
   void become_exposed(Infection *infection);
   void become_infectious(Strain * strain);
   void become_immune(Strain *strain);
   void recover(Strain * strain);
   void behave(int day);
-  int is_symptomatic();
+  int is_symptomatic() const;
 
   // access functions:
-  int get_id() { return id; }
-  int get_age();
-  char get_sex();
-  char get_occupation();
-  char get_marital_status();
-  int get_profession();
-  int get_places();
-  inline char get_strain_status(int strain) {
+  int get_id() const { return id; }
+  int get_age() const;
+  char get_sex() const;
+  char get_occupation() const;
+  char get_marital_status() const;
+  int get_profession() const;
+  int get_places() const;
+  inline char get_strain_status(int strain) const {
     return health->get_strain_status(strain);
   }
-  double get_susceptibility(int strain);
-  double get_infectivity(int strain);
-  int get_exposure_date(int strain);
-  int get_infectious_date(int strain);
-  int get_recovered_date(int strain);
-  int get_infector(int strain);
-  int get_infected_place(int strain);
-  char get_infected_place_type(int strain);
-  int get_infectees(int strain);
+  double get_susceptibility(int strain) const;
+  double get_infectivity(int strain) const;
+  int get_exposure_date(int strain) const;
+  int get_infectious_date(int strain) const;
+  int get_recovered_date(int strain) const;
+  int get_infector(int strain) const;
+  int get_infected_place(int strain) const;
+  char get_infected_place_type(int strain) const;
+  int get_infectees(int strain) const;
   int add_infectee(int strain);
-  int is_new_case(int day, int strain);
+  int is_new_case(int day, int strain) const;
 
-  Health *get_health()             {return health;}
-  Behavior* get_behavior()         {return behavior;}
-  Demographics* get_demographics() {return demographics;}
-  Perceptions* get_perceptions()   {return perceptions;}
-  Population* get_population()     {return pop;}
+  Health *get_health() const             {return health;}
+  Behavior* get_behavior() const         {return behavior;}
+  Demographics* get_demographics() const {return demographics;}
+  Perceptions* get_perceptions() const   {return perceptions;}
+  Population* get_population() const     {return pop;}
 
   void set_changed(void); // notify the population that this Person has changed
 

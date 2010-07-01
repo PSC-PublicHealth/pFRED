@@ -210,7 +210,7 @@ void Behavior::recover(int strain) {
 int Behavior::compliance_to_vaccination(void){
   // Get the populations compliance
   double compliance = self->get_population()->get_vaccine_manager()->get_vaccine_compliance();
-  if(RANDOM()*100. < compliance){
+  if(RANDOM() < compliance){ // Now a probability <=1.0
     return 1;
   }
   return 0;

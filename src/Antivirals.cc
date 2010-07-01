@@ -104,13 +104,13 @@ Antivirals::Antivirals(void){
   quality_control(Strains);
 }
 
-int Antivirals::get_total_current_stock(void) const {
+int  Antivirals::get_total_current_stock(void) const {
   int sum = 0;
   for(unsigned int i=0;i<AVs.size();i++) sum += AVs[i]->get_current_stock();
   return sum;
 }
 
-vector < Antiviral* > Antivirals::find_applicable_AVs(int strain){
+vector < Antiviral* >  Antivirals::find_applicable_AVs(int strain) const { 
   vector <Antiviral* > avs;
   for(unsigned int iav=0;iav< AVs.size();iav++){
     if(AVs[iav]->get_strain() == strain && AVs[iav]->get_current_stock() != 0){
@@ -120,7 +120,7 @@ vector < Antiviral* > Antivirals::find_applicable_AVs(int strain){
   return avs;
 }
 
-vector < Antiviral* > Antivirals::prophylaxis_AVs(void){
+vector < Antiviral* >  Antivirals::prophylaxis_AVs(void) const {
   vector <Antiviral*> avs;
   for(unsigned int iav=0;iav< AVs.size();iav++){
     if(AVs[iav]->is_prophylaxis()){
@@ -130,7 +130,7 @@ vector < Antiviral* > Antivirals::prophylaxis_AVs(void){
   return avs;
 }
 
-void Antivirals::print(void){
+void  Antivirals::print(void) const {
   cout << "\n Antivirals Printout";
   cout << "\n There are "<< AVs.size() << " antivirals to choose from";
   for(unsigned int iav=0;iav<AVs.size(); iav++){
@@ -139,7 +139,7 @@ void Antivirals::print(void){
   cout << "\n\n";
 }
 
-void Antivirals::print_stocks(void){
+void  Antivirals::print_stocks(void) const {
   for(unsigned int iav = 0; iav < AVs.size(); iav++){
     cout <<"\n Antiviral #" << iav;
     AVs[iav]->print_stocks();
@@ -147,7 +147,7 @@ void Antivirals::print_stocks(void){
   }
 }
 
-void Antivirals::quality_control(int nstrains){  
+void  Antivirals::quality_control(int nstrains) const {  
   for(unsigned int iav = 0;iav < AVs.size();iav++) {
     if (Verbose > 1) {
       AVs[iav]->print();
@@ -159,16 +159,16 @@ void Antivirals::quality_control(int nstrains){
   }
 }
 
-void Antivirals::update(int day){
+void  Antivirals::update(int day){
   for(unsigned int iav =0;iav < AVs.size(); iav++)
     AVs[iav]->update(day);
 }
 
-void Antivirals::report(int day){
+void  Antivirals::report(int day) const {
   // STB - To Do
 }
 
-void Antivirals::reset(void){
+void  Antivirals::reset(void){
   for(unsigned int iav = 0; iav < AVs.size(); iav++)
     AVs[iav]->reset();
 }

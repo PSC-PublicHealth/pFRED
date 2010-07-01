@@ -28,12 +28,12 @@ class Vaccine_Health {
   Vaccine_Health(int _vaccination_day, Vaccine* _vaccine, int _age, Health* _health);
   
   // Access Members
-  int get_vaccination_day(void)           { return vaccination_day; }
-  int get_vaccination_effective_day(void) { return vaccination_effective_day; }
-  int is_effective(void)                  { if(vaccination_effective_day != -1) return 1; else return 0;}
-  Vaccine* get_vaccine(void)              { return vaccine; }
-  int get_current_dose(void)              { return current_dose; }
-  int get_days_to_next_dose(void)         { return days_to_next_dose; }
+  int get_vaccination_day(void)           const { return vaccination_day; }
+  int get_vaccination_effective_day(void) const { return vaccination_effective_day; }
+  int is_effective(void)                  const { if(vaccination_effective_day != -1) return 1; else return 0;}
+  Vaccine* get_vaccine(void)              const { return vaccine; }
+  int get_current_dose(void)              const { return current_dose; }
+  int get_days_to_next_dose(void)         const { return days_to_next_dose; }
   // Modifiers
   void set_vaccination_day(int day) { 
     if(vaccination_day ==-1){
@@ -46,8 +46,8 @@ class Vaccine_Health {
   }
   
   //Utility Functions
-  void print(void);
-  void printTrace(void);
+  void print(void) const;
+  void printTrace(void) const;
   void update(int day, int age);
       
  private:

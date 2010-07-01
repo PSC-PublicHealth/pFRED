@@ -63,7 +63,7 @@ void Antiviral::update(int day){
   if(day >= start_day) add_stock(additional_per_day);
 }
 
-void Antiviral::print(void) {
+void Antiviral::print(void) const {
   cout << "Effective for Strain \t\t"<< strain << "\n";
   cout << "Current Stock\t\t\t"<<stock<< " out of "<< total_avail << "\n";
   cout << "What is left =\t\t\t"<< reserve << "\n";
@@ -93,17 +93,17 @@ void Antiviral::reset(void) {
   reserve = total_avail-initial_stock;
 }
 
-void Antiviral::print_stocks(void) {
+void Antiviral::print_stocks(void) const {
   cout << "Current: "<< stock << " Reserve: "<<reserve << " TAvail: "<< total_avail << "\n";
 }
 
-void Antiviral::report(int day) {
+void Antiviral::report(int day) const {
   //STB - Need add a report utility
   cout << "\nNeed to write a report function";
 }
 
 
-int Antiviral::quality_control(int nstrains){
+int Antiviral::quality_control(int nstrains) const {
   // Currently, this checks the parsing of the AVs, and it returns 1 if there is a problem
   if(strain < 0 || strain > nstrains ) {
     cout << "\nAV strain invalid,cannot be higher than "<< nstrains << "\n";

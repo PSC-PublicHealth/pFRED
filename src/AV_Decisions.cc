@@ -51,7 +51,7 @@ int AV_Decision_Give_to_Sympt::evaluate(Person* person, int strain, int current_
   int percentage = av->get_percent_symptomatics();
   if(person->get_health()->get_strain_status(strain) == 'I'){
     person->get_health()->flip_checked_for_av(strain);
-    double r = RANDOM()*100.;
+    double r = RANDOM(); // This is now a probability <=1.0;
     if( r < percentage ) return 0;
   }
   return -1;

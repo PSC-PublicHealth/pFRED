@@ -33,8 +33,8 @@ class Decision{
   Decision(Policy *p);
   ~Decision();
   
-  string get_name(void) { return name; }
-  string get_type(void) { return type; }
+  string get_name(void) const { return name; }
+  string get_type(void) const { return type; }
   
   virtual int evaluate(Person* person, int strain, int current_day) = 0;  
 };

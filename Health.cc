@@ -83,9 +83,9 @@ void Health::reset() {
   // Determine if the agent is at risk
   for(int strain = 0; strain < strains; strain++) {
     Strain* s = self->get_population()->get_strain(strain);
-    if(s->get_at_risk()->get_num_ages()>0){
+    if(!s->get_at_risk()->is_empty()){
       double at_risk_prob = s->get_at_risk()->find_value(self->get_age());
-      if(RANDOM()*100. < at_risk_prob){
+      if(RANDOM() < at_risk_prob){ // Now a probability <=1.0
 	declare_at_risk(s);
       }
     }
@@ -220,7 +220,7 @@ void Health::recover(Strain * strain) {
   strain->remove_from_infectious_list(self);
 }
 
-int Health::is_symptomatic() {
+int Health::is_symptomatic() const {
   for (int strain = 0; strain < strains; strain++) {
     if (infection[strain] != NULL && infection[strain]->is_symptomatic())
       return 1;
@@ -228,49 +228,49 @@ int Health::is_symptomatic() {
   return 0;
 }
 
-int Health::get_exposure_date(int strain) {
+int Health::get_exposure_date(int strain) const {
   if (infection[strain] == NULL) 
     return -1;
   else
     return infection[strain]->get_exposure_date();
 }
 
-int Health::get_infectious_date(int strain) {
+int Health::get_infectious_date(int strain) const {
   if (infection[strain] == NULL) 
     return -1;
   else
     return infection[strain]->get_infectious_date();
 }
 
-int Health::get_recovered_date(int strain) {
+int Health::get_recovered_date(int strain) const {
   if (infection[strain] == NULL) 
     return -1;
   else
     return infection[strain]->get_recovered_date();
 }
 
-int Health::get_infector(int strain) {
+int Health::get_infector(int strain) const {
   if (infection[strain] == NULL) 
     return -1;
   else
     return infection[strain]->get_infector();
 }
 
-int Health::get_infected_place(int strain) {
+int Health::get_infected_place(int strain) const {
   if (infection[strain] == NULL) 
     return -1;
   else
     return infection[strain]->get_infected_place_id();
 }
 
-char Health::get_infected_place_type(int strain) {
+char Health::get_infected_place_type(int strain) const {
   if (infection[strain] == NULL) 
     return 'X';
   else
     return infection[strain]->get_infected_place_type();
 }
 
-int Health::get_infectees(int strain) {
+int Health::get_infectees(int strain) const {
   if (infection[strain] == NULL) 
     return 0;
   else
@@ -284,7 +284,7 @@ int Health::add_infectee(int strain) {
     return infection[strain]->add_infectee();
 }
 
-double Health::get_susceptibility(int strain) {
+double Health::get_susceptibility(int strain) const {
   double suscep_multp = susceptibility_multp[strain];
   if (infection[strain] == NULL)
     return suscep_multp;
@@ -292,7 +292,7 @@ double Health::get_susceptibility(int strain) {
     return infection[strain]->get_susceptibility() * suscep_multp;
 }
 
-double Health::get_infectivity(int strain) {
+double Health::get_infectivity(int strain) const {
   if (infection[strain] == NULL)
     return 0.0;
   else
@@ -365,7 +365,7 @@ void Health::take(Antiviral* av, int day){
   return;
 }
 
-bool Health::is_on_av_for_strain(int day, int s){
+bool Health::is_on_av_for_strain(int day, int s) const {
   for(unsigned int iav = 0; iav < av_health.size(); iav++){
     if(av_health[iav]->get_strain()==s &&
        (day >= av_health[iav]->get_av_start_day() &&

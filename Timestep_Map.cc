@@ -74,12 +74,10 @@ Timestep_Map::Timestep_Map(string _name){
 }
 
 Timestep_Map::~Timestep_Map(void){
-  if(values != NULL){
-    delete values;
-  }
+  delete values;
 }
 
-int Timestep_Map::get_value_for_timestep(int ts){
+int Timestep_Map::get_value_for_timestep(int ts) const{
   map<int,int>::iterator itr;
   
   itr = values->find(ts);
@@ -90,7 +88,7 @@ int Timestep_Map::get_value_for_timestep(int ts){
   return 0;
 }
 	  
-void Timestep_Map::print(void){
+void Timestep_Map::print(void) const {
   cout << "\n";
   cout << name << " Timestep Map  " << values->size() <<"\n";
   map<int,int>::iterator itr;
