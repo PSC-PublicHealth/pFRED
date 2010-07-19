@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -15,7 +15,7 @@ using namespace std;
 #include "Age_Map.h"
 #include "Params.h"
 
-Age_Map::Age_Map(void) {}
+Age_Map::Age_Map() {}
 
 Age_Map::Age_Map(string name) {
   Name = name + " Age Map";
@@ -51,7 +51,7 @@ void Age_Map::read_from_input(string Input) {
     cout <<"Error parsing Age_Map: " << Input << ": Must be an even number of age entries\n";
     abort();
   }
-
+  
   for(int i=0;i<na; i+=2){
     vector <int> ages_tmp2(2);
     ages_tmp2[0] = ages_tmp[i];
@@ -77,7 +77,7 @@ void Age_Map::add_value(int lower_age, int upper_age,double val) {
 
 
 double Age_Map::find_value(int age) const {
-
+  
   //  if(age >=0 && age < ages[0]) return values[0];
   for(unsigned int i=0;i<values.size();i++)
     if(age >= ages[i][0] && age <= ages[i][1])
@@ -87,21 +87,21 @@ double Age_Map::find_value(int age) const {
 }
 
 
-void Age_Map::print(void) const {
+void Age_Map::print() const {
   cout << "\n" << Name << "\n";
   for(unsigned int i=0;i<ages.size();i++){
     cout << "age "<< setw(2) << ages[i][0] << " to " << setw(3) << ages[i][1] << ": " 
-	 << setw(7) << setprecision(4) << fixed << values[i] << "\n";
+    << setw(7) << setprecision(4) << fixed << values[i] << "\n";
   }
   cout << "\n";
 }
 
-bool Age_Map::quality_control(void) const {
+bool Age_Map::quality_control() const {
   // First check to see there are a proper number of values for each age
   if(ages.size()!=values.size()){
-     cout <<"Help! Age_Map: " << Name << ": Must have the same number of age groups and values\n";
-     cout <<"Number of Age Groups = " << ages.size() << "  Number of Values = " << values.size() << "\n";
-     return false;
+    cout <<"Help! Age_Map: " << Name << ": Must have the same number of age groups and values\n";
+    cout <<"Number of Age Groups = " << ages.size() << "  Number of Values = " << values.size() << "\n";
+    return false;
   }
   
   // Next check that the ages groups are correct, the low and high ages are right
@@ -120,15 +120,15 @@ bool Age_Map::quality_control(void) const {
     
     for( unsigned int j=0;j<ages.size();j++) {
       if(j!=i){
-	if((lowage >= ages[j][0] && lowage <= ages[j][1]) ||
-	   (highage >= ages[j][0] && highage <= ages[j][1])) {
-	  cout << "Help! Age_Map: age group " << i << " not mutually exclusive with age group " << j << "\n";
-	  cout << lowage << " " << highage << " " << ages[j][0] << " " << ages[j][1] << "\n";
-	  return false;
-	}
+        if((lowage >= ages[j][0] && lowage <= ages[j][1]) ||
+           (highage >= ages[j][0] && highage <= ages[j][1])) {
+          cout << "Help! Age_Map: age group " << i << " not mutually exclusive with age group " << j << "\n";
+          cout << lowage << " " << highage << " " << ages[j][0] << " " << ages[j][1] << "\n";
+          return false;
+        }
       }
     }
   }
-    
+  
   return true;
 }

@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -17,33 +17,35 @@
 class Vaccine_Dose {
   // Vaccine_Dose is a class to hold the efficacy and dosing information 
   // for a vaccine.  A vaccine may have as many doses as it needs.
- public:
+public:
   // Creation Operators
-  Vaccine_Dose(Age_Map* _efficacy, Age_Map* _efficacy_delay, 
-	       int _days_between_doses);
-  ~Vaccine_Dose();
+  Vaccine_Dose(Age_Map* _efficacy, Age_Map* _efficacy_delay, int _days_between_doses);
+  virtual ~Vaccine_Dose();
   
   //Parameter Access
-  Age_Map* get_efficacy_map(void)       const { return efficacy;}
-  Age_Map* get_efficacy_delay_map(void) const { return efficacy_delay;}
+  virtual Age_Map* get_efficacy_map()       const { return efficacy;}
+  virtual Age_Map* get_efficacy_delay_map() const { return efficacy_delay;}
   
-  double   get_efficacy(int age)         const { return efficacy->find_value(age);  }
-  double   get_efficacy_delay(int age)   const { return efficacy_delay->find_value(age); }
-  int      get_days_between_doses(void)  const { return days_between_doses; }
+  virtual double  get_efficacy(int age)         const { return efficacy->find_value(age);  }
+  virtual double  get_efficacy_delay(int age)   const { return efficacy_delay->find_value(age); }
+  virtual int     get_days_between_doses()  const { return days_between_doses; }
   
-  bool     is_within_age(int age) const;
+  virtual bool    is_within_age(int age) const;
   
   //Utility Functions... no need for update or reset.
-  void print(void) const;
- 
- private:
+  virtual void print() const;
+  
+private:
+  int days_between_doses;       // Number of days until the next dose is administered
   Age_Map* efficacy;            // Age specific efficacy of vaccine, does the dose provide immunity
   Age_Map* efficacy_delay;      // Age specific delay to efficacy, how long does it take to develop immunity
-  int    days_between_doses;    // Number of days until the next dose is administered
+	
+protected:
+	Vaccine_Dose() { }
 };
 
 #endif
 
-  
-  
-  
+
+
+

@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -20,37 +20,37 @@ double * Neighborhood_contacts_per_day;
 double *** Neighborhood_contact_prob;
 int Neighborhood_parameters_set = 0;
 
-Neighborhood::Neighborhood(int loc, char *lab, double lon,
-			   double lat, int container) {
+Neighborhood::Neighborhood(int loc, const char *lab, double lon,
+                           double lat, Place *container, Population *pop) {
   type = NEIGHBORHOOD;
-  setup(loc, lab, lon, lat, container);
-  get_parameters(Strains);
+  setup(loc, lab, lon, lat, container, pop);
+  get_parameters(population->get_strains());
 }
 
 void Neighborhood::get_parameters(int strains) {
   char param_str[80];
-
+  
   if (Neighborhood_parameters_set) return;
-
+  
   Neighborhood_contacts_per_day = new double [ strains ];
   Neighborhood_contact_prob = new double** [ strains ];
-
+  
   for (int s = 0; s < strains; s++) {
     int n;
     sprintf(param_str, "neighborhood_contacts[%d]", s);
     get_param((char *) param_str, &Neighborhood_contacts_per_day[s]);
     // printf("Neighborhood_contacts_per_day[%d]= %f\n",
     // s,Neighborhood_contacts_per_day[s]);
-
+    
     sprintf(param_str, "neighborhood_prob[%d]", s);
     n = get_param_matrix(param_str, &Neighborhood_contact_prob[s]);
     if (Verbose > 1) {
       printf("\nNeighborhood_contact_prob:\n");
       for (int i  = 0; i < n; i++)  {
-	for (int j  = 0; j < n; j++) {
-	  printf("%f ", Neighborhood_contact_prob[s][i][j]);
-	}
-	printf("\n");
+        for (int j  = 0; j < n; j++) {
+          printf("%f ", Neighborhood_contact_prob[s][i][j]);
+        }
+        printf("\n");
       }
     }
   }

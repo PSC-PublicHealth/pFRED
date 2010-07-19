@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -22,19 +22,19 @@ class Person;
 using namespace std;
 
 class Decision{
-
- protected:
+  
+protected:
   string name;
   string type; 
   Policy *policy;  // This is the policy that the decision belongs to
-
- public:
-  Decision(void);
+  
+public:
+  Decision();
   Decision(Policy *p);
   ~Decision();
   
-  string get_name(void) const { return name; }
-  string get_type(void) const { return type; }
+  string get_name() const { return name; }
+  string get_type() const { return type; }
   
   virtual int evaluate(Person* person, int strain, int current_day) = 0;  
 };

@@ -1,14 +1,13 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
 // File: Vaccine_Manager.h
 //
-
 
 #ifndef _FRED_VACCINE_MANAGER_H
 #define _FRED_VACCINE_MANAGER_H
@@ -16,8 +15,8 @@
 #define VACC_NO_PRIORITY  0
 #define VACC_AGE_PRIORITY 1
 
-#include <vector>
 #include <list>
+#include <vector>
 #include "Manager.h"
 
 using namespace std;
@@ -31,35 +30,35 @@ class Timestep_Map;
 
 class Vaccine_Manager: public Manager {
   //Vaccine_Manager handles a stock of vaccines
- public:
+public:
   // Construction and Destruction
-  Vaccine_Manager(void);
+  Vaccine_Manager();
   Vaccine_Manager(Population *_pop);
-  ~Vaccine_Manager(void);
-
+  ~Vaccine_Manager();
+  
   //Parameters Access
-  bool do_vaccination(void)                     const { return do_vacc; }
-  Vaccines* get_vaccines(void)                  const { return vaccine_package; }
-  list < Person* > get_priority_queue(void)     const { return priority_queue;}
-  list < Person* > get_queue(void)              const { return queue;}
-  int get_number_in_priority_queue(void)        const { return priority_queue.size(); }
-  int get_number_in_reg_queue(void)             const { return queue.size(); }
- 
+  bool do_vaccination()                     const { return do_vacc; }
+  Vaccines* get_vaccines()                  const { return vaccine_package; }
+  list < Person* > get_priority_queue()     const { return priority_queue;}
+  list < Person* > get_queue()              const { return queue;}
+  int get_number_in_priority_queue()        const { return priority_queue.size(); }
+  int get_number_in_reg_queue()             const { return queue.size(); }
+  
   // Vaccination Specific Procedures
-  void fill_queues(void);
+  void fill_queues();
   void vaccinate(int day);
   
   //Paramters Access Members
-  int get_vaccine_compliance(void)        const {return vaccine_compliance;}
-  int get_vaccine_priority_age_low(void)  const {return vaccine_priority_age_low;}
-  int get_vaccine_priority_age_high(void) const {return vaccine_priority_age_high;}
+  int get_vaccine_compliance()        const {return vaccine_compliance;}
+  int get_vaccine_priority_age_low()  const {return vaccine_priority_age_low;}
+  int get_vaccine_priority_age_high() const {return vaccine_priority_age_high;}
   
   // Utility Members
   void update(int day);
-  void reset(void);
-  void print(void);
-
- private:
+  void reset();
+  void print();
+  
+private:
   Vaccines* vaccine_package;              //Pointer to the vaccines that this manager oversees
   list < Person* > priority_queue;      //Queue for the priority agents
   list < Person* > queue;               //Queue for everyone else
@@ -78,5 +77,5 @@ class Vaccine_Manager: public Manager {
 
 
 #endif
- 
-  
+
+

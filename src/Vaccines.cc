@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -77,17 +77,17 @@ void Vaccines::setup(string _vaccine_file) {
       dstr >> naggroups >> redi >> tbd;
       cout << "dstr = "<< naggroups << " " << redi << " " << tbd << "\n";
       for(int ig=0;ig<naggroups;ig++) {
-	int age1, age2;
-	double eff, effd;
-	
-	// read in dose efficacy line
-	getline(vaccine_input,lline);
-	istringstream ddstr(lline);
-	
-	ddstr >> age1 >> age2 >> eff >> effd;
-	
-	efficacy_map->add_value(age1,age2,eff);
-	efficacy_delay_map->add_value(age1,age2,effd);
+        int age1, age2;
+        double eff, effd;
+        
+        // read in dose efficacy line
+        getline(vaccine_input,lline);
+        istringstream ddstr(lline);
+        
+        ddstr >> age1 >> age2 >> eff >> effd;
+        
+        efficacy_map->add_value(age1,age2,eff);
+        efficacy_delay_map->add_value(age1,age2,effd);
       }
       //Vaccine_Dose vd(effmap,effdmap,tbd);
       vaccines[iv]->add_dose(new Vaccine_Dose(efficacy_map,efficacy_delay_map,tbd));
@@ -95,7 +95,7 @@ void Vaccines::setup(string _vaccine_file) {
   }
 }	
 
-void Vaccines::print(void) const {
+void Vaccines::print() const {
   cout <<"Vaccine Package Information\n";
   cout <<"There are "<<vaccines.size() <<" vaccines in the package\n";
   fflush(stdout);
@@ -105,12 +105,12 @@ void Vaccines::print(void) const {
   fflush(stdout);
 }
 
-void Vaccines::print_current_stocks(void) const {
+void Vaccines::print_current_stocks() const {
   cout << "Vaccine Stockk Information\n";
   cout << "\nVaccines# " << "Current Stock      " << "Current Reserve    \n";
   for(unsigned int i=0; i<vaccines.size(); i++) {
     cout << setw(10) << i+1 << setw(20) << vaccines[i]->get_current_stock()
-	 << setw(20) << vaccines[i]->get_current_reserve() << "\n";
+    << setw(20) << vaccines[i]->get_current_reserve() << "\n";
   }
 }
 
@@ -120,7 +120,7 @@ void Vaccines::update(int day) {
   }
 }
 
-void Vaccines::reset(void) {
+void Vaccines::reset() {
   for(unsigned int i=0;i<vaccines.size();i++) {
     vaccines[i]->reset();
   }
@@ -145,8 +145,8 @@ int Vaccines::pick_from_applicable_vaccines(int age) const {
   }
   return app_vaccs[randnum];
 }
- 
-int Vaccines::get_total_vaccines_avail_today(void) const{
+
+int Vaccines::get_total_vaccines_avail_today() const {
   int total=0;
   for(unsigned int i=0;i<vaccines.size();i++){
     total += vaccines[i]->get_current_stock();

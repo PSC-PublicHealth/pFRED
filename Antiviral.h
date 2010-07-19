@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -25,45 +25,47 @@ class AV_Health;
 class Antiviral {
   //Antiviral is a class to hold all of the paramters to describe a 
   //single antiviral
- public:
+public:
   //Creation
   
   Antiviral(int _strain, int _course_length, double _reduce_infectivity,
-	    double _reduce_susceptibility, double _reduce_asymp_period,
-	    double _reduce_sympt_period, double _prob_symptoms,
-	    int _initial_stock, int _total_avail, int _additional_per_day,
-	    double _efficacy, double* _av_cousre_start_day, 
-	    int _max_av_course_start_day, int _start_day, bool _prophylaxis,
-	    double _percent_symptomatics);
+            double _reduce_susceptibility, double _reduce_asymp_period,
+            double _reduce_sympt_period, double _prob_symptoms,
+            int _initial_stock, int _total_avail, int _additional_per_day,
+            double _efficacy, double* _av_cousre_start_day, 
+            int _max_av_course_start_day, int _start_day, bool _prophylaxis,
+            double _percent_symptomatics);
   
-  ~Antiviral() {delete av_course_start_day;}
-
+  virtual ~Antiviral() { 
+	  if (av_course_start_day) delete[] av_course_start_day;
+  }
+  
   //Paramter Access Members
-  int     get_strain()                const { return strain;}
-  double  get_reduce_infectivity()    const { return reduce_infectivity;}
-  double  get_reduce_susceptibility() const { return reduce_susceptibility;}
-  double  get_reduce_asymp_period()   const { return reduce_asymp_period;}
-  double  get_reduce_symp_period()    const { return reduce_symp_period;}
-  double  get_prob_symptoms()         const { return prob_symptoms;}
-  int     get_course_length()         const { return course_length; }
-  double  get_percent_symptomatics()  const { return percent_symptomatics;}
-  double  get_efficacy()              const { return efficacy; }
-  int     get_start_day()             const { return start_day; }
-  bool    is_prophylaxis()            const { return prophylaxis;}
+  virtual int     get_strain()                const { return strain;}
+  virtual double  get_reduce_infectivity()    const { return reduce_infectivity;}
+  virtual double  get_reduce_susceptibility() const { return reduce_susceptibility;}
+  virtual double  get_reduce_asymp_period()   const { return reduce_asymp_period;}
+  virtual double  get_reduce_symp_period()    const { return reduce_symp_period;}
+  virtual double  get_prob_symptoms()         const { return prob_symptoms;}
+  virtual int     get_course_length()         const { return course_length; }
+  virtual double  get_percent_symptomatics()  const { return percent_symptomatics;}
+  virtual double  get_efficacy()              const { return efficacy; }
+  virtual int     get_start_day()             const { return start_day; }
+  virtual bool    is_prophylaxis()            const { return prophylaxis;}
   
   // Roll operators
-  int roll_will_have_symp()           const;
-  int roll_efficacy()                 const;
-  int roll_course_start_day()         const;
+  virtual int roll_will_have_symp()           const;
+  virtual int roll_efficacy()                 const;
+  virtual int roll_course_start_day()         const;
   
   // Logistics Functions
-  int get_initial_stock(void)         const { return initial_stock; }
-  int get_total_avail(void)           const { return total_avail; }
-  int get_current_reserve(void)       const { return reserve; }
-  int get_current_stock(void)         const { return stock; }
-  int get_additional_per_day(void)    const { return additional_per_day;}
+  virtual int get_initial_stock()         const { return initial_stock; }
+  virtual int get_total_avail()           const { return total_avail; }
+  virtual int get_current_reserve()       const { return reserve; }
+  virtual int get_current_stock()         const { return stock; }
+  virtual int get_additional_per_day()    const { return additional_per_day;}
   
-  void add_stock( int amount ) {
+  virtual void add_stock( int amount ) {
     if(amount < reserve){
       stock += amount;
       reserve -= amount;
@@ -74,32 +76,32 @@ class Antiviral {
     }
   }
   
-  void remove_stock(int remove){
+  virtual void remove_stock(int remove){
     stock -= remove;
     if(stock < 0) stock = 0;
   }
   
   // Utility Functions
-  void update(int day);
-  void print(void)                   const;
-  void reset(void);
-  void report(int day)               const;
-  int  quality_control(int nstrains) const;
-  void print_stocks(void)            const ;
-
+  virtual void update(int day);
+  virtual void print() const;
+  virtual void reset();
+  virtual void report(int day) const;
+  virtual int quality_control(int nstrains) const;
+  virtual void print_stocks() const;
+  
   //Effect the Health of Person
-  void effect(Health *h, int cur_day, AV_Health* av_health);
-
+  virtual void effect(Health *h, int cur_day, AV_Health* av_health);
+  
   // Policies members
   // Antivirals need a policy associated with them to determine who gets them.
-  void set_policy(Policy* p)       {policy = p; }
-  Policy* get_policy() const          {return policy;}
+  virtual void set_policy(Policy* p)                {policy = p; }
+  virtual Policy* get_policy() const                {return policy;}
   
   // To Be depricated 
-  void add_given_out(int amount)            {given_out+=amount;}
-  void add_ineff_given_out(int amount)      {ineff_given_out+=amount;}
- 
- private:
+  virtual void add_given_out(int amount)            {given_out+=amount;}
+  virtual void add_ineff_given_out(int amount)      {ineff_given_out+=amount;}
+  
+private:
   int strain;                    
   int course_length;               // How many days mush one take the AV
   double reduce_infectivity;       // What percentage does it reduce infectivity
@@ -110,9 +112,10 @@ class Antiviral {
   double reduce_symp_period;       // What percentage does it reduce the symptomatic period
   double prob_symptoms;            // What is the probability of being symptomatic
   double efficacy;                 // The effectiveness of the AV (resistance)
-  double* av_course_start_day;     // Probabilistic AV start
   int max_av_course_start_day;     // Maximum start day
-
+  double* av_course_start_day;     // Probabilistic AV start
+  
+private:
   //Logistics
   int initial_stock;               // Amount of AV at day 0
   int stock;                       // Amount of AV currently available
@@ -134,5 +137,7 @@ class Antiviral {
   Policy* policy;
   
   //To Do... Hospitalization based policy
+protected:
+	Antiviral() { }
 };
 #endif // _FRED_ANTIVIRAL_H

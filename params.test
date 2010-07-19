@@ -1,3 +1,4 @@
+verbose = 100
 days = 50
 runs = 2
 popfile = test_pop.txt

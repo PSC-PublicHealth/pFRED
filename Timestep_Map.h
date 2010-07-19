@@ -9,6 +9,9 @@
 // File: Timestep_Map.h
 //
 
+#ifndef _FRED_TIMESTEP_MAP_H
+#define _FRED_TIMESTEP_MAP_H
+
 #include <stdio.h>
 #include <map>
 
@@ -23,24 +26,26 @@ class Timestep_Map {
   // A Timestep_Map is to be specified in a seperate file
   // If a Timestep_Map is specified with [] on the end, it is assumed to
   // be strain specific 
-
+  
   // This structure is designed so that if there is a specification in the 
   // input that specifies "none" as the keyword, the structure is empty.
-
+  
   // The input keyword will be the name of the structure_file.  So if the
   // name of the Map is passed as "primary_cases", the param keyword will
   // be "primary_cases_file".
   
- public:
+public:
   Timestep_Map();	
   Timestep_Map(string _name);
   ~Timestep_Map();
   
   // Utility Members
-  int  get_value_for_timestep(int ts) const; // returns the value for the given timestep
-  bool is_empty(void) const { return values->empty(); }
-  void print(void) const;
- private:
+  virtual int get_value_for_timestep(int ts) const; // returns the value for the given timestep
+  virtual bool is_empty() const { return values->empty(); }
+  virtual void print() const;
+private:
   map <int, int>* values;  // Map structure that holds <ts, value>
   string name;             // Name of the map
 };
+
+#endif _FRED_TIMESTEP_MAP_H

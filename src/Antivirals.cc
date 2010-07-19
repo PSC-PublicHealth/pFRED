@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -21,7 +21,7 @@ using namespace std;
 #include "Health.h"
 extern int Strains;
 
-Antivirals::Antivirals(void){
+Antivirals::Antivirals(){
   char s[80];
   int nav;
   
@@ -37,9 +37,9 @@ Antivirals::Antivirals(void){
     sprintf(s,"av_reduce_infectious_period[%d]",iav);
     if (does_param_exist(s)) {
       printf("***** Found deprecated parameter ***** %s\n"
-	     "New parameters are av_reduce_asymptomatic_period and "
-	     "av_reduce_symptomatic_period \n"
-	     "Aborting\n", s);
+             "New parameters are av_reduce_asymptomatic_period and "
+             "av_reduce_symptomatic_period \n"
+             "Aborting\n", s);
       abort();
     }
     
@@ -94,23 +94,23 @@ Antivirals::Antivirals(void){
     int MaxAVCourseSt = get_param_vector(s, AVCourseSt) -1;
     
     AVs.push_back(new Antiviral(Strain, CorLength, RedInf, 
-				RedSusc, RedASympPer, RedSympPer,
-				ProbSymp, InitSt, TotAvail, PerDay, 
-				Eff, AVCourseSt, MaxAVCourseSt,
-				StrtDay, isProph, PerSympt) );
+                                RedSusc, RedASympPer, RedSympPer,
+                                ProbSymp, InitSt, TotAvail, PerDay, 
+                                Eff, AVCourseSt, MaxAVCourseSt,
+                                StrtDay, isProph, PerSympt) );
     
   }
   print();
   quality_control(Strains);
 }
 
-int  Antivirals::get_total_current_stock(void) const {
+int Antivirals::get_total_current_stock() const {
   int sum = 0;
   for(unsigned int i=0;i<AVs.size();i++) sum += AVs[i]->get_current_stock();
   return sum;
 }
 
-vector < Antiviral* >  Antivirals::find_applicable_AVs(int strain) const { 
+vector < Antiviral* > Antivirals::find_applicable_AVs(int strain) const {
   vector <Antiviral* > avs;
   for(unsigned int iav=0;iav< AVs.size();iav++){
     if(AVs[iav]->get_strain() == strain && AVs[iav]->get_current_stock() != 0){
@@ -120,7 +120,7 @@ vector < Antiviral* >  Antivirals::find_applicable_AVs(int strain) const {
   return avs;
 }
 
-vector < Antiviral* >  Antivirals::prophylaxis_AVs(void) const {
+vector < Antiviral* > Antivirals::prophylaxis_AVs() const {
   vector <Antiviral*> avs;
   for(unsigned int iav=0;iav< AVs.size();iav++){
     if(AVs[iav]->is_prophylaxis()){
@@ -130,7 +130,7 @@ vector < Antiviral* >  Antivirals::prophylaxis_AVs(void) const {
   return avs;
 }
 
-void  Antivirals::print(void) const {
+void Antivirals::print() const {
   cout << "\n Antivirals Printout";
   cout << "\n There are "<< AVs.size() << " antivirals to choose from";
   for(unsigned int iav=0;iav<AVs.size(); iav++){
@@ -139,7 +139,7 @@ void  Antivirals::print(void) const {
   cout << "\n\n";
 }
 
-void  Antivirals::print_stocks(void) const {
+void Antivirals::print_stocks() const {
   for(unsigned int iav = 0; iav < AVs.size(); iav++){
     cout <<"\n Antiviral #" << iav;
     AVs[iav]->print_stocks();
@@ -147,7 +147,7 @@ void  Antivirals::print_stocks(void) const {
   }
 }
 
-void  Antivirals::quality_control(int nstrains) const {  
+void Antivirals::quality_control(int nstrains) const {  
   for(unsigned int iav = 0;iav < AVs.size();iav++) {
     if (Verbose > 1) {
       AVs[iav]->print();
@@ -159,16 +159,16 @@ void  Antivirals::quality_control(int nstrains) const {
   }
 }
 
-void  Antivirals::update(int day){
+void Antivirals::update(int day) {
   for(unsigned int iav =0;iav < AVs.size(); iav++)
     AVs[iav]->update(day);
 }
 
-void  Antivirals::report(int day) const {
+void Antivirals::report(int day) const {
   // STB - To Do
 }
 
-void  Antivirals::reset(void){
+void Antivirals::reset(){
   for(unsigned int iav = 0; iav < AVs.size(); iav++)
     AVs[iav]->reset();
 }

@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 //
 //
 // File: AV_Decision.h
@@ -18,16 +18,16 @@ class Policy;
 class Person;
 
 class Vaccine_Priority_Decision_Specific_Age: public Decision {
- public:
+public:
   Vaccine_Priority_Decision_Specific_Age(Policy* p);
-  Vaccine_Priority_Decision_Specific_Age(void);
+  Vaccine_Priority_Decision_Specific_Age();
   int evaluate(Person* person, int strain, int day);
 };
 
 class Vaccine_Priority_Decision_No_Priority: public Decision {
- public:
+public:
   Vaccine_Priority_Decision_No_Priority(Policy *p);
-  Vaccine_Priority_Decision_No_Priority(void);
+  Vaccine_Priority_Decision_No_Priority();
   int evaluate(Person* person, int strain, int day);
 };
 

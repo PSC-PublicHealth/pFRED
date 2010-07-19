@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -24,34 +24,35 @@ class Health;
 using namespace std;
 
 class AV_Health{
- public:
+public:
   // Creation Operations
-  AV_Health(void);
+  AV_Health();
   AV_Health(int _av_day, Antiviral* _AV, Health* _health);
   
   //Access Members 
-  int  get_av_start_day(void)        const {return av_day;}
-  int  get_av_end_day(void)          const {return av_end_day;}
-  Health* get_health(void)          const {return health;}
-  int get_strain(void)              const {return strain;}
-  
-  int is_on_av(int day)    const {
+  virtual int get_av_start_day()        const {return av_day;}
+  virtual int get_av_end_day()          const {return av_end_day;}
+  virtual Health* get_health()          const {return health;}
+  virtual int get_strain()              const {return strain;}
+  virtual Antiviral *get_antiviral()		const { return AV; }
+	
+  virtual int is_on_av(int day) const {
     if((day >= av_day) && (day <= av_end_day)) return 1;
     else return 0;
   }
   
-  int is_effective(void) const {
+  virtual int is_effective() const {
     if(av_end_day !=-1) return 1;
     else return 0;
   }
-
+  
   //Utility Functions
-  void update(int day);
-  void print(void) const;
-  void printTrace(void) const;
+  virtual void update(int day);
+  virtual void print() const;
+  virtual void printTrace() const;
   
   
- private:
+private:
   int av_day;           // Day on which the AV treatment starts
   int av_end_day;       // Day on which the AV treatment ends
   Health* health;       // Pointer to the health class for agent

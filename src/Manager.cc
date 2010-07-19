@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -19,12 +19,12 @@
 
 using namespace std;
 
-Manager::Manager(void) {  
+Manager::Manager() {
   pop = NULL;
   current_policy = -1;
 }
 
-Manager::~Manager(void) {
+Manager::~Manager() {
   for(unsigned int i=0; i < policies.size(); i++) delete policies[i];
   policies.clear();
   results.clear();

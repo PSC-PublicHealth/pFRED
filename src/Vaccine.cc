@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -19,7 +19,7 @@ using namespace std;
 #include "Vaccine_Dose.h"
 
 Vaccine::Vaccine(string _name, int _id, int _strain, int _age0, int _age1, 
-		 int _total_avail, int _additional_per_day, int _start_day){
+                 int _total_avail, int _additional_per_day, int _start_day){
   name =               _name;
   id =                 _id;
   strain =             _strain;
@@ -36,15 +36,15 @@ Vaccine::Vaccine(string _name, int _id, int _strain, int _age0, int _age1,
   number_effective = 0;
 }
 
-Vaccine::~Vaccine(void){ 
+Vaccine::~Vaccine(){ 
   for(unsigned int i = 0; i < doses.size(); i++) delete doses[i];
 }
-    
-void  Vaccine::add_dose(Vaccine_Dose* _vaccine_dose) {
+
+void Vaccine::add_dose(Vaccine_Dose* _vaccine_dose) {
   doses.push_back(_vaccine_dose);
 }
 
-void  Vaccine::print(void) const {
+void Vaccine::print() const {
   cout << "Name = \t\t\t\t" <<name << "\n";
   cout << "Applied to strain = \t\t" << strain << "\n";
   cout << "Initial Stock = \t\t" << initial_stock << "\n";
@@ -59,11 +59,11 @@ void  Vaccine::print(void) const {
   }
 }
 
-void  Vaccine::reset(void) {
+void Vaccine::reset() {
   stock = 0;
   reserve = total_avail;
 }
- 
-void  Vaccine::update(int day) {
+
+void Vaccine::update(int day) {
   if(day >= start_day) add_stock(additional_per_day);
 }

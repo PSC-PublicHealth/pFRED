@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -24,18 +24,30 @@ class Timestep_Map;
 
 class Spread {
 public:
-  Spread(Strain * str);
-  ~Spread(void);
-  void reset();
-  void update_stats(int day);
-  void print_stats(int day);
-  void insert_into_exposed_list(Person * person);
-  void insert_into_infectious_list(Person * person);
-  void remove_from_exposed_list(Person * person);
-  void remove_from_infectious_list(Person * person);
-  double get_attack_rate() { return attack_rate; }
-  void update(int day);
-
+	Spread(Strain * str, Timestep_Map *);
+  virtual ~Spread();
+  
+	void reset();
+	void update_stats(int day);
+	void print_stats(int day);
+	void insert_into_exposed_list(Person * person);
+	void insert_into_infectious_list(Person * person);
+	void remove_from_exposed_list(Person * person);
+	void remove_from_infectious_list(Person * person);
+	bool is_in_exposed_list(Person *per);
+	bool is_in_infectious_list(Person *per);
+	double get_attack_rate() { return attack_rate; }
+	void update(int day);
+	int get_S() { return S; }
+	int get_E() { return E; }
+	int get_I() { return I; }
+	int get_I_s() { return I_s; }
+	int get_R() { return R; }
+	int get_M() { return M; }
+	int get_clinical_incidents() { return clinical_incidents; }
+	int get_incident_infections() { return incident_infections; }
+	int get_total_incidents() { return total_incidents; }
+  
 private:
   Strain * strain;
   double attack_rate;
@@ -49,9 +61,9 @@ private:
   int I_s;
   int R;
   int M;
+  int clinical_incidents;
   int incident_infections;
   int total_incidents;
-  int clinical_incidents;
 };
-  
+
 #endif // _FRED_SPREAD_H

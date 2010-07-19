@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 //
 //
 // File: AV_Decision.h
@@ -21,8 +21,8 @@ class Policy;
 //  the course of the simulation
 
 class AV_Decision_Allow_Only_One: public Decision {
-
- public: 
+  
+public: 
   AV_Decision_Allow_Only_One(Policy * p);
   AV_Decision_Allow_Only_One();
   int evaluate(Person* person, int strain, int current_day);
@@ -33,24 +33,24 @@ class AV_Decision_Allow_Only_One: public Decision {
 // i.e. only check once.
 
 class AV_Decision_Give_One_Chance: public Decision {
- public:
+public:
   AV_Decision_Give_One_Chance(Policy *p);
-  AV_Decision_Give_One_Chance(void);
+  AV_Decision_Give_One_Chance();
   int evaluate(Person* person, int strain, int current_day);
 };
 
 class AV_Decision_Give_to_Sympt: public Decision {
- public:
+public:
   AV_Decision_Give_to_Sympt(Policy *p);
-  AV_Decision_Give_to_Sympt(void);
+  AV_Decision_Give_to_Sympt();
   int evaluate(Person* person, int strain, int current_day);
 };
 
 class AV_Decision_Begin_AV_On_Day: public Decision {
- public:
+public:
   AV_Decision_Begin_AV_On_Day(Policy *p);
-  AV_Decision_Begin_AV_On_Day(void);
+  AV_Decision_Begin_AV_On_Day();
   int evaluate(Person* person, int strain, int current_day);
 };
-  
+
 #endif

@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -27,40 +27,41 @@ using namespace std;
 #include "Random.h"
 #include "Age_Map.h"
 #include "Spread.h"
+#include "Timestep_Map.h"
 
 double Prob_stay_home;
 
 Strain::Strain() {
-  transmissibility = -1.0;
-  prob_symptomatic = -1.0;
-  asymp_infectivity = -1.0;
-  symp_infectivity = -1.0;
-  max_days_latent = -1;
-  max_days_incubating = -1;
-  max_days_asymp = -1;
-  max_days_symp = -1;
-  days_latent = NULL;
-  days_incubating = NULL;
-  days_asymp = NULL;
-  days_symp = NULL;
-  immunity_loss_rate = -1.0;
-  mutation_prob = NULL;
-  residual_immunity = NULL;
-  at_risk = NULL;
-  spread = NULL;
-  population = NULL;
+	transmissibility = -1.0;
+	prob_symptomatic = -1.0;
+	asymp_infectivity = -1.0;
+	symp_infectivity = -1.0;
+	max_days_latent = -1;
+	max_days_incubating = -1;
+	max_days_asymp = -1;
+	max_days_symp = -1;
+	days_latent = NULL;
+	days_incubating = NULL;
+	days_asymp = NULL;
+	days_symp = NULL;
+	immunity_loss_rate = -1.0;
+	mutation_prob = NULL;
+	residual_immunity = NULL;
+	at_risk = NULL;
+	spread = NULL;
+	population = NULL;
 }
 
 Strain::~Strain() {
-  delete [] days_latent;
-  delete [] days_incubating;
-  delete [] days_asymp;
-  delete [] days_symp;
-  delete spread;
-  delete residual_immunity;
-  delete at_risk;
+	delete [] days_latent;
+	delete [] days_incubating;
+	delete [] days_asymp;
+	delete [] days_symp;
+	delete spread;
+	delete residual_immunity;
+	delete at_risk;
 }
-  
+
 void Strain::reset() {
   spread->reset();
 }
@@ -69,79 +70,88 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   char s[80];
   id = strain;
   int n;
-
+  
   sprintf(s, "trans[%d]", id);
   get_param(s, &transmissibility);
-
+  
   sprintf(s, "symp[%d]", id);
   get_param(s, &prob_symptomatic);
-
+  
   sprintf(s, "symp_infectivity[%d]", id);
   get_param(s, &symp_infectivity);
-
+  
   sprintf(s, "asymp_infectivity[%d]", id);
   get_param(s, &asymp_infectivity);
-
+  
   sprintf(s, "days_latent[%d]", id);
   get_param(s, &n);
   days_latent = new double [n];
   max_days_latent = get_param_vector(s, days_latent) -1;
-
+  
   sprintf(s, "days_incubating[%d]", id);
   get_param(s, &n);
   days_incubating = new double [n];
   max_days_incubating = get_param_vector(s, days_incubating) -1;
-
+  
   // This check disallows deprecated strain params
   sprintf(s, "days_infectious[%d]", id);
   if (does_param_exist(s)) {
     printf("***** Found deprecated parameter ***** %s\n"
-	   "New parameters are days_asymp and days_symp "
-	   "Aborting\n", s);
+           "New parameters are days_asymp and days_symp "
+           "Aborting\n", s);
     abort();
   }
-
+  
   sprintf(s, "days_asymp[%d]", id);
   get_param(s, &n);
   days_asymp = new double [n];
   max_days_asymp = get_param_vector(s, days_asymp) -1;
-
+  
   sprintf(s, "days_symp[%d]", id);
   get_param(s, &n);
   days_symp = new double [n];
   max_days_symp = get_param_vector(s, days_symp) -1;
-
+  
   sprintf(s, "immunity_loss_rate[%d]", id);
   get_param(s, &immunity_loss_rate);
-
+  
   get_param((char *) "prob_stay_home", &Prob_stay_home);
-
+  
   mutation_prob = mut_prob;
   population = pop;
-  spread = new Spread(this);
-
+	
+  // Read primary_cases file that indicates the number of externally infections
+  // occur each day.
+  // Note: infectees are chosen at random, and previously infected individuals
+  // are not affected, so the number of new cases may be less than specified in
+  // the file.
+  char param_name[80];
+  sprintf(param_name,"primary_cases[%d]",id);
+  string param_name_str(param_name);
+  spread = new Spread(this, new Timestep_Map(param_name_str));
+  
   // Define residual immunity
   //sprintf(s,"residual_immunity_ages[%d]",id);
   residual_immunity = new Age_Map("Residual Immunity");
-  stringstream ss;
+  stringstream ss; 
   ss << "residual_immunity[" << id << "]";
   residual_immunity->read_from_input(ss.str());
   residual_immunity->print();
   
-  // Define at risk people
-  at_risk = new Age_Map("At Risk Population");
-  stringstream sss; 
-  sss << "at_risk[" << id << "]";
-  at_risk->read_from_input(sss.str());
-  at_risk->print();
-
+  // Define at risk people	n		
+  at_risk = new Age_Map("At Risk Population");			
+  stringstream sss; 			
+  sss << "at_risk[" << id << "]";			
+  at_risk->read_from_input(sss.str());			
+  at_risk->print();	
+	
   printf("Strain setup finished\n"); fflush(stdout);
   if (Verbose) print();
 }
 
 void Strain::print() {
   printf("strain %d symp %.3f trans %e symp_infectivity %.3f asymp_infectivity %.3f\n",
-	 id, prob_symptomatic, transmissibility, symp_infectivity, asymp_infectivity);
+         id, prob_symptomatic, transmissibility, symp_infectivity, asymp_infectivity);
   printf("days latent: ");
   for (int i = 0; i <= max_days_latent; i++)
     printf("%.3f ", days_latent[i]);
@@ -161,12 +171,12 @@ void Strain::print() {
 }
 
 bool Strain::attempt_infection(Person* infector, Person* infectee,
-			       Place* place, int exposure_date) {
+                               Place* place, int exposure_date) {
   // is the victim here today, and still susceptible?
   if (infectee->is_on_schedule(exposure_date, place->get_id()) &&
       infectee->get_strain_status(id) == 'S') {
     if (Verbose > 1) { printf("Victim is here and is susceptible\n"); }
-
+    
     // get the victim's susceptibility
     double susceptibility;
     double transmission_prob;
@@ -179,16 +189,16 @@ bool Strain::attempt_infection(Person* infector, Person* infectee,
     }
     if (Verbose > 1) {
       printf("trans_prob = %f  susceptibility = %f\n",
-	     transmission_prob, susceptibility);
+             transmission_prob, susceptibility);
     }
-
+    
     double r = RANDOM();
     if (r < transmission_prob*susceptibility) {
       if (Verbose > 1) { printf("transmission succeeded: r = %f\n", r); }
       Infection* i = new Infection(this, infector, infectee, place, exposure_date);
       infectee->become_exposed(i);
       if (infector)
-	infector->add_infectee(id);
+        infector->add_infectee(id);
       return true;
     }
     if (Verbose > 1) { printf("transmission failed: r = %f\n", r); }
@@ -196,7 +206,7 @@ bool Strain::attempt_infection(Person* infector, Person* infectee,
   }
   if (Verbose > 1) {
     printf("Victim either not here or not susceptible, status = %c  exp_date = %d place_id = %d\n",
-	   infectee->get_strain_status(id), exposure_date, place->get_id());
+           infectee->get_strain_status(id), exposure_date, place->get_id());
   }
   return false;
 }
@@ -208,7 +218,7 @@ Strain* Strain::should_mutate_to() {
   int strain_start = IRAND(0, num_strains-1);
   // By default, create an infection with this strain.
   int infection_id = id;
-
+  
   // Try and mutate to other strains.
   for (int strain_i = strain_start; strain_i < num_strains; ++strain_i) {
     if (strain_i == id) continue;
@@ -223,7 +233,7 @@ Strain* Strain::should_mutate_to() {
       if (strain_i == id) continue;
       double r = RANDOM();
       if (r < mutation_prob[strain_i]) {
-	return population->get_strain(strain_i);
+        return population->get_strain(strain_i);
       }
     }
   }
@@ -283,6 +293,9 @@ void Strain::print_stats(int day) {
 
 // static
 double Strain::get_prob_stay_home() { return Prob_stay_home; }
+
+// static
+void Strain::set_prob_stay_home(double p) { Prob_stay_home = p; }
 
 // static
 void Strain::get_strain_parameters() {

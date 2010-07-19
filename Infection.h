@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -26,7 +26,7 @@ public:
   // Place and infector may be null if this is a seed infection.
   // Place may be null if this is an infection due to a mutation event.
   Infection(Strain * s, Person* infector, Person* infectee,
-	    Place* place, int day);
+            Place* place, int day);
   void become_infectious();
   void become_symptomatic();
   void recover();
@@ -49,7 +49,7 @@ public:
   double get_susceptibility() { return susceptibility; }
   double get_infectivity() { return infectivity * infectivity_multp; }
   double get_symptoms() { return symptoms; }
-
+  
   //Modifiers
   void modify_susceptibility(double multp){ susceptibility*=multp; }
   void modify_infectivity(double multp){ infectivity_multp = multp; }
@@ -68,13 +68,13 @@ public:
   // strain type in this host.  May also alter the course of this infection
   // (shortening or lengthening the duration).  
   bool possibly_mutate(Health* health, int day);
-
+  
   void print();
-
+  
   // Returns an infection for the given host and strain with exposed date and
   // recovered date both equal to day (instant resistance to the given strain);
   static Infection* get_dummy_infection(Strain *s, Person* host, int day);
-
+  
 private:
   // Change the future course of this infection.  Changing parameters such
   // that past transition dates are affected is invalid.  Invalid actions:
@@ -83,9 +83,9 @@ private:
   //         is already infectious
   // Yes, you could bypass these checks by not passing the true current_day,
   // but that's just mean.
- void reset_infection_course(int num_latent_days, int num_asymp_days,
-			     int num_symp_days, int current_day);
-
+  void reset_infection_course(int num_latent_days, int num_asymp_days,
+                              int num_symp_days, int current_day);
+  
   Strain * strain;
   char strain_status;
   int latent_period;

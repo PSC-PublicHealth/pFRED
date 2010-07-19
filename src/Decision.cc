@@ -1,9 +1,9 @@
 
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -13,13 +13,13 @@
 #include "Policy.h"
 #include "Decision.h"
 
-Decision::Decision(void){
+Decision::Decision(){
   name = "";
   type = "";
   policy = NULL;
 }
 
-Decision::~Decision(void){ }
+Decision::~Decision(){ }
 
 Decision::Decision(Policy *p){
   policy = p;

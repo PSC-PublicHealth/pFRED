@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -15,32 +15,30 @@
 #include "Random.h"
 #include "Person.h"
 #include "Strain.h"
-#include "Person.h"
-#include "Behavior.h"
 
 double * Hospital_contacts_per_day;
 double *** Hospital_contact_prob;
 int Hospital_parameters_set = 0;
 
-Hospital::Hospital(int loc, char *lab, double lon, double lat, int container) {
+Hospital::Hospital(int loc, const char *lab, double lon, double lat, Place *container, Population *pop) {
   type = HOSPITAL;
-  setup(loc, lab, lon, lat, container);
-  get_parameters(Strains);
+  setup(loc, lab, lon, lat, container, pop);
+  get_parameters(population->get_strains());
 }
 
 void Hospital::get_parameters(int strains) {
   char param_str[80];
-
+  
   if (Hospital_parameters_set) return;
-
+  
   Hospital_contacts_per_day = new double [ strains ];
   Hospital_contact_prob = new double** [ strains ];
-
+  
   for (int s = 0; s < strains; s++) {
     int n;
     sprintf(param_str, "hospital_contacts[%d]", s);
     get_param((char *) param_str, &Hospital_contacts_per_day[s]);
-
+    
     sprintf(param_str, "hospital_prob[%d]", s);
     n = 0;
     get_param((char *) param_str, &n);
@@ -51,26 +49,26 @@ void Hospital::get_parameters(int strains) {
       n = (int) sqrt((double) n);
       Hospital_contact_prob[s] = new double * [n];
       for (int i  = 0; i < n; i++) 
-	Hospital_contact_prob[s][i] = new double [n];
+        Hospital_contact_prob[s][i] = new double [n];
       for (int i  = 0; i < n; i++) {
-	for (int j  = 0; j < n; j++) {
-	  Hospital_contact_prob[s][i][j] = tmp[i*n+j];
-	}
+        for (int j  = 0; j < n; j++) {
+          Hospital_contact_prob[s][i][j] = tmp[i*n+j];
+        }
       }
       delete tmp;
-
+      
       if (Verbose > 1) {
-	printf("\nHospital_contact_prob:\n");
-	for (int i  = 0; i < n; i++)  {
-	  for (int j  = 0; j < n; j++) {
-	    printf("%f ", Hospital_contact_prob[s][i][j]);
-	  }
-	  printf("\n");
-	}
+        printf("\nHospital_contact_prob:\n");
+        for (int i  = 0; i < n; i++)  {
+          for (int j  = 0; j < n; j++) {
+            printf("%f ", Hospital_contact_prob[s][i][j]);
+          }
+          printf("\n");
+        }
       }
     }
   }
-
+  
   Hospital_parameters_set = 1;
 }
 

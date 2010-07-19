@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -10,10 +10,12 @@
 //
 
 #ifndef _FRED_H
-#define _FRED_H
 
+int main(int argc, char* argv[]);
 void setup(char *paramfile);
 void cleanup(int run);
 void run_sim(int run);
+
+#define _FRED_H
 
 #endif // _FRED_H

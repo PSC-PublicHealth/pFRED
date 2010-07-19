@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -26,7 +26,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 Infection::Infection (Strain * s, Person* person_infector,
-		      Person* infectee, Place* place, int day) {
+                      Person* infectee, Place* place, int day) {
   strain = s;
   strain_status = 'E';
   exposure_date = day;
@@ -53,7 +53,7 @@ Infection::Infection (Strain * s, Person* person_infector,
       asymp_period = strain->get_days_asymp(); // * asymp_period_multp;
     }
   }
-
+  
   infectious_date = exposure_date + latent_period;
   symptomatic_date = infectious_date + asymp_period;
   recovered_date = symptomatic_date + symp_period;
@@ -162,41 +162,41 @@ void Infection::recover() {
 }
 
 void Infection::reset_infection_course(int num_latent_days, int num_asymp_days,
-				       int num_symp_days, int current_day) {
+                                       int num_symp_days, int current_day) {
   // If my host has already recovered, changing any parameters is invalid.
   if (current_day > recovered_date) {
     printf("Infection from strain %i: attempt to change infection course after"
-	   " person %i is already recovered.  Recovery date was %i, and current "
-	   "date is %i\n",
-	   strain->get_id(), host->get_id(), recovered_date, current_day);
+           " person %i is already recovered.  Recovery date was %i, and current "
+           "date is %i\n",
+           strain->get_id(), host->get_id(), recovered_date, current_day);
     fflush(stdout);
     abort();
   }
   // If my host is already infectious, changing the infectious date is invalid.
   if (current_day > infectious_date && latent_period != num_latent_days) {
     printf("Infection from strain %i: attempt to change latent period from % i "
-	   "to %i after person %i is already infectious.  Current infectious "
-	   "date is %i, new day would be %i\n",
-	   strain->get_id(), latent_period, num_latent_days, host->get_id(),
-	   infectious_date, exposure_date + num_latent_days);
+           "to %i after person %i is already infectious.  Current infectious "
+           "date is %i, new day would be %i\n",
+           strain->get_id(), latent_period, num_latent_days, host->get_id(),
+           infectious_date, exposure_date + num_latent_days);
     fflush(stdout);
     abort();
   }
-
+  
   // If my host is already symptomatic, changing the symptomatic state is invalid.
   if (current_day > symptomatic_date &&
       current_day > num_symp_days + symptomatic_date) {
     printf("Infection from strain %i in person %i on day %i: attempt to "
-	   "change symptomatic period to end in the past. "
-	   "current_symptomatic date: %i, current symptomatic period: %i\n"
-	   "new symptomatic date: %i new symptomatic_period: %i  ",
-	   strain->get_id(), host->get_id(), current_day,
-	   symptomatic_date, symp_period,
-	   num_latent_days + num_asymp_days, num_symp_days);
+           "change symptomatic period to end in the past. "
+           "current_symptomatic date: %i, current symptomatic period: %i\n"
+           "new symptomatic date: %i new symptomatic_period: %i  ",
+           strain->get_id(), host->get_id(), current_day,
+           symptomatic_date, symp_period,
+           num_latent_days + num_asymp_days, num_symp_days);
     fflush(stdout);
     abort();
   }
-
+  
   latent_period = num_latent_days;
   asymp_period = num_asymp_days;
   symp_period = num_symp_days;
@@ -204,21 +204,21 @@ void Infection::reset_infection_course(int num_latent_days, int num_asymp_days,
   symptomatic_date = infectious_date + asymp_period;
   will_be_symptomatic = (symp_period > 0);
   recovered_date = symptomatic_date + symp_period;
-
+  
   // If my host is already infectious, changing the infectious date is invalid.
   if (current_day > recovered_date) {
     printf("Infection from strain %i in person %i on day %i: attempt to "
-	   "change recovery date to be in the past\n"
-	   "Passed num_latent_days %i, num_asymp_days %i, num_symp_days %i",
-	   strain->get_id(), host->get_id(), current_day,
-	   num_latent_days, num_asymp_days, num_symp_days);
+           "change recovery date to be in the past\n"
+           "Passed num_latent_days %i, num_asymp_days %i, num_symp_days %i",
+           strain->get_id(), host->get_id(), current_day,
+           num_latent_days, num_asymp_days, num_symp_days);
     fflush(stdout);
     abort();
   }
-
+  
   if (Verbose > 2) {
     fprintf(Statusfp, "reset strain - new infectious_date: %i new recovered date: %i\n",
-	    infectious_date, recovered_date);
+            infectious_date, recovered_date);
     fflush(Statusfp);
   }
   host->set_changed(); // note that the infection state changed
@@ -227,8 +227,8 @@ void Infection::reset_infection_course(int num_latent_days, int num_asymp_days,
 bool Infection::possibly_mutate(Health* health, int day) {
   if (day > recovered_date) {
     printf("Cannot mutate a recovered infection "
-	   "strain %i person %i on date %i status is %c recovered date is %i\n",
-	   strain->get_id(), host->get_id(), day, strain_status, recovered_date);
+           "strain %i person %i on date %i status is %c recovered date is %i\n",
+           strain->get_id(), host->get_id(), day, strain_status, recovered_date);
     print();
     fflush(stdout);
     abort();
@@ -240,35 +240,35 @@ bool Infection::possibly_mutate(Health* health, int day) {
   else {
     if (Verbose > 0) {
       fprintf(Statusfp,"Person %i will mutate from strain %i to strain %i on day %i\n",
-	      host->get_id(), strain->get_id(), new_strain->get_id(), day);
+              host->get_id(), strain->get_id(), new_strain->get_id(), day);
       fflush(Statusfp);
     }
     Infection* new_infection = new Infection(new_strain, host, host, NULL, day);
     int new_asymp_days =
-      new_infection->get_symptomatic_date() - new_infection->get_infectious_date();
+    new_infection->get_symptomatic_date() - new_infection->get_infectious_date();
     int new_symp_days =
-      new_infection->get_recovered_date() - new_infection->get_symptomatic_date();
-
+    new_infection->get_recovered_date() - new_infection->get_symptomatic_date();
+    
     // If I'm already symptomatic, I can't mutate to an infection that 
     // doesn't have symptoms.
     if (symptoms > 0 && new_symp_days == 0) {
       new_infection->modify_develops_symptoms(true, day);
       new_symp_days =
-	new_infection->get_recovered_date() - new_infection->get_symptomatic_date();
+      new_infection->get_recovered_date() - new_infection->get_symptomatic_date();
     }
     
     if (day >= infectious_date && day < symptomatic_date) {
       new_infection->reset_infection_course(0, new_asymp_days,
-					    new_symp_days, day);
+                                            new_symp_days, day);
       symptomatic_date = day;
       symp_period = 0;
     } else if (day >= symptomatic_date) {
       
       new_infection->reset_infection_course(0, 0,
-					    new_symp_days, day);
+                                            new_symp_days, day);
       symp_period = day - symptomatic_date;
     }
-
+    
     recovered_date = day;
     host->become_exposed(new_infection);
     host->set_changed(); // note that the infection state changed
@@ -326,48 +326,48 @@ void Infection::modify_develops_symptoms(bool symptoms, int cur_day) {
     if (symptoms != will_be_symptomatic) {
       will_be_symptomatic = symptoms;
       if (!will_be_symptomatic) {
-	symp_period = 0;
-	recovered_date = symptomatic_date;
+        symp_period = 0;
+        recovered_date = symptomatic_date;
       } 
       else {
-	// Relagating the modification of the symptomatic period to the other function.
-	symp_period = strain->get_days_symp();
-	recovered_date = symptomatic_date + symp_period;
-	host->set_changed(); // note that the infection state changed
+        // Relagating the modification of the symptomatic period to the other function.
+        symp_period = strain->get_days_symp();
+        recovered_date = symptomatic_date + symp_period;
+        host->set_changed(); // note that the infection state changed
       }
     }
   }
   else {
     if (Verbose > 1) {
       printf("Infection from strain %i: attempt to change symptomaticity "
-	     " person %i is already symptomatic.  Symptomatic "
-	     "date is %i, status is %c\n",
-	     strain->get_id(), host->get_id(),
-	     symptomatic_date, strain_status);
+             " person %i is already symptomatic.  Symptomatic "
+             "date is %i, status is %c\n",
+             strain->get_id(), host->get_id(),
+             symptomatic_date, strain_status);
     }
   }
 }
 
 void Infection::print() {
   printf("Infection of strain type: %i in person %i current status: %c\n"
-	 "periods:  latent %i, asymp: %i, symp: %i \n"
-	 "dates: exposed: %i, infectious: %i, symptomatic: %i, recovered: %i susceptible: %i\n"
-	 "will have symp? %i, suscept: %.3f infectivity: %.3f"
-	 "infectivity_multp: %.3f symptms: %.3f\n",
-	 strain->get_id(),
-	 host->get_id(),
-	 strain_status,
-	 latent_period,
-	 asymp_period,
-	 symp_period,
-	 exposure_date,
-	 infectious_date,
-	 symptomatic_date,
-	 recovered_date,
-	 susceptible_date,
-	 will_be_symptomatic,
-	 susceptibility,
-	 infectivity,
-	 infectivity_multp,
-	 symptoms);
+         "periods:  latent %i, asymp: %i, symp: %i \n"
+         "dates: exposed: %i, infectious: %i, symptomatic: %i, recovered: %i susceptible: %i\n"
+         "will have symp? %i, suscept: %.3f infectivity: %.3f"
+         "infectivity_multp: %.3f symptms: %.3f\n",
+         strain->get_id(),
+         host->get_id(),
+         strain_status,
+         latent_period,
+         asymp_period,
+         symp_period,
+         exposure_date,
+         infectious_date,
+         symptomatic_date,
+         recovered_date,
+         susceptible_date,
+         will_be_symptomatic,
+         susceptibility,
+         infectivity,
+         infectivity_multp,
+         symptoms);
 }

@@ -5,6 +5,7 @@
 
 #include "Global.h"
 #include "Params.h"
+#include "Random.h"
 
 // global runtime parameters
 int Verbose;
@@ -28,6 +29,7 @@ double W2;
 double W3;
 int Incremental_Trace;
 int Trace_Headers;
+int Random_start_day;
 
 // global file pointers
 FILE *Statusfp;
@@ -63,4 +65,3 @@ void get_global_parameters() {
   get_param((char *) "incremental_trace", &Incremental_Trace);
   get_param((char *) "trace_headers", &Trace_Headers);
 }
-

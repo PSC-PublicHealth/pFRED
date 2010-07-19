@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -28,20 +28,20 @@ using namespace std;
 class Vaccine_Priority_Policy_No_Priority: public Policy {
   Vaccine_Manager *vacc_manager;
   
- public:
-  Vaccine_Priority_Policy_No_Priority(void){ }
+public:
+  Vaccine_Priority_Policy_No_Priority() { }
   Vaccine_Priority_Policy_No_Priority(Vaccine_Manager* vcm);
   
-  int choose(Person* person, int strain, int day);
+  virtual int choose(Person* person, int strain, int day);
 };
 
 class Vaccine_Priority_Policy_Specific_Age:public Policy {
   Vaccine_Manager *vacc_manager;
   
- public:
-  Vaccine_Priority_Policy_Specific_Age(void);
+public:
+  Vaccine_Priority_Policy_Specific_Age();
   Vaccine_Priority_Policy_Specific_Age(Vaccine_Manager* vcm);
-
+  
   virtual int choose(Person* person, int strain, int day);
 };  
 

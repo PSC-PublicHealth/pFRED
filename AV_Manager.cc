@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -20,26 +20,25 @@
 #include "Params.h"
 #include "Person.h"
 
-AV_Manager::AV_Manager(Population *_pop):
-  Manager(_pop){
+AV_Manager::AV_Manager(Population *_pop) : Manager(_pop){
   pop = _pop;
   
   char s[80];
   int nav;
   sprintf(s,"number_antivirals");
   get_param((char *) "number_antivirals",&nav);
- 
+  
   do_av=0;
   if(nav > 0){
     do_av = 1;
     av_package = new Antivirals();
- 
+    
     // Gather relavent Input Parameters
     sprintf(s,"av_overall_start_day");
     overall_start_day = 0;
     if(does_param_exist(s))
       get_param(s,&overall_start_day);
-
+    
     // Need to fill the AV_Manager Policies
     policies.push_back(new AV_Policy_Distribute_To_Symptomatics(this)); 
     policies.push_back(new AV_Policy_Distribute_To_Everyone(this));
@@ -61,18 +60,18 @@ void AV_Manager::update(int day){
   }
 }
 
-void AV_Manager::reset(void){
+void AV_Manager::reset(){
   if(do_av==1){
     av_package->reset();
   }
 }
 
-void AV_Manager::print(void){
+void AV_Manager::print(){
   if(do_av == 1)
     av_package->print();
 }			
 
-void AV_Manager::set_policies(void){
+void AV_Manager::set_policies(){
   vector < Antiviral* > avs = av_package->get_AV_vector();
   for(unsigned int iav = 0;iav<avs.size();iav++){
     if(avs[iav]->is_prophylaxis()){
@@ -87,7 +86,7 @@ void AV_Manager::set_policies(void){
 void AV_Manager::disseminate(int day){
   // There is no queue, only the whole population
   if(do_av==0) return;
-  Person* people = pop->get_pop();
+  Person** people = pop->get_pop();
   int npeople = pop->get_pop_size();
   //current_day = day;
   // The av_package are in a priority based order, so lets loop over the av_package first
@@ -102,18 +101,18 @@ void AV_Manager::disseminate(int day){
       //current_strain = av->get_strain();
       
       for(int ip=0;ip<npeople;ip++){
-	if(av->get_current_stock()== 0) break;
-	Person* current_person = &people[ip];
-	// Should the person get an av
-	int yeahorney = p->choose(current_person,av->get_strain(),day);
-	if(yeahorney == 0){
-	  if(Debug > 2) cout << "Giving Antiviral for strain " << av->get_strain() << " to " <<ip << "\n";
-	  av->remove_stock(1);
-	  current_person->get_health()->take(av,day);
-	}
+        if(av->get_current_stock()== 0) break;
+        Person* current_person = people[ip];
+        // Should the person get an av
+        int yeahorney = p->choose(current_person,av->get_strain(),day);
+        if(yeahorney == 0){
+          if(Debug > 2) cout << "Giving Antiviral for strain " << av->get_strain() << " to " <<ip << "\n";
+          av->remove_stock(1);
+          current_person->get_health()->take(av,day);
+        }
       }
     }
   }
 }
-        
-	  
+
+

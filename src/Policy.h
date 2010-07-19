@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -26,22 +26,22 @@ class Person;
 using namespace std;
 
 class Policy{
- 
- public:
-  Policy(void);
-  ~Policy(void);
-
+  
+public:
+  Policy();
+  ~Policy();
+  
   Policy(Manager* mgr);
   
   virtual int choose(Person* person, int strain, int current_day);         
-                               // decision will return -1 if the decision is no
-                               // or the integer result of the policies in the decision   
+  // decision will return -1 if the decision is no
+  // or the integer result of the policies in the decision   
   
-  Manager* get_manager(void) const{ return manager; }
-  void print(void) const;
-  void reset(void);
-
- protected:
+  Manager* get_manager() const { return manager; }
+  void print() const;
+  void reset();
+  
+protected:
   vector < Decision * > decision_list;
   string Name;
   Manager* manager;

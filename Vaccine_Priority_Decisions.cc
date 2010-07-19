@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -19,11 +19,9 @@
 #include "Health.h"
 #include <iostream>
 
-Vaccine_Priority_Decision_Specific_Age::Vaccine_Priority_Decision_Specific_Age(void):
-  Decision(){ }
+Vaccine_Priority_Decision_Specific_Age::Vaccine_Priority_Decision_Specific_Age() : Decision(){ }
 
-Vaccine_Priority_Decision_Specific_Age::Vaccine_Priority_Decision_Specific_Age(Policy *p):
-  Decision(p){
+Vaccine_Priority_Decision_Specific_Age::Vaccine_Priority_Decision_Specific_Age(Policy *p): Decision(p) {
   name = "Vaccine Priority Decision Specific Age";
   type = "Y/N";
   policy = p;
@@ -40,11 +38,9 @@ int Vaccine_Priority_Decision_Specific_Age::evaluate(Person* person, int strain,
   return -1;
 }
 
-Vaccine_Priority_Decision_No_Priority::Vaccine_Priority_Decision_No_Priority(void):
-  Decision() { }
+Vaccine_Priority_Decision_No_Priority::Vaccine_Priority_Decision_No_Priority() : Decision() { }
 
-Vaccine_Priority_Decision_No_Priority::Vaccine_Priority_Decision_No_Priority(Policy *p):
-  Decision(p){
+Vaccine_Priority_Decision_No_Priority::Vaccine_Priority_Decision_No_Priority(Policy *p) : Decision(p){
   name = "Vaccine Priority Decision No Priority";
   type = "Y/N";
   policy=p;

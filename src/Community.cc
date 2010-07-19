@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -20,20 +20,20 @@ double * Community_contacts_per_day;
 double *** Community_contact_prob;
 int Community_parameters_set = 0;
 
-Community::Community(int loc, char *lab, double lon, double lat, int container) {
+Community::Community(int loc, const char *lab, double lon, double lat, Place *container, Population * pop) {
   type = COMMUNITY;
-  setup(loc, lab, lon, lat, container);
-  get_parameters(Strains);
+  setup(loc, lab, lon, lat, container, pop);
+  get_parameters(population->get_strains());
 }
 
 void Community::get_parameters(int strains) {
   char param_str[80];
-
+  
   if (Community_parameters_set) return;
-
+  
   Community_contacts_per_day = new double [ strains ];
   Community_contact_prob = new double** [ strains ];
-
+  
   for (int s = 0; s < strains; s++) {
     int n;
     sprintf(param_str, "community_contacts[%d]", s);
@@ -44,10 +44,10 @@ void Community::get_parameters(int strains) {
     if (Verbose > 1) {
       printf("\nCommunity_contact_prob:\n");
       for (int i  = 0; i < n; i++)  {
-	for (int j  = 0; j < n; j++) {
-	  printf("%f ", Community_contact_prob[s][i][j]);
-	}
-	printf("\n");
+        for (int j  = 0; j < n; j++) {
+          printf("%f ", Community_contact_prob[s][i][j]);
+        }
+        printf("\n");
       }
     }
   }
@@ -72,5 +72,3 @@ double Community::get_transmission_prob(int strain, Person * i, Person * s) {
 double Community::get_contacts_per_day(int strain) {
   return Community_contacts_per_day[strain];
 }
-
-

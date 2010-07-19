@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -20,7 +20,7 @@
 #include "Vaccine_Manager.h"
 
 Vaccine_Priority_Policy_No_Priority::Vaccine_Priority_Policy_No_Priority(Vaccine_Manager *vcm):
-  Policy(dynamic_cast <Manager *> (vcm)){
+Policy(dynamic_cast <Manager *> (vcm)){
   
   Name = "Vaccine Priority Policy - No Priority";
   
@@ -41,7 +41,7 @@ int Vaccine_Priority_Policy_No_Priority:: choose(Person* person,int strain,int d
 }  
 
 Vaccine_Priority_Policy_Specific_Age::Vaccine_Priority_Policy_Specific_Age(Vaccine_Manager *vcm):
-  Policy(dynamic_cast <Manager *> (vcm)){
+Policy(dynamic_cast <Manager *> (vcm)){
   
   Name = "Vaccine Priority Policy - Sepcific Age Group";
   decision_list.push_back(new Vaccine_Priority_Decision_Specific_Age(this));

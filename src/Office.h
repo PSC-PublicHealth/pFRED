@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -14,11 +14,15 @@
 
 #include "Place.h"
 
+extern double * Office_contacts_per_day;
+extern double *** Office_contact_prob;
+extern int Office_parameters_set;
+
 class Office: public Place {
 public: 
   Office() {}
   ~Office() {}
-  Office(int,char*,double,double,int);
+  Office(int,const char *,double,double,Place *, Population *pop);
   void get_parameters(int strains);
   int get_group_type(int strain, Person * per);
   double get_transmission_prob(int strain, Person * i, Person * s);

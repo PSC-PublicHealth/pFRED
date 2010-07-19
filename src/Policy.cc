@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -15,14 +15,15 @@
 #include "Decision.h"
 #include "Manager.h"
 
-Policy::Policy(void) {
+Policy::Policy() {
   Name = "";
   manager = NULL;
 }
 
-Policy::~Policy(void) { 
-  for(unsigned int i=0; i < decision_list.size(); i++) delete decision_list[i];
-  decision_list.clear();
+Policy::~Policy() {
+	for (unsigned int i=0; i < decision_list.size(); i++)
+		delete decision_list[i];			
+	decision_list.clear();
 }
 
 Policy::Policy(Manager* mgr){
@@ -42,7 +43,7 @@ int Policy::choose(Person* person, int strain, int current_day){
   return result;
 }   
 
-void Policy::print(void) const{
+void Policy::print() const {
   cout << "\nPolicy List for Decision "<< Name;
   cout << "\n\n" << setw(40) << "Policy " << setw(20) << "Type";
   cout << "\n------------------------------------------------------------------\n";
@@ -51,6 +52,6 @@ void Policy::print(void) const{
   } 
 }
 
-void Policy::reset(void) { 
+void Policy::reset() { 
   cout << "Policy Reset not implemented yet";
 }

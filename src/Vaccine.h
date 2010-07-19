@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -22,28 +22,28 @@ using namespace std;
 class Vaccine_Dose;
 
 class Vaccine{
- public:
+public:
   // Creation
   Vaccine(string _name, int _id, int _strain, int _age0, int _age1, 
-	  int _total_avail, int _additional_per_day, int _start_day);
-  ~Vaccine(void);
+          int _total_avail, int _additional_per_day, int _start_day);
+  virtual ~Vaccine();
   
-  void add_dose(Vaccine_Dose* dose);
+  virtual void add_dose(Vaccine_Dose* dose);
   
-  int  get_strain(void)             const { return strain; }
-  int  get_ID(void)                 const { return id; }
-  int  get_number_doses(void)       const { return doses.size(); }
-  int  get_low_age(void)            const;
-  int  get_high_age(void)           const;
-  Vaccine_Dose* get_dose(int i)     const { return doses[i]; }
+  virtual int get_strain()             const { return strain; }
+  virtual int get_ID()                 const { return id; }
+  virtual int get_number_doses()       const { return doses.size(); }
+  virtual int get_low_age() const { return ages[0]; }
+  virtual int get_high_age() const { return ages[1]; }
+  virtual Vaccine_Dose* get_dose(int i)    const { return doses[i]; }
   
   // Logistics Functions
-  int  get_initial_stock(void)      const { return initial_stock; }
-  int  get_total_avail(void)        const { return total_avail; }
-  int  get_current_reserve(void)    const { return reserve; }
-  int  get_current_stock(void)      const { return stock; }
-  int  get_additional_per_day(void) const { return additional_per_day; }
-  void  add_stock( int add ){ 
+  virtual int get_initial_stock()      const { return initial_stock; }
+  virtual int get_total_avail()        const { return total_avail; }
+  virtual int get_current_reserve()    const { return reserve; }
+  virtual int get_current_stock()      const { return stock; }
+  virtual int get_additional_per_day() const { return additional_per_day; }
+  virtual void add_stock( int add ){ 
     if(add <= reserve){
       stock   += add;
       reserve -= add;
@@ -54,17 +54,17 @@ class Vaccine{
     }
   }
   
-  void  remove_stock( int remove ) {
+  virtual void remove_stock( int remove ) {
     stock-=remove;
     if(stock < 0) stock = 0;
   }
   
   //Utility Functions
-  void  print(void)                const;
-  void  update(int day);
-  void  reset(void);
-
- private:
+  virtual void print() const;
+  virtual void update(int day);
+  virtual void reset();
+  
+private:
   string name;
   int id;                              // Which in the number of vaccines is it
   int strain;                          // Which Strain is this vaccine for
@@ -83,6 +83,9 @@ class Vaccine{
   // for statistics
   int number_delivered;
   int number_effective;
+	
+protected:
+	Vaccine() { }
 };
 
 #endif

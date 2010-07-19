@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -14,11 +14,15 @@
 
 #include "Place.h"
 
+extern double * Community_contacts_per_day;
+extern double *** Community_contact_prob;
+extern int Community_parameters_set;
+
 class Community : public Place {
 public: 
   Community() {};
   ~Community() {};
-  Community(int,char*,double,double,int);
+  Community(int, const	char*,double,double,Place *, Population *);
   void get_parameters(int strains);
   int get_group_type(int strain, Person * per);
   double get_transmission_prob(int strain, Person * i, Person * s);

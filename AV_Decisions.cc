@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -20,11 +20,11 @@
 #include "Health.h"
 #include <iostream>
 
-AV_Decision_Allow_Only_One::AV_Decision_Allow_Only_One(void):
-  Decision(){ }
+AV_Decision_Allow_Only_One::AV_Decision_Allow_Only_One():
+Decision(){ }
 
 AV_Decision_Allow_Only_One::AV_Decision_Allow_Only_One(Policy * p):
-  Decision(p){
+Decision(p){
   name = "AV Decision Allow Only One AV per Person";
   type = "Y/N";
   policy = p;
@@ -35,11 +35,11 @@ int AV_Decision_Allow_Only_One::evaluate(Person* person, int strain, int current
   else return -1;
 }
 
-AV_Decision_Give_to_Sympt::AV_Decision_Give_to_Sympt(void):
-  Decision(){ }
+AV_Decision_Give_to_Sympt::AV_Decision_Give_to_Sympt():
+Decision(){ }
 
 AV_Decision_Give_to_Sympt::AV_Decision_Give_to_Sympt(Policy *p):
-  Decision(p){
+Decision(p){
   name = "AV Decision to give to a percentage of symptomatics";
   type = "Y/N";
   policy = p;
@@ -57,11 +57,11 @@ int AV_Decision_Give_to_Sympt::evaluate(Person* person, int strain, int current_
   return -1;
 }
 
-AV_Decision_Begin_AV_On_Day::AV_Decision_Begin_AV_On_Day(void):
-  Decision(){ } 
+AV_Decision_Begin_AV_On_Day::AV_Decision_Begin_AV_On_Day():
+Decision(){ } 
 
 AV_Decision_Begin_AV_On_Day::AV_Decision_Begin_AV_On_Day(Policy *p):
-  Decision(p){
+Decision(p){
   name = "AV Decision to Begin disseminating AVs on a certain day";
   type = "Y/N";
   policy = p;

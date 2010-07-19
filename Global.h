@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 //
 //
 // File: Global.h
@@ -12,6 +12,12 @@
 #define _FRED_GLOBAL_H
 
 #include <stdio.h>
+#include <err.h>
+#include <errno.h>
+#include <sys/stat.h>
+
+// global constants
+#define DAYS_PER_WEEK 7
 
 // global runtime parameters
 extern int Verbose;
@@ -19,6 +25,7 @@ extern int Debug;
 extern int Test;
 extern int Runs;
 extern int Days;
+extern int Reseed_day;
 extern unsigned long Seed;
 extern int Start_day;
 extern char Outfilebase[80];
@@ -34,6 +41,7 @@ extern double W2;
 extern double W3;
 extern int Incremental_Trace;
 extern int Trace_Headers;
+extern int Random_start_day;
 
 // global file pointers
 extern FILE *Statusfp;

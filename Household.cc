@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -20,40 +20,40 @@ double * Household_contacts_per_day;
 double *** Household_contact_prob;
 int Household_parameters_set = 0;
 
-Household::Household(int loc, char *lab, double lon, double lat, int container) {
+Household::Household(int loc, const  char *lab, double lon, double lat, Place *container, Population* pop) {
   type = HOUSEHOLD;
-  setup(loc, lab, lon, lat, container);
-  get_parameters(Strains);
+  setup(loc, lab, lon, lat, container, pop);
+  get_parameters(population->get_strains());
   // adults = children = 0;
   // HoH = NULL;
 }
 
 void Household::get_parameters(int strains) {
   char param_str[80];
-
+  
   if (Household_parameters_set) return;
-
+  
   Household_contacts_per_day = new double [ strains ];
   Household_contact_prob = new double** [ strains ];
-
+  
   for (int s = 0; s < strains; s++) {
     int n;
     sprintf(param_str, "household_contacts[%d]", s);
     get_param((char *) param_str, &Household_contacts_per_day[s]);
-
+    
     sprintf(param_str, "household_prob[%d]", s);
     n = get_param_matrix(param_str, &Household_contact_prob[s]);
     if (Verbose > 1) {
       printf("\nHousehold_contact_prob:\n");
       for (int i  = 0; i < n; i++)  {
-	for (int j  = 0; j < n; j++) {
-	  printf("%f ", Household_contact_prob[s][i][j]);
-	}
-	printf("\n");
+        for (int j  = 0; j < n; j++) {
+          printf("%f ", Household_contact_prob[s][i][j]);
+        }
+        printf("\n");
       }
     }
   }
-
+  
   Household_parameters_set = 1;
 }
 
@@ -78,15 +78,15 @@ double Household::get_contacts_per_day(int strain) {
 
 
 /*
-void Household::add_person(Person * per) {
-  if (per->get_age() < 19) {
-    children++;
-  }
-  else {
-    adults++;
-    if (adults == 1) {
-      HoH = per;
-    }
-  }
-}
-*/
+ void Household::add_person(Person * per) {
+ if (per->get_age() < 19) {
+ children++;
+ }
+ else {
+ adults++;
+ if (adults == 1) {
+ HoH = per;
+ }
+ }
+ }
+ */

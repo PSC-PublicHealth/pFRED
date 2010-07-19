@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -19,14 +19,14 @@
 #include "AV_Manager.h"
 
 AV_Policy_Distribute_To_Symptomatics::AV_Policy_Distribute_To_Symptomatics(AV_Manager* avm):
-  Policy(dynamic_cast <Manager *> (avm)){
+Policy(dynamic_cast <Manager *> (avm)){
   Name = "Distribute AVs to Symptomatics";
   
   // Need to add the policies in the decisio
   decision_list.push_back(new AV_Decision_Begin_AV_On_Day(this));
   decision_list.push_back(new AV_Decision_Give_to_Sympt(this));
   decision_list.push_back(new AV_Decision_Allow_Only_One(this));
-  //Decision_list.push_back(new AV_Decision_Give_One_Chance(this));
+  //decision_list.push_back(new AV_Decision_Give_One_Chance(this));
 }
 
 int AV_Policy_Distribute_To_Symptomatics::choose(Person* person, int strain, int day) {
@@ -41,7 +41,7 @@ int AV_Policy_Distribute_To_Symptomatics::choose(Person* person, int strain, int
 }   
 
 AV_Policy_Distribute_To_Everyone::AV_Policy_Distribute_To_Everyone(AV_Manager* avm):
-  Policy(dynamic_cast <Manager *> (avm)){
+Policy(dynamic_cast <Manager *> (avm)){
   Name = "Distribute AVs to Symptomatics";
   
   // Need to add the policies in the decision

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -32,7 +32,7 @@ class Vaccine_Health;
 class Health {
 public:
   Health(Person * person);
-  ~Health(void);
+  ~Health();
   void reset();
   void update(int day);
   void update_mutations(int day);
@@ -51,15 +51,15 @@ public:
     }
     else{
       if (infection[strain] == NULL)
-	return 'S';
+        return 'S';
       else 
-	return infection[strain]->get_strain_status();
+        return infection[strain]->get_strain_status();
     }
     
   }
-
+  
   Person* get_self() const { return self;}
-  int get_num_strains(void) const { return strains; }
+  int get_num_strains() const { return strains; }
   int add_infectee(int strain);
   int get_exposure_date(int strain) const;
   int get_infectious_date(int strain) const;
@@ -72,25 +72,25 @@ public:
   double get_infectivity(int strain) const;
   Infection* get_infection(int strain) const { return infection[strain]; }
   bool is_on_av_for_strain(int day, int strain) const;
-
+  
   //Medication operators
   void take(Vaccine *vacc, int day);
   void take(Antiviral *av, int day);
-  int get_number_av_taken(void)             const { return av_health.size();}
+  int get_number_av_taken()             const { return av_health.size();}
   int get_checked_for_av(int s)             const { return checked_for_av[s]; }
   void flip_checked_for_av(int s) { checked_for_av[s] = 1; } 
-  bool is_vaccinated(void) const { 
+  bool is_vaccinated() const { 
     if(vaccine_health.size() > 0){return true;} 
     else {return false;} 
   } // no strain yet!!!!
-  int get_number_vaccines_taken(void)        const { return vaccine_health.size();}
+  int get_number_vaccines_taken()        const { return vaccine_health.size();}
   AV_Health* get_av_health(int i)            const { return av_health[i];}
   Vaccine_Health* get_vaccine_health(int i)  const { return vaccine_health[i];}
-
+  
   //Modifiers
   void modify_susceptibility(int strain, double multp);
   void modify_infectivity(int strain, double multp);
-
+  
   // Current day is needed to modify infectious period, because we can't cause this
   // infection to recover in the past.
   // Modifying infectious period is equivalent to modifying symptomatic and asymptomatic
@@ -100,7 +100,7 @@ public:
   void modify_asymptomatic_period(int strain, double multp, int cur_day);
   // Can't change develops_symptoms if this person is not asymptomatic ('i' or 'E')
   void modify_develops_symptoms(int strain, bool symptoms, int cur_day);
-   
+  
 private:
   Person * self;
   int strains;

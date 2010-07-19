@@ -19,14 +19,15 @@
 
 using namespace std;
 
-Timestep_Map::Timestep_Map(void){
+Timestep_Map::Timestep_Map(){
   values = NULL;
   name = "";
 }
 
 Timestep_Map::Timestep_Map(string _name){
   name = _name;
-
+  
+  
   char map_file_param[255];
   char map_file_name[255];
   // Need Special parsing if this is an array from input
@@ -53,7 +54,7 @@ Timestep_Map::Timestep_Map(string _name){
     values = NULL;
     return;
   }
- 
+  
   ifstream ts_input;
   
   ts_input.open(map_file_name);
@@ -73,22 +74,22 @@ Timestep_Map::Timestep_Map(string _name){
   }
 }
 
-Timestep_Map::~Timestep_Map(void){
-  delete values;
+Timestep_Map::~Timestep_Map() {
+  if (values) delete values;
 }
 
-int Timestep_Map::get_value_for_timestep(int ts) const{
+int Timestep_Map::get_value_for_timestep(int ts) const {
   map<int,int>::iterator itr;
   
   itr = values->find(ts);
-  if(itr != values->end()){
+  if (itr != values->end()) {
     return itr->second;
   }
   
   return 0;
 }
-	  
-void Timestep_Map::print(void) const {
+
+void Timestep_Map::print() const {
   cout << "\n";
   cout << name << " Timestep Map  " << values->size() <<"\n";
   map<int,int>::iterator itr;
@@ -97,9 +98,3 @@ void Timestep_Map::print(void) const {
   }
   cout << "\n";
 }
-
-	
-	
-	
-		
-	   

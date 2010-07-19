@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -23,8 +23,10 @@
 #include "AV_Health.h"
 #include "Age_Map.h"
 
-Person::Person(void) { 
-  id = -1;
+#include <cstdio>
+
+Person::Person() { 
+  idx = -1;
   pop = NULL;
   demographics = NULL;
   health = NULL;
@@ -32,7 +34,7 @@ Person::Person(void) {
   perceptions = NULL;
 }
 
-Person::~Person(void) {
+Person::~Person() {
   delete demographics;
   delete health; 
   delete behavior;
@@ -40,57 +42,56 @@ Person::~Person(void) {
 }
 
 void Person::setup(int index, int age, char sex, int marital, int occ,
-		   int profession, Place *house, Place *neigh,
-		   Place *school, Place *classroom, Place *work,
-		   Place *office, int profile, Population* Pop) 
+                   int profession, Place **favorite_places, int profile, Population* Pop) 
 {
+  idx = index;
   pop = Pop;
-  id = index;
-  demographics = new Demographics(this,age,sex,'U',marital,profession);
+  demographics = new Demographics(this, age,sex,'U',marital,profession);
   health = new Health(this);
-  behavior = new Behavior(this,house,neigh,school,classroom,work,office,profile);
+  behavior = new Behavior(this,favorite_places,profile);
   perceptions = new Perceptions(this);
 }
-  
+
 void Person::print(int strain) const {
   fprintf(Tracefp, "%i %c id %7d  a %3d  s %c %c ",
-	  strain, health->get_strain_status(strain), id,
-	  demographics->get_age(),
-	  demographics->get_sex(),
-	  demographics->get_occupation());
+          strain, health->get_strain_status(strain), idx,
+          demographics->get_age(),
+          demographics->get_sex(),
+          demographics->get_occupation());
   fprintf(Tracefp, "exp: %2d  inf: %2d  rem: %2d ",
-	  health->get_exposure_date(strain), health->get_infectious_date(strain), health->get_recovered_date(strain));
+          health->get_exposure_date(strain), health->get_infectious_date(strain), health->get_recovered_date(strain));
   fprintf(Tracefp, "places %d ", behavior->get_favorite_places());
   fprintf(Tracefp, "infected_at %c %6d ",
-	  health->get_infected_place_type(strain), health->get_infected_place(strain));
+          health->get_infected_place_type(strain), health->get_infected_place(strain));
+  fprintf(Tracefp, "infector %d ", health->get_infector(strain));
   fprintf(Tracefp, "infector %d ", health->get_infector(strain));
   fprintf(Tracefp, "infectees %d ", health->get_infectees(strain));
   
-
+  
   fprintf(Tracefp, "antivirals: %2d ",health->get_number_av_taken());
   for(int i=0;i<health->get_number_av_taken();i++)
     fprintf(Tracefp," %2d",health->get_av_health(i)->get_av_start_day());
-
-
+  
+  
   // fprintf(Tracefp, "vaccines: %2d", health->get_number_vaccines_taken());
-//   for(int i=0;i<health->get_number_vaccines_taken();i++)
-//     fprintf(Tracefp," %2d %2d %2d",health->get_vaccine_stat(i)->get_vaccination_day(),
-// 	    health->get_vaccine_stat(i)->is_effective(),health->get_vaccine_stat(i)->get_current_dose());
+  //   for(int i=0;i<health->get_number_vaccines_taken();i++)
+  //     fprintf(Tracefp," %2d %2d %2d",health->get_vaccine_stat(i)->get_vaccination_day(),
+  // 	    health->get_vaccine_stat(i)->is_effective(),health->get_vaccine_stat(i)->get_current_dose());
   fprintf(Tracefp,"\n");
-//   fflush(Tracefp);
+  //   fflush(Tracefp);
 }
 
 void Person::print_out(int strain) const {
   fprintf(stdout, "%c id %7d  a %3d  s %c %c ",
-	  health->get_strain_status(strain), id,
-	  demographics->get_age(),
-	  demographics->get_sex(),
-	  demographics->get_occupation());
+          health->get_strain_status(strain), idx,
+          demographics->get_age(),
+          demographics->get_sex(),
+          demographics->get_occupation());
   fprintf(stdout, "exp: %2d  inf: %2d  rem: %2d ",
-	  health->get_exposure_date(strain), health->get_infectious_date(strain), health->get_recovered_date(strain));
+          health->get_exposure_date(strain), health->get_infectious_date(strain), health->get_recovered_date(strain));
   fprintf(stdout, "places %d ", behavior->get_favorite_places());
   fprintf(stdout, "infected_at %c %6d ",
-	  health->get_infected_place_type(strain), health->get_infected_place(strain));
+          health->get_infected_place_type(strain), health->get_infected_place(strain));
   fprintf(stdout, "infector %d ", health->get_infector(strain));
   fprintf(stdout, "infectees %d\n", health->get_infectees(strain));
   fflush(stdout);
@@ -99,23 +100,22 @@ void Person::print_out(int strain) const {
 void Person::print_schedule() const {
   behavior->print_schedule();
 }
-  
+
 void Person::reset() {
-  if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", id); }
-  demographics->reset();
-  health->reset();
-  perceptions->reset();
-  behavior->reset();
-  
-  for(int strain = 0; strain < Pop.get_strains(); strain++){
-    Strain* s = Pop.get_strain(strain);
-    if(!s->get_residual_immunity()->is_empty()){
-      double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
-      if(RANDOM()< residual_immunity_prob){ // Now Probability <= 1.0
- 	become_immune(s);
-      }
-    }
-  }
+	if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", idx); }
+	demographics->reset();
+	health->reset();
+	perceptions->reset();
+	behavior->reset();
+	
+	for (int strain = 0; strain < Pop.get_strains(); strain++) {
+		Strain* s = Pop.get_strain(strain);
+		if (!s->get_residual_immunity()->is_empty()) {
+			double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
+			if (RANDOM() < residual_immunity_prob)
+				become_immune(s);
+		}
+	}
 }
 
 void Person::update(int day) {
@@ -147,14 +147,13 @@ void Person::become_immune(Strain* strain) {
   behavior->become_immune(strain_id);
 }
 
-
 void Person::recover(Strain * strain) {
   int strain_id = strain->get_id();
   health->recover(strain);
   behavior->recover(strain_id);
-
+  
   if (Verbose > 2) {
-    fprintf(Statusfp, "RECOVERED person %d for strain %d\n", id, strain_id);
+    fprintf(Statusfp, "RECOVERED person %d for strain %d\n", idx, strain_id);
     print_out(strain_id);
     fflush(Statusfp);
   }
@@ -164,7 +163,7 @@ void Person::update_schedule(int day) {
   return behavior->update_schedule(day);
 }
 
-void Person::get_schedule(int *n, int *sched) const {
+void Person::get_schedule(int *n, Place **sched) const {
   behavior->get_schedule(n, sched);
 }
 
@@ -242,6 +241,6 @@ int Person::is_new_case(int day, int strain) const {
   return (health->get_exposure_date(strain) == day);
 }
 
-void Person::set_changed(void){
+void Person::set_changed(){
   this->pop->set_changed(this);
 }

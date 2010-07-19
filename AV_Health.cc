@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -33,12 +33,12 @@ AV_Health::AV_Health(int _av_day, Antiviral* _AV, Health* _health){
   av_end_day      = av_day + AV->get_course_length();
 } 
 
-void AV_Health::print(void) const {
+void AV_Health::print() const {
   // Need to figure out what to write here
   cout << "\nAV_Status";
 }
 
-void AV_Health::printTrace(void) const{
+void AV_Health::printTrace() const {
   fprintf(Tracefp," %2d %2d %2d",av_day,strain,is_effective());
 }
 
@@ -46,8 +46,8 @@ void AV_Health::update(int day){
   if(day <= av_end_day){
     if(health->get_infection(0)!=NULL){
       if(Debug > 3) {
-	cout << "\nBefore\n"; 
-	health->get_infection(0)->print();
+        cout << "\nBefore\n"; 
+        health->get_infection(0)->print();
       }
     }
   }
@@ -55,13 +55,13 @@ void AV_Health::update(int day){
   if(day <= av_end_day){
     if(Debug > 3) {
       if(health->get_infection(0)!=NULL){
-	cout << "\nAfter\n";
-	health->get_infection(0)->print();
+        cout << "\nAfter\n";
+        health->get_infection(0)->print();
       }
     }
   }
 }
 
-  
-    
-    
+
+
+

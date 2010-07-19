@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -55,10 +55,10 @@ void Locations::setup_locations() {
     char s[32];
     char loctype;
     double lon, lat;
-    int container;
+    int container_id;
     // fprintf(Statusfp, "reading location %d\n", loc); fflush(Statusfp);
     if (fscanf(fp, "%d %s %c %lf %lf %d",
-	       &id, s, &loctype, &lat, &lon, &container) != 6) {
+               &id, s, &loctype, &lat, &lon, &container_id) != 6) {
       fprintf(Statusfp, "Help! Read failure for location %d\n", loc);
       abort();
     }
@@ -68,29 +68,30 @@ void Locations::setup_locations() {
     }
     // printf("loctype = %c\n", loctype); fflush(stdout);
     Place *place;
+    Place *container = get_location(container_id);
     if (loctype == HOUSEHOLD) {
-      place = new (nothrow) Household(id, s, lon, lat, container);
+      place = new (nothrow) Household(id, s, lon, lat, container, &Pop);
     }
     else if (loctype == NEIGHBORHOOD) {
-      place = new (nothrow) Neighborhood(id, s, lon, lat, container);
+      place = new (nothrow) Neighborhood(id, s, lon, lat, container, &Pop);
     }
     else if (loctype == SCHOOL) {
-      place = new (nothrow) School(id, s, lon, lat, container);
+      place = new (nothrow) School(id, s, lon, lat, container, &Pop);
     }
     else if (loctype == CLASSROOM) {
-      place = new (nothrow) Classroom(id, s, lon, lat, container);
+      place = new (nothrow) Classroom(id, s, lon, lat, container, &Pop);
     }
     else if (loctype == WORKPLACE) {
-      place = new (nothrow) Workplace(id, s, lon, lat, container);
+      place = new (nothrow) Workplace(id, s, lon, lat, container, &Pop);
     }
     else if (loctype == OFFICE) {
-      place = new (nothrow) Office(id, s, lon, lat, container);
+      place = new (nothrow) Office(id, s, lon, lat, container, &Pop);
     }
     else if (loctype == HOSPITAL) {
-      place = new (nothrow) Hospital(id, s, lon, lat, container);
+      place = new (nothrow) Hospital(id, s, lon, lat, container, &Pop);
     }
     else if (loctype == COMMUNITY) {
-      place = new (nothrow) Community(id, s, lon, lat, container);
+      place = new (nothrow) Community(id, s, lon, lat, container, &Pop);
     }
     else {
       printf ("Help! bad loctype = %c\n", loctype);
@@ -102,7 +103,7 @@ void Locations::setup_locations() {
     location[loc] = place;
   }
   fclose(fp);
-
+  
   if (Verbose) {
     fprintf(Statusfp, "setup locations finished: Locations = %d\n", locations);
     fflush(Statusfp);
@@ -140,7 +141,7 @@ void Locations::location_quality_control() {
   if (Verbose) {
     fprintf(Statusfp, "location quality control check\n"); fflush(Statusfp);
   }
-
+  
   for (int loc = 0; loc < locations; loc++) {
     if (location[loc]->get_size() < 1) {
       fprintf(Statusfp, "Help!  No one visits location %d\n", loc);
@@ -149,27 +150,27 @@ void Locations::location_quality_control() {
     }
     if (location[loc]->get_size() == 1) {
       if (Verbose > 2) {
-	fprintf(Statusfp, "Warning!  Only one visitor to location %d\n", loc);
-	location[loc]->print(0);
+        fprintf(Statusfp, "Warning!  Only one visitor to location %d\n", loc);
+        location[loc]->print(0);
       }
     }
   }
-
+  
   /*
-  if (Verbose) {
-    for (int loc = 0; loc < locations; loc++) {
-      Place *p = location[loc];
-      if (p->get_type() == HOUSEHOLD) {
-	if (p->get_HoH() != NULL)
-	  { printf("household %d HoH %d age %d\n",p->get_id(),p->get_HoH()->get_id(),p->get_HoH()->get_age()); fflush(stdout);  }
-	else
-	  { printf("household %d HoH NULL\n", p->get_id()); fflush(stdout);  }
-      }
-    }
-  }
-  abort();
-  */
-
+   if (Verbose) {
+   for (int loc = 0; loc < locations; loc++) {
+   Place *p = location[loc];
+   if (p->get_type() == HOUSEHOLD) {
+   if (p->get_HoH() != NULL)
+   { printf("household %d HoH %d age %d\n",p->get_id(),p->get_HoH()->get_id(),p->get_HoH()->get_age()); fflush(stdout);  }
+   else
+   { printf("household %d HoH NULL\n", p->get_id()); fflush(stdout);  }
+   }
+   }
+   }
+   abort();
+   */
+  
   if (Verbose) {
     int count[20];
     int total = 0;
@@ -177,20 +178,20 @@ void Locations::location_quality_control() {
     for (int c = 0; c < 15; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == HOUSEHOLD) {
-	int n = location[loc]->get_size();
-	if (n < 15) { count[n]++; }
-	else { count[14]++; }
-	total++;
+        int n = location[loc]->get_size();
+        if (n < 15) { count[n]++; }
+        else { count[14]++; }
+        total++;
       }
     }
     fprintf(Statusfp, "\nHousehold size distribution: %d households\n", total);
     for (int c = 0; c < 15; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
-	     c, count[c], (100.0*count[c])/total);
+              c, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
   }
-
+  
   if (Verbose) {
     int count[20];
     int total = 0;
@@ -198,20 +199,20 @@ void Locations::location_quality_control() {
     for (int c = 0; c < 15; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == HOUSEHOLD) {
-	int n = location[loc]->get_adults();
-	if (n < 15) { count[n]++; }
-	else { count[14]++; }
-	total++;
+        int n = location[loc]->get_adults();
+        if (n < 15) { count[n]++; }
+        else { count[14]++; }
+        total++;
       }
     }
     fprintf(Statusfp, "\nHousehold adult size distribution: %d households\n", total);
     for (int c = 0; c < 15; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
-	     c, count[c], (100.0*count[c])/total);
+              c, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
   }
-
+  
   if (Verbose) {
     int count[20];
     int total = 0;
@@ -219,20 +220,20 @@ void Locations::location_quality_control() {
     for (int c = 0; c < 15; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == HOUSEHOLD) {
-	int n = location[loc]->get_children();
-	if (n < 15) { count[n]++; }
-	else { count[14]++; }
-	total++;
+        int n = location[loc]->get_children();
+        if (n < 15) { count[n]++; }
+        else { count[14]++; }
+        total++;
       }
     }
     fprintf(Statusfp, "\nHousehold children size distribution: %d households\n", total);
     for (int c = 0; c < 15; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
-	     c, count[c], (100.0*count[c])/total);
+              c, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
   }
-
+  
   if (Verbose) {
     int count[20];
     int total = 0;
@@ -240,21 +241,21 @@ void Locations::location_quality_control() {
     for (int c = 0; c < 15; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == HOUSEHOLD) {
-	if (location[loc]->get_children() == 0) continue;
-	int n = location[loc]->get_adults();
-	if (n < 15) { count[n]++; }
-	else { count[14]++; }
-	total++;
+        if (location[loc]->get_children() == 0) continue;
+        int n = location[loc]->get_adults();
+        if (n < 15) { count[n]++; }
+        else { count[14]++; }
+        total++;
       }
     }
     fprintf(Statusfp, "\nHousehold w/ children, adult size distribution: %d households\n", total);
     for (int c = 0; c < 15; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
-	     c, count[c], (100.0*count[c])/total);
+              c, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
   }
-
+  
   if (Verbose) {
     int count[20];
     int total = 0;
@@ -263,23 +264,23 @@ void Locations::location_quality_control() {
     for (int loc = 0; loc < locations; loc++) {
       Person * per;
       if (location[loc]->get_type() == HOUSEHOLD) {
-	if (location[loc]->get_children() == 0) continue;
-	if ((per = location[loc]->get_HoH()) == NULL) continue;
-	int a = per->get_age();
-	int n = a / 10;
-	if (n < 20) { count[n]++; }
-	else { count[19]++; }
-	total++;
+        if (location[loc]->get_children() == 0) continue;
+        if ((per = location[loc]->get_HoH()) == NULL) continue;
+        int a = per->get_age();
+        int n = a / 10;
+        if (n < 20) { count[n]++; }
+        else { count[19]++; }
+        total++;
       }
     }
     fprintf(Statusfp, "\nAge distribution of heads of households with children: %d households\n", total);
     for (int c = 0; c < 10; c++) {
       fprintf(Statusfp, "age %2d to %d: %6d (%.2f%%)\n",
-	      10*c, 10*(c+1)-1, count[c], (100.0*count[c])/total);
+              10*c, 10*(c+1)-1, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
   }
-
+  
   if (Verbose) {
     int count[20];
     int total = 0;
@@ -287,21 +288,21 @@ void Locations::location_quality_control() {
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == SCHOOL) {
-	int s = location[loc]->get_size();
-	int n = s / 50;
-	if (n < 20) { count[n]++; }
-	else { count[19]++; }
-	total++;
+        int s = location[loc]->get_size();
+        int n = s / 50;
+        if (n < 20) { count[n]++; }
+        else { count[19]++; }
+        total++;
       }
     }
     fprintf(Statusfp, "\nSchool size distribution: %d schools\n", total);
     for (int c = 0; c < 20; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
-	     (c+1)*50, count[c], (100.0*count[c])/total);
+              (c+1)*50, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
   }
-
+  
   if (Verbose) {
     int count[50];
     int total = 0;
@@ -309,21 +310,21 @@ void Locations::location_quality_control() {
     for (int c = 0; c < 50; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == CLASSROOM) {
-	int s = location[loc]->get_size();
-	int n = s;
-	if (n < 50) { count[n]++; }
-	else { count[50-1]++; }
-	total++;
+        int s = location[loc]->get_size();
+        int n = s;
+        if (n < 50) { count[n]++; }
+        else { count[50-1]++; }
+        total++;
       }
     }
     fprintf(Statusfp, "\nClassroom size distribution: %d classrooms\n", total);
     for (int c = 0; c < 50; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
-	     c, count[c], (100.0*count[c])/total);
+              c, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
   }
-
+  
   if (Verbose) {
     int count[20];
     int total = 0;
@@ -331,21 +332,21 @@ void Locations::location_quality_control() {
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == WORKPLACE) {
-	int s = location[loc]->get_size();
-	int n = s / 50;
-	if (n < 20) { count[n]++; }
-	else { count[19]++; }
-	total++;
+        int s = location[loc]->get_size();
+        int n = s / 50;
+        if (n < 20) { count[n]++; }
+        else { count[19]++; }
+        total++;
       }
     }
     fprintf(Statusfp, "\nWorkplace size distribution: %d workplaces\n", total);
     for (int c = 0; c < 20; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
-	     (c+1)*50, count[c], (100.0*count[c])/total);
+              (c+1)*50, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
   }
-
+  
   if (Verbose) {
     int count[60];
     int total = 0;
@@ -353,17 +354,17 @@ void Locations::location_quality_control() {
     for (int c = 0; c < 60; c++) { count[c] = 0; }
     for (int loc = 0; loc < locations; loc++) {
       if (location[loc]->get_type() == OFFICE) {
-	int s = location[loc]->get_size();
-	int n = s;
-	if (n < 60) { count[n]++; }
-	else { count[60-1]++; }
-	total++;
+        int s = location[loc]->get_size();
+        int n = s;
+        if (n < 60) { count[n]++; }
+        else { count[60-1]++; }
+        total++;
       }
     }
     fprintf(Statusfp, "\nOffice size distribution: %d offices\n", total);
     for (int c = 0; c < 60; c++) {
       fprintf(Statusfp, "%3d: %6d (%.2f%%)\n",
-	     c, count[c], (100.0*count[c])/total);
+              c, count[c], (100.0*count[c])/total);
     }
     fprintf(Statusfp, "\n");
   }

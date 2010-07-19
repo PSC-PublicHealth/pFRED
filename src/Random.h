@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -22,7 +22,7 @@ using namespace std;
 /* Using Marseinne Twister MT19937 by T. Nishimura and M. Matsumoto */
 /* See mt19937ar.c for acknowledgements */
 
-double genrand_real2(void);
+double genrand_real2();
 void init_genrand(unsigned long s);
 #define INIT_RANDOM(SEED)   init_genrand(SEED)
 #define RANDOM()        genrand_real2()

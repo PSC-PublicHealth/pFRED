@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -26,45 +26,45 @@ int Classroom_closure_delay;
 int Classroom_parameters_set = 0;
 
 
-Classroom::Classroom(int loc, char *lab, double lon, double lat, int container) {
+Classroom::Classroom(int loc, const char *lab, double lon, double lat, Place *container, Population *pop) {
   type = CLASSROOM;
-  setup(loc, lab, lon, lat, container);
-  get_parameters(Strains);
+  setup(loc, lab, lon, lat, container, pop);
+  get_parameters(population->get_strains());
 }
 
 
 void Classroom::get_parameters(int strains) {
   char param_str[80];
-
+  
   if (Classroom_parameters_set) return;
-
+  
   Classroom_contacts_per_day = new double [ strains ];
   Classroom_contact_prob = new double** [ strains ];
-
+  
   for (int s = 0; s < strains; s++) {
     int n;
     sprintf(param_str, "classroom_contacts[%d]", s);
     get_param((char *) param_str, &Classroom_contacts_per_day[s]);
-
+    
     sprintf(param_str, "classroom_prob[%d]", s);
     n = get_param_matrix(param_str, &Classroom_contact_prob[s]);
     if (Verbose > 1) {
       printf("\nClassroom_contact_prob:\n");
       for (int i  = 0; i < n; i++)  {
-	for (int j  = 0; j < n; j++) {
-	  printf("%f ", Classroom_contact_prob[s][i][j]);
-	}
-	printf("\n");
+        for (int j  = 0; j < n; j++) {
+          printf("%f ", Classroom_contact_prob[s][i][j]);
+        }
+        printf("\n");
       }
     }
   }
-
+  
   Classroom_parameters_set = 1;
 }
 
 int Classroom::get_group_type(int strain, Person * per) {
   int age = per->get_age();
-  if (age <12) { return 0; }
+  if (age < 12) { return 0; }
   else if (age < 16) { return 1; }
   else if (age < 19) { return 2; }
   else return 3;
@@ -80,7 +80,7 @@ double Classroom::get_transmission_prob(int strain, Person * i, Person * s) {
 }
 
 int Classroom::should_be_open(int day, int strain) {
-  return Loc.location_should_be_open(container, day, strain);
+	return container->should_be_open(day, strain);
 }
 
 double Classroom::get_contacts_per_day(int strain) {

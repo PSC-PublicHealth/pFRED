@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+ Copyright 2009 by the University of Pittsburgh
+ Licensed under the Academic Free License version 3.0
+ See the file "LICENSE" for more information
+ */
 
 //
 //
@@ -28,7 +28,7 @@ int read_parameters(char *paramfile) {
   FILE *fp;
   char name[MAX_PARAM_SIZE];
   Params = 0;
-
+  
   fp = fopen("params.def", "r");
   if (fp != NULL) {
     while (fscanf(fp, "%s", name) == 1) {
@@ -39,16 +39,16 @@ int read_parameters(char *paramfile) {
         continue;
       } else {
         if (fscanf(fp, " = %[^\n]", Param_value[Params]) == 1) {
-
+          
           //Remove end of line comments if they are there
           string temp_str(Param_value[Params]);
           size_t pos;
           string whitespaces(" \t\f\v\n\r");
-
+          
           pos = temp_str.find("#");
           if (pos != string::npos)
             temp_str = temp_str.substr(0, pos);
-
+          
           //trim trailing whitespace
           pos = temp_str.find_last_not_of(whitespaces);
           if (pos != string::npos) {
@@ -57,19 +57,19 @@ int read_parameters(char *paramfile) {
           }
           else
             temp_str.clear(); //str is all whitespace
-
+          
           strcpy(Param_value[Params], temp_str.c_str());
-
+          
           strcpy(Param_name[Params], name);
           if (Param_verbose > 2) {
             printf("READ_PARAMS: %s = %s\n", Param_name[Params],
-                Param_value[Params]);
+                   Param_value[Params]);
           }
           Params++;
         } else {
           printf(
-              "Help! Bad format in params.def file on line starting with %s\n",
-              name);
+                 "Help! Bad format in params.def file on line starting with %s\n",
+                 name);
           abort();
         }
       }
@@ -79,7 +79,7 @@ int read_parameters(char *paramfile) {
     abort();
   }
   fclose(fp);
-
+  
   fp = fopen(paramfile, "r");
   if (fp != NULL) {
     while (fscanf(fp, "%s", name) == 1) {
@@ -90,16 +90,16 @@ int read_parameters(char *paramfile) {
         continue;
       } else {
         if (fscanf(fp, " = %[^\n]", Param_value[Params]) == 1) {
-
+          
           //Remove end of line comments if they are there
           string temp_str(Param_value[Params]);
           size_t pos;
           string whitespaces(" \t\f\v\n\r");
-
+          
           pos = temp_str.find("#");
           if (pos != string::npos)
             temp_str = temp_str.substr(0, pos);
-
+          
           //trim trailing whitespace
           pos = temp_str.find_last_not_of(whitespaces);
           if (pos != string::npos) {
@@ -108,18 +108,18 @@ int read_parameters(char *paramfile) {
           }
           else
             temp_str.clear(); //str is all whitespace
-
+          
           strcpy(Param_value[Params], temp_str.c_str());
-
+          
           strcpy(Param_name[Params], name);
           if (Param_verbose > 2) {
             printf("READ_PARAMS: %s = %s\n", Param_name[Params],
-                Param_value[Params]);
+                   Param_value[Params]);
           }
           Params++;
         } else {
           printf("Help! Bad format in file %s on line starting with %s\n",
-              paramfile, name);
+                 paramfile, name);
           abort();
         }
       }
@@ -129,13 +129,13 @@ int read_parameters(char *paramfile) {
     abort();
   }
   fclose(fp);
-
+  
   if (Param_verbose > 1) {
     for (int i = 0; i < Params; i++) {
       printf("READ_PARAMS: %s = %s\n", Param_name[i], Param_value[i]);
     }
   }
-
+  
   return Params;
 }
 
@@ -246,8 +246,8 @@ int get_param(char *s, string &p){
       stringstream ss;
       ss << Param_value[i];
       if(ss.str().size() > 0){
-      p = ss.str();
-      found = 1;
+        p = ss.str();
+        found = 1;
       }
     }
   }
@@ -373,7 +373,7 @@ int get_param_matrix(char *s, double ***p) {
     int temp_n = (int) sqrt((double) n);
     if (n != temp_n * temp_n) {
       printf("Improper matrix dimensions: matricies must be square,"
-        " found dimension %i\n", n);
+             " found dimension %i\n", n);
       abort();
     }
     n = temp_n;
@@ -392,13 +392,13 @@ int get_param_matrix(char *s, double ***p) {
 }
 
 bool does_param_exist(char *s) {
-
+  
   bool found = false;
   for (int i = 0; i < Params && !found; i++) {
     if (strcmp(Param_name[i], s) == 0) {
       found = true;
     }
   }
-
+  
   return found;
 }
