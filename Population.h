@@ -39,7 +39,7 @@ public:
   virtual int get_strains() { return strains; }
   virtual Person **get_pop() { return pop; }
   virtual int get_pop_size() { return pop_size; }
-  Age_Map* get_pregnancy_prob() { return pregnancy_prob; }
+  virtual Age_Map* get_pregnancy_prob() { return pregnancy_prob; }
   //Mitigation Managers
   virtual AV_Manager *get_av_manager(){ return av_manager; }
   virtual Vaccine_Manager *get_vaccine_manager() { return vacc_manager;}

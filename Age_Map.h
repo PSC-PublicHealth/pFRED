@@ -6,7 +6,10 @@
 
 //
 //
-// File: AgeMap.h
+// File: Age_Map.h
+//
+// Age_Map is a class that holds a set of age-specific ranged values
+// The age ranges must be mutually exclusive.
 //
 
 #ifndef _FRED_AGEMAP_H
@@ -15,35 +18,35 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
-using namespace std;
+
 #include "Params.h"
 
-class Age_Map{
-  //Age_Map is a class that holds a set of age specific ranged values
-  // The age ranges much be mutually exclusive.
+using namespace std;
+
+class Age_Map {
 public:
-  //Creation Operators
+  // Creation operations
   Age_Map(string Name);
   Age_Map();
   
-  int get_num_ages() const { return ages.size(); }
-  bool is_empty() const { return ages.empty(); }
+  virtual int get_num_ages() const { return ages.size(); }
+  virtual bool is_empty() const { return ages.empty(); }
   
-  //Additional Creation Operations for building an Age Map
-  void read_from_input(string Input);
-  void add_value(int lower_age,int upper_age,double val);
+  // Additional creation operations for building an Age_Map
+  virtual void read_from_input(string Input);
+  virtual void add_value(int lower_age, int upper_age, double val);
   
-  //Operations
-  double find_value(int age) const;
+  // Operations
+  virtual double find_value(int age) const;
   
-  //Utility functions
-  void print() const;
-  bool quality_control() const;
+  // Utility functions
+  virtual void print() const;
+  virtual bool quality_control() const;
   
 private:
   string Name;
-  vector < vector <int> > ages;  // Vector to hold the age ranges
-  vector < double > values;      // Vector to hold the values for each age range
+  vector < vector<int> > ages;  // vector to hold the age ranges
+  vector <double> values;       // vector to hold the values for each age range
 };
 
 #endif
