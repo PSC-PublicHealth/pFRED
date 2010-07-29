@@ -42,6 +42,7 @@ extern double W3;
 extern int Incremental_Trace;
 extern int Trace_Headers;
 extern int Random_start_day;
+extern int Random_location_order;
 
 // global file pointers
 extern FILE *Statusfp;

@@ -30,6 +30,7 @@ double W3;
 int Incremental_Trace;
 int Trace_Headers;
 int Random_start_day;
+int Random_location_order;
 
 // global file pointers
 FILE *Statusfp;
@@ -64,4 +65,5 @@ void get_global_parameters() {
   get_param((char *) "w3", &W3);
   get_param((char *) "incremental_trace", &Incremental_Trace);
   get_param((char *) "trace_headers", &Trace_Headers);
+  get_param((char *) "random_location_order", &Random_location_order);
 }

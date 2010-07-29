@@ -175,11 +175,72 @@ void Spread::update(int day) {
   }
   
   // infect visitors to infectious locations:
-  for (it = places.begin(); it != places.end(); it++ ) {
-    Place * place = *it;
-    if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+  if (Random_location_order) {
+    for (it = places.begin(); it != places.end(); it++ ) {
+      Place * place = *it;
+      if (Verbose > 1) {
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+      }
+      place->spread_infection(day, strain->get_id());
     }
-    place->spread_infection(day, strain->get_id());
   }
+  else {
+    for (it = places.begin(); it != places.end(); it++ ) {
+      Place * place = *it;
+      if (place->get_type() != CLASSROOM) continue;
+      if (Verbose > 1) {
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+      }
+      place->spread_infection(day, strain->get_id());
+    }
+    for (it = places.begin(); it != places.end(); it++ ) {
+      Place * place = *it;
+      if (place->get_type() != SCHOOL) continue;
+      if (Verbose > 1) {
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+      }
+      place->spread_infection(day, strain->get_id());
+    }
+    for (it = places.begin(); it != places.end(); it++ ) {
+      Place * place = *it;
+      if (place->get_type() != OFFICE) continue;
+      if (Verbose > 1) {
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+      }
+      place->spread_infection(day, strain->get_id());
+    }
+    for (it = places.begin(); it != places.end(); it++ ) {
+      Place * place = *it;
+      if (place->get_type() != WORKPLACE) continue;
+      if (Verbose > 1) {
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+      }
+      place->spread_infection(day, strain->get_id());
+    }
+    for (it = places.begin(); it != places.end(); it++ ) {
+      Place * place = *it;
+      if (place->get_type() != HOSPITAL) continue;
+      if (Verbose > 1) {
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+      }
+      place->spread_infection(day, strain->get_id());
+    }
+    for (it = places.begin(); it != places.end(); it++ ) {
+      Place * place = *it;
+      if (place->get_type() != NEIGHBORHOOD) continue;
+      if (Verbose > 1) {
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+      }
+      place->spread_infection(day, strain->get_id());
+    }
+    for (it = places.begin(); it != places.end(); it++ ) {
+      Place * place = *it;
+      if (place->get_type() != HOUSEHOLD) continue;
+      if (Verbose > 1) {
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+      }
+      place->spread_infection(day, strain->get_id());
+    }
+  }
+
 }

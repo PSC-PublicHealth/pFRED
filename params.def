@@ -15,6 +15,7 @@ outfile = OUT/out
 tracefile = OUT/trace
 SEiIR_model = 0
 show_cases = 1
+random_location_order = 1
 
 # parameters for strain 0
 primary_cases_file[0] = primary_case_schedule-0.txt
