@@ -21,6 +21,7 @@ random_location_order = 1
 primary_cases_file[0] = primary_case_schedule-0.txt
 trans[0] = 1.0
 symp[0] = 0.67
+mortality_rate[0] = 0.0
 days_latent[0] = 3       0.0 0.8 1.0
 days_incubating[0] = 4   0.0 0.3 0.8 1.0
 days_asymp[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
@@ -83,8 +84,31 @@ w1 = 1.0
 w2 = 1.0
 w3 = 1.0
 
+##### COGNITION PARAMETERS
+cognitive_model = random
+# cognitive_model = HBM
+
+# Random cognitive model params
+prob_stay_home_if_sick = 0.5
+prob_accept_vaccine = 0.6
+prob_keep_kids_home = 0.0
+prob_avoid_crowds = 0.0
+prob_wear_face_mask = 0.0
+
+# Health Belief Model params
+HBM_stay_home_if_sick = 5    0.5 0 0 0 0
+HBM_accept_vaccine = 5       0.6 0 0 0 0
+HBM_keep_kids_home = 5       0.0 0 0 0 0
+HBM_avoid_crowds = 5         0.0 0 0 0 0
+HBM_wear_face_mask = 5       0.0 0 0 0 0
+HBM_suscept_discount    = 2  0.99  0.01
+HBM_suscept_threshold   = 2  220  60
+HBM_severity_threshold  = 2  0.01  0.01
+HBM_barriers_threshold  = 2  3000 1000
+
 # set 0 for end-of-run trace printout only, non-zero to print every n-th day
 incremental_trace = 0
 
 # set non-zero to get headers printed in the trace file
 trace_headers = 0
+

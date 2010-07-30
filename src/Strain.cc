@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -32,34 +32,34 @@ using namespace std;
 double Prob_stay_home;
 
 Strain::Strain() {
-	transmissibility = -1.0;
-	prob_symptomatic = -1.0;
-	asymp_infectivity = -1.0;
-	symp_infectivity = -1.0;
-	max_days_latent = -1;
-	max_days_incubating = -1;
-	max_days_asymp = -1;
-	max_days_symp = -1;
-	days_latent = NULL;
-	days_incubating = NULL;
-	days_asymp = NULL;
-	days_symp = NULL;
-	immunity_loss_rate = -1.0;
-	mutation_prob = NULL;
-	residual_immunity = NULL;
-	at_risk = NULL;
-	spread = NULL;
-	population = NULL;
+  transmissibility = -1.0;
+  prob_symptomatic = -1.0;
+  asymp_infectivity = -1.0;
+  symp_infectivity = -1.0;
+  max_days_latent = -1;
+  max_days_incubating = -1;
+  max_days_asymp = -1;
+  max_days_symp = -1;
+  days_latent = NULL;
+  days_incubating = NULL;
+  days_asymp = NULL;
+  days_symp = NULL;
+  immunity_loss_rate = -1.0;
+  mutation_prob = NULL;
+  residual_immunity = NULL;
+  at_risk = NULL;
+  spread = NULL;
+  population = NULL;
 }
 
 Strain::~Strain() {
-	delete [] days_latent;
-	delete [] days_incubating;
-	delete [] days_asymp;
-	delete [] days_symp;
-	delete spread;
-	delete residual_immunity;
-	delete at_risk;
+  delete [] days_latent;
+  delete [] days_incubating;
+  delete [] days_asymp;
+  delete [] days_symp;
+  delete spread;
+  delete residual_immunity;
+  delete at_risk;
 }
 
 void Strain::reset() {
@@ -76,6 +76,9 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   
   sprintf(s, "symp[%d]", id);
   get_param(s, &prob_symptomatic);
+  
+  sprintf(s, "mortality_rate[%d]", id);
+  get_param(s, &mortality_rate);
   
   sprintf(s, "symp_infectivity[%d]", id);
   get_param(s, &symp_infectivity);
