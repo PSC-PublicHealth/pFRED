@@ -10,7 +10,10 @@
 //
 
 #include <new>
+#include <stdexcept>
+
 #include "Health.h"
+#include "Place.h"
 #include "Person.h"
 #include "Strain.h"
 #include "Infection.h"
@@ -101,19 +104,28 @@ void Health::become_susceptible(int strain) {
 }
 
 void Health::update(int day) {
-  //Update Vaccine Status
-  for(unsigned int i=0;i<vaccine_health.size();i++) vaccine_health[i]->update(day, self->get_age());
+  // update vaccine status
+  for (unsigned int i = 0; i < vaccine_health.size(); i++)
+    vaccine_health[i]->update(day, self->get_age());
   
+  // possibly mutate infections
   update_mutations(day);
+  
+  // update each infection
   for (int s = 0; s < strains; s++) {
     char status = self->get_strain_status(s);
     if (status == 'S' || status == 'M')
       continue;
+    
     infection[s]->update(day);
+    
+    if (infection[s]->get_strain_status() == 'S')
+      self->become_susceptible(s);
   }
   
-  //Update Antiviral Status
-  for(unsigned int i=0;i<av_health.size();i++) av_health[i]->update(day);
+  // update antiviral status
+  for(unsigned int i = 0; i < av_health.size(); i++)
+    av_health[i]->update(day);
 }
 
 void Health::update_mutations(int day) {
@@ -147,7 +159,7 @@ void Health::become_exposed(Infection * infection_ptr) {
   Strain * strain = infection_ptr->get_strain();
   int strain_id = strain->get_id();
   if (Verbose > 1) {
-    if (infection_ptr->get_infected_place_id() == -1)
+    if (!infection_ptr->get_infected_place())
       fprintf(Statusfp, "EXPOSED_DUMMY person %d to strain %d\n", self->get_id(), strain_id);
     else
       fprintf(Statusfp, "EXPOSED person %d to strain %d\n", self->get_id(), strain_id);
@@ -202,6 +214,13 @@ void Health::become_infectious(Strain * strain) {
   }
 }
 
+void Health::become_symptomatic(Strain *strain) {
+	if (!infection[strain->get_id()])
+		throw logic_error("become symptomatic: cannot, without being exposed first");
+	infection[strain->get_id()]->become_symptomatic();
+}
+
+
 void Health::become_immune(Strain* strain) {
   int strain_id = strain->get_id();
   if(get_strain_status(strain_id) == 'S'){
@@ -246,35 +265,41 @@ int Health::get_recovered_date(int strain) const {
   if (infection[strain] == NULL) 
     return -1;
   else
-    return infection[strain]->get_recovered_date();
+    return infection[strain]->get_recovery_date();
 }
 
 int Health::get_infector(int strain) const {
   if (infection[strain] == NULL) 
     return -1;
+  else if (infection[strain]->get_infector() == NULL)
+    return -1;
   else
-    return infection[strain]->get_infector();
+    return infection[strain]->get_infector()->get_id();
 }
 
 int Health::get_infected_place(int strain) const {
   if (infection[strain] == NULL) 
     return -1;
+  else if (infection[strain]->get_infected_place() == NULL)
+    return -1;
   else
-    return infection[strain]->get_infected_place_id();
+    return infection[strain]->get_infected_place()->get_id();
 }
 
 char Health::get_infected_place_type(int strain) const {
   if (infection[strain] == NULL) 
     return 'X';
+  else if (infection[strain]->get_infected_place() == NULL)
+    return 'X';
   else
-    return infection[strain]->get_infected_place_type();
+    return infection[strain]->get_infected_place()->get_type();
 }
 
 int Health::get_infectees(int strain) const {
   if (infection[strain] == NULL) 
     return 0;
   else
-    return infection[strain]->get_infectees();
+    return infection[strain]->get_infectee_count();
 }
 
 int Health::add_infectee(int strain) {
@@ -298,7 +323,6 @@ double Health::get_infectivity(int strain) const {
   else
     return infection[strain]->get_infectivity();
 }
-
 
 //Modify Operators
 void Health::modify_susceptibility(int strain, double multp) {
@@ -366,12 +390,17 @@ void Health::take(Antiviral* av, int day){
 }
 
 bool Health::is_on_av_for_strain(int day, int s) const {
-  for(unsigned int iav = 0; iav < av_health.size(); iav++){
-    if(av_health[iav]->get_strain()==s &&
-       (day >= av_health[iav]->get_av_start_day() &&
-        day <= av_health[iav]->get_av_end_day())){
-         return true;
-       }
-  }
-  return false;
+	for (unsigned int iav = 0; iav < av_health.size(); iav++)
+		if (av_health[iav]->get_strain() == s && av_health[iav]->is_on_av(day))
+			return true;
+	return false;
+}
+
+char Health::get_strain_status(int strain) const {
+	if (immunity[strain])
+		return 'M';
+	else if (!infection[strain])
+		return 'S';
+	else 
+		return infection[strain]->get_strain_status();
 }

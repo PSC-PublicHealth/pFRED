@@ -44,6 +44,7 @@ public:
   virtual void become_susceptible(int strain);
   virtual void become_exposed(Infection *infection);
   virtual void become_infectious(Strain *strain);
+  virtual void become_symptomatic(Strain *strain);
   virtual void become_immune(Strain *strain);
   virtual void recover(Strain * strain);
   virtual void behave(int day);

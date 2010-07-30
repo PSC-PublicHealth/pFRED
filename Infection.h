@@ -5,7 +5,6 @@
  */
 
 //
-//
 // File: Infection.h
 //
 
@@ -19,94 +18,89 @@ class Strain;
 class Antiviral;
 class Health;
 
+extern int SEiIR_model;
+
 class Infection {
 public:
-  // Create an infection of type s, for person infectee, starting
-  // on date day.
-  // Place and infector may be null if this is a seed infection.
-  // Place may be null if this is an infection due to a mutation event.
-  Infection(Strain * s, Person* infector, Person* infectee,
-            Place* place, int day);
-  void become_infectious();
-  void become_symptomatic();
-  void recover();
-  // Transition between latent, asymptomatic and symptomatic states, based on
-  // the current day and this Infection's course.
-  void update(int day);
-  int is_symptomatic() { return (symptoms > 0); }
-  Strain * get_strain() { return strain; }
-  char get_strain_status() { return strain_status; }
-  int get_exposure_date() { return exposure_date; }
-  int get_infectious_date() { return infectious_date; }
-  int get_symptomatic_date() {return symptomatic_date; }
-  int get_recovered_date() { return recovered_date; }
-  int get_susceptible_date() { return susceptible_date; }
-  int get_infector();
-  int get_infected_place_id();
-  char get_infected_place_type();
-  int get_infectees() { return infectees; }
-  int add_infectee() { return ++infectees; }
-  double get_susceptibility() { return susceptibility; }
-  double get_infectivity() { return infectivity * infectivity_multp; }
-  double get_symptoms() { return symptoms; }
+	// if primary infection, infector and place are null.
+	// if mutation, place is null.
+	Infection(Strain *s, Person *infector, Person *infectee, Place* place, int day);
+	virtual ~Infection() { }
+	
+	// infection state
+	virtual char get_strain_status() const { return status; }
+	virtual void become_infectious();
+	virtual void become_symptomatic();
+	virtual void become_susceptible();
+	virtual void recover();
+	virtual void update(int today);
+	virtual bool possibly_mutate(Health *health, int day); 	// may cause mutation and/or alter infection course
   
-  //Modifiers
-  void modify_susceptibility(double multp){ susceptibility*=multp; }
-  void modify_infectivity(double multp){ infectivity_multp = multp; }
-  
-  // Current day is needed to modify infectious/symptomatic periods,
-  // because we can't cause this infection to recover in the past.
-  void modify_asymptomatic_period(double multp, int cur_day);
-  void modify_symptomatic_period(double multp, int cur_day);
-  
-  // Modifying infectious period is equivalent to modifying asymptomatic and
-  // symptomatic period by the same factor (in that order).
-  void modify_infectious_period(double multp, int cur_day);
-  // Can only call this if the person hasn't already developed symptoms.
-  void modify_develops_symptoms(bool symptoms, int cur_day);
-  // May result in a mutation, which causes a new infection of a different
-  // strain type in this host.  May also alter the course of this infection
-  // (shortening or lengthening the duration).  
-  bool possibly_mutate(Health* health, int day);
-  
-  void print();
-  
-  // Returns an infection for the given host and strain with exposed date and
-  // recovered date both equal to day (instant resistance to the given strain);
-  static Infection* get_dummy_infection(Strain *s, Person* host, int day);
+	// general
+	virtual Strain *get_strain() const { return strain; }
+	virtual Person *get_infector() const { return infector; }
+	virtual Place *get_infected_place() const { return place; }
+	virtual int get_infectee_count() const { return infectee_count; }
+	virtual int add_infectee() { return ++infectee_count; }
+	virtual void print() const;
+	
+	// chrono
+	virtual int get_exposure_date() const { return exposure_date; }
+	virtual int get_infectious_date() const { return exposure_date + latent_period; }
+	virtual int get_symptomatic_date() const { return get_infectious_date() + asymptomatic_period; }
+	virtual int get_recovery_date() const { return get_symptomatic_date() + symptomatic_period; }
+	virtual int get_susceptible_date() const { return get_recovery_date() + recovery_period; }
+	virtual void modify_asymptomatic_period(double multp, int cur_day);
+	virtual void modify_symptomatic_period(double multp, int cur_day);
+	virtual void modify_infectious_period(double multp, int cur_day);
+	
+	// parameters
+	virtual bool is_symptomatic() const { return symptoms > 0; }
+	virtual double get_susceptibility() const { return susceptibility; }
+	virtual double get_infectivity() const { return infectivity * infectivity_multp; }
+	virtual double get_symptoms() const { return symptoms; }
+	virtual void modify_develops_symptoms(bool symptoms, int cur_day);
+	virtual void modify_susceptibility(double multp) { susceptibility *= multp; }
+	virtual void modify_infectivity(double multp) { infectivity_multp = multp; }	
+	
+	// returns an infection for the given host and strain with exposed date and
+	// recovered date both equal to day (instant resistance to the given strain);
+	static Infection* get_dummy_infection(Strain *s, Person *host, int day);
   
 private:
-  // Change the future course of this infection.  Changing parameters such
-  // that past transition dates are affected is invalid.  Invalid actions:
-  //       - Calling this method after the host recovered
-  //       - changing the number of latent days if the host of this infection
-  //         is already infectious
-  // Yes, you could bypass these checks by not passing the true current_day,
-  // but that's just mean.
-  void reset_infection_course(int num_latent_days, int num_asymp_days,
-                              int num_symp_days, int current_day);
+	// associated strain
+	Strain *strain;
+	
+	// infection status (E/I/i/R)
+	char status;
+	
+	// chrono data
+	int exposure_date;
+	int latent_period;
+	int asymptomatic_period;
+	int symptomatic_period;
+	int recovery_period;
   
-  Strain * strain;
-  char strain_status;
-  int latent_period;
-  int infectious_period;
-  int asymp_period;
-  int symp_period;
-  int exposure_date;
-  int infectious_date;
-  int symptomatic_date;
-  int recovered_date;
-  int susceptible_date;
-  Person* infector;
-  Person* host;
-  Place* infected_place;
-  int infectees;
-  int will_be_symptomatic;
-  double susceptibility;
-  double infectivity;
-  double infectivity_multp;
-  double symptoms;
+	// people involved
+	Person *infector;
+	Person *host;
+	
+	// where infection was caught
+	Place *place;
+	
+	// number of people infected by this infection
+	int infectee_count;
+  
+	// parameters
+	bool will_be_symptomatic;
+	double susceptibility;
+	double infectivity;
+	double infectivity_multp;
+	double symptoms;
+	
+protected:
+	// for mocks
+	Infection() { }
 };
 
 #endif // _FRED_INFECTION_H
-

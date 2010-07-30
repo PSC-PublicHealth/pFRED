@@ -141,6 +141,10 @@ void Person::become_infectious(Strain * strain) {
   behavior->become_infectious(strain_id);
 }
 
+void Person::become_symptomatic(Strain *strain) {
+	health->become_symptomatic(strain);
+}
+
 void Person::become_immune(Strain* strain) {
   int strain_id = strain->get_id();
   health->become_immune(strain);
