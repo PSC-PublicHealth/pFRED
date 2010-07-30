@@ -123,7 +123,7 @@ void Population::read_population() {
   pop = new (nothrow) Person* [pop_size];
 	
   for (int i = 0; i < pop_size; i++)
-	  pop[i] = new Person;
+    pop[i] = new Person;
 	
   if (pop == NULL) { printf ("Help! Pop allocation failure\n"); exit(1); }
   
@@ -200,13 +200,13 @@ void Population::update(int day) {
   
   // update adults first, so that they can make decisions for minors
   for (int p = 0; p < pop_size; p++){
-    if (pop[p]->get_age() > 18)
+    if (18 <= pop[p]->get_age())
       pop[p]->update(day);
   }
   
   // update minors, who may use adult's decisions
   for (int p = 0; p < pop_size; p++){
-    if (pop[p]->get_age() <= 18)
+    if (pop[p]->get_age() < 18)
       pop[p]->update(day);
   }
   
