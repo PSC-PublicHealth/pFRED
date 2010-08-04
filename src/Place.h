@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -40,7 +40,9 @@ public:
 	
   virtual void setup(int loc_id, const char *lab, double lon, double lat, Place *cont, Population *pop);
   virtual void reset();
+  virtual void update(int day);
   virtual void print(int strain);
+  virtual void add_person(Person * per);
   virtual void add_susceptible(int strain, Person * per);
   virtual void delete_susceptible(int strain, Person * per);
   virtual void print_susceptibles(int strain);
@@ -69,11 +71,12 @@ public:
   virtual int get_open_date() { return open_date; }
   virtual int get_adults() { return adults; }
   virtual int get_children() { return children; }
-  virtual Person * get_HoH() { return HoH; }
-  virtual void set_HoH(Person * per) { HoH = per; }
-  virtual int get_num_schools() { return num_schools; }
-  virtual Place * get_school(int i) { return school[i]; }
   virtual Population *get_population() { return population; }
+  virtual int get_daily_cases(int strain) { return cases[strain]; }
+  virtual int get_daily_deaths(int strain) { return deaths[strain]; }
+  virtual int get_total_cases(int strain) { return total_cases[strain]; }
+  virtual int get_total_deaths(int strain) { return total_deaths[strain]; }
+  virtual double get_incidence_rate(int strain) { return (double) total_cases[strain] / (double) N; }
   
   virtual void set_id(int n) { id = n; }
   virtual void set_type(char t) { type = t; }
@@ -83,6 +86,8 @@ public:
   virtual void set_open_date(int day) { open_date = day; }
   virtual void set_population(Population *p) {  population = p; }
   virtual void set_container(Place *cont) { container = cont; }
+  virtual void add_case() { cases++; }
+  virtual void add_deaths() { deaths++; }
   
 protected:
   int id;					// place id
@@ -97,16 +102,17 @@ protected:
   int *S;					// susceptible count
   int *I;					// infectious count
   int *Sympt;					// symptomatics count
-  int close_date;			     // this place will be closed during:
-  int open_date;			     //   [close_date, open_date)
+  int close_date;		    // this place will be closed during:
+  int open_date;			    //   [close_date, open_date)
   int indiv_types;			   // distinct types of visitors
   int adults;					// how many adults
   int children;					// how many children
-  Person * HoH;					// head of household
-  Place * school[4];
-  int num_schools;
+  int * cases;					// symptomatic cases today
+  int * deaths;					// deaths today
+  int * total_cases;			      // total symptomatic cases
+  int * total_deaths;				// total deaths
   Population *population;
-  
+
   // strain parameters
   double *beta;	       // place-independent transmissibility per contact
 };

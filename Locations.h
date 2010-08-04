@@ -18,6 +18,7 @@ class Locations {
 public:
   void setup_locations();
   void reset_locations(int run);
+  void update(int day);
   void location_quality_control();
   void get_location_parameters();
   int get_open_status(int loc, int day);

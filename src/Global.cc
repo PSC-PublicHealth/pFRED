@@ -22,15 +22,11 @@ int All_strains_antigenically_identical;
 int SEiIR_model;
 char VaccineTracefilebase[80];
 int Show_cases;
-int Use_HBM;
-double HBM_threshold;
-double W1;
-double W2;
-double W3;
 int Incremental_Trace;
 int Trace_Headers;
 int Random_start_day;
 int Random_location_order;
+char Cognitive_model_type[80];
 
 // global file pointers
 FILE *Statusfp;
@@ -58,12 +54,8 @@ void get_global_parameters() {
   get_param((char *) "SEiIR_model", &SEiIR_model);
   get_param((char *) "show_cases", &Show_cases);
   get_param((char *) "vaccine_tracefile",VaccineTracefilebase);
-  get_param((char *) "use_hbm", &Use_HBM);
-  get_param((char *) "hbm_threshold", &HBM_threshold);
-  get_param((char *) "w1", &W1);
-  get_param((char *) "w2", &W2);
-  get_param((char *) "w3", &W3);
   get_param((char *) "incremental_trace", &Incremental_Trace);
   get_param((char *) "trace_headers", &Trace_Headers);
   get_param((char *) "random_location_order", &Random_location_order);
+  get_param((char *) "cognitive_model", Cognitive_model_type);
 }

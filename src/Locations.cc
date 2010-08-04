@@ -122,6 +122,18 @@ void Locations::reset_locations(int run) {
   }
 }
 
+void Locations::update(int day) {
+  if (Verbose>1) {
+    fprintf(Statusfp, "update locations entered\n"); fflush(Statusfp);
+  }
+  for (int loc = 0; loc < locations; loc++) {
+    location[loc]->update(day);
+  }
+  if (Verbose>1) {
+    fprintf(Statusfp, "update locations finished\n"); fflush(Statusfp);
+  }
+}
+
 int Locations::get_open_status(int loc, int day) {
   return location[loc]->is_open(day);
 }
@@ -157,19 +169,23 @@ void Locations::location_quality_control() {
   }
   
   /*
-   if (Verbose) {
-   for (int loc = 0; loc < locations; loc++) {
-   Place *p = location[loc];
-   if (p->get_type() == HOUSEHOLD) {
-   if (p->get_HoH() != NULL)
-   { printf("household %d HoH %d age %d\n",p->get_id(),p->get_HoH()->get_id(),p->get_HoH()->get_age()); fflush(stdout);  }
-   else
-   { printf("household %d HoH NULL\n", p->get_id()); fflush(stdout);  }
-   }
-   }
-   }
-   abort();
-   */
+  if (Verbose) {
+    for (int loc = 0; loc < locations; loc++) {
+      Place *p = location[loc];
+      if (p->get_type() == HOUSEHOLD) {
+	if (p->get_HoH() != NULL) { 
+	  // printf("household %d HoH %d age %d\n",
+	  // p->get_id(),p->get_HoH()->get_id(),p->get_HoH()->get_age());
+	  // fflush(stdout);
+	}
+	else {
+	  printf("household %d HoH NULL\n", p->get_id()); fflush(stdout);
+	  abort();
+	}
+      }
+    }
+  }
+  */
   
   if (Verbose) {
     int count[20];
@@ -256,6 +272,7 @@ void Locations::location_quality_control() {
     fprintf(Statusfp, "\n");
   }
   
+  /*
   if (Verbose) {
     int count[20];
     int total = 0;
@@ -280,7 +297,8 @@ void Locations::location_quality_control() {
     }
     fprintf(Statusfp, "\n");
   }
-  
+  */
+
   if (Verbose) {
     int count[20];
     int total = 0;

@@ -28,18 +28,12 @@ public:
   int get_group_type(int strain, Person * per);
   double get_transmission_prob(int strain, Person * i, Person * s);
   double get_contacts_per_day(int strain);
-  
-  //int get_adults() { return adults; }
-  //int get_children() { return children; }
-  //Person * get_HoH() { return HoH; }
-  //void set_HoH(Person * per) { HoH = per; }
-  //void add_person(Person * per);
-  
-  // private:
-  //int adults;					// how many adults
-  //int children;					// how many children
-  //Person * HoH;					// head of household
-  
+  void add_person(Person * per);
+  Person * get_HoH() { return HoH; }
+  Person * get_housemate(int i) { return housemate[i]; }
+private:
+  Person * HoH;
+  vector <Person *> housemate;
 };
 
 #endif // _FRED_HOUSEHOLD_H

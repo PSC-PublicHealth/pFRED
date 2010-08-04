@@ -22,7 +22,7 @@ using namespace std;
 
 class Demographics;
 class Infection;
-class Perceptions;
+class Cognition;
 class Place;
 class Strain;
 class Population;
@@ -74,7 +74,7 @@ public:
   virtual Health *get_health() const { return health; }
   virtual Behavior* get_behavior() const { return behavior; }
   virtual Demographics* get_demographics() const { return demographics; }
-  virtual Perceptions* get_perceptions() const { return perceptions; }
+  virtual Cognition* get_cognition() const { return cognition; }
   virtual Population* get_population() const { return pop; }
   
   virtual void set_changed(); // notify the population that this Person has changed
@@ -85,7 +85,7 @@ private:
   Demographics *demographics;
   Health *health;
   Behavior *behavior;
-  Perceptions *perceptions;
+  Cognition *cognition;
 };
 
 #endif // _FRED_PERSON_H

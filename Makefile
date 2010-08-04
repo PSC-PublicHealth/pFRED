@@ -16,8 +16,8 @@ OBJ =   Global.cc Decision.o Policy.o Manager.o \
         Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \
 	Antiviral.o Antivirals.o Behavior.o Classroom.o Community.o Demographics.o Health.o \
         Hospital.o Household.o Infection.o Locations.o Neighborhood.o Office.o \
-	Params.o Place.o Perceptions.o Person.o Population.o Profile.o \
-	Random.o School.o Spread.o Strain.o Workplace.o
+	Params.o Place.o Cognition.o Perceptions.o Person.o Population.o Profile.o \
+	Random.o School.o Spread.o Strain.o Workplace.o Health_Belief_Model.o Random_Cognitive_Model.o
 
 SRC = $(OBJ:.o=.cc)
 

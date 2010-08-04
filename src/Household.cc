@@ -24,8 +24,7 @@ Household::Household(int loc, const  char *lab, double lon, double lat, Place *c
   type = HOUSEHOLD;
   setup(loc, lab, lon, lat, container, pop);
   get_parameters(population->get_strains());
-  // adults = children = 0;
-  // HoH = NULL;
+  housemate.clear();
 }
 
 void Household::get_parameters(int strains) {
@@ -53,7 +52,7 @@ void Household::get_parameters(int strains) {
       }
     }
   }
-  
+
   Household_parameters_set = 1;
 }
 
@@ -76,17 +75,15 @@ double Household::get_contacts_per_day(int strain) {
   return Household_contacts_per_day[strain];
 }
 
-
-/*
- void Household::add_person(Person * per) {
- if (per->get_age() < 19) {
- children++;
- }
- else {
- adults++;
- if (adults == 1) {
- HoH = per;
- }
- }
- }
- */
+void Household::add_person(Person * per) {
+  N++;
+  if (per->get_age() < 18)
+    children++;
+  else {
+    adults++;
+    if (adults == 1) HoH = per;
+  }
+  // printf("Add person %d to household %d\n", per->get_id(), get_id()); fflush(stdout);
+  housemate.push_back(per);
+  // for (int i = 0; i < N; i++) printf("%d ", housemate[i]->get_id()); printf("\n"); fflush(stdout);
+}

@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -12,32 +12,37 @@
 #ifndef _FRED_PERCEPTIONS_H
 #define _FRED_PERCEPTIONS_H
 
-class Person;
+#include "Place.h"
+#include "Person.h"
+#include "Spread.h"
+#include "Strain.h"
+#include "Household.h"
 
 class Perceptions {
 public:
-	Perceptions(Person *p);
-	virtual void reset();
-	virtual void update(int day);
-	virtual int will_keep_kids_home() { return keep_kids_home; }
-	// double get_perceived_susceptibility() { return perceived_susceptibility; }
-	// double get_perceived_severity() { return perceived_severity; }
-	// double get_perceived_benefits() { return perceived_benefits; }
-	// double get_perceived_barriers() { return perceived_barriers; }
-	// double get_self_efficacy() { return self_efficacy; }
-	
+  Perceptions(Person *p) { self = p; }
+  virtual void reset() {}
+  virtual void update(int day) {}
+  virtual int get_global_cases(int strain) {
+    return self->get_population()->get_strain(strain)->get_spread()->get_clinical_incidents();
+  }
+  virtual int get_global_deaths(int strain) {
+    return self->get_population()->get_strain(strain)->get_mortality_rate()*get_global_cases(strain);
+  }
+  virtual int get_neighborhood_cases(int strain);
+  virtual int get_neighborhood_deaths(int strain);
+  virtual int get_workplace_cases(int strain);
+  virtual int get_workplace_deaths(int strain);
+  virtual int get_school_cases(int strain);
+  virtual int get_school_deaths(int strain);
+  virtual double get_household_school_incidence(int strain);
+  virtual int get_local_cases(int strain) { return 0.0; }
+  virtual int get_local_deaths(int strain) { return 0.0; }
 private:
-	void HBM(int day);
-	Person * self;
-	double perceived_susceptibility;
-	double perceived_severity;
-	double perceived_benefits;
-	double perceived_barriers;
-	double self_efficacy;
-	int keep_kids_home;	
-	
+  Person * self;
 protected:
-	Perceptions() { }
+  Perceptions() {}
+  ~Perceptions() {}
 };
 
 #endif // _FRED_PERCEPTIONS_H

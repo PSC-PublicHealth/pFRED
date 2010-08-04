@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -15,7 +15,7 @@
 #include "Demographics.h"
 #include "Global.h"
 #include "Health.h"
-#include "Perceptions.h"
+#include "Cognition.h"
 #include "Place.h"
 #include "Strain.h"
 #include "Population.h"
@@ -31,14 +31,14 @@ Person::Person() {
   demographics = NULL;
   health = NULL;
   behavior = NULL;
-  perceptions = NULL;
+  cognition = NULL;
 }
 
 Person::~Person() {
   delete demographics;
   delete health; 
   delete behavior;
-  delete perceptions;
+  delete cognition;
 }
 
 void Person::setup(int index, int age, char sex, int marital, int occ,
@@ -49,7 +49,7 @@ void Person::setup(int index, int age, char sex, int marital, int occ,
   demographics = new Demographics(this, age,sex,'U',marital,profession);
   health = new Health(this);
   behavior = new Behavior(this,favorite_places,profile);
-  perceptions = new Perceptions(this);
+  cognition = new Cognition(this);
 }
 
 void Person::print(int strain) const {
@@ -102,26 +102,26 @@ void Person::print_schedule() const {
 }
 
 void Person::reset() {
-	if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", idx); }
-	demographics->reset();
-	health->reset();
-	perceptions->reset();
-	behavior->reset();
+  if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", idx); fflush(Statusfp); }
+  demographics->reset();
+  health->reset();
+  cognition->reset();
+  behavior->reset();
 	
-	for (int strain = 0; strain < Pop.get_strains(); strain++) {
-		Strain* s = Pop.get_strain(strain);
-		if (!s->get_residual_immunity()->is_empty()) {
-			double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
-			if (RANDOM() < residual_immunity_prob)
-				become_immune(s);
-		}
-	}
+  for (int strain = 0; strain < Pop.get_strains(); strain++) {
+    Strain* s = Pop.get_strain(strain);
+    if (!s->get_residual_immunity()->is_empty()) {
+      double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
+      if (RANDOM() < residual_immunity_prob)
+	become_immune(s);
+    }
+  }
 }
 
 void Person::update(int day) {
   demographics->update(day);
   health->update(day);
-  perceptions->update(day);
+  cognition->update(day);
   behavior->update(day);
 }
 

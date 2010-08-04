@@ -66,18 +66,32 @@ classroom_prob[0] = 16 0.0435 0 0 0 0 0.0375 0 0 0 0 0.0315 0 0 0 0 0.0575
 community_prob[0] = 4 3.175e-5 1.8125e-4 3.175e-5 1.8125e-4
 neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 
+#### SCHOOL CLOSURE
 school_closure_policy = none
-school_closure_day = 10
-school_closure_threshold = 0.1
+# school_closure_policy = global
+# school_closure_policy = reactive
+
+# number of days to keep a school closed
 school_closure_period = 10
+
+# delay after reaching any trigger before closing schools
 school_closure_delay = 2
 
+# day to close school under global policy
+school_closure_day = 10
+
+# global closure triggered when global attack rate >= threshold (if school_closure_day == -1)
+# reactive closure triggered when school attack rate >= threshold
+school_closure_threshold = 0.1
+
+
+#### ANTIVIRALS
 number_antivirals = 0
 vaccine_file = none
 vaccine_tracefile = OUT/vacctr
 vaccination_capacity_file = none
 
-# Health Belief Model params
+# Health Belief Model params (obsolete)
 use_hbm = 0
 hbm_threshold = 0.5
 w1 = 1.0
@@ -104,7 +118,8 @@ HBM_wear_face_mask = 5       0.0 0 0 0 0
 HBM_suscept_discount    = 2  0.99  0.01
 HBM_suscept_threshold   = 2  220  60
 HBM_severity_threshold  = 2  0.01  0.01
-HBM_barriers_threshold  = 2  3000 1000
+HBM_benefits_threshold  = 2  0 0 
+HBM_barriers_threshold  = 2  0 0
 
 # set 0 for end-of-run trace printout only, non-zero to print every n-th day
 incremental_trace = 0

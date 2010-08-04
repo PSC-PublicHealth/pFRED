@@ -121,6 +121,7 @@ void run_sim(int run) {
       INIT_RANDOM(new_seed + run);
     }
     printf("================\nsim day = %d\n", day); fflush(stdout);
+    Loc.update(day);
     Pop.update(day);
     Pop.report(day);
     fprintf(Statusfp, "day %d finished  ", day);
