@@ -63,41 +63,6 @@ class Health_Belief_Model : public Cognitive_Model {
   bool keep_kids_home;
   bool wear_face_mask;
 
-  // Thresholds
-  double suscept_threshold[2];
-  double severity_threshold[2];
-  double benefits_threshold[2];
-  double barriers_threshold[2];
-  double susceptibility_threshold;
-
-  // accept_vaccine coefficients (Logistic approach -- see Durham 2010)
-  double base_coeff_accept_vaccine;
-  double susc_coeff_accept_vaccine;
-  double sev_coeff_accept_vaccine;
-  double ben_coeff_accept_vaccine;
-  double bar_coeff_accept_vaccine;
-
-  // odd ratios
-  double base_OR_accept_vaccine;
-  double susc_OR_accept_vaccine;
-  double sev_OR_accept_vaccine;
-  double ben_OR_accept_vaccine;
-  double bar_OR_accept_vaccine;
-
-  // stay_home_if_sick coefficients (Logistic approach -- see Durham 2010)
-  double base_coeff_stay_home_if_sick;
-  double susc_coeff_stay_home_if_sick;
-  double sev_coeff_stay_home_if_sick;
-  double ben_coeff_stay_home_if_sick;
-  double bar_coeff_stay_home_if_sick;
-
-  // odd ratios
-  double base_OR_stay_home_if_sick;
-  double susc_OR_stay_home_if_sick;
-  double sev_OR_stay_home_if_sick;
-  double ben_OR_stay_home_if_sick;
-  double bar_OR_stay_home_if_sick;
-
   bool decide_whether_to_stay_home_if_sick();
   bool decide_whether_to_accept_vaccine();
   bool decide_whether_to_avoid_crowds();

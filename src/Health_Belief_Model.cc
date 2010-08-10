@@ -19,9 +19,46 @@
 
 int HBM_parameters_set = 0;
 
+// Thresholds
+double suscept_threshold[2];
+double severity_threshold[2];
+double benefits_threshold[2];
+double barriers_threshold[2];
+double susceptibility_threshold;
+
+// Logistic approach -- see Durham 2010
+double base_coeff_accept_vaccine;
+double susc_coeff_accept_vaccine;
+double sev_coeff_accept_vaccine;
+double ben_coeff_accept_vaccine;
+double bar_coeff_accept_vaccine;
+
+double base_coeff_stay_home_if_sick;
+double susc_coeff_stay_home_if_sick;
+double sev_coeff_stay_home_if_sick;
+double ben_coeff_stay_home_if_sick;
+double bar_coeff_stay_home_if_sick;
+
+// odd ratios
+double base_OR_accept_vaccine;
+double susc_OR_accept_vaccine;
+double sev_OR_accept_vaccine;
+double ben_OR_accept_vaccine;
+double bar_OR_accept_vaccine;
+
+// odd ratios
+double base_OR_stay_home_if_sick;
+double susc_OR_stay_home_if_sick;
+double sev_OR_stay_home_if_sick;
+double ben_OR_stay_home_if_sick;
+double bar_OR_stay_home_if_sick;
+
+
+
 Health_Belief_Model::Health_Belief_Model(Person *p) {
   self = p;
-  int strains = p->get_population()->get_strains();
+  // int strains = p->get_population()->get_strains();
+  int strains = 1;
 
   perceptions = new Perceptions(p);
   get_parameters();
@@ -79,10 +116,12 @@ void Health_Belief_Model::get_parameters() {
   char s[80];
   double coeff[5];
   int n;
-  int strains = self->get_population()->get_strains();
+  // int strains = self->get_population()->get_strains();
+  int strains = 1;
 
   if (HBM_parameters_set) return;
 
+  Debug = 99;
   n = get_param_vector((char *) "HBM_stay_home_if_sick", coeff);
   if (n != 5) { printf("bad HBM_stay_home_if_sick"); abort(); }
   base_coeff_stay_home_if_sick = coeff[0];
@@ -113,11 +152,11 @@ void Health_Belief_Model::get_parameters() {
   
   susceptibility_threshold = suscept_threshold[0];
   HBM_parameters_set = 1;
-
 }
 
 void Health_Belief_Model::reset() {
-  int strains = self->get_population()->get_strains();
+  // int strains = self->get_population()->get_strains();
+  int strains = 1;
   for (int s = 0; s < strains; s++) {
     memory_susceptibility[s] = 0.0;
     memory_severity[s] = 0.0;
@@ -131,7 +170,8 @@ void Health_Belief_Model::reset() {
 }
 
 void Health_Belief_Model::update(int day) {
-  int strains = self->get_population()->get_strains();
+  // int strains = self->get_population()->get_strains();
+  int strains = 1;
   for (int s = 0; s < strains; s++) {
     // perceptions of current state of epidemic
     int current_cases = perceptions->get_global_cases(s);
@@ -165,6 +205,7 @@ void Health_Belief_Model::update(int day) {
 }
 
 bool Health_Belief_Model::decide_whether_to_stay_home_if_sick() {
+  // return (RANDOM() < self->get_population()->get_strain(0)->get_prob_stay_home());
   return (RANDOM() < base_coeff_stay_home_if_sick);
 }
 
