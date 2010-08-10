@@ -49,7 +49,7 @@ public:
   void vaccinate(int day);
   
   //Paramters Access Members
-  int get_vaccine_compliance()        const {return vaccine_compliance;}
+  double get_vaccine_compliance()        const {return vaccine_compliance;}
   int get_vaccine_priority_age_low()  const {return vaccine_priority_age_low;}
   int get_vaccine_priority_age_high() const {return vaccine_priority_age_high;}
   

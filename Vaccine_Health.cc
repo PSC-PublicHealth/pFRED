@@ -44,7 +44,7 @@ void Vaccine_Health::print() const {
 }
 
 void Vaccine_Health::printTrace() const {
-  fprintf(VaccineTracefp," %2d %2d %2d",vaccination_day,is_effective(),current_dose);
+  fprintf(VaccineTracefp," vaccday %2d iseff %2d currentdose %2d",vaccination_day,is_effective(),current_dose);
   fflush(Tracefp);
 }
 
