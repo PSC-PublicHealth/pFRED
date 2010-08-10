@@ -72,7 +72,7 @@ void setup(char *paramfile) {
 }
 
 void run_sim(int run) {
-  char filename[80];
+  char filename[256];
   unsigned long new_seed;
   time_t clock;		      // current date
 	
