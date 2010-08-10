@@ -15,11 +15,11 @@ my $run = $opts{r} or die "usage: fred_chain -k key -r run -a agent -d depth\n";
 my $agent = $opts{a} or die "usage: fred_chain -k key -r run -a agent -d depth\n";
 my $maxdepth = $opts{d} or die "usage: fred_chain -k key -r run -a agent -d depth\n";
 
-my $id = `$bindir/get_id $key`;
+my $id = `$bindir/fred_id $key`;
 chomp $id;
 die "get_plot: UNKNOWN key: $key\n" if $id eq "UNKNOWN";
 
-my $status = `$bindir/get_status $key`;
+my $status = `$bindir/fred_status -k $key`;
 chomp $status;
 $status =~ s/\s.*//;
 die "get_plot: bad status: $status\n" if $status ne "FINISHED";
