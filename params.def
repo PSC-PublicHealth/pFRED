@@ -87,9 +87,15 @@ school_closure_threshold = 0.1
 
 #### ANTIVIRALS
 number_antivirals = 0
+
+# Vaccination Variables
 vaccine_file = none
 vaccine_tracefile = OUT/vacctr
-vaccination_capacity_file = none
+vaccine_compliance = 0.50
+vaccine_prioritize_by_age = 0
+vaccine_priority_age_low = 0
+vaccine_priority_age_high = 100
+vaccination_capacity_file = vaccination_capacity-0.txt
 
 # Health Belief Model params (obsolete)
 use_hbm = 0
