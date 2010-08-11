@@ -54,7 +54,7 @@ void Vaccine::print() const {
   cout << "Starting on day = \t\t" << start_day << "\n";
   cout << "Dose Information\n";
   for(unsigned int i=0;i<doses.size();i++){
-    cout <<"\t" << setw(20) << "Dose #"<<i+1 << "\n";
+    cout <<"Dose #"<<i+1 << "\n";
     doses[i]->print();
   }
 }

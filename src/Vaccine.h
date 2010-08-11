@@ -49,7 +49,7 @@ public:
       reserve -= add;
     }
     else{
-      stock   += add-reserve;
+      stock   += reserve;
       reserve  = 0;
     }
   }

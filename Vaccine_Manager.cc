@@ -202,7 +202,7 @@ void Vaccine_Manager::vaccinate(int day) {
       }
       return;
     }
-    if(number_vaccinated >= vaccination_capacity){
+    if(number_vaccinated > vaccination_capacity){
       if(Debug > 1) {
         cout << "Vaccinated priority to capacity "<< n_p_vaccinated << " agents, for a total of "
         << number_vaccinated << " on day " << day << "\n";
