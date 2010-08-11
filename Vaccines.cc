@@ -75,7 +75,7 @@ void Vaccines::setup(string _vaccine_file) {
       istringstream dstr(lline);
       
       dstr >> naggroups >> redi >> tbd;
-      cout << "dstr = "<< naggroups << " " << redi << " " << tbd << "\n";
+      //cout << "dstr = "<< naggroups << " " << redi << " " << tbd << "\n";
       for(int ig=0;ig<naggroups;ig++) {
         int age1, age2;
         double eff, effd;
