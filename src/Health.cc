@@ -268,6 +268,12 @@ int Health::get_recovered_date(int strain) const {
     return infection[strain]->get_recovery_date();
 }
 
+int Health:: get_symptomatic_date(int strain) const {
+ if (infection[strain] == NULL) 
+    return -1;
+  else
+    return infection[strain]->get_symptomatic_date();
+}
 int Health::get_infector(int strain) const {
   if (infection[strain] == NULL) 
     return -1;

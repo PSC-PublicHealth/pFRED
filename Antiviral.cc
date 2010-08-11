@@ -139,7 +139,7 @@ int Antiviral::quality_control(int nstrains) const {
 void Antiviral::effect(Health *health, int cur_day, AV_Health* av_health){
   // We need to calculate the effect of the AV on all strains it is applicable to
   int nstrains = health->get_num_strains();
-  for(int is=0;is<nstrains;is++) {
+  for (int is = 0; is < nstrains; is++) {
     if(is == strain){ //Is this antiviral applicable to this strain
       // If this is the first day of AV Course
       if(cur_day == av_health->get_av_start_day()) {
@@ -148,18 +148,28 @@ void Antiviral::effect(Health *health, int cur_day, AV_Health* av_health){
         if((health->get_exposure_date(is) > -1) && (cur_day > health->get_exposure_date(is))){
           cout << "reducing an already exposed person\n";
           health->modify_infectivity(is,reduce_infectivity);
-          health->modify_develops_symptoms(is,roll_will_have_symp(), cur_day);
-          health->modify_asymptomatic_period(is,reduce_asymp_period,cur_day);
-          health->modify_symptomatic_period(is,reduce_symp_period,cur_day);
+	  if (!health->is_symptomatic() && cur_day < health->get_symptomatic_date(is)) {
+	    // Can only have these effects if the agent is not symptomatic yet
+	    health->modify_develops_symptoms(is,roll_will_have_symp(), cur_day);
+	    health->modify_asymptomatic_period(is,reduce_asymp_period,cur_day);
+	  }
+	  if (health->is_symptomatic() && cur_day < health->get_recovered_date(is)) {
+	    health->modify_symptomatic_period(is,reduce_symp_period,cur_day);
+	  }
         }
       }
       // If today is the day you got exposed, prophilaxis
       if(cur_day == health->get_exposure_date(is)) { 
         if(Debug > 3) cout << "reducing agent on the day they are exposed\n";
         health->modify_infectivity(is,reduce_infectivity);
-        health->modify_develops_symptoms(is,roll_will_have_symp(),cur_day);
-        health->modify_asymptomatic_period(is,reduce_asymp_period,cur_day);
-        health->modify_symptomatic_period(is,reduce_symp_period,cur_day);
+	if (!health->is_symptomatic() && cur_day < health->get_symptomatic_date(is)) {
+	  // Can only have these effects if the agent is not symptomatic yet
+	  health->modify_develops_symptoms(is, roll_will_have_symp(), cur_day);
+	  health->modify_asymptomatic_period(is, reduce_asymp_period, cur_day);
+	}
+	if (health->is_symptomatic() && cur_day < health->get_recovered_date(is)) {
+	  health->modify_symptomatic_period(is,reduce_symp_period,cur_day);
+	}
       }
       // If this is the last day of the course
       if(cur_day == av_health->get_av_end_day()) {
@@ -172,3 +182,4 @@ void Antiviral::effect(Health *health, int cur_day, AV_Health* av_health){
     }
   }
 }
+
