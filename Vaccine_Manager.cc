@@ -155,13 +155,14 @@ void Vaccine_Manager::vaccinate(int day) {
   int number_vaccinated = 0;
   int n_p_vaccinated = 0;
   int n_r_vaccinated = 0;
+  // Figure out the total number of vaccines we can hand out today
   int total_vaccines_avail = vaccine_package->get_total_vaccines_avail_today();
   int vaccination_capacity = vaccination_capacity_map->get_value_for_timestep(day);
   
   if(Debug > 1) 
     cout << "Vaccine Capacity on Day "<<day << " = " << vaccination_capacity << "\n";
   
-  if(total_vaccines_avail == 0) {
+  if(total_vaccines_avail == 0 || vaccination_capacity == 0) {
     if(Debug > 1){
       cout <<"No Vaccine Available on Day "<< day << "\n";
     }
@@ -185,8 +186,9 @@ void Vaccine_Manager::vaccinate(int day) {
         vacc->remove_stock(1);
         total_vaccines_avail--;
         current_person->get_health()->take(vacc,day);
+	if(strcmp(Cognitive_model_type,"HBM") == 0) ip = priority_queue.erase(ip);	
       }
-      ip = priority_queue.erase(ip);  // remove a vaccinated person from the queue
+      if(strcmp(Cognitive_model_type,"HBM") != 0) ip = priority_queue.erase(ip);  // remove a vaccinated person from the queue
     }
     else{
       cout << "Vaccine not applicable for agent "<<current_person->get_id() << " " << current_person->get_age() << "\n";
@@ -233,8 +235,10 @@ void Vaccine_Manager::vaccinate(int day) {
         vacc->remove_stock(1);
         total_vaccines_avail--;
         current_person->get_health()->take(vacc,day);
+	if(strcmp(Cognitive_model_type,"HBM") == 0) ip = queue.erase(ip);
       }
-      ip = queue.erase(ip);  // remove a vaccinated person from the queue whether or not they are compliant.
+      if(strcmp(Cognitive_model_type,"HBM") != 0)  ip = queue.erase(ip);  // remove a vaccinated person 
+                                                                          // from the queue whether or not they are compliant.
     }
     else{
       ip++;
@@ -248,7 +252,7 @@ void Vaccine_Manager::vaccinate(int day) {
       }
       return;
     }
-    if( number_vaccinated >= vaccination_capacity){
+    if( number_vaccinated > vaccination_capacity){
       if(Debug > 0){
         cout << "Vaccinated regular to capacity "<< n_r_vaccinated << " agents, for a total of "
         << number_vaccinated << " on day " << day << "\n";
