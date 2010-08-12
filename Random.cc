@@ -35,6 +35,20 @@ double draw_exponential(double lambda) {
   return (-log(u)/lambda);
 }
 
+#define TWOPI (2.0*3.141592653589)
+
+double draw_standard_normal() {
+  // Box-Muller method
+  double U = RANDOM();
+  double V = RANDOM();
+  return (sqrt(-2.0*log(U)) * cos(TWOPI*V));
+}
+
+double draw_normal(double mu, double sigma) {
+  return mu + sigma * draw_standard_normal();
+}
+
+
 using namespace std;
 /*
  algorithm poisson random number (Knuth):
