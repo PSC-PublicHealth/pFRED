@@ -22,6 +22,7 @@ int All_strains_antigenically_identical;
 int SEiIR_model;
 char VaccineTracefilebase[80];
 int Show_cases;
+int Show_HBM;
 int Incremental_Trace;
 int Trace_Headers;
 int Random_start_day;
@@ -53,6 +54,7 @@ void get_global_parameters() {
   get_param((char *) "all_strains_antigenically_identical", &All_strains_antigenically_identical);
   get_param((char *) "SEiIR_model", &SEiIR_model);
   get_param((char *) "show_cases", &Show_cases);
+  get_param((char *) "show_HBM", &Show_HBM);
   get_param((char *) "vaccine_tracefile",VaccineTracefilebase);
   get_param((char *) "incremental_trace", &Incremental_Trace);
   get_param((char *) "trace_headers", &Trace_Headers);

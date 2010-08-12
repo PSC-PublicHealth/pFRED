@@ -64,6 +64,7 @@ private:
   int clinical_incidents;
   int incident_infections;
   int total_incidents;
+  int vaccine_acceptance;
 };
 
 #endif // _FRED_SPREAD_H

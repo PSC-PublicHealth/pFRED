@@ -33,7 +33,7 @@ class Health_Belief_Model : public Cognitive_Model {
   // Memory
   double * cumm_susceptibility;			// per strain
   double * cumm_severity;			// per strain
-  double memory_momentum;
+  double memory_decay;
   int total_deaths;
 
   // Perceptions
@@ -43,6 +43,12 @@ class Health_Belief_Model : public Cognitive_Model {
   double * perceived_benefits_accept_vaccine;	// per strain
   double * perceived_barriers_accept_vaccine;	// per strain
   
+  // Thresholds for dichotomous variables
+  double susceptibility_threshold;
+  double severity_threshold;
+  double benefits_threshold;
+  double barriers_threshold;
+
   // Decisions
   bool * accept_vaccine;			// per strain
 

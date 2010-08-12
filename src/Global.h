@@ -34,6 +34,7 @@ extern int All_strains_antigenically_identical;
 extern int SEiIR_model;
 extern char VaccineTracefilebase[80];
 extern int Show_cases;
+extern int Show_HBM;
 extern int Incremental_Trace;
 extern int Trace_Headers;
 extern int Random_start_day;
