@@ -92,7 +92,7 @@ void Behavior::update_schedule(int day) {
     // decide whether to stay at home if symptomatic
     int is_symptomatic = self->is_symptomatic();
     if (is_symptomatic) {
-      if (self->get_cognition()->will_stay_home_if_sick()) {
+      if (RANDOM() < Strain::get_prob_stay_home()) {
 	schedule[0] = get_household();
 	scheduled_places = 1;
 	on_schedule[0] = 1;
@@ -198,11 +198,14 @@ void Behavior::recover(int strain) {
 }
 
 int Behavior::compliance_to_vaccination(){
+  return self->get_cognition()->will_accept_vaccine(0);
   // Get the populations compliance
+  /*
   double compliance = self->get_population()->get_vaccine_manager()->get_vaccine_compliance();
   if(RANDOM() < compliance){
     return 1;
   }
   return 0;
+  */
 }
 

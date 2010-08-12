@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -19,212 +19,195 @@
 
 int HBM_parameters_set = 0;
 
-// Thresholds
-double suscept_threshold[2];
-double severity_threshold[2];
-double benefits_threshold[2];
-double barriers_threshold[2];
+// Thresholds for dichotomous variables
+double susceptibility_threshold_distr[2];
+double severity_threshold_distr[2];
+double benefits_threshold_distr[2];
+double barriers_threshold_distr[2];
 double susceptibility_threshold;
+double severity_threshold;
+double benefits_threshold;
+double barriers_threshold;
 
-// Logistic approach -- see Durham 2010
-double base_coeff_accept_vaccine;
-double susc_coeff_accept_vaccine;
-double sev_coeff_accept_vaccine;
-double ben_coeff_accept_vaccine;
-double bar_coeff_accept_vaccine;
+// Dichotomous logistic odd-ratios -- see Durham 2010
+double base_accept_vaccine = 0.35;
+double susceptibility_accept_vaccine = 3.0;
+double severity_accept_vaccine = 1.93;
+double benefits_accept_vaccine = 1.0;
+double barriers_accept_vaccine = 0.65;
 
-double base_coeff_stay_home_if_sick;
-double susc_coeff_stay_home_if_sick;
-double sev_coeff_stay_home_if_sick;
-double ben_coeff_stay_home_if_sick;
-double bar_coeff_stay_home_if_sick;
+// memory decay factors
+double memory_momentum_lower;
+double memory_momentum_upper;
 
-// odd ratios
-double base_OR_accept_vaccine;
-double susc_OR_accept_vaccine;
-double sev_OR_accept_vaccine;
-double ben_OR_accept_vaccine;
-double bar_OR_accept_vaccine;
-
-// odd ratios
-double base_OR_stay_home_if_sick;
-double susc_OR_stay_home_if_sick;
-double sev_OR_stay_home_if_sick;
-double ben_OR_stay_home_if_sick;
-double bar_OR_stay_home_if_sick;
-
-
+// population stats
+double pop_cumm_susceptibility;
+double pop_susceptibility;
 
 Health_Belief_Model::Health_Belief_Model(Person *p) {
   self = p;
-  // int strains = p->get_population()->get_strains();
-  int strains = 1;
+  int strains = p->get_population()->get_strains();
 
   perceptions = new Perceptions(p);
   get_parameters();
-  memory_strength = 0.9;
+  memory_momentum = URAND(memory_momentum_lower,memory_momentum_upper);
 
-  susceptibility = new (nothrow) int [strains];
-  if (susceptibility == NULL) {
-    printf("Help! susceptibility allocation failure\n");
+  perceived_susceptibility = new (nothrow) int [strains];
+  if (perceived_susceptibility == NULL) {
+    printf("Help! sus allocation failure\n");
     abort();
   }
   
-  severity = new (nothrow) int [strains];
-  if (severity == NULL) {
-    printf("Help! severity allocation failure\n");
+  perceived_severity = new (nothrow) int [strains];
+  if (perceived_severity == NULL) {
+    printf("Help! sev allocation failure\n");
     abort();
   }
   
-  benefits_stay_home_if_sick = new (nothrow) double [strains];
-  if (benefits_stay_home_if_sick == NULL) {
+  perceived_benefits_accept_vaccine = new (nothrow) double [strains];
+  if (perceived_benefits_accept_vaccine == NULL) {
     printf("Help! benefits allocation failure\n");
     abort();
   }
   
-  barriers_stay_home_if_sick = new (nothrow) double [strains];
-  if (barriers_stay_home_if_sick == NULL) {
-    printf("Help! barrier allocation failure\n");
-    abort();
-  }
-  benefits_accept_vaccine = new (nothrow) double [strains];
-  if (benefits_accept_vaccine == NULL) {
-    printf("Help! benefits allocation failure\n");
-    abort();
-  }
-  
-  barriers_accept_vaccine = new (nothrow) double [strains];
-  if (barriers_accept_vaccine == NULL) {
+  perceived_barriers_accept_vaccine = new (nothrow) double [strains];
+  if (perceived_barriers_accept_vaccine == NULL) {
     printf("Help! barrier allocation failure\n");
     abort();
   }
 
-  memory_susceptibility = new (nothrow) double [strains];
-  if (memory_susceptibility == NULL) {
-    printf("Help! memory_susc allocation failure\n");
+  cumm_susceptibility = new (nothrow) double [strains];
+  if (cumm_susceptibility == NULL) {
+    printf("Help! cumm_susceptibility allocation failure\n");
     abort();
   }
 
-  memory_severity = new (nothrow) double [strains];
-  if (memory_severity == NULL) {
-    printf("Help! memory_severity allocation failure\n");
+  cumm_severity = new (nothrow) double [strains];
+  if (cumm_severity == NULL) {
+    printf("Help! cumm_severity allocation failure\n");
+    abort();
+  }
+
+  accept_vaccine = new (nothrow) bool [strains];
+  if (accept_vaccine == NULL) {
+    printf("Help! accept_vaccine allocation failure\n");
     abort();
   }
 }
 
 void Health_Belief_Model::get_parameters() {
-  char s[80];
   double coeff[5];
   int n;
-  // int strains = self->get_population()->get_strains();
-  int strains = 1;
 
   if (HBM_parameters_set) return;
 
-  Debug = 99;
-  n = get_param_vector((char *) "HBM_stay_home_if_sick", coeff);
-  if (n != 5) { printf("bad HBM_stay_home_if_sick"); abort(); }
-  base_coeff_stay_home_if_sick = coeff[0];
-  susc_coeff_stay_home_if_sick = coeff[1];
-  sev_coeff_stay_home_if_sick = coeff[2];
-  ben_coeff_stay_home_if_sick = coeff[3];
-  bar_coeff_stay_home_if_sick = coeff[4];
+  get_param((char *) "HBM_memory_momentum_lower", &memory_momentum_lower);
+  get_param((char *) "HBM_memory_momentum_upper", &memory_momentum_upper);
+
+  n = get_param_vector((char *) "HBM_susceptibility_threshold", susceptibility_threshold_distr);
+  if (n != 2) { printf("bad HBM_susceptibility_threshold\n"); abort(); }
+  
+  susceptibility_threshold = draw_normal(susceptibility_threshold_distr[0],susceptibility_threshold_distr[1]);
+
+  n = get_param_vector((char *) "HBM_severity_threshold", severity_threshold_distr);
+  if (n != 2) { printf("bad HBM_severity_threshold\n"); abort(); }
+  
+  severity_threshold = draw_normal(severity_threshold_distr[0],severity_threshold_distr[1]);
+
+  n = get_param_vector((char *) "HBM_benefits_threshold", benefits_threshold_distr);
+  if (n != 2) { printf("bad HBM_benefits_threshold\n"); abort(); }
+  
+  benefits_threshold = draw_normal(benefits_threshold_distr[0],benefits_threshold_distr[1]);
+
+  n = get_param_vector((char *) "HBM_barriers_threshold", barriers_threshold_distr);
+  if (n != 2) { printf("bad HBM_barriers_threshold\n"); abort(); }
+  
+  barriers_threshold = draw_normal(barriers_threshold_distr[0],barriers_threshold_distr[1]);
 
   n = get_param_vector((char *) "HBM_accept_vaccine", coeff);
   if (n != 5) { printf("bad HBM_accept_vaccine"); abort(); }
-  base_coeff_accept_vaccine = coeff[0];
-  susc_coeff_accept_vaccine = coeff[1];
-  sev_coeff_accept_vaccine = coeff[2];
-  ben_coeff_accept_vaccine = coeff[3];
-  bar_coeff_accept_vaccine = coeff[4];
+  base_accept_vaccine = coeff[0];
+  susceptibility_accept_vaccine = coeff[1];
+  severity_accept_vaccine = coeff[2];
+  benefits_accept_vaccine = coeff[3];
+  barriers_accept_vaccine = coeff[4];
 
-  n = get_param_vector((char *) "HBM_suscept_threshold", suscept_threshold);
-  if (n != 2) { printf("bad HBM_suscept_threshold\n"); abort(); }
-  
-  n = get_param_vector((char *) "HBM_severity_threshold", severity_threshold);
-  if (n != 2) { printf("bad HBM_severity_threshold\n"); abort(); }
-  
-  n = get_param_vector((char *) "HBM_benefits_threshold", barriers_threshold);
-  if (n != 2) { printf("bad HBM_benefits_threshold\n"); abort(); }
-  
-  n = get_param_vector((char *) "HBM_barriers_threshold", barriers_threshold);
-  if (n != 2) { printf("bad HBM_barriers_threshold\n"); abort(); }
-  
-  susceptibility_threshold = suscept_threshold[0];
   HBM_parameters_set = 1;
 }
 
 void Health_Belief_Model::reset() {
-  // int strains = self->get_population()->get_strains();
-  int strains = 1;
+  int strains = self->get_population()->get_strains();
   for (int s = 0; s < strains; s++) {
-    memory_susceptibility[s] = 0.0;
-    memory_severity[s] = 0.0;
+    cumm_susceptibility[s] = 0.0;
+    cumm_severity[s] = 0.0;
+    accept_vaccine[s] = false;
   }
-  stay_home_if_sick = false;
-  accept_vaccine = false;
-  avoid_crowds = false;
-  keep_kids_home = false;
-  wear_face_mask = false;
   total_deaths = 0;
+  pop_cumm_susceptibility = 0.0;
+  pop_susceptibility = 0.0;
+  if (self->get_id() == 0) {
+    FILE *fp;
+    fp = fopen("HBM_trace", "w");
+    fclose(fp);
+  }
 }
 
 void Health_Belief_Model::update(int day) {
-  // int strains = self->get_population()->get_strains();
-  int strains = 1;
+  int strains = self->get_population()->get_strains();
   for (int s = 0; s < strains; s++) {
+
     // perceptions of current state of epidemic
     int current_cases = perceptions->get_global_cases(s);
     int total_cases = self->get_population()->get_strain(s)->get_spread()->get_total_incidents();
     double current_deaths = self->get_population()->get_strain(s)->get_mortality_rate()*total_cases;
+    double current_incidence = (double) current_cases / (double) self->get_population()->get_pop_size();
     total_deaths += current_deaths;
     
     // update memory
-    memory_susceptibility[s] = memory_strength * memory_susceptibility[s] + current_cases;
-    memory_severity[s] = memory_strength * memory_severity[s] + current_deaths;
+    cumm_susceptibility[s] = memory_momentum * cumm_susceptibility[s] + current_incidence;
+    cumm_severity[s] = memory_momentum * cumm_severity[s] + current_deaths;
 
     // update HBM constructs
     
-    // perceived susceptibility
-    if (susceptibility_threshold <= memory_susceptibility[s])
-      susceptibility[s] = 1;
+    // perceived susibility
+    if (susceptibility_threshold <= cumm_susceptibility[s])
+      perceived_susceptibility[s] = 1;
     else
-      susceptibility[s] = 0;
+      perceived_susceptibility[s] = 0;
     
     // perceived severity
-    if (total_cases > 0 && severity_threshold[s] <= total_deaths/total_cases)
-      severity[s] = 1;
+    if (total_cases > 0 && severity_threshold <= total_deaths/total_cases)
+      perceived_severity[s] = 1;
     else
-      severity[s] = 0;
+      perceived_severity[s] = 0;
+    accept_vaccine[s] = decide_whether_to_accept_vaccine(s);
   }
-  stay_home_if_sick = decide_whether_to_stay_home_if_sick();
-  accept_vaccine = decide_whether_to_accept_vaccine();
-  avoid_crowds = decide_whether_to_avoid_crowds();
-  keep_kids_home = decide_whether_to_keep_kids_home();
-  wear_face_mask = decide_whether_to_wear_face_mask();
+  if (self->get_id() == 0 && day > 0) {
+    FILE *fp;
+    int n = self->get_population()->get_pop_size();
+    fp = fopen("HBM_trace", "a");
+    fprintf(fp, "%d %f %d\n", day, cumm_susceptibility[0], accept_vaccine[0]);
+    fprintf(fp, "%d %f %d\n", day+1, cumm_susceptibility[0], accept_vaccine[0]);
+    // fprintf(fp, "%f %f\n", pop_cumm_susceptibility/n, ((double)pop_susceptibility)/n);
+    fclose(fp);
+    pop_cumm_susceptibility = 0.0;
+    pop_susceptibility = 0.0;
+  }
+  pop_cumm_susceptibility += cumm_susceptibility[0];
+  pop_susceptibility += perceived_susceptibility[0];
 }
 
-bool Health_Belief_Model::decide_whether_to_stay_home_if_sick() {
-  // return (RANDOM() < self->get_population()->get_strain(0)->get_prob_stay_home());
-  return (RANDOM() < base_coeff_stay_home_if_sick);
+bool Health_Belief_Model::decide_whether_to_accept_vaccine(int s) {
+  double Odds;
+  Odds = base_accept_vaccine;
+  if (perceived_susceptibility[s] == 1)
+    Odds *= susceptibility_accept_vaccine;
+  if (perceived_severity[s] == 1)
+    Odds *= severity_accept_vaccine;
+  if (perceived_benefits_accept_vaccine[s] == 1)
+    Odds *= benefits_accept_vaccine;
+  if (perceived_barriers_accept_vaccine[s] == 1)
+    Odds *= barriers_accept_vaccine;
+  return (Odds > 1.0);
 }
-
-bool Health_Belief_Model::decide_whether_to_accept_vaccine() {
-  return false;
-}
-
-bool Health_Belief_Model::decide_whether_to_avoid_crowds() {
-  return false;
-}
-
-bool Health_Belief_Model::decide_whether_to_keep_kids_home() {
-  return false;
-}
-
-bool Health_Belief_Model::decide_whether_to_wear_face_mask() {
-  return false;
-}
-
-
-
 

@@ -22,11 +22,8 @@ class Cognition {
   ~Cognition() {}
   void reset() { model->reset(); }
   void update(int day) { model->update(day); }
-  bool will_stay_home_if_sick() { return model->will_stay_home_if_sick(); }
-  bool will_accept_vaccine() { return model->will_accept_vaccine(); }
-  bool will_avoid_crowds() { return model->will_avoid_crowds(); }
-  bool will_keep_kids_home() { return model->will_keep_kids_home(); }
-  bool will_wear_face_mask() { return model->will_wear_face_mask(); }
+  bool will_accept_vaccine(int strain) { return model->will_accept_vaccine(strain); }
+  bool will_keep_kids_home() { return false; }
  private:
   void get_parameters();
   Cognitive_Model * model;	     // cognitive model does all the real work
