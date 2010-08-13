@@ -38,7 +38,7 @@ int Policy::choose(Person* person, int strain, int current_day){
     int new_result = decision_list[i]->evaluate(person,strain,current_day);
     if(new_result == -1) return -1;
     else if(new_result > result) result = new_result;
-    cout <<"\nResult for decision "<<i<< " is "<< result;
+    //  cout <<"\nResult for decision "<<i<< " is "<< result;
   }
   return result;
 }   

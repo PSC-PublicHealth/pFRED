@@ -22,11 +22,12 @@ using namespace std;
 Timestep_Map::Timestep_Map(){
   values = NULL;
   name = "";
+  current_value = -1;
 }
 
 Timestep_Map::Timestep_Map(string _name){
   name = _name;
-  
+  current_value = 0;
   
   char map_file_param[255];
   char map_file_name[255];
@@ -78,15 +79,15 @@ Timestep_Map::~Timestep_Map() {
   if (values) delete values;
 }
 
-int Timestep_Map::get_value_for_timestep(int ts) const {
+int Timestep_Map::get_value_for_timestep(int ts) {
   map<int,int>::iterator itr;
   
   itr = values->find(ts);
   if (itr != values->end()) {
-    return itr->second;
+    current_value = itr->second;
   }
   
-  return 0;
+  return current_value;
 }
 
 void Timestep_Map::print() const {

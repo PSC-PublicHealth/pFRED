@@ -33,6 +33,16 @@ class Timestep_Map {
   // The input keyword will be the name of the structure_file.  So if the
   // name of the Map is passed as "primary_cases", the param keyword will
   // be "primary_cases_file".
+
+  // The format of the file is as such
+  // 0 100
+  // 1 0 
+  //   Should be interpreted as 100 on timestep 0, 0 on timestep 1 and beyond
+  //
+  // 0 100
+  // 100 0
+  //   Should be interpreted as 100 for timestep 0 - 100, and 0 on timestep 100 and above
+  // Updated: Shawn Brown
   
 public:
   Timestep_Map();	
@@ -40,12 +50,13 @@ public:
   ~Timestep_Map();
   
   // Utility Members
-  virtual int get_value_for_timestep(int ts) const; // returns the value for the given timestep
+  virtual int get_value_for_timestep(int ts); // returns the value for the given timestep
   virtual bool is_empty() const { return values->empty(); }
   virtual void print() const;
 private:
   map <int, int>* values;  // Map structure that holds <ts, value>
   string name;             // Name of the map
+  int current_value;       // Holds the current value of th map.
 };
 
 #endif _FRED_TIMESTEP_MAP_H
