@@ -195,9 +195,7 @@ void Population::reset(int run) {
 }
 
 void Population::update(int day) {
-  vacc_manager->update(day);
-  av_manager->update(day);
-  
+
   // update adults first, so that they can make decisions for minors
   for (int p = 0; p < pop_size; p++){
     if (18 <= pop[p]->get_age())
@@ -209,6 +207,9 @@ void Population::update(int day) {
     if (pop[p]->get_age() < 18)
       pop[p]->update(day);
   }
+  
+  vacc_manager->update(day);
+  av_manager->update(day);
   
   for (int s = 0; s < strains; s++) {
     strain[s].update(day);
