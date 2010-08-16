@@ -41,7 +41,7 @@ class Timestep_Map {
   //
   // 0 100
   // 100 0
-  //   Should be interpreted as 100 for timestep 0 - 100, and 0 on timestep 100 and above
+  //   Should be interpreted as 100 for timestep 0 - 99, and 0 on timestep 100 and above
   // Updated: Shawn Brown
   
 public:

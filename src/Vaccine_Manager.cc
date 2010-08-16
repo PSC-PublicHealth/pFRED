@@ -190,13 +190,16 @@ void Vaccine_Manager::vaccinate(int day) {
       }
       else {
 	// skip non-compliant person under HBM
-	if(strcmp(Cognitive_model_type,"HBM") == 0) ip++;
+	if(strcmp(Cognitive_model_type,"HBM") == 0) ++ip;
 	// remove non-compliant person if not HBM
 	else ip = priority_queue.erase(ip);
       }
     }
     else{
-      cout << "Vaccine not applicable for agent "<<current_person->get_id() << " " << current_person->get_age() << "\n";
+      if(Debug > 1) {
+	cout << "Vaccine not applicable for agent "<<current_person->get_id() << " " \
+	     << current_person->get_age() << "\n";
+      }
       ++ip;
     }
     
