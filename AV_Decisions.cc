@@ -48,7 +48,7 @@ Decision(p){
 int AV_Decision_Give_to_Sympt::evaluate(Person* person, int strain, int current_day){
   AV_Manager *avm = dynamic_cast < AV_Manager* > ( policy->get_manager() );
   Antiviral* av = avm->get_current_av();
-  int percentage = av->get_percent_symptomatics();
+  double percentage = av->get_percent_symptomatics();
   if(person->get_health()->get_strain_status(strain) == 'I'){
     person->get_health()->flip_checked_for_av(strain);
     double r = RANDOM(); // This is now a probability <=1.0;

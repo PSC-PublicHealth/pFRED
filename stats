@@ -63,7 +63,12 @@ for my $i (0..$rows-1) {
       $mean = $data[$i][$j]/$n if $n;
       # std dev
       my $stdev = 0;
-      $stdev = sqrt(($n*$sumsq[$i][$j] - $data[$i][$j]*$data[$i][$j])/($n*($n-1))) if $n>1;
+      if ($n*$sumsq[$i][$j] - $data[$i][$j]*$data[$i][$j] < 0) {
+	# underflow
+	$stdev = 0;
+      } else  {
+	$stdev = sqrt(($n*$sumsq[$i][$j] - $data[$i][$j]*$data[$i][$j])/($n*($n-1))) if $n>1;
+      }
       print "$mean $stdev ";
     }
     else {

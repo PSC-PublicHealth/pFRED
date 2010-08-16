@@ -49,7 +49,7 @@ public:
 	virtual int get_infectious_date() const { return exposure_date + latent_period; }
 	virtual int get_symptomatic_date() const { return get_infectious_date() + asymptomatic_period; }
 	virtual int get_recovery_date() const { return get_symptomatic_date() + symptomatic_period; }
-	virtual int get_susceptible_date() const { return get_recovery_date() + recovery_period; }
+	virtual int get_susceptible_date() const;
 	virtual void modify_asymptomatic_period(double multp, int cur_day);
 	virtual void modify_symptomatic_period(double multp, int cur_day);
 	virtual void modify_infectious_period(double multp, int cur_day);
