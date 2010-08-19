@@ -256,8 +256,8 @@ void Vaccine_Manager::vaccinate(int day) {
       ip++;
     }   
     if(total_vaccines_avail == 0) {
-      if(Debug > 0){
-        cout << "Vaccinated regular to stock out "<< n_r_vaccinated << " agents, for a total of "
+      if(Verbose > 0){
+        cout << "Vaccinated regular to stock_out "<< n_r_vaccinated << " agents, for a total of "
         << number_vaccinated << " on day " << day << "\n";
         cout << "Left in queues:  priority ("<< priority_queue.size() << ")    Regular ("
         <<queue.size() << ")\n";
@@ -265,7 +265,7 @@ void Vaccine_Manager::vaccinate(int day) {
       return;
     }
     if( number_vaccinated > vaccination_capacity){
-      if(Debug > 0){
+      if(Verbose > 0){
         cout << "Vaccinated regular to capacity "<< n_r_vaccinated << " agents, for a total of "
         << number_vaccinated << " on day " << day << "\n";
         cout << "Left in queues:  priority ("<< priority_queue.size() << ")    Regular ("
@@ -274,7 +274,7 @@ void Vaccine_Manager::vaccinate(int day) {
       return;
     }
   }
-  if(Debug > 0){
+  if(Verbose > 0){
     cout << "Vaccinated regular to population " << n_r_vaccinated 
     << " agents, for a total of "<< number_vaccinated << " on day " << day << "\n";
     cout << "Left in queues:  priority ("<< priority_queue.size() << ")    Regular ("
