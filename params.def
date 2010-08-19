@@ -11,8 +11,9 @@ reseed_day = -1
 popfile = alleg_pop.txt
 locfile = alleg_loc.txt
 profiles = profiles.txt
-outfile = OUT/out
-tracefile = OUT/trace
+outdir = OUT
+outfile = out
+tracefile = trace
 SEiIR_model = 0
 show_cases = 1
 show_HBM = 0
@@ -97,7 +98,7 @@ number_antivirals = 0
 
 # Vaccination Variables
 vaccine_file = none
-vaccine_tracefile = OUT/vacctr
+vaccine_tracefile = vacctr
 vaccine_compliance = 0.50
 vaccine_prioritize_by_age = 0
 vaccine_priority_age_low = 0

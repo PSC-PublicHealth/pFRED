@@ -29,14 +29,8 @@ int main(int argc, char* argv[]) {
     strcpy(Paramfile, "params");
   }
   printf("param file = %s\n", Paramfile);
-  strcpy(Outfilebase, "OUT/out");
-  // strcpy(Tracefilebase, "OUT/trace");
-  strcpy(VaccineTracefilebase, "OUT/vacctrace");
 	
-  // sprintf(filename, "status.txt");
-  // Statusfp = fopen(filename, "w");
   Statusfp = stdout;
-	
   fprintf(Statusfp, "FRED started  ");
   time(&clock);
   fprintf(Statusfp, "%s", ctime(&clock));
@@ -45,7 +39,6 @@ int main(int argc, char* argv[]) {
   for (int run = 0; run < Runs; run++) {
     run_sim(run);
   }
-  // fclose(Statusfp);
   return 0;
 }
 
@@ -53,15 +46,16 @@ void setup(char *paramfile) {
   mode_t mask;        // the user's current umask
   mode_t mode = 0777; // as a start
 	
-  // create the "OUT" directory, if it does not already exist
+  read_parameters(paramfile);
+  get_global_parameters();
+
+  // create the output directory, if it does not already exist
   mask = umask(0); // get the current mask, which reads and sets...
   umask(mask);     // so now we have to put it back
   mode ^= mask;    // apply the user's existing umask
-  if (0!=mkdir("OUT", mode) && EEXIST!=errno) // make it
-    err(errno, "mkdir(\"OUT\") failed");      // or die
-	
-  read_parameters(paramfile);
-  get_global_parameters();
+  if (0!=mkdir(Output_directory, mode) && EEXIST!=errno) // make it
+    err(errno, "mkdir(Output_directory) failed");      // or die
+
   Random_start_day = (Start_day > 6);
   Pop.get_parameters();
   Loc.get_location_parameters();
@@ -76,7 +70,7 @@ void run_sim(int run) {
   unsigned long new_seed;
   time_t clock;		      // current date
 	
-  sprintf(filename, "%s%d.txt", Outfilebase, run+1);
+  sprintf(filename, "%s/%s%d.txt", Output_directory, Outfilebase, run+1);
   Outfp = fopen(filename, "w");
   if (Outfp == NULL) {
     printf("Help! Can't open %s\n", filename);
@@ -85,7 +79,7 @@ void run_sim(int run) {
 	
   Tracefp = NULL;
   if (strcmp(Tracefilebase, "none") != 0) {
-    sprintf(filename, "%s%d.txt", Tracefilebase, run+1);
+    sprintf(filename, "%s/%s%d.txt", Output_directory, Tracefilebase, run+1);
     Tracefp = fopen(filename, "w");
     if (Tracefp == NULL) {
       printf("Help! Can't open %s\n", filename);
@@ -93,7 +87,7 @@ void run_sim(int run) {
     }
   }
 	
-  sprintf(filename, "%s%d.txt", VaccineTracefilebase, run+1);
+  sprintf(filename, "%s/%s%d.txt", Output_directory, VaccineTracefilebase, run+1);
   VaccineTracefp = fopen(filename, "w");
   if (VaccineTracefp == NULL) {
     printf("Help! Can't open %s\n", filename);
@@ -113,8 +107,7 @@ void run_sim(int run) {
   Loc.reset_locations(run);
   Pop.reset(run);
   if (Random_start_day) {
-    // start on a random day of the week
-    // Start_day = IRAND(0, 6);
+    // cycle through days of the week for start day
     Start_day = run % 7;
   }
 	

@@ -16,6 +16,7 @@ int Days;
 unsigned long Seed;
 int Start_day;
 int Reseed_day;
+char Output_directory[256];
 char Outfilebase[80];
 char Tracefilebase[80];
 int All_strains_antigenically_identical;
@@ -49,6 +50,7 @@ void get_global_parameters() {
   get_param((char *) "seed", &Seed);
   get_param((char *) "start_day", &Start_day);
   get_param((char *) "reseed_day", &Reseed_day);
+  get_param((char *) "outdir", Output_directory);
   get_param((char *) "outfile", Outfilebase);
   get_param((char *) "tracefile", Tracefilebase);
   get_param((char *) "all_strains_antigenically_identical", &All_strains_antigenically_identical);
