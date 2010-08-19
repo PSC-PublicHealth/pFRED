@@ -385,9 +385,12 @@ void Health::take(Vaccine* vaccine, int day){
   int age = self->get_age();
   vaccine_health.push_back(new Vaccine_Health(day,vaccine,age,this));
   
-  fprintf(VaccineTracefp," id %7d vaccid %3d",self->get_id(),vaccine_health[vaccine_health.size()-1]->get_vaccine()->get_ID());
-  vaccine_health[vaccine_health.size()-1]->printTrace();
-  fprintf(VaccineTracefp,"\n");
+  if (VaccineTracefp != NULL) {
+    fprintf(VaccineTracefp," id %7d vaccid %3d",self->get_id(),vaccine_health[vaccine_health.size()-1]->get_vaccine()->get_ID());
+    vaccine_health[vaccine_health.size()-1]->printTrace();
+    fprintf(VaccineTracefp,"\n");
+  }
+
   return;
 }
 

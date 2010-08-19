@@ -87,11 +87,14 @@ void run_sim(int run) {
     }
   }
 	
-  sprintf(filename, "%s/%s%d.txt", Output_directory, VaccineTracefilebase, run+1);
-  VaccineTracefp = fopen(filename, "w");
-  if (VaccineTracefp == NULL) {
-    printf("Help! Can't open %s\n", filename);
-    abort();
+  VaccineTracefp = NULL;
+  if (strcmp(VaccineTracefilebase, "none") != 0) {
+    sprintf(filename, "%s/%s%d.txt", Output_directory, VaccineTracefilebase, run+1);
+    VaccineTracefp = fopen(filename, "w");
+    if (VaccineTracefp == NULL) {
+      printf("Help! Can't open %s\n", filename);
+      abort();
+    }
   }
 	
   fprintf(Statusfp, "\nStarting run %d\n", run);
