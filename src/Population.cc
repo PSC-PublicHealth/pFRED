@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -58,7 +58,7 @@ void Population::get_parameters() {
   Strains = strains;
   
   int num_mutation_params =
-  get_param_matrix((char *) "mutation_prob", &mutation_prob);
+    get_param_matrix((char *) "mutation_prob", &mutation_prob);
   if (num_mutation_params != strains) {
     fprintf(Statusfp,
             "Improper mutation matrix: expected square matrix of %i rows, found %i",
@@ -235,51 +235,53 @@ void Population::report(int day) {
 }
 
 void Population::print(int incremental, int day) {
-	if (!incremental){
-		if (Trace_Headers) fprintf(Tracefp, "# All agents, by ID\n");
-		for (int p = 0; p < pop_size; p++)
-			for (int i=0; i<strains; i++)
-				pop[p]->print(i);
-	} else if (1==incremental) {
-		ChangeMap::const_iterator iter;
+  if (Tracefp == NULL) return;
+
+  if (!incremental){
+    if (Trace_Headers) fprintf(Tracefp, "# All agents, by ID\n");
+    for (int p = 0; p < pop_size; p++)
+      for (int i=0; i<strains; i++)
+	pop[p]->print(i);
+  } else if (1==incremental) {
+    ChangeMap::const_iterator iter;
 		
-		if (Trace_Headers){
-			if (day<Days)
-				fprintf(Tracefp, "# Incremental Changes (every %d): Day %3d\n", Incremental_Trace, day);
-			else
-				fprintf(Tracefp, "# End-of-simulation: Remaining unreported changes\n");
+    if (Trace_Headers){
+      if (day<Days)
+	fprintf(Tracefp, "# Incremental Changes (every %d): Day %3d\n", Incremental_Trace, day);
+      else
+	fprintf(Tracefp, "# End-of-simulation: Remaining unreported changes\n");
 			
-			if (! incremental_changes.size()){
-				fprintf(Tracefp, "# <LIST-EMPTY>\n");
-				return;
-			}
-		}
+      if (! incremental_changes.size()){
+	fprintf(Tracefp, "# <LIST-EMPTY>\n");
+	return;
+      }
+    }
 		
-		for (iter = this->incremental_changes.begin();
+    for (iter = this->incremental_changes.begin();
          iter != this->incremental_changes.end();
          iter++){
-			(iter->first)->print(0); // the map key is a Person*
-		}
-	} else {
-		ChangeMap::const_iterator iter;
-		if (Trace_Headers){
-			fprintf(Tracefp, "# Agents that never changed\n");
-			if (! never_changed.size()){
-				fprintf(Tracefp, "# <LIST-EMPTY>\n");
-				return;
-			}
-		}
+      (iter->first)->print(0); // the map key is a Person*
+    }
+  } else {
+    ChangeMap::const_iterator iter;
+    if (Trace_Headers){
+      fprintf(Tracefp, "# Agents that never changed\n");
+      if (! never_changed.size()){
+	fprintf(Tracefp, "# <LIST-EMPTY>\n");
+	return;
+      }
+    }
 		
-		for (iter = this->never_changed.begin();
+    for (iter = this->never_changed.begin();
          iter != this->never_changed.end();
          iter++){
-			(iter->first)->print(0); // the map key is a Person*
-		}
-	}
+      (iter->first)->print(0); // the map key is a Person*
+    }
+  }
 	
-	// empty out the incremental list of Person's who have changed
-	if (-1<incremental)
-		incremental_changes.clear();
+  // empty out the incremental list of Person's who have changed
+  if (-1<incremental)
+    incremental_changes.clear();
 }
 
 void Population::end_of_run() {

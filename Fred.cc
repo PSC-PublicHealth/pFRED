@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
   }
   printf("param file = %s\n", Paramfile);
   strcpy(Outfilebase, "OUT/out");
-  strcpy(Tracefilebase, "OUT/trace");
+  // strcpy(Tracefilebase, "OUT/trace");
   strcpy(VaccineTracefilebase, "OUT/vacctrace");
 	
   // sprintf(filename, "status.txt");
@@ -83,11 +83,14 @@ void run_sim(int run) {
     abort();
   }
 	
-  sprintf(filename, "%s%d.txt", Tracefilebase, run+1);
-  Tracefp = fopen(filename, "w");
-  if (Tracefp == NULL) {
-    printf("Help! Can't open %s\n", filename);
-    abort();
+  Tracefp = NULL;
+  if (strcmp(Tracefilebase, "none") != 0) {
+    sprintf(filename, "%s%d.txt", Tracefilebase, run+1);
+    Tracefp = fopen(filename, "w");
+    if (Tracefp == NULL) {
+      printf("Help! Can't open %s\n", filename);
+      abort();
+    }
   }
 	
   sprintf(filename, "%s%d.txt", VaccineTracefilebase, run+1);
@@ -133,7 +136,7 @@ void run_sim(int run) {
   }
   Pop.end_of_run();
   fclose(Outfp);
-  fclose(Tracefp);
+  if (Tracefp != NULL) fclose(Tracefp);
 }
 
 void cleanup(int run) {

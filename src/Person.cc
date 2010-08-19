@@ -53,6 +53,7 @@ void Person::setup(int index, int age, char sex, int marital, int occ,
 }
 
 void Person::print(int strain) const {
+  if (Tracefp == NULL) return;
   fprintf(Tracefp, "%i %c id %7d  a %3d  s %c %c ",
           strain, health->get_strain_status(strain), idx,
           demographics->get_age(),
@@ -78,7 +79,7 @@ void Person::print(int strain) const {
   //     fprintf(Tracefp," %2d %2d %2d",health->get_vaccine_stat(i)->get_vaccination_day(),
   // 	    health->get_vaccine_stat(i)->is_effective(),health->get_vaccine_stat(i)->get_current_dose());
   fprintf(Tracefp,"\n");
-  //   fflush(Tracefp);
+  fflush(Tracefp);
 }
 
 void Person::print_out(int strain) const {
