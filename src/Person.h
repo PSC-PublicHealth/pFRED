@@ -31,7 +31,7 @@ class Person {
 public:
   Person();
   virtual ~Person();
-  virtual void setup(int index, int age, char sex, int marital, int occ, int profession, Place **favorite_places, int profile, Population* pop);
+  virtual void setup(int index, int age, char sex, int marital, int profession, Place **favorite_places, int profile, Population* pop);
   virtual void reset();
   virtual void update(int day);
   virtual void print(int strain) const;
@@ -54,7 +54,6 @@ public:
   virtual int get_id() const { return idx; }
   virtual int get_age() const;
   virtual char get_sex() const;
-  virtual char get_occupation() const;
   virtual char get_marital_status() const;
   virtual int get_profession() const;
   virtual int get_places() const;

@@ -128,14 +128,14 @@ void Population::read_population() {
   if (pop == NULL) { printf ("Help! Pop allocation failure\n"); exit(1); }
   
   for (int p = 0; p < pop_size; p++) {
-    int id, age, married, occ, prof, house, hood;
+    int id, age, married, prof, house, hood;
     int school, classroom, work, office, profile;
     char sex;
     
     // fprintf(Statusfp, "reading person %d\n", p); fflush(Statusfp); // DEBUG
-    if (fscanf(fp, "%d %d %c %d %d %d %d %d %d %d %d %d %d",
-               &id, &age, &sex, &married, &occ, &prof, &house, &hood, &school,
-               &classroom, &work, &office, &profile) != 13) {
+    if (fscanf(fp, "%d %d %c %d %d %d %d %d %d %d %d %d %*s",
+               &id, &age, &sex, &married, &prof, &house, &hood, &school,
+               &classroom, &work, &office, &profile) != 12) {
       fprintf(Statusfp, "Help! Read failure for person %d\n", p);
       abort();
     }
@@ -148,7 +148,7 @@ void Population::read_population() {
       Loc.get_location(work),
       Loc.get_location(office)
     }; 
-    pop[p]->setup(id, age, sex, married, occ, prof, favorite_place, profile, this);
+    pop[p]->setup(id, age, sex, married, prof, favorite_place, profile, this);
     pop[p]->reset();
   }
   fclose(fp);

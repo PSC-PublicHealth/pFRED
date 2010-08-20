@@ -51,10 +51,10 @@ mutation_prob = 1 0.0
 household_contacts[0] = 0.4
 neighborhood_contacts[0] = 140
 community_contacts[0] = 0
-school_contacts[0] = 5
-classroom_contacts[0] = 25
-workplace_contacts[0] = 4
-office_contacts[0] = 5
+school_contacts[0] = 2.8
+classroom_contacts[0] = 14
+workplace_contacts[0] = 3
+office_contacts[0] = 7.5
 
 # groups = children adults
 household_prob[0] = 4 0.6 0.3 0.3 0.4

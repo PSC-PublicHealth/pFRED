@@ -19,7 +19,6 @@
 #include "Place.h"
 #include "Strain.h"
 #include "Population.h"
-//#include "Vaccine_Health.h"
 #include "AV_Health.h"
 #include "Age_Map.h"
 
@@ -41,12 +40,12 @@ Person::~Person() {
   delete cognition;
 }
 
-void Person::setup(int index, int age, char sex, int marital, int occ,
+void Person::setup(int index, int age, char sex, int marital,
                    int profession, Place **favorite_places, int profile, Population* Pop) 
 {
   idx = index;
   pop = Pop;
-  demographics = new Demographics(this, age,sex,'U',marital,profession);
+  demographics = new Demographics(this, age,sex,marital,profession);
   health = new Health(this);
   behavior = new Behavior(this,favorite_places,profile);
   cognition = new Cognition(this);
@@ -54,11 +53,11 @@ void Person::setup(int index, int age, char sex, int marital, int occ,
 
 void Person::print(int strain) const {
   if (Tracefp == NULL) return;
-  fprintf(Tracefp, "%i %c id %7d  a %3d  s %c %c ",
+  fprintf(Tracefp, "%i %c id %7d  a %3d  s %c %d ",
           strain, health->get_strain_status(strain), idx,
           demographics->get_age(),
           demographics->get_sex(),
-          demographics->get_occupation());
+          demographics->get_profession());
   fprintf(Tracefp, "exp: %2d  inf: %2d  rem: %2d ",
           health->get_exposure_date(strain), health->get_infectious_date(strain), health->get_recovered_date(strain));
   fprintf(Tracefp, "places %d ", behavior->get_favorite_places());
@@ -83,11 +82,11 @@ void Person::print(int strain) const {
 }
 
 void Person::print_out(int strain) const {
-  fprintf(stdout, "%c id %7d  a %3d  s %c %c ",
+  fprintf(stdout, "%c id %7d  a %3d  s %c %d ",
           health->get_strain_status(strain), idx,
           demographics->get_age(),
           demographics->get_sex(),
-          demographics->get_occupation());
+          demographics->get_profession());
   fprintf(stdout, "exp: %2d  inf: %2d  rem: %2d ",
           health->get_exposure_date(strain), health->get_infectious_date(strain), health->get_recovered_date(strain));
   fprintf(stdout, "places %d ", behavior->get_favorite_places());
@@ -184,10 +183,6 @@ int Person::get_age() const {
 
 char Person::get_sex() const {
   return demographics->get_sex();
-}
-
-char Person::get_occupation() const {
-  return demographics->get_occupation();
 }
 
 char Person::get_marital_status() const {
