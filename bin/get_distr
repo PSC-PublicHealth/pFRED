@@ -2,22 +2,21 @@
 my ($n) = @ARGV;
 $n = 1000000 if not $n;
 open FH, ">distr";
-my $z = 0;
 for my $i (1..20) {
   if (-e "OUT/trace$i.txt") {
-    #print "distr for run $i\n";
+    # print "distr for run $i\n";
     `grep -v 'S id' OUT/trace$i.txt | grep -v 'M id' > tmp`;
     $n = `wc -l tmp | awk '{print $1}'`;
     my @places = qw/N H C S O W/;
     my $tot = 0.0;
     for my $p (@places) {
+      # print "p = $p  n = $n\n";
       my $x = `grep "at $p" tmp | wc -l | awk '{print $1}' `;
       my $ave = 100.0 * $x / $n;
       $tot += $ave;
       printf FH "%6.2f ", $ave;
     }
     printf FH "\n";
-    $z = $i;
     unlink "tmp";
   }
 }
