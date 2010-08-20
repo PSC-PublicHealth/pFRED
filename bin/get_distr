@@ -1,11 +1,11 @@
 #!/usr/bin/perl
-my ($n) = @ARGV;
-$n = 1000000 if not $n;
+my ($dir) = @ARGV;
+$dir = "OUT" if not $dir;
 open FH, ">distr";
 for my $i (1..20) {
-  if (-e "OUT/trace$i.txt") {
+  if (-e "$dir/trace$i.txt") {
     # print "distr for run $i\n";
-    `grep -v 'S id' OUT/trace$i.txt | grep -v 'M id' > tmp`;
+    `grep -v 'S id' $dir/trace$i.txt | grep -v 'M id' > tmp`;
     $n = `wc -l tmp | awk '{print $1}'`;
     my @places = qw/N H C S O W/;
     my $tot = 0.0;
