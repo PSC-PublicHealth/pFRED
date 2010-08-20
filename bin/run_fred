@@ -177,9 +177,7 @@ mkdir $version or die "Can't make directory $version\n";
 `cp $params $meta/PARAMS`;
 
 # redirect output parameters
-`./ch outfile $out/out $params >> $logfile`;
-`./ch tracefile $out/trace $params >> $logfile`;
-`./ch vaccine_tracefile $out/vacctr $params >> $logfile`;
+`./ch outdir $out $params >> $logfile`;
 
 # update run status
 `echo RUNNING > $meta/STATUS`;
