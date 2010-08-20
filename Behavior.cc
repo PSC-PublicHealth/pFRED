@@ -115,14 +115,16 @@ void Behavior::update_schedule(int day) {
     // if not staying home or traveling, consult usual schedule
     if (scheduled_places == 0) {
       for (int p = 0; p < favorite_places; p++) {
+	if (favorite_place[p] == NULL) continue;
+
 	// visit classroom or office iff going to school or work
 	if (p == 3 || p == 5) {
 	  if (on_schedule[p-1]) {
 	    on_schedule[p] = 1;
 	    schedule[scheduled_places++] = favorite_place[p];
 	  }
-	} else if (favorite_place[p] != NULL &&
-                   is_visited(p, profile, day_of_week)) {
+	}
+	else if (is_visited(p, profile, day_of_week)) {
 	  on_schedule[p] = 1;
 	  schedule[scheduled_places++] = favorite_place[p];
 	}
