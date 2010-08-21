@@ -177,7 +177,7 @@ mkdir $version or die "Can't make directory $version\n";
 `cp $params $meta/PARAMS`;
 
 # redirect output parameters
-`./ch outdir $out $params >> $logfile`;
+`$FRED/bin/ch outdir $out $params >> $logfile`;
 
 # update run status
 `echo RUNNING > $meta/STATUS`;
@@ -217,9 +217,28 @@ exit;
 
 sub same_params {
   my ($p1, $p2) = @_;
-  return 0;
+  my $vac_file_line;
+  my ($name, $vac_file1, $vac_file2);
+#  return 0;
   my $diff = `diff -b -B -q $p1 $p2`;
   return 1 if $diff eq "";
+
+  #try the diff but ignore lines with vaccination_capacity_file
+  $diff = `diff -b -B -q -I "vaccination_capacity_file" $p1 $p2`;
+  return 0 if !($diff eq "");
+
+  $vac_file_line = `grep "vaccination_capacity_file" $p1`;
+  ($name, $vac_file1) = split(/\s+=\s+/, $vac_file_line);
+  chomp($vac_file1);
+
+  $vac_file_line = `grep "vaccination_capacity_file" $p2`;
+  ($name, $vac_file2) = split(/\s+=\s+/, $vac_file_line);
+  chomp($vac_file2);
+
+  #diff the vaccine_capacity_files themselves
+  $diff = `diff -b -B -q $vac_file1 $vac_file2`;
+  return 1 if $diff eq "";
+
+  #not the same return 0 (false)
   return 0;
 }
-
