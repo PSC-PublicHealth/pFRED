@@ -27,7 +27,7 @@ extern int Runs;
 extern int Days;
 extern int Reseed_day;
 extern unsigned long Seed;
-extern int Start_day;
+extern int Start_day_of_week;
 extern char Output_directory[256];
 extern char Outfilebase[80];
 extern char Tracefilebase[80];

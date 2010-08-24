@@ -56,7 +56,7 @@ void setup(char *paramfile) {
   if (0!=mkdir(Output_directory, mode) && EEXIST!=errno) // make it
     err(errno, "mkdir(Output_directory) failed");      // or die
 
-  Random_start_day = (Start_day > 6);
+  Random_start_day = (Start_day_of_week > 6);
   Pop.get_parameters();
   Loc.get_location_parameters();
   Loc.setup_locations();
@@ -116,7 +116,7 @@ void run_sim(int run) {
   Pop.reset(run);
   if (Random_start_day) {
     // cycle through days of the week for start day
-    Start_day = run % 7;
+    Start_day_of_week = run % 7;
   }
 	
   for (int day = 0; day < Days; day++) {

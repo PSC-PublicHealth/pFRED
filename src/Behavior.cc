@@ -97,7 +97,7 @@ void Behavior::update_schedule(int day) {
     for (int p = 0; p < favorite_places; p++) {
       on_schedule[p] = 0;
     }
-    day_of_week = (day+Start_day) % DAYS_PER_WEEK;
+    day_of_week = (day + Start_day_of_week) % DAYS_PER_WEEK;
 		
     // decide whether to stay at home if symptomatic
     int is_symptomatic = self->is_symptomatic();

@@ -14,7 +14,7 @@ int Test;
 int Runs;
 int Days;
 unsigned long Seed;
-int Start_day;
+int Start_day_of_week;
 int Reseed_day;
 char Output_directory[256];
 char Outfilebase[80];
@@ -48,7 +48,7 @@ void get_global_parameters() {
   get_param((char *) "runs", &Runs);
   get_param((char *) "days", &Days);
   get_param((char *) "seed", &Seed);
-  get_param((char *) "start_day", &Start_day);
+  get_param((char *) "start_day_of_week", &Start_day_of_week);
   get_param((char *) "reseed_day", &Reseed_day);
   get_param((char *) "outdir", Output_directory);
   get_param((char *) "outfile", Outfilebase);
