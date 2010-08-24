@@ -14,14 +14,14 @@
 
 #include "Place.h"
 
-extern double * School_contacts_per_day;
-extern double *** School_contact_prob;
-extern char School_closure_policy[];
-extern int School_closure_day;
-extern double School_closure_threshold;
-extern int School_closure_period;
-extern int School_closure_delay;
-extern int School_parameters_set;
+extern double * school_contacts_per_day;
+extern double *** school_contact_prob;
+extern char school_closure_policy[];
+extern int school_closure_day;
+extern double school_closure_threshold;
+extern int school_closure_period;
+extern int school_closure_delay;
+extern int school_parameters_set;
 
 class School : public Place {
 public: 
@@ -36,4 +36,3 @@ public:
 };
 
 #endif // _FRED_SCHOOL_H
-
