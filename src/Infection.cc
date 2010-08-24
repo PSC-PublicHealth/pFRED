@@ -38,6 +38,7 @@ Infection::Infection(Strain *strain, Person* infector, Person* host, Place* plac
   infectivity = 0.0;
   susceptibility = 0.0;
   symptoms = 0.0;
+  infection_model = strain->get_infection_model();
 	
   // chrono
   exposure_date = day;
@@ -45,7 +46,7 @@ Infection::Infection(Strain *strain, Person* infector, Person* host, Place* plac
   latent_period = strain->get_days_latent();
   recovery_period = strain->get_days_recovered();
 	
-  if (SEiIR_model) { // SEiIR model
+  if (infection_model == SEQUENTIAL) { // SEiIR model
     asymptomatic_period = strain->get_days_asymp();
     if (will_be_symptomatic)
       symptomatic_period = strain->get_days_symp();
@@ -60,7 +61,7 @@ Infection::Infection(Strain *strain, Person* infector, Person* host, Place* plac
 }
 
 void Infection::become_infectious() {
-  if (SEiIR_model) { // SEiIR model
+  if (infection_model == SEQUENTIAL) { // SEiIR model
     status = 'i';
     infectivity = strain->get_asymp_infectivity();
     symptoms = 0.0;
@@ -108,7 +109,7 @@ void Infection::update(int today) {
     status = get_strain_status();
   }
 	
-  if (SEiIR_model) {  // SEiIR model
+  if (infection_model == SEQUENTIAL) {  // SEiIR model
     if (status == 'i' && today == get_symptomatic_date()) {
       host->become_symptomatic(strain);
       status = get_strain_status();

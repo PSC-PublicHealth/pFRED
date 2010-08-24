@@ -18,7 +18,10 @@ class Strain;
 class Antiviral;
 class Health;
 
-extern int SEiIR_model;
+#define BIFURCATING 0
+#define SEQUENTIAL 1
+
+extern int Infection_model;
 
 class Infection {
 public:
@@ -97,6 +100,7 @@ private:
 	double infectivity;
 	double infectivity_multp;
 	double symptoms;
+	int infection_model;
 	
 protected:
 	// for mocks

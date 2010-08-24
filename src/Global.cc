@@ -20,7 +20,6 @@ char Output_directory[256];
 char Outfilebase[80];
 char Tracefilebase[80];
 int All_strains_antigenically_identical;
-int SEiIR_model;
 char VaccineTracefilebase[80];
 int Incremental_Trace;
 int Trace_Headers;
@@ -54,7 +53,6 @@ void get_global_parameters() {
   get_param((char *) "outfile", Outfilebase);
   get_param((char *) "tracefile", Tracefilebase);
   get_param((char *) "all_strains_antigenically_identical", &All_strains_antigenically_identical);
-  get_param((char *) "SEiIR_model", &SEiIR_model);
   get_param((char *) "vaccine_tracefile",VaccineTracefilebase);
   get_param((char *) "incremental_trace", &Incremental_Trace);
   get_param((char *) "trace_headers", &Trace_Headers);

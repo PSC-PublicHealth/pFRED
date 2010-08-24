@@ -51,6 +51,7 @@ public:
   virtual int get_max_days() { return max_days; }
 	
   virtual int get_id() { return id; }
+  virtual int get_infection_model() { return infection_model; }
   virtual double get_transmissibility() { return transmissibility; }
   virtual double get_prob_symptomatic() { return prob_symptomatic; }
   virtual double get_attack_rate();
@@ -80,6 +81,7 @@ private:
   double prob_symptomatic;
   double asymp_infectivity;
   double symp_infectivity;
+  int infection_model;
   int max_days_latent;
   int max_days_incubating;
   int max_days_asymp;

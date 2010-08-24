@@ -119,6 +119,9 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   sprintf(s, "immunity_loss_rate[%d]", id);
   get_param(s, &immunity_loss_rate);
   
+  sprintf(s, "infection_model[%d]", id);
+  get_param(s, &infection_model);
+  
   get_param((char *) "prob_stay_home", &Prob_stay_home);
   
   if (max_days_asymp > max_days_symp) {

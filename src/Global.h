@@ -32,7 +32,6 @@ extern char Output_directory[256];
 extern char Outfilebase[80];
 extern char Tracefilebase[80];
 extern int All_strains_antigenically_identical;
-extern int SEiIR_model;
 extern char VaccineTracefilebase[80];
 extern int Incremental_Trace;
 extern int Trace_Headers;

@@ -14,7 +14,6 @@ profiles = profiles.txt
 outdir = OUT
 outfile = out
 tracefile = trace
-SEiIR_model = 0
 random_location_order = 0
 quality_control = 1
 
@@ -29,6 +28,10 @@ primary_cases_file[0] = primary_case_schedule-0.txt
 trans[0] = 1.0
 symp[0] = 0.67
 mortality_rate[0] = 0.0
+# infection model: BIFURCATING = 0 , SEQUENTIAL = 1
+# Bifurcating model: each agent is either SEIR or SEiR
+# Sequential model: each agent is SEiIR
+infection_model[0] = 0
 days_latent[0] = 3       0.0 0.8 1.0
 days_incubating[0] = 4   0.0 0.3 0.8 1.0
 days_asymp[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
