@@ -65,6 +65,11 @@ private:
   int incident_infections;
   int total_incidents;
   int vaccine_acceptance;
+  int * new_cases;
+  vector <Person *> infected;
+  int r_index;
+  double RR;
+  int NR;
 };
 
 #endif // _FRED_SPREAD_H

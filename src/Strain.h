@@ -48,6 +48,7 @@ public:
   virtual double get_asymp_infectivity() {return asymp_infectivity;}
   virtual double get_symp_infectivity() {return symp_infectivity;}
   virtual double get_mortality_rate() {return mortality_rate;}
+  virtual int get_max_days() { return max_days; }
 	
   virtual int get_id() { return id; }
   virtual double get_transmissibility() { return transmissibility; }
@@ -83,6 +84,7 @@ private:
   int max_days_incubating;
   int max_days_asymp;
   int max_days_symp;
+  int max_days;
   double *days_latent;
   double *days_incubating;
   double *days_asymp;

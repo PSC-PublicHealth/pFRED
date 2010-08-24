@@ -59,6 +59,16 @@ void Behavior::reset() {
 }
 
 void Behavior::update(int day) {
+  // testing update costs
+  if (0) {
+    int strains = self->get_population()->get_strains();
+    for (int strain = 0; strain < strains; strain++) {
+      for (int p = 0; p < favorite_places; p++) {
+	if (favorite_place[p] == NULL) continue;
+	favorite_place[p]->add_visitor(self);
+      }
+    }
+  }
 }
 
 void Behavior::print_schedule() {
@@ -199,15 +209,15 @@ void Behavior::recover(int strain) {
   }
 }
 
+
 int Behavior::compliance_to_vaccination(){
-  return self->get_cognition()->will_accept_vaccine(0);
-  // Get the populations compliance
-  /*
-  double compliance = self->get_population()->get_vaccine_manager()->get_vaccine_compliance();
-  if(RANDOM() < compliance){
-    return 1;
-  }
-  return 0;
-  */
+    return self->get_cognition()->will_accept_vaccine(0);
+    /*
+      double compliance = self->get_population()->get_vaccine_manager()->get_vaccine_compliance();
+      if(RANDOM() < compliance){
+      return 1;
+      }
+      return 0;
+    */
 }
 

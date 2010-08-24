@@ -32,8 +32,7 @@ public:
   virtual void recover(int strain);
   virtual int get_profile() { return profile; }
   virtual int get_favorite_places() { return favorite_places; }
-  virtual int compliance_to_vaccination(); // This will currently look up the global vaccine compliance.
-						// This is really a place holder for a more sophistocated model.
+  virtual int compliance_to_vaccination();
   virtual Place * get_household() { return favorite_place[0]; }
   virtual Place * get_neighborhood() { return favorite_place[1]; }
   virtual Place * get_school() { return favorite_place[2]; }
@@ -54,5 +53,6 @@ private:
 protected:
   Behavior() { }
 };
+
 
 #endif // _FRED_BEHAVIOR_H

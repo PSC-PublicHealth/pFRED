@@ -14,6 +14,9 @@
 
 #include "Cognitive_Model.h"
 
+#include "Global.h"
+#include "Random.h"
+
 class Person;
 
 class Random_Cognitive_Model : public Cognitive_Model {
@@ -27,6 +30,13 @@ class Random_Cognitive_Model : public Cognitive_Model {
  protected:
   ~Random_Cognitive_Model() {}
 };
+
+
+extern double Prob_accept_vaccine;
+
+inline bool Random_Cognitive_Model::will_accept_vaccine(int strain) {
+  return (RANDOM() < Prob_accept_vaccine);
+}
 
 #endif // _FRED_RANDOM_COGNITIVE_MODEL_H
 

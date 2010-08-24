@@ -40,6 +40,7 @@ Strain::Strain() {
   max_days_incubating = -1;
   max_days_asymp = -1;
   max_days_symp = -1;
+  max_days = 0;
   days_latent = NULL;
   days_incubating = NULL;
   days_asymp = NULL;
@@ -120,6 +121,13 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   
   get_param((char *) "prob_stay_home", &Prob_stay_home);
   
+  if (max_days_asymp > max_days_symp) {
+    max_days = max_days_latent + max_days_asymp;
+  }
+  else {
+    max_days = max_days_latent + max_days_symp;
+  }
+
   mutation_prob = mut_prob;
   population = pop;
 	
@@ -141,7 +149,7 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   residual_immunity->read_from_input(ss.str());
   residual_immunity->print();
   
-  // Define at risk people	n		
+  // Define at risk people
   at_risk = new Age_Map("At Risk Population");			
   stringstream sss; 			
   sss << "at_risk[" << id << "]";			

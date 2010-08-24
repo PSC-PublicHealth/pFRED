@@ -61,8 +61,10 @@ void setup(char *paramfile) {
   Loc.get_location_parameters();
   Loc.setup_locations();
   Pop.setup();
-  Pop.population_quality_control();
-  Loc.location_quality_control();
+  if (Quality_control) {
+    Pop.population_quality_control();
+    Loc.location_quality_control();
+  }
 }
 
 void run_sim(int run) {

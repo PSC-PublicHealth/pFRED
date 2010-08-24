@@ -217,6 +217,7 @@ void Population::update(int day) {
   
   av_manager->disseminate(day);
   
+
   int count = 0;
   int icount = 0;
   for(int p=0; p < pop_size; p++){

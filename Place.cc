@@ -108,6 +108,7 @@ void Place::update(int day) {
   for (int s = 0; s < strains; s++) {
     cases[s] = deaths[s] = 0;
   }
+  visit = 0;
 }
 
 void Place::print(int strain) {
@@ -122,6 +123,11 @@ void Place::add_person(Person * per) {
     children++;
   else
     adults++;
+}
+
+
+void Place::add_visitor(Person * per) {
+  visit++;
 }
 
 void Place::add_susceptible(int strain, Person * per) {

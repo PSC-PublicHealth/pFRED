@@ -29,7 +29,4 @@ Random_Cognitive_Model::Random_Cognitive_Model(Person *p) {
   }
 }
 
-bool Random_Cognitive_Model::will_accept_vaccine(int strain) {
-  return RANDOM() < Prob_accept_vaccine;
-}
 

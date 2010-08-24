@@ -26,15 +26,10 @@ using namespace std;
 #include "Timestep_Map.h"
 
 Spread::Spread(Strain *str, Timestep_Map* _primary_cases_map) {
-  /*char filename[80];
-   
-   FILE *fp;
-   int day, cases;*/
-  
   strain = str;
-  
   primary_cases_map = _primary_cases_map;
   primary_cases_map->print(); 
+  new_cases = new int [Days];
 }
 
 Spread::~Spread() {
@@ -47,6 +42,8 @@ void Spread::reset() {
   attack_rate = 0.0;
   S = E = I = I_s = R = M = 0;
   total_incidents = 0;
+  infected.clear();
+  r_index = 0;
 }
 
 void Spread::update_stats(int day) {
@@ -56,63 +53,58 @@ void Spread::update_stats(int day) {
   clinical_incidents = 0;
   incident_infections = 0;
   vaccine_acceptance = 0;
+  new_cases[day] = 0;
   S = E = I = I_s = R = M = 0;
   for (int p = 0; p < pop_size; p++) {
     char status = pop[p]->get_strain_status(strain_id);
-    S += (status == 'S');
-    E += (status == 'E');
-    I += (status == 'I') || (status == 'i');
-    I_s += (status == 'I');
-    R += (status == 'R');
-    M += (status == 'M');
-    incident_infections += pop[p]->is_new_case(day, strain_id);
+    switch ( status ) {
+    case 'S' : S++; break;
+    case 'E' : E++; break;
+    case 'I' : I++; I_s++; break;
+    case 'i' : I++; break;
+    case 'R' : R++; break;
+    case 'M' : M++; break;
+    }
+
+    if (pop[p]->is_new_case(day, strain_id)) {
+      incident_infections++;
+      infected.push_back(pop[p]);
+      new_cases[day]++;
+    }
     clinical_incidents += ((status=='I') && (pop[p]->get_infectious_date(strain_id) == day));
     vaccine_acceptance += pop[p]->get_behavior()->compliance_to_vaccination();
   }
   total_incidents += incident_infections;
   attack_rate = (100.0*total_incidents)/pop_size;
+
+  // get reproductive rate for those infected max_days ago;
+  int rday = day - strain->get_max_days();;
+  int rcount = 0;
+  RR = 0.0;
+  NR = 0;
+  if (rday >= 0) {
+    NR = new_cases[rday];
+    for (int i = r_index; i < r_index + NR; i++) {
+      rcount += infected[i]->get_infectees(strain->get_id());
+    }
+    r_index += NR;
+    if (NR)
+      RR = (double)rcount / (double)NR;
+  }
 }
 
 void Spread::print_stats(int day) {
   int N = S+E+I+R+M;
-  if (Show_HBM) {
-    fprintf(Outfp,
-            "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d V %7d\n",
-            day, strain->get_id(), S, E, I, I_s, R, M, incident_infections, N, attack_rate, clinical_incidents, vaccine_acceptance);
-    fflush(Outfp);
-    
-    if (Verbose) {
-      fprintf(Statusfp,
-              "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d\n",
-              day, strain->get_id(), S, E, I, I_s, R, M, incident_infections, N, attack_rate, clinical_incidents);
-      fflush(Statusfp);
-    }
-  }
-  else if (Show_cases) {
-    fprintf(Outfp,
-            "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d\n",
-            day, strain->get_id(), S, E, I, I_s, R, M, incident_infections, N, attack_rate, clinical_incidents);
-    fflush(Outfp);
-    
-    if (Verbose) {
-      fprintf(Statusfp,
-              "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d\n",
-              day, strain->get_id(), S, E, I, I_s, R, M, incident_infections, N, attack_rate, clinical_incidents);
-      fflush(Statusfp);
-    }
-  }
-  else {
-    fprintf(Outfp,
-            "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  N %7d  AR %5.2f\n",
-            day, strain->get_id(), S, E, I, I_s, R, M, N, attack_rate);
-    fflush(Outfp);
-    
-    if (Verbose) {
-      fprintf(Statusfp,
-              "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  N %7d  AR %5.2f\n",
-              day, strain->get_id(), S, E, I, I_s, R, M, N, attack_rate);
-      fflush(Statusfp);
-    }
+  fprintf(Outfp,
+	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d\n",
+	  day, strain->get_id(), S, E, I, I_s, R, M, incident_infections, N, attack_rate, clinical_incidents, vaccine_acceptance, RR,NR);
+  fflush(Outfp);
+  
+  if (Verbose) {
+    fprintf(Statusfp,
+            "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d\n",
+            day, strain->get_id(), S, E, I, I_s, R, M, incident_infections, N, attack_rate, clinical_incidents, vaccine_acceptance, RR,NR);
+    fflush(Statusfp);
   }
 }
 

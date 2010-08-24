@@ -43,6 +43,7 @@ public:
   virtual void update(int day);
   virtual void print(int strain);
   virtual void add_person(Person * per);
+  virtual void add_visitor(Person * per);
   virtual void add_susceptible(int strain, Person * per);
   virtual void delete_susceptible(int strain, Person * per);
   virtual void print_susceptibles(int strain);
@@ -112,6 +113,7 @@ protected:
   int * total_cases;			      // total symptomatic cases
   int * total_deaths;				// total deaths
   Population *population;
+  int visit;
 
   // strain parameters
   double *beta;	       // place-independent transmissibility per contact
