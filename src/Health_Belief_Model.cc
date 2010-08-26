@@ -206,7 +206,8 @@ void Health_Belief_Model::update(int day) {
   }
   if (self->get_id() == 1 && day > 0) {
     FILE *fp;
-    int n = self->get_population()->get_pop_size();
+    // (following variable 'n' not used)
+    //    int n = self->get_population()->get_pop_size();
     fp = fopen("HBM_trace", "a");
     fprintf(fp, "%f %d\n", cumm_susceptibility[0], accept_vaccine[0]);
     fclose(fp);

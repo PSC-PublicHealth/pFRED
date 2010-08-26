@@ -68,7 +68,7 @@ double Perceptions::get_household_school_incidence(int strain) {
       total_school += s->get_size();
     }
   }
-  if (total_school = 0) return 0.0;
+  if (total_school == 0) return 0.0;
   return (double) count / (double) total_school;
 }
 

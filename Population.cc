@@ -113,7 +113,10 @@ void Population::read_population() {
     fprintf(Statusfp, "popfile %s not found\n", popfile);
     exit(1);
   }
-  fscanf(fp, "Population = %d", &pop_size);
+  if (1!=fscanf(fp, "Population = %d", &pop_size)){
+    fprintf(Statusfp, "failed to parse pop_size\n");
+    exit(1);
+  }
   if (Verbose) {
     fprintf(Statusfp, "Population = %d\n", pop_size);
     fflush(Statusfp);

@@ -15,6 +15,8 @@
 #include "Person.h"
 #include "Global.h"
 
+#include <string.h>
+
 Cognition::Cognition(Person *p) {
   if (strcmp(Cognitive_model_type, "random") == 0) {
     model = new Random_Cognitive_Model(p);

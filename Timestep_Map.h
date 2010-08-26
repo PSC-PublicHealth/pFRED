@@ -60,4 +60,4 @@ private:
   int current_value;       // Holds the current value of th map.
 };
 
-#endif _FRED_TIMESTEP_MAP_H
+#endif // _FRED_TIMESTEP_MAP_H

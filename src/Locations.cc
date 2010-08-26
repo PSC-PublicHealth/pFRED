@@ -44,7 +44,10 @@ void Locations::setup_locations() {
     fprintf(Statusfp, "locfile %s not found\n", locfile);
     abort();
   }
-  fscanf(fp, "Locations = %d", &locations);
+  if (1!=fscanf(fp, "Locations = %d", &locations)){
+    fprintf(Statusfp, "failed to parse locations\n");
+    abort();
+  }
   if (Verbose) {
     fprintf(Statusfp, "Locations = %d\n", locations); fflush(Statusfp);
   }

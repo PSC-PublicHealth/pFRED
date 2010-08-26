@@ -12,7 +12,7 @@
 #ifndef _FRED_COGNITION_H
 #define _FRED_COGNITION_H
 
-#include "Cognitive_model.h"
+#include "Cognitive_Model.h"
 
 class Person;
 
