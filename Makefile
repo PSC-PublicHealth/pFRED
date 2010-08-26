@@ -3,7 +3,7 @@
 #################  Compiler Flags ##############################
 CPP = g++ 
 CPPFLAGS = -m64 -O3 #-Wall
-#CPPFLAGS = -pg -g -O0 -Wall
+# CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall
 
 ###############################################
 
@@ -34,18 +34,17 @@ print:
 	enscript $(SRC) $(HDR)
 
 clean:
-	rm -f *.o *~ FRED out* trace* 
+	rm -f *.o *~ FRED
 
 tar: clean
 	cd ..
-	tar cvf FRED.tar FRED
+	tar cvf FRED-`date +"%Y-%m-%d"`.tar FRED
 
 dist:
 	make clean
 	(cd ..; tar cvf FRED-`date +"%Y-%m-%d"`.tar FRED/README \
-	FRED/Makefile FRED/profiles.txt FRED/*.cc FRED/*.h \
-	FRED/params* FRED/p FRED/ch FRED/go FRED/report FRED/test_* \
-	FRED/LICENSE FRED/sim.plt FRED/TEST/* ; cd FRED)
+	FRED/Makefile FRED/*.txt FRED/*.cc FRED/*.h FRED/params* \
+	FRED/bin/* FRED/LICENSE FRED/sim.plt FRED/TEST/* ; cd FRED)
 	make
 
 tags:

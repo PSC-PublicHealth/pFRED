@@ -12,6 +12,7 @@
 #ifndef _FRED_VACCINE_H
 #define _FRED_VACCINE_H
 
+#include "Global.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
@@ -26,24 +27,24 @@ public:
   // Creation
   Vaccine(string _name, int _id, int _strain, int _age0, int _age1, 
           int _total_avail, int _additional_per_day, int _start_day);
-  virtual ~Vaccine();
+  UNIT_TEST_VIRTUAL ~Vaccine();
   
-  virtual void add_dose(Vaccine_Dose* dose);
+  UNIT_TEST_VIRTUAL void add_dose(Vaccine_Dose* dose);
   
-  virtual int get_strain()             const { return strain; }
-  virtual int get_ID()                 const { return id; }
-  virtual int get_number_doses()       const { return doses.size(); }
-  virtual int get_low_age() const { return ages[0]; }
-  virtual int get_high_age() const { return ages[1]; }
-  virtual Vaccine_Dose* get_dose(int i)    const { return doses[i]; }
+  UNIT_TEST_VIRTUAL int get_strain()             const { return strain; }
+  UNIT_TEST_VIRTUAL int get_ID()                 const { return id; }
+  UNIT_TEST_VIRTUAL int get_number_doses()       const { return doses.size(); }
+  UNIT_TEST_VIRTUAL int get_low_age() const { return ages[0]; }
+  UNIT_TEST_VIRTUAL int get_high_age() const { return ages[1]; }
+  UNIT_TEST_VIRTUAL Vaccine_Dose* get_dose(int i)    const { return doses[i]; }
   
   // Logistics Functions
-  virtual int get_initial_stock()      const { return initial_stock; }
-  virtual int get_total_avail()        const { return total_avail; }
-  virtual int get_current_reserve()    const { return reserve; }
-  virtual int get_current_stock()      const { return stock; }
-  virtual int get_additional_per_day() const { return additional_per_day; }
-  virtual void add_stock( int add ){ 
+  UNIT_TEST_VIRTUAL int get_initial_stock()      const { return initial_stock; }
+  UNIT_TEST_VIRTUAL int get_total_avail()        const { return total_avail; }
+  UNIT_TEST_VIRTUAL int get_current_reserve()    const { return reserve; }
+  UNIT_TEST_VIRTUAL int get_current_stock()      const { return stock; }
+  UNIT_TEST_VIRTUAL int get_additional_per_day() const { return additional_per_day; }
+  UNIT_TEST_VIRTUAL void add_stock( int add ){ 
     if(add <= reserve){
       stock   += add;
       reserve -= add;
@@ -54,15 +55,15 @@ public:
     }
   }
   
-  virtual void remove_stock( int remove ) {
+  UNIT_TEST_VIRTUAL void remove_stock( int remove ) {
     stock-=remove;
     if(stock < 0) stock = 0;
   }
   
   //Utility Functions
-  virtual void print() const;
-  virtual void update(int day);
-  virtual void reset();
+  UNIT_TEST_VIRTUAL void print() const;
+  UNIT_TEST_VIRTUAL void update(int day);
+  UNIT_TEST_VIRTUAL void reset();
   
 private:
   string name;

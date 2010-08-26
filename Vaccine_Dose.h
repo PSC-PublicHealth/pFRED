@@ -12,6 +12,7 @@
 #ifndef _FRED_VACCINEDOSE_H
 #define _FRED_VACCINEDOSE_H
 
+#include "Global.h"
 #include "Age_Map.h"
 
 class Vaccine_Dose {
@@ -20,20 +21,20 @@ class Vaccine_Dose {
 public:
   // Creation Operators
   Vaccine_Dose(Age_Map* _efficacy, Age_Map* _efficacy_delay, int _days_between_doses);
-  virtual ~Vaccine_Dose();
+  UNIT_TEST_VIRTUAL ~Vaccine_Dose();
   
   //Parameter Access
-  virtual Age_Map* get_efficacy_map()       const { return efficacy;}
-  virtual Age_Map* get_efficacy_delay_map() const { return efficacy_delay;}
+  UNIT_TEST_VIRTUAL Age_Map* get_efficacy_map()       const { return efficacy;}
+  UNIT_TEST_VIRTUAL Age_Map* get_efficacy_delay_map() const { return efficacy_delay;}
   
-  virtual double  get_efficacy(int age)         const { return efficacy->find_value(age);  }
-  virtual double  get_efficacy_delay(int age)   const { return efficacy_delay->find_value(age); }
-  virtual int     get_days_between_doses()  const { return days_between_doses; }
+  UNIT_TEST_VIRTUAL double  get_efficacy(int age)         const { return efficacy->find_value(age);  }
+  UNIT_TEST_VIRTUAL double  get_efficacy_delay(int age)   const { return efficacy_delay->find_value(age); }
+  UNIT_TEST_VIRTUAL int     get_days_between_doses()  const { return days_between_doses; }
   
-  virtual bool    is_within_age(int age) const;
+  UNIT_TEST_VIRTUAL bool    is_within_age(int age) const;
   
   //Utility Functions... no need for update or reset.
-  virtual void print() const;
+  UNIT_TEST_VIRTUAL void print() const;
   
 private:
   int days_between_doses;       // Number of days until the next dose is administered

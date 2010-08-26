@@ -12,6 +12,7 @@
 #ifndef _FRED_POPULATION_H
 #define _FRED_POPULATION_H
 
+#include "Global.h"
 class Person;
 class Strain;
 class Antivirals;
@@ -26,29 +27,29 @@ typedef map <Person*, bool> ChangeMap;
 class Population {
 public:
   Population();
-  virtual ~Population();
-  virtual void get_parameters();
-  virtual void setup();
-  virtual void population_quality_control();
-  virtual void print(int incremental=0, int day=0); // 0:print all, 1:incremental, -1:unchanged
-  virtual void end_of_run();
-  virtual void reset(int run);
-  virtual void update(int day);
-  virtual void report(int day);
-  virtual Strain * get_strain(int s);
-  virtual int get_strains() { return strains; }
-  virtual Person **get_pop() { return pop; }
-  virtual int get_pop_size() { return pop_size; }
-  virtual Age_Map* get_pregnancy_prob() { return pregnancy_prob; }
+  UNIT_TEST_VIRTUAL ~Population();
+  UNIT_TEST_VIRTUAL void get_parameters();
+  UNIT_TEST_VIRTUAL void setup();
+  UNIT_TEST_VIRTUAL void population_quality_control();
+  UNIT_TEST_VIRTUAL void print(int incremental=0, int day=0); // 0:print all, 1:incremental, -1:unchanged
+  UNIT_TEST_VIRTUAL void end_of_run();
+  UNIT_TEST_VIRTUAL void reset(int run);
+  UNIT_TEST_VIRTUAL void update(int day);
+  UNIT_TEST_VIRTUAL void report(int day);
+  UNIT_TEST_VIRTUAL Strain * get_strain(int s);
+  UNIT_TEST_VIRTUAL int get_strains() { return strains; }
+  UNIT_TEST_VIRTUAL Person **get_pop() { return pop; }
+  UNIT_TEST_VIRTUAL int get_pop_size() { return pop_size; }
+  UNIT_TEST_VIRTUAL Age_Map* get_pregnancy_prob() { return pregnancy_prob; }
   //Mitigation Managers
-  virtual AV_Manager *get_av_manager(){ return av_manager; }
-  virtual Vaccine_Manager *get_vaccine_manager() { return vacc_manager;}
+  UNIT_TEST_VIRTUAL AV_Manager *get_av_manager(){ return av_manager; }
+  UNIT_TEST_VIRTUAL Vaccine_Manager *get_vaccine_manager() { return vacc_manager;}
   
   // Modifiers on the entire pop;
   // void apply_residual_immunity(Strain *strain) {}
   
   // track those agents that have changed since the last incremental dump
-  virtual void set_changed(Person *p);
+  UNIT_TEST_VIRTUAL void set_changed(Person *p);
   
 private:
   char popfile[80];

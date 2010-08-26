@@ -16,6 +16,13 @@
 #include <errno.h>
 #include <sys/stat.h>
 
+// for unit testing, use the line in Makefile: gcc -DUNITTEST ...
+#ifdef UNITTEST
+#define UNIT_TEST_VIRTUAL virtual
+#else
+#define UNIT_TEST_VIRTUAL
+#endif
+
 // global constants
 #define DAYS_PER_WEEK 7
 
@@ -47,12 +54,10 @@ extern FILE *Tracefp;
 extern FILE *VaccineTracefp;
 
 // global singleton objects
-#include "Population.h"
-// class Population;
+class Population;
 extern Population Pop;
 
-#include "Locations.h"
-// class Locations;
+class Locations;
 extern Locations Loc;
 
 void get_global_parameters();

@@ -6,6 +6,8 @@
 #include "Global.h"
 #include "Params.h"
 #include "Random.h"
+#include "Population.h"
+#include "Locations.h"
 
 // global runtime parameters
 int Verbose;

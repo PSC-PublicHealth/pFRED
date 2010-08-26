@@ -12,6 +12,7 @@
 #ifndef _FRED_SPREAD_H
 #define _FRED_SPREAD_H
 
+#include "Global.h"
 #include <set>
 #include <map>
 #include <vector>
@@ -25,7 +26,7 @@ class Timestep_Map;
 class Spread {
  public:
   Spread(Strain * str, Timestep_Map *);
-  virtual ~Spread();
+  UNIT_TEST_VIRTUAL ~Spread();
   
   void reset();
   void update_stats(int day);

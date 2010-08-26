@@ -16,6 +16,7 @@
 #include <assert.h>
 #include <iostream>
 #include "Random.h"
+#include "Population.h"
 
 class Vaccine;
 class Vaccine_Dose;

@@ -12,6 +12,7 @@
 #ifndef _FRED_TIMESTEP_MAP_H
 #define _FRED_TIMESTEP_MAP_H
 
+#include "Global.h"
 #include <stdio.h>
 #include <map>
 
@@ -50,9 +51,9 @@ public:
   ~Timestep_Map();
   
   // Utility Members
-  virtual int get_value_for_timestep(int ts); // returns the value for the given timestep
-  virtual bool is_empty() const { return values->empty(); }
-  virtual void print() const;
+  UNIT_TEST_VIRTUAL int get_value_for_timestep(int ts); // returns the value for the given timestep
+  UNIT_TEST_VIRTUAL bool is_empty() const { return values->empty(); }
+  UNIT_TEST_VIRTUAL void print() const;
 private:
   map <int, int>* values;  // Map structure that holds <ts, value>
   string name;             // Name of the map

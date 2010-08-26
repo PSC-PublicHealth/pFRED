@@ -12,6 +12,7 @@
 #ifndef _FRED_PLACE_H
 #define _FRED_PLACE_H
 
+#include "Global.h"
 #include <vector>
 #include <iostream>
 #include <stdio.h>
@@ -36,59 +37,59 @@ extern int Strains;
 class Place {
 public:
   Place() {}
-  virtual ~Place() {}
+  UNIT_TEST_VIRTUAL ~Place() {}
 	
-  virtual void setup(int loc_id, const char *lab, double lon, double lat, Place *cont, Population *pop);
-  virtual void reset();
-  virtual void update(int day);
-  virtual void print(int strain);
-  virtual void add_person(Person * per);
-  virtual void add_visitor(Person * per);
-  virtual void add_susceptible(int strain, Person * per);
-  virtual void delete_susceptible(int strain, Person * per);
-  virtual void print_susceptibles(int strain);
-  virtual void add_infectious(int strain, Person * per);
-  virtual void delete_infectious(int strain, Person * per);
-  virtual void print_infectious(int strain);
-  virtual void spread_infection(int day, int strain);
-  virtual int is_open(int day);
+  UNIT_TEST_VIRTUAL void setup(int loc_id, const char *lab, double lon, double lat, Place *cont, Population *pop);
+  UNIT_TEST_VIRTUAL void reset();
+  UNIT_TEST_VIRTUAL void update(int day);
+  UNIT_TEST_VIRTUAL void print(int strain);
+  UNIT_TEST_VIRTUAL void add_person(Person * per);
+  UNIT_TEST_VIRTUAL void add_visitor(Person * per);
+  UNIT_TEST_VIRTUAL void add_susceptible(int strain, Person * per);
+  UNIT_TEST_VIRTUAL void delete_susceptible(int strain, Person * per);
+  UNIT_TEST_VIRTUAL void print_susceptibles(int strain);
+  UNIT_TEST_VIRTUAL void add_infectious(int strain, Person * per);
+  UNIT_TEST_VIRTUAL void delete_infectious(int strain, Person * per);
+  UNIT_TEST_VIRTUAL void print_infectious(int strain);
+  UNIT_TEST_VIRTUAL void spread_infection(int day, int strain);
+  UNIT_TEST_VIRTUAL int is_open(int day);
   
   virtual void get_parameters(int strain) = 0;
   virtual int get_group_type(int strain, Person * per) = 0;
   virtual double get_transmission_prob(int strain, Person * i, Person * s) = 0;
   virtual double get_contacts_per_day(int strain) = 0; // access functions
-  virtual int should_be_open(int day, int strain) { return 1; }
+  UNIT_TEST_VIRTUAL int should_be_open(int day, int strain) { return 1; }
 	
-  virtual int get_id() { return id; }
-  virtual char * get_label() { return label; }
-  virtual int get_type() { return type; }
-  virtual double get_latitude() { return latitude; }
-  virtual double get_longitude() { return longitude; }
-  virtual int get_S(int strain) { return S[strain]; }
-  virtual int get_I(int strain) { return (int) (infectious[strain].size()); }
-  virtual int get_symptomatic(int strain) { return Sympt[strain]; }
-  virtual int get_size() { return N; }
-  virtual int get_close_date() { return close_date; }
-  virtual int get_open_date() { return open_date; }
-  virtual int get_adults() { return adults; }
-  virtual int get_children() { return children; }
-  virtual Population *get_population() { return population; }
-  virtual int get_daily_cases(int strain) { return cases[strain]; }
-  virtual int get_daily_deaths(int strain) { return deaths[strain]; }
-  virtual int get_total_cases(int strain) { return total_cases[strain]; }
-  virtual int get_total_deaths(int strain) { return total_deaths[strain]; }
-  virtual double get_incidence_rate(int strain) { return (double) total_cases[strain] / (double) N; }
+  UNIT_TEST_VIRTUAL int get_id() { return id; }
+  UNIT_TEST_VIRTUAL char * get_label() { return label; }
+  UNIT_TEST_VIRTUAL int get_type() { return type; }
+  UNIT_TEST_VIRTUAL double get_latitude() { return latitude; }
+  UNIT_TEST_VIRTUAL double get_longitude() { return longitude; }
+  UNIT_TEST_VIRTUAL int get_S(int strain) { return S[strain]; }
+  UNIT_TEST_VIRTUAL int get_I(int strain) { return (int) (infectious[strain].size()); }
+  UNIT_TEST_VIRTUAL int get_symptomatic(int strain) { return Sympt[strain]; }
+  UNIT_TEST_VIRTUAL int get_size() { return N; }
+  UNIT_TEST_VIRTUAL int get_close_date() { return close_date; }
+  UNIT_TEST_VIRTUAL int get_open_date() { return open_date; }
+  UNIT_TEST_VIRTUAL int get_adults() { return adults; }
+  UNIT_TEST_VIRTUAL int get_children() { return children; }
+  UNIT_TEST_VIRTUAL Population *get_population() { return population; }
+  UNIT_TEST_VIRTUAL int get_daily_cases(int strain) { return cases[strain]; }
+  UNIT_TEST_VIRTUAL int get_daily_deaths(int strain) { return deaths[strain]; }
+  UNIT_TEST_VIRTUAL int get_total_cases(int strain) { return total_cases[strain]; }
+  UNIT_TEST_VIRTUAL int get_total_deaths(int strain) { return total_deaths[strain]; }
+  UNIT_TEST_VIRTUAL double get_incidence_rate(int strain) { return (double) total_cases[strain] / (double) N; }
   
-  virtual void set_id(int n) { id = n; }
-  virtual void set_type(char t) { type = t; }
-  virtual void set_latitude(double x) { latitude = x; }
-  virtual void set_longitude(double x) { longitude = x; }
-  virtual void set_close_date(int day) { close_date = day; }
-  virtual void set_open_date(int day) { open_date = day; }
-  virtual void set_population(Population *p) {  population = p; }
-  virtual void set_container(Place *cont) { container = cont; }
-  virtual void add_case() { cases++; }
-  virtual void add_deaths() { deaths++; }
+  UNIT_TEST_VIRTUAL void set_id(int n) { id = n; }
+  UNIT_TEST_VIRTUAL void set_type(char t) { type = t; }
+  UNIT_TEST_VIRTUAL void set_latitude(double x) { latitude = x; }
+  UNIT_TEST_VIRTUAL void set_longitude(double x) { longitude = x; }
+  UNIT_TEST_VIRTUAL void set_close_date(int day) { close_date = day; }
+  UNIT_TEST_VIRTUAL void set_open_date(int day) { open_date = day; }
+  UNIT_TEST_VIRTUAL void set_population(Population *p) {  population = p; }
+  UNIT_TEST_VIRTUAL void set_container(Place *cont) { container = cont; }
+  UNIT_TEST_VIRTUAL void add_case() { cases++; }
+  UNIT_TEST_VIRTUAL void add_deaths() { deaths++; }
   
 protected:
   int id;					// place id

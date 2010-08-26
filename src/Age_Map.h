@@ -15,6 +15,7 @@
 #ifndef _FRED_AGEMAP_H
 #define _FRED_AGEMAP_H
 
+#include "Global.h"
 #include <stdio.h>
 #include <vector>
 #include <string>
@@ -29,19 +30,19 @@ public:
   Age_Map(string Name);
   Age_Map();
   
-  virtual int get_num_ages() const { return ages.size(); }
-  virtual bool is_empty() const { return ages.empty(); }
+  UNIT_TEST_VIRTUAL int get_num_ages() const { return ages.size(); }
+  UNIT_TEST_VIRTUAL bool is_empty() const { return ages.empty(); }
   
   // Additional creation operations for building an Age_Map
-  virtual void read_from_input(string Input);
-  virtual void add_value(int lower_age, int upper_age, double val);
+  UNIT_TEST_VIRTUAL void read_from_input(string Input);
+  UNIT_TEST_VIRTUAL void add_value(int lower_age, int upper_age, double val);
   
   // Operations
-  virtual double find_value(int age) const;
+  UNIT_TEST_VIRTUAL double find_value(int age) const;
   
   // Utility functions
-  virtual void print() const;
-  virtual bool quality_control() const;
+  UNIT_TEST_VIRTUAL void print() const;
+  UNIT_TEST_VIRTUAL bool quality_control() const;
   
 private:
   string Name;
