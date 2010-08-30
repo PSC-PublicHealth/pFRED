@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -101,6 +101,7 @@ void Health::become_susceptible(int strain) {
     infection[strain] = NULL;
   }
   susceptibility_multp[strain] = 1.0;
+  self->get_population()->get_strain(strain)->increment_S_count();
 }
 
 void Health::update(int day) {
@@ -177,7 +178,7 @@ void Health::become_exposed(Infection * infection_ptr) {
   } else {
     infection[strain_id] = infection_ptr;
   }
-  strain->insert_into_exposed_list(self);
+  // strain->insert_into_exposed_list(self);
   
   if (All_strains_antigenically_identical) {
     // HACK - this is probably NOT how we want to do this.  But strain
@@ -189,7 +190,7 @@ void Health::become_exposed(Infection * infection_ptr) {
         // just assume all strains are antigenically identical.
         Strain* s = Pop.get_strain(i);
         Infection* dummy_i =
-        Infection::get_dummy_infection(s, self, infection_ptr->get_exposure_date());
+	  Infection::get_dummy_infection(s, self, infection_ptr->get_exposure_date());
         self->become_exposed(dummy_i);
         self->become_infectious(s);
         self->recover(s);
@@ -205,7 +206,7 @@ void Health::become_infectious(Strain * strain) {
     fflush(Statusfp);
   }
   infection[strain_id]->become_infectious();
-  strain->remove_from_exposed_list(self);
+  // strain->remove_from_exposed_list(self);
   strain->insert_into_infectious_list(self);
   if (Verbose > 1) {
     fprintf(Statusfp, "INFECTIOUS person %d for strain %d has status %c %d\n",
@@ -215,9 +216,9 @@ void Health::become_infectious(Strain * strain) {
 }
 
 void Health::become_symptomatic(Strain *strain) {
-	if (!infection[strain->get_id()])
-		throw logic_error("become symptomatic: cannot, without being exposed first");
-	infection[strain->get_id()]->become_symptomatic();
+  if (!infection[strain->get_id()])
+    throw logic_error("become symptomatic: cannot, without being exposed first");
+  infection[strain->get_id()]->become_symptomatic();
 }
 
 
@@ -225,6 +226,7 @@ void Health::become_immune(Strain* strain) {
   int strain_id = strain->get_id();
   if(get_strain_status(strain_id) == 'S'){
     immunity[strain_id] = true; 
+    strain->increment_M_count();
   }
 }
 
@@ -269,7 +271,7 @@ int Health::get_recovered_date(int strain) const {
 }
 
 int Health:: get_symptomatic_date(int strain) const {
- if (infection[strain] == NULL) 
+  if (infection[strain] == NULL) 
     return -1;
   else
     return infection[strain]->get_symptomatic_date();
@@ -333,14 +335,14 @@ double Health::get_infectivity(int strain) const {
 //Modify Operators
 void Health::modify_susceptibility(int strain, double multp) {
   if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " susceptibility for strain " 
-    << strain << " by " << multp << "\n";
+		     << strain << " by " << multp << "\n";
   susceptibility_multp[strain] *= multp;
 }
 
 void Health::modify_infectivity(int strain, double multp) {
   if (infection[strain] != NULL) {
     if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " infectivity for strain " << strain 
-      << " by " << multp << "\n";
+		       << " by " << multp << "\n";
     infection[strain]->modify_infectivity(multp);
   }
 }
@@ -348,7 +350,7 @@ void Health::modify_infectivity(int strain, double multp) {
 void Health::modify_infectious_period(int strain, double multp, int cur_day){
   if (infection[strain] != NULL) {
     if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " infectivity for strain " << strain 
-      << " by " << multp << "\n";
+		       << " by " << multp << "\n";
     infection[strain]->modify_infectious_period(multp, cur_day);
   }
 }
@@ -356,7 +358,7 @@ void Health::modify_infectious_period(int strain, double multp, int cur_day){
 void Health::modify_asymptomatic_period(int strain, double multp, int cur_day) {
   if (infection[strain] != NULL) {
     if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " asymptomatic period  for strain " << strain 
-      << " by " << multp << "\n";
+		       << " by " << multp << "\n";
     infection[strain]->modify_asymptomatic_period(multp, cur_day);
   }
 }
@@ -364,7 +366,7 @@ void Health::modify_asymptomatic_period(int strain, double multp, int cur_day) {
 void Health::modify_symptomatic_period(int strain, double multp, int cur_day) {
   if (infection[strain] != NULL) {
     if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomatic period  for strain " << strain 
-      << " by " << multp << "\n";
+		       << " by " << multp << "\n";
     infection[strain]->modify_symptomatic_period(multp, cur_day);
   }
 }
@@ -373,10 +375,10 @@ void Health::modify_develops_symptoms(int strain, bool symptoms, int cur_day) {
   if (infection[strain] != NULL &&
       (infection[strain]->get_strain_status() == 'i' ||
        infection[strain]->get_strain_status() == 'E')){
-        if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomaticity  for strain " << strain 
-          << " to " << symptoms << "\n";
-        infection[strain]->modify_develops_symptoms(symptoms, cur_day);
-      }
+    if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomaticity  for strain " << strain 
+		       << " to " << symptoms << "\n";
+    infection[strain]->modify_develops_symptoms(symptoms, cur_day);
+  }
 }
 
 //Medication operators
@@ -400,17 +402,17 @@ void Health::take(Antiviral* av, int day){
 }
 
 bool Health::is_on_av_for_strain(int day, int s) const {
-	for (unsigned int iav = 0; iav < av_health.size(); iav++)
-		if (av_health[iav]->get_strain() == s && av_health[iav]->is_on_av(day))
-			return true;
-	return false;
+  for (unsigned int iav = 0; iav < av_health.size(); iav++)
+    if (av_health[iav]->get_strain() == s && av_health[iav]->is_on_av(day))
+      return true;
+  return false;
 }
 
 char Health::get_strain_status(int strain) const {
-	if (immunity[strain])
-		return 'M';
-	else if (!infection[strain])
-		return 'S';
-	else 
-		return infection[strain]->get_strain_status();
+  if (immunity[strain])
+    return 'M';
+  else if (!infection[strain])
+    return 'S';
+  else 
+    return infection[strain]->get_strain_status();
 }

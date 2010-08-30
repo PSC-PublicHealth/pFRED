@@ -29,6 +29,9 @@
 
 using namespace std; 
 
+
+int V_count;
+
 Population::Population() {
   pop = NULL;
   pop_size = -1;
@@ -53,9 +56,7 @@ Population::~Population() {
 void Population::get_parameters() {
   get_param((char *) "popfile", popfile);
   get_param((char *) "profiles", profilefile);
-  get_param((char *) "strains", &strains);
-  extern int Strains;
-  Strains = strains;
+  strains = Strains;
   
   int num_mutation_params =
     get_param_matrix((char *) "mutation_prob", &mutation_prob);
@@ -75,7 +76,7 @@ void Population::get_parameters() {
     }
   }
   
-  // Setup the pregnancy probabiliy map
+  // Setup the pregnancy probability map
   pregnancy_prob = new Age_Map("Pregnancy Probability");
   pregnancy_prob->read_from_input("pregnancy_prob");
   pregnancy_prob->print();	

@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -56,8 +56,8 @@ private:
   char profilefile[80];
   Person **pop;
   ChangeMap incremental_changes; // incremental "list" (actually a C++ map)
-  // of those agents whose stats
-  // have changed since the last history dump
+				 // of those agents whose stats
+				 // have changed since the last history dump
   ChangeMap never_changed;       // agents who have *never* changed
   int pop_size;
   Strain *strain;
@@ -65,7 +65,6 @@ private:
   //Mitigation Managers
   AV_Manager *av_manager;
   Vaccine_Manager *vacc_manager;
-  //double vaccine_compliance;  // to be replaced by vaccine_manager
   
   int strains;
   double **mutation_prob;

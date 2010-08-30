@@ -19,24 +19,22 @@
 
 class Person;
 
+extern double Prob_accept_vaccine;
+
 class Random_Cognitive_Model : public Cognitive_Model {
  public:
   Random_Cognitive_Model(Person *p);
   void reset() {};
-  void update(int day) {};
-  bool will_accept_vaccine(int strain);
+  void update(int day) {
+    accept_vaccine = (RANDOM() < Prob_accept_vaccine);
+  }
+  bool will_accept_vaccine(int strain) { return accept_vaccine; }
  private:
   Person * self;
+  bool accept_vaccine;
  protected:
   ~Random_Cognitive_Model() {}
 };
-
-
-extern double Prob_accept_vaccine;
-
-inline bool Random_Cognitive_Model::will_accept_vaccine(int strain) {
-  return (RANDOM() < Prob_accept_vaccine);
-}
 
 #endif // _FRED_RANDOM_COGNITIVE_MODEL_H
 

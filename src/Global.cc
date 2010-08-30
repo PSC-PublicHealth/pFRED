@@ -29,6 +29,7 @@ int Random_start_day;
 int Random_location_order;
 char Cognitive_model_type[80];
 int Quality_control;
+int Strains;
 
 // global file pointers
 FILE *Statusfp;
@@ -39,7 +40,6 @@ FILE *VaccineTracefp;
 // global singleton objects
 Population Pop;
 Locations Loc;
-int Strains;
 
 void get_global_parameters() {
   get_param((char *) "verbose", &Verbose);
@@ -60,4 +60,5 @@ void get_global_parameters() {
   get_param((char *) "trace_headers", &Trace_Headers);
   get_param((char *) "random_location_order", &Random_location_order);
   get_param((char *) "cognitive_model", Cognitive_model_type);
+  get_param((char *) "strains", &Strains);
 }

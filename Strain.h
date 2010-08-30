@@ -13,15 +13,14 @@
 #define _FRED_STRAIN_H
 
 #include "Global.h"
-#include <set>
-#include <stack>
+#include "Spread.h";
+
 using namespace std;
 
 class Infection;
 class Person;
 class Place;
 class Population;
-class Spread;
 class Age_Map;
 
 class Strain {
@@ -63,9 +62,8 @@ public:
   // the strain to mutate to, or NULL if no mutation should occur.
   Strain* should_mutate_to();
 	
-  UNIT_TEST_VIRTUAL void insert_into_exposed_list(Person *person);
+  UNIT_TEST_VIRTUAL void insert_into_infected_list(Person *person);
   UNIT_TEST_VIRTUAL void insert_into_infectious_list(Person *person);
-  UNIT_TEST_VIRTUAL void remove_from_exposed_list(Person *person);
   UNIT_TEST_VIRTUAL void remove_from_infectious_list(Person *person);
   UNIT_TEST_VIRTUAL void update_stats(int day);
   UNIT_TEST_VIRTUAL void print_stats(int day);
@@ -76,6 +74,25 @@ public:
   static double get_prob_stay_home();
   static void set_prob_stay_home(double);
   static void get_strain_parameters();
+  void increment_S_count() { spread->increment_S_count(); }
+  void decrement_S_count() { spread->decrement_S_count(); }
+  void increment_E_count() { spread->increment_E_count(); }
+  void decrement_E_count() { spread->decrement_E_count(); }
+  void increment_I_count() { spread->increment_I_count(); }
+  void decrement_I_count() { spread->decrement_I_count(); }
+  void increment_i_count() { spread->increment_i_count(); }
+  void decrement_i_count() { spread->decrement_i_count(); }
+  void increment_R_count() { spread->increment_R_count(); }
+  void decrement_R_count() { spread->decrement_R_count(); }
+  void increment_r_count() { spread->increment_r_count(); }
+  void decrement_r_count() { spread->decrement_r_count(); }
+  void increment_C_count() { spread->increment_C_count(); }
+  void decrement_C_count() { spread->decrement_C_count(); }
+  void increment_c_count() { spread->increment_c_count(); }
+  void decrement_c_count() { spread->decrement_c_count(); }
+  void increment_M_count() { spread->increment_M_count(); }
+  void decrement_M_count() { spread->decrement_M_count(); }
+  
 private:
   int id;
   double transmissibility;
@@ -103,5 +120,16 @@ private:
   Population *population;
 };
 
+inline void Strain::insert_into_infectious_list(Person * per) {
+  spread->insert_into_infectious_list(per);
+}
+
+inline void Strain::insert_into_infected_list(Person * per) {
+  spread->insert_into_infected_list(per);
+}
+
+inline void Strain::remove_from_infectious_list(Person * per) {
+  spread->remove_from_infectious_list(per);
+}
 
 #endif // _FRED_STRAIN_H

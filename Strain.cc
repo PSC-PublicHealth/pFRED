@@ -313,27 +313,6 @@ void Strain::set_prob_stay_home(double p) { Prob_stay_home = p; }
 
 // static
 void Strain::get_strain_parameters() {
-  // get_param((char *) "strains", &Strains);
-}
-
-void Strain::insert_into_exposed_list(Person * per) {
-  spread->insert_into_exposed_list(per);
-  // exposed.insert(per);
-}
-
-void Strain::insert_into_infectious_list(Person * per) {
-  spread->insert_into_infectious_list(per);
-  // infectious.insert(per);
-}
-
-void Strain::remove_from_exposed_list(Person * per) {
-  spread->remove_from_exposed_list(per);
-  // exposed.erase(per);
-}
-
-void Strain::remove_from_infectious_list(Person * per) {
-  spread->remove_from_infectious_list(per);
-  // infectious.erase(per);
 }
 
 void Strain::update(int day) {

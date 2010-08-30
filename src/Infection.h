@@ -74,6 +74,7 @@ class Infection {
  private:
   // associated strain
   Strain *strain;
+  int id;
 	
   // infection status (E/I/i/R)
   char status;

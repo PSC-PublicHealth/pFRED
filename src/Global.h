@@ -46,6 +46,7 @@ extern int Random_start_day;
 extern int Random_location_order;
 extern char Cognitive_model_type[80];
 extern int Quality_control;
+extern int Strains;
 
 // global file pointers
 extern FILE *Statusfp;

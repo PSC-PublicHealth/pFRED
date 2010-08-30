@@ -24,45 +24,48 @@ class Person;
 class Timestep_Map;
 
 class Spread {
- public:
+public:
   Spread(Strain * str, Timestep_Map *);
   UNIT_TEST_VIRTUAL ~Spread();
   
   void reset();
   void update_stats(int day);
   void print_stats(int day);
-  void insert_into_exposed_list(Person * person);
-  void insert_into_infectious_list(Person * person);
-  void remove_from_exposed_list(Person * person);
-  void remove_from_infectious_list(Person * person);
-  bool is_in_exposed_list(Person *per);
-  bool is_in_infectious_list(Person *per);
+  void insert_into_infected_list(Person * person) { infected.push_back(person); }
+  void insert_into_infectious_list(Person * person) { infectious.insert(person); }
+  void remove_from_infectious_list(Person * person) { infectious.erase(person); }
   double get_attack_rate() { return attack_rate; }
   void update(int day);
-  int get_S() { return S; }
-  int get_E() { return E; }
-  int get_I() { return I; }
-  int get_I_s() { return I_s; }
-  int get_R() { return R; }
-  int get_M() { return M; }
   int get_clinical_incidents() { return clinical_incidents; }
   int get_incident_infections() { return incident_infections; }
   int get_total_incidents() { return total_incidents; }
+  void increment_S_count() { S_count++; }
+  void decrement_S_count() { S_count--; }
+  void increment_E_count() { E_count++; }
+  void decrement_E_count() { E_count--; }
+  void increment_I_count() { I_count++; }
+  void decrement_I_count() { I_count--; }
+  void increment_i_count() { i_count++; }
+  void decrement_i_count() { i_count--; }
+  void increment_R_count() { R_count++; }
+  void decrement_R_count() { R_count--; }
+  void increment_r_count() { r_count++; }
+  void decrement_r_count() { r_count--; }
+  void increment_C_count() { C_count++; }
+  void decrement_C_count() { C_count--; }
+  void increment_c_count() { c_count++; }
+  void decrement_c_count() { c_count--; }
+  void increment_M_count() { M_count++; }
+  void decrement_M_count() { M_count--; }
   
- private:
+private:
   Strain * strain;
+  int id;
+  int N;
   double attack_rate;
   double clinical_attack_rate;
-  set <Person *> exposed;
   set <Person *> infectious;
-  //map <int, int> primary_cases_map;
   Timestep_Map* primary_cases_map;
-  int S;
-  int E;
-  int I;
-  int I_s;
-  int R;
-  int M;
   int clinical_incidents;
   int total_clinical_incidents;
   int incident_infections;
@@ -73,6 +76,15 @@ class Spread {
   int r_index;
   double RR;
   int NR;
+  int S_count;
+  int E_count;
+  int I_count;
+  int i_count;
+  int R_count;
+  int r_count;
+  int C_count;
+  int c_count;
+  int M_count;
 };
 
 #endif // _FRED_SPREAD_H

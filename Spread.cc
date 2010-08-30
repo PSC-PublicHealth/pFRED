@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -25,8 +25,11 @@ using namespace std;
 #include "Place.h"
 #include "Timestep_Map.h"
 
+extern int V_count;
+
 Spread::Spread(Strain *str, Timestep_Map* _primary_cases_map) {
   strain = str;
+  id = strain->get_id();
   primary_cases_map = _primary_cases_map;
   primary_cases_map->print(); 
   new_cases = new int [Days];
@@ -37,58 +40,36 @@ Spread::~Spread() {
 }
 
 void Spread::reset() {
-  exposed.clear();
+  infected.clear();
   infectious.clear();
   attack_rate = 0.0;
-  S = E = I = I_s = R = M = 0;
+  N = strain->get_population()->get_pop_size();
   total_incidents = 0;
   total_clinical_incidents = 0;
-  infected.clear();
-  r_index = 0;
+  r_index = V_count = S_count = C_count = c_count = 0;
+  E_count = I_count = i_count = R_count = r_count = M_count = 0;
 }
 
 void Spread::update_stats(int day) {
-  int strain_id = strain->get_id();
-  Person **pop = strain->get_population()->get_pop();
-  int pop_size = strain->get_population()->get_pop_size();
-  clinical_incidents = 0;
-  incident_infections = 0;
-  vaccine_acceptance = 0;
-  new_cases[day] = 0;
-  S = E = I = I_s = R = M = 0;
-  for (int p = 0; p < pop_size; p++) {
-    char status = pop[p]->get_strain_status(strain_id);
-    switch ( status ) {
-    case 'S' : S++; break;
-    case 'E' : E++; break;
-    case 'I' : I++; I_s++; break;
-    case 'i' : I++; break;
-    case 'R' : R++; break;
-    case 'M' : M++; break;
-    }
-
-    if (pop[p]->is_new_case(day, strain_id)) {
-      incident_infections++;
-      infected.push_back(pop[p]);
-      new_cases[day]++;
-    }
-    clinical_incidents += ((status=='I') && (pop[p]->get_infectious_date(strain_id) == day));
-    vaccine_acceptance += pop[p]->get_behavior()->compliance_to_vaccination();
-  }
+  clinical_incidents = c_count;
+  incident_infections = C_count;
+  vaccine_acceptance = V_count;
+  V_count = 0;
+  new_cases[day] = incident_infections;
   total_incidents += incident_infections;
   total_clinical_incidents += clinical_incidents;
-  attack_rate = (100.0*total_incidents)/pop_size;
-  clinical_attack_rate = (100.0*total_clinical_incidents)/pop_size;
+  attack_rate = (100.0*total_incidents)/N;
+  clinical_attack_rate = (100.0*total_clinical_incidents)/N;
 
   // get reproductive rate for those infected max_days ago;
-  int rday = day - strain->get_max_days();;
+  int rday = day - strain->get_max_days();
   int rcount = 0;
   RR = 0.0;
   NR = 0;
   if (rday >= 0) {
     NR = new_cases[rday];
     for (int i = r_index; i < r_index + NR; i++) {
-      rcount += infected[i]->get_infectees(strain->get_id());
+      rcount += infected[i]->get_infectees(id);
     }
     r_index += NR;
     if (NR)
@@ -97,42 +78,18 @@ void Spread::update_stats(int day) {
 }
 
 void Spread::print_stats(int day) {
-  int N = S+E+I+R+M;
   fprintf(Outfp,
 	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f\n",
-	  day, strain->get_id(), S, E, I, I_s, R, M, incident_infections, N, attack_rate, clinical_incidents, vaccine_acceptance, RR,NR, clinical_attack_rate);
+	  day, id, S_count, E_count, I_count+i_count, I_count, R_count+r_count, M_count, C_count, N, attack_rate, clinical_incidents, vaccine_acceptance, RR,NR, clinical_attack_rate);
   fflush(Outfp);
   
   if (Verbose) {
     fprintf(Statusfp,
-	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f\n",
-	  day, strain->get_id(), S, E, I, I_s, R, M, incident_infections, N, attack_rate, clinical_incidents, vaccine_acceptance, RR,NR, clinical_attack_rate);
+	    "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f\n",
+	    day, id, S_count, E_count, I_count+i_count, I_count, R_count+r_count, M_count, C_count, N, attack_rate, clinical_incidents, vaccine_acceptance, RR,NR, clinical_attack_rate);
     fflush(Statusfp);
   }
-}
-
-void Spread::insert_into_exposed_list(Person * per) {
-  exposed.insert(per);
-}
-
-void Spread::insert_into_infectious_list(Person * per) {
-  infectious.insert(per);
-}
-
-void Spread::remove_from_exposed_list(Person * per) {
-  exposed.erase(per);
-}
-
-void Spread::remove_from_infectious_list(Person * per) {
-  infectious.erase(per);
-}
-
-bool Spread::is_in_exposed_list(Person *per) {
-	return exposed.count(per) != 0;
-}
-
-bool Spread::is_in_infectious_list(Person *per) {
-	return infectious.count(per) != 0;
+  C_count = c_count = 0;
 }
 
 void Spread::update(int day) {
@@ -140,7 +97,6 @@ void Spread::update(int day) {
   set<Person *>::iterator itr;
   set<Place *>::iterator it;
   Person **pop = strain->get_population()->get_pop();
-  int pop_size = strain->get_population()->get_pop_size();
   
   // See if there are changes to primary_cases_per_day from primary_cases_map
   int primary_cases_per_day = primary_cases_map->get_value_for_timestep(day);
@@ -151,8 +107,8 @@ void Spread::update(int day) {
   // are not affected, so the number of new cases may be less than specified in
   // the file.
   for (int i = 0; i < primary_cases_per_day; i++) {
-    int n = IRAND(0, pop_size-1);
-    if (pop[n]->get_strain_status(strain->get_id()) == 'S') {
+    int n = IRAND(0, N-1);
+    if (pop[n]->get_strain_status(id) == 'S') {
       // primary infections are a special case that bypasses
       // Strain::attempt_infection(), meaning we don't roll the dice to see if 
       // we'll expose the person.  We just do it.
@@ -174,7 +130,7 @@ void Spread::update(int day) {
     p->get_schedule(&n, schedule);
     for (int j = 0; j < n; j++) {
       Place * place = schedule[j];
-      if (place && place->is_open(day) && place->should_be_open(day, strain->get_id())) {
+      if (place && place->is_open(day) && place->should_be_open(day, id)) {
         places.insert(place);
       }
     }
@@ -189,9 +145,9 @@ void Spread::update(int day) {
     for (it = places.begin(); it != places.end(); it++ ) {
       Place * place = *it;
       if (Verbose > 1) {
-	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
       }
-      place->spread_infection(day, strain->get_id());
+      place->spread_infection(day, id);
     }
   }
   else {
@@ -199,57 +155,59 @@ void Spread::update(int day) {
       Place * place = *it;
       if (place->get_type() != CLASSROOM) continue;
       if (Verbose > 1) {
-	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
       }
-      place->spread_infection(day, strain->get_id());
+      place->spread_infection(day, id);
     }
     for (it = places.begin(); it != places.end(); it++ ) {
       Place * place = *it;
       if (place->get_type() != SCHOOL) continue;
       if (Verbose > 1) {
-	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
       }
-      place->spread_infection(day, strain->get_id());
+      place->spread_infection(day, id);
     }
     for (it = places.begin(); it != places.end(); it++ ) {
       Place * place = *it;
       if (place->get_type() != OFFICE) continue;
       if (Verbose > 1) {
-	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
       }
-      place->spread_infection(day, strain->get_id());
+      place->spread_infection(day, id);
     }
     for (it = places.begin(); it != places.end(); it++ ) {
       Place * place = *it;
       if (place->get_type() != WORKPLACE) continue;
       if (Verbose > 1) {
-	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
       }
-      place->spread_infection(day, strain->get_id());
+      place->spread_infection(day, id);
     }
-    for (it = places.begin(); it != places.end(); it++ ) {
+    /*
+      for (it = places.begin(); it != places.end(); it++ ) {
       Place * place = *it;
       if (place->get_type() != HOSPITAL) continue;
       if (Verbose > 1) {
-	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
       }
-      place->spread_infection(day, strain->get_id());
-    }
+      place->spread_infection(day, id);
+      }
+    */
     for (it = places.begin(); it != places.end(); it++ ) {
       Place * place = *it;
       if (place->get_type() != NEIGHBORHOOD) continue;
       if (Verbose > 1) {
-	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
       }
-      place->spread_infection(day, strain->get_id());
+      place->spread_infection(day, id);
     }
     for (it = places.begin(); it != places.end(); it++ ) {
       Place * place = *it;
       if (place->get_type() != HOUSEHOLD) continue;
       if (Verbose > 1) {
-	fprintf(Statusfp, "\nspread strain %i in location: %d\n", strain->get_id(), place->get_id()); fflush(Statusfp);
+	fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
       }
-      place->spread_infection(day, strain->get_id());
+      place->spread_infection(day, id);
     }
   }
 
