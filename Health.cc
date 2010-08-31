@@ -106,7 +106,8 @@ void Health::become_susceptible(int strain) {
 
 void Health::update(int day) {
   // update vaccine status
-  for (unsigned int i = 0; i < vaccine_health.size(); i++)
+  int size = (int) vaccine_health.size();
+  for (int i = 0; i < size; i++)
     vaccine_health[i]->update(day, self->get_age());
   
   // possibly mutate infections
@@ -125,7 +126,8 @@ void Health::update(int day) {
   }
   
   // update antiviral status
-  for(unsigned int i = 0; i < av_health.size(); i++)
+  size = av_health.size();
+  for(int i = 0; i < size; i++)
     av_health[i]->update(day);
 }
 
