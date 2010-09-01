@@ -1,0 +1,47 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Env;
+$| = 1;  # AUTO_FLUSH
+
+# File: fred_report
+# Author: John Grefenstette
+# Created: Aug 31, 2010
+
+my ($out, $reports) = @ARGV;
+$out = "OUT" if not $out;
+$reports = "REPORTS" if not $reports;
+mkdir $reports if not -d $reports;
+
+my $FRED = $ENV{FRED_HOME};
+die "run_fred: Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
+
+# process output files
+system "$FRED/bin/stats $out/out* > $reports/stats.out";
+
+# my @fields = qw/S E I R I_s M C AR CI RR V/;
+my @fields = ();
+open IN, "$reports/stats.out";
+my $line = <IN>;
+close IN;
+my @a = split " ", $line;
+for my $i (6..$#a) {
+  push @fields, $a[$i] if $a[$i]=~/[a-z]/i;
+}
+
+for my $x (@fields) {
+  open OUT, ">$reports/$x.dat";
+  open IN, "$reports/stats.out";
+  while (my $line = <IN>) {
+    my @a = split " ", $line;
+    for my $i (0..$#a) {
+      if ($a[$i] eq $x) {
+	print OUT "$a[1] $a[$i+1] $a[$i+2]\n";
+	last;
+      }
+    }
+  }
+  close IN;
+  close OUT;
+}
+
