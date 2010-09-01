@@ -1,64 +1,64 @@
 Profile 0 Child
 Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
-Mon Home 1.0 Nbrhood 0.5 School 0.95 Work 0.0 Travel 0.0
-Tue Home 1.0 Nbrhood 0.5 School 0.95 Work 0.0 Travel 0.0
-Wed Home 1.0 Nbrhood 0.5 School 0.95 Work 0.0 Travel 0.0
-Thu Home 1.0 Nbrhood 0.5 School 0.95 Work 0.0 Travel 0.0
-Fri Home 1.0 Nbrhood 0.5 School 0.95 Work 0.0 Travel 0.0
+Mon Home 1.0 Nbrhood 0.67 School 1.0 Work 0.0 Travel 0.0
+Tue Home 1.0 Nbrhood 0.67 School 1.0 Work 0.0 Travel 0.0
+Wed Home 1.0 Nbrhood 0.67 School 1.0 Work 0.0 Travel 0.0
+Thu Home 1.0 Nbrhood 0.67 School 1.0 Work 0.0 Travel 0.0
+Fri Home 1.0 Nbrhood 0.67 School 1.0 Work 0.0 Travel 0.0
 Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
 
 Profile 1 Older_student
-Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 0.95 Travel 0.1
-Mon Home 1.0 Nbrhood 0.5 School 0.95 Work 0.95 Travel 0.0
-Tue Home 1.0 Nbrhood 0.5 School 0.95 Work 0.95 Travel 0.0
-Wed Home 1.0 Nbrhood 0.5 School 0.95 Work 0.95 Travel 0.0
-Thu Home 1.0 Nbrhood 0.5 School 0.95 Work 0.95 Travel 0.0
-Fri Home 1.0 Nbrhood 0.5 School 0.95 Work 0.95 Travel 0.0
-Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 0.95 Travel 0.1
+Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
+Mon Home 1.0 Nbrhood 0.67 School 1.0 Work 1.0 Travel 0.0
+Tue Home 1.0 Nbrhood 0.67 School 1.0 Work 1.0 Travel 0.0
+Wed Home 1.0 Nbrhood 0.67 School 1.0 Work 1.0 Travel 0.0
+Thu Home 1.0 Nbrhood 0.67 School 1.0 Work 1.0 Travel 0.0
+Fri Home 1.0 Nbrhood 0.67 School 1.0 Work 1.0 Travel 0.0
+Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
 
 Profile 2 Teacher
-Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.1
-Mon Home 1.0 Nbrhood 0.5 School 0.95 Work 0.0 Travel 0.1
-Tue Home 1.0 Nbrhood 0.5 School 0.95 Work 0.0 Travel 0.1
-Wed Home 1.0 Nbrhood 0.5 School 0.95 Work 0.0 Travel 0.1
-Thu Home 1.0 Nbrhood 0.5 School 0.95 Work 0.0 Travel 0.1
-Fri Home 1.0 Nbrhood 0.5 School 0.95 Work 0.0 Travel 0.1
-Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.1
+Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Mon Home 1.0 Nbrhood 1.0 School 1.0 Work 0.0 Travel 0.0
+Tue Home 1.0 Nbrhood 1.0 School 1.0 Work 0.0 Travel 0.0
+Wed Home 1.0 Nbrhood 1.0 School 1.0 Work 0.0 Travel 0.0
+Thu Home 1.0 Nbrhood 1.0 School 1.0 Work 0.0 Travel 0.0
+Fri Home 1.0 Nbrhood 1.0 School 1.0 Work 0.0 Travel 0.0
+Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
 
 Profile 3 Worker
-Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.1
-Mon Home 1.0 Nbrhood 0.2 School 0.2 Work 0.95 Travel 0.1
-Tue Home 1.0 Nbrhood 0.2 School 0.2 Work 0.95 Travel 0.1
-Wed Home 1.0 Nbrhood 0.2 School 0.2 Work 0.95 Travel 0.1
-Thu Home 1.0 Nbrhood 0.2 School 0.2 Work 0.95 Travel 0.1
-Fri Home 1.0 Nbrhood 0.2 School 0.2 Work 0.95 Travel 0.1
-Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.1
+Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Mon Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
+Tue Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
+Wed Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
+Thu Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
+Fri Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
+Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
 
 Profile 4 Weekend_worker
-Sun Home 1.0 Nbrhood 0.2 School 0.0 Work 0.95 Travel 0.1
-Mon Home 1.0 Nbrhood 0.2 School 0.2 Work 0.60 Travel 0.1
-Tue Home 1.0 Nbrhood 0.2 School 0.2 Work 0.60 Travel 0.1
-Wed Home 1.0 Nbrhood 0.2 School 0.2 Work 0.60 Travel 0.1
-Thu Home 1.0 Nbrhood 0.2 School 0.2 Work 0.60 Travel 0.1
-Fri Home 1.0 Nbrhood 0.2 School 0.2 Work 0.60 Travel 0.1
-Sat Home 1.0 Nbrhood 0.2 School 0.0 Work 0.95 Travel 0.1
+Sun Home 1.0 Nbrhood 0.2 School 0.0 Work 1.0 Travel 0.0
+Mon Home 1.0 Nbrhood 0.2 School 0.0 Work 0.60 Travel 0.0
+Tue Home 1.0 Nbrhood 0.2 School 0.0 Work 0.60 Travel 0.0
+Wed Home 1.0 Nbrhood 0.2 School 0.0 Work 0.60 Travel 0.0
+Thu Home 1.0 Nbrhood 0.2 School 0.0 Work 0.60 Travel 0.0
+Fri Home 1.0 Nbrhood 0.2 School 0.0 Work 0.60 Travel 0.0
+Sat Home 1.0 Nbrhood 0.2 School 0.0 Work 1.0 Travel 0.0
 
 Profile 5 Unemployed
-Sun Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Mon Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Tue Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Wed Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Thu Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Fri Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Sat Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
+Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Mon Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Tue Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Wed Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Thu Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Fri Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
 
 Profile 6 Retired
-Sun Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Mon Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Tue Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Wed Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Thu Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Fri Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
-Sat Home 1.0 Nbrhood 0.5 School 0.0 Work 0.0 Travel 0.2
+Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Mon Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Tue Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Wed Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Thu Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Fri Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
 
 
