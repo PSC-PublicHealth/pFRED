@@ -187,34 +187,8 @@ mkdir $version or die "Can't make directory $version\n";
 system "./FRED $params > $logfile";
 # unlink $params;
 
-# process output files
-system "$FRED/bin/stats $out/out* > $reports/stats.out";
-
-# my @fields = qw/S E I R I_s M C AR CI RR V/;
-my @fields = ();
-open IN, "$reports/stats.out";
-my $line = <IN>;
-close IN;
-my @a = split " ", $line;
-for my $i (6..$#a) {
-  push @fields, $a[$i] if $a[$i]=~/[a-z]/i;
-}
-
-for my $x (@fields) {
-  open OUT, ">$reports/$x.dat";
-  open IN, "$reports/stats.out";
-  while (my $line = <IN>) {
-    my @a = split " ", $line;
-    for my $i (0..$#a) {
-      if ($a[$i] eq $x) {
-	print OUT "$a[1] $a[$i+1] $a[$i+2]\n";
-	last;
-      }
-    }
-  }
-  close IN;
-  close OUT;
-}
+# make reports
+`$FRED/bin/fred_report $out $reports`;
 
 # update run status
 `echo FINISHED > $meta/STATUS`;
