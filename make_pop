@@ -31,6 +31,7 @@ my %room = ();
 my %school_map = ();
 my %blocks = ();
 my %classrooms = ();
+my $employed = 0;
 
 # map school workplaces to their school field id
 # print "school map\n";
@@ -55,6 +56,7 @@ while (my $line = <FH>) {
     $w = $x = $prof = $married = -1;
     ($block, $house, $occ, $age, $sex, $lat, $lon, $school, $work) = split " ", $line;
   }
+  $employed++ if $work ne "0";
 
   last if ($area eq "test" and (not exists $blocks{$block}) and scalar (keys %blocks) > 20);
   $blocks{$block} = 1;
@@ -256,28 +258,23 @@ while (my $line = <TMP>) {
     $profile = "2 Teacher";
   }
   elsif ($age < 16) { $profile = "0 Child" }
-  elsif ($age < 25 and $school ne "-1") { $profile = "1 Older_student" }
-  elsif ($age < 62) {
+  elsif ($school ne "-1") { $profile = "1 Older_student" }
+  elsif ($work ne "-1") {
     my $r = rand(1);
-    if ($r < 0.1) {
-      # 10% stay-at-home or unemployed
-      $profile = "5 Unemployed";
+    if ($r < 0.8) {
+      # weekday workers
+      $profile = "3 Worker";
     }
     else {
-      if ($r < 0.3) {
-	# 20% weekend workers
-	$profile = "4 Weekend_worker";
-      }
-      else {
-	# 70% std adult workers
-	$profile = "3 Worker";
-      }
+      # 20% weekend workers
+      $profile = "4 Weekend_worker";
     }
   }
-  else { 
-    # age at least 62
-    # 80% retired, 20% workers
-    (rand(1)<0.8)? $profile = "6 Retired" : $profile = "3 Worker";
+  elsif ($age < 62) {
+    $profile = "5 Unemployed";
+  }
+  else {
+    $profile = "6 Retired";
   }
   print POP "$id $age $sex $married $occ $houseid $hood $school $class $work $off $profile\n";
   print "HELP: $id $age $sex $married $occ $houseid $hood $school $class $work $off $profile\n" if ($school > -1 and $school eq $class) or ($work > -1 and $work eq $off);
