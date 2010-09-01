@@ -123,7 +123,6 @@ void Spread::update(int day) {
   }
   
   // get list of infectious locations:
-  int infectious_places = 0;
   for (itr = infectious.begin(); itr != infectious.end(); itr++) {
     Person * p = *itr;
     if (Verbose > 1) {
@@ -137,7 +136,6 @@ void Spread::update(int day) {
     for (int j = 0; j < n; j++) {
       Place * place = schedule[j];
       if (place && place->is_open(day) && place->should_be_open(day, id)) {
-	infectious_places++;
 	switch (place->get_type()) {
 	case HOUSEHOLD:
 	  inf_households.insert(place);
@@ -167,6 +165,13 @@ void Spread::update(int day) {
     }
   }
   
+  int infectious_places;
+  infectious_places = (int) inf_households.size();
+  infectious_places += (int) inf_neighborhoods.size();
+  infectious_places += (int) inf_schools.size();
+  infectious_places += (int) inf_classrooms.size();
+  infectious_places += (int) inf_workplaces.size();
+  infectious_places += (int) inf_offices.size();
   if (Verbose) {
     fprintf(Statusfp, "Number of infectious places = %d\n", infectious_places);
   }
