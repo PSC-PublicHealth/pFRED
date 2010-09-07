@@ -58,7 +58,7 @@ public:
   virtual int get_group_type(int strain, Person * per) = 0;
   virtual double get_transmission_prob(int strain, Person * i, Person * s) = 0;
   virtual double get_contacts_per_day(int strain) = 0; // access functions
-  UNIT_TEST_VIRTUAL int should_be_open(int day, int strain) { return 1; }
+  virtual int should_be_open(int day, int strain) { return 1; }
 	
   UNIT_TEST_VIRTUAL int get_id() { return id; }
   UNIT_TEST_VIRTUAL char * get_label() { return label; }
