@@ -167,10 +167,6 @@ void Person::update_schedule(int day) {
   return behavior->update_schedule(day);
 }
 
-void Person::get_schedule(int *n, Place **sched) const {
-  behavior->get_schedule(n, sched);
-}
-
 void Person::behave(int day) {}
 
 int Person::is_symptomatic() const {

@@ -19,10 +19,12 @@ using namespace std;
 #include "Random.h"
 #include "Params.h"
 #include "Person.h"
+#include "Behavior.h"
 #include "Global.h"
 #include "Infection.h"
 #include "Locations.h"
 #include "Place.h"
+#include "Community.h"
 #include "Timestep_Map.h"
 
 extern int V_count;
@@ -114,8 +116,8 @@ void Spread::update(int day) {
   for (int i = 0; i < primary_cases_per_day; i++) {
     int n = IRAND(0, N-1);
     if (pop[n]->get_strain_status(id) == 'S') {
-      // primary infections are a special case that bypasses
-      // Strain::attempt_infection(), meaning we don't roll the dice to see if 
+      // primary infections are a special case in which
+      // we don't roll the dice to see if 
       // we'll expose the person.  We just do it.
       Infection * infection = new Infection(strain, NULL, pop[n], NULL, 0);
       pop[n]->become_exposed(infection);
@@ -129,9 +131,9 @@ void Spread::update(int day) {
       fprintf(Statusfp, "day %d infectious person %d \n", day, p->get_id());
       fflush(Statusfp);
     }
-    int n;
-    Place *schedule[100];
     p->update_schedule(day);
+    Place *schedule[FAVORITE_PLACES];
+    int n;
     p->get_schedule(&n, schedule);
     for (int j = 0; j < n; j++) {
       Place * place = schedule[j];
@@ -219,4 +221,5 @@ void Spread::update(int day) {
     place->spread_infection(day, id);
   }
 
+  Commune->spread_infection_in_community(day, id);
 }

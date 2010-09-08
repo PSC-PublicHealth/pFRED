@@ -43,15 +43,16 @@ public:
   UNIT_TEST_VIRTUAL void reset();
   UNIT_TEST_VIRTUAL void update(int day);
   UNIT_TEST_VIRTUAL void print(int strain);
-  UNIT_TEST_VIRTUAL void add_person(Person * per);
+  virtual void add_person(Person * per);
   UNIT_TEST_VIRTUAL void add_visitor(Person * per);
   UNIT_TEST_VIRTUAL void add_susceptible(int strain, Person * per);
   UNIT_TEST_VIRTUAL void delete_susceptible(int strain, Person * per);
-  UNIT_TEST_VIRTUAL void print_susceptibles(int strain);
   UNIT_TEST_VIRTUAL void add_infectious(int strain, Person * per);
   UNIT_TEST_VIRTUAL void delete_infectious(int strain, Person * per);
+  UNIT_TEST_VIRTUAL void print_susceptibles(int strain);
   UNIT_TEST_VIRTUAL void print_infectious(int strain);
   UNIT_TEST_VIRTUAL void spread_infection(int day, int strain);
+  UNIT_TEST_VIRTUAL void new_spread_infection(int day, int strain);
   UNIT_TEST_VIRTUAL int is_open(int day);
   
   virtual void get_parameters(int strain) = 0;
@@ -106,7 +107,6 @@ protected:
   int *Sympt;					// symptomatics count
   int close_date;		    // this place will be closed during:
   int open_date;			    //   [close_date, open_date)
-  int indiv_types;			   // distinct types of visitors
   int adults;					// how many adults
   int children;					// how many children
   int * cases;					// symptomatic cases today

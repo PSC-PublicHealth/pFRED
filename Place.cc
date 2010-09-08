@@ -25,63 +25,28 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   strcpy(label, lab);
   longitude = lon;
   latitude = lat;
-  
-  susceptibles = new (nothrow) vector<Person *> [strains];
-  if (susceptibles == NULL) {
-    printf("Help! susceptibles allocation failure\n");
-    abort();
-  }
-  
-  infectious = new (nothrow) vector<Person *> [strains];
-  if (infectious == NULL) {
-    printf("Help! infectious allocation failure\n");
-    abort();
-  }
-  
-  S = new (nothrow) int [strains];
-  if (S == NULL) {
-    printf("Help! S allocation failure\n");
-    abort();
-  }
-  
-  I = new (nothrow) int [strains];
-  if (I == NULL) {
-    printf("Help! I allocation failure\n");
-    abort();
-  }
-  
-  Sympt = new (nothrow) int [strains];
-  if (Sympt == NULL) {
-    printf("Help! Sympt allocation failure\n");
-    abort();
-  }
-  
-  cases = new (nothrow) int [strains];
-  if (cases == NULL) {
-    printf("Help! cases allocation failure\n");
-    abort();
-  }
-  
-  total_cases = new (nothrow) int [strains];
-  if (total_cases == NULL) {
-    printf("Help! total_cases allocation failure\n");
-    abort();
-  }
-  
-  deaths = new (nothrow) int [strains];
-  if (deaths == NULL) {
-    printf("Help! deaths allocation failure\n");
-    abort();
-  }
-  
-  total_deaths = new (nothrow) int [strains];
-  if (total_deaths == NULL) {
-    printf("Help! total_deaths allocation failure\n");
-    abort();
-  }
-  
-  indiv_types = 1;
   N = adults = children = 0;
+  
+  // allocate strain-related memory
+  susceptibles = new (nothrow) vector<Person *> [strains];
+  assert (susceptibles != NULL);
+  infectious = new (nothrow) vector<Person *> [strains];
+  assert (infectious != NULL);
+  S = new (nothrow) int [strains];
+  assert (S != NULL);
+  I = new (nothrow) int [strains];
+  assert (I != NULL);
+  Sympt = new (nothrow) int [strains];
+  assert (Sympt != NULL);
+  cases = new (nothrow) int [strains];
+  assert (cases != NULL);
+  total_cases = new (nothrow) int [strains];
+  assert (total_cases != NULL);
+  deaths = new (nothrow) int [strains];
+  assert (deaths != NULL);
+  total_deaths = new (nothrow) int [strains];
+  assert (total_deaths != NULL);
+  
   reset();
 }
 
@@ -133,24 +98,13 @@ void Place::add_visitor(Person * per) {
 void Place::add_susceptible(int strain, Person * per) {
   susceptibles[strain].push_back(per);
   S[strain]++;
-  if (Debug &&
-      susceptibles[strain].size() !=  static_cast<unsigned int>(S[strain])) {
-    printf("inconsistent sizes vec %i recorded %i \n",
-           (int) susceptibles[strain].size(),  S[strain]);
-    abort();
-  }
+  assert (S[strain] == static_cast <int> (susceptibles[strain].size()));
 }
 
 
 void Place::delete_susceptible(int strain, Person * per) {
   int s = (int) susceptibles[strain].size();
-  if (s == 0) {
-    if (Verbose > 2)
-      printf("Warning! can't delete from empty list! "
-             "Susceptible %i for strain %i place %i\n",
-             per->get_id(), strain, id); 
-    return;
-  }
+  assert(s > 0);
   Person * last = susceptibles[strain][s-1];
   for (int i = 0; i < s; i++) {
     if (susceptibles[strain][i] == per) {
@@ -160,11 +114,33 @@ void Place::delete_susceptible(int strain, Person * per) {
       break;
     }
   }
-  if (Debug &&
-      susceptibles[strain].size() !=  static_cast<unsigned int>(S[strain])) {
-    printf("while deleting: inconsistent sizes vec %i recorded %i \n",
-           (int) susceptibles[strain].size(),  S[strain]);
-    abort();
+  assert(susceptibles[strain].size() == static_cast<unsigned int>(S[strain]));
+}
+
+void Place::add_infectious(int strain, Person * per) {
+  infectious[strain].push_back(per);
+  I[strain]++;
+  assert(I[strain] == static_cast <int> (infectious[strain].size()));
+  if (per->get_strain_status(strain) == 'I') {
+    Sympt[strain]++;
+    cases[strain]++;
+    total_cases[strain]++;
+  }
+}
+
+void Place::delete_infectious(int strain, Person * per) {
+  int s = (int) infectious[strain].size();
+  assert(s > 0);
+  for (int i = 0; i < s; i++) {
+    if (infectious[strain][i] == per) {
+      infectious[strain][i] = infectious[strain][s-1];
+      infectious[strain].pop_back();
+      I[strain]--;
+      if (per->get_strain_status(strain)=='I') {
+        Sympt[strain]--;
+      }
+      break;
+    }
   }
 }
 
@@ -178,39 +154,6 @@ void Place::print_susceptibles(int strain) {
 }
 
 
-void Place::add_infectious(int strain, Person * per) {
-  infectious[strain].push_back(per);
-  I[strain]++;
-  if (per->get_strain_status(strain) == 'I') {
-    Sympt[strain]++;
-    cases[strain]++;
-    total_cases[strain]++;
-  }
-}
-
-void Place::delete_infectious(int strain, Person * per) {
-  int s = (int) infectious[strain].size();
-  if (s == 0) {
-    if (Verbose > 2)
-      printf("Warning! can't delete from empty list! "
-             "Infectious %i for strain %i place %i\n",
-             per->get_id(), strain, id); 
-    return;
-  }
-  Person * last = infectious[strain][s-1];
-  for (int i = 0; i < s; i++) {
-    if (infectious[strain][i] == per) {
-      infectious[strain][i] = last;
-      infectious[strain].pop_back();
-      I[strain]--;
-      if (per->get_strain_status(strain)=='I') {
-        Sympt[strain]--;
-      }
-      break;
-    }
-  }
-}
-
 void Place::print_infectious(int strain) {
   vector<Person *>::iterator itr;
   for (itr = infectious[strain].begin();
@@ -220,13 +163,26 @@ void Place::print_infectious(int strain) {
   printf("\n");
 }
 
+int Place::is_open(int day) {
+  if (container) {
+    return container->is_open(day);
+  } else {
+    return (day < close_date || open_date <= day);
+  }
+}
+
+void Place::new_spread_infection(int day, int s) {
+}
+
 void Place::spread_infection(int day, int s) {
-  vector<Person *>::iterator itr;
-  Strain * strain = population->get_strain(s);
   if (Verbose > 1) { print(s); }
   if (N < 2) return;
   if (S[s] == 0) return;
 	
+  vector<Person *>::iterator itr;
+  Strain * strain = population->get_strain(s);
+  double beta = strain->get_transmissibility();
+
   // expected number of susceptible contacts for each infectious person
   double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
   if (Verbose > 1) {
@@ -237,26 +193,23 @@ void Place::spread_infection(int day, int s) {
   
   // expected upper bound on number of contacts resulting in infection
   // (per infective)
-  contacts *= strain->get_transmissibility();
+  contacts *= beta;
   if (Verbose > 1) {
-    printf("beta = %.10f\n", strain->get_transmissibility());
+    printf("beta = %.10f\n", beta);
     printf("effective contacts = %f\n", contacts);
     fflush(stdout);
   }
 	
   for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
-    if (S[s] == 0) break;
+    int number_susceptibles = S[s];
+    if (number_susceptibles == 0) break;
     Person * infector = *itr;			// infectious indiv
-    if (Debug && infector->get_strain_status(s) != 'I' &&
-        infector->get_strain_status(s) != 'i') {
-      printf("Non-infectious person on infectious list: person %i day %i\n",
-             infector->get_id(), day);
-      abort();
-    }
+    assert(infector->get_strain_status(s) == 'I' ||
+	   infector->get_strain_status(s) == 'i');
 		
     // skip if this infector did not visit today
     if (Verbose > 1) { printf("Is infector %d here?  ", infector->get_id()); }
-    if (!infector->is_on_schedule(day, id)) {  
+    if (infector->is_on_schedule(day, id) == 0) {  
       if (Verbose > 1) { printf("No\n"); }
       continue;
     }
@@ -279,51 +232,58 @@ void Place::spread_infection(int day, int s) {
       fflush(stdout);
     }
 		
-    // get susceptible target for each contact resulting in infection
+    // get a susceptible target for each contact resulting in infection
     for (int c = 0; c < contact_count; c++) {
       // This check for S[s] == 0 looks redundant, because it's also done
       // in the outer loop - but this inner loop can itself change S[s]
       // so we need to check within the loop too.
-      if (S[s] == 0)
-	break;
+      if (S[s] == 0) { break; }
+
       double r = RANDOM();
       int pos = (int) (r*S[s]);
       Person * infectee = susceptibles[s][pos];
-      if (Debug && infectee->get_strain_status(s) != 'S') {
-	printf("Non-susceptible person on susceptible list for "
-               "strain %i: person %i day %i\n",
-               s, infectee->get_id(), day);
-	abort();
-      }
       if (Verbose > 1) {
 	printf("my possible victim = %d  prof = %d r = %f  pos = %d  S[%d] = %d\n",
-               infectee->get_id(), infectee->get_behavior()->get_profile(), r, pos, s, S[s]);
+               infectee->get_id(), infectee->get_behavior()->get_profile(),
+	       r, pos, s, S[s]);
+	fflush(stdout);
       }
-      if (strain->attempt_infection(infector, infectee, this, day)) {
+
+      // is the victim here today, and still susceptible?
+      if (infectee->is_on_schedule(day, id) && infectee->get_strain_status(s) == 'S') {
+	if (Verbose > 1) { printf("Victim is here\n"); }
+    
+	// get the victim's susceptibility
+	double transmission_prob = get_transmission_prob(s, infector, infectee);
+	double susceptibility = infectee->get_susceptibility(s);
 	if (Verbose > 1) {
-	  if (infector->get_exposure_date(s) == 0) {
-	    printf("SEED infection day %i from %d to %d\n",
-                   day, infector->get_id(),infectee->get_id());
-	  } else {
-	    printf("infection day %i of strain %i from %d to %d\n",
-                   day, s, infector->get_id(),infectee->get_id());
+	  printf("trans_prob = %f  susceptibility = %f\n",
+		 transmission_prob, susceptibility);
+	}
+    
+	// attempt transmission
+	double r = RANDOM();
+	if (r < transmission_prob*susceptibility) {
+	  if (Verbose > 1) { printf("transmission succeeded: r = %f\n", r); }
+	  Infection * infection = new Infection(strain, infector, infectee, this, day);
+	  infectee->become_exposed(infection);
+	  infector->add_infectee(s);
+	  if (Verbose > 1) {
+	    if (infector->get_exposure_date(s) == 0) {
+	      printf("SEED infection day %i from %d to %d\n",
+		     day, infector->get_id(),infectee->get_id());
+	    } else {
+	      printf("infection day %i of strain %i from %d to %d\n",
+		     day, s, infector->get_id(),infectee->get_id());
+	    }
 	  }
 	}
-      } else {
-	if (Verbose > 1) { 
-	  printf("no infection\n");
+	else {
+	  if (Verbose > 1) { printf("transmission failed: r = %f\n", r); }
 	}
       }
     } // end contact loop
   } // end infectious list loop
   if (Verbose > 1) { fflush(stdout); }
-}
-
-int Place::is_open(int day) {
-  if (container) {
-    return container->is_open(day);
-  } else {
-    return (day < close_date || open_date <= day);
-  }
 }
 

@@ -26,19 +26,12 @@
 
 Behavior::Behavior (Person *person, Place **fav_place, int pro) {
   self = person;
-  favorite_places = 6;
-  this->favorite_place = new Place * [favorite_places];
-  for (int i = 0; i < favorite_places; i++) {
+  for (int i = 0; i < FAVORITE_PLACES; i++) {
     this->favorite_place[i] = fav_place[i];
     if (fav_place[i] != NULL) fav_place[i]->add_person(self);
   }
-  if (get_household() == NULL) {
-    printf("Help! person %d has no home.\n", person->get_id()); abort();
-  }
-  // printf("home = %d\n", get_household()->get_id()); fflush(stdout);
+  assert(get_household() != NULL);
   profile = pro;
-  schedule = new Place * [favorite_places];
-  on_schedule = new char [favorite_places];
   schedule_updated = -1;
   scheduled_places = 0;
 }
@@ -47,7 +40,7 @@ void Behavior::reset() {
   // add myself to the susceptible lists at my favorite places
   int strains = self->get_population()->get_strains();
   for (int strain = 0; strain < strains; strain++) {
-    for (int p = 0; p < favorite_places; p++) {
+    for (int p = 0; p < FAVORITE_PLACES; p++) {
       if (favorite_place[p] == NULL) continue;
       favorite_place[p]->add_susceptible(strain, self);
     }
@@ -63,7 +56,7 @@ void Behavior::update(int day) {
   if (0) {
     int strains = self->get_population()->get_strains();
     for (int strain = 0; strain < strains; strain++) {
-      for (int p = 0; p < favorite_places; p++) {
+      for (int p = 0; p < FAVORITE_PLACES; p++) {
 	if (favorite_place[p] == NULL) continue;
 	favorite_place[p]->add_visitor(self);
       }
@@ -75,7 +68,7 @@ void Behavior::print_schedule() {
   fprintf(Statusfp, "Schedule for person %d  ", self->get_id());
   fprintf(Statusfp, "scheduled places %d\n", scheduled_places);
   for (int j = 0; j < scheduled_places; j++) {
-    fprintf(Statusfp, "%d ", schedule[j]->get_id());
+    fprintf(Statusfp, "%d ", schedule_id[j]);
   }
   fprintf(Statusfp, "\n");
   fflush(Statusfp);
@@ -85,7 +78,7 @@ int Behavior::is_on_schedule(int day, int loc) {
   if (schedule_updated < day) 
     update_schedule(day);
   int p = 0; 
-  while (p < scheduled_places && (schedule[p]->get_id() != loc)) p++;
+  while (p < scheduled_places && (schedule_id[p] != loc)) p++;
   return (p < scheduled_places);
 }
 
@@ -94,7 +87,7 @@ void Behavior::update_schedule(int day) {
   if (schedule_updated < day) {
     schedule_updated = day;
     scheduled_places = 0;
-    for (int p = 0; p < favorite_places; p++) {
+    for (int p = 0; p < FAVORITE_PLACES; p++) {
       on_schedule[p] = 0;
     }
     day_of_week = (day + Start_day_of_week) % DAYS_PER_WEEK;
@@ -124,7 +117,7 @@ void Behavior::update_schedule(int day) {
 		
     // if not staying home or traveling, consult usual schedule
     if (scheduled_places == 0) {
-      for (int p = 0; p < favorite_places; p++) {
+      for (int p = 0; p < FAVORITE_PLACES; p++) {
 	if (favorite_place[p] == NULL) continue;
 
 	// visit classroom or office iff going to school or work
@@ -141,6 +134,10 @@ void Behavior::update_schedule(int day) {
       }
     }
 		
+    for (int p = 0; p < scheduled_places; p++) {
+      schedule_id[p] = schedule[p]->get_id();
+    }
+
     if (Verbose > 2) {
       printf("update_schedule on day %d\n", day);
       print_schedule();
@@ -155,9 +152,10 @@ void Behavior::get_schedule(int *n, Place **sched) {
     sched[i] = schedule[i];
 }
 
+
 void Behavior::become_susceptible(int strain) {
   // add me to susceptible list at my favorite places
-  for (int p = 0; p < favorite_places; p++) {
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (favorite_place[p] == NULL) continue;
     favorite_place[p]->add_susceptible(strain, self);
   }
@@ -165,7 +163,7 @@ void Behavior::become_susceptible(int strain) {
 
 void Behavior::become_exposed(int strain) {
   // remove me from susceptible list at my favorite places
-  for (int p = 0; p < favorite_places; p++) {
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (favorite_place[p] == NULL) continue;
     favorite_place[p]->delete_susceptible(strain, self);
   }
@@ -173,7 +171,7 @@ void Behavior::become_exposed(int strain) {
 
 void Behavior::become_infectious(int strain) {
   // add me to infectious list at my favorite places
-  for (int p = 0; p < favorite_places; p++) {
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (favorite_place[p] == NULL) continue;
     if (Test) {
       if (self->get_exposure_date(strain) == 0) {
@@ -189,7 +187,7 @@ void Behavior::become_immune(int strain) {
   // remove me from the susceptible list at my favorite places
   // STB - While this is really the same as become_exposed, I thought it important to 
   //       make sure there was a differentiation
-  for (int p = 0; p < favorite_places; p++) {
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (favorite_place[p] == NULL) continue;
     favorite_place[p]->delete_susceptible(strain, self);
   }
@@ -197,7 +195,7 @@ void Behavior::become_immune(int strain) {
 
 void Behavior::recover(int strain) {
   // remove me from infectious list at my favorite places
-  for (int p = 0; p < favorite_places; p++) {
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (favorite_place[p] == NULL) continue;
     if (Test) {
       if (self->get_exposure_date(strain) == 0) {
@@ -211,13 +209,6 @@ void Behavior::recover(int strain) {
 
 
 int Behavior::compliance_to_vaccination(){
-    return self->get_cognition()->will_accept_vaccine(0);
-    /*
-      double compliance = self->get_population()->get_vaccine_manager()->get_vaccine_compliance();
-      if(RANDOM() < compliance){
-      return 1;
-      }
-      return 0;
-    */
+  return self->get_cognition()->will_accept_vaccine(0);
 }
 

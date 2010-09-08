@@ -38,7 +38,7 @@ public:
   UNIT_TEST_VIRTUAL void print(int strain) const;
   UNIT_TEST_VIRTUAL void print_out(int strain) const;
   UNIT_TEST_VIRTUAL void update_schedule(int day);
-  UNIT_TEST_VIRTUAL void get_schedule(int *n, Place **sched) const;
+  UNIT_TEST_VIRTUAL void get_schedule(int *n, Place **sched) { behavior->get_schedule(n, sched); }
   UNIT_TEST_VIRTUAL int is_on_schedule(int day, int loc) const { return behavior->is_on_schedule(day, loc); }
   
   UNIT_TEST_VIRTUAL void print_schedule() const;

@@ -62,6 +62,7 @@ Health::~Health(){
   for(unsigned int i=0;i<av_health.size();i++)
     delete av_health[i];
   av_health.clear();
+  takes_av = false;
 }
 
 void Health::reset() {
@@ -111,7 +112,9 @@ void Health::update(int day) {
     vaccine_health[i]->update(day, self->get_age());
   
   // possibly mutate infections
-  update_mutations(day);
+  if (takes_av) {
+    update_mutations(day);
+  }
   
   // update each infection
   for (int s = 0; s < strains; s++) {
@@ -126,9 +129,11 @@ void Health::update(int day) {
   }
   
   // update antiviral status
-  size = av_health.size();
-  for(int i = 0; i < size; i++)
-    av_health[i]->update(day);
+  if (takes_av) {
+    size = av_health.size();
+    for(int i = 0; i < size; i++)
+      av_health[i]->update(day);
+  }
 }
 
 void Health::update_mutations(int day) {
@@ -168,6 +173,8 @@ void Health::become_exposed(Infection * infection_ptr) {
       fprintf(Statusfp, "EXPOSED person %d to strain %d\n", self->get_id(), strain_id);
   }
   if (infection[strain_id] != NULL) {
+    assert(infection[strain_id]->get_strain_status() == 'R');
+    /*
     if (infection[strain_id]->get_strain_status() != 'R') {
       printf("WARNING! Attempted double exposure for strain %i in person %i. "
              "Current status is %c "
@@ -175,6 +182,7 @@ void Health::become_exposed(Infection * infection_ptr) {
              strain_id, self->get_id(), infection[strain_id]->get_strain_status());
       abort();
     }
+    */
     delete infection[strain_id];
     infection[strain_id] = infection_ptr;
   } else {
@@ -400,6 +408,7 @@ void Health::take(Vaccine* vaccine, int day){
 
 void Health::take(Antiviral* av, int day){
   av_health.push_back(new AV_Health(day,av,this));
+  takes_av = true;
   return;
 }
 
@@ -410,11 +419,3 @@ bool Health::is_on_av_for_strain(int day, int s) const {
   return false;
 }
 
-char Health::get_strain_status(int strain) const {
-  if (immunity[strain])
-    return 'M';
-  else if (!infection[strain])
-    return 'S';
-  else 
-    return infection[strain]->get_strain_status();
-}

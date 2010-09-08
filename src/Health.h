@@ -72,6 +72,7 @@ public:
   int get_number_vaccines_taken()        const { return vaccine_health.size();}
   AV_Health* get_av_health(int i)            const { return av_health[i];}
   Vaccine_Health* get_vaccine_health(int i)  const { return vaccine_health[i];}
+  bool takes_av;
   
   //Modifiers
   void modify_susceptibility(int strain, double multp);
@@ -103,5 +104,14 @@ private:
 protected:
   Health() { }
 };
+
+inline char Health::get_strain_status(int strain) const {
+  if (immunity[strain])
+    return 'M';
+  else if (!infection[strain])
+    return 'S';
+  else 
+    return infection[strain]->get_strain_status();
+}
 
 #endif // _FRED_HEALTH_H

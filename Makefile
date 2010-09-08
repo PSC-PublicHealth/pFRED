@@ -1,8 +1,15 @@
-##################### SynDEM src makefile ###########################
+##################### FRED Makefile ###########################
 
 #################  Compiler Flags ##############################
 CPP = g++ 
-CPPFLAGS = -m64 -O3 #-Wall
+
+# use this for development:
+# CPPFLAGS = -g -m64 -O3 -fast #-Wall
+
+# Use this for production:
+CPPFLAGS = -m64 -O3 -DNDEBUG -fast #-Wall
+
+# Use this for unit testing:
 # CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall
 
 ###############################################

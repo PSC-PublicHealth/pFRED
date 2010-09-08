@@ -17,9 +17,7 @@
 
 using namespace std;
 
-class Infection;
 class Person;
-class Place;
 class Population;
 class Age_Map;
 
@@ -32,11 +30,6 @@ public:
   UNIT_TEST_VIRTUAL void setup(int s, Population *pop,  double *mut_prob);
   UNIT_TEST_VIRTUAL void print();
   UNIT_TEST_VIRTUAL void update(int day);
-	
-  // If the infectee is susceptible, is at the given place on the given day,
-  // and if the random roll for transmissibility succeeds
-  // the infection is successful and attempt_infection returns true.
-  UNIT_TEST_VIRTUAL bool attempt_infection(Person* infector, Person* infectee, Place* place, int exposure_date);
 	
   // These methods draw from the underlying distributions to randomly determine some aspect of the infection.
   UNIT_TEST_VIRTUAL int get_days_latent();

@@ -16,6 +16,8 @@
 class Person;
 class Place;
 
+#define FAVORITE_PLACES 6
+
 class Behavior {
 public:
   Behavior (Person *person, Place **favorite_place, int pro);
@@ -32,7 +34,7 @@ public:
   UNIT_TEST_VIRTUAL void become_immune(int strain);
   UNIT_TEST_VIRTUAL void recover(int strain);
   UNIT_TEST_VIRTUAL int get_profile() { return profile; }
-  UNIT_TEST_VIRTUAL int get_favorite_places() { return favorite_places; }
+  UNIT_TEST_VIRTUAL int get_favorite_places() { return FAVORITE_PLACES; }
   UNIT_TEST_VIRTUAL int compliance_to_vaccination();
   UNIT_TEST_VIRTUAL Place * get_household() { return favorite_place[0]; }
   UNIT_TEST_VIRTUAL Place * get_neighborhood() { return favorite_place[1]; }
@@ -44,10 +46,10 @@ public:
 private:
   Person * self;	 // pointer to person using having this behavior
   int profile;				 // index of usual visit pattern
-  Place ** favorite_place;		      // list of expected places
-  int favorite_places;		   // number of places expected to visit
-  Place ** schedule;	     // list of place ids actually visited today
-  char * on_schedule;	    // 1 = favorite place is on schedule; 0 o.w.
+  Place * favorite_place[FAVORITE_PLACES];    // list of expected places
+  Place * schedule[FAVORITE_PLACES]; // list of places actually visited today
+  int schedule_id[FAVORITE_PLACES]; // list of ids of places actually visited today 
+  char on_schedule[FAVORITE_PLACES]; // 1 = favorite place is on schedule; 0 o.w.
   int scheduled_places;		 // number places actually visited today
   int schedule_updated;			 // date of last schedule update
   

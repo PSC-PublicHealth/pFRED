@@ -15,6 +15,7 @@
 #include <err.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <assert.h>
 
 // for unit testing, use the line in Makefile: gcc -DUNITTEST ...
 #ifdef UNITTEST
@@ -60,6 +61,9 @@ extern Population Pop;
 
 class Locations;
 extern Locations Loc;
+
+class Community;
+extern Community * Commune;
 
 void get_global_parameters();
 

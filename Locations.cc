@@ -29,6 +29,8 @@
 #include "Params.h"
 #include "Person.h"
 
+Community * Commune;
+
 void Locations::get_location_parameters() {
 }
 
@@ -52,7 +54,7 @@ void Locations::setup_locations() {
     fprintf(Statusfp, "Locations = %d\n", locations); fflush(Statusfp);
   }
   location = new (nothrow) Place * [locations];
-  if (location == NULL) { printf("Help! location array allocation failure\n"); abort(); }
+  assert(location != NULL);
   for (int loc = 0; loc < locations; loc++) {
     int id;
     char s[32];
@@ -94,7 +96,8 @@ void Locations::setup_locations() {
       place = new (nothrow) Hospital(id, s, lon, lat, container, &Pop);
     }
     else if (loctype == COMMUNITY) {
-      place = new (nothrow) Community(id, s, lon, lat, container, &Pop);
+      Commune = new (nothrow) Community(id, s, lon, lat, container, &Pop);
+      place = Commune;
     }
     else {
       printf ("Help! bad loctype = %c\n", loctype);

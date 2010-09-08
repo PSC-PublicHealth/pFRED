@@ -18,11 +18,7 @@
 using namespace std;
 
 #include "Global.h"
-#include "Infection.h"
-#include "Locations.h"
 #include "Params.h"
-#include "Person.h"
-#include "Place.h"
 #include "Population.h"
 #include "Random.h"
 #include "Age_Map.h"
@@ -96,15 +92,6 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   get_param(s, &n);
   days_incubating = new double [n];
   max_days_incubating = get_param_vector(s, days_incubating) -1;
-  
-  // This check disallows deprecated strain params
-  sprintf(s, "days_infectious[%d]", id);
-  if (does_param_exist(s)) {
-    printf("***** Found deprecated parameter ***** %s\n"
-           "New parameters are days_asymp and days_symp "
-           "Aborting\n", s);
-    abort();
-  }
   
   sprintf(s, "days_asymp[%d]", id);
   get_param(s, &n);
@@ -182,47 +169,6 @@ void Strain::print() {
   for (int i = 0; i <= max_days_asymp; i++)
     printf("%.3f ", days_asymp[i]);
   printf("\n");
-}
-
-bool Strain::attempt_infection(Person* infector, Person* infectee,
-                               Place* place, int exposure_date) {
-  // is the victim here today, and still susceptible?
-  if (infectee->is_on_schedule(exposure_date, place->get_id()) &&
-      infectee->get_strain_status(id) == 'S') {
-    if (Verbose > 1) { printf("Victim is here and is susceptible\n"); }
-    
-    // get the victim's susceptibility
-    double susceptibility;
-    double transmission_prob;
-    if (place && infector) {
-      transmission_prob = place->get_transmission_prob(id, infector, infectee);
-      susceptibility = infectee->get_susceptibility(id);
-    } else {
-      // This isn't a regular transmission - it's a seed case or a mutation.
-      transmission_prob = susceptibility = 1.0;
-    }
-    if (Verbose > 1) {
-      printf("trans_prob = %f  susceptibility = %f\n",
-             transmission_prob, susceptibility);
-    }
-    
-    double r = RANDOM();
-    if (r < transmission_prob*susceptibility) {
-      if (Verbose > 1) { printf("transmission succeeded: r = %f\n", r); }
-      Infection* i = new Infection(this, infector, infectee, place, exposure_date);
-      infectee->become_exposed(i);
-      if (infector)
-        infector->add_infectee(id);
-      return true;
-    }
-    if (Verbose > 1) { printf("transmission failed: r = %f\n", r); }
-    return false;
-  }
-  if (Verbose > 1) {
-    printf("Victim either not here or not susceptible, status = %c  exp_date = %d place_id = %d\n",
-           infectee->get_strain_status(id), exposure_date, place->get_id());
-  }
-  return false;
 }
 
 Strain* Strain::should_mutate_to() {
