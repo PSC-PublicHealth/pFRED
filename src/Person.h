@@ -39,7 +39,7 @@ public:
   UNIT_TEST_VIRTUAL void print_out(int strain) const;
   UNIT_TEST_VIRTUAL void update_schedule(int day);
   UNIT_TEST_VIRTUAL void get_schedule(int *n, Place **sched) { behavior->get_schedule(n, sched); }
-  UNIT_TEST_VIRTUAL int is_on_schedule(int day, int loc) const { return behavior->is_on_schedule(day, loc); }
+  UNIT_TEST_VIRTUAL int is_on_schedule(int day, int loc, char loctype) const { return behavior->is_on_schedule(day, loc, loctype); }
   
   UNIT_TEST_VIRTUAL void print_schedule() const;
   UNIT_TEST_VIRTUAL void become_susceptible(int strain);
@@ -53,11 +53,11 @@ public:
   
   // access functions:
   UNIT_TEST_VIRTUAL int get_id() const { return idx; }
+  UNIT_TEST_VIRTUAL Place *get_household() const;
   UNIT_TEST_VIRTUAL int get_age() const;
   UNIT_TEST_VIRTUAL char get_sex() const;
   UNIT_TEST_VIRTUAL char get_marital_status() const;
   UNIT_TEST_VIRTUAL int get_profession() const;
-  UNIT_TEST_VIRTUAL int get_places() const;
   UNIT_TEST_VIRTUAL char get_strain_status(int strain) const { return health->get_strain_status(strain); }
   UNIT_TEST_VIRTUAL double get_susceptibility(int strain) const;
   UNIT_TEST_VIRTUAL double get_infectivity(int strain) const;

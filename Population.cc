@@ -310,14 +310,8 @@ void Population::population_quality_control() {
   
   // check population
   for (int p = 0; p < pop_size; p++) {
-    if (pop[p]->get_places() == 0) {
+    if (pop[p]->get_behavior()->get_household() == NULL) {
       fprintf(Statusfp, "Help! Person %d has no home.\n",p);
-      pop[p]->print(0);
-      continue;
-    }
-    if (pop[p]->get_places() == 0) {
-      fprintf(Statusfp,
-              "Help! Person %d has no place to go\n",p);
       pop[p]->print(0);
     }
   }

@@ -60,7 +60,7 @@ void Person::print(int strain) const {
           demographics->get_profession());
   fprintf(Tracefp, "exp: %2d  inf: %2d  rem: %2d ",
           health->get_exposure_date(strain), health->get_infectious_date(strain), health->get_recovered_date(strain));
-  fprintf(Tracefp, "places %d ", behavior->get_favorite_places());
+  fprintf(Tracefp, "places %d ", FAVORITE_PLACES);
   fprintf(Tracefp, "infected_at %c %6d ",
           health->get_infected_place_type(strain), health->get_infected_place(strain));
   fprintf(Tracefp, "infector %d ", health->get_infector(strain));
@@ -89,7 +89,7 @@ void Person::print_out(int strain) const {
           demographics->get_profession());
   fprintf(stdout, "exp: %2d  inf: %2d  rem: %2d ",
           health->get_exposure_date(strain), health->get_infectious_date(strain), health->get_recovered_date(strain));
-  fprintf(stdout, "places %d ", behavior->get_favorite_places());
+  fprintf(stdout, "places %d ", FAVORITE_PLACES);
   fprintf(stdout, "infected_at %c %6d ",
           health->get_infected_place_type(strain), health->get_infected_place(strain));
   fprintf(stdout, "infector %d ", health->get_infector(strain));
@@ -173,6 +173,10 @@ int Person::is_symptomatic() const {
   return health->is_symptomatic();
 }
 
+Place * Person::get_household() const {
+  return behavior->get_household();
+}
+
 int Person::get_age() const {
   return demographics->get_age();
 }
@@ -187,10 +191,6 @@ char Person::get_marital_status() const {
 
 int Person::get_profession() const {
   return demographics->get_profession();
-}
-
-int Person::get_places() const {
-  return behavior->get_favorite_places();
 }
 
 double Person::get_susceptibility(int strain) const {

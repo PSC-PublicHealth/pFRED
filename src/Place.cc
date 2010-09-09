@@ -215,7 +215,7 @@ void Place::spread_infection(int day, int s) {
 		
     // skip if this infector did not visit today
     if (Verbose > 1) { printf("Is infector %d here?  ", infector->get_id()); }
-    if (infector->is_on_schedule(day, id) == 0) {  
+    if (infector->is_on_schedule(day, id, type) == false) {  
       if (Verbose > 1) { printf("No\n"); }
       continue;
     }
@@ -256,7 +256,7 @@ void Place::spread_infection(int day, int s) {
       }
 
       // is the victim here today, and still susceptible?
-      if (infectee->is_on_schedule(day, id) && infectee->get_strain_status(s) == 'S') {
+      if (infectee->is_on_schedule(day, id, type) && infectee->get_strain_status(s) == 'S') {
 	if (Verbose > 1) { printf("Victim is here\n"); }
     
 	// get the victim's susceptibility

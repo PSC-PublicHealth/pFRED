@@ -38,7 +38,6 @@ class Place {
 public:
   Place() {}
   UNIT_TEST_VIRTUAL ~Place() {}
-	
   UNIT_TEST_VIRTUAL void setup(int loc_id, const char *lab, double lon, double lat, Place *cont, Population *pop);
   UNIT_TEST_VIRTUAL void reset();
   UNIT_TEST_VIRTUAL void update(int day);
@@ -60,7 +59,6 @@ public:
   virtual double get_transmission_prob(int strain, Person * i, Person * s) = 0;
   virtual double get_contacts_per_day(int strain) = 0; // access functions
   virtual int should_be_open(int day, int strain) { return 1; }
-	
   UNIT_TEST_VIRTUAL int get_id() { return id; }
   UNIT_TEST_VIRTUAL char * get_label() { return label; }
   UNIT_TEST_VIRTUAL int get_type() { return type; }

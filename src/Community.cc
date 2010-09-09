@@ -112,7 +112,7 @@ void Community::spread_infection_in_community(int day, int s) {
 		
     // skip if this infector did not visit today
     if (Verbose > 1) { printf("Is infector %d here?  ", infector->get_id()); }
-    if (!infector->is_on_schedule(day, id)) {  
+    if (!infector->is_on_schedule(day, id, type)) {  
       if (Verbose > 1) { printf("No\n"); }
       continue;
     }
@@ -159,7 +159,7 @@ void Community::spread_infection_in_community(int day, int s) {
       int strain_id = strain->get_id();
 
       // is the victim here today, and still susceptible?
-      if (infectee->is_on_schedule(day, id) &&
+      if (infectee->is_on_schedule(day, id, type) &&
 	  infectee->get_strain_status(strain_id) == 'S') {
 	if (Verbose > 1) { printf("Victim is here and is susceptible\n"); }
     
