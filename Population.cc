@@ -220,16 +220,6 @@ void Population::update(int day) {
   }
   
   av_manager->disseminate(day);
-  
-
-  int count = 0;
-  int icount = 0;
-  for(int p=0; p < pop_size; p++){
-    if(pop[p]->get_health()->is_vaccinated()){ count++; }
-    if(pop[p]->get_health()->is_immune(&strain[0])){ icount++; }
-  }
-  cout << "People Vaccinated: " << count << "  Immunized:  " << icount << "\n";
-  
 }
 
 void Population::report(int day) {

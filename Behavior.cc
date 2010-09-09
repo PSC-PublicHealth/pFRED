@@ -52,16 +52,6 @@ void Behavior::reset() {
 }
 
 void Behavior::update(int day) {
-  // testing update costs
-  if (0) {
-    int strains = self->get_population()->get_strains();
-    for (int strain = 0; strain < strains; strain++) {
-      for (int p = 0; p < FAVORITE_PLACES; p++) {
-	if (favorite_place[p] == NULL) continue;
-	favorite_place[p]->add_visitor(self);
-      }
-    }
-  }
 }
 
 bool Behavior::is_on_schedule(int day, int loc, char loctype) {
@@ -95,48 +85,39 @@ void Behavior::print_schedule() {
 void Behavior::update_schedule(int day) {
   int day_of_week;
   if (schedule_updated < day) {
+    day_of_week = (day + Start_day_of_week) % DAYS_PER_WEEK;
     schedule_updated = day;
-    int scheduled_places = 0;
     for (int p = 0; p < FAVORITE_PLACES; p++) {
       on_schedule[p] = false;
     }
-    day_of_week = (day + Start_day_of_week) % DAYS_PER_WEEK;
 		
     // decide whether to stay at home if symptomatic
     int is_symptomatic = self->is_symptomatic();
     if (is_symptomatic) {
       if (RANDOM() < Strain::get_prob_stay_home()) {
-	scheduled_places = 1;
 	on_schedule[0] = true;
+	return;
       }
     }
 		
     // decide whether to stay home from school
-    if (0 < day_of_week && day_of_week < 6) {
-      if (scheduled_places == 0 && self->get_age() < 18) {
-	if (self->get_cognition()->will_keep_kids_home()) {
-	  scheduled_places = 1;
-	  on_schedule[0] = true;
-	  printf("day %d age %d staying home\n",day,self->get_age());
-	  fflush(stdout);
-	}
+    if (0 < day_of_week && day_of_week < 6 && self->get_age() < 18) {
+      if (self->get_cognition()->will_keep_kids_home()) {
+	on_schedule[0] = true;
+	return;
       }
     }
 		
     // if not staying home or traveling, consult usual schedule
-    if (scheduled_places == 0) {
-      for (int p = 0; p < FAVORITE_PLACES; p++) {
-	if (favorite_place[p] == NULL) continue;
+    for (int p = 0; p < FAVORITE_PLACES; p++) {
+      if (favorite_place[p] == NULL) continue;
 
-	// visit classroom or office iff going to school or work
-	if (p == CLASSROOM_INDEX || p == OFFICE_INDEX) {
-	  if (on_schedule[p-1]) {
-	    on_schedule[p] = true;
-	  }
-	}
-	else if (is_visited(p, profile, day_of_week)) {
-	  on_schedule[p] = true;
-	}
+      // visit classroom or office iff going to school or work
+      if (p == CLASSROOM_INDEX || p == OFFICE_INDEX) {
+	on_schedule[p] = on_schedule[p-1];
+      }
+      else {
+	on_schedule[p] = is_visited(p, profile, day_of_week);
       }
     }
 		
@@ -161,29 +142,30 @@ void Behavior::get_schedule(int *n, Place **sched) {
 void Behavior::become_susceptible(int strain) {
   // add me to susceptible list at my favorite places
   for (int p = 0; p < FAVORITE_PLACES; p++) {
-    if (favorite_place[p] == NULL) continue;
-    favorite_place[p]->add_susceptible(strain, self);
+    if (favorite_place[p] != NULL)
+      favorite_place[p]->add_susceptible(strain, self);
   }
 }
 
 void Behavior::become_exposed(int strain) {
   // remove me from susceptible list at my favorite places
   for (int p = 0; p < FAVORITE_PLACES; p++) {
-    if (favorite_place[p] == NULL) continue;
-    favorite_place[p]->delete_susceptible(strain, self);
+    if (favorite_place[p] != NULL)
+      favorite_place[p]->delete_susceptible(strain, self);
   }
 }
 
 void Behavior::become_infectious(int strain) {
   // add me to infectious list at my favorite places
   for (int p = 0; p < FAVORITE_PLACES; p++) {
-    if (favorite_place[p] == NULL) continue;
-    if (Test) {
-      if (self->get_exposure_date(strain) == 0) {
+    if (favorite_place[p] != NULL) {
+      if (Test) {
+	if (self->get_exposure_date(strain) == 0) {
+	  favorite_place[p]->add_infectious(strain, self);
+	}
+      } else {
 	favorite_place[p]->add_infectious(strain, self);
       }
-    } else {
-      favorite_place[p]->add_infectious(strain, self);
     }
   }
 }
@@ -193,21 +175,22 @@ void Behavior::become_immune(int strain) {
   // STB - While this is really the same as become_exposed, I thought it important to 
   //       make sure there was a differentiation
   for (int p = 0; p < FAVORITE_PLACES; p++) {
-    if (favorite_place[p] == NULL) continue;
-    favorite_place[p]->delete_susceptible(strain, self);
+    if (favorite_place[p] != NULL) 
+      favorite_place[p]->delete_susceptible(strain, self);
   }
 }
 
 void Behavior::recover(int strain) {
   // remove me from infectious list at my favorite places
   for (int p = 0; p < FAVORITE_PLACES; p++) {
-    if (favorite_place[p] == NULL) continue;
-    if (Test) {
-      if (self->get_exposure_date(strain) == 0) {
+    if (favorite_place[p] != NULL) {
+      if (Test) {
+	if (self->get_exposure_date(strain) == 0) {
+	  favorite_place[p]->delete_infectious(strain, self);
+	}
+      } else {
 	favorite_place[p]->delete_infectious(strain, self);
       }
-    } else {
-      favorite_place[p]->delete_infectious(strain, self);
     }
   }
 }

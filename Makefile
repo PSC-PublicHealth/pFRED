@@ -6,6 +6,9 @@ CPP = g++
 # use this for development:
 CPPFLAGS = -g -m64 -O3 -fast #-Wall
 
+# use this for profiling
+# CPPFLAGS = -g -m64 -O3 -DNDEBUG
+
 # Use this for production:
 # CPPFLAGS = -m64 -O3 -DNDEBUG -fast #-Wall
 
