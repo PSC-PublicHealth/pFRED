@@ -13,11 +13,11 @@
 #define _FRED_AV_MANAGER_H
 
 #include "Antivirals.h"
+#include "Manager.h"
 
 #define AV_POLICY_PERCENT_SYMPT 0
 #define AV_POLICY_GIVE_EVERYONE 1
 
-class Manager;
 class Population;
 class Person;
 class Policy; 
