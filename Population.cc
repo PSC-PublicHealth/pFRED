@@ -126,6 +126,10 @@ void Population::read_population() {
   // allocate population array
   pop = new (nothrow) Person* [pop_size];
 	
+  // clear age-related lists
+  children.clear();
+  adults.clear();
+
   for (int i = 0; i < pop_size; i++)
     pop[i] = new Person;
 	
@@ -154,6 +158,12 @@ void Population::read_population() {
     }; 
     pop[p]->setup(id, age, sex, married, prof, favorite_place, profile, this);
     pop[p]->reset();
+    if (age < 18) {
+      children.push_back(pop[p]);
+    }
+    else {
+      adults.push_back(pop[p]);
+    }
   }
   fclose(fp);
   if (Verbose) {
@@ -201,24 +211,21 @@ void Population::reset(int run) {
 void Population::update(int day) {
 
   // update adults first, so that they can make decisions for minors
-  for (int p = 0; p < pop_size; p++){
-    if (18 <= pop[p]->get_age())
-      pop[p]->update(day);
+  vector<Person *>::iterator itr;
+  for (itr = adults.begin(); itr != adults.end(); itr++) {
+    (*itr)->update(day);
   }
-  
+
   // update minors, who may use adult's decisions
-  for (int p = 0; p < pop_size; p++){
-    if (pop[p]->get_age() < 18)
-      pop[p]->update(day);
+  for (itr = children.begin(); itr != children.end(); itr++) {
+    (*itr)->update(day);
   }
-  
+
   vacc_manager->update(day);
   av_manager->update(day);
-  
   for (int s = 0; s < strains; s++) {
     strain[s].update(day);
   }
-  
   av_manager->disseminate(day);
 }
 

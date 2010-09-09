@@ -45,7 +45,7 @@ public:
   int is_symptomatic() const;
   bool is_immune(Strain* strain) const { return immunity[strain->get_id()]; }
   bool is_at_risk(Strain* strain) const { return at_risk[strain->get_id()]; }
-  char get_strain_status (int strain) const;
+  char get_strain_status (int strain) const { return status[strain]; }
   Person* get_self() const { return self;}
   int get_num_strains() const { return strains; }
   int add_infectee(int strain);
@@ -73,6 +73,7 @@ public:
   AV_Health* get_av_health(int i)            const { return av_health[i];}
   Vaccine_Health* get_vaccine_health(int i)  const { return vaccine_health[i];}
   bool takes_av;
+  bool takes_vaccine;
   
   //Modifiers
   void modify_susceptibility(int strain, double multp);
@@ -100,18 +101,10 @@ private:
   vector < bool > checked_for_av;
   vector < AV_Health * > av_health;
   vector < Vaccine_Health * > vaccine_health;
+  char * status;
 
 protected:
   Health() { }
 };
-
-inline char Health::get_strain_status(int strain) const {
-  if (immunity[strain])
-    return 'M';
-  else if (!infection[strain])
-    return 'S';
-  else 
-    return infection[strain]->get_strain_status();
-}
 
 #endif // _FRED_HEALTH_H

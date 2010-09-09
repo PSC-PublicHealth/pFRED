@@ -13,6 +13,8 @@
 #define _FRED_POPULATION_H
 
 #include "Global.h"
+#include <vector>
+
 class Person;
 class Strain;
 class Antivirals;
@@ -52,9 +54,11 @@ public:
   UNIT_TEST_VIRTUAL void set_changed(Person *p);
   
 private:
-  char popfile[80];
-  char profilefile[80];
-  Person **pop;
+  char popfile[256];
+  char profilefile[256];
+  Person **pop;					// list of all agents
+  vector<Person *> children;		  // list of children (under 18)
+  vector<Person *> adults;		 // list of adults (18 or older)
   ChangeMap incremental_changes; // incremental "list" (actually a C++ map)
 				 // of those agents whose stats
 				 // have changed since the last history dump

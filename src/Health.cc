@@ -33,8 +33,10 @@ Health::Health (Person * person) {
   strains = self->get_population()->get_strains();
   
   infection = new Infection* [strains];
+  status = new char [strains];
   for (int strain = 0; strain < strains; strain++) {
     infection[strain] = NULL;
+    status[strain] = 'S';
   }
   susceptibility_multp = new double [strains];
   
@@ -59,6 +61,8 @@ Health::~Health(){
   for(unsigned int i=0;i<vaccine_health.size();i++)
     delete vaccine_health[i];
   vaccine_health.clear();
+  takes_vaccine = false;
+
   for(unsigned int i=0;i<av_health.size();i++)
     delete av_health[i];
   av_health.clear();
@@ -66,7 +70,6 @@ Health::~Health(){
 }
 
 void Health::reset() {
-  
   immunity.assign(immunity.size(),false);
   at_risk.assign(at_risk.size(),false);
   for (int strain = 0; strain < strains; strain++) {
@@ -77,10 +80,12 @@ void Health::reset() {
   for(unsigned int i=0;i<vaccine_health.size();i++)
     delete vaccine_health[i];
   vaccine_health.clear();
+  takes_vaccine = false;
   
   for(unsigned int i=0;i<av_health.size();i++)
     delete av_health[i];
   av_health.clear();
+  takes_av = false;
   
   checked_for_av.assign(checked_for_av.size(),false);
   
@@ -103,14 +108,17 @@ void Health::become_susceptible(int strain) {
   }
   susceptibility_multp[strain] = 1.0;
   self->get_population()->get_strain(strain)->increment_S_count();
+  status[strain] = 'S';
 }
 
 void Health::update(int day) {
   // update vaccine status
-  int size = (int) vaccine_health.size();
-  for (int i = 0; i < size; i++)
-    vaccine_health[i]->update(day, self->get_age());
-  
+  if (takes_vaccine) {
+    int size = (int) vaccine_health.size();
+    for (int i = 0; i < size; i++)
+      vaccine_health[i]->update(day, self->get_age());
+  }
+
   // possibly mutate infections
   if (takes_av) {
     update_mutations(day);
@@ -118,19 +126,16 @@ void Health::update(int day) {
   
   // update each infection
   for (int s = 0; s < strains; s++) {
-    char status = self->get_strain_status(s);
-    if (status == 'S' || status == 'M')
+    if (status[s] == 'S' || status[s] == 'M')
       continue;
-    
     infection[s]->update(day);
-    
     if (infection[s]->get_strain_status() == 'S')
       self->become_susceptible(s);
   }
   
   // update antiviral status
   if (takes_av) {
-    size = av_health.size();
+    int size = av_health.size();
     for(int i = 0; i < size; i++)
       av_health[i]->update(day);
   }
@@ -142,8 +147,7 @@ void Health::update_mutations(int day) {
   // is not relevant right now (only 1 or 2 strains)
   // First, update vaccine status
   for (int s = 0; s < strains; s++) {
-    char status = get_strain_status(s);
-    if (status == 'S' || status == 'M' || status == 'R')
+    if (status[s] == 'S' || status[s] == 'M' || status[s] == 'R')
       continue;
     if (is_on_av_for_strain(day, s) == true) {
       if (Verbose > 1) {
@@ -174,21 +178,12 @@ void Health::become_exposed(Infection * infection_ptr) {
   }
   if (infection[strain_id] != NULL) {
     assert(infection[strain_id]->get_strain_status() == 'R');
-    /*
-    if (infection[strain_id]->get_strain_status() != 'R') {
-      printf("WARNING! Attempted double exposure for strain %i in person %i. "
-             "Current status is %c "
-             "Double infection is not supported.\n",
-             strain_id, self->get_id(), infection[strain_id]->get_strain_status());
-      abort();
-    }
-    */
     delete infection[strain_id];
     infection[strain_id] = infection_ptr;
   } else {
     infection[strain_id] = infection_ptr;
   }
-  // strain->insert_into_exposed_list(self);
+  status[strain_id] = 'E';
   
   if (All_strains_antigenically_identical) {
     // HACK - this is probably NOT how we want to do this.  But strain
@@ -216,27 +211,30 @@ void Health::become_infectious(Strain * strain) {
     fflush(Statusfp);
   }
   infection[strain_id]->become_infectious();
-  // strain->remove_from_exposed_list(self);
   strain->insert_into_infectious_list(self);
+  status[strain_id] = infection[strain_id]->get_strain_status();
   if (Verbose > 1) {
     fprintf(Statusfp, "INFECTIOUS person %d for strain %d has status %c %d\n",
-            self->get_id(), strain_id, get_strain_status(strain_id),is_symptomatic());
+            self->get_id(), strain_id, status[strain_id], is_symptomatic());
     fflush(Statusfp);
   }
 }
 
 void Health::become_symptomatic(Strain *strain) {
-  if (!infection[strain->get_id()])
+  int strain_id = strain->get_id();
+  if (!infection[strain_id])
     throw logic_error("become symptomatic: cannot, without being exposed first");
   infection[strain->get_id()]->become_symptomatic();
+  status[strain_id] = 'I';
 }
 
 
 void Health::become_immune(Strain* strain) {
   int strain_id = strain->get_id();
-  if(get_strain_status(strain_id) == 'S'){
+  if(status[strain_id] == 'S'){
     immunity[strain_id] = true; 
     strain->increment_M_count();
+    status[strain_id] = 'M';
   }
 }
 
@@ -249,6 +247,7 @@ void Health::recover(Strain * strain) {
   int strain_id = strain->get_id();
   infection[strain_id]->recover();
   strain->remove_from_infectious_list(self);
+  status[strain_id] = 'R';
 }
 
 int Health::is_symptomatic() const {
@@ -388,6 +387,7 @@ void Health::modify_develops_symptoms(int strain, bool symptoms, int cur_day) {
     if(Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomaticity  for strain " << strain 
 		       << " to " << symptoms << "\n";
     infection[strain]->modify_develops_symptoms(symptoms, cur_day);
+    status[strain] = 'I';
   }
 }
 
@@ -396,6 +396,7 @@ void Health::take(Vaccine* vaccine, int day){
   // Compliance will be somewhere else
   int age = self->get_age();
   vaccine_health.push_back(new Vaccine_Health(day,vaccine,age,this));
+  takes_vaccine = true;
   
   if (VaccineTracefp != NULL) {
     fprintf(VaccineTracefp," id %7d vaccid %3d",self->get_id(),vaccine_health[vaccine_health.size()-1]->get_vaccine()->get_ID());
