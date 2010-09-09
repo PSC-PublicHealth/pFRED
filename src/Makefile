@@ -4,13 +4,13 @@
 CPP = g++ 
 
 # use this for development:
-# CPPFLAGS = -g -m64 -O3 -fast #-Wall
+CPPFLAGS = -g -m64 -O3 -fast #-Wall
 
 # Use this for production:
 # CPPFLAGS = -m64 -O3 -DNDEBUG -fast #-Wall
 
 # Use this for unit testing:
-CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall
+# CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall
 
 ###############################################
 
@@ -49,8 +49,8 @@ GMOCK_DIR = gmock
 # Where to find user code.
 USER_DIR = TestSuite
 
-# Flags passed to the preprocessor.
-CPPFLAGS += -I$(GTEST_DIR)/include -I$(GMOCK_DIR)/include
+# Flags passed to the preprocessor. (Uncomment if testing)
+# CPPFLAGS += -I$(GTEST_DIR)/include -I$(GMOCK_DIR)/include
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
