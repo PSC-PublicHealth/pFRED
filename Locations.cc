@@ -10,10 +10,8 @@
 //
 
 #include "Locations.h"
-
 #include <set>
 #include <new>
-#include <iostream>
 #include "Population.h"
 #include "Strain.h"
 #include "Global.h"

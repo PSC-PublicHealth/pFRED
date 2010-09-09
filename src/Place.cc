@@ -105,10 +105,12 @@ void Place::add_susceptible(int strain, Person * per) {
 void Place::delete_susceptible(int strain, Person * per) {
   int s = (int) susceptibles[strain].size();
   assert(s > 0);
-  Person * last = susceptibles[strain][s-1];
+  // The following may look inefficient, but it performs well because lists
+  // and generally small.  More efficient that using sets or maps due to the need
+  // for random access in spread_infection()
   for (int i = 0; i < s; i++) {
     if (susceptibles[strain][i] == per) {
-      susceptibles[strain][i] = last;
+      susceptibles[strain][i] = susceptibles[strain][s-1];
       susceptibles[strain].pop_back();
       S[strain]--;
       break;
@@ -131,6 +133,9 @@ void Place::add_infectious(int strain, Person * per) {
 void Place::delete_infectious(int strain, Person * per) {
   int s = (int) infectious[strain].size();
   assert(s > 0);
+  // The following may look inefficient, but it performs well because lists
+  // and generally small.  More efficient that using sets or maps due to the need
+  // for random access in spread_infection()
   for (int i = 0; i < s; i++) {
     if (infectious[strain][i] == per) {
       infectious[strain][i] = infectious[strain][s-1];
@@ -142,6 +147,7 @@ void Place::delete_infectious(int strain, Person * per) {
       break;
     }
   }
+  assert(infectious[strain].size() == static_cast<unsigned int>(I[strain]));
 }
 
 void Place::print_susceptibles(int strain) {
