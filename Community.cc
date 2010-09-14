@@ -36,6 +36,15 @@ void Community::get_parameters(int strains) {
   Community_contacts_per_day = new double [ strains ];
   Community_contact_prob = new double** [ strains ];
   
+  susceptible_child = new (nothrow) vector<Person *> [strains];
+  assert (susceptible_child != NULL);
+  infectious_child = new (nothrow) set<Person *> [strains];
+  assert (infectious_child != NULL);
+  susceptible_adult = new (nothrow) vector<Person *> [strains];
+  assert (susceptible_adult != NULL);
+  infectious_adult = new (nothrow) set<Person *> [strains];
+  assert (infectious_adult != NULL);
+  
   for (int s = 0; s < strains; s++) {
     int n;
     sprintf(param_str, "community_contacts[%d]", s);
@@ -52,8 +61,13 @@ void Community::get_parameters(int strains) {
         printf("\n");
       }
     }
+    susceptible_child[s].clear();
+    infectious_child[s].clear();
+    susceptible_adult[s].clear();
+    infectious_adult[s].clear();
   }
   Community_parameters_set = 1;
+
 }
 
 int Community::get_group_type(int strain, Person * per) {
@@ -75,7 +89,76 @@ double Community::get_contacts_per_day(int strain) {
   return Community_contacts_per_day[strain];
 }
 
-void Community::spread_infection_in_community(int day, int s) {
+void Community::reset() {
+  int strains = population->get_strains();
+  for (int s = 0; s < strains; s++) {
+    susceptible_child[s].clear();
+    infectious_child[s].clear();
+    susceptible_adult[s].clear();
+    infectious_adult[s].clear();
+    Sympt[s] = S[s] = I[s] = 0;
+    total_cases[s] = total_deaths[s] = 0;
+  }
+  if (Verbose > 2) {
+    printf("reset place: %d\n", id);
+    print(0);
+    fflush(stdout);
+  }
+  close_date = INT_MAX;
+  open_date = 0;
+}
+
+void Community::add_susceptible(int strain, Person * per) {
+  int age = per->get_age();
+  if (age < 18) {
+    susceptible_child[strain].push_back(per);
+  }
+  else {
+    susceptible_adult[strain].push_back(per);
+  }
+  S[strain]++;
+  assert (S[strain] == (static_cast <int> (susceptible_child[strain].size()) + static_cast <int> (susceptible_adult[strain].size())));
+}
+
+
+void Community::delete_susceptible(int strain, Person * per) {
+}
+
+void Community::add_infectious(int strain, Person * per) {
+  int age = per->get_age();
+  if (age < 18) {
+    infectious_child[strain].insert(per);
+  }
+  else {
+    infectious_adult[strain].insert(per);
+  }
+  I[strain]++;
+  assert(I[strain] == (static_cast <int> (infectious_child[strain].size())+static_cast <int> (infectious_child[strain].size())));
+  if (per->get_strain_status(strain) == 'I') {
+    Sympt[strain]++;
+    cases[strain]++;
+    total_cases[strain]++;
+  }
+}
+
+void Community::delete_infectious(int strain, Person * per) {
+  int age = per->get_age();
+  if (age < 18) {
+    assert(infectious_child[strain].find(per) != infectious[strain].end());
+    infectious_child[strain].erase(per);
+  }
+  else {
+    assert(infectious_adult[strain].find(per) != infectious[strain].end());
+    infectious_adult[strain].erase(per);
+  }
+  I[strain]--;
+  if (per->get_strain_status(strain)=='I') {
+    Sympt[strain]--;
+  }
+  assert(I[strain] == (static_cast <int> (infectious_child[strain].size())+static_cast <int> (infectious_child[strain].size())));
+}
+
+void Community::spread_infection(int day, int s) {
   if (1 || Verbose > 1) { print(s); }
   // if (N < 2) return;
   if (S[s] == 0) return;

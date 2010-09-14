@@ -221,5 +221,5 @@ void Spread::update(int day) {
     place->spread_infection(day, id);
   }
 
-  community->spread_infection_in_community(day, id);
+  community->spread_infection(day, id);
 }
