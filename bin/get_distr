@@ -7,7 +7,7 @@ for my $i (1..20) {
     # print "distr for run $i\n";
     `grep -v 'S id' $dir/trace$i.txt | grep -v 'M id' > tmp`;
     $n = `wc -l tmp | awk '{print $1}'`;
-    my @places = qw/N H C S O W/;
+    my @places = qw/N H C S O W X/;
     my $tot = 0.0;
     for my $p (@places) {
       # print "p = $p  n = $n\n";
@@ -25,6 +25,8 @@ my $mean;
 my $std;
 ($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 1`;
 printf "N %5.2f %4.2f %d\n", $mean, $std, $n;  
+($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 7`;
+printf "X %5.2f %4.2f %d\n", $mean, $std, $n;  
 ($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 2`;
 printf "H %5.2f %4.2f %d\n", $mean, $std, $n;  
 ($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 3`;
