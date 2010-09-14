@@ -16,6 +16,8 @@
 #include "Person.h"
 #include "Strain.h"
 
+Community * community;
+
 double * Community_contacts_per_day;
 double *** Community_contact_prob;
 int Community_parameters_set = 0;
@@ -74,15 +76,16 @@ double Community::get_contacts_per_day(int strain) {
 }
 
 void Community::spread_infection_in_community(int day, int s) {
-  return;
-  vector<Person *>::iterator itr;
-  Strain * strain = population->get_strain(s);
-  if (Verbose > 1) { print(s); }
-  if (N < 2) return;
+  if (1 || Verbose > 1) { print(s); }
+  // if (N < 2) return;
   if (S[s] == 0) return;
 	
+  set<Person *>::iterator itr;
+  Strain * strain = population->get_strain(s);
+  double beta = strain->get_transmissibility();
+
   // expected number of susceptible contacts for each infectious person
-  double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
+  double contacts = get_contacts_per_day(s);
   if (Verbose > 1) {
     printf("Strain %i, expected suscept contacts = %.3f * %i / %i = %f\n",
            s, get_contacts_per_day(s), S[s], (N-1), contacts);
@@ -91,28 +94,23 @@ void Community::spread_infection_in_community(int day, int s) {
   
   // expected upper bound on number of contacts resulting in infection
   // (per infective)
-  contacts *= strain->get_transmissibility();
+  contacts *= beta;
   if (Verbose > 1) {
-    printf("beta = %.10f\n", strain->get_transmissibility());
+    printf("beta = %.10f\n", beta);
     printf("effective contacts = %f\n", contacts);
     fflush(stdout);
   }
 	
-  if (contacts == 0.0) { return; }
-
   for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
-    if (S[s] == 0) break;
+    int number_susceptibles = S[s];
+    if (number_susceptibles == 0) break;
     Person * infector = *itr;			// infectious indiv
-    if (Debug && infector->get_strain_status(s) != 'I' &&
-        infector->get_strain_status(s) != 'i') {
-      printf("Non-infectious person on infectious list: person %i day %i\n",
-             infector->get_id(), day);
-      abort();
-    }
+    assert(infector->get_strain_status(s) == 'I' ||
+	   infector->get_strain_status(s) == 'i');
 		
     // skip if this infector did not visit today
     if (Verbose > 1) { printf("Is infector %d here?  ", infector->get_id()); }
-    if (!infector->is_on_schedule(day, id, type)) {  
+    if (infector->is_on_schedule(day, id, type) == false) {  
       if (Verbose > 1) { printf("No\n"); }
       continue;
     }
@@ -135,50 +133,52 @@ void Community::spread_infection_in_community(int day, int s) {
       fflush(stdout);
     }
 		
-    // get susceptible target for each contact resulting in infection
-    for (int c = 0; c < contact_count; c++) {
+    // get a susceptible target for each contact resulting in infection
+    // for (int c = 0; c < contact_count; c++) {
+    int c = 0;
+    while(c < contact_count) {
       // This check for S[s] == 0 looks redundant, because it's also done
       // in the outer loop - but this inner loop can itself change S[s]
       // so we need to check within the loop too.
-      if (S[s] == 0)
-	break;
+      if (S[s] == 0) { break; }
+
+      if (0.0048 < RANDOM()) {
+	c++;
+	continue;
+      }
+
       double r = RANDOM();
       int pos = (int) (r*S[s]);
       Person * infectee = susceptibles[s][pos];
-      if (Debug && infectee->get_strain_status(s) != 'S') {
-	printf("Non-susceptible person on susceptible list for "
-               "strain %i: person %i day %i\n",
-               s, infectee->get_id(), day);
-	abort();
-      }
       if (Verbose > 1) {
 	printf("my possible victim = %d  prof = %d r = %f  pos = %d  S[%d] = %d\n",
-               infectee->get_id(), infectee->get_behavior()->get_profile(), r, pos, s, S[s]);
+               infectee->get_id(), infectee->get_behavior()->get_profile(),
+	       r, pos, s, S[s]);
+	fflush(stdout);
       }
 
-      int strain_id = strain->get_id();
-
       // is the victim here today, and still susceptible?
-      if (infectee->is_on_schedule(day, id, type) &&
-	  infectee->get_strain_status(strain_id) == 'S') {
-	if (Verbose > 1) { printf("Victim is here and is susceptible\n"); }
+      if (infectee->is_on_schedule(day, id, type) && infectee->get_strain_status(s) == 'S') {
+	if (Verbose > 1) { printf("Victim is here\n"); }
     
 	// get the victim's susceptibility
-	double susceptibility;
-	double transmission_prob;
-	transmission_prob = get_transmission_prob(strain_id, infector, infectee);
-	susceptibility = infectee->get_susceptibility(strain_id);
+	double transmission_prob = 1.0;
+	// double transmission_prob = get_transmission_prob(s, infector, infectee);
+	double susceptibility = infectee->get_susceptibility(s);
 	if (Verbose > 1) {
 	  printf("trans_prob = %f  susceptibility = %f\n",
 		 transmission_prob, susceptibility);
 	}
     
+	// if (victim within distance radius) { ...
+
+	// attempt transmission
 	double r = RANDOM();
 	if (r < transmission_prob*susceptibility) {
 	  if (Verbose > 1) { printf("transmission succeeded: r = %f\n", r); }
-	  Infection* i = new Infection(strain, infector, infectee, this, day);
-	  infectee->become_exposed(i);
-	  infector->add_infectee(strain_id);
+	  Infection * infection = new Infection(strain, infector, infectee, this, day);
+	  infectee->become_exposed(infection);
+	  infector->add_infectee(s);
 	  if (Verbose > 1) {
 	    if (infector->get_exposure_date(s) == 0) {
 	      printf("SEED infection day %i from %d to %d\n",
@@ -192,8 +192,12 @@ void Community::spread_infection_in_community(int day, int s) {
 	else {
 	  if (Verbose > 1) { printf("transmission failed: r = %f\n", r); }
 	}
+	c++;
+	// } // victim within distance radius
       }
     } // end contact loop
   } // end infectious list loop
   if (Verbose > 1) { fflush(stdout); }
 }
+
+

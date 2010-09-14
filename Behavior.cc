@@ -15,6 +15,7 @@
 #include "Global.h"
 #include "Profile.h"
 #include "Place.h"
+#include "Community.h"
 #include "Random.h"
 #include "Strain.h"
 #include "Params.h"
@@ -45,6 +46,7 @@ void Behavior::reset() {
       if (favorite_place[p] == NULL) continue;
       favorite_place[p]->add_susceptible(strain, self);
     }
+    community->add_susceptible(strain, self);
   }
 	
   // reset the daily schedule
@@ -168,6 +170,7 @@ void Behavior::become_infectious(int strain) {
       }
     }
   }
+  community->add_infectious(strain, self);
 }
 
 void Behavior::become_immune(int strain) {
@@ -193,6 +196,7 @@ void Behavior::recover(int strain) {
       }
     }
   }
+  community->delete_infectious(strain, self);
 }
 
 

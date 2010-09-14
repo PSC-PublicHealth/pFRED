@@ -14,6 +14,7 @@
 
 #include "Global.h"
 #include <vector>
+#include <set>
 #include <iostream>
 #include <stdio.h>
 #include <limits.h> 
@@ -99,7 +100,7 @@ protected:
   double longitude;				// geo location
   int N;			   // total number of potential visitors
   vector <Person *> *susceptibles;	 // list of susceptible visitors
-  vector <Person *> *infectious;	  // list of infectious visitors
+  set <Person *> *infectious;		  // list of infectious visitors
   int *S;					// susceptible count
   int *I;					// infectious count
   int *Sympt;					// symptomatics count

@@ -74,8 +74,9 @@ school_prob[0] = 16 0.0435 0 0 0.0435 0 0.0375 0 0.0375 0 0 0.0315 0.0315 0.0435
 classroom_prob[0] = 16 0.0435 0 0 0.0435 0 0.0375 0 0.0375 0 0 0.0315 0.0315 0.0435 0.0375 0.0315 0.0575
 
 # goups = children adults
-community_prob[0] = 4 3.175e-5 1.8125e-4 3.175e-5 1.8125e-4
+## community_prob[0] = 4 3.175e-5 1.8125e-4 3.175e-5 1.8125e-4
 neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
+community_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 
 #### SCHOOL CLOSURE
 school_closure_policy = none

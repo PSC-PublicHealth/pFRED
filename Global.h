@@ -63,7 +63,7 @@ class Locations;
 extern Locations Loc;
 
 class Community;
-extern Community * Commune;
+extern Community * community;
 
 void get_global_parameters();
 

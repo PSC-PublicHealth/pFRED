@@ -30,7 +30,7 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   // allocate strain-related memory
   susceptibles = new (nothrow) vector<Person *> [strains];
   assert (susceptibles != NULL);
-  infectious = new (nothrow) vector<Person *> [strains];
+  infectious = new (nothrow) set<Person *> [strains];
   assert (infectious != NULL);
   S = new (nothrow) int [strains];
   assert (S != NULL);
@@ -120,7 +120,7 @@ void Place::delete_susceptible(int strain, Person * per) {
 }
 
 void Place::add_infectious(int strain, Person * per) {
-  infectious[strain].push_back(per);
+  infectious[strain].insert(per);
   I[strain]++;
   assert(I[strain] == static_cast <int> (infectious[strain].size()));
   if (per->get_strain_status(strain) == 'I') {
@@ -131,21 +131,11 @@ void Place::add_infectious(int strain, Person * per) {
 }
 
 void Place::delete_infectious(int strain, Person * per) {
-  int s = (int) infectious[strain].size();
-  assert(s > 0);
-  // The following may look inefficient, but it performs well because lists
-  // and generally small.  More efficient that using sets or maps due to the need
-  // for random access in spread_infection()
-  for (int i = 0; i < s; i++) {
-    if (infectious[strain][i] == per) {
-      infectious[strain][i] = infectious[strain][s-1];
-      infectious[strain].pop_back();
-      I[strain]--;
-      if (per->get_strain_status(strain)=='I') {
-        Sympt[strain]--;
-      }
-      break;
-    }
+  assert(infectious[strain].find(per) != infectious[strain].end());
+  infectious[strain].erase(per);
+  I[strain]--;
+  if (per->get_strain_status(strain)=='I') {
+    Sympt[strain]--;
   }
   assert(infectious[strain].size() == static_cast<unsigned int>(I[strain]));
 }
@@ -161,7 +151,7 @@ void Place::print_susceptibles(int strain) {
 
 
 void Place::print_infectious(int strain) {
-  vector<Person *>::iterator itr;
+  set<Person *>::iterator itr;
   for (itr = infectious[strain].begin();
        itr != infectious[strain].end(); itr++) {
     printf(" %d", (*itr)->get_id());
@@ -185,7 +175,7 @@ void Place::spread_infection(int day, int s) {
   if (N < 2) return;
   if (S[s] == 0) return;
 	
-  vector<Person *>::iterator itr;
+  set<Person *>::iterator itr;
   Strain * strain = population->get_strain(s);
   double beta = strain->get_transmissibility();
 

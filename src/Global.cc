@@ -5,9 +5,6 @@
 
 #include "Global.h"
 #include "Params.h"
-#include "Random.h"
-#include "Population.h"
-#include "Locations.h"
 
 // global runtime parameters
 int Verbose;
@@ -36,10 +33,6 @@ FILE *Statusfp;
 FILE *Outfp;
 FILE *Tracefp;
 FILE *VaccineTracefp;
-
-// global singleton objects
-Population Pop;
-Locations Loc;
 
 void get_global_parameters() {
   get_param((char *) "verbose", &Verbose);

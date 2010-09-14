@@ -27,7 +27,8 @@
 #include "Params.h"
 #include "Person.h"
 
-Community * Commune;
+// global singleton object
+Locations Loc;
 
 void Locations::get_location_parameters() {
 }
@@ -94,8 +95,8 @@ void Locations::setup_locations() {
       place = new (nothrow) Hospital(id, s, lon, lat, container, &Pop);
     }
     else if (loctype == COMMUNITY) {
-      Commune = new (nothrow) Community(id, s, lon, lat, container, &Pop);
-      place = Commune;
+      community = new (nothrow) Community(id, s, lon, lat, container, &Pop);
+      place = community;
     }
     else {
       printf ("Help! bad loctype = %c\n", loctype);

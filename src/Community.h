@@ -28,6 +28,7 @@ public:
   double get_transmission_prob(int strain, Person * i, Person * s);
   double get_contacts_per_day(int strain);
   void spread_infection_in_community(int day, int s);
+  void static spread(int day, int s);
 };
 
 #endif // _FRED_COMMUNITY_H

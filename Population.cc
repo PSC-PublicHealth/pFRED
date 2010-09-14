@@ -29,6 +29,8 @@
 
 using namespace std; 
 
+// global singleton object
+Population Pop;
 
 int V_count;
 
