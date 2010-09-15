@@ -25,7 +25,7 @@ public:
   ~Household() {}
   Household(int,const char *,double,double,Place *, Population *);
   void get_parameters(int strains);
-  int get_group_type(int strain, Person * per);
+  int get_group(int strain, Person * per);
   double get_transmission_prob(int strain, Person * i, Person * s);
   double get_contacts_per_day(int strain);
   void add_person(Person * per);

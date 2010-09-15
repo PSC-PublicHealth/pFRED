@@ -57,7 +57,7 @@ void Neighborhood::get_parameters(int strains) {
   Neighborhood_parameters_set = 1;
 }
 
-int Neighborhood::get_group_type(int strain, Person * per) {
+int Neighborhood::get_group(int strain, Person * per) {
   int age = per->get_age();
   if (age < 18) { return 0; }
   else { return 1; }
@@ -66,8 +66,8 @@ int Neighborhood::get_group_type(int strain, Person * per) {
 double Neighborhood::get_transmission_prob(int strain, Person * i, Person * s) {
   // i = infected agent
   // s = susceptible agent
-  int row = get_group_type(strain, i);
-  int col = get_group_type(strain, s);
+  int row = get_group(strain, i);
+  int col = get_group(strain, s);
   double tr_pr = Neighborhood_contact_prob[strain][row][col];
   return tr_pr;
 }

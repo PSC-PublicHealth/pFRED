@@ -177,13 +177,9 @@ Place * Person::get_household() const {
   return behavior->get_household();
 }
 
-int Person::get_age() const {
-  return demographics->get_age();
-}
+int Person::get_age() const { return demographics->get_age(); }
 
-char Person::get_sex() const {
-  return demographics->get_sex();
-}
+char Person::get_sex() const { return demographics->get_sex(); }
 
 char Person::get_marital_status() const {
   return demographics->get_marital_status();
@@ -191,14 +187,6 @@ char Person::get_marital_status() const {
 
 int Person::get_profession() const {
   return demographics->get_profession();
-}
-
-double Person::get_susceptibility(int strain) const {
-  return health->get_susceptibility(strain);
-}
-
-double Person::get_infectivity(int strain) const {
-  return health->get_infectivity(strain);
 }
 
 int Person::get_exposure_date(int strain) const {

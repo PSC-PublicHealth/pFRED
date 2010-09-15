@@ -56,7 +56,7 @@ public:
   UNIT_TEST_VIRTUAL int is_open(int day);
   
   virtual void get_parameters(int strain) = 0;
-  virtual int get_group_type(int strain, Person * per) = 0;
+  virtual int get_group(int strain, Person * per) = 0;
   virtual double get_transmission_prob(int strain, Person * i, Person * s) = 0;
   virtual double get_contacts_per_day(int strain) = 0; // access functions
   virtual int should_be_open(int day, int strain) { return 1; }

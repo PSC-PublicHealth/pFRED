@@ -59,6 +59,9 @@ classroom_contacts[0] = 13.5
 workplace_contacts[0] = 2
 office_contacts[0] = 8
 
+community_limit[0] = -1;
+community_limit_trials = 50
+
 # groups = children adults
 household_prob[0] = 4 0.6 0.3 0.3 0.4
 
@@ -74,7 +77,6 @@ school_prob[0] = 16 0.0435 0 0 0.0435 0 0.0375 0 0.0375 0 0 0.0315 0.0315 0.0435
 classroom_prob[0] = 16 0.0435 0 0 0.0435 0 0.0375 0 0.0375 0 0 0.0315 0.0315 0.0435 0.0375 0.0315 0.0575
 
 # goups = children adults
-## community_prob[0] = 4 3.175e-5 1.8125e-4 3.175e-5 1.8125e-4
 neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 community_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 

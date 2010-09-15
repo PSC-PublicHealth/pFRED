@@ -55,15 +55,15 @@ void Workplace::get_parameters(int strains) {
   Workplace_parameters_set = 1;
 }
 
-int Workplace::get_group_type(int strain, Person * per) {
+int Workplace::get_group(int strain, Person * per) {
   return 0;
 }
 
 double Workplace::get_transmission_prob(int strain, Person * i, Person * s) {
   // i = infected agent
   // s = susceptible agent
-  int row = get_group_type(strain, i);
-  int col = get_group_type(strain, s);
+  int row = get_group(strain, i);
+  int col = get_group(strain, s);
   double tr_pr = Workplace_contact_prob[strain][row][col];
   return tr_pr;
 }

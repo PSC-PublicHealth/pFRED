@@ -59,8 +59,8 @@ public:
   UNIT_TEST_VIRTUAL char get_marital_status() const;
   UNIT_TEST_VIRTUAL int get_profession() const;
   UNIT_TEST_VIRTUAL char get_strain_status(int strain) const { return health->get_strain_status(strain); }
-  UNIT_TEST_VIRTUAL double get_susceptibility(int strain) const;
-  UNIT_TEST_VIRTUAL double get_infectivity(int strain) const;
+  UNIT_TEST_VIRTUAL double get_susceptibility(int strain) const { return health->get_susceptibility(strain); }
+  UNIT_TEST_VIRTUAL double get_infectivity(int strain) const { return health->get_infectivity(strain); }
   UNIT_TEST_VIRTUAL int get_exposure_date(int strain) const;
   UNIT_TEST_VIRTUAL int get_infectious_date(int strain) const;
   UNIT_TEST_VIRTUAL int get_recovered_date(int strain) const;

@@ -25,19 +25,19 @@ public:
   Community(int, const	char*,double,double,Place *, Population *);
   void reset();
   void get_parameters(int strains);
-  int get_group_type(int strain, Person * per);
+  int get_group(int strain, Person * per);
   double get_transmission_prob(int strain, Person * i, Person * s);
   double get_contacts_per_day(int strain);
-  void spread_infection(int day, int s);
+  void spread_infection(int day, int sstrin);
+  Person * get_possible_infectee(int strain, Person * infector, double lat, double lon);
   void add_susceptible(int strain, Person * per);
   void delete_susceptible(int strain, Person * per);
   void add_infectious(int strain, Person * per);
   void delete_infectious(int strain, Person * per);
+  double geo_dist(double lat1, double lat2, double lon1, double lon2, int ic);
  private:
-  vector <Person *> *susceptible_child;	 // list of susceptible visitors
-  vector <Person *> *susceptible_adult;	 // list of susceptible visitors
-  set <Person *> *infectious_child;		  // list of infectious visitors
-  set <Person *> *infectious_adult;		  // list of infectious visitors
+  set <Person *> ** infectious_list;	  // list of infectious visitors
+  int groups;
 };
 
 #endif // _FRED_COMMUNITY_H
