@@ -1,5 +1,7 @@
-days = 50
+days = 120
 runs = 2
+outdir = OUT.TEST
 popfile = test_pop.txt
 locfile = test_loc.txt
 profiles = test_profiles.txt
+

@@ -59,7 +59,7 @@ classroom_contacts[0] = 13.5
 workplace_contacts[0] = 2
 office_contacts[0] = 8
 
-community_limit[0] = -1;
+community_limit[0] = -1
 community_limit_trials = 50
 
 # groups = children adults

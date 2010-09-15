@@ -1,7 +1,8 @@
 #!/bin/csh -f
-./FRED params.test > out.txt 
-cmp OUT/out1.txt TEST/out1.txt
-cmp OUT/out2.txt TEST/out2.txt
-cmp OUT/trace1.txt TEST/trace1.txt
-cmp OUT/trace2.txt TEST/trace2.txt
+if (! -d OUT.TEST) mkdir OUT.TEST
+./FRED params.test > OUT.TEST/LOG
+cmp OUT.TEST/out1.txt TEST/out1.txt
+cmp OUT.TEST/out2.txt TEST/out2.txt
+cmp OUT.TEST/trace1.txt TEST/trace1.txt
+cmp OUT.TEST/trace2.txt TEST/trace2.txt
 echo regression test finished.
