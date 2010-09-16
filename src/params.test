@@ -1,7 +1,7 @@
-days = 120
+days = 50
 runs = 2
 outdir = OUT.TEST
 popfile = test_pop.txt
-locfile = test_loc.txt
-profiles = test_profiles.txt
+vaccine_tracefile = none
+quality_control = 0
 
