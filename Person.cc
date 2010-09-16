@@ -147,8 +147,11 @@ void Person::become_symptomatic(Strain *strain) {
 
 void Person::become_immune(Strain* strain) {
   int strain_id = strain->get_id();
-  health->become_immune(strain);
-  behavior->become_immune(strain_id);
+  char status = health->get_strain_status(strain_id);
+  if(status == 'S'){
+    health->become_immune(strain);
+    behavior->become_immune(strain_id);
+  }
 }
 
 void Person::recover(Strain * strain) {
