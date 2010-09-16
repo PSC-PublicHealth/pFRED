@@ -15,8 +15,8 @@
 #include "Global.h"
 #include "Place.h"
 #include "Person.h"
-#include "Spread.h"
 #include "Strain.h"
+#include "Epidemic.h"
 #include "Household.h"
 
 class Perceptions {
@@ -25,7 +25,7 @@ public:
   UNIT_TEST_VIRTUAL void reset() {}
   UNIT_TEST_VIRTUAL void update(int day) {}
   UNIT_TEST_VIRTUAL int get_global_cases(int strain) {
-    return self->get_population()->get_strain(strain)->get_spread()->get_clinical_incidents();
+    return self->get_population()->get_strain(strain)->get_epidemic()->get_clinical_incidents();
   }
   UNIT_TEST_VIRTUAL int get_global_deaths(int strain) {
     return self->get_population()->get_strain(strain)->get_mortality_rate()*get_global_cases(strain);

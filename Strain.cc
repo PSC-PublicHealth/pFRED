@@ -22,7 +22,7 @@ using namespace std;
 #include "Population.h"
 #include "Random.h"
 #include "Age_Map.h"
-#include "Spread.h"
+#include "Epidemic.h"
 #include "Timestep_Map.h"
 
 double Prob_stay_home;
@@ -45,7 +45,7 @@ Strain::Strain() {
   mutation_prob = NULL;
   residual_immunity = NULL;
   at_risk = NULL;
-  spread = NULL;
+  epidemic = NULL;
   population = NULL;
 }
 
@@ -54,13 +54,13 @@ Strain::~Strain() {
   delete [] days_incubating;
   delete [] days_asymp;
   delete [] days_symp;
-  delete spread;
+  delete epidemic;
   delete residual_immunity;
   delete at_risk;
 }
 
 void Strain::reset() {
-  spread->reset();
+  epidemic->reset();
 }
 
 void Strain::setup(int strain, Population *pop, double *mut_prob) {
@@ -129,7 +129,7 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   char param_name[80];
   sprintf(param_name,"primary_cases[%d]",id);
   string param_name_str(param_name);
-  spread = new Spread(this, new Timestep_Map(param_name_str));
+  epidemic = new Epidemic(this, new Timestep_Map(param_name_str));
   
   // Define residual immunity
   //sprintf(s,"residual_immunity_ages[%d]",id);
@@ -240,15 +240,15 @@ int Strain::get_symptoms() {
 }
 
 double Strain::get_attack_rate() {
-  return spread->get_attack_rate();
+  return epidemic->get_attack_rate();
 }
 
 void Strain::update_stats(int day) {
-  spread->update_stats(day);
+  epidemic->update_stats(day);
 }
 
 void Strain::print_stats(int day) {
-  spread->print_stats(day);
+  epidemic->print_stats(day);
 }
 
 // static
@@ -262,5 +262,5 @@ void Strain::get_strain_parameters() {
 }
 
 void Strain::update(int day) {
-  spread->update(day);
+  epidemic->update(day);
 }

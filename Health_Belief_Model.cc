@@ -14,7 +14,7 @@
 #include "Global.h"
 #include "Params.h"
 #include "Random.h"
-#include "Spread.h"
+#include "Epidemic.h"
 #include "Perceptions.h"
 
 int HBM_parameters_set = 0;
@@ -163,7 +163,7 @@ void Health_Belief_Model::update(int day) {
 
     // perceptions of current state of epidemic
     int current_cases = perceptions->get_global_cases(s);
-    int total_cases = self->get_population()->get_strain(s)->get_spread()->get_total_incidents();
+    int total_cases = self->get_population()->get_strain(s)->get_epidemic()->get_total_incidents();
     double current_deaths = self->get_population()->get_strain(s)->get_mortality_rate()*total_cases;
     double current_incidence = (double) current_cases / (double) self->get_population()->get_pop_size();
     total_deaths += current_deaths;

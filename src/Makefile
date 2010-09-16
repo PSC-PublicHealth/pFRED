@@ -4,10 +4,10 @@
 CPP = g++ 
 
 # use this for development:
-CPPFLAGS = -g -m64 -O3 -fast #-Wall
+CPPFLAGS = -g -m64 -O3 # -fast #-Wall
 
 # use this for profiling
-# CPPFLAGS = -g -m64 -O3 -DNDEBUG
+# CPPFLAGS = -g -m64 -O3 # -DNDEBUG
 
 # Use this for production:
 # CPPFLAGS = -m64 -O3 -DNDEBUG -fast #-Wall
@@ -27,7 +27,7 @@ OBJ =   Global.cc Decision.o Policy.o Manager.o \
 	Antiviral.o Antivirals.o Behavior.o Classroom.o Community.o Demographics.o Health.o \
         Hospital.o Household.o Infection.o Locations.o Neighborhood.o Office.o \
 	Params.o Place.o Cognition.o Perceptions.o Person.o Population.o Profile.o \
-	Random.o School.o Spread.o Strain.o Workplace.o Health_Belief_Model.o Random_Cognitive_Model.o
+	Random.o School.o Epidemic.o Strain.o Workplace.o Health_Belief_Model.o Random_Cognitive_Model.o
 
 SRC = $(OBJ:.o=.cc)
 

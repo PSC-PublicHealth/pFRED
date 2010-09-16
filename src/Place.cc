@@ -167,9 +167,6 @@ int Place::is_open(int day) {
   }
 }
 
-void Place::new_spread_infection(int day, int s) {
-}
-
 void Place::spread_infection(int day, int s) {
   if (Verbose > 1) { print(s); }
   if (N < 2) return;

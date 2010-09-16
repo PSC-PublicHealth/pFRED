@@ -13,7 +13,7 @@
 #define _FRED_STRAIN_H
 
 #include "Global.h"
-#include "Spread.h";
+#include "Epidemic.h"
 
 using namespace std;
 
@@ -62,29 +62,29 @@ public:
   UNIT_TEST_VIRTUAL void print_stats(int day);
 	
   UNIT_TEST_VIRTUAL Population * get_population() { return population; }
-  UNIT_TEST_VIRTUAL Spread * get_spread() { return spread; }
+  UNIT_TEST_VIRTUAL Epidemic * get_epidemic() { return epidemic; }
 	
   static double get_prob_stay_home();
   static void set_prob_stay_home(double);
   static void get_strain_parameters();
-  void increment_S_count() { spread->increment_S_count(); }
-  void decrement_S_count() { spread->decrement_S_count(); }
-  void increment_E_count() { spread->increment_E_count(); }
-  void decrement_E_count() { spread->decrement_E_count(); }
-  void increment_I_count() { spread->increment_I_count(); }
-  void decrement_I_count() { spread->decrement_I_count(); }
-  void increment_i_count() { spread->increment_i_count(); }
-  void decrement_i_count() { spread->decrement_i_count(); }
-  void increment_R_count() { spread->increment_R_count(); }
-  void decrement_R_count() { spread->decrement_R_count(); }
-  void increment_r_count() { spread->increment_r_count(); }
-  void decrement_r_count() { spread->decrement_r_count(); }
-  void increment_C_count() { spread->increment_C_count(); }
-  void decrement_C_count() { spread->decrement_C_count(); }
-  void increment_c_count() { spread->increment_c_count(); }
-  void decrement_c_count() { spread->decrement_c_count(); }
-  void increment_M_count() { spread->increment_M_count(); }
-  void decrement_M_count() { spread->decrement_M_count(); }
+  void increment_S_count() { epidemic->increment_S_count(); }
+  void decrement_S_count() { epidemic->decrement_S_count(); }
+  void increment_E_count() { epidemic->increment_E_count(); }
+  void decrement_E_count() { epidemic->decrement_E_count(); }
+  void increment_I_count() { epidemic->increment_I_count(); }
+  void decrement_I_count() { epidemic->decrement_I_count(); }
+  void increment_i_count() { epidemic->increment_i_count(); }
+  void decrement_i_count() { epidemic->decrement_i_count(); }
+  void increment_R_count() { epidemic->increment_R_count(); }
+  void decrement_R_count() { epidemic->decrement_R_count(); }
+  void increment_r_count() { epidemic->increment_r_count(); }
+  void decrement_r_count() { epidemic->decrement_r_count(); }
+  void increment_C_count() { epidemic->increment_C_count(); }
+  void decrement_C_count() { epidemic->decrement_C_count(); }
+  void increment_c_count() { epidemic->increment_c_count(); }
+  void decrement_c_count() { epidemic->decrement_c_count(); }
+  void increment_M_count() { epidemic->increment_M_count(); }
+  void decrement_M_count() { epidemic->decrement_M_count(); }
   
 private:
   int id;
@@ -105,7 +105,7 @@ private:
   double immunity_loss_rate;
   double *mutation_prob;
   double mortality_rate;
-  Spread *spread;
+  Epidemic *epidemic;
   Age_Map *residual_immunity;
   Age_Map *at_risk;
   
@@ -114,15 +114,15 @@ private:
 };
 
 inline void Strain::insert_into_infectious_list(Person * per) {
-  spread->insert_into_infectious_list(per);
+  epidemic->insert_into_infectious_list(per);
 }
 
 inline void Strain::insert_into_infected_list(Person * per) {
-  spread->insert_into_infected_list(per);
+  epidemic->insert_into_infected_list(per);
 }
 
 inline void Strain::remove_from_infectious_list(Person * per) {
-  spread->remove_from_infectious_list(per);
+  epidemic->remove_from_infectious_list(per);
 }
 
 #endif // _FRED_STRAIN_H

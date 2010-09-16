@@ -11,7 +11,6 @@
 
 #include "Perceptions.h"
 #include "Person.h"
-#include "Spread.h"
 #include "Strain.h"
 #include "Household.h"
 

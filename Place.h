@@ -52,7 +52,6 @@ public:
   UNIT_TEST_VIRTUAL void print_susceptibles(int strain);
   UNIT_TEST_VIRTUAL void print_infectious(int strain);
   virtual void spread_infection(int day, int strain);
-  UNIT_TEST_VIRTUAL void new_spread_infection(int day, int strain);
   UNIT_TEST_VIRTUAL int is_open(int day);
   
   virtual void get_parameters(int strain) = 0;
