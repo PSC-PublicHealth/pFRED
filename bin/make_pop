@@ -48,11 +48,11 @@ while (my $line = <FH>) {
   chomp $line;
   my ($block, $house, $occ, $age, $sex, $married, $prof, $w, $lat, $lon, $school, $x, $work);
 
-  if ($area eq "dc" or $area eq "test") {
+  if ($area eq "dc") {
     ($block, $house, $occ, $age, $sex, $married, $prof, $w, $lat, $lon, $school, $x, $work) = split " ", $line;
   }
 
-  if ($area eq "alleg") {
+  if ($area eq "alleg" or $area eq "test") {
     $w = $x = $prof = $married = -1;
     ($block, $house, $occ, $age, $sex, $lat, $lon, $school, $work) = split " ", $line;
   }
