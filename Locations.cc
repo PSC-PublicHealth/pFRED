@@ -67,8 +67,10 @@ void Locations::setup_locations() {
       abort();
     }
     if (id != loc) {
-      fprintf(Statusfp, "Help! Read index %d for location %d\n", id, loc);
-      abort();
+      if (Verbose > 2) {
+	fprintf(Statusfp, "Warning: Read index %d for location %d\n", id, loc);
+      }
+      // abort();
     }
     // printf("loctype = %c\n", loctype); fflush(stdout);
     Place *place;
