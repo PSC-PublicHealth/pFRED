@@ -79,6 +79,14 @@ void Behavior::print_schedule() {
   for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (on_schedule[p])
       fprintf(Statusfp, "%d ", favorite_place[p]->get_id());
+    else {
+      if (favorite_place[p] == NULL) {
+	fprintf(Statusfp, "-1 ");
+      }
+      else {
+	fprintf(Statusfp, "-%d ", favorite_place[p]->get_id());
+      }
+    }
   }
   fprintf(Statusfp, "\n");
   fflush(Statusfp);

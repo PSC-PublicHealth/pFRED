@@ -64,10 +64,7 @@ void Person::print(int strain) const {
   fprintf(Tracefp, "infected_at %c %6d ",
           health->get_infected_place_type(strain), health->get_infected_place(strain));
   fprintf(Tracefp, "infector %d ", health->get_infector(strain));
-  fprintf(Tracefp, "infector %d ", health->get_infector(strain));
   fprintf(Tracefp, "infectees %d ", health->get_infectees(strain));
-  
-  
   fprintf(Tracefp, "antivirals: %2d ",health->get_number_av_taken());
   for(int i=0;i<health->get_number_av_taken();i++)
     fprintf(Tracefp," %2d",health->get_av_health(i)->get_av_start_day());

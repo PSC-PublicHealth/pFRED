@@ -12,6 +12,9 @@
 #ifndef _FRED_LOCATIONS_H
 #define _FRED_LOCATIONS_H
 
+#include <map>
+using namespace std;
+
 class Place;
 
 class Locations {
@@ -29,6 +32,7 @@ private:
   char locfile[80];
   Place ** location;
   int locations;
+  map<int, int> location_map;
 };
 
 

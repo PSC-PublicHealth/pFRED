@@ -66,12 +66,9 @@ void Locations::setup_locations() {
       fprintf(Statusfp, "Help! Read failure for location %d\n", loc);
       abort();
     }
-    if (id != loc) {
-      if (Verbose > 2) {
-	fprintf(Statusfp, "Warning: Read index %d for location %d\n", id, loc);
-      }
-      // abort();
-    }
+    assert(location_map.find(id) == location_map.end());
+    location_map[id] = loc;
+
     // printf("loctype = %c\n", loctype); fflush(stdout);
     Place *place;
     Place *container = get_location(container_id);
@@ -150,10 +147,9 @@ int Locations::location_should_be_open(int loc, int strain, int day) {
 }
 
 Place * Locations::get_location(int loc) {
-  if (0 <= loc && loc < locations)
-    return location[loc];
-  else
-    return NULL;
+  if (loc == -1) return NULL;
+  assert(location_map.find(loc) != location_map.end());
+  return location[location_map[loc]];
 }
 
 void Locations::location_quality_control() {
