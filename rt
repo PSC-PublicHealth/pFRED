@@ -1,5 +1,7 @@
 #!/bin/csh -f
 if (! -d OUT.TEST) mkdir OUT.TEST
+if (-e OUT.TEST/out1.txt) rm OUT.TEST/out*
+if (-e OUT.TEST/trace1.txt) rm OUT.TEST/trace*
 ./FRED params.test > OUT.TEST/LOG
 cmp OUT.TEST/out1.txt OUT.RT/out1.txt
 cmp OUT.TEST/out2.txt OUT.RT/out2.txt

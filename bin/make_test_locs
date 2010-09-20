@@ -15,13 +15,13 @@ while ($line = <FH>) {
 close FH;
 
 my $locs = scalar keys %good_loc;
-$locs++; # for Community
+# $locs++; # for Community
 
 open FH, "alleg_loc.txt";
 open OUT, ">test_loc.txt";
 
 print OUT "Locations = $locs\n";
-print OUT "0 Community X 0 0 -1\n";
+# print OUT "0 Community X 0 0 -1\n";
 my $dlon = 0;
 $line = <FH>;
 while ($line = <FH>) {

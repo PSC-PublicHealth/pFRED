@@ -52,9 +52,19 @@ void Locations::setup_locations() {
   if (Verbose) {
     fprintf(Statusfp, "Locations = %d\n", locations); fflush(Statusfp);
   }
+  locations++; 					// add space for community
   location = new (nothrow) Place * [locations];
   assert(location != NULL);
-  for (int loc = 0; loc < locations; loc++) {
+
+  int loc = 0;
+
+  // special case: set up the community (which should not be in the locfile)
+  community = new (nothrow) Community(0, "Community", 0.0, 0.0, NULL, &Pop);
+  location[loc] = community;
+  location_map[0] = loc;
+  loc++;
+
+  while (loc < locations) {
     int id;
     char s[32];
     char loctype;
@@ -66,8 +76,10 @@ void Locations::setup_locations() {
       fprintf(Statusfp, "Help! Read failure for location %d\n", loc);
       abort();
     }
-    assert(location_map.find(id) == location_map.end());
-    location_map[id] = loc;
+    if (loctype != COMMUNITY) {
+      assert(location_map.find(id) == location_map.end());
+      location_map[id] = loc;
+    }
 
     // printf("loctype = %c\n", loctype); fflush(stdout);
     Place *place;
@@ -94,8 +106,11 @@ void Locations::setup_locations() {
       place = new (nothrow) Hospital(id, s, lon, lat, container, &Pop);
     }
     else if (loctype == COMMUNITY) {
-      community = new (nothrow) Community(id, s, lon, lat, container, &Pop);
-      place = community;
+      // Community on loc file is deprecated.  Skip this line;
+      locations--;
+      continue;
+      // community = new (nothrow) Community(id, s, lon, lat, container, &Pop);
+      // place = community;
     }
     else {
       printf ("Help! bad loctype = %c\n", loctype);
@@ -105,6 +120,7 @@ void Locations::setup_locations() {
       printf("Help! allocation failure for loc %d\n", loc); abort();
     }
     location[loc] = place;
+    loc++;
   }
   fclose(fp);
   
@@ -157,17 +173,11 @@ void Locations::location_quality_control() {
     fprintf(Statusfp, "location quality control check\n"); fflush(Statusfp);
   }
   
-  for (int loc = 0; loc < locations; loc++) {
+  for (int loc = 1; loc < locations; loc++) {
     if (location[loc]->get_size() < 1) {
       fprintf(Statusfp, "Help!  No one visits location %d\n", loc);
       location[loc]->print(0);
       continue;
-    }
-    if (location[loc]->get_size() == 1) {
-      if (Verbose > 2) {
-        fprintf(Statusfp, "Warning!  Only one visitor to location %d\n", loc);
-        location[loc]->print(0);
-      }
     }
   }
   

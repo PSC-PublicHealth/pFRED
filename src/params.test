@@ -2,6 +2,6 @@ days = 50
 runs = 2
 outdir = OUT.TEST
 popfile = test_pop.txt
-popfile = test_loc.txt
+locfile = test_loc.txt
 vaccine_tracefile = none
 
