@@ -195,9 +195,9 @@ my @place = ();
 my %pmap = ();
 $pmap{0}= -1;
 $id = 0;
-push @place, "0 Community 0 0 0";
-$pmap{Community} = $id;
-$type{Community} = "X";
+# push @place, "0 Community 0 0 0";
+# $pmap{Community} = $id;
+# $type{Community} = "X";
 $id++;
 for my $key (sort keys %loc) {
   push @place, "$id $key $loc{$key}";
