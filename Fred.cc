@@ -72,7 +72,6 @@ void run_sim(int run) {
   unsigned long new_seed;
   time_t clock;		      // current date
 	
-  // sprintf(filename, "%s/%s%d.txt", Output_directory, Outfilebase, run+1);
   sprintf(filename, "%s/out%d.txt", Output_directory, run+1);
   Outfp = fopen(filename, "w");
   if (Outfp == NULL) {
@@ -82,7 +81,6 @@ void run_sim(int run) {
 	
   Tracefp = NULL;
   if (strcmp(Tracefilebase, "none") != 0) {
-    // sprintf(filename, "%s/%s%d.txt", Output_directory, Tracefilebase, run+1);
     sprintf(filename, "%s/trace%d.txt", Output_directory, run+1);
     Tracefp = fopen(filename, "w");
     if (Tracefp == NULL) {
@@ -93,7 +91,6 @@ void run_sim(int run) {
 	
   VaccineTracefp = NULL;
   if (strcmp(VaccineTracefilebase, "none") != 0) {
-    // sprintf(filename, "%s/%s%d.txt", Output_directory, VaccineTracefilebase, run+1);
     sprintf(filename, "%s/vacctr%d.txt", Output_directory, run+1);
     VaccineTracefp = fopen(filename, "w");
     if (VaccineTracefp == NULL) {
