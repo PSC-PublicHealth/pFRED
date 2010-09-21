@@ -6,4 +6,16 @@ use Env;
 my $FRED = $ENV{FRED_HOME};
 die "Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
 
-system "open `$FRED/bin/fred_plot @ARGV`";
+my $gnuplot = $ENV{FRED_GNUPLOT};
+if (not $gnuplot or (not -x $gnuplot)) {
+  print "fred_display_plot requires gnuplot\n";
+  exit;
+}
+
+my $open = $ENV{FRED_OPENPNG};
+if (not $open or (not -x $open)) {
+  print "fred_display_plot requires a executable to display png files\n";
+  exit;
+}
+
+system "$open `$FRED/bin/fred_plot @ARGV`";

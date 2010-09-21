@@ -21,15 +21,20 @@ my $id = `$bindir/fred_id $key`;
 chomp $id;
 die "fred_plot: UNKNOWN key: $key\n" if $id eq "UNKNOWN";
 
-chomp(my $gnuplot = `which gnuplot`);
-die "fred_plot can't find gnuplot\n" if not -x $gnuplot;
-
 my $status = `$bindir/fred_status -k $key`;
 chomp $status;
 $status =~ s/\s.*//;
 die "fred_plot: bad status: $status\n" if $status ne "FINISHED";
 
 my $reportsdir = "$FRED/RESULTS/RUN/$id/DATA/REPORTS";
+
+my $gnuplot = $ENV{FRED_GNUPLOT};
+if (not $gnuplot or (not -x $gnuplot)) {
+  my $x = $args[0];
+  system "cat $reportsdir/$x.dat";
+  exit;
+}
+
 my $outdir = "$FRED/RESULTS/RUN/$id/DATA/OUT";
 
 chdir $reportsdir or die "Can't find REPORTS directory: $reportsdir\n";

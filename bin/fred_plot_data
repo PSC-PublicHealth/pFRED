@@ -9,9 +9,9 @@ getopts("k:v:", \%options);
 my $key = "";
 my $varlist = "";
 $key = $options{k} if exists $options{k};
-die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|r]\n" if not $key;
+die "usage: fred_plot_data -k key -v [S|E|I|R|s|C|c|M|A|r]\n" if not $key;
 $varlist = $options{v} if exists $options{v};
-die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|r]\n" if not $varlist;
+die "usage: fred_plot_data -k key -v [S|E|I|R|s|C|c|M|A|r]\n" if not $varlist;
 my ($x) = check_varlist($varlist);
 
 my $FRED = $ENV{FRED_HOME};
