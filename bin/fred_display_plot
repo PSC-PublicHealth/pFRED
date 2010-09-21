@@ -12,7 +12,7 @@ if (not $gnuplot or (not -x $gnuplot)) {
   exit;
 }
 
-my $open = $ENV{FRED_OPENPNG};
+my $open = $ENV{FRED_DISPLAY_PNG};
 if (not $open or (not -x $open)) {
   print "fred_display_plot requires a executable to display png files\n";
   exit;
