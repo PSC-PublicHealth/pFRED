@@ -20,23 +20,29 @@ CPPFLAGS = -g -m64 -O3 # -fast #-Wall
 %.o:%.c %.h
 	$(CPP) $(CPPFLAGS) -c $< $(INCLUDES)
 
-OBJ =   Global.cc Decision.o Policy.o Manager.o \
+OBJ =   Fred.o Global.o Decision.o Policy.o Manager.o \
         AV_Decisions.o AV_Policies.o AV_Manager.o AV_Health.o \
         Age_Map.o Timestep_Map.o Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
         Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \
-	Antiviral.o Antivirals.o Behavior.o Classroom.o Community.o Demographics.o Health.o \
+	Antiviral.o Antivirals.o Health_Belief_Model.o Random_Cognitive_Model.o \
+	Behavior.o Classroom.o Cognition.o Community.o Demographics.o Epidemic.o Health.o \
         Hospital.o Household.o Infection.o Locations.o Neighborhood.o Office.o \
-	Params.o Place.o Cognition.o Perceptions.o Person.o Population.o Profile.o \
-	Random.o School.o Epidemic.o Strain.o Workplace.o Health_Belief_Model.o Random_Cognitive_Model.o
+	Params.o Perceptions.o Person.o Place.o Population.o Profile.o Random.o \
+	School.o Strain.o Workplace.o
 
 SRC = $(OBJ:.o=.cc)
 
 HDR = $(OBJ:.o=.h)
 
-all:	FRED
+all: FRED
 
-FRED: Fred.cc Fred.h $(OBJ)
-	$(CPP) $(CPPFLAGS) Fred.cc $(OBJ) -o FRED
+FRED: $(OBJ)
+	$(CPP) $(CPPFLAGS) $(OBJ) -o FRED
+
+DEPENDS: $(SRC) $(HDR)
+	$(CPP) -MM $(SRC) > DEPENDS
+
+include DEPENDS
 
 ############################# Google Test/Mock ################################
 
