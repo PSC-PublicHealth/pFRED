@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+# File: run_fred_helper
+# Author: John Grefenstette
+# Created: Sep 22, 2010
+
+my ($fred, $params, $logfile, $report, $out, $reports, $status) = @ARGV;
+
+# run FRED
+system "$fred $params > $logfile";
+
+# make reports
+system "$report $out $reports";
+
+# update run status
+system "echo FINISHED > $status";
+exit;
