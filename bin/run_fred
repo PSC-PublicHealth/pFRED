@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Env;
-#use Cwd;
+use Cwd;
 use Fcntl qw(:flock);
 use Getopt::Std;
 $| = 1;  # AUTO_FLUSH
@@ -10,99 +10,141 @@ $| = 1;  # AUTO_FLUSH
 # File: run_fred
 # Author: John Grefenstette
 # Created: Jan 12, 2010
-# Updated: Apr 7, 2010
+# Updated: Sep 22, 2010
 
 # get current working directory
-# my $cwd = getcwd();
+my $cwd = getcwd();
 
 my $FRED = $ENV{FRED_HOME};
 die "run_fred: Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
 
 # get command line arguments
 my %options = ();
-getopts("p:k:", \%options);
+getopts("cp:k:", \%options);
 my $paramsfile;
 $paramsfile = $options{p} if exists $options{p};
 my $key;
 $key = $options{k} if exists $options{k};
 $paramsfile = "params" if not $paramsfile;
+my $cache = exists $options{c};
 
-# make a temp copy of the params file
-# my ($paramsfile, $key) = @ARGV;
-# $paramsfile = "params" if not $paramsfile;
-die "run_fred: Bad params file name\n" if $paramsfile =~ /;/;
-my $params = "/tmp/params.$$";
-die "run_fred: Can't find params file $paramsfile\n" if not -e $paramsfile;
-system "cp $paramsfile $params";
+# get the base of the params file name
+my $params_base = $paramsfile;
+$params_base =~ s/.*\/// if $params_base =~ /\//;
+my @a = ();
 
-# NOTE: the rest of the script runs in the FRED_HOME directory
+# get the path to the population files
+my $popdir = `grep 'popdir = ' params.def`;
+chomp $popdir;
+@a = split " ", $popdir;
+$popdir = pop @a;
+if ($popdir eq ".") {
+  $popdir = $cwd;
+}
+else {
+  $popdir = "$cwd/$popdir";
+}
+
+# get the file parameters from the params files
+# and extract the basename for use in the working directory
+my $profiles = `grep 'profiles =' params.def`;
+chomp $profiles;
+@a = split " ", $profiles;
+$profiles = pop @a;
+my $profiles_base = $profiles;
+$profiles_base =~ s/.*\/// if $profiles_base =~ /\//;
+
+my $primary_cases = `grep 'primary_cases_file.0. =' params.def`;
+chomp $primary_cases;
+@a = split " ", $primary_cases;
+$primary_cases = pop @a;
+my $primary_cases_base = $primary_cases;
+$primary_cases_base =~ s/.*\/// if $primary_cases_base =~ /\//;
+
+my $vaccine_file = `grep 'vaccine_file =' params.def`;
+chomp $vaccine_file;
+@a = split " ", $vaccine_file;
+$vaccine_file = pop @a;
+my $vaccine_file_base = $vaccine_file;
+$vaccine_file_base =~ s/.*\/// if $vaccine_file_base =~ /\//;
+
+my $vaccination_capacity_file = `grep 'vaccination_capacity_file =' params.def`;
+chomp $vaccination_capacity_file;
+@a = split " ", $vaccination_capacity_file;
+$vaccination_capacity_file = pop @a;
+my $vaccination_capacity_file_base = $vaccination_capacity_file;
+$vaccination_capacity_file_base =~ s/.*\/// if $vaccination_capacity_file_base =~ /\//;
+
+# NOTE: the next part of the script runs in the FRED_HOME directory
 chdir $FRED or die "Can't change to FRED directory $FRED\n";
+
+# compile FRED if necessary
+system "make -s";
 
 # set locking semaphore
 my $SEMAPHORE = ".results.lck";
 open(SEM, ">$SEMAPHORE") || die "run_fred failed to obtain semaphore: ($!)\n";
 flock(SEM, LOCK_EX);
 
-# compile FRED if necessary
-system "make -s";
-
 # create RESULTS directory if needed
 my $fred_results = "$FRED/RESULTS";
 if (not -d $fred_results) {
-  mkdir "$fred_results" or (close SEM and die "Can't create RESULTS directory\n");
+ mkdir "$fred_results" or (close SEM and die "Can't create RESULTS directory\n");
 }
 
 # create RESULTS/RUN directory if needed
 if (not -d "$fred_results/RUN") {
-  mkdir "$fred_results/RUN" or (close SEM and die "Can't create $fred_results/RUN directory\n");
+ mkdir "$fred_results/RUN" or (close SEM and die "Can't create $fred_results/RUN directory\n");
 }
 
 # create $fred_results/ID file if needed
 if (not -e "$fred_results/ID") {
-  open FH, ">$fred_results/ID" or (close SEM and die "Can't create file $fred_results/ID\n");
-  print FH "1\n";
-  close FH;
+ open FH, ">$fred_results/ID" or (close SEM and die "Can't create file $fred_results/ID\n");
+ print FH "1\n";
+ close FH;
 }
 
 # create $fred_results/KEY file if needed
 if (not -e "$fred_results/KEY") {
-  open FH, ">$fred_results/KEY" or (close SEM and die "Can't create file $fred_results/KEY\n");
-  close FH;
+ open FH, ">$fred_results/KEY" or (close SEM and die "Can't create file $fred_results/KEY\n");
+ close FH;
 }
 
 # determine if key is unique. if not, terminate.
 open FH, "$fred_results/KEY";
 while (<FH>) {
-  chomp;
-  my ($k) = split;
-  if ($k eq $key) {
-    close SEM and close FH and die "run_fred: key $key already used.\n";
-  }
+ chomp;
+ my ($k) = split;
+ if ($k eq $key) {
+   close SEM and close FH and die "run_fred: key $key already used.\n";
+ }
 }
 close FH;
 
-# see if we have already used there params before.
-# if so, just return the id of the previous request
-open FH, "$fred_results/KEY";
-while (<FH>) {
-  chomp;
-  my ($k, $id) = split;
-  if (same_params($params, "$fred_results/RUN/$id/META/PARAMS")) {
-    close FH;
+if ($cache) {
+  # see if we have already used there params before.
+  # if so, just return the id of the previous request
+  open FH, "$fred_results/KEY";
+  while (<FH>) {
+    chomp;
+    my ($k, $id) = split;
+    if (same_params($paramsfile, "$fred_results/RUN/$id/META/PARAMS")) {
+      close FH;
+      
+      # add key-id pair
+      `echo $key $id >> $fred_results/KEY`;
 
-    # add key-id pair
-    `echo $key $id >> $fred_results/KEY`;
+      # release semaphore
+      close SEM;
 
-    # release semaphore
-    close SEM;
-
-    # return to original directory
-    # chdir $cwd;
-    print "$key $id\n";
-    exit;
+      # return to original directory
+      chdir $cwd;
+      print "$key $id\n";
+      exit;
+    }
   }
+  close FH;
 }
-close FH;
 
 # get id for this experiment and update counter
 open FH, "$fred_results/ID";
@@ -124,11 +166,17 @@ $key = $id if not defined $key;
 # release semaphore
 close SEM;
 
+# make main directory for this experiment
 my $dir = "$fred_results/RUN/$id";
 die "run_fred: ID $id already used\n" if -d $dir;
-
-# make directory for this experiment
 mkdir $dir or die "Can't make directory $dir\n";
+
+# return run_key association
+print "$key $id\n";
+
+# make working directory
+my $work = "$dir/WORK";
+mkdir $work or die "Can't make directory $work\n";
 
 # make directories for output
 my $data = "$dir/DATA";
@@ -150,51 +198,67 @@ mkdir $meta or die "Can't make directory $meta\n";
 # record the KEY
 `echo $key > $meta/KEY`;
 
-# return run_key association
-print "$key $id\n";
+# copy params file
+`cp $paramsfile $meta/PARAMS`;
 
-my $datefile = "$meta/DATE";
-`date > $datefile`; 
+# record the time and date
+`date > $meta/DATE`; 
 
-my $userfile = "$meta/USER";
-my $user = $ENV{USER};
-`echo $user > $userfile`;
+# record the user
+`echo $ENV{USER} > $meta/USER`;
 
+# record the host
 `hostname > $meta/WHERE`;
 
-my $cmdfile = "$meta/COMMAND";
-`echo ./FRED $paramsfile > $cmdfile`; 
+# record the original FRED command
+`echo ./FRED $paramsfile > $meta/COMMAND`; 
 
+# create the LOG file
 my $logfile = "$meta/LOG";
 
 # copy source code
 my $version = "$meta/VERSION";
 mkdir $version or die "Can't make directory $version\n";
-`cp -p Makefile profiles.txt *.cc *.h params* test_* LICENSE $version`;
-`cp $params $version/$paramsfile`;
+`cp -p Makefile profiles.txt primary_case_schedule-0.txt *.cc *.h params params.def  params.test test_pop.txt test_loc.txt LICENSE $version`;
 
-# copy the params file
-`cp $params $meta/PARAMS`;
+# return to original directory
+chdir $cwd;
+
+# copy the input files to working directory
+`cp params.def $work/params.def`;
+my $params = "$work/$params_base";
+`cp $paramsfile $params`;
+`cp $profiles "$work/$profiles_base"`;
+`cp $primary_cases "$work/$primary_cases_base"`;
+`cp $vaccine_file "$work/$vaccine_file_base"` if $vaccine_file ne "none";
+`cp $vaccination_capacity_file "$work/$vaccination_capacity_file_base"` if $vaccination_capacity_file ne "none";
+
+# redirect the path to the population file
+`$FRED/bin/ch popdir $popdir $params >> $logfile`;
 
 # redirect output parameters
 `$FRED/bin/ch outdir $out $params >> $logfile`;
+`$FRED/bin/ch profiles $profiles_base $params >> $logfile`;
+# `$FRED/bin/ch primary_cases_file $primary_cases_base $params >> $logfile`;
+`$FRED/bin/ch vaccine_file $vaccine_file_base $params >> $logfile`;
+`$FRED/bin/ch vaccination_capacity_file $vaccination_capacity_file_base $params >> $logfile`;
 
 # update run status
 `echo RUNNING > $meta/STATUS`;
 
+# run FRED in background process
+system "$FRED/bin/run_fred_helper $FRED/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
+
+if (0) {
 # finally, run FRED
-# system "./FRED $params | tee -a $logfile";
-system "./FRED $params > $logfile";
-# unlink $params;
+system "$FRED/FRED $params > $logfile";
 
 # make reports
 `$FRED/bin/fred_report $out $reports`;
 
 # update run status
 `echo FINISHED > $meta/STATUS`;
-
-# return to original directory
-# chdir $cwd;
+}
 
 exit;
 
@@ -202,7 +266,7 @@ sub same_params {
   my ($p1, $p2) = @_;
   my $vac_file_line;
   my ($name, $vac_file1, $vac_file2);
-#  return 0;
+  #  return 0;
   my $diff = `diff -b -B -q $p1 $p2`;
   return 1 if $diff eq "";
 
