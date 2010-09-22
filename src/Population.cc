@@ -111,9 +111,11 @@ void Population::read_population() {
   }
   
   // read in population
-  FILE *fp = fopen(popfile, "r");
+  char population_file[256];
+  sprintf(population_file, "%s/%s", Population_directory, popfile);
+  FILE *fp = fopen(population_file, "r");
   if (fp == NULL) {
-    fprintf(Statusfp, "popfile %s not found\n", popfile);
+    fprintf(Statusfp, "popultion_file %s not found\n", population_file);
     exit(1);
   }
   if (1!=fscanf(fp, "Population = %d", &pop_size)){

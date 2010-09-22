@@ -15,14 +15,15 @@ int Days;
 unsigned long Seed;
 int Start_day_of_week;
 int Reseed_day;
+char Population_directory[256];
 char Output_directory[256];
-char Tracefilebase[80];
-char VaccineTracefilebase[80];
+char Tracefilebase[256];
+char VaccineTracefilebase[256];
 int All_strains_antigenically_identical;
 int Incremental_Trace;
 int Trace_Headers;
 int Random_start_day;
-char Cognitive_model_type[80];
+char Cognitive_model_type[256];
 int Quality_control;
 int Strains;
 
@@ -42,6 +43,7 @@ void get_global_parameters() {
   get_param((char *) "seed", &Seed);
   get_param((char *) "start_day_of_week", &Start_day_of_week);
   get_param((char *) "reseed_day", &Reseed_day);
+  get_param((char *) "popdir", Population_directory);
   get_param((char *) "outdir", Output_directory);
   get_param((char *) "tracefile", Tracefilebase);
   get_param((char *) "vaccine_tracefile", VaccineTracefilebase);

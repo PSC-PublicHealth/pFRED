@@ -36,13 +36,15 @@ void Locations::get_location_parameters() {
 
 void Locations::setup_locations() {
   FILE *fp;
+  char location_file[256];
   if (Verbose) {
     fprintf(Statusfp, "setup locations entered\n"); fflush(Statusfp);
   }
   get_param((char *) "locfile", locfile);
-  fp = fopen(locfile, "r");
+  sprintf(location_file, "%s/%s", Population_directory, locfile);
+  fp = fopen(location_file, "r");
   if (fp == NULL) {
-    fprintf(Statusfp, "locfile %s not found\n", locfile);
+    fprintf(Statusfp, "location file %s not found\n", location_file);
     abort();
   }
   if (1!=fscanf(fp, "Locations = %d", &locations)){

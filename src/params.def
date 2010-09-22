@@ -11,8 +11,8 @@ reseed_day = -1
 popfile = alleg_pop.txt
 locfile = alleg_loc.txt
 profiles = profiles.txt
+popdir = .
 outdir = OUT
-outfile = out
 tracefile = trace
 quality_control = 1
 
