@@ -116,7 +116,7 @@ void Epidemic::update(int day) {
   for (int i = 0; i < primary_cases_per_day; i++) {
     int n = IRAND(0, N-1);
     if (pop[n]->get_strain_status(id) == 'S') {
-      Infection * infection = new Infection(strain, NULL, pop[n], NULL, 0);
+      Infection * infection = new Infection(strain, NULL, pop[n], NULL, day);
       pop[n]->become_exposed(infection);
     }
   }
