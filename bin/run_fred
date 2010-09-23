@@ -46,32 +46,17 @@ else {
 }
 
 # get the file parameters from the params files
-# and extract the basename for use in the working directory
-my $profiles = `grep 'profiles =' params.def`;
-chomp $profiles;
-@a = split " ", $profiles;
-$profiles = pop @a;
+my $profiles = get_param_value("profiles",$paramsfile);
+my $primary_cases = get_param_value("primary_cases_file[0]",$paramsfile);
+my $vaccine_file =  get_param_value("vaccine_file",$paramsfile);
+my $vaccination_capacity_file =  get_param_value("vaccination_capacity_file",$paramsfile);
+
 my $profiles_base = $profiles;
 $profiles_base =~ s/.*\/// if $profiles_base =~ /\//;
-
-my $primary_cases = `grep 'primary_cases_file.0. =' params.def`;
-chomp $primary_cases;
-@a = split " ", $primary_cases;
-$primary_cases = pop @a;
 my $primary_cases_base = $primary_cases;
 $primary_cases_base =~ s/.*\/// if $primary_cases_base =~ /\//;
-
-my $vaccine_file = `grep 'vaccine_file =' params.def`;
-chomp $vaccine_file;
-@a = split " ", $vaccine_file;
-$vaccine_file = pop @a;
 my $vaccine_file_base = $vaccine_file;
 $vaccine_file_base =~ s/.*\/// if $vaccine_file_base =~ /\//;
-
-my $vaccination_capacity_file = `grep 'vaccination_capacity_file =' params.def`;
-chomp $vaccination_capacity_file;
-@a = split " ", $vaccination_capacity_file;
-$vaccination_capacity_file = pop @a;
 my $vaccination_capacity_file_base = $vaccination_capacity_file;
 $vaccination_capacity_file_base =~ s/.*\/// if $vaccination_capacity_file_base =~ /\//;
 
@@ -239,7 +224,7 @@ my $params = "$work/$params_base";
 # redirect output parameters
 `$FRED/bin/ch outdir $out $params >> $logfile`;
 `$FRED/bin/ch profiles $profiles_base $params >> $logfile`;
-# `$FRED/bin/ch primary_cases_file $primary_cases_base $params >> $logfile`;
+`$FRED/bin/ch 'primary_cases_file[0]' $primary_cases_base $params >> $logfile`;
 `$FRED/bin/ch vaccine_file $vaccine_file_base $params >> $logfile`;
 `$FRED/bin/ch vaccination_capacity_file $vaccination_capacity_file_base $params >> $logfile`;
 
@@ -250,6 +235,8 @@ my $params = "$work/$params_base";
 # system "$FRED/bin/run_fred_helper $FRED/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
 
 # finally, run FRED
+# NOTE: the next part of the script runs in the WORK directory
+chdir $work or die "Can't change to FRED directory $work\n";
 system "$FRED/FRED $params > $logfile";
 
 # make reports
@@ -257,6 +244,10 @@ system "$FRED/FRED $params > $logfile";
 
 # update run status
 `echo FINISHED > $meta/STATUS`;
+
+# return to original directory
+chdir $cwd;
+
 exit;
 
 sub same_params {
@@ -286,3 +277,26 @@ sub same_params {
   #not the same return 0 (false)
   return 0;
 }
+
+
+sub get_param_value {
+  my ($param, $paramsfile) = @_;
+  $param =~ s/\[/\\[/g;
+  $param =~ s/\-/\\-/g;
+  my $dval = `grep '$param =' params.def`;
+  chomp $dval;
+  my @a = split " ", $dval;
+  $dval = pop @a;
+  return "" if not $dval;
+  # print "dval = |$dval|\n";
+  my $pval = `grep '$param =' $paramsfile`;
+  if ($pval) {
+    @a = split " ", $pval;
+    $pval = pop @a;
+  }
+  # print "pval = |$pval|\n";
+  return $pval if $pval;
+  return $dval if $dval;
+  return "";
+}
+

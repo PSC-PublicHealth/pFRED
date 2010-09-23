@@ -10,10 +10,15 @@ use Fcntl qw(:flock);
 die "USAGE: ch parameter-name [ parameter-value [params-file] ]\n" if not @ARGV;
 my ($param, $param_value, $params_file) = @ARGV;
 $params_file = "params" if not $params_file;
+# print "param = |$param|\n";
 
 # make sure given param is in the params.def file
 my $x="$param = ";
-my $line = `grep "^$x" params.def`;
+$x =~ s/\[/\\[/g;
+$x =~ s/\-/\\-/g;
+$x =~ s/\./\\./g;
+#print "x = |$x|\n";
+my $line = `grep '^$x' params.def`;
 die "$param not a valid parameter\n" if not $line;
 
 # set locking semaphore
