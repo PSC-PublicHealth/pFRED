@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     sscanf(argv[2], "%d", &single_run_number);
   }
   else {
-    single_run_number = -1;
+    single_run_number = 0;
   }
   if (argc > 1) {
     strcpy(Paramfile, argv[1]);
@@ -43,8 +43,8 @@ int main(int argc, char* argv[]) {
   fprintf(Statusfp, "%s", ctime(&clock));
 	
   setup(Paramfile);
-  if (single_run_number > -1) {
-    run_sim(single_run_number);
+  if (single_run_number > 0) {
+    run_sim(single_run_number-1);
   }
   else {
     for (int run = 0; run < Runs; run++) {
