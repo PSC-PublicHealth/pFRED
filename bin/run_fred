@@ -209,7 +209,6 @@ chdir $cwd;
 # copy the input files to working directory
 `cp params.def $work/params.def`;
 my $params = "$work/$params_base";
-print "paramsfile = $paramsfile\n";
 `cp $paramsfile $params`;
 `cp $profiles "$work/$profiles_base"`;
 `cp $primary_cases "$work/$primary_cases_base"`;
@@ -231,7 +230,6 @@ print "paramsfile = $paramsfile\n";
 
 # update run status
 `echo RUNNING > $meta/STATUS`;
-exit;
 # run FRED in background process
 # system "$FRED/bin/run_fred_helper $FRED/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
 
