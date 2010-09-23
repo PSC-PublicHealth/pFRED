@@ -247,9 +247,8 @@ my $params = "$work/$params_base";
 `echo RUNNING > $meta/STATUS`;
 
 # run FRED in background process
-system "$FRED/bin/run_fred_helper $FRED/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
+# system "$FRED/bin/run_fred_helper $FRED/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
 
-if (0) {
 # finally, run FRED
 system "$FRED/FRED $params > $logfile";
 
@@ -258,8 +257,6 @@ system "$FRED/FRED $params > $logfile";
 
 # update run status
 `echo FINISHED > $meta/STATUS`;
-}
-
 exit;
 
 sub same_params {
