@@ -44,10 +44,10 @@ int main(int argc, char* argv[]) {
 	
   setup(Paramfile);
   if (single_run_number > 0) {
-    run_sim(single_run_number-1);
+    run_sim(single_run_number);
   }
   else {
-    for (int run = 0; run < Runs; run++) {
+    for (int run = 1; run <= Runs; run++) {
       run_sim(run);
     }
   }
@@ -87,7 +87,7 @@ void run_sim(int run) {
   unsigned long new_seed;
   time_t clock;		      // current date
 	
-  sprintf(filename, "%s/out%d.txt", Output_directory, run+1);
+  sprintf(filename, "%s/out%d.txt", Output_directory, run);
   Outfp = fopen(filename, "w");
   if (Outfp == NULL) {
     printf("Help! Can't open %s\n", filename);
@@ -96,7 +96,7 @@ void run_sim(int run) {
 	
   Tracefp = NULL;
   if (strcmp(Tracefilebase, "none") != 0) {
-    sprintf(filename, "%s/trace%d.txt", Output_directory, run+1);
+    sprintf(filename, "%s/trace%d.txt", Output_directory, run);
     Tracefp = fopen(filename, "w");
     if (Tracefp == NULL) {
       printf("Help! Can't open %s\n", filename);
@@ -106,7 +106,7 @@ void run_sim(int run) {
 	
   VaccineTracefp = NULL;
   if (strcmp(VaccineTracefilebase, "none") != 0) {
-    sprintf(filename, "%s/vacctr%d.txt", Output_directory, run+1);
+    sprintf(filename, "%s/vacctr%d.txt", Output_directory, run);
     VaccineTracefp = fopen(filename, "w");
     if (VaccineTracefp == NULL) {
       printf("Help! Can't open %s\n", filename);
@@ -120,7 +120,7 @@ void run_sim(int run) {
   fprintf(Statusfp, "%s", ctime(&clock));
 	
   // allow us to replicate individual runs
-  if (run > 0 && Reseed_day == -1) { new_seed = Seed * 100 + run; }
+  if (run > 1 && Reseed_day == -1) { new_seed = Seed * 100 + (run-1); }
   else { new_seed = Seed; }
   fprintf(Statusfp, "seed = %lu\n", new_seed);
   INIT_RANDOM(new_seed);
@@ -128,13 +128,13 @@ void run_sim(int run) {
   Pop.reset(run);
   if (Random_start_day) {
     // cycle through days of the week for start day
-    Start_day_of_week = run % 7;
+    Start_day_of_week = (run-1) % 7;
   }
 	
   for (int day = 0; day < Days; day++) {
     if (day == Reseed_day) {
       printf("************** reseed day = %d\n", day); fflush(stdout);
-      INIT_RANDOM(new_seed + run);
+      INIT_RANDOM(new_seed + run - 1);
     }
     printf("================\nsim day = %d\n", day); fflush(stdout);
     Loc.update(day);
