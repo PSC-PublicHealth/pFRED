@@ -21,7 +21,14 @@
 char Paramfile[80];
 
 int main(int argc, char* argv[]) {
-  time_t clock;		      // current date
+  time_t clock;					// current date
+  int single_run_number;			// number of single run
+  if (argc > 2) {
+    sscanf(argv[2], "%d", &single_run_number);
+  }
+  else {
+    single_run_number = -1;
+  }
   if (argc > 1) {
     strcpy(Paramfile, argv[1]);
   }
@@ -36,9 +43,17 @@ int main(int argc, char* argv[]) {
   fprintf(Statusfp, "%s", ctime(&clock));
 	
   setup(Paramfile);
-  for (int run = 0; run < Runs; run++) {
-    run_sim(run);
+  if (single_run_number > -1) {
+    run_sim(single_run_number);
   }
+  else {
+    for (int run = 0; run < Runs; run++) {
+      run_sim(run);
+    }
+  }
+  fprintf(Statusfp, "FRED finished  ");
+  time(&clock);
+  fprintf(Statusfp, "%s", ctime(&clock));
   return 0;
 }
 
