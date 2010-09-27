@@ -5,6 +5,7 @@ use Env;
 use Cwd;
 use Fcntl qw(:flock);
 use Getopt::Std;
+use POSIX qw/ceil/;
 $| = 1;  # AUTO_FLUSH
 
 # File: run_fred
@@ -20,13 +21,14 @@ die "run_fred: Please set environmental variable FRED_HOME to location of FRED s
 
 # get command line arguments
 my %options = ();
-getopts("cp:k:", \%options);
+getopts("scp:k:", \%options);
 my $paramsfile;
 $paramsfile = $options{p} if exists $options{p};
 my $key;
 $key = $options{k} if exists $options{k};
 $paramsfile = "params" if not $paramsfile;
 my $cache = exists $options{c};
+my $use_serial = exists $options{s};
 
 # get the base of the params file name
 my $params_base = $paramsfile;
@@ -45,7 +47,40 @@ else {
   $popdir = "$cwd/$popdir";
 }
 
+# declare these in package
+my $cpus;
+my $using_pbs;
+
+# if not using serial mode, determine how many cpus to use for parallel runs
+if (! $use_serial) {
+  # are we running in the context of a PBS batch job?
+  my $using_pbs = (exists $ENV{PBS_JOBID}) ? 1 : 0;
+
+  # intialize cpu count
+  $cpus = 0;
+  if ($using_pbs) {
+    # if using PBS, look up how many cores have been requested
+    if (exists $ENV{PBS_NODEFILE} && -f $ENV{PBS_NODEFILE}) {
+      open FH, $ENV{PBS_NODEFILE};
+      $cpus++ while (<FH>);
+      close FH;
+    }
+  } elsif (-f "/proc/cpuinfo") {
+    # not using PBS so see if we can get a core count from /proc/cpuinfo
+    # TODO: watch out for Intel Hyper-threading cpus
+    open FH, "/proc/cpuinfo";
+    while (<FH>) {
+      $cpus++ if /^processor\s*:/;
+    }
+    close FH;
+  } else {
+    # cannot determine how many cpus are available so force serial mode
+    $use_serial = 1;
+  }
+}
+
 # get the file parameters from the params files
+my $runs = get_param_value("runs",$paramsfile);
 my $profiles = get_param_value("profiles",$paramsfile);
 my $primary_cases = get_param_value("primary_cases_file[0]",$paramsfile);
 my $vaccine_file =  get_param_value("vaccine_file",$paramsfile);
@@ -230,13 +265,72 @@ my $params = "$work/$params_base";
 
 # update run status
 `echo RUNNING > $meta/STATUS`;
-# run FRED in background process
-# system "$FRED/bin/run_fred_helper $FRED/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
 
 # finally, run FRED
-# NOTE: the next part of the script runs in the WORK directory
-chdir $work or die "Can't change to FRED directory $work\n";
-system "$FRED/FRED $params > $logfile";
+if ($use_serial) {
+  # run FRED in background process
+  # system "$FRED/bin/run_fred_helper $FRED/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
+  # NOTE: the next part of the script runs in the WORK directory
+  chdir $work or die "Can't change to FRED directory $work\n";
+  system "$FRED/FRED $params > $logfile";
+} else {
+  # parallel run
+
+  # number of single cpu fred runs
+  my $runs_remaining = $runs;
+
+  # break down runs into sets of "$cpus" each
+  my $num_run_sets = ceil($runs / $cpus);
+
+  # create the LOG file for parallel run information
+  my $logfile_parallel = "$meta/LOGP";
+
+  # initialize parallel log to record activity
+  open LP, ">$logfile_parallel";
+  print LP "runs=$runs\n";
+  print LP "cpus=$cpus\n";
+  print LP "number of sets=$num_run_sets\n";
+  close LP;
+
+  # iterate over the number of sets of runs
+  for (my $run_set = 0; $run_set < $num_run_sets; $run_set++) {
+    # distribute fred runs accross cpus for this set
+    my $run_instance = 0;
+    while ($run_instance < $cpus && $runs_remaining > 0) {
+      # set fred instance (1 through $runs)
+      my $fred_instance = $runs - $runs_remaining + 1;
+
+      # log parallel activity
+      open LP, ">>$logfile_parallel";
+      print LP "Starting fred instance $fred_instance in set $run_set, instance $run_instance\n";
+      close LP;
+
+      # create instance-specific log file
+      my $logfilep = "$meta/LOG.$fred_instance";
+
+      # run FRED in background process
+      # system "$FRED/bin/run_fred_helper $FRED/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
+
+      # create child process
+      if (fork() == 0) {
+        # child
+        if ($using_pbs) {
+          # run on remote node
+          exec "pbsdsh -n $run_instance /bin/sh -c \"cd $work && $FRED/FRED $params $fred_instance > $logfilep\"\n";
+        } else {
+          # run on localhost
+          exec "cd $work && $FRED/FRED $params $fred_instance > $logfilep \n" ;
+        }
+      }
+
+      $run_instance++;
+      $runs_remaining--;
+    } # while run_instance
+
+    # wait for all child processes to finish from current set
+    while (wait() != -1) {}
+  } #for run_set
+} # if serial
 
 # make reports
 `$FRED/bin/fred_report $out $reports`;
@@ -298,4 +392,5 @@ sub get_param_value {
   return $dval if $dval;
   return "";
 }
+
 
