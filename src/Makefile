@@ -58,7 +58,8 @@ DEPENDS: $(SRC) $(HDR)
 include DEPENDS
 
 FRED.tar.gz: $(SRC) $(HDR)
-	tar -czf FRED.tar.gz $(HDR) $(SRC) Makefile params.def
+	tar -czf FRED.tar.gz $(HDR) $(SRC) Makefile params.def \
+	primary_case_schedule-0.txt profiles.txt vaccination_capacity-0.txt
 
 FRED.md5 : FRED.tar.gz
 	$(MD5SUM) $< > $@
