@@ -1,0 +1,23 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Env;
+
+# File: fred_clear_all_results
+# Author: John Grefenstette
+# Created: Sep 28, 2010
+
+my $FRED = $ENV{FRED_HOME};
+die "fred_clear_all_results: Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
+
+print "You are about to delete $FRED/RESULTS. This cannot be undone.\n";
+print "Proceed? yes/no [no]\n";
+my $response = <>;
+if ($response =~ /^y|yes/i) {
+  system "rm -rf $FRED/RESULTS";
+  print "$FRED/RESULTS deleted\n";
+}
+else {
+  print "cancelled\n";
+}
+

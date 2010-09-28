@@ -131,17 +131,19 @@ if (not -e "$fred_results/KEY") {
 }
 
 # determine if key is unique. if not, terminate.
-open FH, "$fred_results/KEY";
-while (<FH>) {
- chomp;
- my ($k) = split;
- if ($k eq $key) {
-   close SEM and close FH and die "run_fred: key $key already used.\n";
- }
+if ($key) {
+  open FH, "$fred_results/KEY";
+  while (<FH>) {
+    chomp;
+    my ($k) = split;
+    if ($k eq $key) {
+      close SEM and close FH and die "run_fred: key $key already used.\n";
+    }
+  }
+  close FH;
 }
-close FH;
 
-if ($cache) {
+if ($key and $cache) {
   # see if we have already used there params before.
   # if so, just return the id of the previous request
   open FH, "$fred_results/KEY";
