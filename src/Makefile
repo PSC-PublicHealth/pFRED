@@ -43,7 +43,9 @@ SRC = $(OBJ:.o=.cc)
 
 HDR = $(OBJ:.o=.h) Cognitive_Model.h
 
-MD5 = FRED.md5 alleg_pop.md5 alleg_loc.md5
+POP := $(wildcard *_pop.txt)
+LOC := $(wildcard *_loc.txt)
+MD5 := FRED.md5 $(POP:.txt=.md5) $(LOC:.txt=.md5)
 
 all: FRED FRED.tar.gz $(MD5)
 
@@ -61,10 +63,10 @@ FRED.tar.gz: $(SRC) $(HDR)
 FRED.md5 : FRED.tar.gz
 	$(MD5SUM) $< > $@
 
-alleg_pop.md5 : alleg_pop.txt
+%_pop.md5 : %_pop.txt
 	$(MD5SUM) $< > $@
 
-alleg_loc.md5 : alleg_loc.txt
+%_loc.md5 : %_loc.txt
 	$(MD5SUM) $< > $@
 
 
