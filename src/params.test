@@ -4,4 +4,5 @@ outdir = OUT.TEST
 popfile = test_pop.txt
 locfile = test_loc.txt
 vaccine_tracefile = none
+tracefile = trace
 
