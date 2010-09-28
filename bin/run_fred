@@ -238,7 +238,7 @@ my $logfile = "$meta/LOG";
 # copy source code
 my $version = "$meta/VERSION";
 mkdir $version or die "Can't make directory $version\n";
-`cp -p Makefile profiles.txt primary_case_schedule-0.txt *.cc *.h params.def params.test test_pop.txt test_loc.txt LICENSE $version`;
+`cp -p FRED.tar.gz FRED.md5 alleg_pop.md5 alleg_loc.md5 $version`;
 
 # return to original directory
 chdir $cwd;
