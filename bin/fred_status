@@ -28,11 +28,16 @@ if ($status =~ /RUNNING/) {
   my $z = `grep 'runs =' $dir/RUN/$id/META/PARAMS`;
   my ($x, $y, $runs) = split " ", $z;
   chomp $runs;
-  my $finished = `ls $dir/RUN/$id/DATA/OUT/out* | wc -l`;
-  chomp $finished;
-  $finished =~ s/\s//g;
-  $finished--;
-  $status = sprintf "RUNNING-%02d", int(0.5+100*$finished/$runs);
+  if (-e "$dir/RUN/$id/DATA/OUT/out1.txt") {
+    my $finished = `ls $dir/RUN/$id/DATA/OUT/out* | wc -l`;
+    chomp $finished;
+    $finished =~ s/\s//g;
+    $finished--;
+    $status = sprintf "RUNNING-%02d", int(0.5+100*$finished/$runs);
+  }
+  else {
+    $status = "RUNNING-00";
+  }
 }
 
 $status .= " " . `date`;
