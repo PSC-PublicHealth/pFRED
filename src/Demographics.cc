@@ -64,5 +64,6 @@ void Demographics::print() {
 }
 
 int Demographics::get_age(int day) { 
+  return  init_age;
   return (int) ((day-birthday)/365.0);
 }
