@@ -15,6 +15,15 @@ CPPFLAGS = -g -m64 -O3 # -fast #-Wall
 # Use this for unit testing:
 # CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall
 
+#################  MD5 Program ##############################
+
+UNIX	:= $(shell uname)
+ifeq ($(UNIX), Linux)
+MD5SUM	:= md5sum
+else
+MD5SUM	:= md5 -q
+endif
+
 ###############################################
 
 %.o:%.c %.h
@@ -32,9 +41,11 @@ OBJ =   Fred.o Global.o Decision.o Policy.o Manager.o \
 
 SRC = $(OBJ:.o=.cc)
 
-HDR = $(OBJ:.o=.h)
+HDR = $(OBJ:.o=.h) Cognitive_Model.h
 
-all: FRED
+MD5 = FRED.md5 alleg_pop.md5 alleg_loc.md5
+
+all: FRED FRED.tar.gz $(MD5)
 
 FRED: $(OBJ)
 	$(CPP) $(CPPFLAGS) $(OBJ) -o FRED
@@ -43,6 +54,19 @@ DEPENDS: $(SRC) $(HDR)
 	$(CPP) -MM $(SRC) > DEPENDS
 
 include DEPENDS
+
+FRED.tar.gz: $(SRC) $(HDR)
+	tar -czf FRED.tar.gz $(HDR) $(SRC) Makefile params.def
+
+FRED.md5 : FRED.tar.gz
+	$(MD5SUM) $< > $@
+
+alleg_pop.md5 : alleg_pop.txt
+	$(MD5SUM) $< > $@
+
+alleg_loc.md5 : alleg_loc.txt
+	$(MD5SUM) $< > $@
+
 
 ############################# Google Test/Mock ################################
 
