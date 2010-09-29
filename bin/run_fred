@@ -274,7 +274,7 @@ if ($use_serial) {
   # system "$FRED/bin/run_fred_helper $FRED/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
   # NOTE: the next part of the script runs in the WORK directory
   chdir $work or die "Can't change to FRED directory $work\n";
-  system "$FRED/FRED $params > $logfile";
+  system "$FRED/bin/FRED $params > $logfile";
 } else {
   # parallel run
 
@@ -318,10 +318,10 @@ if ($use_serial) {
         # child
         if ($using_pbs) {
           # run on remote node
-          exec "pbsdsh -n $run_instance /bin/sh -c \"cd $work && $FRED/FRED $params $fred_instance > $logfilep\"\n";
+          exec "pbsdsh -n $run_instance /bin/sh -c \"cd $work && $FRED/bin/FRED $params $fred_instance > $logfilep\"\n";
         } else {
           # run on localhost
-          exec "cd $work && $FRED/FRED $params $fred_instance > $logfilep \n" ;
+          exec "cd $work && $FRED/bin/FRED $params $fred_instance > $logfilep \n" ;
         }
       }
 

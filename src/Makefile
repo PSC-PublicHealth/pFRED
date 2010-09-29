@@ -51,6 +51,7 @@ all: FRED FRED.tar.gz $(MD5)
 
 FRED: $(OBJ)
 	$(CPP) $(CPPFLAGS) $(OBJ) -o FRED
+	cp FRED ../bin
 
 DEPENDS: $(SRC) $(HDR)
 	$(CPP) -MM $(SRC) > DEPENDS
