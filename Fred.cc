@@ -35,12 +35,12 @@ int main(int argc, char* argv[]) {
   else {
     strcpy(Paramfile, "params");
   }
-  printf("param file = %s\n", Paramfile);
 	
   Statusfp = stdout;
-  fprintf(Statusfp, "FRED started  ");
   time(&clock);
-  fprintf(Statusfp, "%s", ctime(&clock));
+  fprintf(Statusfp, "FRED started %s", ctime(&clock));
+  fprintf(Statusfp, "param file = %s\n", Paramfile);
+  fflush(Statusfp);
 	
   setup(Paramfile);
   if (single_run_number > 0) {
@@ -51,9 +51,8 @@ int main(int argc, char* argv[]) {
       run_sim(run);
     }
   }
-  fprintf(Statusfp, "FRED finished  ");
   time(&clock);
-  fprintf(Statusfp, "%s", ctime(&clock));
+  fprintf(Statusfp, "FRED finished %s", ctime(&clock));
   return 0;
 }
 
@@ -114,10 +113,9 @@ void run_sim(int run) {
     }
   }
 	
-  fprintf(Statusfp, "\nStarting run %d\n", run);
-  fprintf(Statusfp, "FRED started  ");
   time(&clock);
-  fprintf(Statusfp, "%s", ctime(&clock));
+  fprintf(Statusfp, "\nFRED run %d started %s\n", run, ctime(&clock));
+  fflush(Statusfp);
 	
   // allow us to replicate individual runs
   if (run > 1 && Reseed_day == -1) { new_seed = Seed * 100 + (run-1); }
