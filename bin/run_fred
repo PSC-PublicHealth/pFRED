@@ -17,7 +17,7 @@ $| = 1;  # AUTO_FLUSH
 my $cwd = getcwd();
 
 my $FRED = $ENV{FRED_HOME};
-die "run_fred: Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
+die "run_fred: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
 # get command line arguments
 my %options = ();
@@ -99,7 +99,7 @@ $vaccination_capacity_file_base =~ s/.*\/// if $vaccination_capacity_file_base =
 chdir $FRED or die "Can't change to FRED directory $FRED\n";
 
 # compile FRED if necessary
-system "make -s";
+# system "cd src; make -s";
 
 # set locking semaphore
 my $SEMAPHORE = ".results.lck";
@@ -238,7 +238,8 @@ my $logfile = "$meta/LOG";
 # copy source code
 my $version = "$meta/VERSION";
 mkdir $version or die "Can't make directory $version\n";
-`cp -p FRED.tar.gz FRED.md5 alleg_pop.md5 alleg_loc.md5 $version`;
+`cp -p $FRED/src/FRED.tar.gz $FRED/src/FRED.md5 $version`;
+`cp -p $FRED/region/*_pop.md5 $FRED/region/*_loc.md5 $version`;
 
 # return to original directory
 chdir $cwd;
@@ -271,7 +272,7 @@ my $params = "$work/$params_base";
 # finally, run FRED
 if ($use_serial) {
   # run FRED in background process
-  # system "$FRED/bin/run_fred_helper $FRED/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
+  # system "$FRED/bin/run_fred_helper $FRED/bin/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
   # NOTE: the next part of the script runs in the WORK directory
   chdir $work or die "Can't change to FRED directory $work\n";
   system "$FRED/bin/FRED $params > $logfile";
@@ -311,7 +312,7 @@ if ($use_serial) {
       my $logfilep = "$meta/LOG.$fred_instance";
 
       # run FRED in background process
-      # system "$FRED/bin/run_fred_helper $FRED/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
+      # system "$FRED/bin/run_fred_helper $FRED/bin/FRED $params $logfile $FRED/bin/fred_report $out $reports $meta/STATUS &";
 
       # create child process
       if (fork() == 0) {
