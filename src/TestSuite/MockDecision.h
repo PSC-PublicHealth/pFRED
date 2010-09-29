@@ -9,7 +9,7 @@
 
 #include <gmock/gmock.h>
 
-#include "../../Decision.h"
+#include "../Decision.h"
 
 class Person;
 
