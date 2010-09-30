@@ -39,8 +39,13 @@ if ($status =~ /RUNNING/) {
     $status = "RUNNING-00";
   }
 }
-
-$status .= " " . `date`;
+if ($status =~ /FINISHED/) {
+  my $t = (stat("$dir/RUN/$id/META/STATUS"))[9];
+  $status .= " " . localtime($t) . "\n";
+}
+else {
+  $status .= " " . localtime() . "\n";
+}
 print $status;
 
 if (defined $secs and $secs =~ /^\d+$/) {
@@ -58,7 +63,13 @@ if (defined $secs and $secs =~ /^\d+$/) {
       $finished--;
       $status = sprintf "RUNNING-%02d", int(0.5+100*$finished/$runs);
     }
-    $status .= " " . `date`;
+    if ($status =~ /FINISHED/) {
+      my $t = (stat("$dir/RUN/$id/META/STATUS"))[9];
+      $status .= " " . localtime($t) . "\n";
+    }
+    else {
+      $status .= " " . localtime() . "\n";
+    }
     print $status;
   }
 }
