@@ -35,18 +35,6 @@ my $params_base = $paramsfile;
 $params_base =~ s/.*\/// if $params_base =~ /\//;
 my @a = ();
 
-# get the path to the population files
-my $popdir = `grep 'popdir = ' params.def`;
-chomp $popdir;
-@a = split " ", $popdir;
-$popdir = pop @a;
-if ($popdir eq ".") {
-  $popdir = $cwd;
-}
-else {
-  $popdir = "$cwd/$popdir";
-}
-
 # declare these in package
 my $cpus;
 my $using_pbs;
@@ -80,6 +68,10 @@ if (! $use_serial) {
 }
 
 # get the file parameters from the params files
+my $popdir = get_param_value("popdir",$paramsfile);
+if ($popdir eq ".") { $popdir = $cwd; }
+else { $popdir = "$cwd/$popdir"; }
+
 my $runs = get_param_value("runs",$paramsfile);
 my $profiles = get_param_value("profiles",$paramsfile);
 my $primary_cases = get_param_value("primary_cases_file[0]",$paramsfile);
