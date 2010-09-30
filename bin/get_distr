@@ -1,4 +1,11 @@
 #!/usr/bin/perl
+use strict;
+use warnings;
+use Env;
+
+my $FRED = $ENV{FRED_HOME};
+die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
+
 my ($dir) = @ARGV;
 $dir = "OUT" if not $dir;
 open FH, ">distr";
@@ -6,12 +13,12 @@ for my $i (1..20) {
   if (-e "$dir/trace$i.txt") {
     # print "distr for run $i\n";
     `grep -v 'S id' $dir/trace$i.txt | grep -v 'M id' > tmp`;
-    $n = `wc -l tmp | awk '{print $1}'`;
-    my @places = qw/N H C S O W X/;
+    my $n = `wc -l tmp | awk '{print \$1}'`;
+    my @places = qw/N X H C S O W/;
     my $tot = 0.0;
     for my $p (@places) {
       # print "p = $p  n = $n\n";
-      my $x = `grep "at $p" tmp | wc -l | awk '{print $1}' `;
+      my $x = `grep "at $p" tmp | wc -l | awk '{print \$1}' `;
       my $ave = 100.0 * $x / $n;
       $tot += $ave;
       printf FH "%6.2f ", $ave;
@@ -21,22 +28,37 @@ for my $i (1..20) {
   }
 }
 close FH;
-my $mean;
-my $std;
-($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 1`;
-printf "N %5.2f %4.2f %d\n", $mean, $std, $n;  
-($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 7`;
-printf "X %5.2f %4.2f %d\n", $mean, $std, $n;  
-($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 2`;
-printf "H %5.2f %4.2f %d\n", $mean, $std, $n;  
-($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 3`;
-printf "C %5.2f %4.2f %d\n", $mean, $std, $n;  
-($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 4`;
-printf "S %5.2f %4.2f %d\n", $mean, $std, $n;  
-($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 5`;
-printf "O %5.2f %4.2f %d\n", $mean, $std, $n;  
-($n, $mean, $std) = split " ", `/Users/gref/bin/ave_std distr 6`;
-printf "W %5.2f %4.2f %d\n", $mean, $std, $n;  
+
+get_mean_std("distr", 0);
+get_mean_std("distr", 1);
+get_mean_std("distr", 2);
+get_mean_std("distr", 3);
+get_mean_std("distr", 4);
+get_mean_std("distr", 5);
+get_mean_std("distr", 6);
+unlink "distr";
+exit;
 
 
-
+sub get_mean_std {
+  my ($file, $col) = @_;
+  open FH, $file or die "get_distr: Can't open file $file\n";
+  my $sum = 0;
+  my $sumsq = 0;
+  my $n = 0;
+  my $mean = 0;
+  my $std = 0;
+  while (my $line = <FH>) {
+    chomp $line;
+    my @F = split " ", $line;
+    $sum += $F[$col];
+    $sumsq += $F[$col] * $F[$col];
+    $n++;
+  }
+  close FH;
+  $mean = $sum/$n if $n;
+  $std = sqrt(($n*$sumsq - $sum*$sum)/($n*($n-1))) if ($n > 1);
+  printf "N %5.2f %4.2f %d\n", $mean, $std, $n;  
+  # return ($n, $mean, $std);
+}
+  
