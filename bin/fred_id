@@ -4,7 +4,7 @@ use warnings;
 use Env;
 
 my $FRED = $ENV{FRED_HOME};
-die "Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
+die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
 my ($mykey) = @ARGV;
 die "usage: fred_id: key\n" if not defined $mykey;

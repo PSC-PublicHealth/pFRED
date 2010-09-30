@@ -9,7 +9,7 @@ use Getopt::Std;
 # Created: Sep 28, 2010
 
 my $FRED = $ENV{FRED_HOME};
-die "fred_delete: Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
+die "fred_delete: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
 # get command line arguments
 my %options = ();

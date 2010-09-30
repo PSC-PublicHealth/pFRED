@@ -13,7 +13,7 @@ die "usage: fred_status -k key [-s secs]\n" if not $mykey;
 $secs = $options{s} if exists $options{s};
 
 my $FRED = $ENV{FRED_HOME};
-die "Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
+die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
 my $dir = "$FRED/RESULTS";
 die "Can't find directory $dir\n" if not -d $dir;

@@ -5,7 +5,7 @@ use Env;
 use Getopt::Std;
 
 my $FRED = $ENV{FRED_HOME};
-die "Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
+die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
 my $dir = "$FRED/RESULTS";
 die "Can't find directory $dir\n" if not -d $dir;
@@ -15,6 +15,6 @@ while (<FH>) {
   chomp;
   my ($key, $id) = split;
   printf "KEY = %10s\tRUN = %3d\t", $key, $id;
-  print "STATUS = ", `fred_status -k $key`;
+  print "STATUS = ", `$FRED/bin/fred_status -k $key`;
 }
 close FH;

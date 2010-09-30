@@ -14,7 +14,7 @@ $reports = "REPORTS" if not $reports;
 mkdir $reports if not -d $reports;
 
 my $FRED = $ENV{FRED_HOME};
-die "run_fred: Please set environmental variable FRED_HOME to location of FRED source directory\n" if not $FRED;
+die "fred_report: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
 # process output files
 system "$FRED/bin/stats $out/out* > $reports/stats.out";
