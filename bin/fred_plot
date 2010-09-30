@@ -5,13 +5,14 @@ use Env;
 use Getopt::Std;
 
 my %options = ();
-getopts("k:v:", \%options);
+getopts("ek:v:", \%options);
 my $key = "";
 my $varlist = "";
+my $errorbars = exists $options{e};
 $key = $options{k} if exists $options{k};
-die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|r]\n" if not $key;
+die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|r] [-e]\n" if not $key;
 $varlist = $options{v} if exists $options{v};
-die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|r]\n" if not $varlist;
+die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|r] [-e]\n" if not $varlist;
 my @args = check_varlist($varlist);
 
 my $FRED = $ENV{FRED_HOME};
@@ -24,7 +25,7 @@ die "fred_plot: UNKNOWN key: $key\n" if $id eq "UNKNOWN";
 my $status = `$bindir/fred_status -k $key`;
 chomp $status;
 $status =~ s/\s.*//;
-die "fred_plot: bad status: $status\n" if $status ne "FINISHED";
+die "fred_plot: bad status: $status\n" if $status !~ /FINISHED/;
 
 my $reportsdir = "$FRED/RESULTS/RUN/$id/DATA/REPORTS";
 
@@ -68,8 +69,8 @@ for my $x (@args) {
   $title = "Reproductive Rate" if $x eq "RR";
   print FH ($n == 0)? "plot " : ",\\\n";
   $n++;
-  print FH "\"$x.dat\" using  1:2 title \"$title\" with lines lw 3 lt $n, \\\n";
-  print FH "\"\" using 1:2:3 notitle with errorbars lw 1 lt $n";
+  print FH "\"$x.dat\" using 1:2:3 notitle with errorbars lw 1 lt $n, \\\n" if $errorbars;
+  print FH "\"$x.dat\" using  1:2 title \"$title\" with lines lw 3 lt $n";
 }
 print FH "\n";
 close FH;
