@@ -30,7 +30,7 @@ sub good_param {
   my $dval = `grep '$param =' params.def`;
   chomp $dval;
   my @a = split " ", $dval;
-  $dval = pop @a;
+  $dval = shift @a;
   return $dval;
 }
 
