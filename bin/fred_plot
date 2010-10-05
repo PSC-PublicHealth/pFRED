@@ -51,7 +51,7 @@ set grid
 set yrange [0:*]
 set xrange [0:*]
 set xlabel \"Days\"
-set ylabel \"Individuals\" rotate by 90
+set ylabel \"Individuals\"
 EOF
 
 for my $x (@args) {
