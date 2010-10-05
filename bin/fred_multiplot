@@ -10,8 +10,8 @@ my $gnuplot = $ENV{FRED_GNUPLOT};
 die "no gnuplot\n" if (not $gnuplot or (not -x $gnuplot));
 
 my @args = @ARGV;
-die "uage: fred_multiplot -v var -k key1 key2 ...\n" if $args[0] ne "-v";
-die "uage: fred_multiplot -v var -k key1 key2 ...\n" if $args[2] ne "-k";
+die "usage: fred_multiplot -v var -k key1 key2 ...\n" if $args[0] ne "-v";
+die "usage: fred_multiplot -v var -k key1 key2 ...\n" if $args[2] ne "-k";
 my $v = $args[1];
 my @keys = @args;
 shift @keys;
@@ -48,6 +48,7 @@ set xrange [0:*]
 set xlabel \"Days\" 0,0.5
 set ylabel \"Individuals\" 1,0 rotate by 90
 EOF
+print FH "set key left Left reverse\n" if $v eq "A";
 
 my $n = 0;
 for my $k (@keys) {

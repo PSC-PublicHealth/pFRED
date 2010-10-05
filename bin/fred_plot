@@ -54,6 +54,10 @@ set xlabel \"Days\"
 set ylabel \"Individuals\" rotate by 90
 EOF
 
+for my $x (@args) {
+  print FH "set key left Left reverse\n" if $x eq "AR";
+}
+
 my $n = 0;
 for my $x (@args) {
   my $title;
