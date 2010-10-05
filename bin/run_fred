@@ -136,13 +136,13 @@ if ($key) {
 }
 
 if ($key and $cache) {
-  # see if we have already used there params before.
+  # see if we have already used these params before.
   # if so, just return the id of the previous request
   open FH, "$fred_results/KEY";
   while (<FH>) {
     chomp;
     my ($k, $id) = split;
-    if (same_params($paramsfile, "$fred_results/RUN/$id/META/PARAMS")) {
+    if (same_params("$cwd/$paramsfile", "$fred_results/RUN/$id/META/PARAMS")) {
       close FH;
       
       # add key-id pair
