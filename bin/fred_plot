@@ -45,17 +45,23 @@ my $pngfile = "report-$key-$$.png";
 open FH, ">$pltfile";
 print FH <<"EOF";
 set title \"FRED: Allegheny County Model\"
-set terminal png font \"Arial\" 12
+set terminal png font \"Arial Bold\" 12
 set output \"$pngfile\"
 set grid
 set yrange [0:*]
 set xrange [0:*]
-set xlabel \"Days\"
-set ylabel \"Individuals\"
+set xlabel \"Days\" 0,0.5
+set ylabel \"Individuals\" 1.2,0
 EOF
 
 for my $x (@args) {
-  print FH "set key left Left reverse\n" if $x eq "AR";
+  if ($x eq "AR") {
+    print FH "set key left Left reverse\n";
+    print FH "set ylabel 'Per cent of Population' 1.2,0\n";
+  }
+  if ($x eq "RR") {
+    print FH "set ylabel 'Reproductive Rate' 1.2,0\n";
+  }
 }
 
 my $n = 0;
