@@ -8,11 +8,21 @@ open FH, $file or die "Can't readfile $file\n";
 while (my $line = <FH>) {
   chomp $line;
   next if not $line;
-  next if not ($line=~/^run_fred/ or $line =~/^fred_/ or $line =~/^#/ or $line =~ /^cat /;
+  # next if not ($line=~/^run_fred/ or $line =~/^fred_/ or $line =~/^#/ or $line =~/^cat /);
   if (not $line =~ /^#/) {
+    if ($line=~/^s /) {
+      $line =~ s/^s //;
+      system "$line";
+    }
+    elsif ($line=~/^q /) {
+      $line =~ s/^q //;
+      system "$line >& /dev/null";
+    }
+    else {
     print "\n% $line\n";
     system "$line &";
     my $return = getc;
+    }
   }
   else { 
     print "$line\n";
