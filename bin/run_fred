@@ -208,6 +208,8 @@ mkdir $meta or die "Can't make directory $meta\n";
 
 # update run status
 `echo SETUP > $meta/STATUS`;
+my $t = localtime();
+`echo $t > $meta/START`;
 
 # record the KEY
 `echo $key > $meta/KEY`;
@@ -332,6 +334,8 @@ if ($use_serial) {
 
 # update run status
 `echo FINISHED > $meta/STATUS`;
+$t = localtime();
+`echo $t > $meta/FINISHED`;
 
 # return to original directory
 chdir $cwd;
