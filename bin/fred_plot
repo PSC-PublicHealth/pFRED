@@ -10,9 +10,9 @@ my $key = "";
 my $varlist = "";
 my $errorbars = exists $options{e};
 $key = $options{k} if exists $options{k};
-die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|r] [-e]\n" if not $key;
+die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r] [-e]\n" if not $key;
 $varlist = $options{v} if exists $options{v};
-die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|r] [-e]\n" if not $varlist;
+die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r] [-e]\n" if not $varlist;
 my @args = check_varlist($varlist);
 
 my $FRED = $ENV{FRED_HOME};
@@ -55,7 +55,7 @@ set ylabel \"Individuals\" 1.2,0
 EOF
 
 for my $x (@args) {
-  if ($x eq "AR") {
+  if ($x eq "AR" or $x eq "CAR") {
     print FH "set key left Left reverse\n";
     print FH "set ylabel 'Per cent of Population' 1.2,0\n";
   }
@@ -75,6 +75,7 @@ for my $x (@args) {
   $title = "Symptomatic" if $x eq "I_s";
   $title = "Immune" if $x eq "M";
   $title = "Attack Rate" if $x eq "AR";
+  $title = "Clinical Attack Rate" if $x eq "CAR";
   $title = "Clinical Cases" if $x eq "CI";
   $title = "Reproductive Rate" if $x eq "RR";
   print FH ($n == 0)? "plot " : ",\\\n";
@@ -92,7 +93,7 @@ exit;
 sub check_varlist {
   my $v = shift;
   my @args = ();
-  my %mapping = (C=>'C', S=>'S', E=>'E', I=>'I', R=>'R', s=>'I_s', M=>'M', A=>'AR', c=>'CI', r=>'RR');
+  my %mapping = (C=>'C', S=>'S', E=>'E', I=>'I', R=>'R', s=>'I_s', M=>'M', A=>'AR', a=>'CAR', c=>'CI', r=>'RR');
   my @vars = split "", $v;
   for my $x (@vars) {
     if (exists $mapping{$x}) {
@@ -100,7 +101,7 @@ sub check_varlist {
     }
     else {
       print "bad arg: |$x|\n";
-      die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|r]\n";
+      die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r]\n";
     }
   }
   return @args;
