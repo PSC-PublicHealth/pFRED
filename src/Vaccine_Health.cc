@@ -50,7 +50,8 @@ void Vaccine_Health::print() const {
 }
 
 void Vaccine_Health::printTrace() const {
-  fprintf(VaccineTracefp," vaccday %2d iseff %2d currentdose %2d",vaccination_day,is_effective(),current_dose);
+  fprintf(VaccineTracefp," vaccday %5d age %3d iseff %2d effday %5d currentdose %3d",vaccination_day,
+	  health->get_self()->get_age(),is_effective(), vaccination_effective_day, current_dose);
   fflush(VaccineTracefp);
 }
 
@@ -103,6 +104,7 @@ void Vaccine_Health::update(int day, int age){
 }
 
 void Vaccine_Health::update_for_next_dose(int day, int age){
+  vaccination_day = day;
   if(!is_effective()){
     double efficacy = vaccine->get_dose(current_dose)->get_efficacy(age);
     double efficacy_delay = vaccine->get_dose(current_dose)->get_efficacy_delay(age);
