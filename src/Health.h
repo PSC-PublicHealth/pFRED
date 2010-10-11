@@ -28,6 +28,7 @@ class AV_Manager;
 class AV_Health;
 class Vaccine;
 class Vaccine_Health;
+class Vaccine_Manager;
 
 class Health {
 public:
@@ -63,7 +64,7 @@ public:
   bool is_on_av_for_strain(int day, int strain) const;
   
   //Medication operators
-  void take(Vaccine *vacc, int day);
+  void take(Vaccine *vacc, int day, Vaccine_Manager* vm);
   void take(Antiviral *av, int day);
   int get_number_av_taken()             const { return av_health.size();}
   int get_checked_for_av(int s)             const { return checked_for_av[s]; }

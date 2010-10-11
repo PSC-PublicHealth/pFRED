@@ -26,7 +26,8 @@ int Random_start_day;
 char Cognitive_model_type[256];
 int Quality_control;
 int Strains;
-
+double Prob_accept_vaccine; // For Random_Congition_Model, need to find a way not to be global
+double Prob_accept_vaccine_dose; //  For Random_Congition_Model, need to find a way not to be global
 // global file pointers
 FILE *Statusfp;
 FILE *Outfp;
@@ -52,4 +53,6 @@ void get_global_parameters() {
   get_param((char *) "trace_headers", &Trace_Headers);
   get_param((char *) "cognitive_model", Cognitive_model_type);
   get_param((char *) "strains", &Strains);
+  get_param((char *) "prob_accept_vaccine", &Prob_accept_vaccine);
+  get_param((char *) "prob_accept_another_vaccine_dose",&Prob_accept_vaccine_dose);
 }

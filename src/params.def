@@ -104,10 +104,10 @@ number_antivirals = 0
 # Vaccination Variables
 vaccine_file = none
 vaccine_tracefile = vacctr
-vaccine_compliance = 0.50
 vaccine_prioritize_by_age = 0
 vaccine_priority_age_low = 0
 vaccine_priority_age_high = 100
+vaccine_dose_priority = 0
 vaccination_capacity_file = vaccination_capacity-0.txt
 
 ##### COGNITION PARAMETERS
@@ -116,7 +116,7 @@ cognitive_model = random
 
 # Random cognitive model params
 prob_accept_vaccine = 0.6
-
+prob_accept_another_vaccine_dose = 1.0
 # Health Belief Model params
 HBM_susceptibility_discount    = 2  0.99  0.01
 HBM_susceptibility_threshold   = 2  220  60

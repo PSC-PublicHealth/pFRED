@@ -23,6 +23,7 @@ class Health_Belief_Model : public Cognitive_Model {
   void reset();
   void update(int day);
   bool will_accept_vaccine(int strain) { return accept_vaccine[strain]; }
+  bool will_accept_another_vaccine_dose(int strain) { return true; } // Not implemented
  private:
   void get_parameters();
   bool decide_whether_to_accept_vaccine(int strain);

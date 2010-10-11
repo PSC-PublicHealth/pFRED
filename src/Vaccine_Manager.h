@@ -15,8 +15,14 @@
 #define VACC_NO_PRIORITY  0
 #define VACC_AGE_PRIORITY 1
 
+#define VACC_DOSE_NO_PRIORITY 0
+#define VACC_DOSE_FIRST_PRIORITY 1
+#define VACC_DOSE_RAND_PRIORITY 2
+#define VACC_DOSE_LAST_PRIORITY 3
+
 #include <list>
 #include <vector>
+#include <string>
 #include "Manager.h"
 
 using namespace std;
@@ -43,15 +49,21 @@ public:
   list < Person* > get_queue()              const { return queue;}
   int get_number_in_priority_queue()        const { return priority_queue.size(); }
   int get_number_in_reg_queue()             const { return queue.size(); }
+  int get_current_vaccine_capacity()        const { return current_vaccine_capacity; }
   
   // Vaccination Specific Procedures
   void fill_queues();
   void vaccinate(int day);
-  
+  void add_to_priority_queue_random(Person* person);
+  void add_to_regular_queue_random(Person* person);
+  void add_to_priority_queue_begin(Person* person);
+  void add_to_priority_queue_end(Person* person);
+
   //Paramters Access Members
-  double get_vaccine_compliance()        const {return vaccine_compliance;}
   int get_vaccine_priority_age_low()  const {return vaccine_priority_age_low;}
   int get_vaccine_priority_age_high() const {return vaccine_priority_age_high;}
+  int get_vaccine_dose_priority()     const {return vaccine_dose_priority;}
+  string get_vaccine_dose_priority_string() const;
   
   // Utility Members
   void update(int day);
@@ -65,14 +77,18 @@ private:
   
   //Parameters from Input 
   bool   do_vacc;                         //Is Vaccination being performed
-  double vaccine_compliance;              //Global compliance parameter
   int    vaccine_priority_scheme;         //Priority policy to use (see defines above)
   bool   vaccine_priority_only;           //True - Vaccinate only the priority
   
   int vaccine_priority_age_low;           //Age specific priority
   int vaccine_priority_age_high;
+  int vaccine_dose_priority;              //Defines where people getting multiple doses fit in the queue
+                                          // See defines above for values
   
-  Timestep_Map *vaccination_capacity_map;               // How many people can be vaccinated now, gets its value from the capacity change list
+  Timestep_Map *vaccination_capacity_map; // How many people can be vaccinated now,
+                                          // gets its value from the capacity change list
+  int current_vaccine_capacity;           // variable to keep track of how many persons this 
+                                          // can vaccinate each timestep.
 };
 
 

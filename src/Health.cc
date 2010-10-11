@@ -27,6 +27,7 @@
 #include "Vaccine.h"
 #include "Vaccine_Dose.h"
 #include "Vaccine_Health.h"
+#include "Vaccine_Manager.h"
 
 Health::Health (Person * person) {
   self = person;
@@ -392,11 +393,23 @@ void Health::modify_develops_symptoms(int strain, bool symptoms, int cur_day) {
 }
 
 //Medication operators
-void Health::take(Vaccine* vaccine, int day){
+void Health::take(Vaccine* vaccine, int day, Vaccine_Manager* vm){  
   // Compliance will be somewhere else
   int age = self->get_age();
-  vaccine_health.push_back(new Vaccine_Health(day,vaccine,age,this));
-  takes_vaccine = true;
+  // Is this our first dose?
+  Vaccine_Health* vaccine_health_for_dose = NULL;
+  for(int ivh = 0; ivh < vaccine_health.size(); ivh++){
+    if(vaccine_health[ivh]->get_vaccine() == vaccine){
+      vaccine_health_for_dose = vaccine_health[ivh];
+    }
+  }
+  if(vaccine_health_for_dose == NULL){ // This is our first dose of this vaccine
+    vaccine_health.push_back(new Vaccine_Health(day,vaccine,age,this,vm));
+    takes_vaccine = true;
+  }
+  else{ // Already have a dose, need to take the next dose
+    vaccine_health_for_dose->update_for_next_dose(day,age);
+  }
   
   if (VaccineTracefp != NULL) {
     fprintf(VaccineTracefp," id %7d vaccid %3d",self->get_id(),vaccine_health[vaccine_health.size()-1]->get_vaccine()->get_ID());

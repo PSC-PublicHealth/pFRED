@@ -208,7 +208,11 @@ void Behavior::recover(int strain) {
 }
 
 
-int Behavior::compliance_to_vaccination(){
+bool Behavior::acceptance_of_vaccine(){
   return self->get_cognition()->will_accept_vaccine(0);
+}
+
+bool Behavior::acceptance_of_another_vaccine_dose(){
+  return self->get_cognition()->will_accept_another_vaccine_dose(0);
 }
 
