@@ -10,13 +10,24 @@ my $gnuplot = $ENV{FRED_GNUPLOT};
 die "no gnuplot\n" if (not $gnuplot or (not -x $gnuplot));
 
 my @args = @ARGV;
-die "usage: fred_multiplot -v var -k key1 key2 ...\n" if $args[0] ne "-v";
-die "usage: fred_multiplot -v var -k key1 key2 ...\n" if $args[2] ne "-k";
+die "usage: fred_multiplot -v var -k key1 key2 ... [-n name1 name2 ...]\n" if $args[0] ne "-v";
+die "usage: fred_multiplot -v var -k key1 key2 ... [-n name1 name2 ...]\n" if $args[2] ne "-k";
 my $v = $args[1];
 my @keys = @args;
 shift @keys;
 shift @keys;
 shift @keys;
+my @names = ();
+for my $i (0..$#keys) {
+  if ($keys[$i] eq "-n") {
+    for (my $j = $#keys; $j > $i; $j--) {
+      push @names, pop @keys;
+    }
+    pop @keys;
+    @names = reverse @names;
+    last;
+  }
+}
 
 for my $key (@keys) {
   system "$FRED/bin/fred_plot_data -k $key -v $v > fred_multiplot.$key-$$";
@@ -57,11 +68,12 @@ if ($v eq "r") {
   print FH "set ylabel 'Reproductive Rate' 1.2,0\n";
 }
 
-my $n = 0;
-for my $k (@keys) {
+for my $n (0..$#keys) {
+  my $k = $keys[$n];
+  my $name = $names[$n];
   print FH ($n == 0)? "plot " : ",\\\n";
-  $n++;
-  print FH "\"fred_multiplot.$k-$$\" using  1:2 title \"$k\" with lines lw 3 lt $n";
+  print FH "\"fred_multiplot.$k-$$\" using  1:2 title \"$k\" with lines lw 3 lt ", $n+1 if not $name;
+  print FH "\"fred_multiplot.$k-$$\" using  1:2 title \"$name\" with lines lw 3 lt ", $n+1 if $name;
 }
 print FH "\n";
 close FH;
