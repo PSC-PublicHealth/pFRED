@@ -402,3 +402,9 @@ bool does_param_exist(char *s) {
   
   return found;
 }
+
+bool does_param_exist(string s) {
+  char st[80];
+  sprintf(st,"%s",s.c_str());
+  return does_param_exist(st);
+}

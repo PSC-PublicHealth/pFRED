@@ -29,6 +29,8 @@
 #include "Vaccine_Health.h"
 #include "Vaccine_Manager.h"
 
+int nantivirals = -1; // This global variable needs to be removed
+
 Health::Health (Person * person) {
   self = person;
   strains = self->get_population()->get_strains();
@@ -41,14 +43,10 @@ Health::Health (Person * person) {
   }
   susceptibility_multp = new double [strains];
   
-  // Immunity to the strains setting immunity to 0 
-  int nav;
-  //get_param((char *) "number_antivirals",&nav);
-  nav = 4;  // Just put there to make sure there is space.  
-  // If  I call get_param, it prints out a line in the output 
-  // for every agent.  Need to fix.
-  //This actually allocates the space for these vectors
-  checked_for_av.assign(nav,false);
+  if(nantivirals == -1){
+    get_param_from_string("number_antivirals",&nantivirals);
+  }
+  checked_for_av.assign(nantivirals,false);
   immunity.assign(strains,false);
   at_risk.assign(strains,false);
   reset();

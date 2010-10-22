@@ -4,7 +4,7 @@ days = 240
 seed = 123456
 runs = 2
 verbose = 1
-debug = 0
+debug = 1
 test = 0
 start_day_of_week = 0
 reseed_day = -1
@@ -102,7 +102,7 @@ school_closure_threshold = 0.1
 number_antivirals = 0
 
 # Vaccination Variables
-vaccine_file = none
+number_of_vaccines = 0
 vaccine_tracefile = vacctr
 vaccine_prioritize_by_age = 0
 vaccine_priority_age_low = 0
@@ -117,6 +117,7 @@ cognitive_model = random
 # Random cognitive model params
 prob_accept_vaccine = 0.6
 prob_accept_another_vaccine_dose = 1.0
+
 # Health Belief Model params
 HBM_susceptibility_discount    = 2  0.99  0.01
 HBM_susceptibility_threshold   = 2  220  60

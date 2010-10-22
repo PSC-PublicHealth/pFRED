@@ -25,25 +25,23 @@ class Vaccine_Dose;
 class Vaccine{
 public:
   // Creation
-  Vaccine(string _name, int _id, int _strain, int _age0, int _age1, 
+  Vaccine(string _name, int _id, int _strain, 
           int _total_avail, int _additional_per_day, int _start_day);
   UNIT_TEST_VIRTUAL ~Vaccine();
   
   UNIT_TEST_VIRTUAL void add_dose(Vaccine_Dose* dose);
   
-  UNIT_TEST_VIRTUAL int get_strain()             const { return strain; }
-  UNIT_TEST_VIRTUAL int get_ID()                 const { return id; }
-  UNIT_TEST_VIRTUAL int get_number_doses()       const { return doses.size(); }
-  UNIT_TEST_VIRTUAL int get_low_age() const { return ages[0]; }
-  UNIT_TEST_VIRTUAL int get_high_age() const { return ages[1]; }
+  UNIT_TEST_VIRTUAL int get_strain()                 const { return strain; }
+  UNIT_TEST_VIRTUAL int get_ID()                     const { return id; }
+  UNIT_TEST_VIRTUAL int get_number_doses()           const { return doses.size(); }
   UNIT_TEST_VIRTUAL Vaccine_Dose* get_dose(int i)    const { return doses[i]; }
   
   // Logistics Functions
-  UNIT_TEST_VIRTUAL int get_initial_stock()      const { return initial_stock; }
-  UNIT_TEST_VIRTUAL int get_total_avail()        const { return total_avail; }
-  UNIT_TEST_VIRTUAL int get_current_reserve()    const { return reserve; }
-  UNIT_TEST_VIRTUAL int get_current_stock()      const { return stock; }
-  UNIT_TEST_VIRTUAL int get_additional_per_day() const { return additional_per_day; }
+  UNIT_TEST_VIRTUAL int get_initial_stock()          const { return initial_stock; }
+  UNIT_TEST_VIRTUAL int get_total_avail()            const { return total_avail; }
+  UNIT_TEST_VIRTUAL int get_current_reserve()        const { return reserve; }
+  UNIT_TEST_VIRTUAL int get_current_stock()          const { return stock; }
+  UNIT_TEST_VIRTUAL int get_additional_per_day()     const { return additional_per_day; }
   UNIT_TEST_VIRTUAL void add_stock( int add ){ 
     if(add <= reserve){
       stock   += add;
@@ -70,7 +68,7 @@ private:
   int id;                              // Which in the number of vaccines is it
   int strain;                          // Which Strain is this vaccine for
   int number_doses;                    // How many doses does the vaccine need.
-  int ages[2];                         // Applicable Ages
+  //int ages[2];                         // Applicable Ages
   vector < Vaccine_Dose* > doses;       // Data structure to hold the efficacy of each dose.
   
   int initial_stock;                   // How much available at the beginning

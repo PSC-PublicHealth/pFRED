@@ -68,47 +68,32 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   id = strain;
   int n;
   
-  sprintf(s, "trans[%d]", id);
-  get_param(s, &transmissibility);
-  
-  sprintf(s, "symp[%d]", id);
-  get_param(s, &prob_symptomatic);
-  
-  sprintf(s, "mortality_rate[%d]", id);
-  get_param(s, &mortality_rate);
-  
-  sprintf(s, "symp_infectivity[%d]", id);
-  get_param(s, &symp_infectivity);
-  
-  sprintf(s, "asymp_infectivity[%d]", id);
-  get_param(s, &asymp_infectivity);
-  
-  sprintf(s, "days_latent[%d]", id);
-  get_param(s, &n);
+  get_indexed_param("trans",id,&transmissibility);
+  get_indexed_param("symp",id,&prob_symptomatic);
+  get_indexed_param("mortality_rate",id,&mortality_rate);
+  get_indexed_param("symp_infectivity",id,&symp_infectivity);
+  get_indexed_param("asymp_infectivity",id,&asymp_infectivity);
+
+  get_indexed_param("days_latent",id,&n);
   days_latent = new double [n];
-  max_days_latent = get_param_vector(s, days_latent) -1;
+  max_days_latent = get_indexed_param_vector("days_latent", id, days_latent) -1;
   
-  sprintf(s, "days_incubating[%d]", id);
-  get_param(s, &n);
+  get_indexed_param("days_incubating",id,&n);
   days_incubating = new double [n];
-  max_days_incubating = get_param_vector(s, days_incubating) -1;
-  
-  sprintf(s, "days_asymp[%d]", id);
-  get_param(s, &n);
+  max_days_incubating = get_indexed_param_vector("days_incubating",id, days_incubating) - 1;
+    
+  get_indexed_param("days_asymp",id,&n);
   days_asymp = new double [n];
-  max_days_asymp = get_param_vector(s, days_asymp) -1;
+  max_days_asymp = get_indexed_param_vector("days_asymp", id, days_asymp) -1;
   
-  sprintf(s, "days_symp[%d]", id);
-  get_param(s, &n);
+  get_indexed_param("days_symp",id,&n);
   days_symp = new double [n];
-  max_days_symp = get_param_vector(s, days_symp) -1;
+  max_days_symp = get_indexed_param_vector("days_symp", id, days_symp) -1;
   
-  sprintf(s, "immunity_loss_rate[%d]", id);
-  get_param(s, &immunity_loss_rate);
+  get_indexed_param("immunity_loss_rate",id,&immunity_loss_rate);
+  get_indexed_param("infection_model",id,&infection_model);
   
-  sprintf(s, "infection_model[%d]", id);
-  get_param(s, &infection_model);
-  
+  // This needs to be moved to Cognition
   get_param((char *) "prob_stay_home", &Prob_stay_home);
   
   if (max_days_asymp > max_days_symp) {
@@ -132,18 +117,13 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   epidemic = new Epidemic(this, new Timestep_Map(param_name_str));
   
   // Define residual immunity
-  //sprintf(s,"residual_immunity_ages[%d]",id);
   residual_immunity = new Age_Map("Residual Immunity");
-  stringstream ss; 
-  ss << "residual_immunity[" << id << "]";
-  residual_immunity->read_from_input(ss.str());
+  residual_immunity->read_from_input("residual_immunity",id);
   residual_immunity->print();
   
   // Define at risk people
-  at_risk = new Age_Map("At Risk Population");			
-  stringstream sss; 			
-  sss << "at_risk[" << id << "]";			
-  at_risk->read_from_input(sss.str());			
+  at_risk = new Age_Map("At Risk Population");
+  at_risk->read_from_input("at_risk",id);
   at_risk->print();	
 	
   printf("Strain setup finished\n"); fflush(stdout);

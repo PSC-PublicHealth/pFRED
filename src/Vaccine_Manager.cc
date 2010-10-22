@@ -39,12 +39,11 @@ Manager(_pop) {
   
   pop = _pop;
   
-  string vaccine_file;
-  get_param((char*)"vaccine_file",vaccine_file);
-  
   vaccine_package = new Vaccines();
-  if(vaccine_file.substr(0,4)!="none"){
-    vaccine_package->setup(vaccine_file); 
+  int num_vaccs = 0;
+  get_param_from_string("number_of_vaccines",&num_vaccs);
+  if(num_vaccs > 0){
+    vaccine_package->setup();
     vaccine_package->print();
     do_vacc = 1;
   }

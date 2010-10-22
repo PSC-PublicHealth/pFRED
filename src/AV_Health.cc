@@ -29,7 +29,6 @@ AV_Health::AV_Health(int _av_day, Antiviral* _AV, Health* _health){
   av_day          = _av_day +1;
   health          = _health;
   av_end_day      = -1;
-  //double efficacy = AV->get_efficacy();
   av_end_day      = av_day + AV->get_course_length();
 } 
 
@@ -50,6 +49,9 @@ void AV_Health::update(int day){
         health->get_infection(0)->print();
       }
     }
+    else{
+      cout << "\nBefore: Suceptibility "<< health->get_susceptibility(0) << "\n";
+    }
   }
   AV->effect(health,day,this);
   if(day <= av_end_day){
@@ -57,6 +59,9 @@ void AV_Health::update(int day){
       if(health->get_infection(0)!=NULL){
         cout << "\nAfter\n";
         health->get_infection(0)->print();
+      }
+      else{
+	cout << "\nAfter: Suceptibility "<< health->get_susceptibility(0) << "\n";
       }
     }
   }
