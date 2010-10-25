@@ -61,7 +61,6 @@ void Age_Map::read_from_input(string Input) {
     sprintf(values_string,"%s_values",Input.c_str());
   }
   
-  printf("ages_string = %s values_string = %s\n", ages_string, values_string);
   vector < int > ages_tmp;
   int na  = get_param_vector(ages_string,ages_tmp);
   
