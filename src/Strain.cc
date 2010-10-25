@@ -119,12 +119,12 @@ void Strain::setup(int strain, Population *pop, double *mut_prob) {
   // Define residual immunity
   residual_immunity = new Age_Map("Residual Immunity");
   residual_immunity->read_from_input("residual_immunity",id);
-  residual_immunity->print();
+  if(residual_immunity->is_empty() == false) residual_immunity->print();
   
   // Define at risk people
   at_risk = new Age_Map("At Risk Population");
   at_risk->read_from_input("at_risk",id);
-  at_risk->print();	
+  if(at_risk->is_empty() == false ) at_risk->print();	
 	
   printf("Strain setup finished\n"); fflush(stdout);
   if (Verbose) print();
