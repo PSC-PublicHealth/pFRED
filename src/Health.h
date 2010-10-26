@@ -46,6 +46,7 @@ public:
   int is_symptomatic() const;
   bool is_immune(Strain* strain) const { return immunity[strain->get_id()]; }
   bool is_at_risk(Strain* strain) const { return at_risk[strain->get_id()]; }
+  bool is_at_risk(int strain) const { return at_risk[strain]; }
   char get_strain_status (int strain) const { return status[strain]; }
   Person* get_self() const { return self;}
   int get_num_strains() const { return strains; }

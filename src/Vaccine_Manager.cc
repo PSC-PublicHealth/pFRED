@@ -57,25 +57,38 @@ Manager(_pop) {
     do_vacc = false;
     return;
   }
-  // Priority Age
-  int do_age_priority;
+  // ACIP Priority takes precidence
+  int do_acip_priority;
   current_policy = VACC_NO_PRIORITY;
-  get_param((char*)"vaccine_prioritize_by_age",&do_age_priority);
-  if(do_age_priority){ 
-    cout <<"Vaccination Priority by Age\n";
-    current_policy = VACC_AGE_PRIORITY;
-    get_param((char*)"vaccine_priority_age_low",&vaccine_priority_age_low);
-    get_param((char*)"vaccine_priority_age_high",&vaccine_priority_age_high);
-    cout <<"      Between Ages "<< vaccine_priority_age_low << " and " 
-    << vaccine_priority_age_high << "\n";
+  get_param_from_string("vaccine_prioritize_acip",&do_acip_priority);
+  if(do_acip_priority == 1){
+    cout << "Vaccination Priority using ACIP recommendations\n";
+    cout << "   Includes: \n";
+    cout << "        Ages 0 to 24\n";
+    cout << "        Pregnant Women\n";
+    cout << "        Persons at risk for complications\n";
+    current_policy = VACC_ACIP_PRIORITY;
+    vaccine_priority_age_low = 0;
+    vaccine_priority_age_high = 24;
   }
   else{
-    vaccine_priority_age_low = 0;
-    vaccine_priority_age_high = 110;
+    int do_age_priority;
+    get_param_from_string("vaccine_prioritize_by_age",&do_age_priority);
+    if(do_age_priority){ 
+      cout <<"Vaccination Priority by Age\n";
+      current_policy = VACC_AGE_PRIORITY;
+      get_param_from_string("vaccine_priority_age_low",&vaccine_priority_age_low);
+      get_param_from_string("vaccine_priority_age_high",&vaccine_priority_age_high);
+      cout <<"      Between Ages "<< vaccine_priority_age_low << " and " 
+	   << vaccine_priority_age_high << "\n";
+    }
+    else{
+      vaccine_priority_age_low = 0;
+      vaccine_priority_age_high = 110;
+    }
   }
-  
   // get vaccine_dose_priority
-  get_param((char*)"vaccine_dose_priority",&vaccine_dose_priority);
+  get_param_from_string("vaccine_dose_priority",&vaccine_dose_priority);
   assert(vaccine_dose_priority < 4);
   //get_param((char*)"vaccination_capacity",&vaccination_capacity);
   vaccination_capacity_map = new Timestep_Map("vaccination_capacity");
@@ -85,9 +98,10 @@ Manager(_pop) {
   // Need to fill the Vaccine_Manager Policies
   policies.push_back(new Vaccine_Priority_Policy_No_Priority(this)); 
   policies.push_back(new Vaccine_Priority_Policy_Specific_Age(this));
+  policies.push_back(new Vaccine_Priority_Policy_ACIP(this));
   
 };
-
+  
 Vaccine_Manager::~Vaccine_Manager(){
   if(vaccine_package != NULL) delete vaccine_package;
   if(vaccination_capacity_map != NULL) delete vaccination_capacity_map;
@@ -102,7 +116,7 @@ void Vaccine_Manager::fill_queues(){
   
   for (int ip = 0; ip < popsize; ip++){
     Person* current_person = people[ip];
-    if (policies[current_policy]->choose(current_person, 0, 0) == 1)
+    if(policies[current_policy]->choose_first_positive(current_person,0,0)==true)
       priority_queue.push_back(current_person);
     else
       queue.push_back(current_person);

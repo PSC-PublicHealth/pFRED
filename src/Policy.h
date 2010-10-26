@@ -33,7 +33,9 @@ public:
   
   Policy(Manager* mgr);
   
-  virtual int choose(Person* person, int strain, int current_day);         
+  virtual int choose(Person* person, int strain, int current_day);
+  virtual bool choose_first_positive(Person* person, int strain, int current_day);
+  virtual bool choose_first_negative(Person* person, int strain, int current_day);
   // decision will return -1 if the decision is no
   // or the integer result of the policies in the decision   
   

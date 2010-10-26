@@ -102,8 +102,9 @@ void AV_Manager::disseminate(int day){
         if(av->get_current_stock()== 0) break;
         Person* current_person = people[ip];
         // Should the person get an av
-        int yeah_or_ney = p->choose(current_person,av->get_strain(),day);
-        if(yeah_or_ney == 0){
+	//int yeah_or_ney = p->choose(current_person,av->get_strain(),day);
+	//if(yeah_or_ney == 0){
+	if(p->choose_first_negative(current_person,av->get_strain(),day) == true){
           if(Debug > 3) cout << "Giving Antiviral for strain " << av->get_strain() << " to " <<ip << "\n";
           av->remove_stock(1);
           current_person->get_health()->take(av,day);

@@ -41,4 +41,12 @@ public:
   Vaccine_Priority_Policy_Specific_Age(Vaccine_Manager* vcm);
 };  
 
+class Vaccine_Priority_Policy_ACIP:public Policy {
+  Vaccine_Manager *vacc_manager;
+  
+ public: 
+  Vaccine_Priority_Policy_ACIP();
+  Vaccine_Priority_Policy_ACIP(Vaccine_Manager* vcm);
+};
+
 #endif

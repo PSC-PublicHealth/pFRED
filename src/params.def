@@ -104,6 +104,7 @@ number_antivirals = 0
 # Vaccination Variables
 number_of_vaccines = 0
 vaccine_tracefile = vacctr
+vaccine_prioritize_acip = 0
 vaccine_prioritize_by_age = 0
 vaccine_priority_age_low = 0
 vaccine_priority_age_high = 100
