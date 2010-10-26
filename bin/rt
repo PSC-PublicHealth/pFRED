@@ -1,10 +1,29 @@
-#!/bin/csh -f
-if (! -d OUT.TEST) mkdir OUT.TEST
-if (-e OUT.TEST/out1.txt) rm OUT.TEST/out*
-if (-e OUT.TEST/trace1.txt) rm OUT.TEST/trace*
-FRED params.test > OUT.TEST/LOG
+#!/bin/bash
+
+# look for the FRED binary
+FRED="./FRED"
+if [ ! -x $FRED -a -x $FRED_HOME/src/FRED ]; then
+    cd $FRED_HOME/src
+fi
+
+# sanity checks
+[ ! -d OUT.TEST ]          && mkdir -p OUT.TEST
+[ -e OUT.TEST/out1.txt ]   && rm -f OUT.TEST/out*
+[ -e OUT.TEST/trace1.txt ] && rm -f OUT.TEST/trace*
+if [ ! -x $FRED ]; then
+    echo "No FRED binary found (either ./FRED or \$FRED_HOME/src/FRED)"
+    echo ">>> You must either build FRED or properly define FRED_HOME"
+    exit 1
+fi
+
+# run the regression test
+$FRED params.test > OUT.TEST/LOG
+
+# check the results
 cmp OUT.TEST/out1.txt OUT.RT/out1.txt
 cmp OUT.TEST/out2.txt OUT.RT/out2.txt
 cmp OUT.TEST/trace1.txt OUT.RT/trace1.txt
 cmp OUT.TEST/trace2.txt OUT.RT/trace2.txt
+
+# done
 echo regression test finished.
