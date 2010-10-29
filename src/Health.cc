@@ -396,7 +396,7 @@ void Health::take(Vaccine* vaccine, int day, Vaccine_Manager* vm){
   int age = self->get_age();
   // Is this our first dose?
   Vaccine_Health* vaccine_health_for_dose = NULL;
-  for(int ivh = 0; ivh < vaccine_health.size(); ivh++){
+  for(unsigned int ivh = 0; ivh < vaccine_health.size(); ivh++){
     if(vaccine_health[ivh]->get_vaccine() == vaccine){
       vaccine_health_for_dose = vaccine_health[ivh];
     }

@@ -86,7 +86,7 @@ void Age_Map::read_from_input(string Input) {
 
 int Age_Map::get_minimum_age(void) const {
   int min = 9999999;
-  for(int i=0;i<ages.size();i++){
+  for(unsigned int i=0;i<ages.size();i++){
     if(ages[i][0] < min) min = ages[i][0];
   }
   return min;
@@ -94,7 +94,7 @@ int Age_Map::get_minimum_age(void) const {
 
 int Age_Map::get_maximum_age(void) const {
   int max = -1;
-  for(int i=0; i< ages.size();i++){
+  for(unsigned int i=0; i< ages.size();i++){
     if(ages[i][1] > max) max = ages[i][1];
   }
   return max;

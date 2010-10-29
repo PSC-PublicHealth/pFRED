@@ -64,7 +64,7 @@ void Strain::reset() {
 }
 
 void Strain::setup(int strain, Population *pop, double *mut_prob) {
-  char s[80];
+  //  char s[80];
   id = strain;
   int n;
   
