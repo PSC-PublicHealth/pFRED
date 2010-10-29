@@ -75,15 +75,12 @@ else { $popdir = "$cwd/$popdir"; }
 my $runs = get_param_value("runs",$paramsfile);
 my $profiles = get_param_value("profiles",$paramsfile);
 my $primary_cases = get_param_value("primary_cases_file[0]",$paramsfile);
-my $vaccine_file =  get_param_value("vaccine_file",$paramsfile);
 my $vaccination_capacity_file =  get_param_value("vaccination_capacity_file",$paramsfile);
 
 my $profiles_base = $profiles;
 $profiles_base =~ s/.*\/// if $profiles_base =~ /\//;
 my $primary_cases_base = $primary_cases;
 $primary_cases_base =~ s/.*\/// if $primary_cases_base =~ /\//;
-my $vaccine_file_base = $vaccine_file;
-$vaccine_file_base =~ s/.*\/// if $vaccine_file_base =~ /\//;
 my $vaccination_capacity_file_base = $vaccination_capacity_file;
 $vaccination_capacity_file_base =~ s/.*\/// if $vaccination_capacity_file_base =~ /\//;
 
@@ -244,7 +241,6 @@ my $params = "$work/$params_base";
 `cp $paramsfile $params`;
 `cp $profiles "$work/$profiles_base"`;
 `cp $primary_cases "$work/$primary_cases_base"`;
-`cp $vaccine_file "$work/$vaccine_file_base"` if $vaccine_file ne "none";
 `cp $vaccination_capacity_file "$work/$vaccination_capacity_file_base"` if $vaccination_capacity_file ne "none";
 
 # copy the params file to RESULTS for reference
@@ -257,7 +253,6 @@ my $params = "$work/$params_base";
 `$FRED/bin/ch outdir $out $params >> $logfile`;
 `$FRED/bin/ch profiles $profiles_base $params >> $logfile`;
 `$FRED/bin/ch 'primary_cases_file[0]' $primary_cases_base $params >> $logfile`;
-`$FRED/bin/ch vaccine_file $vaccine_file_base $params >> $logfile`;
 `$FRED/bin/ch vaccination_capacity_file $vaccination_capacity_file_base $params >> $logfile`;
 
 # update run status
