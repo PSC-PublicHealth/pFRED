@@ -40,10 +40,10 @@ symp_infectivity[0] = 1.0
 asymp_infectivity[0] = 0.5
 residual_immunity_ages[0] = 0
 residual_immunity_values[0] = 0
-pregnancy_prob_ages = 0
-pregnancy_prob_values = 0
-at_risk_ages[0] = 0
-at_risk_values[0] = 0
+at_risk_ages[0] = 14 0 1 2 4 5 18 19 24 25 49 50 64 65 110
+at_risk_values[0] = 7 0.039 0.0883 0.1168 0.1235 0.1570 0.3056 0.4701
+pregnancy_prob_ages = 8 0 18 19 24 25 49 50 110
+pregnancy_prob_values = 4 0.0 0.0576 0.0314 0.0
 prob_stay_home = 0.5
 mutation_prob = 1 0.0
 
@@ -110,11 +110,6 @@ vaccine_priority_age_low = 0
 vaccine_priority_age_high = 100
 vaccine_dose_priority = 0
 vaccination_capacity_file = vaccination_capacity-0.txt
-
-at_risk_ages[0] = 14 0 1 2 4 5 18 19 24 25 49 50 64 65 110
-at_risk_values[0] = 7 0.039 0.0883 0.1168 0.1235 0.1570 0.3056 0.4701
-pregnancy_prob_ages = 8 0 18 19 24 25 49 50 110
-pregnancy_prob_values = 4 0.0 0.0576 0.0314 0.0
 
 ## Definition of Vaccine #0
 vaccine_number_of_doses[0]    = 1
