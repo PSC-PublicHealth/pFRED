@@ -31,46 +31,4 @@ int get_param_vector(char *s, vector < double > &p);
 int get_param_vector(char *s, double *p);
 int get_param_matrix(char *s, double ***p);
 bool does_param_exist(char *s);
-bool does_param_exist(string s);
-
-template <typename T>
-int get_param_from_string(string s, T *p){
-  char st[80];
-  sprintf(st,"%s",s.c_str());
-  int err = get_param(st,p);
-  return err;
-}
-
-template <typename T> 
-int get_indexed_param(string s, int index, T *p){
-  char st[80];
-  sprintf(st, "%s[%d]",s.c_str(),index);
-  int err = get_param(st,p);
-  return err;
-}
-
-template <typename T>
-int get_double_indexed_param(string s, int index_i, int index_j, T* p){
-  char st[80];
-  sprintf(st, "%s[%d][%d]",s.c_str(),index_i,index_j);
-  int err = get_param(st,p);
-  return err;
-}
-
-template <typename T>
-int get_indexed_param_vector(string s, int index, T* p){
-  char st[80];
-  sprintf(st, "%s[%d]",s.c_str(),index);
-  int err = get_param_vector(st,p);
-  return err;
-}
-
-template <typename T>
-int get_double_indexed_param_vector(string s, int index_i, int index_j, T* p) {
-    char st[80];
-    sprintf(st, "%s[%d][%d]",s.c_str(),index_i,index_j);
-    int err = get_param_vector(st,p);
-    return err;
-}
-
 #endif // _FRED_PARAMS_H

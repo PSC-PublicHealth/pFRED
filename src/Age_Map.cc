@@ -11,11 +11,9 @@
 
 #include <iostream>
 #include <iomanip>
-
+using namespace std;
 #include "Age_Map.h"
 #include "Params.h"
-
-using namespace std;
 
 Age_Map::Age_Map() {}
 
@@ -23,21 +21,6 @@ Age_Map::Age_Map(string name) {
   Name = name + " Age Map";
 }
 
-void Age_Map::read_from_input(string Input, int i){
-  stringstream Input_string;
-  Input_string << Input << "[" << i << "]";  
-  this->read_from_input(Input_string.str());
-}
-
-void Age_Map::read_from_input(string Input, int i, int j){
-  stringstream Input_string;
-  Input_string << Input << "[" << i << "][" << j << "]";
-  this->read_from_input(Input_string.str());
-}
-
-
-// will leave this interface in, as it will automatically determine whether the 
-// input variable is indexed or not.
 void Age_Map::read_from_input(string Input) {
   Name = Input + " Age Map";
   
@@ -46,10 +29,10 @@ void Age_Map::read_from_input(string Input) {
   
   if(Input.find("[") != string::npos) {
     // Need Special parsing if this is an array from input
-    // Allows Strain specific values
+    // Allows Disease specific values
     string input_tmp;
     string number;
-    size_t found = Input.find_first_of("[");
+    size_t found = Input.find_last_of("[");
     size_t found2 = Input.find_last_of("]");
     input_tmp.assign(Input.begin(),Input.begin()+found);
     number.assign(Input.begin()+found+1,Input.begin()+found2);
@@ -82,22 +65,6 @@ void Age_Map::read_from_input(string Input) {
   if(quality_control() != true)
     abort();
   return;
-}
-
-int Age_Map::get_minimum_age(void) const {
-  int min = 9999999;
-  for(unsigned int i=0;i<ages.size();i++){
-    if(ages[i][0] < min) min = ages[i][0];
-  }
-  return min;
-}
-
-int Age_Map::get_maximum_age(void) const {
-  int max = -1;
-  for(unsigned int i=0; i< ages.size();i++){
-    if(ages[i][1] > max) max = ages[i][1];
-  }
-  return max;
 }
 
 void Age_Map::add_value(int lower_age, int upper_age,double val) {

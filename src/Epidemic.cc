@@ -10,7 +10,7 @@
 //
 
 #include "Epidemic.h"
-#include "Strain.h"
+#include "Disease.h"
 
 #include <stdio.h>
 #include <new>
@@ -29,9 +29,9 @@ using namespace std;
 
 extern int V_count;
 
-Epidemic::Epidemic(Strain *str, Timestep_Map* _primary_cases_map) {
-  strain = str;
-  id = strain->get_id();
+Epidemic::Epidemic(Disease *str, Timestep_Map* _primary_cases_map) {
+  disease = str;
+  id = disease->get_id();
   primary_cases_map = _primary_cases_map;
   primary_cases_map->print(); 
   new_cases = new int [Days];
@@ -45,7 +45,7 @@ void Epidemic::reset() {
   infected.clear();
   infectious.clear();
   attack_rate = 0.0;
-  N = strain->get_population()->get_pop_size();
+  N = disease->get_population()->get_pop_size();
   total_incidents = 0;
   total_clinical_incidents = 0;
   r_index = V_count = S_count = C_count = c_count = 0;
@@ -64,7 +64,7 @@ void Epidemic::update_stats(int day) {
   clinical_attack_rate = (100.0*total_clinical_incidents)/N;
 
   // get reproductive rate for those infected max_days ago;
-  int rday = day - strain->get_max_days();
+  int rday = day - disease->get_max_days();
   int rcount = 0;
   RR = 0.0;
   NR = 0;
@@ -103,7 +103,7 @@ void Epidemic::update(int day) {
   set <Place *> inf_offices;
   set<Person *>::iterator itr;
   set<Place *>::iterator it;
-  Person **pop = strain->get_population()->get_pop();
+  Person **pop = disease->get_population()->get_pop();
   
   // See if there are changes to primary_cases_per_day from primary_cases_map
   int primary_cases_per_day = primary_cases_map->get_value_for_timestep(day);
@@ -115,8 +115,8 @@ void Epidemic::update(int day) {
   // the file.
   for (int i = 0; i < primary_cases_per_day; i++) {
     int n = IRAND(0, N-1);
-    if (pop[n]->get_strain_status(id) == 'S') {
-      Infection * infection = new Infection(strain, NULL, pop[n], NULL, day);
+    if (pop[n]->get_disease_status(id) == 'S') {
+      Infection * infection = new Infection(disease, NULL, pop[n], NULL, day);
       pop[n]->become_exposed(infection);
     }
   }
@@ -178,42 +178,42 @@ void Epidemic::update(int day) {
   for (it = inf_classrooms.begin(); it != inf_classrooms.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_schools.begin(); it != inf_schools.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_offices.begin(); it != inf_offices.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_workplaces.begin(); it != inf_workplaces.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_neighborhoods.begin(); it != inf_neighborhoods.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_households.begin(); it != inf_households.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread strain %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }

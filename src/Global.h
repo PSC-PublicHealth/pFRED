@@ -40,15 +40,13 @@ extern char Population_directory[];
 extern char Output_directory[];
 extern char Tracefilebase[];
 extern char VaccineTracefilebase[];
-extern int All_strains_antigenically_identical;
+extern int All_diseases_antigenically_identical;
 extern int Incremental_Trace;
 extern int Trace_Headers;
 extern int Random_start_day;
 extern char Cognitive_model_type[];
 extern int Quality_control;
-extern int Strains;
-extern double Prob_accept_vaccine;
-extern double Prob_accept_vaccine_dose;
+extern int Diseases;
 
 // global file pointers
 extern FILE *Statusfp;

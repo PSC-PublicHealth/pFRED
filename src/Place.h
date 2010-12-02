@@ -33,7 +33,7 @@
 using namespace std;
 
 class Person;
-extern int Strains;
+extern int Diseases;
 
 class Place {
 public:
@@ -42,42 +42,42 @@ public:
   UNIT_TEST_VIRTUAL void setup(int loc_id, const char *lab, double lon, double lat, Place *cont, Population *pop);
   virtual void reset();
   UNIT_TEST_VIRTUAL void update(int day);
-  UNIT_TEST_VIRTUAL void print(int strain);
+  UNIT_TEST_VIRTUAL void print(int disease);
   virtual void add_person(Person * per);
   UNIT_TEST_VIRTUAL void add_visitor(Person * per);
-  virtual void add_susceptible(int strain, Person * per);
-  virtual void delete_susceptible(int strain, Person * per);
-  virtual void add_infectious(int strain, Person * per);
-  virtual void delete_infectious(int strain, Person * per);
-  UNIT_TEST_VIRTUAL void print_susceptibles(int strain);
-  UNIT_TEST_VIRTUAL void print_infectious(int strain);
-  virtual void spread_infection(int day, int strain);
+  virtual void add_susceptible(int disease, Person * per);
+  virtual void delete_susceptible(int disease, Person * per);
+  virtual void add_infectious(int disease, Person * per);
+  virtual void delete_infectious(int disease, Person * per);
+  UNIT_TEST_VIRTUAL void print_susceptibles(int disease);
+  UNIT_TEST_VIRTUAL void print_infectious(int disease);
+  virtual void spread_infection(int day, int disease);
   UNIT_TEST_VIRTUAL int is_open(int day);
   
-  virtual void get_parameters(int strain) = 0;
-  virtual int get_group(int strain, Person * per) = 0;
-  virtual double get_transmission_prob(int strain, Person * i, Person * s) = 0;
-  virtual double get_contacts_per_day(int strain) = 0; // access functions
-  virtual int should_be_open(int day, int strain) { return 1; }
+  virtual void get_parameters(int disease) = 0;
+  virtual int get_group(int disease, Person * per) = 0;
+  virtual double get_transmission_prob(int disease, Person * i, Person * s) = 0;
+  virtual double get_contacts_per_day(int disease) = 0; // access functions
+  virtual int should_be_open(int day, int disease) { return 1; }
   UNIT_TEST_VIRTUAL int get_id() { return id; }
   UNIT_TEST_VIRTUAL char * get_label() { return label; }
   UNIT_TEST_VIRTUAL int get_type() { return type; }
   UNIT_TEST_VIRTUAL double get_latitude() { return latitude; }
   UNIT_TEST_VIRTUAL double get_longitude() { return longitude; }
-  UNIT_TEST_VIRTUAL int get_S(int strain) { return S[strain]; }
-  UNIT_TEST_VIRTUAL int get_I(int strain) { return (int) (infectious[strain].size()); }
-  UNIT_TEST_VIRTUAL int get_symptomatic(int strain) { return Sympt[strain]; }
+  UNIT_TEST_VIRTUAL int get_S(int disease) { return S[disease]; }
+  UNIT_TEST_VIRTUAL int get_I(int disease) { return (int) (infectious[disease].size()); }
+  UNIT_TEST_VIRTUAL int get_symptomatic(int disease) { return Sympt[disease]; }
   UNIT_TEST_VIRTUAL int get_size() { return N; }
   UNIT_TEST_VIRTUAL int get_close_date() { return close_date; }
   UNIT_TEST_VIRTUAL int get_open_date() { return open_date; }
   UNIT_TEST_VIRTUAL int get_adults() { return adults; }
   UNIT_TEST_VIRTUAL int get_children() { return children; }
   UNIT_TEST_VIRTUAL Population *get_population() { return population; }
-  UNIT_TEST_VIRTUAL int get_daily_cases(int strain) { return cases[strain]; }
-  UNIT_TEST_VIRTUAL int get_daily_deaths(int strain) { return deaths[strain]; }
-  UNIT_TEST_VIRTUAL int get_total_cases(int strain) { return total_cases[strain]; }
-  UNIT_TEST_VIRTUAL int get_total_deaths(int strain) { return total_deaths[strain]; }
-  UNIT_TEST_VIRTUAL double get_incidence_rate(int strain) { return (double) total_cases[strain] / (double) N; }
+  UNIT_TEST_VIRTUAL int get_daily_cases(int disease) { return cases[disease]; }
+  UNIT_TEST_VIRTUAL int get_daily_deaths(int disease) { return deaths[disease]; }
+  UNIT_TEST_VIRTUAL int get_total_cases(int disease) { return total_cases[disease]; }
+  UNIT_TEST_VIRTUAL int get_total_deaths(int disease) { return total_deaths[disease]; }
+  UNIT_TEST_VIRTUAL double get_incidence_rate(int disease) { return (double) total_cases[disease] / (double) N; }
   
   UNIT_TEST_VIRTUAL void set_id(int n) { id = n; }
   UNIT_TEST_VIRTUAL void set_type(char t) { type = t; }
@@ -114,7 +114,7 @@ protected:
   Population *population;
   int visit;
 
-  // strain parameters
+  // disease parameters
   double *beta;	       // place-independent transmissibility per contact
 };
 

@@ -19,7 +19,6 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
-#include <sstream>
 
 #include "Params.h"
 
@@ -32,15 +31,10 @@ public:
   Age_Map();
   
   UNIT_TEST_VIRTUAL int get_num_ages() const { return ages.size(); }
-  UNIT_TEST_VIRTUAL int get_minimum_age() const;
-  UNIT_TEST_VIRTUAL int get_maximum_age() const;
-  
   UNIT_TEST_VIRTUAL bool is_empty() const { return ages.empty(); }
   
   // Additional creation operations for building an Age_Map
   UNIT_TEST_VIRTUAL void read_from_input(string Input);
-  UNIT_TEST_VIRTUAL void read_from_input(string Input, int i);
-  UNIT_TEST_VIRTUAL void read_from_input(string Input, int i, int j);
   UNIT_TEST_VIRTUAL void add_value(int lower_age, int upper_age, double val);
   
   // Operations

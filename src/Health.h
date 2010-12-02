@@ -17,18 +17,17 @@
 using namespace std;
 
 #include "Infection.h"
-#include "Strain.h"
+#include "Disease.h"
 
 class Person;
 class Infection;
-class Strain;
+class Disease;
 class Antiviral;
 class Antivirals;
 class AV_Manager;
 class AV_Health;
 class Vaccine;
 class Vaccine_Health;
-class Vaccine_Manager;
 
 class Health {
 public:
@@ -36,36 +35,35 @@ public:
   ~Health();
   void reset();
   void update(int day);
-  void become_susceptible(int strain);
+  void become_susceptible(int disease);
   void become_exposed(Infection *inf);
-  void become_infectious(Strain * strain);
-  void become_symptomatic(Strain *strain);
-  void become_immune(Strain* strain);
-  void declare_at_risk(Strain* strain);
-  void recover(Strain * strain);
+  void become_infectious(Disease * disease);
+  void become_symptomatic(Disease *disease);
+  void become_immune(Disease* disease);
+  void declare_at_risk(Disease* disease);
+  void recover(Disease * disease);
   int is_symptomatic() const;
-  bool is_immune(Strain* strain) const { return immunity[strain->get_id()]; }
-  bool is_at_risk(Strain* strain) const { return at_risk[strain->get_id()]; }
-  bool is_at_risk(int strain) const { return at_risk[strain]; }
-  char get_strain_status (int strain) const { return status[strain]; }
+  bool is_immune(Disease* disease) const { return immunity[disease->get_id()]; }
+  bool is_at_risk(Disease* disease) const { return at_risk[disease->get_id()]; }
+  char get_disease_status (int disease) const { return status[disease]; }
   Person* get_self() const { return self;}
-  int get_num_strains() const { return strains; }
-  int add_infectee(int strain);
-  int get_exposure_date(int strain) const;
-  int get_infectious_date(int strain) const;
-  int get_recovered_date(int strain) const;
-  int get_symptomatic_date(int strain) const;
-  int get_infector(int strain) const;
-  int get_infected_place(int strain) const;
-  char get_infected_place_type(int strain) const;
-  int get_infectees(int strain) const;	
-  double get_susceptibility(int strain) const;
-  double get_infectivity(int strain) const;
-  Infection* get_infection(int strain) const { return infection[strain]; }
-  bool is_on_av_for_strain(int day, int strain) const;
+  int get_num_diseases() const { return diseases; }
+  int add_infectee(int disease);
+  int get_exposure_date(int disease) const;
+  int get_infectious_date(int disease) const;
+  int get_recovered_date(int disease) const;
+  int get_symptomatic_date(int disease) const;
+  int get_infector(int disease) const;
+  int get_infected_place(int disease) const;
+  char get_infected_place_type(int disease) const;
+  int get_infectees(int disease) const;	
+  double get_susceptibility(int disease) const;
+  double get_infectivity(int disease) const;
+  Infection* get_infection(int disease) const { return infection[disease]; }
+  bool is_on_av_for_disease(int day, int disease) const;
   
   //Medication operators
-  void take(Vaccine *vacc, int day, Vaccine_Manager* vm);
+  void take(Vaccine *vacc, int day);
   void take(Antiviral *av, int day);
   int get_number_av_taken()             const { return av_health.size();}
   int get_checked_for_av(int s)             const { return checked_for_av[s]; }
@@ -78,24 +76,24 @@ public:
   bool takes_vaccine;
   
   //Modifiers
-  void modify_susceptibility(int strain, double multp);
-  void modify_infectivity(int strain, double multp);
+  void modify_susceptibility(int disease, double multp);
+  void modify_infectivity(int disease, double multp);
 	
   // Current day is needed to modify infectious period, because we can't cause this
   // infection to recover in the past.
   // Modifying infectious period is equivalent to modifying symptomatic and asymptomatic
   // periods by the same amount.
-  void modify_infectious_period(int strain, double multp, int cur_day);
-  void modify_symptomatic_period(int strain, double multp, int cur_day);
-  void modify_asymptomatic_period(int strain, double multp, int cur_day);
+  void modify_infectious_period(int disease, double multp, int cur_day);
+  void modify_symptomatic_period(int disease, double multp, int cur_day);
+  void modify_asymptomatic_period(int disease, double multp, int cur_day);
   // Can't change develops_symptoms if this person is not asymptomatic ('i' or 'E')
-  void modify_develops_symptoms(int strain, bool symptoms, int cur_day);
+  void modify_develops_symptoms(int disease, bool symptoms, int cur_day);
 
 private:
   void update_mutations(int day);
 
   Person * self;
-  int strains;
+  int diseases;
   Infection ** infection;
   vector < bool > immunity;
   vector < bool > at_risk;	// Agent is/isn't at risk for severe complications

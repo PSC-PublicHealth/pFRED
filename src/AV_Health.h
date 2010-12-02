@@ -33,7 +33,7 @@ public:
   virtual int get_av_start_day()        const {return av_day;}
   virtual int get_av_end_day()          const {return av_end_day;}
   virtual Health* get_health()          const {return health;}
-  virtual int get_strain()              const {return strain;}
+  virtual int get_disease()              const {return disease;}
   virtual Antiviral *get_antiviral()		const { return AV; }
 	
   virtual int is_on_av(int day) const {
@@ -56,7 +56,7 @@ private:
   int av_day;           // Day on which the AV treatment starts
   int av_end_day;       // Day on which the AV treatment ends
   Health* health;       // Pointer to the health class for agent
-  int strain;           // Strain for this AV
+  int disease;           // Disease for this AV
   Antiviral* AV;        // Pointer to the AV the person took
 };
 

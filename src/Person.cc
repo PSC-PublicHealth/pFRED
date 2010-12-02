@@ -17,7 +17,7 @@
 #include "Health.h"
 #include "Cognition.h"
 #include "Place.h"
-#include "Strain.h"
+#include "Disease.h"
 #include "Population.h"
 #include "AV_Health.h"
 #include "Age_Map.h"
@@ -51,20 +51,20 @@ void Person::setup(int index, int age, char sex, int marital,
   cognition = new Cognition(this);
 }
 
-void Person::print(int strain) const {
+void Person::print(int disease) const {
   if (Tracefp == NULL) return;
   fprintf(Tracefp, "%i %c id %7d  a %3d  s %c %d ",
-          strain, health->get_strain_status(strain), idx,
+          disease, health->get_disease_status(disease), idx,
           demographics->get_age(),
           demographics->get_sex(),
           demographics->get_profession());
   fprintf(Tracefp, "exp: %2d  inf: %2d  rem: %2d ",
-          health->get_exposure_date(strain), health->get_infectious_date(strain), health->get_recovered_date(strain));
+          health->get_exposure_date(disease), health->get_infectious_date(disease), health->get_recovered_date(disease));
   fprintf(Tracefp, "places %d ", FAVORITE_PLACES);
   fprintf(Tracefp, "infected_at %c %6d ",
-          health->get_infected_place_type(strain), health->get_infected_place(strain));
-  fprintf(Tracefp, "infector %d ", health->get_infector(strain));
-  fprintf(Tracefp, "infectees %d ", health->get_infectees(strain));
+          health->get_infected_place_type(disease), health->get_infected_place(disease));
+  fprintf(Tracefp, "infector %d ", health->get_infector(disease));
+  fprintf(Tracefp, "infectees %d ", health->get_infectees(disease));
   fprintf(Tracefp, "antivirals: %2d ",health->get_number_av_taken());
   for(int i=0;i<health->get_number_av_taken();i++)
     fprintf(Tracefp," %2d",health->get_av_health(i)->get_av_start_day());
@@ -78,19 +78,19 @@ void Person::print(int strain) const {
   fflush(Tracefp);
 }
 
-void Person::print_out(int strain) const {
+void Person::print_out(int disease) const {
   fprintf(stdout, "%c id %7d  a %3d  s %c %d ",
-          health->get_strain_status(strain), idx,
+          health->get_disease_status(disease), idx,
           demographics->get_age(),
           demographics->get_sex(),
           demographics->get_profession());
   fprintf(stdout, "exp: %2d  inf: %2d  rem: %2d ",
-          health->get_exposure_date(strain), health->get_infectious_date(strain), health->get_recovered_date(strain));
+          health->get_exposure_date(disease), health->get_infectious_date(disease), health->get_recovered_date(disease));
   fprintf(stdout, "places %d ", FAVORITE_PLACES);
   fprintf(stdout, "infected_at %c %6d ",
-          health->get_infected_place_type(strain), health->get_infected_place(strain));
-  fprintf(stdout, "infector %d ", health->get_infector(strain));
-  fprintf(stdout, "infectees %d\n", health->get_infectees(strain));
+          health->get_infected_place_type(disease), health->get_infected_place(disease));
+  fprintf(stdout, "infector %d ", health->get_infector(disease));
+  fprintf(stdout, "infectees %d\n", health->get_infectees(disease));
   fflush(stdout);
 }
 
@@ -105,8 +105,8 @@ void Person::reset() {
   cognition->reset();
   behavior->reset();
 	
-  for (int strain = 0; strain < Pop.get_strains(); strain++) {
-    Strain* s = Pop.get_strain(strain);
+  for (int disease = 0; disease < Pop.get_diseases(); disease++) {
+    Disease* s = Pop.get_disease(disease);
     if (!s->get_residual_immunity()->is_empty()) {
       double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
       if (RANDOM() < residual_immunity_prob)
@@ -122,43 +122,43 @@ void Person::update(int day) {
   behavior->update(day);
 }
 
-void Person::become_susceptible(int strain) {
-  health->become_susceptible(strain);
-  behavior->become_susceptible(strain);
+void Person::become_susceptible(int disease) {
+  health->become_susceptible(disease);
+  behavior->become_susceptible(disease);
 }
 
 void Person::become_exposed(Infection * infection) {
   health->become_exposed(infection);
-  behavior->become_exposed(infection->get_strain()->get_id());
+  behavior->become_exposed(infection->get_disease()->get_id());
 }
 
-void Person::become_infectious(Strain * strain) {
-  int strain_id = strain->get_id();
-  health->become_infectious(strain);
-  behavior->become_infectious(strain_id);
+void Person::become_infectious(Disease * disease) {
+  int disease_id = disease->get_id();
+  health->become_infectious(disease);
+  behavior->become_infectious(disease_id);
 }
 
-void Person::become_symptomatic(Strain *strain) {
-	health->become_symptomatic(strain);
+void Person::become_symptomatic(Disease *disease) {
+	health->become_symptomatic(disease);
 }
 
-void Person::become_immune(Strain* strain) {
-  int strain_id = strain->get_id();
-  char status = health->get_strain_status(strain_id);
+void Person::become_immune(Disease* disease) {
+  int disease_id = disease->get_id();
+  char status = health->get_disease_status(disease_id);
   if(status == 'S'){
-    health->become_immune(strain);
-    behavior->become_immune(strain_id);
+    health->become_immune(disease);
+    behavior->become_immune(disease_id);
   }
 }
 
-void Person::recover(Strain * strain) {
-  int strain_id = strain->get_id();
-  health->recover(strain);
-  behavior->recover(strain_id);
+void Person::recover(Disease * disease) {
+  int disease_id = disease->get_id();
+  health->recover(disease);
+  behavior->recover(disease_id);
   
   if (Verbose > 2) {
-    fprintf(Statusfp, "RECOVERED person %d for strain %d\n", idx, strain_id);
-    print_out(strain_id);
+    fprintf(Statusfp, "RECOVERED person %d for disease %d\n", idx, disease_id);
+    print_out(disease_id);
     fflush(Statusfp);
   }
 }
@@ -189,40 +189,40 @@ int Person::get_profession() const {
   return demographics->get_profession();
 }
 
-int Person::get_exposure_date(int strain) const {
-  return health->get_exposure_date(strain);
+int Person::get_exposure_date(int disease) const {
+  return health->get_exposure_date(disease);
 }
 
-int Person::get_infectious_date(int strain) const {
-  return health->get_infectious_date(strain);
+int Person::get_infectious_date(int disease) const {
+  return health->get_infectious_date(disease);
 }
 
-int Person::get_recovered_date(int strain) const {
-  return health->get_recovered_date(strain);
+int Person::get_recovered_date(int disease) const {
+  return health->get_recovered_date(disease);
 }
 
-int Person::get_infector(int strain) const {
-  return health->get_infector(strain);
+int Person::get_infector(int disease) const {
+  return health->get_infector(disease);
 }
 
-int Person::get_infected_place(int strain) const {
-  return health->get_infected_place(strain);
+int Person::get_infected_place(int disease) const {
+  return health->get_infected_place(disease);
 }
 
-char Person::get_infected_place_type(int strain) const {
-  return health->get_infected_place_type(strain);
+char Person::get_infected_place_type(int disease) const {
+  return health->get_infected_place_type(disease);
 }
 
-int Person::get_infectees(int strain) const {
-  return health->get_infectees(strain);
+int Person::get_infectees(int disease) const {
+  return health->get_infectees(disease);
 }
 
-int Person::add_infectee(int strain) {
-  return health->add_infectee(strain);
+int Person::add_infectee(int disease) {
+  return health->add_infectee(disease);
 }
 
-int Person::is_new_case(int day, int strain) const {
-  return (health->get_exposure_date(strain) == day);
+int Person::is_new_case(int day, int disease) const {
+  return (health->get_exposure_date(disease) == day);
 }
 
 void Person::set_changed(){

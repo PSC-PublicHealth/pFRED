@@ -18,7 +18,7 @@
 #include "Profile.h"
 #include "Global.h"
 #include "Locations.h"
-#include "Strain.h"
+#include "Disease.h"
 #include "Person.h"
 #include "Demographics.h"
 #include "Manager.h"
@@ -37,17 +37,17 @@ int V_count;
 Population::Population() {
   pop = NULL;
   pop_size = -1;
-  strain = NULL;
+  disease = NULL;
   av_manager = NULL;
   vacc_manager = NULL;
-  strains = -1;
+  diseases = -1;
   mutation_prob = NULL;
   pregnancy_prob = NULL;
 }
 
 Population::~Population() {
   if(pop != NULL) delete [] pop;
-  if(strain != NULL) delete [] strain;
+  if(disease != NULL) delete [] disease;
   if(vacc_manager != NULL) delete vacc_manager;
   if(av_manager != NULL) delete av_manager;
   if(mutation_prob != NULL) delete [] mutation_prob;
@@ -58,20 +58,20 @@ Population::~Population() {
 void Population::get_parameters() {
   get_param((char *) "popfile", popfile);
   get_param((char *) "profiles", profilefile);
-  strains = Strains;
+  diseases = Diseases;
   
   int num_mutation_params =
     get_param_matrix((char *) "mutation_prob", &mutation_prob);
-  if (num_mutation_params != strains) {
+  if (num_mutation_params != diseases) {
     fprintf(Statusfp,
             "Improper mutation matrix: expected square matrix of %i rows, found %i",
-            strains, num_mutation_params);
+            diseases, num_mutation_params);
     exit(1);
   }
   if (Verbose > 1) {
     printf("\nmutation_prob:\n");
-    for (int i  = 0; i < strains; i++)  {
-      for (int j  = 0; j < strains; j++) {
+    for (int i  = 0; i < diseases; i++)  {
+      for (int j  = 0; j < diseases; j++) {
         printf("%f ", mutation_prob[i][j]);
       }
       printf("\n");
@@ -89,14 +89,14 @@ void Population::setup() {
     fprintf(Statusfp, "setup population entered\n");
     fflush(Statusfp);
   }
-  strain = new Strain [strains];
-  for (int is = 0; is < strains; is++) {
-    strain[is].setup(is, this, mutation_prob[is]);
+  disease = new Disease [diseases];
+  for (int is = 0; is < diseases; is++) {
+    disease[is].setup(is, this, mutation_prob[is]);
   }
   read_profiles(profilefile);
   read_population();
   if (Verbose) {
-    fprintf(Statusfp, "setup population completed, strains = %d\n", strains);
+    fprintf(Statusfp, "setup population completed, diseases = %d\n", diseases);
     fflush(Statusfp);
   }
   
@@ -182,8 +182,8 @@ void Population::reset(int run) {
     fflush(Statusfp);
   }
   // reset population level infections
-  for (int s = 0; s < strains; s++) {
-    strain[s].reset();
+  for (int s = 0; s < diseases; s++) {
+    disease[s].reset();
   }
   
   // empty out the incremental list of Person's who have changed
@@ -198,7 +198,7 @@ void Population::reset(int run) {
   if(Verbose > 0){
     int count = 0;
     for(int p = 0; p < pop_size; p++){
-      Strain* s = &strain[0];
+      Disease* s = &disease[0];
       if(pop[p]->get_health()->is_immune(s)) count++;
     }
     cout << "Number of Residually Immune people = "<<count << "\n";
@@ -227,16 +227,16 @@ void Population::update(int day) {
 
   vacc_manager->update(day);
   av_manager->update(day);
-  for (int s = 0; s < strains; s++) {
-    strain[s].update(day);
+  for (int s = 0; s < diseases; s++) {
+    disease[s].update(day);
   }
   av_manager->disseminate(day);
 }
 
 void Population::report(int day) {
-  for (int s = 0; s < strains; s++) {
-    strain[s].update_stats(day);
-    strain[s].print_stats(day);
+  for (int s = 0; s < diseases; s++) {
+    disease[s].update_stats(day);
+    disease[s].print_stats(day);
   }
 }
 
@@ -246,7 +246,7 @@ void Population::print(int incremental, int day) {
   if (!incremental){
     if (Trace_Headers) fprintf(Tracefp, "# All agents, by ID\n");
     for (int p = 0; p < pop_size; p++)
-      for (int i=0; i<strains; i++)
+      for (int i=0; i<diseases; i++)
 	pop[p]->print(i);
   } else if (1==incremental) {
     ChangeMap::const_iterator iter;
@@ -299,8 +299,8 @@ void Population::end_of_run() {
   this->print(-1);
 }
 
-Strain *Population::get_strain(int s) {
-  return &strain[s];
+Disease *Population::get_disease(int s) {
+  return &disease[s];
 }
 
 void Population::population_quality_control() {
@@ -357,9 +357,9 @@ void Population::population_quality_control() {
     }
     
     // Print out At Risk distribution
-    for(int is = 0; is < strains; is++){
-      if(strain[is].get_at_risk()->get_num_ages() > 0){
-        Strain* s = &strain[is];
+    for(int is = 0; is < diseases; is++){
+      if(disease[is].get_at_risk()->get_num_ages() > 0){
+        Disease* s = &disease[is];
         int rcount[20];
         for (int c = 0; c < 20; c++) { rcount[c] = 0; }
         for (int p = 0; p < pop_size; p++) {
@@ -370,7 +370,7 @@ void Population::population_quality_control() {
             else { rcount[19]++; }
           }
         }
-        fprintf(Statusfp, "\n Age Distribution of At Risk for Strain %d: %d people\n",is,total);
+        fprintf(Statusfp, "\n Age Distribution of At Risk for Disease %d: %d people\n",is,total);
         for(int c = 0; c < 10; c++ ) {
           fprintf(Statusfp, "age %2d to %2d: %6d (%.2f%%)\n",
                   10*c, 10*(c+1)-1, rcount[c], (100.0*rcount[c])/total);

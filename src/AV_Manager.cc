@@ -22,10 +22,11 @@
 
 AV_Manager::AV_Manager(Population *_pop) : Manager(_pop){
   pop = _pop;
-  are_policies_set = false;
-  //char s[80];
+  
+  char s[80];
   int nav;
-  get_param_from_string("number_antivirals",&nav);
+  sprintf(s,"number_antivirals");
+  get_param((char *) "number_antivirals",&nav);
   
   do_av=0;
   if(nav > 0){
@@ -33,9 +34,10 @@ AV_Manager::AV_Manager(Population *_pop) : Manager(_pop){
     av_package = new Antivirals();
     
     // Gather relavent Input Parameters
-    //overall_start_day = 0;
-    //if(does_param_exist(s))
-    //  get_param(s,&overall_start_day);
+    sprintf(s,"av_overall_start_day");
+    overall_start_day = 0;
+    if(does_param_exist(s))
+      get_param(s,&overall_start_day);
     
     // Need to fill the AV_Manager Policies
     policies.push_back(new AV_Policy_Distribute_To_Symptomatics(this)); 
@@ -79,7 +81,6 @@ void AV_Manager::set_policies(){
       avs[iav]->set_policy(policies[AV_POLICY_PERCENT_SYMPT]);
     }
   }
-  are_policies_set = true;
 }
 
 void AV_Manager::disseminate(int day){
@@ -97,15 +98,15 @@ void AV_Manager::disseminate(int day){
       Policy *p = av->get_policy();
       
       current_av = av;
-
+      //current_disease = av->get_disease();
+      
       for(int ip=0;ip<npeople;ip++){
         if(av->get_current_stock()== 0) break;
         Person* current_person = people[ip];
         // Should the person get an av
-	//int yeah_or_ney = p->choose(current_person,av->get_strain(),day);
-	//if(yeah_or_ney == 0){
-	if(p->choose_first_negative(current_person,av->get_strain(),day) == true){
-          if(Debug > 3) cout << "Giving Antiviral for strain " << av->get_strain() << " to " <<ip << "\n";
+        int yeahorney = p->choose(current_person,av->get_disease(),day);
+        if(yeahorney == 0){
+          if(Debug > 2) cout << "Giving Antiviral for disease " << av->get_disease() << " to " <<ip << "\n";
           av->remove_stock(1);
           current_person->get_health()->take(av,day);
         }

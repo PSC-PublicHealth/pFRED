@@ -15,7 +15,7 @@
 class Health;
 class Person;
 class Place;
-class Strain;
+class Disease;
 class Antiviral;
 class Health;
 
@@ -28,11 +28,11 @@ class Infection {
  public:
   // if primary infection, infector and place are null.
   // if mutation, place is null.
-  Infection(Strain *s, Person *infector, Person *infectee, Place* place, int day);
+  Infection(Disease *s, Person *infector, Person *infectee, Place* place, int day);
   UNIT_TEST_VIRTUAL ~Infection() { }
 	
   // infection state
-  UNIT_TEST_VIRTUAL char get_strain_status() const { return status; }
+  UNIT_TEST_VIRTUAL char get_disease_status() const { return status; }
   UNIT_TEST_VIRTUAL void become_infectious();
   UNIT_TEST_VIRTUAL void become_symptomatic();
   UNIT_TEST_VIRTUAL void become_susceptible();
@@ -41,7 +41,7 @@ class Infection {
   UNIT_TEST_VIRTUAL bool possibly_mutate(Health *health, int day); 	// may cause mutation and/or alter infection course
   
   // general
-  UNIT_TEST_VIRTUAL Strain *get_strain() const { return strain; }
+  UNIT_TEST_VIRTUAL Disease *get_disease() const { return disease; }
   UNIT_TEST_VIRTUAL Person *get_infector() const { return infector; }
   UNIT_TEST_VIRTUAL Place *get_infected_place() const { return place; }
   UNIT_TEST_VIRTUAL int get_infectee_count() const { return infectee_count; }
@@ -67,13 +67,13 @@ class Infection {
   UNIT_TEST_VIRTUAL void modify_susceptibility(double multp) { susceptibility *= multp; }
   UNIT_TEST_VIRTUAL void modify_infectivity(double multp) { infectivity_multp = multp; }	
 	
-  // returns an infection for the given host and strain with exposed date and
-  // recovered date both equal to day (instant resistance to the given strain);
-  static Infection* get_dummy_infection(Strain *s, Person *host, int day);
+  // returns an infection for the given host and disease with exposed date and
+  // recovered date both equal to day (instant resistance to the given disease);
+  static Infection* get_dummy_infection(Disease *s, Person *host, int day);
   
  private:
-  // associated strain
-  Strain *strain;
+  // associated disease
+  Disease *disease;
   int id;
 	
   // infection status (E/I/i/R)

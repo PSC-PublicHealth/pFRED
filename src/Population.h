@@ -16,7 +16,7 @@
 #include <vector>
 
 class Person;
-class Strain;
+class Disease;
 class Antivirals;
 class AV_Manager;
 class Vaccine_Manager;
@@ -38,8 +38,8 @@ public:
   UNIT_TEST_VIRTUAL void reset(int run);
   UNIT_TEST_VIRTUAL void update(int day);
   UNIT_TEST_VIRTUAL void report(int day);
-  UNIT_TEST_VIRTUAL Strain * get_strain(int s);
-  UNIT_TEST_VIRTUAL int get_strains() { return strains; }
+  UNIT_TEST_VIRTUAL Disease * get_disease(int s);
+  UNIT_TEST_VIRTUAL int get_diseases() { return diseases; }
   UNIT_TEST_VIRTUAL Person **get_pop() { return pop; }
   UNIT_TEST_VIRTUAL int get_pop_size() { return pop_size; }
   UNIT_TEST_VIRTUAL Age_Map* get_pregnancy_prob() { return pregnancy_prob; }
@@ -48,7 +48,7 @@ public:
   UNIT_TEST_VIRTUAL Vaccine_Manager *get_vaccine_manager() { return vacc_manager;}
   
   // Modifiers on the entire pop;
-  // void apply_residual_immunity(Strain *strain) {}
+  // void apply_residual_immunity(Disease *disease) {}
   
   // track those agents that have changed since the last incremental dump
   UNIT_TEST_VIRTUAL void set_changed(Person *p);
@@ -64,13 +64,13 @@ private:
 				 // have changed since the last history dump
   ChangeMap never_changed;       // agents who have *never* changed
   int pop_size;
-  Strain *strain;
+  Disease *disease;
   
   //Mitigation Managers
   AV_Manager *av_manager;
   Vaccine_Manager *vacc_manager;
   
-  int strains;
+  int diseases;
   double **mutation_prob;
   void read_population();
 	

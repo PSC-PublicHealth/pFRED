@@ -18,11 +18,13 @@ using namespace std;
 #include "Vaccine.h"
 #include "Vaccine_Dose.h"
 
-Vaccine::Vaccine(string _name, int _id, int _strain, 
+Vaccine::Vaccine(string _name, int _id, int _disease, int _age0, int _age1, 
                  int _total_avail, int _additional_per_day, int _start_day){
   name =               _name;
   id =                 _id;
-  strain =             _strain;
+  disease =             _disease;
+  ages[0] =            _age0;
+  ages[1] =            _age1;
   additional_per_day = _additional_per_day;
   start_day =          _start_day;
   
@@ -44,7 +46,7 @@ void Vaccine::add_dose(Vaccine_Dose* _vaccine_dose) {
 
 void Vaccine::print() const {
   cout << "Name = \t\t\t\t" <<name << "\n";
-  cout << "Applied to strain = \t\t" << strain << "\n";
+  cout << "Applied to disease = \t\t" << disease << "\n";
   cout << "Initial Stock = \t\t" << initial_stock << "\n";
   cout << "Total Available = \t\t"<< total_avail << "\n";
   cout << "Amount left to system = \t" << reserve << "\n";

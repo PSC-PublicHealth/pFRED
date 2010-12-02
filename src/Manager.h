@@ -38,7 +38,7 @@ public:
   Manager();
   Manager(Population *_pop);
   ~Manager();
-  virtual int poll_manager(Person* p, int strain, int day); //member to allow someone to see if they fit the current policy
+  virtual int poll_manager(Person* p, int disease, int day); //member to allow someone to see if they fit the current policy
   
   // Parameters
   Population* get_population() const { return pop;}

@@ -16,15 +16,15 @@
 #include "Person.h"
 #include "Place.h"
 #include "Random.h"
-#include "Strain.h"
+#include "Disease.h"
 #include "Health.h"
 
 using std::out_of_range;
 
-Infection::Infection(Strain *strain, Person* infector, Person* host, Place* place, int day) {
+Infection::Infection(Disease *disease, Person* infector, Person* host, Place* place, int day) {
   // general
-  this->strain = strain;
-  this->id = strain->get_id();
+  this->disease = disease;
+  this->id = disease->get_id();
   this->infector = infector;
   this->host = host;
   this->place = place;
@@ -32,56 +32,56 @@ Infection::Infection(Strain *strain, Person* infector, Person* host, Place* plac
 	
   // status
   status = 'E';
-  strain->decrement_S_count();
-  strain->increment_E_count();
-  strain->increment_C_count();
-  strain->insert_into_infected_list(host);
+  disease->decrement_S_count();
+  disease->increment_E_count();
+  disease->increment_C_count();
+  disease->insert_into_infected_list(host);
 	
   // parameters
-  will_be_symptomatic = strain->get_symptoms();
+  will_be_symptomatic = disease->get_symptoms();
   infectivity_multp = 1.0;
   infectivity = 0.0;
   susceptibility = 0.0;
   symptoms = 0.0;
-  infection_model = strain->get_infection_model();
+  infection_model = disease->get_infection_model();
 	
   // chrono
   exposure_date = day;
   asymptomatic_period = symptomatic_period = 0;
-  latent_period = strain->get_days_latent();
-  recovery_period = strain->get_days_recovered();
+  latent_period = disease->get_days_latent();
+  recovery_period = disease->get_days_recovered();
 	
   if (infection_model == SEQUENTIAL) { // SEiIR model
-    asymptomatic_period = strain->get_days_asymp();
+    asymptomatic_period = disease->get_days_asymp();
     if (will_be_symptomatic)
-      symptomatic_period = strain->get_days_symp();
+      symptomatic_period = disease->get_days_symp();
   } else { // SEIR/SEiR model
     if (will_be_symptomatic)
-      symptomatic_period = strain->get_days_symp();
+      symptomatic_period = disease->get_days_symp();
     else
-      asymptomatic_period = strain->get_days_asymp();
+      asymptomatic_period = disease->get_days_asymp();
   }
   host->set_changed();
 }
 
 void Infection::become_infectious() {
-  strain->decrement_E_count();
+  disease->decrement_E_count();
   if (infection_model == SEQUENTIAL) { // SEiIR model
     status = 'i';
-    strain->increment_i_count();
-    infectivity = strain->get_asymp_infectivity();
+    disease->increment_i_count();
+    infectivity = disease->get_asymp_infectivity();
     symptoms = 0.0;
   } else { // SEIR/SEiR model
     if (will_be_symptomatic) {
       status = 'I';
-      strain->increment_I_count();
-      infectivity = strain->get_symp_infectivity();
+      disease->increment_I_count();
+      infectivity = disease->get_symp_infectivity();
       symptoms = 1.0;
-      strain->increment_c_count();
+      disease->increment_c_count();
     } else {
       status = 'i';
-      strain->increment_i_count();
-      infectivity = strain->get_asymp_infectivity();
+      disease->increment_i_count();
+      infectivity = disease->get_asymp_infectivity();
       symptoms = 0.0;
     }
   }
@@ -90,14 +90,14 @@ void Infection::become_infectious() {
 
 void Infection::become_susceptible() {
   status = 'S';
-  strain->decrement_r_count();
+  disease->decrement_r_count();
 }
 
 void Infection::become_symptomatic() {
   status = 'I';
-  strain->decrement_i_count();
-  strain->increment_I_count();
-  infectivity = strain->get_symp_infectivity();
+  disease->decrement_i_count();
+  disease->increment_I_count();
+  infectivity = disease->get_symp_infectivity();
   symptoms = 1.0;
   host->set_changed();
 }
@@ -105,13 +105,13 @@ void Infection::become_symptomatic() {
 void Infection::recover() {
   status = 'R';
   if (is_symptomatic())
-    strain->decrement_I_count();
+    disease->decrement_I_count();
   else
-    strain->decrement_i_count();
+    disease->decrement_i_count();
   if (recovery_period > -1) 
-    strain->increment_r_count();
+    disease->increment_r_count();
   else
-    strain->increment_R_count();
+    disease->increment_R_count();
   infectivity = 0.0;
   susceptibility = 0.0;
   symptoms = 0.0;
@@ -120,19 +120,19 @@ void Infection::recover() {
 
 void Infection::update(int today) {
   if (status == 'E' && today == get_infectious_date()) {
-    host->become_infectious(strain);
+    host->become_infectious(disease);
   }
 	
   if (infection_model == SEQUENTIAL) {  // SEiIR model
     if (status == 'i' && today == get_symptomatic_date()) {
-      host->become_symptomatic(strain);
+      host->become_symptomatic(disease);
     }
     if (status == 'I' && today == get_recovery_date()) {
-      host->recover(strain);
+      host->recover(disease);
     }
   } else {  // SEIR/SEiR model
     if ((status == 'I' || status == 'i') && today == get_recovery_date()) {
-      host->recover(strain);
+      host->recover(disease);
     }
   }
 	
@@ -201,7 +201,7 @@ void Infection::modify_develops_symptoms(bool symptoms, int today) {
     throw out_of_range("cannot modify: past symptomatic period");
 	
   will_be_symptomatic = symptoms;
-  symptomatic_period = will_be_symptomatic ? strain->get_days_symp() : 0;
+  symptomatic_period = will_be_symptomatic ? disease->get_days_symp() : 0;
   
   host->set_changed();
 }
@@ -212,16 +212,16 @@ bool Infection::possibly_mutate(Health* health, int day) {
     return false;
 	
   // attempt mutation
-  Strain* new_strain = strain->should_mutate_to();
-  if (!new_strain)
+  Disease* new_disease = disease->should_mutate_to();
+  if (!new_disease)
     return false;
 	
   if (Verbose)
-    fprintf(Statusfp, "Person %i will mutate from strain %i to strain %i on day %i\n",
-            host->get_id(), strain->get_id(), new_strain->get_id(), day);
+    fprintf(Statusfp, "Person %i will mutate from disease %i to disease %i on day %i\n",
+            host->get_id(), disease->get_id(), new_disease->get_id(), day);
 	
   // mutated infection
-  Infection *mutated = new Infection(new_strain, infector, host, NULL, day);
+  Infection *mutated = new Infection(new_disease, infector, host, NULL, day);
 	
   // we're past the latent period
   if (day >= get_infectious_date()) 
@@ -255,7 +255,7 @@ bool Infection::possibly_mutate(Health* health, int day) {
   } 
 	
   // recover from current infection
-  host->recover(strain);
+  host->recover(disease);
 	
   // expose to mutated infection
   host->become_exposed(mutated);
@@ -267,12 +267,12 @@ bool Infection::possibly_mutate(Health* health, int day) {
 }
 
 void Infection::print() const {
-  printf("Infection of strain type: %i in person %i current status: %c\n"
+  printf("Infection of disease type: %i in person %i current status: %c\n"
          "periods:  latent %i, asymp: %i, symp: %i recovery: %i \n"
          "dates: exposed: %i, infectious: %i, symptomatic: %i, recovered: %i susceptible: %i\n"
-         "will have symp? %i, suscept: %.3f infectivity: %.3f "
+         "will have symp? %i, suscept: %.3f infectivity: %.3f"
          "infectivity_multp: %.3f symptms: %.3f\n",
-         strain->get_id(),
+         disease->get_id(),
          host->get_id(),
          status,
          latent_period,
@@ -292,7 +292,7 @@ void Infection::print() const {
 }
 
 // static 
-Infection *Infection::get_dummy_infection(Strain *s, Person* host, int day) {
+Infection *Infection::get_dummy_infection(Disease *s, Person* host, int day) {
   Infection* i = new Infection(s, NULL, host, NULL, day);
   i->latent_period = 0;
   i->asymptomatic_period = 0;

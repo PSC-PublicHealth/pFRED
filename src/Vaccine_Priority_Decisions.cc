@@ -17,7 +17,6 @@
 #include "Random.h"
 #include "Person.h"
 #include "Health.h"
-#include "Demographics.h"
 #include <iostream>
 
 Vaccine_Priority_Decision_Specific_Age::Vaccine_Priority_Decision_Specific_Age() : Decision(){ }
@@ -28,7 +27,7 @@ Vaccine_Priority_Decision_Specific_Age::Vaccine_Priority_Decision_Specific_Age(P
   policy = p;
 }
 
-int Vaccine_Priority_Decision_Specific_Age::evaluate(Person* person, int strain, int day){
+int Vaccine_Priority_Decision_Specific_Age::evaluate(Person* person, int disease, int day){
   Vaccine_Manager* vcm = dynamic_cast < Vaccine_Manager* >(policy->get_manager());
   int low_age = vcm->get_vaccine_priority_age_low();
   int high_age = vcm->get_vaccine_priority_age_high();
@@ -39,33 +38,6 @@ int Vaccine_Priority_Decision_Specific_Age::evaluate(Person* person, int strain,
   return -1;
 }
 
-Vaccine_Priority_Decision_Pregnant::Vaccine_Priority_Decision_Pregnant() : Decision(){ }
-
-Vaccine_Priority_Decision_Pregnant::Vaccine_Priority_Decision_Pregnant(Policy *p): Decision(p) {
-  name = "Vaccine Priority Decision to Include Pregnant Women";
-  type = "Y/N";
-  policy = p;
-}
-
-int Vaccine_Priority_Decision_Pregnant::evaluate(Person* person, int strain, int day){
-  if(person->get_demographics()->is_pregnant()) return 1;
-  return -1;
-}
-
-Vaccine_Priority_Decision_At_Risk::Vaccine_Priority_Decision_At_Risk() : Decision(){ }
-
-Vaccine_Priority_Decision_At_Risk::Vaccine_Priority_Decision_At_Risk(Policy *p): Decision(p) {
-  name = "Vaccine Priority Decision to Include At_Risk";
-  type = "Y/N";
-  policy = p;
-}
-
-int Vaccine_Priority_Decision_At_Risk::evaluate(Person* person, int strain, int day){
-  if(person->get_health()->is_at_risk(strain)) return 1;
-  return -1;
-}
-
-
 Vaccine_Priority_Decision_No_Priority::Vaccine_Priority_Decision_No_Priority() : Decision() { }
 
 Vaccine_Priority_Decision_No_Priority::Vaccine_Priority_Decision_No_Priority(Policy *p) : Decision(p){
@@ -74,7 +46,7 @@ Vaccine_Priority_Decision_No_Priority::Vaccine_Priority_Decision_No_Priority(Pol
   policy=p;
 }
 
-int Vaccine_Priority_Decision_No_Priority::evaluate(Person* person, int strain, int day){  
+int Vaccine_Priority_Decision_No_Priority::evaluate(Person* person, int disease, int day){  
   return -1;
 }
 

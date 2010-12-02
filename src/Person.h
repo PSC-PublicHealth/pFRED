@@ -25,7 +25,7 @@ class Demographics;
 class Infection;
 class Cognition;
 class Place;
-class Strain;
+class Disease;
 class Population;
 
 class Person {
@@ -35,19 +35,19 @@ public:
   UNIT_TEST_VIRTUAL void setup(int index, int age, char sex, int marital, int profession, Place **favorite_places, int profile, Population* pop);
   UNIT_TEST_VIRTUAL void reset();
   UNIT_TEST_VIRTUAL void update(int day);
-  UNIT_TEST_VIRTUAL void print(int strain) const;
-  UNIT_TEST_VIRTUAL void print_out(int strain) const;
+  UNIT_TEST_VIRTUAL void print(int disease) const;
+  UNIT_TEST_VIRTUAL void print_out(int disease) const;
   UNIT_TEST_VIRTUAL void update_schedule(int day);
   UNIT_TEST_VIRTUAL void get_schedule(int *n, Place **sched) { behavior->get_schedule(n, sched); }
   UNIT_TEST_VIRTUAL int is_on_schedule(int day, int loc, char loctype) const { return behavior->is_on_schedule(day, loc, loctype); }
   
   UNIT_TEST_VIRTUAL void print_schedule() const;
-  UNIT_TEST_VIRTUAL void become_susceptible(int strain);
+  UNIT_TEST_VIRTUAL void become_susceptible(int disease);
   UNIT_TEST_VIRTUAL void become_exposed(Infection *infection);
-  UNIT_TEST_VIRTUAL void become_infectious(Strain *strain);
-  UNIT_TEST_VIRTUAL void become_symptomatic(Strain *strain);
-  UNIT_TEST_VIRTUAL void become_immune(Strain *strain);
-  UNIT_TEST_VIRTUAL void recover(Strain * strain);
+  UNIT_TEST_VIRTUAL void become_infectious(Disease *disease);
+  UNIT_TEST_VIRTUAL void become_symptomatic(Disease *disease);
+  UNIT_TEST_VIRTUAL void become_immune(Disease *disease);
+  UNIT_TEST_VIRTUAL void recover(Disease * disease);
   UNIT_TEST_VIRTUAL void behave(int day);
   UNIT_TEST_VIRTUAL int is_symptomatic() const;
   
@@ -58,18 +58,18 @@ public:
   UNIT_TEST_VIRTUAL char get_sex() const;
   UNIT_TEST_VIRTUAL char get_marital_status() const;
   UNIT_TEST_VIRTUAL int get_profession() const;
-  UNIT_TEST_VIRTUAL char get_strain_status(int strain) const { return health->get_strain_status(strain); }
-  UNIT_TEST_VIRTUAL double get_susceptibility(int strain) const { return health->get_susceptibility(strain); }
-  UNIT_TEST_VIRTUAL double get_infectivity(int strain) const { return health->get_infectivity(strain); }
-  UNIT_TEST_VIRTUAL int get_exposure_date(int strain) const;
-  UNIT_TEST_VIRTUAL int get_infectious_date(int strain) const;
-  UNIT_TEST_VIRTUAL int get_recovered_date(int strain) const;
-  UNIT_TEST_VIRTUAL int get_infector(int strain) const;
-  UNIT_TEST_VIRTUAL int get_infected_place(int strain) const;
-  UNIT_TEST_VIRTUAL char get_infected_place_type(int strain) const;
-  UNIT_TEST_VIRTUAL int get_infectees(int strain) const;
-  UNIT_TEST_VIRTUAL int add_infectee(int strain);
-  UNIT_TEST_VIRTUAL int is_new_case(int day, int strain) const;
+  UNIT_TEST_VIRTUAL char get_disease_status(int disease) const { return health->get_disease_status(disease); }
+  UNIT_TEST_VIRTUAL double get_susceptibility(int disease) const { return health->get_susceptibility(disease); }
+  UNIT_TEST_VIRTUAL double get_infectivity(int disease) const { return health->get_infectivity(disease); }
+  UNIT_TEST_VIRTUAL int get_exposure_date(int disease) const;
+  UNIT_TEST_VIRTUAL int get_infectious_date(int disease) const;
+  UNIT_TEST_VIRTUAL int get_recovered_date(int disease) const;
+  UNIT_TEST_VIRTUAL int get_infector(int disease) const;
+  UNIT_TEST_VIRTUAL int get_infected_place(int disease) const;
+  UNIT_TEST_VIRTUAL char get_infected_place_type(int disease) const;
+  UNIT_TEST_VIRTUAL int get_infectees(int disease) const;
+  UNIT_TEST_VIRTUAL int add_infectee(int disease);
+  UNIT_TEST_VIRTUAL int is_new_case(int day, int disease) const;
   
   UNIT_TEST_VIRTUAL Health *get_health() const { return health; }
   UNIT_TEST_VIRTUAL Behavior* get_behavior() const { return behavior; }

@@ -13,7 +13,7 @@
 #include <set>
 #include <new>
 #include "Population.h"
-#include "Strain.h"
+#include "Disease.h"
 #include "Global.h"
 #include "Place.h"
 #include "School.h"
@@ -160,8 +160,8 @@ int Locations::get_open_status(int loc, int day) {
   return location[loc]->is_open(day);
 }
 
-int Locations::location_should_be_open(int loc, int strain, int day) {
-  return location[loc]->should_be_open(day, strain);
+int Locations::location_should_be_open(int loc, int disease, int day) {
+  return location[loc]->should_be_open(day, disease);
 }
 
 Place * Locations::get_location(int loc) {

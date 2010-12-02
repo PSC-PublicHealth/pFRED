@@ -19,15 +19,14 @@ char Population_directory[256];
 char Output_directory[256];
 char Tracefilebase[256];
 char VaccineTracefilebase[256];
-int All_strains_antigenically_identical;
+int All_diseases_antigenically_identical;
 int Incremental_Trace;
 int Trace_Headers;
 int Random_start_day;
 char Cognitive_model_type[256];
 int Quality_control;
-int Strains;
-double Prob_accept_vaccine; // For Random_Congition_Model, need to find a way not to be global
-double Prob_accept_vaccine_dose; //  For Random_Congition_Model, need to find a way not to be global
+int Diseases;
+
 // global file pointers
 FILE *Statusfp;
 FILE *Outfp;
@@ -48,11 +47,9 @@ void get_global_parameters() {
   get_param((char *) "outdir", Output_directory);
   get_param((char *) "tracefile", Tracefilebase);
   get_param((char *) "vaccine_tracefile", VaccineTracefilebase);
-  get_param((char *) "all_strains_antigenically_identical", &All_strains_antigenically_identical);
+  get_param((char *) "all_diseases_antigenically_identical", &All_diseases_antigenically_identical);
   get_param((char *) "incremental_trace", &Incremental_Trace);
   get_param((char *) "trace_headers", &Trace_Headers);
   get_param((char *) "cognitive_model", Cognitive_model_type);
-  get_param((char *) "strains", &Strains);
-  get_param((char *) "prob_accept_vaccine", &Prob_accept_vaccine);
-  get_param((char *) "prob_accept_another_vaccine_dose",&Prob_accept_vaccine_dose);
+  get_param((char *) "diseases", &Diseases);
 }

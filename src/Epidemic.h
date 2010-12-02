@@ -19,13 +19,13 @@
 
 using namespace std;
 
-class Strain;
+class Disease;
 class Person;
 class Timestep_Map;
 
 class Epidemic {
 public:
-  Epidemic(Strain * str, Timestep_Map *);
+  Epidemic(Disease * str, Timestep_Map *);
   UNIT_TEST_VIRTUAL ~Epidemic();
   
   void reset();
@@ -59,7 +59,7 @@ public:
   void decrement_M_count() { M_count--; }
   
 private:
-  Strain * strain;
+  Disease * disease;
   int id;
   int N;
   double attack_rate;

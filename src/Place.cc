@@ -14,12 +14,12 @@
 #include "Params.h"
 #include "Random.h"
 #include "Person.h"
-#include "Strain.h"
+#include "Disease.h"
 #include "Infection.h"
 
 void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop) {
   population = pop;
-  int strains = population->get_strains();
+  int diseases = population->get_diseases();
   id = loc_id;
   container = cont;
   strcpy(label, lab);
@@ -27,24 +27,24 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   latitude = lat;
   N = adults = children = 0;
   
-  // allocate strain-related memory
-  susceptibles = new (nothrow) vector<Person *> [strains];
+  // allocate disease-related memory
+  susceptibles = new (nothrow) vector<Person *> [diseases];
   assert (susceptibles != NULL);
-  infectious = new (nothrow) set<Person *> [strains];
+  infectious = new (nothrow) set<Person *> [diseases];
   assert (infectious != NULL);
-  S = new (nothrow) int [strains];
+  S = new (nothrow) int [diseases];
   assert (S != NULL);
-  I = new (nothrow) int [strains];
+  I = new (nothrow) int [diseases];
   assert (I != NULL);
-  Sympt = new (nothrow) int [strains];
+  Sympt = new (nothrow) int [diseases];
   assert (Sympt != NULL);
-  cases = new (nothrow) int [strains];
+  cases = new (nothrow) int [diseases];
   assert (cases != NULL);
-  total_cases = new (nothrow) int [strains];
+  total_cases = new (nothrow) int [diseases];
   assert (total_cases != NULL);
-  deaths = new (nothrow) int [strains];
+  deaths = new (nothrow) int [diseases];
   assert (deaths != NULL);
-  total_deaths = new (nothrow) int [strains];
+  total_deaths = new (nothrow) int [diseases];
   assert (total_deaths != NULL);
   
   reset();
@@ -52,8 +52,8 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
 
 
 void Place::reset() {
-  int strains = population->get_strains();
-  for (int s = 0; s < strains; s++) {
+  int diseases = population->get_diseases();
+  for (int s = 0; s < diseases; s++) {
     susceptibles[s].clear();
     infectious[s].clear();
     Sympt[s] = S[s] = I[s] = 0;
@@ -69,16 +69,16 @@ void Place::reset() {
 }
 
 void Place::update(int day) {
-  int strains = population->get_strains();
-  for (int s = 0; s < strains; s++) {
+  int diseases = population->get_diseases();
+  for (int s = 0; s < diseases; s++) {
     cases[s] = deaths[s] = 0;
   }
   visit = 0;
 }
 
-void Place::print(int strain) {
+void Place::print(int disease) {
   printf("Place %d label %s type %c ", id, label, type);
-  printf("S %d I %d N %d\n", S[strain], I[strain], N);
+  printf("S %d I %d N %d\n", S[disease], I[disease], N);
   fflush(stdout);
 }
 
@@ -95,65 +95,65 @@ void Place::add_visitor(Person * per) {
   visit++;
 }
 
-void Place::add_susceptible(int strain, Person * per) {
-  susceptibles[strain].push_back(per);
-  S[strain]++;
-  assert (S[strain] == static_cast <int> (susceptibles[strain].size()));
+void Place::add_susceptible(int disease, Person * per) {
+  susceptibles[disease].push_back(per);
+  S[disease]++;
+  assert (S[disease] == static_cast <int> (susceptibles[disease].size()));
 }
 
 
-void Place::delete_susceptible(int strain, Person * per) {
-  int s = (int) susceptibles[strain].size();
+void Place::delete_susceptible(int disease, Person * per) {
+  int s = (int) susceptibles[disease].size();
   assert(s > 0);
   // The following may look inefficient, but it performs well because lists
   // and generally small.  More efficient that using sets or maps due to the need
   // for random access in spread_infection()
   for (int i = 0; i < s; i++) {
-    if (susceptibles[strain][i] == per) {
-      susceptibles[strain][i] = susceptibles[strain][s-1];
-      susceptibles[strain].pop_back();
-      S[strain]--;
+    if (susceptibles[disease][i] == per) {
+      susceptibles[disease][i] = susceptibles[disease][s-1];
+      susceptibles[disease].pop_back();
+      S[disease]--;
       break;
     }
   }
-  assert(susceptibles[strain].size() == static_cast<unsigned int>(S[strain]));
+  assert(susceptibles[disease].size() == static_cast<unsigned int>(S[disease]));
 }
 
-void Place::add_infectious(int strain, Person * per) {
-  infectious[strain].insert(per);
-  I[strain]++;
-  assert(I[strain] == static_cast <int> (infectious[strain].size()));
-  if (per->get_strain_status(strain) == 'I') {
-    Sympt[strain]++;
-    cases[strain]++;
-    total_cases[strain]++;
+void Place::add_infectious(int disease, Person * per) {
+  infectious[disease].insert(per);
+  I[disease]++;
+  assert(I[disease] == static_cast <int> (infectious[disease].size()));
+  if (per->get_disease_status(disease) == 'I') {
+    Sympt[disease]++;
+    cases[disease]++;
+    total_cases[disease]++;
   }
 }
 
-void Place::delete_infectious(int strain, Person * per) {
-  assert(infectious[strain].find(per) != infectious[strain].end());
-  infectious[strain].erase(per);
-  I[strain]--;
-  if (per->get_strain_status(strain)=='I') {
-    Sympt[strain]--;
+void Place::delete_infectious(int disease, Person * per) {
+  assert(infectious[disease].find(per) != infectious[disease].end());
+  infectious[disease].erase(per);
+  I[disease]--;
+  if (per->get_disease_status(disease)=='I') {
+    Sympt[disease]--;
   }
-  assert(infectious[strain].size() == static_cast<unsigned int>(I[strain]));
+  assert(infectious[disease].size() == static_cast<unsigned int>(I[disease]));
 }
 
-void Place::print_susceptibles(int strain) {
+void Place::print_susceptibles(int disease) {
   vector<Person *>::iterator itr;
-  for (itr = susceptibles[strain].begin();
-       itr != susceptibles[strain].end(); itr++) {
+  for (itr = susceptibles[disease].begin();
+       itr != susceptibles[disease].end(); itr++) {
     printf(" %d", (*itr)->get_id());
   }
   printf("\n");
 }
 
 
-void Place::print_infectious(int strain) {
+void Place::print_infectious(int disease) {
   set<Person *>::iterator itr;
-  for (itr = infectious[strain].begin();
-       itr != infectious[strain].end(); itr++) {
+  for (itr = infectious[disease].begin();
+       itr != infectious[disease].end(); itr++) {
     printf(" %d", (*itr)->get_id());
   }
   printf("\n");
@@ -173,13 +173,13 @@ void Place::spread_infection(int day, int s) {
   if (S[s] == 0) return;
 	
   set<Person *>::iterator itr;
-  Strain * strain = population->get_strain(s);
-  double beta = strain->get_transmissibility();
+  Disease * disease = population->get_disease(s);
+  double beta = disease->get_transmissibility();
 
   // expected number of susceptible contacts for each infectious person
   double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
   if (Verbose > 1) {
-    printf("Strain %i, expected suscept contacts = %.3f * %i / %i = %f\n",
+    printf("Disease %i, expected suscept contacts = %.3f * %i / %i = %f\n",
            s, get_contacts_per_day(s), S[s], (N-1), contacts);
     fflush(stdout);
   }
@@ -197,8 +197,8 @@ void Place::spread_infection(int day, int s) {
     int number_susceptibles = S[s];
     if (number_susceptibles == 0) break;
     Person * infector = *itr;			// infectious indiv
-    assert(infector->get_strain_status(s) == 'I' ||
-	   infector->get_strain_status(s) == 'i');
+    assert(infector->get_disease_status(s) == 'I' ||
+	   infector->get_disease_status(s) == 'i');
 		
     // skip if this infector did not visit today
     if (Verbose > 1) { printf("Is infector %d here?  ", infector->get_id()); }
@@ -243,7 +243,7 @@ void Place::spread_infection(int day, int s) {
       }
 
       // is the victim here today, and still susceptible?
-      if (infectee->is_on_schedule(day, id, type) && infectee->get_strain_status(s) == 'S') {
+      if (infectee->is_on_schedule(day, id, type) && infectee->get_disease_status(s) == 'S') {
 	if (Verbose > 1) { printf("Victim is here\n"); }
     
 	// get the victim's susceptibility
@@ -258,7 +258,7 @@ void Place::spread_infection(int day, int s) {
 	double r = RANDOM();
 	if (r < transmission_prob*susceptibility) {
 	  if (Verbose > 1) { printf("transmission succeeded: r = %f\n", r); }
-	  Infection * infection = new Infection(strain, infector, infectee, this, day);
+	  Infection * infection = new Infection(disease, infector, infectee, this, day);
 	  infectee->become_exposed(infection);
 	  infector->add_infectee(s);
 	  if (Verbose > 1) {
@@ -266,7 +266,7 @@ void Place::spread_infection(int day, int s) {
 	      printf("SEED infection day %i from %d to %d\n",
 		     day, infector->get_id(),infectee->get_id());
 	    } else {
-	      printf("infection day %i of strain %i from %d to %d\n",
+	      printf("infection day %i of disease %i from %d to %d\n",
 		     day, s, infector->get_id(),infectee->get_id());
 	    }
 	  }

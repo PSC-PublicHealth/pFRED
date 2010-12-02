@@ -39,48 +39,48 @@ double pop_susceptibility;
 
 Health_Belief_Model::Health_Belief_Model(Person *p) {
   self = p;
-  int strains = p->get_population()->get_strains();
+  int diseases = p->get_population()->get_diseases();
 
   perceptions = new Perceptions(p);
   get_parameters();
 
-  perceived_susceptibility = new (nothrow) int [strains];
+  perceived_susceptibility = new (nothrow) int [diseases];
   if (perceived_susceptibility == NULL) {
     printf("Help! sus allocation failure\n");
     abort();
   }
   
-  perceived_severity = new (nothrow) int [strains];
+  perceived_severity = new (nothrow) int [diseases];
   if (perceived_severity == NULL) {
     printf("Help! sev allocation failure\n");
     abort();
   }
   
-  perceived_benefits_accept_vaccine = new (nothrow) double [strains];
+  perceived_benefits_accept_vaccine = new (nothrow) double [diseases];
   if (perceived_benefits_accept_vaccine == NULL) {
     printf("Help! benefits allocation failure\n");
     abort();
   }
   
-  perceived_barriers_accept_vaccine = new (nothrow) double [strains];
+  perceived_barriers_accept_vaccine = new (nothrow) double [diseases];
   if (perceived_barriers_accept_vaccine == NULL) {
     printf("Help! barrier allocation failure\n");
     abort();
   }
 
-  cumm_susceptibility = new (nothrow) double [strains];
+  cumm_susceptibility = new (nothrow) double [diseases];
   if (cumm_susceptibility == NULL) {
     printf("Help! cumm_susceptibility allocation failure\n");
     abort();
   }
 
-  cumm_severity = new (nothrow) double [strains];
+  cumm_severity = new (nothrow) double [diseases];
   if (cumm_severity == NULL) {
     printf("Help! cumm_severity allocation failure\n");
     abort();
   }
 
-  accept_vaccine = new (nothrow) bool [strains];
+  accept_vaccine = new (nothrow) bool [diseases];
   if (accept_vaccine == NULL) {
     printf("Help! accept_vaccine allocation failure\n");
     abort();
@@ -141,8 +141,8 @@ void Health_Belief_Model::get_parameters() {
 }
 
 void Health_Belief_Model::reset() {
-  int strains = self->get_population()->get_strains();
-  for (int s = 0; s < strains; s++) {
+  int diseases = self->get_population()->get_diseases();
+  for (int s = 0; s < diseases; s++) {
     cumm_susceptibility[s] = 0.0;
     cumm_severity[s] = 0.0;
     accept_vaccine[s] = false;
@@ -158,13 +158,13 @@ void Health_Belief_Model::reset() {
 }
 
 void Health_Belief_Model::update(int day) {
-  int strains = self->get_population()->get_strains();
-  for (int s = 0; s < strains; s++) {
+  int diseases = self->get_population()->get_diseases();
+  for (int s = 0; s < diseases; s++) {
 
     // perceptions of current state of epidemic
     int current_cases = perceptions->get_global_cases(s);
-    int total_cases = self->get_population()->get_strain(s)->get_epidemic()->get_total_incidents();
-    double current_deaths = self->get_population()->get_strain(s)->get_mortality_rate()*total_cases;
+    int total_cases = self->get_population()->get_disease(s)->get_epidemic()->get_total_incidents();
+    double current_deaths = self->get_population()->get_disease(s)->get_mortality_rate()*total_cases;
     double current_incidence = (double) current_cases / (double) self->get_population()->get_pop_size();
     total_deaths += current_deaths;
     

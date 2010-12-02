@@ -14,7 +14,7 @@
 #include "Params.h"
 #include "Random.h"
 #include "Person.h"
-#include "Strain.h"
+#include "Disease.h"
 
 double * Classroom_contacts_per_day;
 double *** Classroom_contact_prob;
@@ -29,19 +29,19 @@ int Classroom_parameters_set = 0;
 Classroom::Classroom(int loc, const char *lab, double lon, double lat, Place *container, Population *pop) {
   type = CLASSROOM;
   setup(loc, lab, lon, lat, container, pop);
-  get_parameters(population->get_strains());
+  get_parameters(population->get_diseases());
 }
 
 
-void Classroom::get_parameters(int strains) {
+void Classroom::get_parameters(int diseases) {
   char param_str[80];
   
   if (Classroom_parameters_set) return;
   
-  Classroom_contacts_per_day = new double [ strains ];
-  Classroom_contact_prob = new double** [ strains ];
+  Classroom_contacts_per_day = new double [ diseases ];
+  Classroom_contact_prob = new double** [ diseases ];
   
-  for (int s = 0; s < strains; s++) {
+  for (int s = 0; s < diseases; s++) {
     int n;
     sprintf(param_str, "classroom_contacts[%d]", s);
     get_param((char *) param_str, &Classroom_contacts_per_day[s]);
@@ -62,7 +62,7 @@ void Classroom::get_parameters(int strains) {
   Classroom_parameters_set = 1;
 }
 
-int Classroom::get_group(int strain, Person * per) {
+int Classroom::get_group(int disease, Person * per) {
   int age = per->get_age();
   if (age < 12) { return 0; }
   else if (age < 16) { return 1; }
@@ -70,20 +70,20 @@ int Classroom::get_group(int strain, Person * per) {
   else return 3;
 }
 
-double Classroom::get_transmission_prob(int strain, Person * i, Person * s) {
+double Classroom::get_transmission_prob(int disease, Person * i, Person * s) {
   // i = infected agent
   // s = susceptible agent
-  int row = get_group(strain, i);
-  int col = get_group(strain, s);
-  double tr_pr = Classroom_contact_prob[strain][row][col];
+  int row = get_group(disease, i);
+  int col = get_group(disease, s);
+  double tr_pr = Classroom_contact_prob[disease][row][col];
   return tr_pr;
 }
 
-int Classroom::should_be_open(int day, int strain) {
-	return container->should_be_open(day, strain);
+int Classroom::should_be_open(int day, int disease) {
+	return container->should_be_open(day, disease);
 }
 
-double Classroom::get_contacts_per_day(int strain) {
-  return Classroom_contacts_per_day[strain];
+double Classroom::get_contacts_per_day(int disease) {
+  return Classroom_contacts_per_day[disease];
 }
 

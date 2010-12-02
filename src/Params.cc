@@ -10,7 +10,6 @@
 //
 
 #include "Params.h"
-#include "Global.h"
 #include <math.h>
 #include <string>
 #include <sstream>
@@ -23,6 +22,7 @@ using namespace std;
 char Param_name[MAX_PARAMS][MAX_PARAM_SIZE];
 char Param_value[MAX_PARAMS][MAX_PARAM_SIZE];
 int Params;
+int Param_verbose = 1;
 
 int read_parameters(char *paramfile) {
   FILE *fp;
@@ -61,7 +61,7 @@ int read_parameters(char *paramfile) {
           strcpy(Param_value[Params], temp_str.c_str());
           
           strcpy(Param_name[Params], name);
-          if (Debug > 2) {
+          if (Param_verbose > 2) {
             printf("READ_PARAMS: %s = %s\n", Param_name[Params],
                    Param_value[Params]);
           }
@@ -112,7 +112,7 @@ int read_parameters(char *paramfile) {
           strcpy(Param_value[Params], temp_str.c_str());
           
           strcpy(Param_name[Params], name);
-          if (Debug > 2) {
+          if (Param_verbose > 2) {
             printf("READ_PARAMS: %s = %s\n", Param_name[Params],
                    Param_value[Params]);
           }
@@ -130,7 +130,7 @@ int read_parameters(char *paramfile) {
   }
   fclose(fp);
   
-  if (Debug > 1) {
+  if (Param_verbose > 1) {
     for (int i = 0; i < Params; i++) {
       printf("READ_PARAMS: %s = %s\n", Param_name[i], Param_value[i]);
     }
@@ -149,13 +149,13 @@ int get_param(char *s, int *p) {
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s = %d\n", s, *p);
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
@@ -174,13 +174,13 @@ int get_param(char *s, unsigned long *p) {
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s = %lu\n", s, *p);
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
@@ -199,13 +199,13 @@ int get_param(char *s, double *p) {
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s = %f\n", s, *p);
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
@@ -224,13 +224,13 @@ int get_param(char *s, float *p) {
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s = %f\n", s, *p);
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
@@ -252,13 +252,13 @@ int get_param(char *s, string &p){
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s = %s\n", s, p.c_str());
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
@@ -277,13 +277,13 @@ int get_param(char *s, char *p) {
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s = %s\n", s, p);
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Param_verbose) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
@@ -401,10 +401,4 @@ bool does_param_exist(char *s) {
   }
   
   return found;
-}
-
-bool does_param_exist(string s) {
-  char st[80];
-  sprintf(st,"%s",s.c_str());
-  return does_param_exist(st);
 }

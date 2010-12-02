@@ -33,13 +33,12 @@ public:
   UNIT_TEST_VIRTUAL void print_schedule();
   UNIT_TEST_VIRTUAL void update_schedule(int day);
   UNIT_TEST_VIRTUAL void get_schedule(int *n, Place **sched);
-  UNIT_TEST_VIRTUAL void become_susceptible(int strain);
-  UNIT_TEST_VIRTUAL void become_exposed(int strain);
-  UNIT_TEST_VIRTUAL void become_infectious(int strain);
-  UNIT_TEST_VIRTUAL void become_immune(int strain);
-  UNIT_TEST_VIRTUAL void recover(int strain);
-  UNIT_TEST_VIRTUAL bool acceptance_of_vaccine();
-  UNIT_TEST_VIRTUAL bool acceptance_of_another_vaccine_dose();
+  UNIT_TEST_VIRTUAL void become_susceptible(int disease);
+  UNIT_TEST_VIRTUAL void become_exposed(int disease);
+  UNIT_TEST_VIRTUAL void become_infectious(int disease);
+  UNIT_TEST_VIRTUAL void become_immune(int disease);
+  UNIT_TEST_VIRTUAL void recover(int disease);
+  UNIT_TEST_VIRTUAL int compliance_to_vaccination();
 
   UNIT_TEST_VIRTUAL int get_profile() { return profile; }
   UNIT_TEST_VIRTUAL Place * get_household() { return favorite_place[HOUSEHOLD_INDEX]; }

@@ -25,7 +25,7 @@ public:
   void location_quality_control();
   void get_location_parameters();
   int get_open_status(int loc, int day);
-  int location_should_be_open(int loc, int strain, int day);
+  int location_should_be_open(int loc, int disease, int day);
   Place * get_location(int loc);
   
 private:

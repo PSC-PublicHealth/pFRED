@@ -18,7 +18,7 @@
 
 using namespace std;
 
-class Strain;
+class Disease;
 class Health;
 class Policy;
 class AV_Health;
@@ -29,7 +29,7 @@ class Antiviral {
  public:
   //Creation
   
-  Antiviral(int _strain, int _course_length, double _reduce_infectivity,
+  Antiviral(int _disease, int _course_length, double _reduce_infectivity,
             double _reduce_susceptibility, double _reduce_asymp_period,
             double _reduce_sympt_period, double _prob_symptoms,
             int _initial_stock, int _total_avail, int _additional_per_day,
@@ -42,7 +42,7 @@ class Antiviral {
   }
   
   //Paramter Access Members
-  UNIT_TEST_VIRTUAL int     get_strain()                const { return strain;}
+  UNIT_TEST_VIRTUAL int     get_disease()                const { return disease;}
   UNIT_TEST_VIRTUAL double  get_reduce_infectivity()    const { return reduce_infectivity;}
   UNIT_TEST_VIRTUAL double  get_reduce_susceptibility() const { return reduce_susceptibility;}
   UNIT_TEST_VIRTUAL double  get_reduce_asymp_period()   const { return reduce_asymp_period;}
@@ -87,7 +87,7 @@ class Antiviral {
   UNIT_TEST_VIRTUAL void print() const;
   UNIT_TEST_VIRTUAL void reset();
   UNIT_TEST_VIRTUAL void report(int day) const;
-  UNIT_TEST_VIRTUAL int quality_control(int nstrains) const;
+  UNIT_TEST_VIRTUAL int quality_control(int ndiseases) const;
   UNIT_TEST_VIRTUAL void print_stocks() const;
   
   //Effect the Health of Person
@@ -103,7 +103,7 @@ class Antiviral {
   UNIT_TEST_VIRTUAL void add_ineff_given_out(int amount)      {ineff_given_out+=amount;}
   
  private:
-  int strain;                    
+  int disease;                    
   int course_length;               // How many days mush one take the AV
   double reduce_infectivity;       // What percentage does it reduce infectivity
   double reduce_susceptibility;    // What percentage does it reduce susceptability

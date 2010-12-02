@@ -20,7 +20,7 @@ class Vaccines {
 public:
   // Creation Operations
   Vaccines() { }
-  void setup();
+  void setup(string _vaccince_file);
   
   Vaccine *get_vaccine(int i) const { return vaccines[i];}
   

@@ -17,7 +17,7 @@
 #include "Place.h"
 #include "Community.h"
 #include "Random.h"
-#include "Strain.h"
+#include "Disease.h"
 #include "Params.h"
 #include "Vaccine_Manager.h"
 #include "Manager.h"
@@ -40,13 +40,13 @@ Behavior::Behavior (Person *person, Place **fav_place, int pro) {
 
 void Behavior::reset() {
   // add myself to the susceptible lists at my favorite places
-  int strains = self->get_population()->get_strains();
-  for (int strain = 0; strain < strains; strain++) {
+  int diseases = self->get_population()->get_diseases();
+  for (int disease = 0; disease < diseases; disease++) {
     for (int p = 0; p < FAVORITE_PLACES; p++) {
       if (favorite_place[p] == NULL) continue;
-      favorite_place[p]->add_susceptible(strain, self);
+      favorite_place[p]->add_susceptible(disease, self);
     }
-    community->add_susceptible(strain, self);
+    community->add_susceptible(disease, self);
   }
 	
   // reset the daily schedule
@@ -104,7 +104,7 @@ void Behavior::update_schedule(int day) {
     // decide whether to stay at home if symptomatic
     int is_symptomatic = self->is_symptomatic();
     if (is_symptomatic) {
-      if (RANDOM() < Strain::get_prob_stay_home()) {
+      if (RANDOM() < Disease::get_prob_stay_home()) {
 	on_schedule[0] = true;
 	return;
       }
@@ -149,70 +149,66 @@ void Behavior::get_schedule(int *n, Place **sched) {
 }
 
 
-void Behavior::become_susceptible(int strain) {
+void Behavior::become_susceptible(int disease) {
   // add me to susceptible list at my favorite places
   for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (favorite_place[p] != NULL)
-      favorite_place[p]->add_susceptible(strain, self);
+      favorite_place[p]->add_susceptible(disease, self);
   }
 }
 
-void Behavior::become_exposed(int strain) {
+void Behavior::become_exposed(int disease) {
   // remove me from susceptible list at my favorite places
   for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (favorite_place[p] != NULL)
-      favorite_place[p]->delete_susceptible(strain, self);
+      favorite_place[p]->delete_susceptible(disease, self);
   }
 }
 
-void Behavior::become_infectious(int strain) {
+void Behavior::become_infectious(int disease) {
   // add me to infectious list at my favorite places
   for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (favorite_place[p] != NULL) {
       if (Test) {
-	if (self->get_exposure_date(strain) == 0) {
-	  favorite_place[p]->add_infectious(strain, self);
+	if (self->get_exposure_date(disease) == 0) {
+	  favorite_place[p]->add_infectious(disease, self);
 	}
       } else {
-	favorite_place[p]->add_infectious(strain, self);
+	favorite_place[p]->add_infectious(disease, self);
       }
     }
   }
-  community->add_infectious(strain, self);
+  community->add_infectious(disease, self);
 }
 
-void Behavior::become_immune(int strain) {
+void Behavior::become_immune(int disease) {
   // remove me from the susceptible list at my favorite places
   // STB - While this is really the same as become_exposed, I thought it important to 
   //       make sure there was a differentiation
   for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (favorite_place[p] != NULL) 
-      favorite_place[p]->delete_susceptible(strain, self);
+      favorite_place[p]->delete_susceptible(disease, self);
   }
 }
 
-void Behavior::recover(int strain) {
+void Behavior::recover(int disease) {
   // remove me from infectious list at my favorite places
   for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (favorite_place[p] != NULL) {
       if (Test) {
-	if (self->get_exposure_date(strain) == 0) {
-	  favorite_place[p]->delete_infectious(strain, self);
+	if (self->get_exposure_date(disease) == 0) {
+	  favorite_place[p]->delete_infectious(disease, self);
 	}
       } else {
-	favorite_place[p]->delete_infectious(strain, self);
+	favorite_place[p]->delete_infectious(disease, self);
       }
     }
   }
-  community->delete_infectious(strain, self);
+  community->delete_infectious(disease, self);
 }
 
 
-bool Behavior::acceptance_of_vaccine(){
+int Behavior::compliance_to_vaccination(){
   return self->get_cognition()->will_accept_vaccine(0);
-}
-
-bool Behavior::acceptance_of_another_vaccine_dose(){
-  return self->get_cognition()->will_accept_another_vaccine_dose(0);
 }
 

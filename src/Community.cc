@@ -14,7 +14,7 @@
 #include "Params.h"
 #include "Random.h"
 #include "Person.h"
-#include "Strain.h"
+#include "Disease.h"
 
 Community * community;
 double * Community_contacts_per_day;
@@ -24,16 +24,16 @@ double *** Community_contact_prob;
 int Community_parameters_set = 0;
 
 Community::Community(int loc, const char *lab, double lon, double lat, Place *container, Population * pop) {
-  int strains = pop->get_strains();
+  int diseases = pop->get_diseases();
   type = COMMUNITY;
   groups = 2;
-  get_parameters(strains);
+  get_parameters(diseases);
 
-  // allocate strain-related memory
-  infectious_list = new (nothrow) set<Person *> * [strains];
+  // allocate disease-related memory
+  infectious_list = new (nothrow) set<Person *> * [diseases];
   assert (infectious_list != NULL);
 
-  for (int s = 0; s < strains; s++) {
+  for (int s = 0; s < diseases; s++) {
     infectious_list[s] = new (nothrow) set<Person *> [groups];
     assert (infectious_list[s] != NULL);
   } 
@@ -41,13 +41,13 @@ Community::Community(int loc, const char *lab, double lon, double lat, Place *co
   setup(loc, lab, lon, lat, container, pop);
 }
 
-void Community::get_parameters(int strains) {
+void Community::get_parameters(int diseases) {
   char param_str[80];
   if (Community_parameters_set) return;
-  Community_contacts_per_day = new double [ strains ];
-  Community_contact_prob = new double** [ strains ];
-  Community_limit = new double [ strains ];
-  for (int s = 0; s < strains; s++) {
+  Community_contacts_per_day = new double [ diseases ];
+  Community_contact_prob = new double** [ diseases ];
+  Community_limit = new double [ diseases ];
+  for (int s = 0; s < diseases; s++) {
     int n;
     sprintf(param_str, "community_limit_trials");
     get_param((char *) param_str, &Community_limit_trials);
@@ -73,8 +73,8 @@ void Community::get_parameters(int strains) {
 
 
 void Community::reset() {
-  int strains = population->get_strains();
-  for (int s = 0; s < strains; s++) {
+  int diseases = population->get_diseases();
+  for (int s = 0; s < diseases; s++) {
     susceptibles[s].clear();
     for (int group = 0; group < groups; group++) {
       infectious_list[s][group].clear();
@@ -92,58 +92,58 @@ void Community::reset() {
 }
 
 
-double Community::get_transmission_prob(int strain, Person * i, Person * s) {
+double Community::get_transmission_prob(int disease, Person * i, Person * s) {
   // i = infected agent
   // s = susceptible agent
-  int row = get_group(strain, i);
-  int col = get_group(strain, s);
-  double tr_pr = Community_contact_prob[strain][row][col];
+  int row = get_group(disease, i);
+  int col = get_group(disease, s);
+  double tr_pr = Community_contact_prob[disease][row][col];
   return tr_pr;
 }
 
-int Community::get_group(int strain, Person * per) {
+int Community::get_group(int disease, Person * per) {
   int age = per->get_age();
   if (age < 18) { return 0; }
   else { return 1; }
 }
 
-double Community::get_contacts_per_day(int strain) {
-  return Community_contacts_per_day[strain];
+double Community::get_contacts_per_day(int disease) {
+  return Community_contacts_per_day[disease];
 }
 
-void Community::add_susceptible(int strain, Person * per) {
-  susceptibles[strain].push_back(per);
-  S[strain]++;
-  assert (S[strain] == static_cast <int> (susceptibles[strain].size()));
+void Community::add_susceptible(int disease, Person * per) {
+  susceptibles[disease].push_back(per);
+  S[disease]++;
+  assert (S[disease] == static_cast <int> (susceptibles[disease].size()));
 }
 
 
-void Community::delete_susceptible(int strain, Person * per) {
+void Community::delete_susceptible(int disease, Person * per) {
 }
 
-void Community::add_infectious(int strain, Person * per) {
-  int group = get_group(strain, per);
-  infectious_list[strain][group].insert(per);
-  I[strain]++;
-  assert (I[strain] == (static_cast <int> (infectious_list[strain][0].size()) +
-			static_cast <int> (infectious_list[strain][1].size())));
-  if (per->get_strain_status(strain) == 'I') {
-    Sympt[strain]++;
-    cases[strain]++;
-    total_cases[strain]++;
+void Community::add_infectious(int disease, Person * per) {
+  int group = get_group(disease, per);
+  infectious_list[disease][group].insert(per);
+  I[disease]++;
+  assert (I[disease] == (static_cast <int> (infectious_list[disease][0].size()) +
+			static_cast <int> (infectious_list[disease][1].size())));
+  if (per->get_disease_status(disease) == 'I') {
+    Sympt[disease]++;
+    cases[disease]++;
+    total_cases[disease]++;
   }
 }
 
-void Community::delete_infectious(int strain, Person * per) {
-  int group = get_group(strain, per);
-  assert(infectious_list[strain][group].find(per) != infectious_list[strain][group].end());
-  infectious_list[strain][group].erase(per);
-  I[strain]--;
-  if (per->get_strain_status(strain)=='I') {
-    Sympt[strain]--;
+void Community::delete_infectious(int disease, Person * per) {
+  int group = get_group(disease, per);
+  assert(infectious_list[disease][group].find(per) != infectious_list[disease][group].end());
+  infectious_list[disease][group].erase(per);
+  I[disease]--;
+  if (per->get_disease_status(disease)=='I') {
+    Sympt[disease]--;
   }
-  assert (I[strain] == (static_cast <int> (infectious_list[strain][0].size()) +
-			static_cast <int> (infectious_list[strain][1].size())));
+  assert (I[disease] == (static_cast <int> (infectious_list[disease][0].size()) +
+			static_cast <int> (infectious_list[disease][1].size())));
 }
 
 void Community::spread_infection(int day, int s) {
@@ -151,8 +151,8 @@ void Community::spread_infection(int day, int s) {
   // if (N < 2) return;
 	
   set<Person *>::iterator itr;
-  Strain * strain = population->get_strain(s);
-  double beta = strain->get_transmissibility();
+  Disease * disease = population->get_disease(s);
+  double beta = disease->get_transmissibility();
 
   // expected number of susceptible contacts for each infectious person
   double contacts = get_contacts_per_day(s);
@@ -161,7 +161,7 @@ void Community::spread_infection(int day, int s) {
   contacts *= beta;
 
   if (Verbose > 1) {
-    printf("Strain %d, expected suscept contacts = %.3f\n",
+    printf("Disease %d, expected suscept contacts = %.3f\n",
            s, get_contacts_per_day(s));
     printf("beta = %.10f\n", beta);
     printf("effective contacts = %f\n", contacts);
@@ -173,8 +173,8 @@ void Community::spread_infection(int day, int s) {
 	 itr != infectious_list[s][source_group].end(); itr++) {
       if (S[s] == 0) break;
       Person * infector = *itr;			// infectious indiv
-      assert(infector->get_strain_status(s) == 'I' ||
-	     infector->get_strain_status(s) == 'i');
+      assert(infector->get_disease_status(s) == 'I' ||
+	     infector->get_disease_status(s) == 'i');
 		
       // skip if this infector did not visit today
       if (Verbose > 1) { printf("Is infector %d here?  ", infector->get_id()); }
@@ -226,7 +226,7 @@ void Community::spread_infection(int day, int s) {
 	  }
 
 	  // is the victim here today, and still susceptible?
-	  if (infectee->is_on_schedule(day, id, type) && infectee->get_strain_status(s) == 'S') {
+	  if (infectee->is_on_schedule(day, id, type) && infectee->get_disease_status(s) == 'S') {
 	    if (Verbose > 1) { printf("Victim is here\n"); }
     
 	    // get the victim's susceptibility
@@ -239,7 +239,7 @@ void Community::spread_infection(int day, int s) {
 	    double r = RANDOM();
 	    if (r < susceptibility) {
 	      // transmission succeeded
-	      Infection * infection = new Infection(strain, infector, infectee, this, day);
+	      Infection * infection = new Infection(disease, infector, infectee, this, day);
 	      infectee->become_exposed(infection);
 	      infector->add_infectee(s);
 	      if (Verbose > 1) {
@@ -248,7 +248,7 @@ void Community::spread_infection(int day, int s) {
 		  printf("SEED infection day %i from %d to %d\n",
 			 day, infector->get_id(),infectee->get_id());
 		} else {
-		  printf("infection day %i of strain %i from %d to %d\n",
+		  printf("infection day %i of disease %i from %d to %d\n",
 			 day, s, infector->get_id(),infectee->get_id());
 		}
 	      }
@@ -264,17 +264,17 @@ void Community::spread_infection(int day, int s) {
   if (Verbose > 1) { fflush(stdout); }
 }
 
-Person * Community::get_possible_infectee(int strain, Person * infector, double lat1, double lon1) {
+Person * Community::get_possible_infectee(int disease, Person * infector, double lat1, double lon1) {
   Person * infectee = NULL;
   Person * candidate;
   double r;
   int pos;
 
-  if (Community_limit[strain] < 0) {
+  if (Community_limit[disease] < 0) {
     // select a random target
     r = RANDOM();
-    pos = (int) (r*S[strain]);
-    infectee = susceptibles[strain][pos];
+    pos = (int) (r*S[disease]);
+    infectee = susceptibles[disease][pos];
   }
   else {
     // select a random target using a gravity model
@@ -285,8 +285,8 @@ Person * Community::get_possible_infectee(int strain, Person * infector, double 
     // take at most Community_limit_trials
     while (not_found && (trial < Community_limit_trials)) {
       trial++;
-      pos = (int) (r*S[strain]);
-      candidate = susceptibles[strain][pos];
+      pos = (int) (r*S[disease]);
+      candidate = susceptibles[disease][pos];
       Place *h2 = candidate->get_household();
       double lat2 = h2->get_latitude();
       double lon2 = h2->get_longitude();
@@ -298,7 +298,7 @@ Person * Community::get_possible_infectee(int strain, Person * infector, double 
       }
       r = RANDOM();
       if (dist == 0.0 ||
-	  (dist < Community_limit[strain] && r < 25.0/(dist*dist))) {
+	  (dist < Community_limit[disease] && r < 25.0/(dist*dist))) {
 	infectee = candidate;
 	not_found = 0;
       }
@@ -314,7 +314,7 @@ Person * Community::get_possible_infectee(int strain, Person * infector, double 
     if (infectee != NULL) {
       printf("possible victim = %d  prof = %d pos = %d  S[%d] = %d\n",
 	     infectee->get_id(), infectee->get_behavior()->get_profile(),
-	     pos, strain, S[strain]);
+	     pos, disease, S[disease]);
     }
     else {
       printf("possible victim = None found\n");

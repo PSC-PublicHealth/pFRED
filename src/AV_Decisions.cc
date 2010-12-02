@@ -30,7 +30,7 @@ Decision(p){
   policy = p;
 }
 
-int AV_Decision_Allow_Only_One::evaluate(Person* person, int strain, int current_day){
+int AV_Decision_Allow_Only_One::evaluate(Person* person, int disease, int current_day){
   if(person->get_health()->get_number_av_taken() == 0) return 0;
   else return -1;
 }
@@ -45,12 +45,12 @@ Decision(p){
   policy = p;
 }
 
-int AV_Decision_Give_to_Sympt::evaluate(Person* person, int strain, int current_day){
+int AV_Decision_Give_to_Sympt::evaluate(Person* person, int disease, int current_day){
   AV_Manager *avm = dynamic_cast < AV_Manager* > ( policy->get_manager() );
   Antiviral* av = avm->get_current_av();
   double percentage = av->get_percent_symptomatics();
-  if(person->get_health()->get_strain_status(strain) == 'I'){
-    person->get_health()->flip_checked_for_av(strain);
+  if(person->get_health()->get_disease_status(disease) == 'I'){
+    person->get_health()->flip_checked_for_av(disease);
     double r = RANDOM(); // This is now a probability <=1.0;
     if( r < percentage ) return 0;
   }
@@ -67,7 +67,7 @@ Decision(p){
   policy = p;
 }
 
-int AV_Decision_Begin_AV_On_Day::evaluate(Person* person, int strain, int current_day){
+int AV_Decision_Begin_AV_On_Day::evaluate(Person* person, int disease, int current_day){
   AV_Manager *avm = dynamic_cast < AV_Manager* > ( policy->get_manager() );
   Antiviral* av = avm->get_current_av();
   int start_day = av->get_start_day();

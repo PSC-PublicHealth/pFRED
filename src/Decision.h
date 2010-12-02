@@ -36,6 +36,6 @@ public:
   string get_name() const { return name; }
   string get_type() const { return type; }
   
-  virtual int evaluate(Person* person, int strain, int current_day) = 0;  
+  virtual int evaluate(Person* person, int disease, int current_day) = 0;  
 };
 #endif

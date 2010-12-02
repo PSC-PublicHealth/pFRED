@@ -35,7 +35,7 @@ Manager::Manager(Population *P){
   current_policy = 0;
 }
 
-int Manager::poll_manager(Person* p, int strain, int day){
-  int result = policies[current_policy]->choose(p,strain,day);
+int Manager::poll_manager(Person* p, int disease, int day){
+  int result = policies[current_policy]->choose(p,disease,day);
   return result;
 }

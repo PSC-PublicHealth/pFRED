@@ -24,10 +24,10 @@ public:
   Household() {}
   ~Household() {}
   Household(int,const char *,double,double,Place *, Population *);
-  void get_parameters(int strains);
-  int get_group(int strain, Person * per);
-  double get_transmission_prob(int strain, Person * i, Person * s);
-  double get_contacts_per_day(int strain);
+  void get_parameters(int diseases);
+  int get_group(int disease, Person * per);
+  double get_transmission_prob(int disease, Person * i, Person * s);
+  double get_contacts_per_day(int disease);
   void add_person(Person * per);
   Person * get_HoH() { return HoH; }
   Person * get_housemate(int i) { return housemate[i]; }

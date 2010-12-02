@@ -27,14 +27,13 @@ public:
   AV_Manager(Population *_pop);
   
   //Parameters
-  bool do_antivirals()             const { return do_av; }
-  int get_overall_start_day()      const { return overall_start_day; }
-  Antiviral* get_current_av()      const { return current_av; }
+  bool do_antivirals()             const { return do_av;}
+  int get_overall_start_day()          const { return overall_start_day;}
+  Antiviral* get_current_av()          const { return current_av; }
   
   //Paramters
   Antivirals* get_antivirals()     const { return av_package; }
-  int get_num_antivirals()         const { return av_package->get_number_antivirals(); }
-  bool get_are_policies_set()      const { return are_policies_set; }
+  int get_num_antivirals()         const { return av_package->get_number_antivirals();}
   
   // Manager Functions
   void disseminate(int day);      // push avs to agents, needed for prophylaxis
@@ -49,8 +48,7 @@ private:
   Antivirals* av_package;          //The package of avs available to this manager
   // Parameters 
   int overall_start_day;           //Day to start the av procedure
-  void set_policies();             //member to set the policy of all of the avs
-  bool are_policies_set;         //Ensure that the policies for AVs have been set.
+  void set_policies();         //member to set the policy of all of the avs
   
   Antiviral* current_av;           //NEED TO ELIMINATE, HIDDEN to IMPLEMENTATION
 };

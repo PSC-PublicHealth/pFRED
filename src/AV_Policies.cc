@@ -29,11 +29,11 @@ Policy(dynamic_cast <Manager *> (avm)){
   //decision_list.push_back(new AV_Decision_Give_One_Chance(this));
 }
 
-int AV_Policy_Distribute_To_Symptomatics::choose(Person* person, int strain, int day) {
+int AV_Policy_Distribute_To_Symptomatics::choose(Person* person, int disease, int day) {
   int result=-1;
   for(unsigned int i=0; i < decision_list.size(); i++){
     
-    int new_result = decision_list[i]->evaluate(person, strain, day);
+    int new_result = decision_list[i]->evaluate(person, disease, day);
     if(new_result == -1) return -1;
     else if(new_result > result) result = new_result;
   }
@@ -49,10 +49,10 @@ Policy(dynamic_cast <Manager *> (avm)){
   decision_list.push_back(new AV_Decision_Allow_Only_One(this));
 }
 
-int AV_Policy_Distribute_To_Everyone::choose(Person* person, int strain, int day){
+int AV_Policy_Distribute_To_Everyone::choose(Person* person, int disease, int day){
   int result=-1;
   for(unsigned int i=0; i < decision_list.size(); i++){   
-    int new_result = decision_list[i]->evaluate(person, strain, day);
+    int new_result = decision_list[i]->evaluate(person, disease, day);
     if(new_result == -1) { return -1; }   
     if(new_result > result) result = new_result;
   }

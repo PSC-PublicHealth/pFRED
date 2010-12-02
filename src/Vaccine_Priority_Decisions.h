@@ -21,28 +21,14 @@ class Vaccine_Priority_Decision_Specific_Age: public Decision {
 public:
   Vaccine_Priority_Decision_Specific_Age(Policy* p);
   Vaccine_Priority_Decision_Specific_Age();
-  int evaluate(Person* person, int strain, int day);
-};
-
-class Vaccine_Priority_Decision_Pregnant: public Decision {
- public:
-  Vaccine_Priority_Decision_Pregnant(Policy* p);
-  Vaccine_Priority_Decision_Pregnant();
-  int evaluate(Person* person, int strain, int day);
-};
-
-class Vaccine_Priority_Decision_At_Risk: public Decision {
- public:
-  Vaccine_Priority_Decision_At_Risk(Policy* p);
-  Vaccine_Priority_Decision_At_Risk();
-  int evaluate(Person* person, int strain, int day);
+  int evaluate(Person* person, int disease, int day);
 };
 
 class Vaccine_Priority_Decision_No_Priority: public Decision {
 public:
   Vaccine_Priority_Decision_No_Priority(Policy *p);
   Vaccine_Priority_Decision_No_Priority();
-  int evaluate(Person* person, int strain, int day);
+  int evaluate(Person* person, int disease, int day);
 };
 
 #endif

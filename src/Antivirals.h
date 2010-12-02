@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <iomanip>
 #include <vector>
-#define MAX_ANTIVIRALS 4
 
 using namespace std;
 
@@ -27,11 +26,11 @@ public:
   Antivirals();          // This is created from input
   
   //Paramter Access Members
-  bool do_av()                               const { return AVs.size() > 0; } 
-  int get_number_antivirals()                const { return AVs.size(); }
-  int get_total_current_stock()              const;
+  bool do_av()                         const { return AVs.size() > 0; } 
+  int get_number_antivirals()          const { return AVs.size(); }
+  int get_total_current_stock()        const;
   vector <Antiviral *> const get_AV_vector() const { return AVs; }
-  Antiviral* const get_AV(int nav)           const { return AVs[nav]; }
+  Antiviral* const get_AV(int nav)               const { return AVs[nav]; }
   
   // Utility Functions
   void print() const;
@@ -39,10 +38,10 @@ public:
   void reset();
   void update(int day);
   void report(int day) const;
-  void quality_control(int nstrains) const;
+  void quality_control(int ndiseases) const;
   
   // Polling the collection 
-  vector < Antiviral*> find_applicable_AVs(int strain) const;
+  vector < Antiviral*> find_applicable_AVs(int disease) const;
   vector < Antiviral*> prophylaxis_AVs() const;
   
 private:

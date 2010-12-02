@@ -22,27 +22,26 @@ class Health_Belief_Model : public Cognitive_Model {
   Health_Belief_Model(Person *p);
   void reset();
   void update(int day);
-  bool will_accept_vaccine(int strain) { return accept_vaccine[strain]; }
-  bool will_accept_another_vaccine_dose(int strain) { return true; } // Not implemented
+  bool will_accept_vaccine(int disease) { return accept_vaccine[disease]; }
  private:
   void get_parameters();
-  bool decide_whether_to_accept_vaccine(int strain);
+  bool decide_whether_to_accept_vaccine(int disease);
 
   // Pointer to agent
   Person * self;
 
   // Memory
-  double * cumm_susceptibility;			// per strain
-  double * cumm_severity;			// per strain
+  double * cumm_susceptibility;			// per disease
+  double * cumm_severity;			// per disease
   double memory_decay;
   int total_deaths;
 
   // Perceptions
   Perceptions * perceptions;
-  int * perceived_susceptibility;		// per strain
-  int * perceived_severity;			// per strain
-  double * perceived_benefits_accept_vaccine;	// per strain
-  double * perceived_barriers_accept_vaccine;	// per strain
+  int * perceived_susceptibility;		// per disease
+  int * perceived_severity;			// per disease
+  double * perceived_benefits_accept_vaccine;	// per disease
+  double * perceived_barriers_accept_vaccine;	// per disease
   
   // Thresholds for dichotomous variables
   double susceptibility_threshold;
@@ -51,7 +50,7 @@ class Health_Belief_Model : public Cognitive_Model {
   double barriers_threshold;
 
   // Decisions
-  bool * accept_vaccine;			// per strain
+  bool * accept_vaccine;			// per disease
 
  protected:
   ~Health_Belief_Model() { }

@@ -15,7 +15,7 @@
 #include "Global.h"
 #include "Place.h"
 #include "Person.h"
-#include "Strain.h"
+#include "Disease.h"
 #include "Epidemic.h"
 #include "Household.h"
 
@@ -24,21 +24,21 @@ public:
   Perceptions(Person *p) { self = p; }
   UNIT_TEST_VIRTUAL void reset() {}
   UNIT_TEST_VIRTUAL void update(int day) {}
-  UNIT_TEST_VIRTUAL int get_global_cases(int strain) {
-    return self->get_population()->get_strain(strain)->get_epidemic()->get_clinical_incidents();
+  UNIT_TEST_VIRTUAL int get_global_cases(int disease) {
+    return self->get_population()->get_disease(disease)->get_epidemic()->get_clinical_incidents();
   }
-  UNIT_TEST_VIRTUAL int get_global_deaths(int strain) {
-    return self->get_population()->get_strain(strain)->get_mortality_rate()*get_global_cases(strain);
+  UNIT_TEST_VIRTUAL int get_global_deaths(int disease) {
+    return self->get_population()->get_disease(disease)->get_mortality_rate()*get_global_cases(disease);
   }
-  UNIT_TEST_VIRTUAL int get_neighborhood_cases(int strain);
-  UNIT_TEST_VIRTUAL int get_neighborhood_deaths(int strain);
-  UNIT_TEST_VIRTUAL int get_workplace_cases(int strain);
-  UNIT_TEST_VIRTUAL int get_workplace_deaths(int strain);
-  UNIT_TEST_VIRTUAL int get_school_cases(int strain);
-  UNIT_TEST_VIRTUAL int get_school_deaths(int strain);
-  UNIT_TEST_VIRTUAL double get_household_school_incidence(int strain);
-  UNIT_TEST_VIRTUAL int get_local_cases(int strain) { return 0.0; }
-  UNIT_TEST_VIRTUAL int get_local_deaths(int strain) { return 0.0; }
+  UNIT_TEST_VIRTUAL int get_neighborhood_cases(int disease);
+  UNIT_TEST_VIRTUAL int get_neighborhood_deaths(int disease);
+  UNIT_TEST_VIRTUAL int get_workplace_cases(int disease);
+  UNIT_TEST_VIRTUAL int get_workplace_deaths(int disease);
+  UNIT_TEST_VIRTUAL int get_school_cases(int disease);
+  UNIT_TEST_VIRTUAL int get_school_deaths(int disease);
+  UNIT_TEST_VIRTUAL double get_household_school_incidence(int disease);
+  UNIT_TEST_VIRTUAL int get_local_cases(int disease) { return 0.0; }
+  UNIT_TEST_VIRTUAL int get_local_deaths(int disease) { return 0.0; }
 private:
   Person * self;
 protected:

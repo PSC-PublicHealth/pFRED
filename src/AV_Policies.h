@@ -32,7 +32,7 @@ public:
   AV_Policy_Distribute_To_Symptomatics();
   AV_Policy_Distribute_To_Symptomatics(AV_Manager* avm);
   
-  virtual int choose(Person* person, int strain, int current_day);
+  virtual int choose(Person* person, int disease, int current_day);
 };
 
 class AV_Policy_Distribute_To_Everyone: public Policy {
@@ -41,6 +41,6 @@ public:
   AV_Policy_Distribute_To_Everyone();
   AV_Policy_Distribute_To_Everyone(AV_Manager* avm);
   
-  virtual int choose(Person* person, int strain, int current_day);
+  virtual int choose(Person* person, int disease, int current_day);
 };
 #endif
