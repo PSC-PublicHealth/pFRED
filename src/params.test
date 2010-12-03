@@ -5,5 +5,3 @@ popfile = test_pop.txt
 locfile = test_loc.txt
 vaccine_tracefile = none
 tracefile = trace
-shit[5] = 3
-fuck[10][1] = 10
