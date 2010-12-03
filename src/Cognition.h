@@ -23,12 +23,13 @@ class Cognition {
   Cognition(Person *p);
   ~Cognition() {}
   void reset() { model->reset(); }
-  void update(int day) { model->update(day); V_count += will_accept_vaccine(0); }
-  bool will_accept_vaccine(int disease) { return model->will_accept_vaccine(disease); }
+  void update(int day)  { model->update(day); V_count += will_accept_vaccine(0); }
+  bool will_accept_vaccine(int disease)              { return model->will_accept_vaccine(disease); }
+  bool will_accept_another_vaccine_dose(int disease) { return model->will_accept_another_vaccine_dose(disease);}
   bool will_keep_kids_home() { return false; }
  private:
   void get_parameters();
-  Cognitive_Model * model;	     // cognitive model does all the real work
+  Cognitive_Model* model;	     // cognitive model does all the real work
 };
 
 #endif // _FRED_COGNITION_H

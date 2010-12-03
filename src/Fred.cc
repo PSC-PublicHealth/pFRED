@@ -41,8 +41,9 @@ int main(int argc, char* argv[]) {
   fprintf(Statusfp, "FRED started %s", ctime(&clock));
   fprintf(Statusfp, "param file = %s\n", Paramfile);
   fflush(Statusfp);
-	
+       
   setup(Paramfile);
+
   if (single_run_number > 0) {
     run_sim(single_run_number);
   }

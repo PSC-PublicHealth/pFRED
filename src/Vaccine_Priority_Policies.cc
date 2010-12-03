@@ -34,3 +34,11 @@ Policy(dynamic_cast <Manager *> (vcm)){
   decision_list.push_back(new Vaccine_Priority_Decision_Specific_Age(this));
 }
 
+Vaccine_Priority_Policy_ACIP::Vaccine_Priority_Policy_ACIP(Vaccine_Manager *vcm):
+  Policy(dynamic_cast <Manager *> (vcm)){
+  
+  Name = "Vaccine Priority Policy - ACIP Priority";
+  decision_list.push_back(new Vaccine_Priority_Decision_Specific_Age(this));
+  decision_list.push_back(new Vaccine_Priority_Decision_Pregnant(this));
+  decision_list.push_back(new Vaccine_Priority_Decision_At_Risk(this));
+}

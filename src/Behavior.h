@@ -38,7 +38,8 @@ public:
   UNIT_TEST_VIRTUAL void become_infectious(int disease);
   UNIT_TEST_VIRTUAL void become_immune(int disease);
   UNIT_TEST_VIRTUAL void recover(int disease);
-  UNIT_TEST_VIRTUAL int compliance_to_vaccination();
+  UNIT_TEST_VIRTUAL bool acceptance_of_vaccine();
+  UNIT_TEST_VIRTUAL bool acceptance_of_another_vaccine_dose();
 
   UNIT_TEST_VIRTUAL int get_profile() { return profile; }
   UNIT_TEST_VIRTUAL Place * get_household() { return favorite_place[HOUSEHOLD_INDEX]; }

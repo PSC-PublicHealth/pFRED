@@ -270,7 +270,7 @@ void Infection::print() const {
   printf("Infection of disease type: %i in person %i current status: %c\n"
          "periods:  latent %i, asymp: %i, symp: %i recovery: %i \n"
          "dates: exposed: %i, infectious: %i, symptomatic: %i, recovered: %i susceptible: %i\n"
-         "will have symp? %i, suscept: %.3f infectivity: %.3f"
+         "will have symp? %i, suscept: %.3f infectivity: %.3f "
          "infectivity_multp: %.3f symptms: %.3f\n",
          disease->get_id(),
          host->get_id(),

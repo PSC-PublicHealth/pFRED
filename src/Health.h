@@ -28,6 +28,7 @@ class AV_Manager;
 class AV_Health;
 class Vaccine;
 class Vaccine_Health;
+class Vaccine_Manager;
 
 class Health {
 public:
@@ -45,6 +46,7 @@ public:
   int is_symptomatic() const;
   bool is_immune(Disease* disease) const { return immunity[disease->get_id()]; }
   bool is_at_risk(Disease* disease) const { return at_risk[disease->get_id()]; }
+  bool is_at_risk(int disease) const { return at_risk[disease]; }
   char get_disease_status (int disease) const { return status[disease]; }
   Person* get_self() const { return self;}
   int get_num_diseases() const { return diseases; }
@@ -63,7 +65,7 @@ public:
   bool is_on_av_for_disease(int day, int disease) const;
   
   //Medication operators
-  void take(Vaccine *vacc, int day);
+  void take(Vaccine *vacc, int day, Vaccine_Manager* vm);
   void take(Antiviral *av, int day);
   int get_number_av_taken()             const { return av_health.size();}
   int get_checked_for_av(int s)             const { return checked_for_av[s]; }

@@ -47,6 +47,8 @@ extern int Random_start_day;
 extern char Cognitive_model_type[];
 extern int Quality_control;
 extern int Diseases;
+extern double Prob_accept_vaccine;
+extern double Prob_accept_vaccine_dose;
 
 // global file pointers
 extern FILE *Statusfp;

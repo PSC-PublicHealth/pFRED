@@ -33,65 +33,28 @@ Antivirals::Antivirals(){
     double RedInf, RedSusc, RedASympPer, RedSympPer, ProbSymp, Eff, PerSympt;
     int StrtDay,Proph;
     bool isProph;
-    // Check for deprecated params
-    sprintf(s,"av_reduce_infectious_period[%d]",iav);
-    if (does_param_exist(s)) {
-      printf("***** Found deprecated parameter ***** %s\n"
-             "New parameters are av_reduce_asymptomatic_period and "
-             "av_reduce_symptomatic_period \n"
-             "Aborting\n", s);
-      abort();
-    }
     
-    sprintf(s,"av_disease[%d]",iav);
-    get_param(s,&Disease);
-    
-    sprintf(s,"av_initial_stock[%d]",iav);
-    get_param(s,&InitSt);
-    
-    sprintf(s,"av_total_avail[%d]",iav);
-    get_param(s,&TotAvail);
-    
-    sprintf(s,"av_additional_per_day[%d]",iav);
-    get_param(s,&PerDay);
-    
-    sprintf(s,"av_percent_resistance[%d]",iav);
-    get_param(s,&Eff);
-    
-    sprintf(s,"av_course_length[%d]",iav);
-    get_param(s,&CorLength);
-    
-    sprintf(s,"av_reduce_infectivity[%d]",iav);
-    get_param(s,&RedInf);
-    
-    sprintf(s,"av_reduce_susceptibility[%d]",iav);
-    get_param(s,&RedSusc);
-    
-    sprintf(s,"av_reduce_symptomatic_period[%d]",iav);
-    get_param(s, &RedSympPer);
-    
-    sprintf(s,"av_reduce_asymptomatic_period[%d]",iav);
-    get_param(s, &RedASympPer);
-    
-    sprintf(s,"av_prob_symptoms[%d]",iav);
-    get_param(s, &ProbSymp);
-    
-    sprintf(s, "av_start_day[%d]", iav);
-    get_param(s, &StrtDay);
-    
-    sprintf(s, "av_prophylaxis[%d]", iav);
-    get_param(s, &Proph);
+    get_indexed_param("av_disease",iav,&Disease);
+    get_indexed_param("av_initial_stock",iav,&InitSt);
+    get_indexed_param("av_total_avail",iav,&TotAvail);
+    get_indexed_param("av_additional_per_day",iav,&PerDay);
+    //get_indexed_param("av_percent_resistance",iav,&Eff);
+    Eff = 1.0; // Not implemented yet
+    get_indexed_param("av_course_length",iav,&CorLength);
+    get_indexed_param("av_reduce_infectivity",iav,&RedInf);
+    get_indexed_param("av_reduce_susceptibility",iav,&RedSusc);
+    get_indexed_param("av_reduce_symptomatic_period",iav,&RedSympPer);
+    get_indexed_param("av_reduce_asymptomatic_period",iav,&RedASympPer);
+    get_indexed_param("av_prob_symptoms",iav,&ProbSymp);
+    get_indexed_param("av_start_day",iav,&StrtDay);
+    get_indexed_param("av_prophylaxis",iav,&Proph);
     if(Proph == 1) isProph= true;
     else isProph = false;
-    
-    sprintf(s, "av_percent_symptomatics[%d]",iav);
-    get_param(s, &PerSympt);
-    
-    sprintf(s, "av_course_start_day[%d]", iav);
+    get_indexed_param("av_percent_symptomatics",iav,&PerSympt);
     int n;
-    get_param(s, &n);
+    get_indexed_param("av_course_start_day",iav,&n);
     double* AVCourseSt= new double [n];
-    int MaxAVCourseSt = get_param_vector(s, AVCourseSt) -1;
+    int MaxAVCourseSt = get_indexed_param_vector("av_course_start_day",iav, AVCourseSt) -1;
     
     AVs.push_back(new Antiviral(Disease, CorLength, RedInf, 
                                 RedSusc, RedASympPer, RedSympPer,
@@ -131,9 +94,10 @@ vector < Antiviral* > Antivirals::prophylaxis_AVs() const {
 }
 
 void Antivirals::print() const {
-  cout << "\n Antivirals Printout";
-  cout << "\n There are "<< AVs.size() << " antivirals to choose from";
+  cout << "\nAntiviral Package \n";
+  cout << "There are "<< AVs.size() << " antivirals to choose from. \n";
   for(unsigned int iav=0;iav<AVs.size(); iav++){
+    cout << "\nAntiviral #" << iav << "\n";
     AVs[iav]->print();
   }
   cout << "\n\n";
