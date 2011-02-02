@@ -189,7 +189,7 @@ void Vaccine_Manager::update(int day){
   if (do_vacc == 1) {
     vaccine_package->update(day);
     // Update the current vaccination capacity
-    current_vaccine_capacity = vaccination_capacity_map->get_value_for_timestep(day);
+    current_vaccine_capacity = vaccination_capacity_map->get_value_for_timestep(day, Vaccine_offset);
     cout << "Current Vaccine Stock = " << vaccine_package->get_vaccine(0)->get_current_stock()  << "\n";
     vaccinate(day);
   }

@@ -6,7 +6,17 @@ runs = 2
 verbose = 1
 debug = 1
 test = 0
-start_day_of_week = 0
+
+# To delay the start of the epidemic up to 6 days.  If the value is > 6, 
+#  the system will assign a random delay based on the run number
+epidemic_offset = 0
+
+vaccine_offset = 0
+
+# set to 'today' to use the system clock, otherwise set it to 
+# a date in the format 'MM/DD/YYYY'
+#start_date = today
+start_date = 01/30/2011
 reseed_day = -1
 popfile = alleg_pop.txt
 locfile = alleg_loc.txt

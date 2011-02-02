@@ -37,7 +37,7 @@ OBJ =   Fred.o Global.o Decision.o Policy.o Manager.o \
 	Behavior.o Classroom.o Cognition.o Community.o Demographics.o Epidemic.o Health.o \
         Hospital.o Household.o Infection.o Locations.o Neighborhood.o Office.o \
 	Params.o Perceptions.o Person.o Place.o Population.o Profile.o Random.o \
-	School.o Disease.o Workplace.o
+	School.o Disease.o Workplace.o Date.o
 
 SRC = $(OBJ:.o=.cc)
 

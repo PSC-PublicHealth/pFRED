@@ -22,6 +22,7 @@
 #include "Vaccine_Manager.h"
 #include "Manager.h"
 #include "Household.h"
+#include "Date.h"
 
 #define DAYS_PER_WEEK 7
 
@@ -95,7 +96,7 @@ void Behavior::print_schedule() {
 void Behavior::update_schedule(int day) {
   int day_of_week;
   if (schedule_updated < day) {
-    day_of_week = (day + Start_day_of_week) % DAYS_PER_WEEK;
+    day_of_week = Fred_Date->get_day_of_week(day);
     schedule_updated = day;
     for (int p = 0; p < FAVORITE_PLACES; p++) {
       on_schedule[p] = false;

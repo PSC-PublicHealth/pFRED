@@ -106,7 +106,7 @@ void Epidemic::update(int day) {
   Person **pop = disease->get_population()->get_pop();
   
   // See if there are changes to primary_cases_per_day from primary_cases_map
-  int primary_cases_per_day = primary_cases_map->get_value_for_timestep(day);
+  int primary_cases_per_day = primary_cases_map->get_value_for_timestep(day, Epidemic_offset);
   
   // Attempt to infect primary_cases_per_day.
   // This represents external sources of infection.

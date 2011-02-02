@@ -13,7 +13,9 @@ int Test;
 int Runs;
 int Days;
 unsigned long Seed;
-int Start_day_of_week;
+int Epidemic_offset;
+int Vaccine_offset;
+char Start_date[256];
 int Reseed_day;
 char Population_directory[256];
 char Output_directory[256];
@@ -33,6 +35,7 @@ FILE *Statusfp;
 FILE *Outfp;
 FILE *Tracefp;
 FILE *VaccineTracefp;
+FILE *FredDatefp;
 
 void get_global_parameters() {
   get_param((char *) "verbose", &Verbose);
@@ -42,7 +45,9 @@ void get_global_parameters() {
   get_param((char *) "runs", &Runs);
   get_param((char *) "days", &Days);
   get_param((char *) "seed", &Seed);
-  get_param((char *) "start_day_of_week", &Start_day_of_week);
+  get_param((char *) "epidemic_offset", &Epidemic_offset);
+  get_param((char *) "vaccine_offset", &Vaccine_offset);
+  get_param((char *) "start_date", Start_date);
   get_param((char *) "reseed_day", &Reseed_day);
   get_param((char *) "popdir", Population_directory);
   get_param((char *) "outdir", Output_directory);
