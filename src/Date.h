@@ -67,8 +67,8 @@ public:
   int get_day_of_month(int t);
   int get_day_of_week(int t);
   string get_day_of_week_string(int t);
-  int get_week(int t);
-  int get_week_year(int t);
+  int get_epi_week(int t);
+  int get_epi_week_year(int t);
 
   static int parse_month_from_date_string(string date_string, string format_string);
   static int parse_day_of_month_from_date_string(string date_string, string format_string);

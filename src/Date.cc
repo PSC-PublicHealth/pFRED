@@ -406,7 +406,7 @@ int Date::get_day_of_week() {
  *  December 29, 30, and 31 could potentially fall into MMWR week #1
  *  of the following MMWR year.
  */
-int Date::get_week(int t) {
+int Date::get_epi_week(int t) {
 
   int ret_value = -1;
 
@@ -433,7 +433,7 @@ int Date::get_week(int t) {
       if (epi_week < 1) {
         //Create a new date that represents the last day of the previous year
         Date * tmp_date = new Date(future_year - 1, 12, 31, 1);
-        epi_week = tmp_date->get_week(0);
+        epi_week = tmp_date->get_epi_week(0);
         delete tmp_date;
         return epi_week;
       }
@@ -446,7 +446,7 @@ int Date::get_week(int t) {
   return ret_value;
 }
 
-int Date::get_week_year(int t) {
+int Date::get_epi_week_year(int t) {
 
   //Get the future date info
   int future_year = this->get_year(t);
@@ -465,7 +465,8 @@ int Date::get_week_year(int t) {
     return future_year + 1;
   } else {
 
-    int epi_week = ceil((future_day_of_year + jan_1_day_of_week) / 7);
+    int epi_week = (future_day_of_year + jan_1_day_of_week) / 7;
+    if (((future_day_of_year + jan_1_day_of_week) % 7) > 0) epi_week++;
 
     if(jan_1_day_of_week > Date::WEDNESDAY) {
       epi_week--;

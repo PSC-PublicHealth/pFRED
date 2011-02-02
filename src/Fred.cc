@@ -109,8 +109,8 @@ void setup(char *paramfile) {
       Fred_Date->get_month(day),
       Fred_Date->get_day_of_month(day),
       Fred_Date->get_year(day),
-      Fred_Date->get_week_year(day),
-      Fred_Date->get_week(day));
+      Fred_Date->get_epi_week_year(day),
+      Fred_Date->get_epi_week(day));
   }
 
   fclose(FredDatefp);
