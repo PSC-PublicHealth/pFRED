@@ -38,7 +38,7 @@ my $found = 0;
 for my $pline (@params_in) {
   if ($pline =~ /^$param =/) {
     # replace the first instance of the param in the param list
-    push @params_out, "$param = $param_value\n" if $param_value and not $found;
+    push @params_out, "$param = $param_value\n" if defined $param_value and not $found;
     $found = 1;
   }
   else {
@@ -46,14 +46,14 @@ for my $pline (@params_in) {
   }
 }
 # add new param value to end of file if it was not found
-push @params_out, "$param = $param_value\n" if $param_value and not $found;
+push @params_out, "$param = $param_value\n" if defined $param_value and not $found;
 
 # write out new params
 open OUT, ">$params_file" or die "Can't write param file $params_file\n";
 print OUT @params_out;
 close OUT;
 
-print "$param = $param_value\n" if $param_value;
+print "$param = $param_value\n" if defined $param_value;
 
 # release semaphore
 close S;
