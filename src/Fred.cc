@@ -14,6 +14,7 @@
 #include "Disease.h"
 #include "Population.h"
 #include "Locations.h"
+#include "Patches.h"
 #include "Params.h"
 #include "Random.h"
 #include "Vaccine_Manager.h"
@@ -75,9 +76,14 @@ void setup(char *paramfile) {
 
   Random_start_day = (Epidemic_offset > 6);
   Pop.get_parameters();
-  Loc.get_location_parameters();
-  Loc.setup_locations();
+  Loc.get_parameters();
+  Loc.setup();
   Pop.setup();
+  if (Use_patches) {
+    patches = new Patches;
+    patches->setup(Loc.get_minimum_lon(),Loc.get_maximum_lon(),
+		   Loc.get_minimum_lat(),Loc.get_maximum_lat());
+  }
 
   // Date Setup
   // If Start_date parameter is "today", then set do default constructor
@@ -162,7 +168,7 @@ void run_sim(int run) {
   else { new_seed = Seed; }
   fprintf(Statusfp, "seed = %lu\n", new_seed);
   INIT_RANDOM(new_seed);
-  Loc.reset_locations(run);
+  Loc.reset(run);
   Pop.reset(run);
   if (Random_start_day) {
     // cycle through days of the week for start day

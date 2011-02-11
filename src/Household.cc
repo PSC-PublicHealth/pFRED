@@ -15,6 +15,7 @@
 #include "Random.h"
 #include "Person.h"
 #include "Disease.h"
+#include "Patch.h"
 
 double * Household_contacts_per_day;
 double *** Household_contact_prob;

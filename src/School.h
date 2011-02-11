@@ -28,11 +28,16 @@ public:
   School() {}
   ~School() {}
   School(int,const char*,double,double,Place *, Population *pop);
+  void reset();
   void get_parameters(int diseases);
   int get_group(int disease, Person * per);
   double get_transmission_prob(int disease, Person * i, Person * s);
   int should_be_open(int day, int disease);
   double get_contacts_per_day(int disease);
+  void add_person(Person * per);
+  int children_in_grade(int age) { if (-1 < age && age < 20) return grade[age]; else return 0; }
+private:
+  int grade[20];
 };
 
 #endif // _FRED_SCHOOL_H

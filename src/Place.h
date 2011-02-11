@@ -20,6 +20,7 @@
 #include <limits.h> 
 
 #include "Population.h"
+class Patch;
 
 #define HOUSEHOLD 'H'
 #define NEIGHBORHOOD 'N'
@@ -89,6 +90,7 @@ public:
   UNIT_TEST_VIRTUAL void set_container(Place *cont) { container = cont; }
   UNIT_TEST_VIRTUAL void add_case() { cases++; }
   UNIT_TEST_VIRTUAL void add_deaths() { deaths++; }
+  void set_patch(Patch *p) { patch = p; }
   
 protected:
   int id;					// place id
@@ -113,6 +115,7 @@ protected:
   int * total_deaths;				// total deaths
   Population *population;
   int visit;
+  Patch * patch;			     // geo patch for this place
 
   // disease parameters
   double *beta;	       // place-independent transmissibility per contact

@@ -30,13 +30,15 @@
 // global singleton object
 Locations Loc;
 
-void Locations::get_location_parameters() {
+void Locations::get_parameters() {
 }
 
 
-void Locations::setup_locations() {
+void Locations::setup() {
   FILE *fp;
   char location_file[256];
+  int locations;
+
   if (Verbose) {
     fprintf(Statusfp, "setup locations entered\n"); fflush(Statusfp);
   }
@@ -54,38 +56,39 @@ void Locations::setup_locations() {
   if (Verbose) {
     fprintf(Statusfp, "Locations = %d\n", locations); fflush(Statusfp);
   }
-  locations++; 					// add space for community
-  location = new (nothrow) Place * [locations];
-  assert(location != NULL);
+  location.clear();
 
   int loc = 0;
+  minimum_lat = minimum_lon = 999.0;
+  maximum_lat = maximum_lon = -999.0;
 
   // special case: set up the community (which should not be in the locfile)
   community = new (nothrow) Community(0, "Community", 0.0, 0.0, NULL, &Pop);
-  location[loc] = community;
+  location.push_back(community);
   location_map[0] = loc;
   loc++;
 
-  while (loc < locations) {
-    int id;
-    char s[32];
-    char loctype;
-    double lon, lat;
-    int container_id;
-    // fprintf(Statusfp, "reading location %d\n", loc); fflush(Statusfp);
-    if (fscanf(fp, "%d %s %c %lf %lf %d",
-               &id, s, &loctype, &lat, &lon, &container_id) != 6) {
-      fprintf(Statusfp, "Help! Read failure for location %d\n", loc);
-      abort();
-    }
+  int id;
+  char s[32];
+  char loctype;
+  double lon, lat;
+  int container_id;
+  Place *place = NULL;
+  Place *container;
+  while (fscanf(fp, "%d %s %c %lf %lf %d",
+		&id, s, &loctype, &lat, &lon, &container_id) == 6) {
+    if (lat < minimum_lat && lat != 0) minimum_lat = lat;
+    if (lon < minimum_lon && lon != 0) minimum_lon = lon;
+    if (lat > maximum_lat && lat != 0) maximum_lat = lat;
+    if (lon > maximum_lon && lon != 0) maximum_lon = lon;
     if (loctype != COMMUNITY) {
       assert(location_map.find(id) == location_map.end());
       location_map[id] = loc;
     }
 
     // printf("loctype = %c\n", loctype); fflush(stdout);
-    Place *place;
-    Place *container = get_location(container_id);
+
+    container = get_location(container_id);
     if (loctype == HOUSEHOLD) {
       place = new (nothrow) Household(id, s, lon, lat, container, &Pop);
     }
@@ -108,11 +111,8 @@ void Locations::setup_locations() {
       place = new (nothrow) Hospital(id, s, lon, lat, container, &Pop);
     }
     else if (loctype == COMMUNITY) {
-      // Community on loc file is deprecated.  Skip this line;
-      locations--;
+      // Community on loc file is deprecated.  Skip this input line;
       continue;
-      // community = new (nothrow) Community(id, s, lon, lat, container, &Pop);
-      // place = community;
     }
     else {
       printf ("Help! bad loctype = %c\n", loctype);
@@ -121,18 +121,21 @@ void Locations::setup_locations() {
     if (place == NULL) {
       printf("Help! allocation failure for loc %d\n", loc); abort();
     }
-    location[loc] = place;
+    location.push_back(place);
+    location_map[id] = loc;
     loc++;
+    place = NULL;
   }
   fclose(fp);
   
   if (Verbose) {
-    fprintf(Statusfp, "setup locations finished: Locations = %d\n", locations);
+    fprintf(Statusfp, "setup locations finished: Locations = %d\n", (int) location.size());
     fflush(Statusfp);
   }
 }
 
-void Locations::reset_locations(int run) {
+void Locations::reset(int run) {
+  int locations = location.size();
   if (Verbose) {
     fprintf(Statusfp, "reset locations entered\n"); fflush(Statusfp);
   }
@@ -145,6 +148,7 @@ void Locations::reset_locations(int run) {
 }
 
 void Locations::update(int day) {
+  int locations = location.size();
   if (Verbose>1) {
     fprintf(Statusfp, "update locations entered\n"); fflush(Statusfp);
   }
@@ -156,21 +160,19 @@ void Locations::update(int day) {
   }
 }
 
-int Locations::get_open_status(int loc, int day) {
-  return location[loc]->is_open(day);
+Place * Locations::get_location(int id) {
+  if (id == -1) return NULL;
+  assert(location_map.find(id) != location_map.end());
+  return location[location_map[id]];
 }
 
-int Locations::location_should_be_open(int loc, int disease, int day) {
-  return location[loc]->should_be_open(day, disease);
-}
-
-Place * Locations::get_location(int loc) {
-  if (loc == -1) return NULL;
-  assert(location_map.find(loc) != location_map.end());
-  return location[location_map[loc]];
+void Locations::add_location(Place * p) {
+  location.push_back(p);
+  location_map[p->get_id()] = location.size()-1;
 }
 
 void Locations::location_quality_control() {
+  int locations = location.size();
   if (Verbose) {
     fprintf(Statusfp, "location quality control check\n"); fflush(Statusfp);
   }
@@ -405,3 +407,4 @@ void Locations::location_quality_control() {
     fprintf(Statusfp, "location quality control finished\n"); fflush(Statusfp);
   }
 }
+

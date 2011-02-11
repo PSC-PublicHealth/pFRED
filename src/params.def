@@ -152,3 +152,10 @@ HBM_memory_decay_lower = 0.0
 HBM_memory_decay_upper = 1.0
 
 HBM_accept_vaccine = 5       0.6 0 0 0 0
+
+#### PATCHES
+use_patches = 0
+km_per_deg_longitude = 84.83063
+km_per_deg_latitude = 111.04326
+patch_size = 1.0
+
