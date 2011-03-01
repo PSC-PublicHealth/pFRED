@@ -12,16 +12,6 @@
 #ifndef _FRED_PLACE_H
 #define _FRED_PLACE_H
 
-#include "Global.h"
-#include <vector>
-#include <set>
-#include <iostream>
-#include <stdio.h>
-#include <limits.h> 
-
-#include "Population.h"
-class Patch;
-
 #define HOUSEHOLD 'H'
 #define NEIGHBORHOOD 'N'
 #define SCHOOL 'S'
@@ -31,10 +21,18 @@ class Patch;
 #define HOSPITAL 'M'
 #define COMMUNITY 'X'
 
+#include <vector>
+// #include <iostream>
+// #include <stdio.h>
+// #include <limits.h> 
 using namespace std;
 
+#include "Population.h"
+#include "Global.h"
+class Patch;
 class Person;
-extern int Diseases;
+
+
 
 class Place {
 public:
@@ -45,15 +43,13 @@ public:
   UNIT_TEST_VIRTUAL void update(int day);
   UNIT_TEST_VIRTUAL void print(int disease);
   virtual void add_person(Person * per);
-  UNIT_TEST_VIRTUAL void add_visitor(Person * per);
   virtual void add_susceptible(int disease, Person * per);
-  virtual void delete_susceptible(int disease, Person * per);
-  virtual void add_infectious(int disease, Person * per);
-  virtual void delete_infectious(int disease, Person * per);
+  virtual void add_infectious(int disease, Person * per, char status);
   UNIT_TEST_VIRTUAL void print_susceptibles(int disease);
   UNIT_TEST_VIRTUAL void print_infectious(int disease);
   virtual void spread_infection(int day, int disease);
   UNIT_TEST_VIRTUAL int is_open(int day);
+  bool is_infectious(int disease) { return I[disease] > 0; }
   
   virtual void get_parameters(int disease) = 0;
   virtual int get_group(int disease, Person * per) = 0;
@@ -90,7 +86,9 @@ public:
   UNIT_TEST_VIRTUAL void set_container(Place *cont) { container = cont; }
   UNIT_TEST_VIRTUAL void add_case() { cases++; }
   UNIT_TEST_VIRTUAL void add_deaths() { deaths++; }
+  Patch * get_patch() { return patch; }
   void set_patch(Patch *p) { patch = p; }
+  void clear_counts() { N = adults = children = 0; }
   
 protected:
   int id;					// place id
@@ -101,7 +99,7 @@ protected:
   double longitude;				// geo location
   int N;			   // total number of potential visitors
   vector <Person *> *susceptibles;	 // list of susceptible visitors
-  set <Person *> *infectious;		  // list of infectious visitors
+  vector <Person *> *infectious;	  // list of infectious visitors
   int *S;					// susceptible count
   int *I;					// infectious count
   int *Sympt;					// symptomatics count
@@ -114,7 +112,7 @@ protected:
   int * total_cases;			      // total symptomatic cases
   int * total_deaths;				// total deaths
   Population *population;
-  int visit;
+  int diseases;					// number of diseases
   Patch * patch;			     // geo patch for this place
 
   // disease parameters

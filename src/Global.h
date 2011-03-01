@@ -52,7 +52,6 @@ extern int Quality_control;
 extern int Diseases;
 extern double Prob_accept_vaccine;
 extern double Prob_accept_vaccine_dose;
-extern int Use_patches;
 
 // global file pointers
 extern FILE *Statusfp;
@@ -65,14 +64,11 @@ extern FILE *FredDatefp;
 class Population;
 extern Population Pop;
 
-class Locations;
-extern Locations Loc;
+class Place_List;
+extern Place_List Places;
 
-class Community;
-extern Community * community;
-
-class Patches;
-extern Patches * patches;
+class Grid;
+extern Grid Patches;
 
 class Date;
 extern Date * Fred_Date;

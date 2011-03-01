@@ -13,8 +13,8 @@
 #include "Global.h"
 #include "Disease.h"
 #include "Population.h"
-#include "Locations.h"
-#include "Patches.h"
+#include "Place_List.h"
+#include "Grid.h"
 #include "Params.h"
 #include "Random.h"
 #include "Vaccine_Manager.h"
@@ -75,15 +75,12 @@ void setup(char *paramfile) {
     err(errno, "mkdir(Output_directory) failed");      // or die
 
   Random_start_day = (Epidemic_offset > 6);
+  Patches.get_parameters();
   Pop.get_parameters();
-  Loc.get_parameters();
-  Loc.setup();
+  Places.get_parameters();
+  Patches.setup();
+  Places.setup();
   Pop.setup();
-  if (Use_patches) {
-    patches = new Patches;
-    patches->setup(Loc.get_minimum_lon(),Loc.get_maximum_lon(),
-		   Loc.get_minimum_lat(),Loc.get_maximum_lat());
-  }
 
   // Date Setup
   // If Start_date parameter is "today", then set do default constructor
@@ -122,8 +119,8 @@ void setup(char *paramfile) {
   fclose(FredDatefp);
 
   if (Quality_control) {
-    Pop.population_quality_control();
-    Loc.location_quality_control();
+    Pop.quality_control();
+    Places.quality_control();
   }
 }
 
@@ -168,8 +165,9 @@ void run_sim(int run) {
   else { new_seed = Seed; }
   fprintf(Statusfp, "seed = %lu\n", new_seed);
   INIT_RANDOM(new_seed);
-  Loc.reset(run);
+  Places.reset(run);
   Pop.reset(run);
+  Patches.reset(run);
   if (Random_start_day) {
     // cycle through days of the week for start day
     Epidemic_offset = (run-1) % 7;
@@ -181,7 +179,7 @@ void run_sim(int run) {
       INIT_RANDOM(new_seed + run - 1);
     }
     printf("================\nsim day = %d\n", day); fflush(stdout);
-    Loc.update(day);
+    Places.update(day);
     Pop.update(day);
     Pop.report(day);
     fprintf(Statusfp, "day %d finished  ", day);

@@ -17,7 +17,7 @@
 #include "Params.h"
 #include "Profile.h"
 #include "Global.h"
-#include "Locations.h"
+#include "Place_List.h"
 #include "Disease.h"
 #include "Person.h"
 #include "Demographics.h"
@@ -130,10 +130,6 @@ void Population::read_population() {
   // allocate population array
   pop = new (nothrow) Person* [pop_size];
 	
-  // clear age-related lists
-  children.clear();
-  adults.clear();
-
   for (int i = 0; i < pop_size; i++)
     pop[i] = new Person;
 	
@@ -152,22 +148,19 @@ void Population::read_population() {
       abort();
     }
     
+    // ignore the neighborhood entry
+    hood = -1;
+
     Place *favorite_place[] = { 
-      Loc.get_location(house),
-      Loc.get_location(hood),
-      Loc.get_location(school),
-      Loc.get_location(classroom),
-      Loc.get_location(work),
-      Loc.get_location(office)
+      Places.get_place(house),
+      Places.get_place(hood),
+      Places.get_place(school),
+      Places.get_place(classroom),
+      Places.get_place(work),
+      Places.get_place(office)
     }; 
     pop[p]->setup(id, age, sex, married, prof, favorite_place, profile, this);
     pop[p]->reset();
-    if (age < 18) {
-      children.push_back(pop[p]);
-    }
-    else {
-      adults.push_back(pop[p]);
-    }
   }
   fclose(fp);
   if (Verbose) {
@@ -190,7 +183,6 @@ void Population::reset(int run) {
   incremental_changes.clear();
   never_changed.clear();
   
-  // reset each person (adds her to the susc list for each favorite place)
   for (int p = 0; p < pop_size; p++){
     pop[p]->reset();
     never_changed[pop[p]]=true; // add all agents to this list at start
@@ -214,24 +206,55 @@ void Population::reset(int run) {
 
 void Population::update(int day) {
 
-  // update adults first, so that they can make decisions for minors
-  vector<Person *>::iterator itr;
-  for (itr = adults.begin(); itr != adults.end(); itr++) {
-    (*itr)->update(day);
+  // update everyone's demographics
+  for (int p = 0; p < pop_size; p++) {
+    pop[p]->update_demographics(day);
   }
 
-  // update minors, who may use adult's decisions
-  for (itr = children.begin(); itr != children.end(); itr++) {
-    (*itr)->update(day);
+  // update everyone's health status
+  for (int p = 0; p < pop_size; p++) {
+    pop[p]->update_health(day);
   }
 
+  // update adult decisions
+  for (int p = 0; p < pop_size; p++) {
+    if (18 <= pop[p]->get_age()) {
+      pop[p]->update_cognition(day);
+    }
+  }
+
+  // update child decisions
+  for (int p = 0; p < pop_size; p++) {
+    if (pop[p]->get_age() < 18) {
+      pop[p]->update_cognition(day);
+    }
+  }
+
+  // update actions of infectious agents
+  for (int p = 0; p < pop_size; p++) {
+    pop[p]->update_infectious_behavior(day);
+  }
+
+  // update actions of susceptible agents
+  for (int p = 0; p < pop_size; p++) {
+    pop[p]->update_susceptible_behavior(day);
+  }
+
+  // distribute vaccines
   vacc_manager->update(day);
+
+  // distribute AVs
   av_manager->update(day);
+
+  // apply transmission model in all infectious places
   for (int s = 0; s < diseases; s++) {
     disease[s].update(day);
   }
+
+  // give out anti-virals (after today's infections)
   av_manager->disseminate(day);
 }
+
 
 void Population::report(int day) {
   for (int s = 0; s < diseases; s++) {
@@ -303,7 +326,7 @@ Disease *Population::get_disease(int s) {
   return &disease[s];
 }
 
-void Population::population_quality_control() {
+void Population::quality_control() {
   if (Verbose) {
     fprintf(Statusfp, "population quality control check\n");
     fflush(Statusfp);

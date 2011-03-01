@@ -69,6 +69,7 @@ Health::~Health(){
 }
 
 void Health::reset() {
+  symptomatic_status = false;
   immunity.assign(immunity.size(),false);
   at_risk.assign(at_risk.size(),false);
   for (int disease = 0; disease < diseases; disease++) {
@@ -124,12 +125,15 @@ void Health::update(int day) {
   }
   
   // update each infection
+  symptomatic_status = false;
   for (int s = 0; s < diseases; s++) {
     if (status[s] == 'S' || status[s] == 'M')
       continue;
     infection[s]->update(day);
     if (infection[s]->get_disease_status() == 'S')
-      self->become_susceptible(s);
+      become_susceptible(s);
+    if (status[s] == 'I')
+      symptomatic_status = true;
   }
   
   // update antiviral status
@@ -195,9 +199,9 @@ void Health::become_exposed(Infection * infection_ptr) {
         Disease* s = Pop.get_disease(i);
         Infection* dummy_i =
 	  Infection::get_dummy_infection(s, self, infection_ptr->get_exposure_date());
-        self->become_exposed(dummy_i);
-        self->become_infectious(s);
-        self->recover(s);
+        become_exposed(dummy_i);
+        become_infectious(s);
+        recover(s);
       }
     }
   }
@@ -206,15 +210,19 @@ void Health::become_exposed(Infection * infection_ptr) {
 void Health::become_infectious(Disease * disease) {
   int disease_id = disease->get_id();
   if (Verbose > 1) {
-    fprintf(Statusfp, "INFECTIOUS person %d for disease %d %d\n", self->get_id(), disease_id, is_symptomatic());
+    fprintf(Statusfp, "INFECTIOUS person %d for disease %d is %s\n",
+	    self->get_id(), disease_id, symptomatic_status?"symptomatic":"asymptomatic");
     fflush(Statusfp);
   }
   infection[disease_id]->become_infectious();
   disease->insert_into_infectious_list(self);
   status[disease_id] = infection[disease_id]->get_disease_status();
+  if (status[disease_id] == 'I')
+    symptomatic_status = true;
   if (Verbose > 1) {
-    fprintf(Statusfp, "INFECTIOUS person %d for disease %d has status %c %d\n",
-            self->get_id(), disease_id, status[disease_id], is_symptomatic());
+    fprintf(Statusfp, "INFECTIOUS person %d for disease %d has status %c %s\n",
+            self->get_id(), disease_id,
+	    status[disease_id], symptomatic_status?"symptomatic":"asymptomatic");
     fflush(Statusfp);
   }
 }
@@ -225,6 +233,7 @@ void Health::become_symptomatic(Disease *disease) {
     throw logic_error("become symptomatic: cannot, without being exposed first");
   infection[disease->get_id()]->become_symptomatic();
   status[disease_id] = 'I';
+  symptomatic_status = true;
 }
 
 
@@ -247,14 +256,6 @@ void Health::recover(Disease * disease) {
   infection[disease_id]->recover();
   disease->remove_from_infectious_list(self);
   status[disease_id] = 'R';
-}
-
-int Health::is_symptomatic() const {
-  for (int disease = 0; disease < diseases; disease++) {
-    if (infection[disease] != NULL && infection[disease]->is_symptomatic())
-      return 1;
-  }
-  return 0;
 }
 
 int Health::get_exposure_date(int disease) const {

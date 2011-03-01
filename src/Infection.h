@@ -39,6 +39,7 @@ class Infection {
   UNIT_TEST_VIRTUAL void recover();
   UNIT_TEST_VIRTUAL void update(int today);
   UNIT_TEST_VIRTUAL bool possibly_mutate(Health *health, int day); 	// may cause mutation and/or alter infection course
+  bool is_infectious() const { return (status == 'I' || status == 'i'); }
   
   // general
   UNIT_TEST_VIRTUAL Disease *get_disease() const { return disease; }

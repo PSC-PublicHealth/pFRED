@@ -62,14 +62,14 @@ mutation_prob = 1 0.0
 # using the bifurcating SEIR model (SEiIR = 0)
 household_contacts[0] = 0.475
 neighborhood_contacts[0] = 59
-community_contacts[0] = 0
+# community_contacts[0] = 0
 school_contacts[0] = 8
 classroom_contacts[0] = 13.5
 workplace_contacts[0] = 2
 office_contacts[0] = 8
 
-community_limit[0] = -1
-community_limit_trials = 50
+# community_limit[0] = -1
+# community_limit_trials = 50
 
 # groups = children adults
 household_prob[0] = 4 0.6 0.3 0.3 0.4
@@ -87,7 +87,7 @@ classroom_prob[0] = 16 0.0435 0 0 0.0435 0 0.0375 0 0.0375 0 0 0.0315 0.0315 0.0
 
 # goups = children adults
 neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
-community_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
+# community_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 
 #### SCHOOL CLOSURE
 school_closure_policy = none
@@ -154,8 +154,11 @@ HBM_memory_decay_upper = 1.0
 HBM_accept_vaccine = 5       0.6 0 0 0 0
 
 #### PATCHES
-use_patches = 0
 km_per_deg_longitude = 84.83063
 km_per_deg_latitude = 111.04326
 patch_size = 1.0
+min_latitude = 40.1955
+max_latitude = 40.6742
+min_longitude = -80.3581
+max_longitude = -79.6906
 

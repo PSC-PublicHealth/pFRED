@@ -94,10 +94,6 @@ void Person::print_out(int disease) const {
   fflush(stdout);
 }
 
-void Person::print_schedule() const {
-  behavior->print_schedule();
-}
-
 void Person::reset() {
   if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", idx); fflush(Statusfp); }
   demographics->reset();
@@ -116,68 +112,21 @@ void Person::reset() {
 }
 
 void Person::update(int day) {
-  demographics->update(day);
-  health->update(day);
-  cognition->update(day);
-  behavior->update(day);
 }
 
-void Person::become_susceptible(int disease) {
-  health->become_susceptible(disease);
-  behavior->become_susceptible(disease);
-}
-
-void Person::become_exposed(Infection * infection) {
-  health->become_exposed(infection);
-  behavior->become_exposed(infection->get_disease()->get_id());
-}
-
-void Person::become_infectious(Disease * disease) {
-  int disease_id = disease->get_id();
-  health->become_infectious(disease);
-  behavior->become_infectious(disease_id);
-}
-
-void Person::become_symptomatic(Disease *disease) {
-	health->become_symptomatic(disease);
-}
 
 void Person::become_immune(Disease* disease) {
   int disease_id = disease->get_id();
   char status = health->get_disease_status(disease_id);
   if(status == 'S'){
     health->become_immune(disease);
-    behavior->become_immune(disease_id);
   }
 }
 
-void Person::recover(Disease * disease) {
-  int disease_id = disease->get_id();
-  health->recover(disease);
-  behavior->recover(disease_id);
-  
-  if (Verbose > 2) {
-    fprintf(Statusfp, "RECOVERED person %d for disease %d\n", idx, disease_id);
-    print_out(disease_id);
-    fflush(Statusfp);
-  }
-}
-
-void Person::update_schedule(int day) {
-  return behavior->update_schedule(day);
-}
-
-void Person::behave(int day) {}
-
-int Person::is_symptomatic() const {
-  return health->is_symptomatic();
-}
 
 Place * Person::get_household() const {
   return behavior->get_household();
 }
-
-int Person::get_age() const { return demographics->get_age(); }
 
 char Person::get_sex() const { return demographics->get_sex(); }
 
@@ -228,3 +177,5 @@ int Person::is_new_case(int day, int disease) const {
 void Person::set_changed(){
   this->pop->set_changed(this);
 }
+
+

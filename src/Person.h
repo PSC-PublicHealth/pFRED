@@ -18,15 +18,14 @@
 #include <vector>
 using namespace std;
 
-#include "Behavior.h"
+#include "Population.h";
+#include "Demographics.h";
 #include "Health.h"
-
-class Demographics;
-class Infection;
-class Cognition;
+#include "Cognition.h";
+#include "Behavior.h"
+#include "Infection.h";
 class Place;
 class Disease;
-class Population;
 
 class Person {
 public:
@@ -35,26 +34,21 @@ public:
   UNIT_TEST_VIRTUAL void setup(int index, int age, char sex, int marital, int profession, Place **favorite_places, int profile, Population* pop);
   UNIT_TEST_VIRTUAL void reset();
   UNIT_TEST_VIRTUAL void update(int day);
+  UNIT_TEST_VIRTUAL void update_infectious_behavior(int day) { behavior->update_infectious_behavior(day); }
+  UNIT_TEST_VIRTUAL void update_susceptible_behavior(int day)  { behavior->update_susceptible_behavior(day); }
   UNIT_TEST_VIRTUAL void print(int disease) const;
   UNIT_TEST_VIRTUAL void print_out(int disease) const;
-  UNIT_TEST_VIRTUAL void update_schedule(int day);
-  UNIT_TEST_VIRTUAL void get_schedule(int *n, Place **sched) { behavior->get_schedule(n, sched); }
-  UNIT_TEST_VIRTUAL int is_on_schedule(int day, int loc, char loctype) const { return behavior->is_on_schedule(day, loc, loctype); }
-  
   UNIT_TEST_VIRTUAL void print_schedule() const;
-  UNIT_TEST_VIRTUAL void become_susceptible(int disease);
-  UNIT_TEST_VIRTUAL void become_exposed(Infection *infection);
-  UNIT_TEST_VIRTUAL void become_infectious(Disease *disease);
-  UNIT_TEST_VIRTUAL void become_symptomatic(Disease *disease);
   UNIT_TEST_VIRTUAL void become_immune(Disease *disease);
-  UNIT_TEST_VIRTUAL void recover(Disease * disease);
-  UNIT_TEST_VIRTUAL void behave(int day);
-  UNIT_TEST_VIRTUAL int is_symptomatic() const;
+  int is_symptomatic() { return health->is_symptomatic(); }
+  bool is_susceptible(int dis) { return health->is_susceptible(dis); }
+  bool is_infectious(int dis) { return health->is_infectious(dis); }
+  int get_diseases() { return pop->get_diseases(); }
   
   // access functions:
   UNIT_TEST_VIRTUAL int get_id() const { return idx; }
   UNIT_TEST_VIRTUAL Place *get_household() const;
-  UNIT_TEST_VIRTUAL int get_age() const;
+  int get_age() const { return demographics->get_age(); }
   UNIT_TEST_VIRTUAL char get_sex() const;
   UNIT_TEST_VIRTUAL char get_marital_status() const;
   UNIT_TEST_VIRTUAL int get_profession() const;
@@ -78,6 +72,16 @@ public:
   UNIT_TEST_VIRTUAL Population* get_population() const { return pop; }
   
   UNIT_TEST_VIRTUAL void set_changed(); // notify the population that this Person has changed
+  void update_demographics(int day) { demographics->update(day); }
+  void update_health(int day) { health->update(day); }
+  void update_cognition(int day) { cognition->update(day); }
+  void update_behavior(int day) { behavior->update(day); }
+
+  void become_susceptible(int disease) { health->become_susceptible(disease); }
+  void become_exposed(Infection * infection) { health->become_exposed(infection); }
+  void become_infectious(Disease * disease) { health->become_infectious(disease); }
+  void become_symptomatic(Disease *disease) { health->become_symptomatic(disease); }
+  void recover(Disease * disease) { health->recover(disease); }
   
 private:
   int idx;

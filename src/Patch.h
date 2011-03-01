@@ -17,12 +17,12 @@
 
 #include "Place.h"
 class Person;
-class Patches;
+class Grid;
 
 class Patch {
 public:
   Patch() {}
-  void setup(Patches * patch_mgr, int i, int j, double xmin, double xmax, double ymin, double ymax);
+  void setup(Grid * patch_mgr, int i, int j, double xmin, double xmax, double ymin, double ymax);
   void reset(int run);
   void print();
   void print_coord();
@@ -30,15 +30,25 @@ public:
   double get_min_x() { return min_x;}
   double get_max_y() { return max_y;}
   double get_max_x() { return max_x;}
+  double get_center_y() { return center_y;}
+  double get_center_x() { return center_x;}
+  void make_neighborhood();
   void add_household(Place *p);
   int get_houses() { return houses;}
-  Place * get_place() { return place; }
-  Place * select_neighbor();
-  void add_person_to_neighbors(Person *per);
-  void add_person(Person *per) { place->add_person(per); }
-  void set_social_networks();
+  Place * get_neighborhood() { return neighborhood; }
+  void add_person(Person *per) { neighborhood->add_person(per); }
+  Place *select_random_household();
+  Place *select_random_school(int age);
+  Place *select_random_workplace();
+  Person *select_random_person();
+  Person *select_random_person_from_neighbors();
+  Place *select_neighborhood();
+  double distance_to_patch(Patch *p2);
 
 protected:
+  Place * select_neighboring_patch();
+
+  // set during setup():
   int row;
   int col;
   double min_x;
@@ -48,13 +58,15 @@ protected:
   double center_x;
   double center_y;
   Patch ** neighbors;
+  Place * neighborhood;
+  Grid * patch_manager;
   vector <Place *> household;
+  int houses;
+
+  // set during reset():
   vector <Place *> school[20];
   vector <Place *> workplace;
   vector <Person *> person;
-  int houses;
-  Place * place;
-  Patches * patch_manager;
 };
 
 #endif // _FRED_PATCH_H

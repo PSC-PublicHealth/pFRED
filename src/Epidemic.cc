@@ -19,12 +19,10 @@ using namespace std;
 #include "Random.h"
 #include "Params.h"
 #include "Person.h"
-#include "Behavior.h"
 #include "Global.h"
 #include "Infection.h"
-#include "Locations.h"
+#include "Place_List.h"
 #include "Place.h"
-#include "Community.h"
 #include "Timestep_Map.h"
 
 extern int V_count;
@@ -35,6 +33,14 @@ Epidemic::Epidemic(Disease *str, Timestep_Map* _primary_cases_map) {
   primary_cases_map = _primary_cases_map;
   primary_cases_map->print(); 
   new_cases = new int [Days];
+
+  int places = Places.get_number_of_places();
+  inf_households.reserve(places);
+  inf_neighborhoods.reserve(places);
+  inf_classrooms.reserve(places);
+  inf_schools.reserve(places);
+  inf_workplaces.reserve(places);
+  inf_offices.reserve(places);
 }
 
 Epidemic::~Epidemic() {
@@ -44,6 +50,12 @@ Epidemic::~Epidemic() {
 void Epidemic::reset() {
   infected.clear();
   infectious.clear();
+  inf_households.clear();
+  inf_neighborhoods.clear();
+  inf_classrooms.clear();
+  inf_schools.clear();
+  inf_workplaces.clear();
+  inf_offices.clear();
   attack_rate = 0.0;
   N = disease->get_population()->get_pop_size();
   total_incidents = 0;
@@ -94,15 +106,77 @@ void Epidemic::print_stats(int day) {
   C_count = c_count = 0;
 }
 
+
+
+void Epidemic::add_infectious_place(Place *place, char type) {
+  switch (type) {
+  case HOUSEHOLD:
+    inf_households.push_back(place);
+    break;
+    
+  case NEIGHBORHOOD:
+    inf_neighborhoods.push_back(place);
+    break;
+    
+  case CLASSROOM:
+    inf_classrooms.push_back(place);
+    break;
+    
+  case SCHOOL:
+    inf_schools.push_back(place);
+    break;
+    
+  case WORKPLACE:
+    inf_workplaces.push_back(place);
+    break;
+    
+  case OFFICE:
+    inf_offices.push_back(place);
+    break;
+  }
+}
+
+void Epidemic::get_infectious_places(int day) {
+  vector<Person *>::iterator itr;
+  vector<Place *>::iterator it;
+
+  int places = Places.get_number_of_places();
+  for (int p = 0; p < places; p++) {
+    Place * place = Places.get_place_at_position(p);
+    if (place->is_open(day) && place->should_be_open(day, id)) {
+      switch (place->get_type()) {
+      case HOUSEHOLD:
+	inf_households.push_back(place);
+	break;
+	
+      case NEIGHBORHOOD:
+	inf_neighborhoods.push_back(place);
+	break;
+	
+      case CLASSROOM:
+	inf_classrooms.push_back(place);
+	break;
+	
+      case SCHOOL:
+	inf_schools.push_back(place);
+	break;
+	
+      case WORKPLACE:
+	inf_workplaces.push_back(place);
+	break;
+	
+      case OFFICE:
+	inf_offices.push_back(place);
+	break;
+      }
+    }
+  }
+}
+  
+
 void Epidemic::update(int day) {
-  set <Place *> inf_households;
-  set <Place *> inf_neighborhoods;
-  set <Place *> inf_classrooms;
-  set <Place *> inf_schools;
-  set <Place *> inf_workplaces;
-  set <Place *> inf_offices;
-  set<Person *>::iterator itr;
-  set<Place *>::iterator it;
+  vector<Person *>::iterator itr;
+  vector<Place *>::iterator it;
   Person **pop = disease->get_population()->get_pop();
   
   // See if there are changes to primary_cases_per_day from primary_cases_map
@@ -121,49 +195,8 @@ void Epidemic::update(int day) {
     }
   }
   
-  // get list of infectious locations:
-  for (itr = infectious.begin(); itr != infectious.end(); itr++) {
-    Person * p = *itr;
-    if (Verbose > 1) {
-      fprintf(Statusfp, "day %d infectious person %d \n", day, p->get_id());
-      fflush(Statusfp);
-    }
-    p->update_schedule(day);
-    Place *schedule[FAVORITE_PLACES];
-    int n;
-    p->get_schedule(&n, schedule);
-    for (int j = 0; j < n; j++) {
-      Place * place = schedule[j];
-      if (place && place->is_open(day) && place->should_be_open(day, id)) {
-	switch (place->get_type()) {
-	case HOUSEHOLD:
-	  inf_households.insert(place);
-	  break;
+  // get_infectious_places(day);
 
-	case NEIGHBORHOOD:
-	  inf_neighborhoods.insert(place);
-	  break;
-
-	case CLASSROOM:
-	  inf_classrooms.insert(place);
-	  break;
-
-	case SCHOOL:
-	  inf_schools.insert(place);
-	  break;
-
-	case WORKPLACE:
-	  inf_workplaces.insert(place);
-	  break;
-
-	case OFFICE:
-	  inf_offices.insert(place);
-	  break;
-	}
-      }
-    }
-  }
-  
   int infectious_places;
   infectious_places = (int) inf_households.size();
   infectious_places += (int) inf_neighborhoods.size();
@@ -178,45 +211,49 @@ void Epidemic::update(int day) {
   for (it = inf_classrooms.begin(); it != inf_classrooms.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_schools.begin(); it != inf_schools.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_offices.begin(); it != inf_offices.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_workplaces.begin(); it != inf_workplaces.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_neighborhoods.begin(); it != inf_neighborhoods.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_households.begin(); it != inf_households.end(); it++ ) {
     Place * place = *it;
     if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in location: %d\n", id, place->get_id()); fflush(Statusfp);
+      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
     }
     place->spread_infection(day, id);
   }
-
-  community->spread_infection(day, id);
+  inf_households.clear();
+  inf_neighborhoods.clear();
+  inf_classrooms.clear();
+  inf_schools.clear();
+  inf_workplaces.clear();
+  inf_offices.clear();
 }

@@ -32,7 +32,7 @@ public:
   UNIT_TEST_VIRTUAL ~Population();
   UNIT_TEST_VIRTUAL void get_parameters();
   UNIT_TEST_VIRTUAL void setup();
-  UNIT_TEST_VIRTUAL void population_quality_control();
+  UNIT_TEST_VIRTUAL void quality_control();
   UNIT_TEST_VIRTUAL void print(int incremental=0, int day=0); // 0:print all, 1:incremental, -1:unchanged
   UNIT_TEST_VIRTUAL void end_of_run();
   UNIT_TEST_VIRTUAL void reset(int run);

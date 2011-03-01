@@ -30,7 +30,6 @@ int Quality_control;
 int Diseases;
 double Prob_accept_vaccine; // For Random_Congition_Model, need to find a way not to be global
 double Prob_accept_vaccine_dose; //  For Random_Congition_Model, need to find a way not to be global
-int Use_patches;
 
 // global file pointers
 FILE *Statusfp;
@@ -62,5 +61,4 @@ void get_global_parameters() {
   get_param((char *) "diseases", &Diseases);
   get_param((char *) "prob_accept_vaccine", &Prob_accept_vaccine);
   get_param((char *) "prob_accept_another_vaccine_dose",&Prob_accept_vaccine_dose);
-  get_param((char *) "use_patches",&Use_patches);
 }

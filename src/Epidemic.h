@@ -22,6 +22,7 @@ using namespace std;
 class Disease;
 class Person;
 class Timestep_Map;
+class Place;
 
 class Epidemic {
 public:
@@ -31,6 +32,8 @@ public:
   void reset();
   void update_stats(int day);
   void print_stats(int day);
+  void add_infectious_place(Place *p, char type);
+  void get_infectious_places(int day);
   void insert_into_infected_list(Person * person) { infected.push_back(person); }
   void insert_into_infectious_list(Person * person) { infectious.insert(person); }
   void remove_from_infectious_list(Person * person) { infectious.erase(person); }
@@ -62,6 +65,12 @@ private:
   Disease * disease;
   int id;
   int N;
+  vector <Place *> inf_households;
+  vector <Place *> inf_neighborhoods;
+  vector <Place *> inf_classrooms;
+  vector <Place *> inf_schools;
+  vector <Place *> inf_workplaces;
+  vector <Place *> inf_offices;
   double attack_rate;
   double clinical_attack_rate;
   set <Person *> infectious;

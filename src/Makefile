@@ -34,10 +34,10 @@ OBJ =   Fred.o Global.o Decision.o Policy.o Manager.o \
         Age_Map.o Timestep_Map.o Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
         Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \
 	Antiviral.o Antivirals.o Health_Belief_Model.o Random_Cognitive_Model.o \
-	Behavior.o Classroom.o Cognition.o Community.o Demographics.o Epidemic.o Health.o \
-        Hospital.o Household.o Infection.o Locations.o Neighborhood.o Office.o \
-	Params.o Perceptions.o Person.o Place.o Population.o Profile.o Random.o \
-	School.o Disease.o Workplace.o Patches.o Patch.o Date.o
+	Behavior.o Classroom.o Cognition.o Demographics.o Epidemic.o Health.o \
+        Hospital.o Household.o Infection.o Neighborhood.o Office.o Params.o \
+	Perceptions.o Person.o Place.o Place_List.o Population.o Profile.o Random.o \
+	School.o Disease.o Workplace.o Grid.o Patch.o Date.o
 
 SRC = $(OBJ:.o=.cc)
 

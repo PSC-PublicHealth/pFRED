@@ -43,7 +43,13 @@ public:
   void become_immune(Disease* disease);
   void declare_at_risk(Disease* disease);
   void recover(Disease * disease);
-  int is_symptomatic() const;
+  bool is_susceptible(int disease) const {
+    return (status[disease] == 'S');
+  }
+  bool is_infectious(int disease) const {
+    return (status[disease] == 'I' || status[disease] == 'i');
+  }
+  bool is_symptomatic() const { return symptomatic_status; }
   bool is_immune(Disease* disease) const { return immunity[disease->get_id()]; }
   bool is_at_risk(Disease* disease) const { return at_risk[disease->get_id()]; }
   bool is_at_risk(int disease) const { return at_risk[disease]; }
@@ -104,6 +110,7 @@ private:
   vector < AV_Health * > av_health;
   vector < Vaccine_Health * > vaccine_health;
   char * status;
+  bool symptomatic_status;
 
 protected:
   Health() { }

@@ -14,18 +14,17 @@
 using namespace std;
 #include "Global.h"
 #include "Patch.h"
-#include "Patches.h"
+#include "Grid.h"
 #include "Place.h"
 #include "Neighborhood.h"
-#include "Locations.h"
+#include "Place_List.h"
 #include "Random.h"
 #include "Household.h"
 #include "School.h"
 
 class Person;
 
-void Patch::setup(Patches * patch_mgr, int i, int j, double xmin, double xmax, double ymin, double ymax) {
-  double lat, lon;
+void Patch::setup(Grid * patch_mgr, int i, int j, double xmin, double xmax, double ymin, double ymax) {
   patch_manager = patch_mgr;
   min_x = xmin;
   max_x = xmax;
@@ -38,32 +37,19 @@ void Patch::setup(Patches * patch_mgr, int i, int j, double xmin, double xmax, d
   neighbors = patch_mgr->get_neighbors(i,j);
   houses = 0;
   household.clear();
+
+}
+
+void Patch::make_neighborhood() {
   char str[80];
+  double lat, lon;
   sprintf(str, "Patch_%04d_%04d",row,col);
   int id = 900000000 + 10000*row + col;
-  patch_mgr->translate_to_lat_lon(center_x,center_y,&lat,&lon);
-  place = new (nothrow) Neighborhood(id, str, lon, lat, 0, &Pop);
-  Loc.add_location(place);
-  reset(0);
+  patch_manager->translate_to_lat_lon(center_x,center_y,&lat,&lon);
+  neighborhood = new (nothrow) Neighborhood(id, str, lon, lat, 0, &Pop);
+  Places.add_place(neighborhood);
 }
 
-void Patch::print() {
-  printf("Patch %d %d: %f, %f, %f, %f\n",row,col,min_x,max_x,min_y,max_y);
-  for (int i = 0; i < 9; i++) {
-    if (neighbors[i] == NULL) { printf("NULL ");}
-    else {neighbors[i]->print_coord();}
-    printf("\n");
-  }
-}
-
-
-void Patch::print_coord() {
-  printf("(%d, %d)",row,col);
-}
-
-
-void Patch::reset(int run) {
-}
 
 void Patch::add_household(Place *p) {
   houses++;
@@ -73,46 +59,29 @@ void Patch::add_household(Place *p) {
     lat = p->get_latitude();
     lon = p->get_longitude();
     patch_manager->translate_to_cartesian(lat,lon,&x,&y);
-    printf("HHH %f %f\n", x,y);
+    p->print(0);
+    printf("HHH %f %f %f %f house_id: %d row = %d  col = %d  houses = %d\n", lon,lat, x,y, p->get_id(), row, col, houses);
   }
 }
 
-Place * Patch::select_neighbor() {
-  // return place associated with current patch with 10% prob.
-  if (RANDOM() < 0.1) return place;
-
-  // otherwise select a random neighbor:
-
-  int n = IRAND(0,8);
-  if (neighbors[n] == NULL) 
-    // return current patch if neighbor is off the grid
-    return place;
-  else
-    // return place associated with selected neighbor
-    return neighbors[n]->get_place();;
-}
-
-void Patch::add_person_to_neighbors(Person *per) {
-  for (int i = 0; i < 9; i++) {
-    if (neighbors[i] != NULL) {
-      neighbors[i]->add_person(per);
-    }
-  }
-}
-
-
-void Patch::set_social_networks() {
+void Patch::reset(int run) {
   Household * house;
   Person * per;
   Place * p;
   School * s;
+
+  // create lists of persons, workplaces, schools (by age)
+  person.clear();
+  workplace.clear();
+  for (int age = 0; age < 20; age++) school[age].clear();
+  neighborhood->clear_counts();
+
   for (int i = 0; i < houses; i++) {
     house = (Household *) household[i];
-    household.push_back(house);
     int hsize = house->get_size();
     for (int j = 0; j < hsize; j++) {
       per = house->get_housemate(j);
-      place->add_person(per);
+      neighborhood->add_person(per);
       person.push_back(per);
       p = per->get_behavior()->get_workplace();
       if (p != NULL) workplace.push_back(p);
@@ -131,5 +100,107 @@ void Patch::set_social_networks() {
     printf("%d ", (int)school[age].size());
   }
   printf("\n");
+}
+
+
+void Patch::print() {
+  printf("Patch %d %d: %f, %f, %f, %f\n",row,col,min_x,max_x,min_y,max_y);
+  for (int i = 0; i < 9; i++) {
+    if (neighbors[i] == NULL) { printf("NULL ");}
+    else {neighbors[i]->print_coord();}
+    printf("\n");
+  }
+}
+
+void Patch::print_coord() {
+  printf("(%d, %d)",row,col);
+}
+
+Place * Patch::select_neighborhood() {
+  Patch * patch;
+  double r = RANDOM();
+  double grav_prob = 0.001;
+  double self_prob = 0.95;
+
+  if (r < grav_prob) {
+    // use gravity model
+    patch = patch_manager->select_patch_by_gravity_model(row,col);
+  }
+  else {
+    r = (r - grav_prob)/(1.0 - grav_prob);
+    if (r < self_prob) {
+      // select local patch
+      patch = this;
+    }
+    else {
+      r = (r - self_prob)/(1.0 - self_prob);
+      int n = (int) (8.0*r);
+      patch = neighbors[n];
+      if (patch == NULL) patch = this; // fall back to local patch
+    }
+  }
+  // printf("DIST: %f\n", distance_to_patch(patch));
+  return patch->get_neighborhood();
+}
+
+
+Person *Patch::select_random_person() {
+  if ((int)person.size() == 0) return NULL;
+  int i = IRAND(0, ((int) person.size())-1);
+  return person[i];
+}
+
+
+Place *Patch::select_random_household() {
+  if ((int)household.size() == 0) return NULL;
+  int i = IRAND(0, ((int) household.size())-1);
+  return household[i];
+}
+
+
+Place *Patch::select_random_workplace() {
+  if ((int)workplace.size() == 0) return NULL;
+  int i = IRAND(0, ((int) workplace.size())-1);
+  return workplace[i];
+}
+
+
+Place *Patch::select_random_school(int age) {
+  if ((int)school[age].size() == 0) return NULL;
+  int i = IRAND(0, ((int) school[age].size())-1);
+  return school[age][i];
+}
+
+
+Person *Patch::select_random_person_from_neighbors() {
+  Patch * pat = NULL;
+  Person * per;
+  int trial = 0;
+  while (per == NULL && trial < 20) {
+
+    // select current patch with 10% prob.
+    if (RANDOM() < 0.1) pat = this;
+
+    // otherwise select a random neighbor:
+    int n = IRAND(0,8);
+    if (neighbors[n] == NULL) 
+      // current patch if neighbor is off the grid
+      pat = this;
+    else
+      pat = neighbors[n];
+
+    // choose a random person from selected patch
+    per = pat->select_random_person();
+    trial++;
+  }
+  return per;
+}
+
+double Patch::distance_to_patch(Patch *p2) {
+  double x1 = center_x;
+  double y1 = center_y;
+  double x2 = p2->get_center_x();
+  double y2 = p2->get_center_y();
+  return sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 }
 

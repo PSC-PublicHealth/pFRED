@@ -19,7 +19,7 @@
 
 void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop) {
   population = pop;
-  int diseases = population->get_diseases();
+  diseases = population->get_diseases();
   id = loc_id;
   container = cont;
   strcpy(label, lab);
@@ -30,7 +30,7 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   // allocate disease-related memory
   susceptibles = new (nothrow) vector<Person *> [diseases];
   assert (susceptibles != NULL);
-  infectious = new (nothrow) set<Person *> [diseases];
+  infectious = new (nothrow) vector<Person *> [diseases];
   assert (infectious != NULL);
   S = new (nothrow) int [diseases];
   assert (S != NULL);
@@ -46,34 +46,34 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   assert (deaths != NULL);
   total_deaths = new (nothrow) int [diseases];
   assert (total_deaths != NULL);
-  
   reset();
 }
 
 
 void Place::reset() {
-  int diseases = population->get_diseases();
   for (int s = 0; s < diseases; s++) {
-    susceptibles[s].clear();
-    infectious[s].clear();
+    // printf("PLACE %d  %s  reserving %d\n",id,label,N);
+    susceptibles[s].reserve(N);
+    infectious[s].reserve(N);
     Sympt[s] = S[s] = I[s] = 0;
     total_cases[s] = total_deaths[s] = 0;
   }
+  close_date = INT_MAX;
+  open_date = 0;
   if (Verbose > 2) {
     printf("reset place: %d\n", id);
     print(0);
     fflush(stdout);
   }
-  close_date = INT_MAX;
-  open_date = 0;
 }
 
 void Place::update(int day) {
-  int diseases = population->get_diseases();
   for (int s = 0; s < diseases; s++) {
     cases[s] = deaths[s] = 0;
+    susceptibles[s].clear();
+    infectious[s].clear();
+    Sympt[s] = S[s] = I[s] = 0;
   }
-  visit = 0;
 }
 
 void Place::print(int disease) {
@@ -91,10 +91,6 @@ void Place::add_person(Person * per) {
 }
 
 
-void Place::add_visitor(Person * per) {
-  visit++;
-}
-
 void Place::add_susceptible(int disease, Person * per) {
   susceptibles[disease].push_back(per);
   S[disease]++;
@@ -102,42 +98,19 @@ void Place::add_susceptible(int disease, Person * per) {
 }
 
 
-void Place::delete_susceptible(int disease, Person * per) {
-  int s = (int) susceptibles[disease].size();
-  assert(s > 0);
-  // The following may look inefficient, but it performs well because lists
-  // and generally small.  More efficient that using sets or maps due to the need
-  // for random access in spread_infection()
-  for (int i = 0; i < s; i++) {
-    if (susceptibles[disease][i] == per) {
-      susceptibles[disease][i] = susceptibles[disease][s-1];
-      susceptibles[disease].pop_back();
-      S[disease]--;
-      break;
-    }
-  }
-  assert(susceptibles[disease].size() == static_cast<unsigned int>(S[disease]));
-}
-
-void Place::add_infectious(int disease, Person * per) {
-  infectious[disease].insert(per);
+void Place::add_infectious(int disease, Person * per, char status) {
+  infectious[disease].push_back(per);
   I[disease]++;
   assert(I[disease] == static_cast <int> (infectious[disease].size()));
-  if (per->get_disease_status(disease) == 'I') {
+  if (status == 'I') {
     Sympt[disease]++;
     cases[disease]++;
     total_cases[disease]++;
   }
-}
-
-void Place::delete_infectious(int disease, Person * per) {
-  assert(infectious[disease].find(per) != infectious[disease].end());
-  infectious[disease].erase(per);
-  I[disease]--;
-  if (per->get_disease_status(disease)=='I') {
-    Sympt[disease]--;
+  if (I[disease]==1) {
+    Disease * dis = population->get_disease(disease);
+    dis->add_infectious_place(this, type);
   }
-  assert(infectious[disease].size() == static_cast<unsigned int>(I[disease]));
 }
 
 void Place::print_susceptibles(int disease) {
@@ -151,7 +124,7 @@ void Place::print_susceptibles(int disease) {
 
 
 void Place::print_infectious(int disease) {
-  set<Person *>::iterator itr;
+  vector<Person *>::iterator itr;
   for (itr = infectious[disease].begin();
        itr != infectious[disease].end(); itr++) {
     printf(" %d", (*itr)->get_id());
@@ -171,8 +144,10 @@ void Place::spread_infection(int day, int s) {
   if (Verbose > 1) { print(s); }
   if (N < 2) return;
   if (S[s] == 0) return;
+  if (is_open(day) == false) return;
+  if (should_be_open(day, s) == false) return;
 	
-  set<Person *>::iterator itr;
+  vector<Person *>::iterator itr;
   Disease * disease = population->get_disease(s);
   double beta = disease->get_transmissibility();
 
@@ -199,14 +174,6 @@ void Place::spread_infection(int day, int s) {
     Person * infector = *itr;			// infectious indiv
     assert(infector->get_disease_status(s) == 'I' ||
 	   infector->get_disease_status(s) == 'i');
-		
-    // skip if this infector did not visit today
-    if (Verbose > 1) { printf("Is infector %d here?  ", infector->get_id()); }
-    if (infector->is_on_schedule(day, id, type) == false) {  
-      if (Verbose > 1) { printf("No\n"); }
-      continue;
-    }
-    if (Verbose > 1) { printf("Yes\n"); }
 		
     // reduce number of infective contact events by my infectivity
     double my_contacts = contacts * infector->get_infectivity(s);
@@ -236,15 +203,14 @@ void Place::spread_infection(int day, int s) {
       int pos = (int) (r*S[s]);
       Person * infectee = susceptibles[s][pos];
       if (Verbose > 1) {
-	printf("my possible victim = %d  prof = %d r = %f  pos = %d  S[%d] = %d\n",
-               infectee->get_id(), infectee->get_behavior()->get_profile(),
-	       r, pos, s, S[s]);
+	printf("my possible victim = %d  r = %f  pos = %d  S[%d] = %d\n",
+               infectee->get_id(), r, pos, s, S[s]);
 	fflush(stdout);
       }
 
-      // is the victim here today, and still susceptible?
-      if (infectee->is_on_schedule(day, id, type) && infectee->get_disease_status(s) == 'S') {
-	if (Verbose > 1) { printf("Victim is here\n"); }
+      // is the victim still susceptible?
+      if (infectee->is_susceptible(s)) {
+	if (Verbose > 1) { printf("Victim is susceptible\n"); }
     
 	// get the victim's susceptibility
 	double transmission_prob = get_transmission_prob(s, infector, infectee);
@@ -277,6 +243,7 @@ void Place::spread_infection(int day, int s) {
       }
     } // end contact loop
   } // end infectious list loop
+
   if (Verbose > 1) { fflush(stdout); }
 }
 

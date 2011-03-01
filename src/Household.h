@@ -32,7 +32,7 @@ public:
   void add_person(Person * per);
   Person * get_HoH() { return HoH; }
   Person * get_housemate(int i) { return housemate[i]; }
-  Place * select_neighborhood() { return patch->select_neighbor(); }
+  Place * select_neighborhood() { return patch->select_neighborhood(); }
 private:
   Person * HoH;
   vector <Person *> housemate;

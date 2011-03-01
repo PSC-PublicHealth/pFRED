@@ -55,6 +55,7 @@ public:
   // the disease to mutate to, or NULL if no mutation should occur.
   Disease* should_mutate_to();
 	
+  void add_infectious_place(Place *p, char type);
   UNIT_TEST_VIRTUAL void insert_into_infected_list(Person *person);
   UNIT_TEST_VIRTUAL void insert_into_infectious_list(Person *person);
   UNIT_TEST_VIRTUAL void remove_from_infectious_list(Person *person);
@@ -112,6 +113,10 @@ private:
   // Vars that are not disease-specific (for updating global stats).
   Population *population;
 };
+
+inline void Disease::add_infectious_place(Place *p, char type) {
+  epidemic->add_infectious_place(p, type);
+}
 
 inline void Disease::insert_into_infectious_list(Person * per) {
   epidemic->insert_into_infectious_list(per);
