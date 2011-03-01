@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo 'the rt regression test is temporarily disabled - JG'
+exit
+
 # look for the FRED binary
 FRED="./FRED"
 if [ ! -x $FRED -a -x $FRED_HOME/src/FRED ]; then
