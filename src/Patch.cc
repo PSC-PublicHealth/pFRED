@@ -94,12 +94,14 @@ void Patch::reset(int run) {
       }
     }
   }
+  /*
   printf("patch update: row = %d col = %d  pop = %d  houses = %d work = %d schools = ",
 	 row,col,(int)person.size(),(int)household.size(),(int)workplace.size());
   for (int age = 0; age < 20; age++) {
     printf("%d ", (int)school[age].size());
   }
   printf("\n");
+  */
 }
 
 
