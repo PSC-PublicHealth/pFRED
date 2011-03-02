@@ -33,9 +33,13 @@ public:
   Person * get_HoH() { return HoH; }
   Person * get_housemate(int i) { return housemate[i]; }
   Place * select_neighborhood() { return patch->select_neighborhood(); }
+  UNIT_TEST_VIRTUAL int get_adults() { return adults; }
+  UNIT_TEST_VIRTUAL int get_children() { return children; }
 private:
   Person * HoH;
   vector <Person *> housemate;
+  int children;
+  int adults;
 };
 
 #endif // _FRED_HOUSEHOLD_H

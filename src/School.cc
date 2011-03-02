@@ -150,10 +150,6 @@ double School::get_contacts_per_day(int disease) {
 void School::add_person(Person * per) {
   N++;
   int age = per->get_age();
-  if (age < 18)
-    children++;
-  else
-    adults++;
   if (age < 20) {
     grade[age]++;
   }

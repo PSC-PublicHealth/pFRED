@@ -25,7 +25,7 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   strcpy(label, lab);
   longitude = lon;
   latitude = lat;
-  N = adults = children = 0;
+  N = 0;
   
   // allocate disease-related memory
   susceptibles = new (nothrow) vector<Person *> [diseases];
@@ -84,10 +84,6 @@ void Place::print(int disease) {
 
 void Place::add_person(Person * per) {
   N++;
-  if (per->get_age() < 18)
-    children++;
-  else
-    adults++;
 }
 
 

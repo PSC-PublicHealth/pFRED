@@ -231,7 +231,8 @@ void Place_List::quality_control() {
     for (int c = 0; c < 15; c++) { count[c] = 0; }
     for (int p = 0; p < number_places; p++) {
       if (places[p]->get_type() == HOUSEHOLD) {
-        int n = places[p]->get_adults();
+	Household *h = (Household *) places[p];
+        int n = h->get_adults();
         if (n < 15) { count[n]++; }
         else { count[14]++; }
         total++;
@@ -252,7 +253,8 @@ void Place_List::quality_control() {
     for (int c = 0; c < 15; c++) { count[c] = 0; }
     for (int p = 0; p < number_places; p++) {
       if (places[p]->get_type() == HOUSEHOLD) {
-        int n = places[p]->get_children();
+	Household *h = (Household *) places[p];
+        int n = h->get_children();
         if (n < 15) { count[n]++; }
         else { count[14]++; }
         total++;
@@ -273,8 +275,9 @@ void Place_List::quality_control() {
     for (int c = 0; c < 15; c++) { count[c] = 0; }
     for (int p = 0; p < number_places; p++) {
       if (places[p]->get_type() == HOUSEHOLD) {
-        if (places[p]->get_children() == 0) continue;
-        int n = places[p]->get_adults();
+	Household *h = (Household *) places[p];
+        if (h->get_children() == 0) continue;
+        int n = h->get_adults();
         if (n < 15) { count[n]++; }
         else { count[14]++; }
         total++;
@@ -297,8 +300,9 @@ void Place_List::quality_control() {
     for (int p = 0; p < number_places; p++) {
       Person * per;
       if (places[p]->get_type() == HOUSEHOLD) {
-        if (places[p]->get_children() == 0) continue;
-        if ((per = places[p]->get_HoH()) == NULL) continue;
+	Household *h = (Household *) places[p];
+        if (h->get_children() == 0) continue;
+        if ((per = h->get_HoH()) == NULL) continue;
         int a = per->get_age();
         int n = a / 10;
         if (n < 20) { count[n]++; }

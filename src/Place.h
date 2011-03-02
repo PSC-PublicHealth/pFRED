@@ -22,9 +22,6 @@
 #define COMMUNITY 'X'
 
 #include <vector>
-// #include <iostream>
-// #include <stdio.h>
-// #include <limits.h> 
 using namespace std;
 
 #include "Population.h"
@@ -67,8 +64,6 @@ public:
   UNIT_TEST_VIRTUAL int get_size() { return N; }
   UNIT_TEST_VIRTUAL int get_close_date() { return close_date; }
   UNIT_TEST_VIRTUAL int get_open_date() { return open_date; }
-  UNIT_TEST_VIRTUAL int get_adults() { return adults; }
-  UNIT_TEST_VIRTUAL int get_children() { return children; }
   UNIT_TEST_VIRTUAL Population *get_population() { return population; }
   UNIT_TEST_VIRTUAL int get_daily_cases(int disease) { return cases[disease]; }
   UNIT_TEST_VIRTUAL int get_daily_deaths(int disease) { return deaths[disease]; }
@@ -88,7 +83,7 @@ public:
   UNIT_TEST_VIRTUAL void add_deaths() { deaths++; }
   Patch * get_patch() { return patch; }
   void set_patch(Patch *p) { patch = p; }
-  void clear_counts() { N = adults = children = 0; }
+  void clear_counts() { N = 0; }
   
 protected:
   int id;					// place id
@@ -105,8 +100,6 @@ protected:
   int *Sympt;					// symptomatics count
   int close_date;		    // this place will be closed during:
   int open_date;			    //   [close_date, open_date)
-  int adults;					// how many adults
-  int children;					// how many children
   int * cases;					// symptomatic cases today
   int * deaths;					// deaths today
   int * total_cases;			      // total symptomatic cases
