@@ -35,18 +35,22 @@ Population Pop;
 int V_count;
 
 Population::Population() {
-  pop = NULL;
-  pop_size = -1;
+  pop.clear();
+  pop_map.clear();
+  pop_size = 0;
   disease = NULL;
   av_manager = NULL;
   vacc_manager = NULL;
   diseases = -1;
   mutation_prob = NULL;
   pregnancy_prob = NULL;
+  population_changed = false;
 }
 
 Population::~Population() {
-  if(pop != NULL) delete [] pop;
+  pop.clear();
+  pop_map.clear();
+  pop_size = 0;
   if(disease != NULL) delete [] disease;
   if(vacc_manager != NULL) delete vacc_manager;
   if(av_manager != NULL) delete av_manager;
@@ -84,6 +88,42 @@ void Population::get_parameters() {
   pregnancy_prob->print();	
 }
 
+void Population::add_person(Person * person) {
+  // printf("POP_MAP ADD: %d\n", person->get_id());
+  assert(pop_map.find(person) == pop_map.end());
+  pop.push_back(person);
+  assert(pop_size == pop.size()-1);
+  pop_map[person] = pop_size;
+  pop_size = pop.size();
+  population_changed = true;
+}
+
+void Population::delete_person(Person * person) {
+  map<Person *,int>::iterator it;
+  // printf("POP_MAP DELETE: %d\n", person->get_id());
+  it = pop_map.find(person);
+  if (it == pop_map.end()) {
+    printf("Help! person %d deleted, but not in the pop_map\n", person->get_id());
+  }
+  assert(it != pop_map.end());
+  int n = (*it).second;
+  Person * last = pop[pop_size-1];
+  pop[n] = last;
+  pop.pop_back();
+  pop_size--;
+  pop_map.erase(it);
+  pop_map[last] = n;
+  if (pop_size != pop.size()) { printf("pop_size = %d  pop.size() = %d\n",
+				       pop_size, (int) pop.size()); }
+  assert(pop_size == pop.size());
+  graveyard.push_back(person);
+  population_changed = true;
+}
+
+void Population::prepare_to_die(Person *per) {
+  death_list.push_back(per);
+}
+
 void Population::setup() {
   if (Verbose) {
     fprintf(Statusfp, "setup population entered\n");
@@ -115,27 +155,24 @@ void Population::read_population() {
   sprintf(population_file, "%s/%s", Population_directory, popfile);
   FILE *fp = fopen(population_file, "r");
   if (fp == NULL) {
-    fprintf(Statusfp, "popultion_file %s not found\n", population_file);
+    fprintf(Statusfp, "population_file %s not found\n", population_file);
     exit(1);
   }
-  if (1!=fscanf(fp, "Population = %d", &pop_size)){
+  int psize;
+  if (1!=fscanf(fp, "Population = %d", &psize)){
     fprintf(Statusfp, "failed to parse pop_size\n");
     exit(1);
   }
   if (Verbose) {
-    fprintf(Statusfp, "Population = %d\n", pop_size);
+    fprintf(Statusfp, "Population = %d\n", psize);
     fflush(Statusfp);
   }
   
-  // allocate population array
-  pop = new (nothrow) Person* [pop_size];
+  // reserve population vector
+  pop.reserve(psize);
 	
-  for (int i = 0; i < pop_size; i++)
-    pop[i] = new Person;
-	
-  if (pop == NULL) { printf ("Help! Pop allocation failure\n"); exit(1); }
-  
-  for (int p = 0; p < pop_size; p++) {
+  for (int p = 0; p < psize; p++) {
+    Person * person = new Person;
     int id, age, married, prof, house, hood;
     int school, classroom, work, office, profile;
     char sex;
@@ -159,10 +196,15 @@ void Population::read_population() {
       Places.get_place(work),
       Places.get_place(office)
     }; 
-    pop[p]->setup(id, age, sex, married, prof, favorite_place, profile, this);
-    pop[p]->reset();
+    person->setup(id, age, sex, married, prof, favorite_place, profile, this);
+    person->reset();
+    add_person(person);
+    pop_map[person] = p;
   }
   fclose(fp);
+  assert(pop_size == psize);
+  population_changed = false;
+  
   if (Verbose) {
     fprintf(Statusfp, "finished reading population = %d\n", pop_size);
     fflush(Statusfp);
@@ -174,6 +216,14 @@ void Population::reset(int run) {
     fprintf(Statusfp, "reset population entered for run %d\n", run);
     fflush(Statusfp);
   }
+
+  if (population_changed) {
+    pop.clear();
+    pop_map.clear();
+    pop_size = 0;
+    read_population();
+  }
+
   // reset population level infections
   for (int s = 0; s < diseases; s++) {
     disease[s].reset();
@@ -197,6 +247,7 @@ void Population::reset(int run) {
   }
   av_manager->reset();
   vacc_manager->reset();
+  population_changed = false;
   
   if (Verbose) {
     fprintf(Statusfp, "reset population completed\n");
@@ -206,6 +257,8 @@ void Population::reset(int run) {
 
 void Population::update(int day) {
 
+  death_list.clear();
+
   // update everyone's demographics
   for (int p = 0; p < pop_size; p++) {
     pop[p]->update_demographics(day);
@@ -214,6 +267,15 @@ void Population::update(int day) {
   // update everyone's health status
   for (int p = 0; p < pop_size; p++) {
     pop[p]->update_health(day);
+  }
+
+  // remove the dead from the population
+  int deaths = death_list.size();
+  for (int i = 0; i < deaths; i++) {
+    delete_person(death_list[i]);
+  }
+  if (Verbose) {
+    fprintf(Statusfp, "day = %d  deaths = %d\n",day,deaths);fflush(stdout);
   }
 
   // update adult decisions
@@ -253,6 +315,7 @@ void Population::update(int day) {
 
   // give out anti-virals (after today's infections)
   av_manager->disseminate(day);
+
 }
 
 
@@ -313,6 +376,7 @@ void Population::print(int incremental, int day) {
     incremental_changes.clear();
 }
 
+
 void Population::end_of_run() {
   // print out agents who have changes yet unreported
   // (results from Incremental_Trace==0  || Days%Incremental_Trace!=0)
@@ -320,6 +384,13 @@ void Population::end_of_run() {
   
   // print out all those agents who never changed
   this->print(-1);
+
+  // print out dead agents
+  int n = graveyard.size();
+  for (int i = 0; i < n; i++) {
+    // graveyard[i]->print_out(-1);
+  }
+  graveyard.clear();
 }
 
 Disease *Population::get_disease(int s) {
@@ -415,3 +486,4 @@ void Population::set_changed(Person *p){
   never_changed.erase(p);      // remove it from this list 
   // (might already be gone, but this won't hurt)
 }
+

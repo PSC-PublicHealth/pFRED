@@ -57,7 +57,7 @@ void Epidemic::reset() {
   inf_workplaces.clear();
   inf_offices.clear();
   attack_rate = 0.0;
-  N = disease->get_population()->get_pop_size();
+  N_init = N = disease->get_population()->get_pop_size();
   total_incidents = 0;
   total_clinical_incidents = 0;
   r_index = V_count = S_count = C_count = c_count = 0;
@@ -72,8 +72,8 @@ void Epidemic::update_stats(int day) {
   new_cases[day] = incident_infections;
   total_incidents += incident_infections;
   total_clinical_incidents += clinical_incidents;
-  attack_rate = (100.0*total_incidents)/N;
-  clinical_attack_rate = (100.0*total_clinical_incidents)/N;
+  attack_rate = (100.0*total_incidents)/N_init;
+  clinical_attack_rate = (100.0*total_clinical_incidents)/N_init;
 
   // get reproductive rate for those infected max_days ago;
   int rday = day - disease->get_max_days();
@@ -93,14 +93,24 @@ void Epidemic::update_stats(int day) {
 
 void Epidemic::print_stats(int day) {
   fprintf(Outfp,
-	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f\n",
-	  day, id, S_count, E_count, I_count+i_count, I_count, R_count+r_count, M_count, C_count, N, attack_rate, clinical_incidents, vaccine_acceptance, RR,NR, clinical_attack_rate);
+	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
+	  day, id, S_count, E_count, I_count+i_count,
+	  I_count, R_count+r_count, M_count);
+  fprintf(Outfp,
+	  "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f\n",
+	  C_count, N, attack_rate, clinical_incidents,
+	  vaccine_acceptance, RR,NR, clinical_attack_rate);
   fflush(Outfp);
   
   if (Verbose) {
     fprintf(Statusfp,
-	    "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f\n",
-	    day, id, S_count, E_count, I_count+i_count, I_count, R_count+r_count, M_count, C_count, N, attack_rate, clinical_incidents, vaccine_acceptance, RR,NR, clinical_attack_rate);
+	    "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
+	    day, id, S_count, E_count, I_count+i_count,
+	    I_count, R_count+r_count, M_count);
+    fprintf(Statusfp,
+	    "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f\n",
+	    C_count, N, attack_rate, clinical_incidents,
+	    vaccine_acceptance, RR,NR, clinical_attack_rate);
     fflush(Statusfp);
   }
   C_count = c_count = 0;
@@ -177,7 +187,8 @@ void Epidemic::get_infectious_places(int day) {
 void Epidemic::update(int day) {
   vector<Person *>::iterator itr;
   vector<Place *>::iterator it;
-  Person **pop = disease->get_population()->get_pop();
+  Population *pop = disease->get_population();
+  N = pop->get_pop_size();
   
   // See if there are changes to primary_cases_per_day from primary_cases_map
   int primary_cases_per_day = primary_cases_map->get_value_for_timestep(day, Epidemic_offset);
@@ -189,9 +200,10 @@ void Epidemic::update(int day) {
   // the file.
   for (int i = 0; i < primary_cases_per_day; i++) {
     int n = IRAND(0, N-1);
-    if (pop[n]->get_disease_status(id) == 'S') {
-      Infection * infection = new Infection(disease, NULL, pop[n], NULL, day);
-      pop[n]->become_exposed(infection);
+    Person * person = pop->get_person(n);
+    if (person->get_disease_status(id) == 'S') {
+      Infection * infection = new Infection(disease, NULL, person, NULL, day);
+      person->become_exposed(infection);
     }
   }
   

@@ -142,6 +142,7 @@ void Health::update(int day) {
     for(int i = 0; i < size; i++)
       av_health[i]->update(day);
   }
+
 }
 
 void Health::update_mutations(int day) {

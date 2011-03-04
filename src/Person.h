@@ -18,12 +18,12 @@
 #include <vector>
 using namespace std;
 
-#include "Population.h";
-#include "Demographics.h";
+#include "Population.h"
+#include "Demographics.h"
 #include "Health.h"
-#include "Cognition.h";
+#include "Cognition.h"
 #include "Behavior.h"
-#include "Infection.h";
+#include "Infection.h"
 class Place;
 class Disease;
 

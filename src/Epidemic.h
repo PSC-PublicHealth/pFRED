@@ -64,7 +64,8 @@ public:
 private:
   Disease * disease;
   int id;
-  int N;
+  int N;				      // current population size
+  int N_init;				      // initial population size
   vector <Place *> inf_households;
   vector <Place *> inf_neighborhoods;
   vector <Place *> inf_classrooms;

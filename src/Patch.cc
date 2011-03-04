@@ -59,8 +59,8 @@ void Patch::add_household(Place *p) {
     lat = p->get_latitude();
     lon = p->get_longitude();
     patch_manager->translate_to_cartesian(lat,lon,&x,&y);
-    p->print(0);
-    printf("HHH %f %f %f %f house_id: %d row = %d  col = %d  houses = %d\n", lon,lat, x,y, p->get_id(), row, col, houses);
+    // p->print(0);
+    // printf("HHH %f %f %f %f house_id: %d row = %d  col = %d  houses = %d\n", lon,lat, x,y, p->get_id(), row, col, houses);
   }
 }
 

@@ -79,21 +79,23 @@ void Person::print(int disease) const {
 }
 
 void Person::print_out(int disease) const {
+  if (disease < 0) printf("DEAD: ");
+  disease = 0;
   fprintf(stdout, "%c id %7d  a %3d  s %c %d ",
-          health->get_disease_status(disease), idx,
-          demographics->get_age(),
-          demographics->get_sex(),
-          demographics->get_profession());
+	  health->get_disease_status(disease), idx,
+	  demographics->get_age(),
+	  demographics->get_sex(),
+	  demographics->get_profession());
   fprintf(stdout, "exp: %2d  inf: %2d  rem: %2d ",
-          health->get_exposure_date(disease), health->get_infectious_date(disease), health->get_recovered_date(disease));
+	  health->get_exposure_date(disease), health->get_infectious_date(disease), health->get_recovered_date(disease));
   fprintf(stdout, "places %d ", FAVORITE_PLACES);
   fprintf(stdout, "infected_at %c %6d ",
-          health->get_infected_place_type(disease), health->get_infected_place(disease));
+	  health->get_infected_place_type(disease), health->get_infected_place(disease));
   fprintf(stdout, "infector %d ", health->get_infector(disease));
   fprintf(stdout, "infectees %d\n", health->get_infectees(disease));
   fflush(stdout);
 }
-
+  
 void Person::reset() {
   if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", idx); fflush(Statusfp); }
   demographics->reset();

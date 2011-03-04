@@ -85,7 +85,6 @@ void AV_Manager::set_policies(){
 void AV_Manager::disseminate(int day){
   // There is no queue, only the whole population
   if(do_av==0) return;
-  Person** people = pop->get_pop();
   int npeople = pop->get_pop_size();
   //current_day = day;
   // The av_package are in a priority based order, so lets loop over the av_package first
@@ -100,7 +99,7 @@ void AV_Manager::disseminate(int day){
 
       for(int ip=0;ip<npeople;ip++){
         if(av->get_current_stock()== 0) break;
-        Person* current_person = people[ip];
+        Person* current_person = pop->get_person(ip);
         // Should the person get an av
 	//int yeah_or_ney = p->choose(current_person,av->get_disease(),day);
 	//if(yeah_or_ney == 0){
