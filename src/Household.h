@@ -14,6 +14,7 @@
 
 #include "Place.h"
 #include "Person.h"
+#include "Patch.h"
 
 extern double * Household_contacts_per_day;
 extern double *** Household_contact_prob;
@@ -31,9 +32,14 @@ public:
   void add_person(Person * per);
   Person * get_HoH() { return HoH; }
   Person * get_housemate(int i) { return housemate[i]; }
+  Place * select_neighborhood() { return patch->select_neighborhood(); }
+  UNIT_TEST_VIRTUAL int get_adults() { return adults; }
+  UNIT_TEST_VIRTUAL int get_children() { return children; }
 private:
   Person * HoH;
   vector <Person *> housemate;
+  int children;
+  int adults;
 };
 
 #endif // _FRED_HOUSEHOLD_H

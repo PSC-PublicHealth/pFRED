@@ -16,7 +16,6 @@
 #include <string.h>
 #include <string>
 #include <vector>
-#include <map>
 
 using namespace std;
 
@@ -31,9 +30,6 @@ int get_param_vector(char *s, vector < int > &p);
 int get_param_vector(char *s, vector < double > &p);
 int get_param_vector(char *s, double *p);
 int get_param_matrix(char *s, double ***p);
-int get_param_map(char *s, map<string, double> *p);
-int get_double_indexed_param_map(string s, int index_i, int index_j, map<string, double> *p);
-int get_indexed_param_map(string s, int index, map<string, double> *p);
 bool does_param_exist(char *s);
 bool does_param_exist(string s);
 

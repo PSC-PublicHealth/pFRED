@@ -15,8 +15,6 @@
 #include "Global.h"
 class Person;
 class Place;
-class Disease;
-class Transmission;
 
 #define HOUSEHOLD_INDEX 0
 #define NEIGHBORHOOD_INDEX 1
@@ -31,28 +29,20 @@ public:
   Behavior (Person *person, Place **favorite_place, int pro);
   UNIT_TEST_VIRTUAL void reset();
   UNIT_TEST_VIRTUAL void update(int day);
-  UNIT_TEST_VIRTUAL bool is_on_schedule(int day, int loc, char loctype);
-  UNIT_TEST_VIRTUAL void print_schedule();
+  void update_infectious_behavior(int day);
+  void update_susceptible_behavior(int day);
   UNIT_TEST_VIRTUAL void update_schedule(int day);
-  UNIT_TEST_VIRTUAL void get_schedule(int *n, Place **sched);
-  UNIT_TEST_VIRTUAL void become_susceptible(int disease);
-  UNIT_TEST_VIRTUAL void become_unsusceptible(int disease);
-  UNIT_TEST_VIRTUAL void become_exposed(int disease);
-  UNIT_TEST_VIRTUAL void become_infectious(int disease);
-  UNIT_TEST_VIRTUAL void become_immune(int disease);
-  UNIT_TEST_VIRTUAL void recover(int disease);
+  UNIT_TEST_VIRTUAL void print_schedule();
   UNIT_TEST_VIRTUAL bool acceptance_of_vaccine();
   UNIT_TEST_VIRTUAL bool acceptance_of_another_vaccine_dose();
-
-  UNIT_TEST_VIRTUAL int get_profile() { return profile; }
+  // UNIT_TEST_VIRTUAL int get_profile() { return profile; }
   UNIT_TEST_VIRTUAL Place * get_household() { return favorite_place[HOUSEHOLD_INDEX]; }
   UNIT_TEST_VIRTUAL Place * get_neighborhood() { return favorite_place[NEIGHBORHOOD_INDEX]; }
   UNIT_TEST_VIRTUAL Place * get_school() { return favorite_place[SCHOOL_INDEX]; }
   UNIT_TEST_VIRTUAL Place * get_classroom() { return favorite_place[CLASSROOM_INDEX]; }
   UNIT_TEST_VIRTUAL Place * get_workplace() { return favorite_place[WORKPLACE_INDEX]; }
   UNIT_TEST_VIRTUAL Place * get_office() { return favorite_place[OFFICE_INDEX]; }
-  void getInfected(Disease *disease, Transmission *transmission) {}; 
-
+	
 private:
   Person * self;	 // pointer to person using having this behavior
   int profile;				 // index of usual visit pattern

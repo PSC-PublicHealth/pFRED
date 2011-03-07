@@ -112,10 +112,9 @@ void Vaccine_Manager::fill_queues(){
   if (!do_vacc) return;
   // We need to loop over the entire population that the Manager oversees to put them in a queue.
   int popsize = pop->get_pop_size();
-  Person** people = pop->get_pop();
   
   for (int ip = 0; ip < popsize; ip++){
-    Person* current_person = people[ip];
+    Person* current_person = pop->get_person(ip);
     if(policies[current_policy]->choose_first_positive(current_person,0,0)==true)
       priority_queue.push_back(current_person);
     else
@@ -189,7 +188,7 @@ void Vaccine_Manager::update(int day){
   if (do_vacc == 1) {
     vaccine_package->update(day);
     // Update the current vaccination capacity
-    current_vaccine_capacity = vaccination_capacity_map->get_value_for_timestep(day);
+    current_vaccine_capacity = vaccination_capacity_map->get_value_for_timestep(day, Vaccine_offset);
     cout << "Current Vaccine Stock = " << vaccine_package->get_vaccine(0)->get_current_stock()  << "\n";
     vaccinate(day);
   }

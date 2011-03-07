@@ -37,19 +37,23 @@ public:
   void reset();
   void update(int day);
   void become_susceptible(int disease);
-  void become_unsusceptible(int disease);
   void become_exposed(Infection *inf);
   void become_infectious(Disease * disease);
   void become_symptomatic(Disease *disease);
   void become_immune(Disease* disease);
   void declare_at_risk(Disease* disease);
   void recover(Disease * disease);
-  int is_symptomatic() const;
+  bool is_susceptible(int disease) const {
+    return (status[disease] == 'S');
+  }
+  bool is_infectious(int disease) const {
+    return (status[disease] == 'I' || status[disease] == 'i');
+  }
+  bool is_symptomatic() const { return symptomatic_status; }
   bool is_immune(Disease* disease) const { return immunity[disease->get_id()]; }
   bool is_at_risk(Disease* disease) const { return at_risk[disease->get_id()]; }
   bool is_at_risk(int disease) const { return at_risk[disease]; }
   char get_disease_status (int disease) const { return status[disease]; }
-  bool isSusceptible (int disease) const { return susceptible[disease]; }
   Person* get_self() const { return self;}
   int get_num_diseases() const { return diseases; }
   int add_infectee(int disease);
@@ -62,12 +66,9 @@ public:
   char get_infected_place_type(int disease) const;
   int get_infectees(int disease) const;	
   double get_susceptibility(int disease) const;
-  double get_infectivity(int disease, int day) const;
+  double get_infectivity(int disease) const;
   Infection* get_infection(int disease) const { return infection[disease]; }
   bool is_on_av_for_disease(int day, int disease) const;
-
-  void infect(Person *infectee, int disease, Transmission *transmission);
-  void getInfected(Disease *disease, Transmission *transmission);
   
   //Medication operators
   void take(Vaccine *vacc, int day, Vaccine_Manager* vm);
@@ -101,7 +102,7 @@ private:
 
   Person * self;
   int diseases;
-  Infection **infection;
+  Infection ** infection;
   vector < bool > immunity;
   vector < bool > at_risk;	// Agent is/isn't at risk for severe complications
   double *susceptibility_multp;
@@ -109,7 +110,7 @@ private:
   vector < AV_Health * > av_health;
   vector < Vaccine_Health * > vaccine_health;
   char * status;
-  bool * susceptible;
+  bool symptomatic_status;
 
 protected:
   Health() { }
