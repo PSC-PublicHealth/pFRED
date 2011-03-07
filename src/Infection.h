@@ -12,12 +12,19 @@
 #define _FRED_INFECTION_H
 
 #include "Global.h"
+#include <map>
+#include "Trajectory.h"
+#include "IHM.h"
+#include <limits.h>
+
 class Health;
 class Person;
 class Place;
 class Disease;
 class Antiviral;
 class Health;
+class IHM;
+class Transmission;
 
 #define BIFURCATING 0
 #define SEQUENTIAL 1
@@ -36,10 +43,10 @@ class Infection {
   UNIT_TEST_VIRTUAL void become_infectious();
   UNIT_TEST_VIRTUAL void become_symptomatic();
   UNIT_TEST_VIRTUAL void become_susceptible();
+  UNIT_TEST_VIRTUAL void become_unsusceptible();
   UNIT_TEST_VIRTUAL void recover();
   UNIT_TEST_VIRTUAL void update(int today);
   UNIT_TEST_VIRTUAL bool possibly_mutate(Health *health, int day); 	// may cause mutation and/or alter infection course
-  bool is_infectious() const { return (status == 'I' || status == 'i'); }
   
   // general
   UNIT_TEST_VIRTUAL Disease *get_disease() const { return disease; }
@@ -51,27 +58,47 @@ class Infection {
 	
   // chrono
   UNIT_TEST_VIRTUAL int get_exposure_date() const { return exposure_date; }
-  UNIT_TEST_VIRTUAL int get_infectious_date() const { return exposure_date + latent_period; }
-  UNIT_TEST_VIRTUAL int get_symptomatic_date() const { return get_infectious_date() + asymptomatic_period; }
-  UNIT_TEST_VIRTUAL int get_recovery_date() const { return get_symptomatic_date() + symptomatic_period; }
-  UNIT_TEST_VIRTUAL int get_susceptible_date() const;
+  UNIT_TEST_VIRTUAL int get_infectious_date() const { return infectious_date - offset; }
+  UNIT_TEST_VIRTUAL int get_symptomatic_date() const { return symptomatic_date - offset; }
+										int get_asymptomatic_date() const { return asymptomatic_date - offset; }
+  UNIT_TEST_VIRTUAL int get_recovery_date() const { return recovery_date - offset; }
+  UNIT_TEST_VIRTUAL int get_susceptible_date() const {
+  	if (recovery_period > -1) { return get_recovery_date() + recovery_period; } 
+		else { return INT_MAX; }
+  }
+  UNIT_TEST_VIRTUAL int set_susceptibility_period(int period) { return susceptibility_period = period; }
+  UNIT_TEST_VIRTUAL int get_unsusceptible_date() const { return exposure_date + susceptibility_period; }
+
   UNIT_TEST_VIRTUAL void modify_asymptomatic_period(double multp, int cur_day);
   UNIT_TEST_VIRTUAL void modify_symptomatic_period(double multp, int cur_day);
   UNIT_TEST_VIRTUAL void modify_infectious_period(double multp, int cur_day);
 	
   // parameters
-  UNIT_TEST_VIRTUAL bool is_symptomatic() const { return symptoms > 0; }
+  bool is_infectious() { return infectivity > trajectory_infectivity_threshold; }
+  UNIT_TEST_VIRTUAL	bool is_symptomatic() { return symptoms > trajectory_symptomaticity_threshold; }
   UNIT_TEST_VIRTUAL double get_susceptibility() const { return susceptibility; }
-  UNIT_TEST_VIRTUAL double get_infectivity() const { return infectivity * infectivity_multp; }
+
   UNIT_TEST_VIRTUAL double get_symptoms() const { return symptoms; }
   UNIT_TEST_VIRTUAL void modify_develops_symptoms(bool symptoms, int cur_day);
   UNIT_TEST_VIRTUAL void modify_susceptibility(double multp) { susceptibility *= multp; }
-  UNIT_TEST_VIRTUAL void modify_infectivity(double multp) { infectivity_multp = multp; }	
-	
+  UNIT_TEST_VIRTUAL void modify_infectivity(double multp) { infectivity_multp *= multp; }	
+ 
+  UNIT_TEST_VIRTUAL double get_infectivity(int day) const {
+    day = day - exposure_date + offset;
+    Trajectory::point point = trajectory->get_data_point(day);
+    return point.infectivity * infectivity_multp;
+  }
+
+  void transmit(Person *infectee, Transmission *transmission);
+  void addTransmission(Transmission *transmission);
+  void setTrajectory(Trajectory *trajectory);
+
   // returns an infection for the given host and disease with exposed date and
   // recovered date both equal to day (instant resistance to the given disease);
   static Infection* get_dummy_infection(Disease *s, Person *host, int day);
-  
+
+  Trajectory * get_trajectory() { return trajectory; }
+
  private:
   // associated disease
   Disease *disease;
@@ -79,13 +106,16 @@ class Infection {
 	
   // infection status (E/I/i/R)
   char status;
+  bool isSusceptible;
 	
   // chrono data
   int exposure_date;
+
   int latent_period;
   int asymptomatic_period;
   int symptomatic_period;
   int recovery_period;
+  int susceptibility_period;
   
   // people involved
   Person *infector;
@@ -104,10 +134,35 @@ class Infection {
   double infectivity_multp;
   double symptoms;
   int infection_model;
-	
+  
+  // trajectory contains vectors that describe the (tentative) infection course
+  Trajectory * trajectory;
+  // thresholds used by determine_transition_dates()
+  double trajectory_infectivity_threshold;
+  double trajectory_symptomaticity_threshold;
+
+  int incubation_period;
+  // the transition dates are set in the constructor by determine_transition_dates()
+  int infectious_date;
+  int symptomatic_date;
+  int asymptomatic_date;
+  int recovery_date;
+  int susceptible_date;
+
+  void determine_transition_dates();
+
+  // offset is used for dummy infections to advance to the first infectious day
+  // this offset is applied in the get_*_date() methods defined in the header
+  // as well as in the update() method when evaluating the trajectory
+  bool dummy;
+  int offset;
+
+  std::vector <Transmission *> transmissions;
+
  protected:
   // for mocks
   Infection() { }
 };
 
 #endif // _FRED_INFECTION_H
+

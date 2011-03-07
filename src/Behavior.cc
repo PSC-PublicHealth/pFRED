@@ -15,13 +15,15 @@
 #include "Global.h"
 #include "Profile.h"
 #include "Place.h"
+#include "Community.h"
 #include "Random.h"
 #include "Disease.h"
 #include "Params.h"
 #include "Vaccine_Manager.h"
 #include "Manager.h"
-#include "Date.h"
-#include "Patch.h"
+#include "Household.h"
+
+#define DAYS_PER_WEEK 7
 
 Behavior::Behavior (Person *person, Place **fav_place, int pro) {
   self = person;
@@ -32,107 +34,44 @@ Behavior::Behavior (Person *person, Place **fav_place, int pro) {
     }
   }
   assert(get_household() != NULL);
-
-  // get the neighbhood from the household
-  favorite_place[NEIGHBORHOOD_INDEX] = favorite_place[HOUSEHOLD_INDEX]->get_patch()->get_neighborhood();
-  if (get_neighborhood() == NULL) { 
-    printf("person %d house %d \n", person->get_id(), get_household()->get_id());
-  }
-  assert(get_neighborhood() != NULL);
-  favorite_place[NEIGHBORHOOD_INDEX]->add_person(self);
-
   profile = pro;
   schedule_updated = -1;
 }
 
 void Behavior::reset() {
+  // add myself to the susceptible lists at my favorite places
+  int diseases = self->get_population()->get_diseases();
+  for (int disease = 0; disease < diseases; disease++) {
+    for (int p = 0; p < FAVORITE_PLACES; p++) {
+      if (favorite_place[p] == NULL) continue;
+      favorite_place[p]->add_susceptible(disease, self);
+    }
+    community->add_susceptible(disease, self);
+  }
+	
   // reset the daily schedule
   schedule_updated = -1;
 }
 
 void Behavior::update(int day) {
-  // we avoid computing this except as happens below
-  // update_schedule(day);
 }
 
-void Behavior::update_infectious_behavior(int day) {
-  int diseases = self->get_diseases();
-  for (int dis = 0; dis < diseases; dis++) {
-    if (self->is_infectious(dis)) {
-      char status = self->get_disease_status(dis);
-      if (schedule_updated < day) update_schedule(day);
-      for (int i = 0; i < FAVORITE_PLACES; i++) {
-	if (on_schedule[i]) {
-	  favorite_place[i]->add_infectious(dis, self, status);
-	}
-      }
-    }
+bool Behavior::is_on_schedule(int day, int loc, char loctype) {
+  int p = 0; 
+  if (schedule_updated < day) 
+    update_schedule(day);
+  switch (loctype) {
+  case HOUSEHOLD: p = HOUSEHOLD_INDEX; break;
+  case NEIGHBORHOOD: p = NEIGHBORHOOD_INDEX; break;
+  case COMMUNITY: p = NEIGHBORHOOD_INDEX; break;
+  case SCHOOL: p = SCHOOL_INDEX; break;
+  case CLASSROOM: p = CLASSROOM_INDEX; break;
+  case WORKPLACE: p = WORKPLACE_INDEX; break;
+  case OFFICE: p = OFFICE_INDEX; break;
+  default: assert(strcmp("Bad loctype", "") == 0);
   }
-}
-
-void Behavior::update_susceptible_behavior(int day) {
-  int diseases = self->get_diseases();
-  for (int dis = 0; dis < diseases; dis++) {
-    if (self->is_susceptible(dis)) {
-      for (int i = 0; i < FAVORITE_PLACES; i++) {
-	if (favorite_place[i] != NULL && favorite_place[i]->is_infectious(dis)) {
-	  if (schedule_updated < day) update_schedule(day);
-	  if (on_schedule[i]) {
-	    favorite_place[i]->add_susceptible(dis, self);
-	  }
-	}
-      }
-    }
-  }
-}
-
-void Behavior::update_schedule(int day) {
-  int day_of_week;
-  if (schedule_updated < day) {
-    day_of_week = Fred_Date->get_day_of_week(day);
-    schedule_updated = day;
-    for (int p = 0; p < FAVORITE_PLACES; p++) {
-      on_schedule[p] = false;
-    }
-		
-    // decide whether to stay at home if symptomatic
-    int is_symptomatic = self->is_symptomatic();
-    if (is_symptomatic) {
-      if (RANDOM() < Disease::get_prob_stay_home()) {
-	on_schedule[HOUSEHOLD_INDEX] = true;
-	return;
-      }
-    }
-		
-    // decide whether to stay home from school
-    if (0 < day_of_week && day_of_week < 6 && self->get_age() < 18) {
-      if (self->get_cognition()->will_keep_kids_home()) {
-	on_schedule[HOUSEHOLD_INDEX] = true;
-	return;
-      }
-    }
-		
-    // if not staying home or traveling, consult usual schedule
-    for (int p = 0; p < FAVORITE_PLACES; p++) {
-      if (favorite_place[p] != NULL)
-	on_schedule[p] = is_visited(p, profile, day_of_week);
-    }
-
-    if (on_schedule[NEIGHBORHOOD_INDEX]) {
-      // pick the neighborhood to visit today
-      favorite_place[NEIGHBORHOOD_INDEX] = favorite_place[HOUSEHOLD_INDEX]->get_patch()->select_neighborhood();
-    }
-
-    // visit classroom or office iff going to school or work
-    on_schedule[CLASSROOM_INDEX] = on_schedule[SCHOOL_INDEX];
-    on_schedule[OFFICE_INDEX] = on_schedule[WORKPLACE_INDEX];
-		
-    if (Verbose > 2) {
-      printf("update_schedule on day %d\n", day);
-      print_schedule();
-      fflush(stdout);
-    }
-  }
+  assert(loctype == COMMUNITY || (favorite_place[p]->get_id() == loc));
+  return on_schedule[p];
 }
 
 void Behavior::print_schedule() {
@@ -153,11 +92,136 @@ void Behavior::print_schedule() {
   fflush(Statusfp);
 }
 
-bool Behavior::acceptance_of_vaccine() {
+void Behavior::update_schedule(int day) {
+  int day_of_week;
+  if (schedule_updated < day) {
+    day_of_week = (day + Start_day_of_week) % DAYS_PER_WEEK;
+    schedule_updated = day;
+    for (int p = 0; p < FAVORITE_PLACES; p++) {
+      on_schedule[p] = false;
+    }
+		
+    // decide whether to stay at home if symptomatic
+    int is_symptomatic = self->is_symptomatic();
+    if (is_symptomatic) {
+      if (RANDOM() < Disease::get_prob_stay_home()) {
+	on_schedule[0] = true;
+	return;
+      }
+    }
+		
+    // decide whether to stay home from school
+    if (0 < day_of_week && day_of_week < 6 && self->get_age() < 18) {
+      if (self->get_cognition()->will_keep_kids_home()) {
+	on_schedule[0] = true;
+	return;
+      }
+    }
+		
+    // if not staying home or traveling, consult usual schedule
+    for (int p = 0; p < FAVORITE_PLACES; p++) {
+      if (favorite_place[p] == NULL) continue;
+
+      // visit classroom or office iff going to school or work
+      if (p == CLASSROOM_INDEX || p == OFFICE_INDEX) {
+	on_schedule[p] = on_schedule[p-1];
+      }
+      else {
+	on_schedule[p] = is_visited(p, profile, day_of_week);
+      }
+    }
+		
+    if (Verbose > 2) {
+      printf("update_schedule on day %d\n", day);
+      print_schedule();
+      fflush(stdout);
+    }
+  }
+}
+
+void Behavior::get_schedule(int *n, Place **sched) {
+  *n = 0;
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
+    if (on_schedule[p]) {
+      sched[(*n)++] = favorite_place[p];
+    }
+  }
+}
+
+
+void Behavior::become_susceptible(int disease) {
+  // add me to susceptible list at my favorite places
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
+    if (favorite_place[p] != NULL)
+      favorite_place[p]->add_susceptible(disease, self);
+  }
+}
+
+void Behavior::become_unsusceptible(int disease) { // stuff previously in become_exposed
+  // remove me from susceptible list at my favorite places
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
+    if (favorite_place[p] != NULL)
+      favorite_place[p]->delete_susceptible(disease, self);
+  }
+}
+
+void Behavior::become_exposed(int disease) {
+  // remove me from susceptible list at my favorite places
+/*  for (int p = 0; p < FAVORITE_PLACES; p++) {
+    if (favorite_place[p] != NULL)
+      favorite_place[p]->delete_susceptible(disease, self);
+  }*/
+}
+
+void Behavior::become_infectious(int disease) {
+  // add me to infectious list at my favorite places
+  
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
+    if (favorite_place[p] != NULL) {
+      if (Test) {
+	      if (self->get_exposure_date(disease) == 0) {
+    	    favorite_place[p]->add_infectious(disease, self);
+	      }
+      } else {
+	      favorite_place[p]->add_infectious(disease, self);
+      }
+    }
+  }
+  community->add_infectious(disease, self);
+}
+
+void Behavior::become_immune(int disease) {
+  // remove me from the susceptible list at my favorite places
+  // STB - While this is really the same as become_exposed, I thought it important to 
+  //       make sure there was a differentiation
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
+    if (favorite_place[p] != NULL) 
+      favorite_place[p]->delete_susceptible(disease, self);
+  }
+}
+
+void Behavior::recover(int disease) {
+  // remove me from infectious list at my favorite places
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
+    if (favorite_place[p] != NULL) {
+      if (Test) {
+	if (self->get_exposure_date(disease) == 0) {
+	  favorite_place[p]->delete_infectious(disease, self);
+	}
+      } else {
+	favorite_place[p]->delete_infectious(disease, self);
+      }
+    }
+  }
+  community->delete_infectious(disease, self);
+}
+
+
+bool Behavior::acceptance_of_vaccine(){
   return self->get_cognition()->will_accept_vaccine(0);
 }
 
-bool Behavior::acceptance_of_another_vaccine_dose() {
+bool Behavior::acceptance_of_another_vaccine_dose(){
   return self->get_cognition()->will_accept_another_vaccine_dose(0);
 }
 

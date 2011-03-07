@@ -32,25 +32,6 @@ School::School(int loc, const char *lab, double lon, double lat, Place* containe
 }
 
 
-void School::reset() {
-  int diseases = population->get_diseases();
-  for (int s = 0; s < diseases; s++) {
-    susceptibles[s].clear();
-    infectious[s].clear();
-    Sympt[s] = S[s] = I[s] = 0;
-    total_cases[s] = total_deaths[s] = 0;
-  }
-  if (Verbose > 2) {
-    printf("reset place: %d\n", id);
-    print(0);
-    fflush(stdout);
-  }
-  close_date = INT_MAX;
-  open_date = 0;
-  for (int i = 0; i < 20; i++) grade[i] = 0;
-}
-
-
 void School::get_parameters(int diseases) {
   char param_str[80];
   
@@ -146,17 +127,4 @@ int School::should_be_open(int day, int disease) {
 double School::get_contacts_per_day(int disease) {
   return school_contacts_per_day[disease];
 }
-
-void School::add_person(Person * per) {
-  N++;
-  int age = per->get_age();
-  if (age < 20) {
-    grade[age]++;
-  }
-  else {
-    grade[19]++;
-  }
-  
-}
-
 

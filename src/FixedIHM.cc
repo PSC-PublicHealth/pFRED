@@ -1,0 +1,72 @@
+
+#include <vector>
+#include <map>
+
+#include "FixedIHM.h"
+
+#include "Disease.h"
+#include "Params.h"
+#include "Infection.h"
+#include "Trajectory.h"
+#include "Random.h"
+
+using namespace std;
+
+void FixedIHM :: setup(Disease *disease)
+{
+  IHM::setup(disease);
+
+	char s[80];
+	int numProfiles;
+  int id = disease->get_id();
+
+	sprintf(s, "infectivity_profile_probabilities[%d]", id);
+	get_param(s, &numProfiles);
+	get_param_vector(s, probabilities);
+
+  max_days = 0;
+	for(int i = 0; i < numProfiles; i++) {
+    vector<double> infProfile;
+		sprintf(s, "fixed_infectivity_profile[%d][%d]", id, i);
+		get_param_vector(s, infProfile);
+    infLibrary.push_back(infProfile);
+
+		vector<double> sympProfile;
+		sprintf(s, "fixed_symptomaticity_profile[%d][%d]", id, i);
+		get_param_vector(s, sympProfile);
+    sympLibrary.push_back(sympProfile);
+
+    if(infProfile.size() > max_days) max_days = infProfile.size();
+  }
+}
+
+Trajectory * FixedIHM :: getTrajectory(Infection *infection, map<int, double> *loads)
+{
+	double r = RANDOM();
+  int index = 0;
+	vector<double> :: iterator it;
+	for(it = probabilities.begin(); it != probabilities.end(); it++, index++){
+		if (r <= *it) break;
+	}
+
+  map<int, vector<double> > infectivities;
+  map<int, double> :: iterator lit;
+
+  // Weight infectivity values of each strain by their corresponding load
+  for(lit = loads->begin(); lit != loads->end(); lit++){
+    int strain = lit->first;
+    double load = lit->second;
+
+    vector<double> infectivity;
+    vector<double> :: iterator infIt;
+    for(infIt = infLibrary[index].begin(); infIt != infLibrary[index].end(); infIt++){
+      infectivity.push_back( (*infIt) * load );
+    }
+
+    infectivities.insert( pair<int, vector<double> > (strain, infectivity) );
+  }
+
+  vector<double> symptomaticity = sympLibrary[index];
+
+	return new Trajectory(infectivities, symptomaticity);
+}

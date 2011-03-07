@@ -21,6 +21,7 @@
 #include "Population.h"
 #include "AV_Health.h"
 #include "Age_Map.h"
+#include "Transmission.h"
 
 #include <cstdio>
 
@@ -79,23 +80,25 @@ void Person::print(int disease) const {
 }
 
 void Person::print_out(int disease) const {
-  if (disease < 0) printf("DEAD: ");
-  disease = 0;
   fprintf(stdout, "%c id %7d  a %3d  s %c %d ",
-	  health->get_disease_status(disease), idx,
-	  demographics->get_age(),
-	  demographics->get_sex(),
-	  demographics->get_profession());
+          health->get_disease_status(disease), idx,
+          demographics->get_age(),
+          demographics->get_sex(),
+          demographics->get_profession());
   fprintf(stdout, "exp: %2d  inf: %2d  rem: %2d ",
-	  health->get_exposure_date(disease), health->get_infectious_date(disease), health->get_recovered_date(disease));
+          health->get_exposure_date(disease), health->get_infectious_date(disease), health->get_recovered_date(disease));
   fprintf(stdout, "places %d ", FAVORITE_PLACES);
   fprintf(stdout, "infected_at %c %6d ",
-	  health->get_infected_place_type(disease), health->get_infected_place(disease));
+          health->get_infected_place_type(disease), health->get_infected_place(disease));
   fprintf(stdout, "infector %d ", health->get_infector(disease));
   fprintf(stdout, "infectees %d\n", health->get_infectees(disease));
   fflush(stdout);
 }
-  
+
+void Person::print_schedule() const {
+  behavior->print_schedule();
+}
+
 void Person::reset() {
   if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", idx); fflush(Statusfp); }
   demographics->reset();
@@ -114,21 +117,73 @@ void Person::reset() {
 }
 
 void Person::update(int day) {
+  demographics->update(day);
+  health->update(day);
+  cognition->update(day);
+  behavior->update(day);
 }
 
+void Person::become_susceptible(int disease) {
+  health->become_susceptible(disease);
+  behavior->become_susceptible(disease);
+}
+
+void Person::become_unsusceptible(int disease) {
+  health->become_unsusceptible(disease);
+  behavior->become_unsusceptible(disease);
+}
+
+void Person::become_exposed(Infection * infection) {
+  health->become_exposed(infection);
+  behavior->become_exposed(infection->get_disease()->get_id());
+}
+
+void Person::become_infectious(Disease * disease) {
+  int disease_id = disease->get_id();
+  health->become_infectious(disease);
+  behavior->become_infectious(disease_id);
+}
+
+void Person::become_symptomatic(Disease *disease) {
+	health->become_symptomatic(disease);
+}
 
 void Person::become_immune(Disease* disease) {
   int disease_id = disease->get_id();
   char status = health->get_disease_status(disease_id);
   if(status == 'S'){
     health->become_immune(disease);
+    behavior->become_immune(disease_id);
   }
 }
 
+void Person::recover(Disease * disease) {
+  int disease_id = disease->get_id();
+  health->recover(disease);
+  behavior->recover(disease_id);
+  
+  if (Verbose > 2) {
+    fprintf(Statusfp, "RECOVERED person %d for disease %d\n", idx, disease_id);
+    print_out(disease_id);
+    fflush(Statusfp);
+  }
+}
+
+void Person::update_schedule(int day) {
+  return behavior->update_schedule(day);
+}
+
+void Person::behave(int day) {}
+
+int Person::is_symptomatic() const {
+  return health->is_symptomatic();
+}
 
 Place * Person::get_household() const {
   return behavior->get_household();
 }
+
+int Person::get_age() const { return demographics->get_age(); }
 
 char Person::get_sex() const { return demographics->get_sex(); }
 
@@ -180,4 +235,12 @@ void Person::set_changed(){
   this->pop->set_changed(this);
 }
 
+void Person::infect(Person *infectee, int disease, Transmission *transmission) {
+  this->health->infect(infectee, disease, transmission);
+  this->add_infectee(disease);
+}
 
+void Person::getInfected(Disease *disease, Transmission *transmission) {
+  health->getInfected(disease, transmission);
+  behavior->getInfected(disease, transmission);
+}

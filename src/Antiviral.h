@@ -92,6 +92,10 @@ class Antiviral {
   
   //Effect the Health of Person
   UNIT_TEST_VIRTUAL void effect(Health *h, int cur_day, AV_Health* av_health);
+  void modify_susceptiblilty(Health *health, int disease);
+  void modify_infectivity(Health *health, int disease);
+  void modify_infectivity_strain(Health *health, int disease, int strain);
+  void modify_symptomaticity(Health *health, int disease, int cur_day);
   
   // Policies members
   // Antivirals need a policy associated with them to determine who gets them.

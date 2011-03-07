@@ -390,6 +390,69 @@ int get_param_matrix(char *s, double ***p) {
   }
   return -1;
 }
+/*
+int get_param_map(char *s, map<char *, double> *p) {
+  char str[1024];
+  int n = 0;
+  char *pch;
+  get_param(s, str);
+  pch = strtok(str, " ");
+
+  if (sscanf(pch, "%d", &n) == 1) {
+    for (int i = 0; i < n; i++) {
+      pch = strtok(NULL, " ");
+      if (pch == NULL) {
+        printf("Help! bad param vector: %s\n", s);
+        abort();
+      }
+
+      char *key, *valStr; double val;
+      key = strtok(pch, ":");
+      valStr = strtok(NULL, ":");
+      
+      if (valStr == NULL) {
+        printf("Help! bad param vector: %s\n", s);
+        abort();
+      }
+      sscanf(valStr, "%lf", &val);
+
+      p->insert( pair<char *, double> (key, val) );
+    }
+  } else {
+    abort();
+  }
+  return n;
+}
+*/
+
+int get_param_map(char *s, map<string, double> *p) {
+  char str[1024];
+  get_param(s, str);
+
+  stringstream pairsStream(str);
+  string kv_pair;
+  getline(pairsStream, kv_pair, ' '); // read number of elements
+  while(getline(pairsStream, kv_pair, ' ')) {
+    stringstream ss(kv_pair);
+    string key, val;
+    if( getline(ss, key, ':') && getline(ss, val, ':') ){
+      double valDouble = atof(val.c_str());
+      //p->insert( pair<string, double> ( (char *)key.c_str(), val1) );
+      (*p)[key] = valDouble;
+    }
+    else {
+      printf("Help! bad param vector: %s\n", s);
+      abort();
+    }
+  }
+}
+
+int get_double_indexed_param_map(string s, int index_i, int index_j, map<string, double> *p) {
+    char st[80];
+    sprintf(st, "%s[%d][%d]",s.c_str(),index_i,index_j);
+    int err = get_param_map(st,p);
+    return err;
+}
 
 bool does_param_exist(char *s) {
   
@@ -408,3 +471,11 @@ bool does_param_exist(string s) {
   sprintf(st,"%s",s.c_str());
   return does_param_exist(st);
 }
+
+int get_indexed_param_map(string s, int index, map<string, double> *p){
+  char st[80];
+  sprintf(st, "%s[%d]",s.c_str(),index);
+  int err = get_param_map(st,p);
+  return err;
+}
+

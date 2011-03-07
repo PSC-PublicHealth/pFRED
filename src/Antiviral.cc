@@ -19,6 +19,8 @@
 #include "Infection.h"
 #include "Disease.h"
 #include "Global.h"
+#include "Evolution.h"
+#include "Population.h"
 
 Antiviral::Antiviral(int _disease, int _course_length, double _reduce_infectivity,
                      double _reduce_susceptibility, double _reduce_asymp_period,
@@ -143,45 +145,31 @@ void Antiviral::effect(Health *health, int cur_day, AV_Health* av_health){
   int ndiseases = health->get_num_diseases();
   for (int is = 0; is < ndiseases; is++) {
     if(is == disease){ //Is this antiviral applicable to this disease
-      // If this is the first day of AV Course
-      if(cur_day == av_health->get_av_start_day()) {
-        health->modify_susceptibility(is,1.0-reduce_susceptibility);
-        // If you are already exposed, we need to modify your infection
-        if((health->get_exposure_date(is) > -1) && (cur_day > health->get_exposure_date(is))){
-          if(Debug > 3) cout << "reducing an already exposed person\n";
-          health->modify_infectivity(is,1.0-reduce_infectivity);
-	  if (!health->is_symptomatic() && cur_day < health->get_symptomatic_date(is)) {
-	    // Can only have these effects if the agent is not symptomatic yet
-	    health->modify_develops_symptoms(is,roll_will_have_symp(), cur_day);
-	    health->modify_asymptomatic_period(is,1.0-reduce_asymp_period,cur_day);
-	  }
-	  if (health->is_symptomatic() && cur_day < health->get_recovered_date(is)) {
-	    health->modify_symptomatic_period(is,1.0-reduce_symp_period,cur_day);
-	  }
-        }
-      }
-      // If today is the day you got exposed, prophilaxis
-      if(cur_day == health->get_exposure_date(is)) { 
-        if(Debug > 3) cout << "reducing agent on the day they are exposed\n";
-        health->modify_infectivity(is,1.0-reduce_infectivity);
-	if (!health->is_symptomatic() && cur_day < health->get_symptomatic_date(is)) {
-	  // Can only have these effects if the agent is not symptomatic yet
-	  health->modify_develops_symptoms(is, roll_will_have_symp(), cur_day);
-	  health->modify_asymptomatic_period(is, 1.0-reduce_asymp_period, cur_day);
-	}
-	if (health->is_symptomatic() && cur_day < health->get_recovered_date(is)) {
-	  health->modify_symptomatic_period(is,1.0-reduce_symp_period,cur_day);
-	}
-      }
-      // If this is the last day of the course
-      if(cur_day == av_health->get_av_end_day()) {
-        if(Debug > 3) cout << "resetting agent to original state\n";
-        health->modify_susceptibility(is,1.0/(1.0-reduce_susceptibility));
-        if(cur_day >= health->get_exposure_date(is)) {
-          health->modify_infectivity(is,1.0/(1.0-reduce_infectivity));
-        }
-      }  
+      Disease *dis = Pop.get_disease(is);
+      Evolution *evol = dis->get_evolution();
+      evol->avEffect(this, health, disease, cur_day, av_health);
     }
+  }
+}
+
+void Antiviral::modify_susceptiblilty(Health *health, int disease) {
+  health->modify_susceptibility(disease,1.0-reduce_susceptibility);
+}
+
+void Antiviral::modify_infectivity(Health *health, int disease) {
+  health->modify_infectivity(disease,1.0-reduce_infectivity);
+}
+
+void Antiviral::modify_symptomaticity(Health *health, int disease, int cur_day){
+  if (!health->is_symptomatic() && cur_day < health->get_symptomatic_date(disease)) {
+    // Can only have these effects if the agent is not symptomatic yet
+    health->modify_develops_symptoms(disease, roll_will_have_symp(), cur_day);
+  }
+  if (!health->is_symptomatic() && cur_day < health->get_symptomatic_date(disease)) {
+    health->modify_asymptomatic_period(disease, 1.0-reduce_asymp_period,cur_day);
+  }
+  if (health->is_symptomatic() && cur_day < health->get_recovered_date(disease)) {
+    health->modify_symptomatic_period(disease, 1.0-reduce_symp_period,cur_day);
   }
 }
 

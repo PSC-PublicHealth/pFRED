@@ -12,8 +12,9 @@
 #include "Household.h"
 #include "Global.h"
 #include "Params.h"
+#include "Random.h"
 #include "Person.h"
-#include "Patch.h"
+#include "Disease.h"
 
 double * Household_contacts_per_day;
 double *** Household_contact_prob;
@@ -24,7 +25,6 @@ Household::Household(int loc, const  char *lab, double lon, double lat, Place *c
   setup(loc, lab, lon, lat, container, pop);
   get_parameters(population->get_diseases());
   housemate.clear();
-  adults = children = 0;
 }
 
 void Household::get_parameters(int diseases) {

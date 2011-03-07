@@ -51,7 +51,7 @@ public:
   ~Timestep_Map();
   
   // Utility Members
-  UNIT_TEST_VIRTUAL int get_value_for_timestep(int ts, int offset); // returns the value for the given timestep - delay
+  UNIT_TEST_VIRTUAL int get_value_for_timestep(int ts); // returns the value for the given timestep
   UNIT_TEST_VIRTUAL bool is_empty() const { return values->empty(); }
   UNIT_TEST_VIRTUAL void print() const;
 private:

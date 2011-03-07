@@ -35,10 +35,7 @@ extern int Runs;
 extern int Days;
 extern int Reseed_day;
 extern unsigned long Seed;
-extern int Epidemic_offset;
-extern int Vaccine_offset;
-extern char Start_date[];
-
+extern int Start_day_of_week;
 extern char Population_directory[];
 extern char Output_directory[];
 extern char Tracefilebase[];
@@ -52,26 +49,26 @@ extern int Quality_control;
 extern int Diseases;
 extern double Prob_accept_vaccine;
 extern double Prob_accept_vaccine_dose;
+extern int StrainEvolution;
 
 // global file pointers
 extern FILE *Statusfp;
 extern FILE *Outfp;
 extern FILE *Tracefp;
 extern FILE *VaccineTracefp;
-extern FILE *FredDatefp;
 
 // global singleton objects
 class Population;
 extern Population Pop;
 
-class Place_List;
-extern Place_List Places;
+class Locations;
+extern Locations Loc;
 
-class Grid;
-extern Grid Patches;
+class Community;
+extern Community * community;
 
-class Date;
-extern Date * Fred_Date;
+class Evolution;
+extern Evolution *Evol;
 
 void get_global_parameters();
 

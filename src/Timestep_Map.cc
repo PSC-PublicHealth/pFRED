@@ -79,16 +79,12 @@ Timestep_Map::~Timestep_Map() {
   if (values) delete values;
 }
 
-int Timestep_Map::get_value_for_timestep(int ts, int offset) {
+int Timestep_Map::get_value_for_timestep(int ts) {
   map<int,int>::iterator itr;
   
-  if ((ts - offset) < 0) {
-    current_value = 0;
-  } else {
-    itr = values->find(ts - offset);
-    if (itr != values->end()) {
-      current_value = itr->second;
-    }
+  itr = values->find(ts);
+  if (itr != values->end()) {
+    current_value = itr->second;
   }
   
   return current_value;

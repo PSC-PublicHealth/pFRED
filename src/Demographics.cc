@@ -44,12 +44,6 @@ Demographics::~Demographics() {
 }
 
 void Demographics::update(int day) {
-
-  // decide if this agent will die today
-  if (0 && RANDOM() < 0.001) {
-    self->get_population()->prepare_to_die(self);
-  }
-
 }
 
 void Demographics::reset() {
