@@ -241,6 +241,6 @@ void Disease::set_prob_stay_home(double p) { Prob_stay_home = p; }
 void Disease::get_disease_parameters() {
 }
 
-void Disease::update(int day) {
-  epidemic->update(day);
+void Disease::update(Date *sim_start_date, int day) {
+  epidemic->update(sim_start_date, day);
 }

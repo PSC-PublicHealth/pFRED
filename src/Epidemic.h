@@ -38,7 +38,7 @@ public:
   void insert_into_infectious_list(Person * person) { infectious.insert(person); }
   void remove_from_infectious_list(Person * person) { infectious.erase(person); }
   double get_attack_rate() { return attack_rate; }
-  void update(int day);
+  void update(Date *sim_start_date, int day);
   int get_clinical_incidents() { return clinical_incidents; }
   int get_incident_infections() { return incident_infections; }
   int get_total_incidents() { return total_incidents; }

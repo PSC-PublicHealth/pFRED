@@ -55,12 +55,12 @@ void Behavior::update(int day) {
   // update_schedule(day);
 }
 
-void Behavior::update_infectious_behavior(int day) {
+void Behavior::update_infectious_behavior(Date *sim_start_date, int day) {
   int diseases = self->get_diseases();
   for (int dis = 0; dis < diseases; dis++) {
     if (self->is_infectious(dis)) {
       char status = self->get_disease_status(dis);
-      if (schedule_updated < day) update_schedule(day);
+      if (schedule_updated < day) update_schedule(sim_start_date, day);
       for (int i = 0; i < FAVORITE_PLACES; i++) {
 	if (on_schedule[i]) {
 	  favorite_place[i]->add_infectious(dis, self, status);
@@ -70,13 +70,13 @@ void Behavior::update_infectious_behavior(int day) {
   }
 }
 
-void Behavior::update_susceptible_behavior(int day) {
+void Behavior::update_susceptible_behavior(Date *sim_start_date, int day) {
   int diseases = self->get_diseases();
   for (int dis = 0; dis < diseases; dis++) {
     if (self->is_susceptible(dis)) {
       for (int i = 0; i < FAVORITE_PLACES; i++) {
 	if (favorite_place[i] != NULL && favorite_place[i]->is_infectious(dis)) {
-	  if (schedule_updated < day) update_schedule(day);
+	  if (schedule_updated < day) update_schedule(sim_start_date, day);
 	  if (on_schedule[i]) {
 	    favorite_place[i]->add_susceptible(dis, self);
 	  }
@@ -86,10 +86,10 @@ void Behavior::update_susceptible_behavior(int day) {
   }
 }
 
-void Behavior::update_schedule(int day) {
+void Behavior::update_schedule(Date *sim_start_date, int day) {
   int day_of_week;
   if (schedule_updated < day) {
-    day_of_week = Fred_Date->get_day_of_week(day);
+    day_of_week = sim_start_date->get_day_of_week(day);
     schedule_updated = day;
     for (int p = 0; p < FAVORITE_PLACES; p++) {
       on_schedule[p] = false;

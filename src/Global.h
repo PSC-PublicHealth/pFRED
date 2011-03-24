@@ -52,13 +52,15 @@ extern int Quality_control;
 extern int Diseases;
 extern double Prob_accept_vaccine;
 extern double Prob_accept_vaccine_dose;
+extern int Enable_Aging;
+extern int Enable_Births;
+extern int Enable_Deaths;
 
 // global file pointers
 extern FILE *Statusfp;
 extern FILE *Outfp;
 extern FILE *Tracefp;
 extern FILE *VaccineTracefp;
-extern FILE *FredDatefp;
 
 // global singleton objects
 class Population;
@@ -71,7 +73,7 @@ class Grid;
 extern Grid Patches;
 
 class Date;
-extern Date * Fred_Date;
+extern Date * Sim_Start_Date;
 
 void get_global_parameters();
 

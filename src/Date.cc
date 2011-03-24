@@ -12,6 +12,7 @@
 #include "Date.h"
 #include <time.h>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <math.h>
 #include <string>
@@ -31,11 +32,19 @@ const string Date::MMDDYY = string("MM/DD/YY");
 const string Date::DDMMYYYY = string("DD/MM/YYYY");
 const string Date::DDMMYY = string("DD/MM/YY");
 
+bool Date::is_initialized = false;
+vector<int> * Date::day_of_month_vec = NULL;
+vector<int> * Date::month_vec = NULL;
+vector<int> * Date::year_vec = NULL;
+
 Date::Date() {
 
-  this->day_of_month_vec = NULL;
-  this->month_vec = NULL;
-  this->year_vec = NULL;
+  this->days_since_jan_1_1600 = 0;
+
+  //Create the vectors once
+  if(!Date::is_initialized) {
+    Date::initialize_vectors();
+  }
 
   //Get the system time
   time_t rawtime;
@@ -55,50 +64,71 @@ Date::Date() {
   year = curr_time->tm_year + 1900;
 
   this->set_date(year, month, day);
+
 }
 
-Date::Date(int max_days) {
+Date::Date(string date_string, string format_string) {
 
-  this->day_of_month_vec = NULL;
-  this->month_vec = NULL;
-  this->year_vec = NULL;
+  this->days_since_jan_1_1600 = 0;
 
-  //Get the system time
-  time_t rawtime;
-  time(&rawtime);
+  //Create the vectors once
+  if(!Date::is_initialized) {
+    Date::initialize_vectors();
+  }
 
-  int month, day, year;
-  struct tm * curr_time = localtime(&rawtime);
-
-  /*
-   * Meaning of values in structure tm:
-   * tm_mday day of the month  1-31
-   * tm_mon  months since January  0-11
-   * tm_year years since 1900
-   */
-  month = curr_time->tm_mon + 1;
-  day = curr_time->tm_mday;
-  year = curr_time->tm_year + 1900;
-
-  this->set_date(year, month, day, max_days);
-}
-
-Date::Date(int year, int month, int day_of_month) {
-
-  this->day_of_month_vec = NULL;
-  this->month_vec = NULL;
-  this->year_vec = NULL;
+  int year = Date::parse_year_from_date_string(date_string, format_string);
+  int month = Date::parse_month_from_date_string(date_string, format_string);
+  int day_of_month = Date::parse_day_of_month_from_date_string(date_string, format_string);
 
   this->set_date(year, month, day_of_month);
 }
 
-Date::Date(int year, int month, int day_of_month, int max_days) {
+Date::Date(int year, int day_of_year) {
 
-  this->day_of_month_vec = NULL;
-  this->month_vec = NULL;
-  this->year_vec = NULL;
+  this->days_since_jan_1_1600 = 0;
 
-  this->set_date(year, month, day_of_month, max_days);
+  //Create the vectors once
+  if(!Date::is_initialized) {
+    Date::initialize_vectors();
+  }
+
+  //Find month and day
+  int month = 0;
+  int day_of_month = 0;
+  bool is_found = false;
+  int days_so_far = 0;
+
+  for (int i = Date::JANUARY; i <= Date::DECEMBER && !is_found; i++) {
+    days_so_far += Date::day_table[Date::is_leap_year(year)][i];
+    if (day_of_year <= days_so_far ) {
+      month = i;
+      int days_to_subtract = 0;
+      for (int j = Date::JANUARY; j < month; j++) {
+        days_to_subtract += Date::day_table[Date::is_leap_year(year)][j];
+      }
+      day_of_month = day_of_year - days_to_subtract;
+      is_found = true;
+    }
+  }
+
+  if(is_found) {
+    this->set_date(year, month, day_of_month);
+  } else {
+    this->set_date(year, Date::JANUARY, 1);
+  }
+
+}
+
+Date::Date(int year, int month, int day_of_month) {
+
+  this->days_since_jan_1_1600 = 0;
+
+  //Create the vectors once
+  if(!Date::is_initialized) {
+    Date::initialize_vectors();
+  }
+
+  this->set_date(year, month, day_of_month);
 }
 
 /**
@@ -109,132 +139,79 @@ Date::Date(int year, int month, int day_of_month, int max_days) {
  */
 void Date::set_date(int year, int month, int day_of_month) {
 
-  this->set_year(year);
-  this->set_month(month);
-  this->set_day_of_month(day_of_month);
-
-  this->day_of_month_vec = NULL;
-  this->month_vec = NULL;
-  this->year_vec = NULL;
-
-  this->add_to_vectors(Date::DEFAULT_MAX_DAYS);
-
-  //Set day_of_week to the actual day of the week that it should be
-  this->set_day_of_week(this->get_day_of_week());
-}
-
-/**
- * Sets the month, day, and year to the values.  The values will be set
- * in the order Year, Month, then Day.  So, setting Feb, 29, 2009 will
- * result in an error, since the day is outside of the range for that
- * month in that year.
- *
- * By letting the system know how many days it will run, we can build maps
- * of day to year, month and day_of_month
- */
-void Date::set_date(int year, int month, int day_of_month, int max_days) {
-  this->set_year(year);
-  this->set_month(month);
-  this->set_day_of_month(day_of_month);
-
-  this->day_of_month_vec = NULL;
-  this->month_vec = NULL;
-  this->year_vec = NULL;
-
-  this->add_to_vectors(max_days);
-
-  //Set day_of_week to the actual day of the week that it should be
-  this->set_day_of_week(this->get_day_of_week());
-}
-
-/**
- * Sets the year to the value.  Negative years will just be set to year 0
- */
-void Date::set_year(int year) {
-  this->year = (year < 0 ? 0 : year);
-}
-
-/**
- * Sets the month to the value.  If the month is outside of the legal range (1 [JANUARY] - 12 [DECEMBER]), then
- * abort.
- */
-void Date::set_month(int month) {
-  if (month >= Date::JANUARY && month <= Date::DECEMBER) {
-    this->month = month;
-  } else {
-    cout << "Help!  Month [" << month << "] is outside of valid range (" << Date::JANUARY <<
-        " - " << Date::DECEMBER << ")" << endl;
+  if (year < 1600) {
+    cout << "Help!  Year prior to 1600 [" << year << "] is not recognized." << endl;
     abort();
   }
-}
 
-/**
- * Sets the day_of_month to the value.  If the day_of_month is outside of the
- * legal range (1-31, 1-30, 1-28(29)), then abort
- */
-void Date::set_day_of_month(int day_of_month) {
-
-  if (day_of_month >= 1 && day_of_month <= Date::get_days_in_month(this->month, this->year)) {
-    this->day_of_month = day_of_month;
-  } else {
-    cout << "Help!  Day of month [" << day_of_month << "] is outside of valid range for the month (1 - "
-        << this->get_days_in_month(this->month,this->year) << ")" << endl;
+  if (month < Date::JANUARY || month > Date::DECEMBER) {
+    cout << "Help!  Month must be between 1 and 12 inclusive." << endl;
     abort();
   }
-}
 
-/**
- * Sets the day_of_week to the value.  If the day_of_week is outside of the
- * legal range (0 - 6), then abort
- */
-void Date::set_day_of_week(int day_of_week) {
-
-  if (day_of_week >= Date::SUNDAY && day_of_week <= Date::SATURDAY) {
-    this->day_of_week = day_of_week;
-  } else {
-    cout << "Help!  Day of week [" << day_of_week << "] is outside of valid range (" << Date::SUNDAY
-        << " - " << Date::SATURDAY << ")" << endl;
+  if (day_of_month < 1 || day_of_month > Date::day_table[(Date::is_leap_year(year) ? 1 : 0)][month]) {
+    cout << "Help!  Day of month is out of range for the given month." << endl;
     abort();
   }
+
+  //total years since 1600
+  int temp_days = (year - 1600) * 365;
+
+  //add in the leap days
+  for (int i = 1600; i < year; i += 4) {
+    if (i % 4 == 0)
+      temp_days++;
+  }
+
+  //subtract the leap days of centuries
+  for (int i = 1600; i < year; i += 100) {
+    if (i % 100 == 0)
+      temp_days--;
+  }
+
+  //add in the leap days for centuries divisible by 400
+  for (int i = 1600; i < year; i += 400) {
+    if (i % 400 == 0)
+      temp_days++;
+  }
+
+  //add in the days of the current year (up to the current month)
+  for(int i = Date::JANUARY; i < month; i++) {
+    temp_days += Date::day_table[(Date::is_leap_year(year) ? 1 : 0)][i];
+  }
+
+  //add in the days of the current month
+  temp_days += (day_of_month - 1);
+
+  this->days_since_jan_1_1600 = temp_days;
+
 }
 
 int Date::get_year(int t) {
 
-  if (t > 0) {
-
-    if (this->year_vec  && t < (int)this->year_vec->size()) {
-      int * temp = & this->year_vec->at(t);
-      return * temp;
-    } else {
-      this->add_to_vectors(t);
-
-      int * temp = & this->year_vec->at(t);
-      return * temp;
-    }
-
+  if(Date::year_vec != NULL && (this->days_since_jan_1_1600 + t) < (int)Date::year_vec->size()) {
+    int * temp = & Date::year_vec->at(this->days_since_jan_1_1600 + t);
+    return * temp;
   } else {
-    return this->year;
+    Date::add_to_vectors(this->days_since_jan_1_1600 + t);
+
+    int * temp = & Date::year_vec->at(this->days_since_jan_1_1600 + t);
+    return * temp;
   }
+
 }
 
 int Date::get_month(int t) {
 
-  if (t > 0) {
-
-    if (this->month_vec && t < (int)this->month_vec->size()) {
-      int * temp = & this->month_vec->at(t);
-      return * temp;
-    } else {
-      this->add_to_vectors(t);
-
-      int * temp = & this->month_vec->at(t);
-      return * temp;
-    }
+  if(Date::month_vec != NULL && (this->days_since_jan_1_1600 + t) < (int)Date::month_vec->size()) {
+    int * temp = & Date::month_vec->at(this->days_since_jan_1_1600 + t);
+    return * temp;
   } else {
-    return this->month;
-  }
+    Date::add_to_vectors(this->days_since_jan_1_1600 + t);
 
-  return -1;
+    int * temp = & Date::month_vec->at(this->days_since_jan_1_1600 + t);
+    return * temp;
+  }
 }
 
 string Date::get_month_string(int t) {
@@ -272,96 +249,38 @@ string Date::get_month_string(int t) {
 
 int Date::get_day_of_month(int t) {
 
-  if(t > 0) {
-
-    if (this->day_of_month_vec
-        && t < (int)this->day_of_month_vec->size()) {
-      int * temp = & this->day_of_month_vec->at(t);
-      return * temp;
-    } else {
-      this->add_to_vectors(t);
-
-      int * temp = & this->day_of_month_vec->at(t);
-      return * temp;
-    }
-
+  if(Date::day_of_month_vec != NULL && (this->days_since_jan_1_1600 + t) < (int)Date::day_of_month_vec->size()) {
+    int * temp = & Date::day_of_month_vec->at(this->days_since_jan_1_1600 + t);
+    return * temp;
   } else {
-    return  this->day_of_month;
+    Date::add_to_vectors(this->days_since_jan_1_1600 + t);
+
+    int * temp = & Date::day_of_month_vec->at(this->days_since_jan_1_1600 + t);
+    return * temp;
+  }
+
+}
+
+int Date::get_day_of_year(int t) {
+
+  if(t >= 0) {
+    return Date::get_day_of_year(this->get_year(t), this->get_month(t), this->get_day_of_month(t));
+  } else {
+    return Date::get_day_of_year(this->get_year(0), this->get_month(0), this->get_day_of_month(0));
   }
 
 }
 
 int Date::get_day_of_week(int t) {
-  int ret_value = (this->day_of_week + t) % 7;
-  ret_value = (ret_value >= 0 ? ret_value : 7 + ret_value);
 
-  return ret_value;
-}
+  int year, month, day_of_month;
 
-void Date::add_to_vectors(int max_days) {
+  year = this->get_year(t);
+  month = this->get_month(t);
+  day_of_month = this->get_day_of_month(t);
 
-  size_t vec_size = (size_t) (max_days + 1);
+  return Date::get_day_of_week(year, month, day_of_month);
 
-  //If the vectors do not exist, create now
-  if (this->year_vec == NULL) {
-    this->year_vec = new vector<int>;
-    this->year_vec->reserve(vec_size);
-  }
-
-  if (this->month_vec == NULL) {
-    this->month_vec = new vector<int>;
-    this->month_vec->reserve(vec_size);
-  }
-
-  if (this->day_of_month_vec == NULL) {
-    this->day_of_month_vec = new vector<int>;
-    this->day_of_month_vec->reserve(vec_size);
-  }
-
-  //Check to see if the vector is empty
-  size_t current_vec_size = this->day_of_month_vec->size();
-  if (current_vec_size == 0) {
-    int current_year = this->year;
-    int current_month = this->month;
-    int current_day_of_month = this->day_of_month;
-
-    for (int i = 0; i <= max_days; i++) {
-
-      this->year_vec->push_back(current_year);
-      this->month_vec->push_back(current_month);
-      this->day_of_month_vec->push_back(current_day_of_month);
-
-      if (++current_day_of_month >
-        Date::day_table[(Date::is_leap_year(current_year) ? 1 : 0)][current_month]) {
-        current_day_of_month = 1;
-        if (++current_month > Date::DECEMBER) {
-          current_month = Date::JANUARY;
-          current_year++;
-        }
-      }
-    }
-  } else if (current_vec_size <= (size_t) max_days) {
-
-    int current_year = this->year_vec->back();
-    int current_month = this->month_vec->back();
-    int current_day_of_month = this->day_of_month_vec->back();//start_day_of_month;
-
-    for (size_t i = 0; i <= ((size_t)max_days - current_vec_size); i++) {
-
-      if (++current_day_of_month >
-        Date::day_table[(Date::is_leap_year(current_year) ? 1 : 0)][current_month]) {
-        current_day_of_month = 1;
-        if (++current_month > Date::DECEMBER) {
-          current_month = Date::JANUARY;
-          current_year++;
-        }
-      }
-
-      this->year_vec->push_back(current_year);
-      this->month_vec->push_back(current_month);
-      this->day_of_month_vec->push_back(current_day_of_month);
-    }
-  }
 }
 
 string Date::get_day_of_week_string(int t) {
@@ -388,7 +307,7 @@ string Date::get_day_of_week_string(int t) {
 }
 
 int Date::get_day_of_week() {
-  return Date::get_day_of_week(this->year, this->month, this->day_of_month);
+  return Date::get_day_of_week(this->get_year(), this->get_month(), this->get_day_of_month());
 }
 
 /**
@@ -432,9 +351,10 @@ int Date::get_epi_week(int t) {
       epi_week--;
       if (epi_week < 1) {
         //Create a new date that represents the last day of the previous year
-        Date * tmp_date = new Date(future_year - 1, 12, 31, 1);
-        epi_week = tmp_date->get_epi_week(0);
+        Date * tmp_date = new Date(future_year - 1, Date::DECEMBER, 31);
+        epi_week = tmp_date->get_epi_week();
         delete tmp_date;
+
         return epi_week;
       }
     }
@@ -479,8 +399,34 @@ int Date::get_epi_week_year(int t) {
   return future_year;
 }
 
+Date * Date::clone() {
+  return new Date(this->get_year(), this->get_month(), this->get_day_of_month());
+}
+
+bool Date::equals(Date * check_date) {
+  return (this->compare_to(check_date) == 0);
+}
+
+int Date::compare_to(Date * check_date) {
+
+  return (this->days_since_jan_1_1600 - check_date->days_since_jan_1_1600);
+
+}
+
+string Date::to_string() {
+  stringstream oss;
+  oss << setw(4) << setfill('0') << this->get_year() << "-";
+  oss << setw(2) << setfill('0') << this->get_month() << "-";
+  oss << setw(2) << setfill('0') << get_day_of_month();
+  return oss.str();
+}
 
 //Static Methods
+int Date::days_between(Date * date_1, Date * date_2) {
+
+  return abs(date_1->days_since_jan_1_1600 - date_2->days_since_jan_1_1600);
+
+}
 
 bool Date::is_leap_year(int year) {
 
@@ -690,8 +636,80 @@ int Date::parse_year_from_date_string(string date_string, string format_string) 
   return -1;
 }
 
+void Date::initialize_vectors() {
+
+  Date::add_to_vectors(Date::DEFAULT_MAX_DAYS);
+  Date::is_initialized = true;
+
+}
+
+void Date::add_to_vectors(int days_since_jan_1_1600) {
+
+  size_t vec_size = (size_t) (days_since_jan_1_1600 + 1);
+
+  //If the vectors do not exist, create now
+  if (Date::year_vec == NULL) {
+    Date::year_vec = new vector<int>;
+    Date::year_vec->reserve(vec_size);
+  }
+
+  if (Date::month_vec == NULL) {
+    Date::month_vec = new vector<int>;
+    Date::month_vec->reserve(vec_size);
+  }
+
+  if (Date::day_of_month_vec == NULL) {
+    Date::day_of_month_vec = new vector<int>;
+    Date::day_of_month_vec->reserve(vec_size);
+  }
+
+  //Check to see if the vector is empty
+  size_t current_vec_size = Date::day_of_month_vec->size();
+  if (current_vec_size == 0) {
+    int current_year = 1600;
+    int current_month = Date::JANUARY;
+    int current_day_of_month = 1;
+
+    for (int i = 0; i <= days_since_jan_1_1600; i++) {
+
+      Date::year_vec->push_back(current_year);
+      Date::month_vec->push_back(current_month);
+      Date::day_of_month_vec->push_back(current_day_of_month);
+
+      if (++current_day_of_month >
+        Date::day_table[(Date::is_leap_year(current_year) ? 1 : 0)][current_month]) {
+        current_day_of_month = 1;
+        if(++current_month > Date::DECEMBER) {
+          current_month = Date::JANUARY;
+          current_year++;
+        }
+      }
+    }
+  } else if (current_vec_size <= (size_t)days_since_jan_1_1600) {
+
+    int current_year = Date::year_vec->back();
+    int current_month = Date::month_vec->back();
+    int current_day_of_month = Date::day_of_month_vec->back();
+
+    for (size_t i = 0; i <= ((size_t)days_since_jan_1_1600 - current_vec_size); i++) {
+
+      if (++current_day_of_month >
+        Date::day_table[(Date::is_leap_year(current_year) ? 1 : 0)][current_month]) {
+        current_day_of_month = 1;
+        if(++current_month > Date::DECEMBER) {
+          current_month = Date::JANUARY;
+          current_year++;
+        }
+      }
+
+      Date::year_vec->push_back(current_year);
+      Date::month_vec->push_back(current_month);
+      Date::day_of_month_vec->push_back(current_day_of_month);
+    }
+  }
+
+}
+
 Date::~Date() {
-  if (this->day_of_month_vec) delete day_of_month_vec;
-  if (this->month_vec) delete month_vec;
-  if (this->year_vec) delete year_vec;
+
 }

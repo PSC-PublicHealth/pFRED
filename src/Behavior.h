@@ -29,9 +29,9 @@ public:
   Behavior (Person *person, Place **favorite_place, int pro);
   UNIT_TEST_VIRTUAL void reset();
   UNIT_TEST_VIRTUAL void update(int day);
-  void update_infectious_behavior(int day);
-  void update_susceptible_behavior(int day);
-  UNIT_TEST_VIRTUAL void update_schedule(int day);
+  void update_infectious_behavior(Date *sim_start_date, int day);
+  void update_susceptible_behavior(Date *sim_start_date, int day);
+  UNIT_TEST_VIRTUAL void update_schedule(Date *sim_start_date, int day);
   UNIT_TEST_VIRTUAL void print_schedule();
   UNIT_TEST_VIRTUAL bool acceptance_of_vaccine();
   UNIT_TEST_VIRTUAL bool acceptance_of_another_vaccine_dose();

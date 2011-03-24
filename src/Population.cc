@@ -34,7 +34,11 @@ Population Pop;
 
 int V_count;
 
+//Static variables
+int Population::next_id = 0;
+
 Population::Population() {
+
   pop.clear();
   pop_map.clear();
   pop_size = 0;
@@ -43,19 +47,23 @@ Population::Population() {
   vacc_manager = NULL;
   diseases = -1;
   mutation_prob = NULL;
-  pregnancy_prob = NULL;
   population_changed = false;
 }
 
 Population::~Population() {
+
+  // free all memory (remember, first delete the referenced memory before
+  // deleting the pointer to it --as the vector is an array of pointers.
+  for (unsigned i = 0; i < pop.size(); ++i)
+    delete pop[i];
   pop.clear();
   pop_map.clear();
+
   pop_size = 0;
   if(disease != NULL) delete [] disease;
   if(vacc_manager != NULL) delete vacc_manager;
   if(av_manager != NULL) delete av_manager;
   if(mutation_prob != NULL) delete [] mutation_prob;
-  if(pregnancy_prob != NULL) delete pregnancy_prob;
 }
 
 
@@ -72,6 +80,7 @@ void Population::get_parameters() {
             diseases, num_mutation_params);
     exit(1);
   }
+
   if (Verbose > 1) {
     printf("\nmutation_prob:\n");
     for (int i  = 0; i < diseases; i++)  {
@@ -82,20 +91,16 @@ void Population::get_parameters() {
     }
   }
   
-  // Setup the pregnancy probability map
-  pregnancy_prob = new Age_Map("Pregnancy Probability");
-  pregnancy_prob->read_from_input("pregnancy_prob");
-  pregnancy_prob->print();	
 }
 
 void Population::add_person(Person * person) {
-  // printf("POP_MAP ADD: %d\n", person->get_id());
   assert(pop_map.find(person) == pop_map.end());
   pop.push_back(person);
   assert(pop_size == pop.size()-1);
   pop_map[person] = pop_size;
   pop_size = pop.size();
   population_changed = true;
+
 }
 
 void Population::delete_person(Person * person) {
@@ -121,10 +126,17 @@ void Population::delete_person(Person * person) {
 }
 
 void Population::prepare_to_die(Person *per) {
+  //Add person to daily death_list
   death_list.push_back(per);
 }
 
+void Population::prepare_for_birth(Person *per) {
+  //Add person to daily birth_list
+  birth_list.push_back(per);
+}
+
 void Population::setup() {
+
   if (Verbose) {
     fprintf(Statusfp, "setup population entered\n");
     fflush(Statusfp);
@@ -185,6 +197,10 @@ void Population::read_population() {
       abort();
     }
     
+    //Increment the static next_id and make certain that it is always at least one greater than the max id read in
+    if(Population::next_id <= id)
+      Population::next_id = id + 1;
+
     // ignore the neighborhood entry
     hood = -1;
 
@@ -196,11 +212,13 @@ void Population::read_population() {
       Places.get_place(work),
       Places.get_place(office)
     }; 
-    person->setup(id, age, sex, married, prof, favorite_place, profile, this);
-    person->reset();
+
+    person->setup(id, age, sex, married, prof, favorite_place, profile, this, Sim_Start_Date);
+    person->reset(Sim_Start_Date);
+    person->register_event_handler(this);
     add_person(person);
-    pop_map[person] = p;
   }
+
   fclose(fp);
   assert(pop_size == psize);
   population_changed = false;
@@ -209,6 +227,7 @@ void Population::read_population() {
     fprintf(Statusfp, "finished reading population = %d\n", pop_size);
     fflush(Statusfp);
   }
+
 }
 
 void Population::reset(int run) {
@@ -234,7 +253,7 @@ void Population::reset(int run) {
   never_changed.clear();
   
   for (int p = 0; p < pop_size; p++){
-    pop[p]->reset();
+    pop[p]->reset(Sim_Start_Date);
     never_changed[pop[p]]=true; // add all agents to this list at start
   }
   if(Verbose > 0){
@@ -258,10 +277,11 @@ void Population::reset(int run) {
 void Population::update(int day) {
 
   death_list.clear();
+  birth_list.clear();
 
   // update everyone's demographics
   for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_demographics(day);
+    pop[p]->update_demographics(Sim_Start_Date, day);
   }
 
   // update everyone's health status
@@ -269,13 +289,27 @@ void Population::update(int day) {
     pop[p]->update_health(day);
   }
 
+  // add the births to the population
+  size_t births = birth_list.size();
+
+  for (size_t i = 0; i < births; i++) {
+    Person * baby = birth_list[i]->give_birth();
+    baby->register_event_handler(this);
+    add_person(baby);
+  }
+
+  if (Verbose) {
+    fprintf(Statusfp, "births = %d\n", (int)births);fflush(stdout);
+  }
+
   // remove the dead from the population
-  int deaths = death_list.size();
-  for (int i = 0; i < deaths; i++) {
+  size_t deaths = death_list.size();
+  for (size_t i = 0; i < deaths; i++) {
     delete_person(death_list[i]);
   }
+
   if (Verbose) {
-    fprintf(Statusfp, "day = %d  deaths = %d\n",day,deaths);fflush(stdout);
+    fprintf(Statusfp, "deaths = %d\n", (int)deaths);fflush(stdout);
   }
 
   // update adult decisions
@@ -294,12 +328,12 @@ void Population::update(int day) {
 
   // update actions of infectious agents
   for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_infectious_behavior(day);
+    pop[p]->update_infectious_behavior(Sim_Start_Date, day);
   }
 
   // update actions of susceptible agents
   for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_susceptible_behavior(day);
+    pop[p]->update_susceptible_behavior(Sim_Start_Date, day);
   }
 
   // distribute vaccines
@@ -310,14 +344,13 @@ void Population::update(int day) {
 
   // apply transmission model in all infectious places
   for (int s = 0; s < diseases; s++) {
-    disease[s].update(day);
+    disease[s].update(Sim_Start_Date, day);
   }
 
   // give out anti-virals (after today's infections)
   av_manager->disseminate(day);
 
 }
-
 
 void Population::report(int day) {
   for (int s = 0; s < diseases; s++) {
@@ -379,18 +412,31 @@ void Population::print(int incremental, int day) {
 
 void Population::end_of_run() {
   // print out agents who have changes yet unreported
-  // (results from Incremental_Trace==0  || Days%Incremental_Trace!=0)
   this->print(1, Days);
   
   // print out all those agents who never changed
   this->print(-1);
 
-  // print out dead agents
-  int n = graveyard.size();
-  for (int i = 0; i < n; i++) {
-    // graveyard[i]->print_out(-1);
-  }
+  // free all memory (remember, first delete the referenced memory before
+  // deleting the pointer to it --as the vector is an array of pointers.
+  for (unsigned i = 0; i < pop.size(); ++i)
+    delete pop[i];
+
+  pop.clear();
+  pop_map.clear();
+  birth_list.clear();
+
+  this->pop_size = 0;
+
+  // loop over dead agents
+  for (unsigned i = 0; i < graveyard.size(); ++i)
+    delete graveyard[i];
+
   graveyard.clear();
+  death_list.clear();
+
+  this->read_population();
+
 }
 
 Disease *Population::get_disease(int s) {
@@ -430,26 +476,6 @@ void Population::quality_control() {
     }
     fprintf(Statusfp, "\n");
     
-    if (pregnancy_prob->get_num_ages() > 0){
-      int pcount[20];
-      // Print out pregnancy distribution
-      for (int c = 0; c < 20; c++) { pcount[c] = 0; }
-      for (int p = 0; p < pop_size; p++) {
-        int a = pop[p]->get_age();
-        int n = a / 10;
-        if(pop[p]->get_demographics()->is_pregnant()==true) {
-          if( n < 20 ) { pcount[n]++; }
-          else { pcount[19]++; }
-        }
-      } 
-      fprintf(Statusfp, "\nAge Distribution of Pregnancy: %d people\n", total);
-      for(int c = 0; c < 10; c++) {
-        fprintf(Statusfp, "age %2d to %2d: %6d (%.2f%%)\n",
-                10*c, 10*(c+1)-1, pcount[c], (100.0*pcount[c])/total);
-      }
-      fprintf(Statusfp,"\n");
-    }
-    
     // Print out At Risk distribution
     for(int is = 0; is < diseases; is++){
       if(disease[is].get_at_risk()->get_num_ages() > 0){
@@ -485,5 +511,27 @@ void Population::set_changed(Person *p){
   incremental_changes[p]=true; // note that this element has been changed
   never_changed.erase(p);      // remove it from this list 
   // (might already be gone, but this won't hurt)
+}
+
+//Implement the interface
+void Population::handle_property_change_event(Person *source, string property_name, int prev_val, int new_val) {
+
+}
+
+void Population::handle_property_change_event(Person *source, string property_name, bool new_val) {
+
+  if (property_name.compare("deceased") == 0 && new_val) {
+    this->prepare_to_die(source);
+  } else if (property_name.compare("deliver") == 0 && new_val) {
+    this->prepare_for_birth(source);
+  }
+}
+
+
+//Static function to get and increment the next_id
+int Population::get_next_id() {
+  int return_val = Population::next_id;
+  Population::next_id++;
+  return return_val;
 }
 

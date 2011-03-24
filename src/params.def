@@ -15,8 +15,8 @@ vaccine_offset = 0
 
 # set to 'today' to use the system clock, otherwise set it to 
 # a date in the format 'MM/DD/YYYY'
-#start_date = today
-start_date = 01/30/2011
+start_date = today
+#start_date = 01/1/2011
 reseed_day = -1
 popfile = alleg_pop.txt
 locfile = alleg_loc.txt
@@ -52,8 +52,14 @@ residual_immunity_ages[0] = 0
 residual_immunity_values[0] = 0
 at_risk_ages[0] = 14 0 1 2 4 5 18 19 24 25 49 50 64 65 110
 at_risk_values[0] = 7 0.039 0.0883 0.1168 0.1235 0.1570 0.3056 0.4701
-pregnancy_prob_ages = 8 0 18 19 24 25 49 50 110
-pregnancy_prob_values = 4 0.0 0.0576 0.0314 0.0
+
+#Aging, Births and Deaths
+enable_aging = 0
+enable_births = 0
+enable_deaths = 0 
+yearly_mortality_rate_file = mortality_rate.txt
+yearly_birth_rate_file = birth_rate.txt
+
 prob_stay_home = 0.5
 mutation_prob = 1 0.0
 

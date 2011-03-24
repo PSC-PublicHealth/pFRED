@@ -16,6 +16,22 @@ void setup(char *paramfile);
 void cleanup(int run);
 void run_sim(int run);
 
+//class Population;
+
+//class Fred {
+//
+//public:
+//  Fred();
+//  virtual ~Fred();
+//  void setup(char *paramfile);
+//  void cleanup(int run);
+//  void run_sim(int run);
+//
+//private:
+//  Population static_pop;
+//
+//};
+
 #define _FRED_H
 
 #endif // _FRED_H

@@ -13,20 +13,21 @@
 #define _FRED_POPULATION_H
 
 #include "Global.h"
+#include "Person_Event_Interface.h"
+#include "Demographics.h"
 
 class Person;
 class Disease;
 class Antivirals;
 class AV_Manager;
 class Vaccine_Manager;
-class Age_Map;
 
 using namespace std;
 #include <map>
 #include <vector>
 typedef map <Person*, bool> ChangeMap;	
 
-class Population {
+class Population : public Person_Event_Interface {
 public:
   Population();
   UNIT_TEST_VIRTUAL ~Population();
@@ -41,7 +42,6 @@ public:
   UNIT_TEST_VIRTUAL Disease * get_disease(int s);
   UNIT_TEST_VIRTUAL int get_diseases() { return diseases; }
   UNIT_TEST_VIRTUAL int get_pop_size() { return pop_size; }
-  UNIT_TEST_VIRTUAL Age_Map* get_pregnancy_prob() { return pregnancy_prob; }
 
   //Mitigation Managers
   UNIT_TEST_VIRTUAL AV_Manager *get_av_manager(){ return av_manager; }
@@ -49,20 +49,30 @@ public:
   void add_person(Person * per);
   void delete_person(Person * per);
   void prepare_to_die(Person *per);
+  void prepare_for_birth(Person *per);
   Person *get_person(int n) { return pop[n]; }
   
   // Modifiers on the entire pop;
   // void apply_residual_immunity(Disease *disease) {}
-  
+
+  //Implement the interface
+  UNIT_TEST_VIRTUAL void handle_property_change_event(Person *source, string property_name, int prev_val, int new_val);
+  UNIT_TEST_VIRTUAL void handle_property_change_event(Person *source, string property_name, bool new_val);
+
+
   // track those agents that have changed since the last incremental dump
   UNIT_TEST_VIRTUAL void set_changed(Person *p);
   
+  static int get_next_id();
+
 private:
   char popfile[256];
   char profilefile[256];
   vector <Person *> pop;			// list of all agents
   vector <Person *> graveyard;		      // list of all dead agents
   vector <Person *> death_list;		      // list agents to die today
+  vector <Person *> birth_list;         // list agents to give birth today
+
   map<Person *,int> pop_map;
   bool population_changed;	  // true if any person added or deleted
   ChangeMap incremental_changes; // incremental "list" (actually a C++ map)
@@ -71,7 +81,7 @@ private:
   ChangeMap never_changed;       // agents who have *never* changed
   int pop_size;
   Disease *disease;
-  
+
   //Mitigation Managers
   AV_Manager *av_manager;
   Vaccine_Manager *vacc_manager;
@@ -79,9 +89,9 @@ private:
   int diseases;
   double **mutation_prob;
   void read_population();
-	
-  // Population specific Age Maps			
-  Age_Map* pregnancy_prob;
+
+  static int next_id;
+
 };
 
 #endif // _FRED_POPULATION_H

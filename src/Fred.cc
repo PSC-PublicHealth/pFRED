@@ -21,9 +21,10 @@
 #include "Date.h"
 
 char Paramfile[80];
-Date * Fred_Date;
+Date * Sim_Start_Date;
 
 int main(int argc, char* argv[]) {
+
   time_t clock;					// current date
   int single_run_number;			// number of single run
   if (argc > 2) {
@@ -67,6 +68,13 @@ void setup(char *paramfile) {
   read_parameters(paramfile);
   get_global_parameters();
 
+  // Date Setup
+  // If Start_date parameter is "today", then do default constructor
+  if (strncmp(Start_date, "today", 5)==0)
+    Sim_Start_Date = new Date();
+  else
+    Sim_Start_Date = new Date(string(Start_date), Date::MMDDYYYY);
+
   // create the output directory, if it does not already exist
   mask = umask(0); // get the current mask, which reads and sets...
   umask(mask);     // so now we have to put it back
@@ -82,41 +90,27 @@ void setup(char *paramfile) {
   Places.setup();
   Pop.setup();
 
-  // Date Setup
-  // If Start_date parameter is "today", then set do default constructor
-  if (strncmp(Start_date, "today", 5)==0) {
-    Fred_Date = new Date(Days);
-
-  } else {
-    int day_of_month = Date::parse_day_of_month_from_date_string(string(Start_date), Date::MMDDYYYY);
-    int month = Date::parse_month_from_date_string(string(Start_date), Date::MMDDYYYY);
-    int year = Date::parse_year_from_date_string(string(Start_date), Date::MMDDYYYY);
-
-    Fred_Date = new Date(year, month, day_of_month, Days);
-
-  }
-
   // Write the date info to a file
   char filename[256];
   sprintf(filename, "%s/fred_date.txt", Output_directory);
-  FredDatefp = fopen(filename, "w");
-  if (FredDatefp == NULL) {
+  FILE *fred_date_fp = fopen(filename, "w");
+  if (fred_date_fp == NULL) {
     printf("Help! Can't open %s\n", filename);
     abort();
   }
 
   for (int day = 0; day < Days; day++) {
-    fprintf(FredDatefp, "%d\t%s %d/%d/%d\t%d Week %d\n",
+    fprintf(fred_date_fp, "%d\t%s\t%d-%d-%d\t%d Week %d\n",
       day,
-      Fred_Date->get_day_of_week_string(day).c_str(),
-      Fred_Date->get_month(day),
-      Fred_Date->get_day_of_month(day),
-      Fred_Date->get_year(day),
-      Fred_Date->get_epi_week_year(day),
-      Fred_Date->get_epi_week(day));
+      Sim_Start_Date->get_day_of_week_string(day).c_str(),
+      Sim_Start_Date->get_year(day),
+      Sim_Start_Date->get_month(day),
+      Sim_Start_Date->get_day_of_month(day),
+      Sim_Start_Date->get_epi_week_year(day),
+      Sim_Start_Date->get_epi_week(day));
   }
 
-  fclose(FredDatefp);
+  fclose(fred_date_fp);
 
   if (Quality_control) {
     Pop.quality_control();

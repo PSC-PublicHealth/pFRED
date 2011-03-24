@@ -24,18 +24,23 @@ using namespace std;
 #include "Cognition.h"
 #include "Behavior.h"
 #include "Infection.h"
+#include "Person_Event_Interface.h"
 class Place;
 class Disease;
+class Date;
+
+class Population;
 
 class Person {
 public:
   Person();
   UNIT_TEST_VIRTUAL ~Person();
-  UNIT_TEST_VIRTUAL void setup(int index, int age, char sex, int marital, int profession, Place **favorite_places, int profile, Population* pop);
-  UNIT_TEST_VIRTUAL void reset();
-  UNIT_TEST_VIRTUAL void update(int day);
-  UNIT_TEST_VIRTUAL void update_infectious_behavior(int day) { behavior->update_infectious_behavior(day); }
-  UNIT_TEST_VIRTUAL void update_susceptible_behavior(int day)  { behavior->update_susceptible_behavior(day); }
+  UNIT_TEST_VIRTUAL void setup(int index, int age, char sex, int marital, int profession,
+                               Place **favorite_places, int profile, Population* pop,
+                               Date *sim_start_date);
+  UNIT_TEST_VIRTUAL void reset(Date *sim_start_date);
+  UNIT_TEST_VIRTUAL void update_infectious_behavior(Date *sim_start_date, int day) { behavior->update_infectious_behavior(sim_start_date, day); }
+  UNIT_TEST_VIRTUAL void update_susceptible_behavior(Date *sim_start_date, int day)  { behavior->update_susceptible_behavior(sim_start_date, day); }
   UNIT_TEST_VIRTUAL void print(int disease) const;
   UNIT_TEST_VIRTUAL void print_out(int disease) const;
   UNIT_TEST_VIRTUAL void print_schedule() const;
@@ -43,7 +48,7 @@ public:
   int is_symptomatic() { return health->is_symptomatic(); }
   bool is_susceptible(int dis) { return health->is_susceptible(dis); }
   bool is_infectious(int dis) { return health->is_infectious(dis); }
-  int get_diseases() { return pop->get_diseases(); }
+  int get_diseases();
   
   // access functions:
   UNIT_TEST_VIRTUAL int get_id() const { return idx; }
@@ -72,7 +77,7 @@ public:
   UNIT_TEST_VIRTUAL Population* get_population() const { return pop; }
   
   UNIT_TEST_VIRTUAL void set_changed(); // notify the population that this Person has changed
-  void update_demographics(int day) { demographics->update(day); }
+  void update_demographics(Date *sim_start_date, int day) { demographics->update(sim_start_date, day); }
   void update_health(int day) { health->update(day); }
   void update_cognition(int day) { cognition->update(day); }
   void update_behavior(int day) { behavior->update(day); }
@@ -83,6 +88,14 @@ public:
   void become_symptomatic(Disease *disease) { health->become_symptomatic(disease); }
   void recover(Disease * disease) { health->recover(disease); }
   
+  Person * give_birth();
+
+  //Event Handling
+  UNIT_TEST_VIRTUAL void register_event_handler(Person_Event_Interface *event_handler);
+  UNIT_TEST_VIRTUAL void deregister_event_handler(Person_Event_Interface *event_handler);
+  UNIT_TEST_VIRTUAL void notify_property_change(string property_name, int prev_val, int new_val);
+  UNIT_TEST_VIRTUAL void notify_property_change(string property_name, bool new_val);
+
 private:
   int idx;
   Population *pop;
@@ -90,6 +103,7 @@ private:
   Health *health;
   Behavior *behavior;
   Cognition *cognition;
+  vector<Person_Event_Interface *> *registered_event_handlers;
 };
 
 #endif // _FRED_PERSON_H
