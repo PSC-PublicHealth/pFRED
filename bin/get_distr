@@ -6,6 +6,7 @@ use Env;
 my $FRED = $ENV{FRED_HOME};
 die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
+my @places = qw/N X H C S O W/;
 my ($dir) = @ARGV;
 $dir = "OUT" if not $dir;
 open FH, ">distr";
@@ -14,7 +15,6 @@ for my $i (1..20) {
     # print "distr for run $i\n";
     `grep -v 'S id' $dir/trace$i.txt | grep -v 'M id' > tmp`;
     my $n = `wc -l tmp | awk '{print \$1}'`;
-    my @places = qw/N X H C S O W/;
     my $tot = 0.0;
     for my $p (@places) {
       # print "p = $p  n = $n\n";
@@ -29,13 +29,10 @@ for my $i (1..20) {
 }
 close FH;
 
-get_mean_std("distr", 0);
-get_mean_std("distr", 1);
-get_mean_std("distr", 2);
-get_mean_std("distr", 3);
-get_mean_std("distr", 4);
-get_mean_std("distr", 5);
-get_mean_std("distr", 6);
+for my $i (0..6) {
+  print "$places[$i] ";
+  get_mean_std("distr", $i);
+}
 unlink "distr";
 exit;
 
@@ -58,7 +55,7 @@ sub get_mean_std {
   close FH;
   $mean = $sum/$n if $n;
   $std = sqrt(($n*$sumsq - $sum*$sum)/($n*($n-1))) if ($n > 1);
-  printf "N %5.2f %4.2f %d\n", $mean, $std, $n;  
+  printf "%5.2f %4.2f %d\n", $mean, $std, $n;  
   # return ($n, $mean, $std);
 }
   
