@@ -92,6 +92,16 @@ private:
 
   static int next_id;
 
+  //Used for reporting
+  static void reset_static_arrays();
+
+  static bool is_intialized;
+  static int age_count_male[Demographics::MAX_AGE + 1];
+  static int age_count_female[Demographics::MAX_AGE + 1];
+  static int birth_count[Demographics::MAX_PREGNANCY_AGE + 1];
+  static int death_count_male[Demographics::MAX_AGE + 1];
+  static int death_count_female[Demographics::MAX_AGE + 1];
+
 };
 
 #endif // _FRED_POPULATION_H

@@ -26,6 +26,7 @@
 #include "Vaccine_Manager.h"
 #include "Age_Map.h"
 #include "Random.h"
+#include "Date.h"
 
 using namespace std; 
 
@@ -37,7 +38,21 @@ int V_count;
 //Static variables
 int Population::next_id = 0;
 
+//Used for reporting
+bool Population::is_intialized = false;
+int Population::age_count_male[Demographics::MAX_AGE + 1];
+int Population::age_count_female[Demographics::MAX_AGE + 1];
+int Population::birth_count[Demographics::MAX_PREGNANCY_AGE + 1];
+int Population::death_count_male[Demographics::MAX_AGE + 1];
+int Population::death_count_female[Demographics::MAX_AGE + 1];
+
 Population::Population() {
+
+  //Initialize static arrays only once
+  if (!Population::is_intialized) {
+    Population::reset_static_arrays();
+    Population::is_intialized = true;
+  }
 
   pop.clear();
   pop_map.clear();
@@ -296,6 +311,13 @@ void Population::update(int day) {
     Person * baby = birth_list[i]->give_birth();
     baby->register_event_handler(this);
     add_person(baby);
+
+    //For reporting
+    if (Verbose) {
+      int age_lookup = birth_list[i]->get_age();
+      age_lookup = (age_lookup <= Demographics::MAX_PREGNANCY_AGE ? age_lookup : Demographics::MAX_PREGNANCY_AGE);
+      Population::birth_count[age_lookup]++;
+    }
   }
 
   if (Verbose) {
@@ -305,6 +327,17 @@ void Population::update(int day) {
   // remove the dead from the population
   size_t deaths = death_list.size();
   for (size_t i = 0; i < deaths; i++) {
+
+    //For reporting
+    if (Verbose) {
+      int age_lookup = death_list[i]->get_age();
+      age_lookup = (age_lookup <= Demographics::MAX_AGE ? age_lookup : Demographics::MAX_AGE);
+      if (death_list[i]->get_sex() == 'F')
+        Population::death_count_female[age_lookup]++;
+      else
+        Population::death_count_male[age_lookup]++;
+    }
+
     delete_person(death_list[i]);
   }
 
@@ -349,6 +382,32 @@ void Population::update(int day) {
 
   // give out anti-virals (after today's infections)
   av_manager->disseminate(day);
+
+
+  //Only print the statistics on December 31 of each year of the simulation
+  if (Verbose && Sim_Start_Date->get_day_of_month(day) == 31 && Sim_Start_Date->get_month(day) == Date::DECEMBER) {
+
+    for (int i = 0; i < pop_size; ++i) {
+      int age_lookup = pop[i]->get_age();
+      age_lookup = (age_lookup <= Demographics::MAX_AGE ? age_lookup : Demographics::MAX_AGE);
+      if (pop[i]->get_sex() == 'F')
+        Population::age_count_female[age_lookup]++;
+      else
+        Population::age_count_male[age_lookup]++;
+    }
+
+    for (int i = 0; i < Demographics::MAX_AGE; ++i)
+    {
+      fprintf(Statusfp, "DEMOGRAPHICS Year %d TotalPop %d Age %d Females [Count:Deaths:Births] [ %d %d %d ] Males [Count:Deaths] [ %d %d ]\n",
+          Sim_Start_Date->get_year(day), pop_size,
+          i, Population::age_count_female[i], Population::death_count_female[i],
+          Population::birth_count[(i <= Demographics::MAX_PREGNANCY_AGE ? i : Demographics::MAX_PREGNANCY_AGE)],
+          Population::age_count_male[i], Population::death_count_male[i]);
+      fflush(stdout);
+    }
+
+    Population::reset_static_arrays();
+  }
 
 }
 
@@ -435,8 +494,6 @@ void Population::end_of_run() {
   graveyard.clear();
   death_list.clear();
 
-  this->read_population();
-
 }
 
 Disease *Population::get_disease(int s) {
@@ -511,6 +568,20 @@ void Population::set_changed(Person *p){
   incremental_changes[p]=true; // note that this element has been changed
   never_changed.erase(p);      // remove it from this list 
   // (might already be gone, but this won't hurt)
+}
+
+//Static function to reset arrays
+void Population::reset_static_arrays() {
+  for (int i = 0; i <= Demographics::MAX_AGE; ++i) {
+    Population::age_count_male[i] = 0;
+    Population::age_count_female[i] = 0;
+    Population::death_count_male[i] = 0;
+    Population::death_count_female[i] = 0;
+  }
+
+  for (int i = 0; i <= Demographics::MAX_PREGNANCY_AGE; ++i) {
+    Population::birth_count[i] = 0;
+  }
 }
 
 //Implement the interface
