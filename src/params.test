@@ -5,7 +5,14 @@ pregnancy_prob_values = 0
 at_risk_ages[0] = 0
 at_risk_values[0] = 0
 outdir = OUT.TEST
+popdir = .
 popfile = test_pop.txt
 locfile = test_loc.txt
 vaccine_tracefile = none
 tracefile = trace
+
+min_latitude = 40.43
+max_latitude = 40.47
+min_longitude = -65.05
+max_longitude = -64.97
+verbose = 1

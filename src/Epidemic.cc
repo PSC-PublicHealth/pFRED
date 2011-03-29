@@ -72,6 +72,11 @@ void Epidemic::reset() {
 }
 
 void Epidemic::update_stats(int day) {
+  if (Verbose>1) {
+    fprintf(Statusfp, "epidemic update\n");
+    fflush(Statusfp);
+  }
+
   if (day == 0) {
     N_init = N = disease->get_population()->get_pop_size();
   }
@@ -100,6 +105,11 @@ void Epidemic::update_stats(int day) {
     if (NR)
       RR = (double)rcount / (double)NR;
   }
+  if (Verbose>1) {
+    fprintf(Statusfp, "epidemic update finished\n");
+    fflush(Statusfp);
+  }
+
 }
 
 void Epidemic::print_stats(int day) {

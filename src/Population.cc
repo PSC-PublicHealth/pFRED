@@ -66,6 +66,7 @@ Population::Population() {
 }
 
 Population::~Population() {
+  return;
   // free all memory (remember, first delete the referenced memory before
   // deleting the pointer to it --as the vector is an array of pointers.
   for (unsigned i = 0; i < pop.size(); ++i)
@@ -330,7 +331,7 @@ void Population::update(int day) {
     }
   }
 
-  if (Verbose) {
+  if (Verbose>1) {
     fprintf(Statusfp, "births = %d\n", (int)births);fflush(stdout);
   }
 
@@ -351,7 +352,7 @@ void Population::update(int day) {
     delete_person(death_list[i]);
   }
 
-  if (Verbose) {
+  if (Verbose>1) {
     fprintf(Statusfp, "deaths = %d\n", (int)deaths);fflush(stdout);
   }
 
@@ -387,6 +388,10 @@ void Population::update(int day) {
 
   // apply transmission model in all infectious places
   for (int s = 0; s < diseases; s++) {
+    if (Verbose > 1) {
+      fprintf(Statusfp, "disease = %d day = %d\n",s,day);fflush(stdout);
+      disease[s].print();
+    }
     disease[s].update(Sim_Start_Date, day);
   }
 
@@ -417,6 +422,10 @@ void Population::update(int day) {
     }
 
     Population::reset_static_arrays();
+  }
+
+  if (Verbose>1) {
+    fprintf(Statusfp, "population update finished\n");fflush(stdout);
   }
 
 }
@@ -485,24 +494,6 @@ void Population::end_of_run() {
   
   // print out all those agents who never changed
   this->print(-1);
-
-  // free all memory (remember, first delete the referenced memory before
-  // deleting the pointer to it --as the vector is an array of pointers.
-  for (unsigned i = 0; i < pop.size(); ++i)
-    delete pop[i];
-
-  pop.clear();
-  pop_map.clear();
-  birth_list.clear();
-
-  this->pop_size = 0;
-
-  // loop over dead agents
-  for (unsigned i = 0; i < graveyard.size(); ++i)
-    delete graveyard[i];
-
-  graveyard.clear();
-  death_list.clear();
 }
 
 

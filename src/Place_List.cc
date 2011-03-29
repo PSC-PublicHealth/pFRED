@@ -426,13 +426,13 @@ void Place_List::quality_control() {
 
 void Place_List::end_of_run() {
   int number_places = places.size();
-  if (Verbose) {
+  if (Verbose>1) {
     fprintf(Statusfp, "places end_of_run entered\n"); fflush(Statusfp);
   }
   for (int p = 0; p < number_places; p++) {
     places[p]->clear_counts();
   }
-  if (Verbose) {
+  if (Verbose>1) {
     fprintf(Statusfp, "places end_of_run finished\n"); fflush(Statusfp);
   }
 }
