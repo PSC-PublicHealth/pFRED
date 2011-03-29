@@ -48,6 +48,10 @@ Epidemic::~Epidemic() {
 }
 
 void Epidemic::reset() {
+  if (Verbose) {
+    fprintf(Statusfp, "epidemic %d reset started\n", id);
+    fflush(Statusfp);
+  }
   infected.clear();
   infectious.clear();
   inf_households.clear();
@@ -57,14 +61,21 @@ void Epidemic::reset() {
   inf_workplaces.clear();
   inf_offices.clear();
   attack_rate = 0.0;
-  N_init = N = disease->get_population()->get_pop_size();
   total_incidents = 0;
   total_clinical_incidents = 0;
   r_index = V_count = S_count = C_count = c_count = 0;
   E_count = I_count = i_count = R_count = r_count = M_count = 0;
+  if (Verbose) {
+    fprintf(Statusfp, "epidemic %d reset finished\n", id);
+    fflush(Statusfp);
+  }
 }
 
 void Epidemic::update_stats(int day) {
+  if (day == 0) {
+    N_init = N = disease->get_population()->get_pop_size();
+  }
+
   clinical_incidents = c_count;
   incident_infections = C_count;
   vaccine_acceptance = V_count;

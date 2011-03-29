@@ -35,6 +35,7 @@ public:
   Place * select_neighborhood() { return patch->select_neighborhood(); }
   UNIT_TEST_VIRTUAL int get_adults() { return adults; }
   UNIT_TEST_VIRTUAL int get_children() { return children; }
+  void clear_counts();
 private:
   Person * HoH;
   vector <Person *> housemate;

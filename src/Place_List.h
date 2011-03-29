@@ -29,6 +29,7 @@ public:
   Place * get_place_at_position(int i) { return places[i]; }
   void add_place(Place * p);
   int get_number_of_places() { return places.size(); }
+  void end_of_run();
 
 private:
   char locfile[80];

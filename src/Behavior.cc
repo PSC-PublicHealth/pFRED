@@ -26,26 +26,29 @@
 Behavior::Behavior (Person *person, Place **fav_place, int pro) {
   self = person;
   for (int i = 0; i < FAVORITE_PLACES; i++) {
-    this->favorite_place[i] = fav_place[i];
-    if (fav_place[i] != NULL) {
-      fav_place[i]->add_person(self);
-    }
+    favorite_place[i] = fav_place[i];
   }
   assert(get_household() != NULL);
 
   // get the neighbhood from the household
   favorite_place[NEIGHBORHOOD_INDEX] = favorite_place[HOUSEHOLD_INDEX]->get_patch()->get_neighborhood();
   if (get_neighborhood() == NULL) { 
-    printf("person %d house %d \n", person->get_id(), get_household()->get_id());
+    printf("Help! NO NEIGHBORHOOD for person %d house %d \n", person->get_id(), get_household()->get_id());
   }
   assert(get_neighborhood() != NULL);
-  favorite_place[NEIGHBORHOOD_INDEX]->add_person(self);
-
   profile = pro;
   schedule_updated = -1;
 }
 
 void Behavior::reset() {
+
+  // register in all the favorite places
+  for (int i = 0; i < FAVORITE_PLACES; i++) {
+    if (favorite_place[i] != NULL) {
+      favorite_place[i]->add_person(self);
+    }
+  }
+
   // reset the daily schedule
   schedule_updated = -1;
 }

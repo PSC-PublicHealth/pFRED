@@ -87,3 +87,9 @@ void Household::add_person(Person * per) {
   housemate.push_back(per);
   // for (int i = 0; i < N; i++) printf("%d ", housemate[i]->get_id()); printf("\n"); fflush(stdout);
 }
+
+void Household::clear_counts() {
+  N = 0; 
+  adults = children = 0;
+  housemate.clear();
+}

@@ -37,6 +37,7 @@ public:
   bool is_pregnant()       { return pregnant; }
   void set_occupation();
   void print();
+  bool is_deceased() { return deceased; }
 	
 private:
   Person *self;                // Pointer to the person class belongs

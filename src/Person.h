@@ -53,6 +53,7 @@ public:
   // access functions:
   UNIT_TEST_VIRTUAL int get_id() const { return idx; }
   UNIT_TEST_VIRTUAL Place *get_household() const;
+  UNIT_TEST_VIRTUAL Place *get_neighborhood() const;
   int get_age() const { return demographics->get_age(); }
   UNIT_TEST_VIRTUAL char get_sex() const;
   UNIT_TEST_VIRTUAL char get_marital_status() const;
@@ -87,6 +88,7 @@ public:
   void become_infectious(Disease * disease) { health->become_infectious(disease); }
   void become_symptomatic(Disease *disease) { health->become_symptomatic(disease); }
   void recover(Disease * disease) { health->recover(disease); }
+  bool is_deceased() { return demographics->is_deceased(); }
   
   Person * give_birth();
 

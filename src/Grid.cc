@@ -78,8 +78,6 @@ void Grid::setup() {
       }
     }
   }
-
-  // reset(0); // FOR DEBUGGING ONLY
 }
 
 void Grid::make_neighborhoods() {
@@ -172,7 +170,6 @@ Patch * Grid::select_patch_by_gravity_model(int row, int col) {
 
   // select a patch at random using the computed probabilities
   double r = RANDOM()*total;
-  Patch *p;
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       if (r < patch_prob[i][j]) {
@@ -203,4 +200,23 @@ void Grid::test_gravity_model() {
     }
   }
   exit(0);
+}
+
+void Grid::quality_control() {
+  if (Verbose) {
+    fprintf(Statusfp, "patches quality control check\n");
+    fflush(Statusfp);
+  }
+  
+  for (int row = 0; row < rows; row++) {
+    for (int col = 0; col < cols; col++) {
+      patch[row][col].quality_control();
+    }
+  }
+
+  if (Verbose) {
+    fprintf(Statusfp, "patches quality control finished\n");
+    fflush(Statusfp);
+  }
+  
 }

@@ -44,6 +44,7 @@ public:
   Person *select_random_person_from_neighbors();
   Place *select_neighborhood();
   double distance_to_patch(Patch *p2);
+  void quality_control();
 
 protected:
   Place * select_neighboring_patch();

@@ -34,11 +34,12 @@ class Person;
 class Place {
 public:
   Place() {}
-  UNIT_TEST_VIRTUAL ~Place() {}
+  ~Place() {}
+
   UNIT_TEST_VIRTUAL void setup(int loc_id, const char *lab, double lon, double lat, Place *cont, Population *pop);
   virtual void reset();
   UNIT_TEST_VIRTUAL void update(int day);
-  UNIT_TEST_VIRTUAL void print(int disease);
+  virtual void print(int disease);
   virtual void add_person(Person * per);
   virtual void add_susceptible(int disease, Person * per);
   virtual void add_infectious(int disease, Person * per, char status);
@@ -83,7 +84,7 @@ public:
   UNIT_TEST_VIRTUAL void add_deaths() { deaths++; }
   Patch * get_patch() { return patch; }
   void set_patch(Patch *p) { patch = p; }
-  void clear_counts() { N = 0; }
+  virtual void clear_counts();
   
 protected:
   int id;					// place id

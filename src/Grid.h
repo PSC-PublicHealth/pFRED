@@ -30,6 +30,7 @@ public:
   Patch * select_patch_by_gravity_model(int row, int col);
   void test_gravity_model();
   void make_neighborhoods();
+  void quality_control();
 
 protected:
   Patch ** patch;		 		// array of patches

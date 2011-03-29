@@ -62,18 +62,16 @@ Population::Population() {
   vacc_manager = NULL;
   diseases = -1;
   mutation_prob = NULL;
-  population_changed = false;
+  population_changed = true;
 }
 
 Population::~Population() {
-
   // free all memory (remember, first delete the referenced memory before
   // deleting the pointer to it --as the vector is an array of pointers.
   for (unsigned i = 0; i < pop.size(); ++i)
     delete pop[i];
   pop.clear();
   pop_map.clear();
-
   pop_size = 0;
   if(disease != NULL) delete [] disease;
   if(vacc_manager != NULL) delete vacc_manager;
@@ -105,18 +103,18 @@ void Population::get_parameters() {
       printf("\n");
     }
   }
-  
 }
+
 
 void Population::add_person(Person * person) {
   assert(pop_map.find(person) == pop_map.end());
   pop.push_back(person);
-  assert(pop_size == pop.size()-1);
+  assert((unsigned) pop_size == pop.size()-1);
   pop_map[person] = pop_size;
   pop_size = pop.size();
   population_changed = true;
-
 }
+
 
 void Population::delete_person(Person * person) {
   map<Person *,int>::iterator it;
@@ -133,9 +131,9 @@ void Population::delete_person(Person * person) {
   pop_size--;
   pop_map.erase(it);
   pop_map[last] = n;
-  if (pop_size != pop.size()) { printf("pop_size = %d  pop.size() = %d\n",
+  if ((unsigned) pop_size != pop.size()) { printf("pop_size = %d  pop.size() = %d\n",
 				       pop_size, (int) pop.size()); }
-  assert(pop_size == pop.size());
+  assert((unsigned) pop_size == pop.size());
   graveyard.push_back(person);
   population_changed = true;
 }
@@ -151,7 +149,6 @@ void Population::prepare_for_birth(Person *per) {
 }
 
 void Population::setup() {
-
   if (Verbose) {
     fprintf(Statusfp, "setup population entered\n");
     fflush(Statusfp);
@@ -161,15 +158,73 @@ void Population::setup() {
     disease[is].setup(is, this, mutation_prob[is]);
   }
   read_profiles(profilefile);
-  read_population();
+  vacc_manager = new Vaccine_Manager(this);
+  av_manager   = new AV_Manager(this);
+  if (Verbose > 1) av_manager->print();
   if (Verbose) {
     fprintf(Statusfp, "setup population completed, diseases = %d\n", diseases);
     fflush(Statusfp);
   }
+}
+
+void Population::reset(int run) {
+  if (Verbose) {
+    fprintf(Statusfp, "reset population entered for run %d\n", run);
+    fflush(Statusfp);
+  }
+
+  // reset population level infections
+  for (int s = 0; s < diseases; s++) {
+    disease[s].reset();
+  }
   
-  vacc_manager = new Vaccine_Manager(this);
-  av_manager   = new AV_Manager(this);
-  if(Verbose > 1) av_manager->print();
+  if (population_changed) {
+
+    // free any memory allocated on previous runs
+    for (unsigned i = 0; i < pop.size(); ++i)
+      delete pop[i];
+    pop.clear();
+    pop_map.clear();
+    pop_size = 0;
+    birth_list.clear();
+
+    // loop over dead agents
+    for (unsigned i = 0; i < graveyard.size(); ++i)
+      delete graveyard[i];
+    graveyard.clear();
+    death_list.clear();
+
+    read_population();
+    population_changed = false;
+  }
+  else {
+    for (int p = 0; p < pop_size; p++){
+      pop[p]->reset(Sim_Start_Date);
+    }
+  }
+
+  // empty out the incremental list of Person's who have changed
+  incremental_changes.clear();
+  never_changed.clear();
+  for (int p = 0; p < pop_size; p++){
+    never_changed[pop[p]]=true; // add all agents to this list at start
+  }
+
+  if(Verbose > 0){
+    int count = 0;
+    for(int p = 0; p < pop_size; p++){
+      Disease* s = &disease[0];
+      if(pop[p]->get_health()->is_immune(s)) count++;
+    }
+    cout << "Number of Residually Immune people = "<<count << "\n";
+  }
+  av_manager->reset();
+  vacc_manager->reset();
+  
+  if (Verbose) {
+    fprintf(Statusfp, "reset population completed\n");
+    fflush(Statusfp);
+  }
 }
 
 void Population::read_population() {
@@ -236,57 +291,12 @@ void Population::read_population() {
 
   fclose(fp);
   assert(pop_size == psize);
-  population_changed = false;
   
   if (Verbose) {
     fprintf(Statusfp, "finished reading population = %d\n", pop_size);
     fflush(Statusfp);
   }
 
-}
-
-void Population::reset(int run) {
-  if (Verbose) {
-    fprintf(Statusfp, "reset population entered for run %d\n", run);
-    fflush(Statusfp);
-  }
-
-  if (population_changed) {
-    pop.clear();
-    pop_map.clear();
-    pop_size = 0;
-    read_population();
-  }
-
-  // reset population level infections
-  for (int s = 0; s < diseases; s++) {
-    disease[s].reset();
-  }
-  
-  // empty out the incremental list of Person's who have changed
-  incremental_changes.clear();
-  never_changed.clear();
-  
-  for (int p = 0; p < pop_size; p++){
-    pop[p]->reset(Sim_Start_Date);
-    never_changed[pop[p]]=true; // add all agents to this list at start
-  }
-  if(Verbose > 0){
-    int count = 0;
-    for(int p = 0; p < pop_size; p++){
-      Disease* s = &disease[0];
-      if(pop[p]->get_health()->is_immune(s)) count++;
-    }
-    cout << "Number of Residually Immune people = "<<count << "\n";
-  }
-  av_manager->reset();
-  vacc_manager->reset();
-  population_changed = false;
-  
-  if (Verbose) {
-    fprintf(Statusfp, "reset population completed\n");
-    fflush(Statusfp);
-  }
 }
 
 void Population::update(int day) {
@@ -493,8 +503,9 @@ void Population::end_of_run() {
 
   graveyard.clear();
   death_list.clear();
-
 }
+
+
 
 Disease *Population::get_disease(int s) {
   return &disease[s];

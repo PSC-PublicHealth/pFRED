@@ -36,6 +36,9 @@ public:
   double get_contacts_per_day(int disease);
   void add_person(Person * per);
   int children_in_grade(int age) { if (-1 < age && age < 20) return grade[age]; else return 0; }
+  void print(int disease);
+  void clear_counts();
+
 private:
   int grade[20];
 };

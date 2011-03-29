@@ -65,8 +65,17 @@ void setup(char *paramfile) {
   mode_t mask;        // the user's current umask
   mode_t mode = 0777; // as a start
 	
+  // get runtime parameters
   read_parameters(paramfile);
   get_global_parameters();
+  Patches.get_parameters();
+  Pop.get_parameters();
+  Places.get_parameters();
+
+  // runtime initialization
+  Patches.setup();
+  Places.setup();
+  Pop.setup();
 
   // Date Setup
   // If Start_date parameter is "today", then do default constructor
@@ -83,13 +92,6 @@ void setup(char *paramfile) {
     err(errno, "mkdir(Output_directory) failed");      // or die
 
   Random_start_day = (Epidemic_offset > 6);
-  Patches.get_parameters();
-  Pop.get_parameters();
-  Places.get_parameters();
-  Patches.setup();
-  Places.setup();
-  Pop.setup();
-
   // Write the date info to a file
   char filename[256];
   sprintf(filename, "%s/fred_date.txt", Output_directory);
@@ -100,7 +102,7 @@ void setup(char *paramfile) {
   }
 
   for (int day = 0; day < Days; day++) {
-    fprintf(fred_date_fp, "%d\t%s\t%d-%d-%d\t%d Week %d\n",
+    fprintf(fred_date_fp, "%d\t%s\t%d-%02d-%02d\t%d Week %d\n",
       day,
       Sim_Start_Date->get_day_of_week_string(day).c_str(),
       Sim_Start_Date->get_year(day),
@@ -112,10 +114,6 @@ void setup(char *paramfile) {
 
   fclose(fred_date_fp);
 
-  if (Quality_control) {
-    Pop.quality_control();
-    Places.quality_control();
-  }
 }
 
 void run_sim(int run) {
@@ -159,9 +157,19 @@ void run_sim(int run) {
   else { new_seed = Seed; }
   fprintf(Statusfp, "seed = %lu\n", new_seed);
   INIT_RANDOM(new_seed);
-  Places.reset(run);
+
+  // initialize for new run
   Pop.reset(run);
+  Places.reset(run);
   Patches.reset(run);
+
+  if (Quality_control) {
+    Pop.quality_control();
+    Places.quality_control();
+    Patches.quality_control();
+  }
+
+  // allow for an offset in the start of the epidemic
   if (Random_start_day) {
     // cycle through days of the week for start day
     Epidemic_offset = (run-1) % 7;
@@ -185,8 +193,10 @@ void run_sim(int run) {
 
   }
   Pop.end_of_run();
+  Places.end_of_run();
   fclose(Outfp);
   if (Tracefp != NULL) fclose(Tracefp);
+  if (VaccineTracefp != NULL) fclose(VaccineTracefp);
 }
 
 void cleanup(int run) {

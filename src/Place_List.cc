@@ -41,7 +41,7 @@ void Place_List::setup() {
   int locations;
 
   if (Verbose) {
-    fprintf(Statusfp, "Place_List::setup() entered\n"); fflush(Statusfp);
+    fprintf(Statusfp, "setup places entered\n"); fflush(Statusfp);
   }
   get_param((char *) "locfile", locfile);
   sprintf(location_file, "%s/%s", Population_directory, locfile);
@@ -59,7 +59,7 @@ void Place_List::setup() {
   }
   places.clear();
 
-  // setup a Neighborhood for each patch in the grid
+  // generate a Neighborhood for each patch in the grid
   Patches.make_neighborhoods();
 
   int id;
@@ -176,6 +176,7 @@ void Place_List::quality_control() {
     fprintf(Statusfp, "places quality control check\n"); fflush(Statusfp);
   }
   
+  /*
   for (int p = 1; p < number_places; p++) {
     if (places[p]->get_size() < 1) {
       fprintf(Statusfp, "Help!  No one visits place %d\n", p);
@@ -183,6 +184,7 @@ void Place_List::quality_control() {
       continue;
     }
   }
+  */
   
   /*
   if (Verbose) {
@@ -342,6 +344,17 @@ void Place_List::quality_control() {
   }
   
   if (Verbose) {
+  // age distribution in schools
+    fprintf(Statusfp, "\nSchool age distribution:\n");
+    for (int p = 0; p < number_places; p++) {
+      if (places[p]->get_type() == SCHOOL) {
+	places[p]->print(0);
+      }
+    }
+    fprintf(Statusfp, "\n");
+  }
+  
+  if (Verbose) {
     int count[50];
     int total = 0;
     // size distribution of classrooms
@@ -411,3 +424,15 @@ void Place_List::quality_control() {
   }
 }
 
+void Place_List::end_of_run() {
+  int number_places = places.size();
+  if (Verbose) {
+    fprintf(Statusfp, "places end_of_run entered\n"); fflush(Statusfp);
+  }
+  for (int p = 0; p < number_places; p++) {
+    places[p]->clear_counts();
+  }
+  if (Verbose) {
+    fprintf(Statusfp, "places end_of_run finished\n"); fflush(Statusfp);
+  }
+}

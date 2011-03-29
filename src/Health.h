@@ -41,6 +41,7 @@ public:
   void become_infectious(Disease * disease);
   void become_symptomatic(Disease *disease);
   void become_immune(Disease* disease);
+  void become_removed(int disease);
   void declare_at_risk(Disease* disease);
   void recover(Disease * disease);
   bool is_susceptible(int disease) const {

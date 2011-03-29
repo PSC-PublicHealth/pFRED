@@ -118,6 +118,26 @@ void Infection::recover() {
   host->set_changed(); // note that the infection state changed
 }
 
+void Infection::remove() {
+  if (status == 'R') {
+    return;
+  }
+  if (status == 'E') {
+    disease->decrement_E_count();
+  }
+  if (status == 'I') {
+    disease->decrement_I_count();
+  }
+  if (status == 'i') {
+    disease->decrement_i_count();
+  }
+  status = 'R';
+  host->set_changed(); // note that the infection state changed
+  infectivity = 0.0;
+  susceptibility = 0.0;
+  symptoms = 0.0;
+}
+
 void Infection::update(int today) {
   if (status == 'E' && today == get_infectious_date()) {
     host->become_infectious(disease);

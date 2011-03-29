@@ -29,6 +29,7 @@ School::School(int loc, const char *lab, double lon, double lat, Place* containe
   type = SCHOOL;
   setup(loc, lab, lon, lat, container, pop);
   get_parameters(population->get_diseases());
+  for (int i = 0; i < 20; i++) grade[i] = 0;
 }
 
 
@@ -47,7 +48,6 @@ void School::reset() {
   }
   close_date = INT_MAX;
   open_date = 0;
-  for (int i = 0; i < 20; i++) grade[i] = 0;
 }
 
 
@@ -156,7 +156,20 @@ void School::add_person(Person * per) {
   else {
     grade[19]++;
   }
-  
+  // printf("added person of age %d to school %d  grade size = %d\n",age,id, grade[age]); fflush(stdout);
 }
 
+void School::print(int disease) {
+  printf("Place %d label %s type %c ", id, label, type);
+  printf("S %d I %d N %d\n", S[disease], I[disease], N);
+  for (int g = 0; g < 20; g++) {
+    printf("grade %d = %d  ",g,grade[g]);
+  }
+  printf("\n");
+  fflush(stdout);
+}
 
+void School::clear_counts() {
+  N = 0; 
+  for (int i = 0; i < 20; i++) grade[i] = 0;
+}

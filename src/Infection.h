@@ -37,6 +37,7 @@ class Infection {
   UNIT_TEST_VIRTUAL void become_symptomatic();
   UNIT_TEST_VIRTUAL void become_susceptible();
   UNIT_TEST_VIRTUAL void recover();
+  UNIT_TEST_VIRTUAL void remove();
   UNIT_TEST_VIRTUAL void update(int today);
   UNIT_TEST_VIRTUAL bool possibly_mutate(Health *health, int day); 	// may cause mutation and/or alter infection course
   bool is_infectious() const { return (status == 'I' || status == 'i'); }

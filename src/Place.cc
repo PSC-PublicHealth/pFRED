@@ -25,7 +25,6 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   strcpy(label, lab);
   longitude = lon;
   latitude = lat;
-  N = 0;
   
   // allocate disease-related memory
   susceptibles = new (nothrow) vector<Person *> [diseases];
@@ -46,20 +45,19 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   assert (deaths != NULL);
   total_deaths = new (nothrow) int [diseases];
   assert (total_deaths != NULL);
-  reset();
+  N = 0;
 }
 
 
 void Place::reset() {
   for (int s = 0; s < diseases; s++) {
-    // printf("PLACE %d  %s  reserving %d\n",id,label,N);
     susceptibles[s].reserve(N);
     infectious[s].reserve(N);
-    Sympt[s] = S[s] = I[s] = 0;
     total_cases[s] = total_deaths[s] = 0;
   }
-  close_date = INT_MAX;
+  update(0);
   open_date = 0;
+  close_date = INT_MAX;
   if (Verbose > 2) {
     printf("reset place: %d\n", id);
     print(0);
@@ -245,3 +243,4 @@ void Place::spread_infection(int day, int s) {
   } // end infectious list loop
 }
 
+void Place::clear_counts() { N = 0; }

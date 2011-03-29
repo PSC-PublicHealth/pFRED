@@ -37,7 +37,6 @@ void Patch::setup(Grid * patch_mgr, int i, int j, double xmin, double xmax, doub
   neighbors = patch_mgr->get_neighbors(i,j);
   houses = 0;
   household.clear();
-
 }
 
 void Patch::make_neighborhood() {
@@ -74,7 +73,6 @@ void Patch::reset(int run) {
   person.clear();
   workplace.clear();
   for (int age = 0; age < 20; age++) school[age].clear();
-  neighborhood->clear_counts();
 
   for (int i = 0; i < houses; i++) {
     house = (Household *) household[i];
@@ -93,14 +91,6 @@ void Patch::reset(int run) {
 	}
       }
     }
-  }
-  if (Verbose) {
-    printf("PATCH RESET: row = %d col = %d  pop = %d  houses = %d work = %d schools = ",
-	   row,col,(int)person.size(),(int)household.size(),(int)workplace.size());
-    for (int age = 0; age < 20; age++) {
-      printf("%d ", (int)school[age].size());
-    }
-    printf("\n");
   }
 }
 
@@ -121,8 +111,8 @@ void Patch::print_coord() {
 Place * Patch::select_neighborhood() {
   Patch * patch;
   double r = RANDOM();
-  double grav_prob = 0.001;
-  double self_prob = 0.95;
+  double grav_prob = 0.0;
+  double self_prob = 0.5;
 
   if (r < grav_prob) {
     // use gravity model
@@ -176,7 +166,7 @@ Place *Patch::select_random_school(int age) {
 
 Person *Patch::select_random_person_from_neighbors() {
   Patch * pat = NULL;
-  Person * per;
+  Person * per = NULL;
   int trial = 0;
   while (per == NULL && trial < 20) {
 
@@ -206,3 +196,14 @@ double Patch::distance_to_patch(Patch *p2) {
   return sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 }
 
+void Patch::quality_control() {
+  return;
+  fprintf(Statusfp,
+	  "PATCH row = %d col = %d  pop = %d  houses = %d work = %d schools = ",
+	  row,col,(int)person.size(),(int)household.size(),(int)workplace.size());
+  for (int age = 0; age < 20; age++) {
+    fprintf(Statusfp, "%d ", (int)school[age].size());
+  }
+  fprintf(Statusfp, "\n");
+  fflush(Statusfp);
+}

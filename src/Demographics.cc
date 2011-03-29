@@ -288,8 +288,8 @@ void Demographics::reset(Date * sim_start_date) {
 
   //Capture the values prior to reseting
   int prev_age       = age;
-  bool prev_pregnant = pregnant;
-  bool prev_deceased = deceased;
+  // bool prev_pregnant = pregnant;
+  // bool prev_deceased = deceased;
 
   age                = init_age;
   marital_status     = init_marital_status;

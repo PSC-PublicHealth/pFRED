@@ -110,7 +110,7 @@ void Person::reset(Date * sim_start_date) {
     if (!s->get_residual_immunity()->is_empty()) {
       double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
       if (RANDOM() < residual_immunity_prob)
-	      become_immune(s);
+	become_immune(s);
     }
   }
 }
@@ -129,6 +129,10 @@ void Person::become_immune(Disease* disease) {
 
 Place * Person::get_household() const {
   return behavior->get_household();
+}
+
+Place * Person::get_neighborhood() const {
+  return behavior->get_neighborhood();
 }
 
 char Person::get_sex() const { return demographics->get_sex(); }
@@ -184,13 +188,13 @@ void Person::set_changed(){
 Person * Person::give_birth() {
 
   int id = Population::get_next_id(), age = 0, married = -1, prof = 2;
-  int hood = -1, school = -1, classroom = -1, work = -1;
+  int school = -1, classroom = -1, work = -1;
   int office = -1, profile = 0;
-  char sex = (URAND(0.0, 1.0) < .5 ? 'M' : 'F');
+  char sex = (URAND(0.0, 1.0) < 0.5 ? 'M' : 'F');
 
   Place *favorite_place[] = {
     this->get_household(),
-    Places.get_place(hood),
+    this->get_neighborhood(),
     Places.get_place(school),
     Places.get_place(classroom),
     Places.get_place(work),

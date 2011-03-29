@@ -49,7 +49,7 @@ Health::Health (Person * person) {
   checked_for_av.assign(nantivirals,false);
   immunity.assign(diseases,false);
   at_risk.assign(diseases,false);
-  reset();
+  // reset();
 }
 
 Health::~Health(){
@@ -69,6 +69,7 @@ Health::~Health(){
 }
 
 void Health::reset() {
+  // printf("reset health for person %d  diseases = %d\n",self->get_id(),diseases); fflush(stdout);
   symptomatic_status = false;
   immunity.assign(immunity.size(),false);
   at_risk.assign(at_risk.size(),false);
@@ -111,7 +112,28 @@ void Health::become_susceptible(int disease) {
   status[disease] = 'S';
 }
 
+void Health::become_removed(int disease) {
+  if (infection[disease] != NULL) {
+    infection[disease]->remove();
+    delete infection[disease];
+    infection[disease] = NULL;
+  }
+  else {
+    self->get_population()->get_disease(disease)->decrement_S_count();
+  }
+  status[disease] = 'D';
+}
+
 void Health::update(int day) {
+
+  // if deceased, clear health status
+  if (self->is_deceased()) {
+    for (int s = 0; s < diseases; s++) {
+      become_removed(s);
+    }
+    return;
+  }
+
   // update vaccine status
   if (takes_vaccine) {
     int size = (int) vaccine_health.size();
