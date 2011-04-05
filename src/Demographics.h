@@ -28,6 +28,7 @@ public:
                int _marital_status,int _profession,
                Date * anchor_date, bool has_random_birthday = true);
   ~Demographics();
+  void setup(Date * anchor_date);
   void reset(Date * sim_start_date);
   void update(Date * sim_start_date, int day);
   int get_age()            { return age; }
@@ -35,9 +36,9 @@ public:
   int get_marital_status() { return marital_status; }
   int get_profession()     { return profession; }
   bool is_pregnant()       { return pregnant; }
+  bool is_deceased()       { return deceased; }
   void set_occupation();
   void print();
-  bool is_deceased() { return deceased; }
 	
 private:
   Person *self;                // Pointer to the person class belongs

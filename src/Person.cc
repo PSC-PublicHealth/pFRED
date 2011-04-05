@@ -48,11 +48,11 @@ Person::~Person() {
 
 void Person::setup(int index, int age, char sex, int marital,
                    int profession, Place **favorite_places, int profile,
-                   Population* Pop, Date *sim_start_date)
+                   Population* Pop, Date *sim_start_date, bool has_random_birthday)
 {
   idx = index;
   pop = Pop;
-  demographics = new Demographics(this, age, sex, marital, profession, sim_start_date, true);
+  demographics = new Demographics(this, age, sex, marital, profession, sim_start_date, has_random_birthday);
   health = new Health(this);
   behavior = new Behavior(this, favorite_places, profile);
   cognition = new Cognition(this);
@@ -110,7 +110,7 @@ void Person::reset(Date * sim_start_date) {
     if (!s->get_residual_immunity()->is_empty()) {
       double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
       if (RANDOM() < residual_immunity_prob)
-	become_immune(s);
+	      become_immune(s);
     }
   }
 }
@@ -185,7 +185,7 @@ void Person::set_changed(){
   this->pop->set_changed(this);
 }
 
-Person * Person::give_birth() {
+Person * Person::give_birth(int day) {
 
   int id = Population::get_next_id(), age = 0, married = -1, prof = 2;
   int school = -1, classroom = -1, work = -1;
@@ -202,8 +202,11 @@ Person * Person::give_birth() {
   };
 
   Person * baby = new Person();
-  baby->setup(id, age, sex, married, prof, favorite_place, profile, this->pop, Sim_Start_Date);
-  baby->reset(Sim_Start_Date);
+  Date * birth_date = new Date(Sim_Start_Date->get_year(day),
+                              Sim_Start_Date->get_month(day),
+                              Sim_Start_Date->get_day_of_month(day));
+  baby->setup(id, age, sex, married, prof, favorite_place, profile, this->pop, birth_date, false);
+  delete birth_date;
 
   return baby;
 }

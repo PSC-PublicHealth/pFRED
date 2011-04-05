@@ -37,7 +37,7 @@ public:
   UNIT_TEST_VIRTUAL ~Person();
   UNIT_TEST_VIRTUAL void setup(int index, int age, char sex, int marital, int profession,
                                Place **favorite_places, int profile, Population* pop,
-                               Date *sim_start_date);
+                               Date *sim_start_date, bool has_random_birthday);
   UNIT_TEST_VIRTUAL void reset(Date *sim_start_date);
   UNIT_TEST_VIRTUAL void update_infectious_behavior(Date *sim_start_date, int day) { behavior->update_infectious_behavior(sim_start_date, day); }
   UNIT_TEST_VIRTUAL void update_susceptible_behavior(Date *sim_start_date, int day)  { behavior->update_susceptible_behavior(sim_start_date, day); }
@@ -90,7 +90,7 @@ public:
   void recover(Disease * disease) { health->recover(disease); }
   bool is_deceased() { return demographics->is_deceased(); }
   
-  Person * give_birth();
+  Person * give_birth(int day);
 
   //Event Handling
   UNIT_TEST_VIRTUAL void register_event_handler(Person_Event_Interface *event_handler);
