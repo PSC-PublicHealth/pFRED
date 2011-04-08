@@ -713,3 +713,26 @@ void Date::add_to_vectors(int days_since_jan_1_1600) {
 Date::~Date() {
 
 }
+
+void Date::setup(char * output_directory, int days) {
+  // Write the date info to a file
+  char filename[256];
+  sprintf(filename, "%s/dates.txt", output_directory);
+  FILE *fred_date_fp = fopen(filename, "w");
+  if (fred_date_fp == NULL) {
+    printf("Help! Can't open %s\n", filename);
+    abort();
+  }
+  
+  for (int day = 0; day < days; day++) {
+    fprintf(fred_date_fp, "%d\t%s\t%d-%02d-%02d\t%d Week %d\n",
+	    day,
+	    this->get_day_of_week_string(day).c_str(),
+	    this->get_year(day),
+	    this->get_month(day),
+	    this->get_day_of_month(day),
+	    this->get_epi_week_year(day),
+	    this->get_epi_week(day));
+  }
+  fclose(fred_date_fp);
+}

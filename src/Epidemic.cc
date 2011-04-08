@@ -47,9 +47,9 @@ Epidemic::~Epidemic() {
   delete primary_cases_map;
 }
 
-void Epidemic::reset() {
+void Epidemic::clear() {
   if (Verbose) {
-    fprintf(Statusfp, "epidemic %d reset started\n", id);
+    fprintf(Statusfp, "clear epidemic %d started\n", id);
     fflush(Statusfp);
   }
   infected.clear();
@@ -66,7 +66,7 @@ void Epidemic::reset() {
   r_index = V_count = S_count = C_count = c_count = 0;
   E_count = I_count = i_count = R_count = r_count = M_count = 0;
   if (Verbose) {
-    fprintf(Statusfp, "epidemic %d reset finished\n", id);
+    fprintf(Statusfp, "clear epidemic %d finished\n", id);
     fflush(Statusfp);
   }
 }

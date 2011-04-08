@@ -29,7 +29,7 @@ public:
   Epidemic(Disease * str, Timestep_Map *);
   UNIT_TEST_VIRTUAL ~Epidemic();
   
-  void reset();
+  void clear();
   void update_stats(int day);
   void print_stats(int day);
   void add_infectious_place(Place *p, char type);

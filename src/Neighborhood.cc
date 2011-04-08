@@ -59,7 +59,7 @@ void Neighborhood::get_parameters(int diseases) {
 
 int Neighborhood::get_group(int disease, Person * per) {
   int age = per->get_age();
-  if (age < 18) { return 0; }
+  if (age < ADULT_AGE) { return 0; }
   else { return 1; }
 }
 

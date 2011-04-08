@@ -12,6 +12,14 @@
 #ifndef _FRED_PROFILE_H
 #define _FRED_PROFILE_H
 
+#define PRESCHOOL_PROFILE 0
+#define STUDENT_PROFILE 1
+#define TEACHER_PROFILE 2
+#define WORKER_PROFILE 3
+#define WEEKEND_WORKER_PROFILE 4
+#define UNEMPLOYED_PROFILE 5
+#define RETIRED_PROFILE 6
+
 class Profile {
   int id;
   double prob_visit[7][20];

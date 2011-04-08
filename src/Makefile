@@ -4,7 +4,7 @@
 CPP = g++ 
 
 # use this for development:
-CPPFLAGS = -g -m64 -O3 # -fast #-Wall
+CPPFLAGS = -g -m64 -O3 -Wall # -fast #-Wall
 
 # use this for profiling
 # CPPFLAGS = -g -m64 -O3 # -DNDEBUG
@@ -33,15 +33,15 @@ OBJ =   Fred.o Global.o Decision.o Policy.o Manager.o \
         AV_Decisions.o AV_Policies.o AV_Manager.o AV_Health.o \
         Age_Map.o Timestep_Map.o Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
         Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \
-	    Antiviral.o Antivirals.o Health_Belief_Model.o Random_Cognitive_Model.o \
-	    Behavior.o Classroom.o Cognition.o Demographics.o Epidemic.o Health.o \
+	    Antiviral.o Antivirals.o Health_Belief_Model.o Random_Behavior_Model.o \
+	    Activities.o Classroom.o Behavior.o Demographics.o Epidemic.o Health.o \
         Hospital.o Household.o Infection.o Neighborhood.o Office.o \
 	    Params.o Perceptions.o Person.o Place.o Place_List.o Population.o Profile.o Random.o \
 	    School.o Disease.o Workplace.o Patch.o Grid.o Date.o Person_Event_Interface.o
 
 SRC = $(OBJ:.o=.cc)
 
-HDR = $(OBJ:.o=.h) Cognitive_Model.h
+HDR = $(OBJ:.o=.h) Behavior_Model.h
 
 POP := $(wildcard *_pop.txt)
 LOC := $(wildcard *_loc.txt)
@@ -59,8 +59,7 @@ DEPENDS: $(SRC) $(HDR)
 include DEPENDS
 
 FRED.tar.gz: $(SRC) $(HDR)
-	tar -czf FRED.tar.gz $(HDR) $(SRC) Makefile params.def \
-	primary_case_schedule-0.txt profiles.txt vaccination_capacity-0.txt
+	tar -czf FRED.tar.gz $(HDR) $(SRC) Makefile params* *.txt
 
 FRED.md5 : FRED.tar.gz
 	$(MD5SUM) $< > $@
@@ -168,9 +167,9 @@ tar: clean
 
 dist:
 	make clean
-	(cd ..; tar cvf FRED-`date +"%Y-%m-%d"`.tar FRED/README \
-	FRED/Makefile FRED/*.txt FRED/*.cc FRED/*.h FRED/params* \
-	FRED/bin/* FRED/LICENSE FRED/sim.plt FRED/TEST/* ; cd FRED)
+	(cd ../..; tar cvf FRED-`date +"%Y-%m-%d"`.tar FRED/src/Makefile \
+	FRED/src/*.txt FRED/src/*.cc FRED/src/*.h FRED/src/params* \
+	FRED/bin/* FRED/src/OUT.RT/* ; cd FRED/src)
 	make
 
 tags:

@@ -29,13 +29,12 @@ public:
   int get_group(int disease, Person * per);
   double get_transmission_prob(int disease, Person * i, Person * s);
   double get_contacts_per_day(int disease);
-  void add_person(Person * per);
+  void enroll(Person * per);
   Person * get_HoH() { return HoH; }
   Person * get_housemate(int i) { return housemate[i]; }
   Place * select_neighborhood() { return patch->select_neighborhood(); }
   UNIT_TEST_VIRTUAL int get_adults() { return adults; }
   UNIT_TEST_VIRTUAL int get_children() { return children; }
-  void clear_counts();
 private:
   Person * HoH;
   vector <Person *> housemate;

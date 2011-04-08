@@ -18,7 +18,7 @@
 #include "Vaccine.h"
 #include "Person.h"
 #include "Health.h"
-#include "Behavior.h"
+#include "Activities.h"
 #include "Params.h"
 #include "Random.h"
 #include "Global.h"
@@ -262,7 +262,7 @@ void Vaccine_Manager::vaccinate(int day) {
       }
       else {
 	// skip non-compliant person under HBM
-	if(strcmp(Cognitive_model_type,"HBM") == 0) ++ip;
+	if(strcmp(Behavior_model_type,"HBM") == 0) ++ip;
 	// remove non-compliant person if not HBM
 	else ip = priority_queue.erase(ip);
       }
@@ -327,7 +327,7 @@ void Vaccine_Manager::vaccinate(int day) {
       }
       else {
 	// skip non-compliant person under HBM
-	if(strcmp(Cognitive_model_type,"HBM") == 0) ip++;
+	if(strcmp(Behavior_model_type,"HBM") == 0) ip++;
 	// remove non-compliant person if not HBM
 	else ip = queue.erase(ip);
       }

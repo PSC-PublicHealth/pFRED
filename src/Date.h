@@ -106,6 +106,8 @@ public:
 
   virtual ~Date();
 
+  void setup(char * output_directory, int days);
+
 private:
 
   static const int day_table[2][13];
@@ -120,7 +122,8 @@ private:
   static void initialize_vectors();
   static void add_to_vectors(int days_since_jan_1_1600);
 
-  static int get_doomsday_month(int month, int year) { return Date::doomsday_month_val[(Date::is_leap_year(year) ? 1 : 0)][month]; }
+  static int get_doomsday_month(int month, int year)
+  { return Date::doomsday_month_val[(Date::is_leap_year(year) ? 1 : 0)][month]; }
   static int get_doomsday_century(int year);
   static int get_day_of_week(int year, int month, int day_of_month);
 };

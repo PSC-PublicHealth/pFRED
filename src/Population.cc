@@ -39,7 +39,6 @@ int V_count;
 int Population::next_id = 0;
 
 //Used for reporting
-bool Population::is_intialized = false;
 int Population::age_count_male[Demographics::MAX_AGE + 1];
 int Population::age_count_female[Demographics::MAX_AGE + 1];
 int Population::birth_count[Demographics::MAX_PREGNANCY_AGE + 1];
@@ -47,13 +46,7 @@ int Population::death_count_male[Demographics::MAX_AGE + 1];
 int Population::death_count_female[Demographics::MAX_AGE + 1];
 
 Population::Population() {
-
-  //Initialize static arrays only once
-  if (!Population::is_intialized) {
-    Population::reset_static_arrays();
-    Population::is_intialized = true;
-  }
-
+  Population::clear_static_arrays();
   pop.clear();
   pop_map.clear();
   pop_size = 0;
@@ -62,18 +55,14 @@ Population::Population() {
   vacc_manager = NULL;
   diseases = -1;
   mutation_prob = NULL;
-  population_changed = true;
 }
 
 Population::~Population() {
-
-  // free all memory (remember, first delete the referenced memory before
-  // deleting the pointer to it --as the vector is an array of pointers.
+  // free all memory
   for (unsigned i = 0; i < pop.size(); ++i)
     delete pop[i];
   pop.clear();
   pop_map.clear();
-
   pop_size = 0;
   if(disease != NULL) delete [] disease;
   if(vacc_manager != NULL) delete vacc_manager;
@@ -105,8 +94,8 @@ void Population::get_parameters() {
       printf("\n");
     }
   }
-  
 }
+
 
 void Population::add_person(Person * person) {
   assert(pop_map.find(person) == pop_map.end());
@@ -114,8 +103,8 @@ void Population::add_person(Person * person) {
   assert((unsigned) pop_size == pop.size()-1);
   pop_map[person] = pop_size;
   pop_size = pop.size();
-  population_changed = true;
 }
+
 
 void Population::delete_person(Person * person) {
   map<Person *,int>::iterator it;
@@ -136,16 +125,15 @@ void Population::delete_person(Person * person) {
 				       pop_size, (int) pop.size()); }
   assert((unsigned) pop_size == pop.size());
   graveyard.push_back(person);
-  population_changed = true;
 }
 
 void Population::prepare_to_die(Person *per) {
-  //Add person to daily death_list
+  // add person to daily death_list
   death_list.push_back(per);
 }
 
 void Population::prepare_for_birth(Person *per) {
-  //Add person to daily birth_list
+  // add person to daily birth_list
   birth_list.push_back(per);
 }
 
@@ -162,46 +150,22 @@ void Population::setup() {
   vacc_manager = new Vaccine_Manager(this);
   av_manager   = new AV_Manager(this);
   if (Verbose > 1) av_manager->print();
-  if (Verbose) {
-    fprintf(Statusfp, "setup population completed, diseases = %d\n", diseases);
-    fflush(Statusfp);
-  }
-}
+  pop.clear();
+  pop_map.clear();
+  pop_size = 0;
+  birth_list.clear();
+  graveyard.clear();
+  death_list.clear();
+  read_population();
 
-void Population::reset(int run) {
-  if (Verbose) {
-    fprintf(Statusfp, "reset population entered for run %d\n", run);
-    fflush(Statusfp);
-  }
-
-  // reset population level infections
+  // clear population level infections
   for (int s = 0; s < diseases; s++) {
-    disease[s].reset();
+    disease[s].clear();
   }
-
-  if (population_changed) {
-
-    // free any memory allocated on previous runs
-    for (unsigned i = 0; i < pop.size(); ++i)
-      delete pop[i];
-    pop.clear();
-    pop_map.clear();
-    pop_size = 0;
-    birth_list.clear();
-
-    // loop over dead agents
-    for (unsigned i = 0; i < graveyard.size(); ++i)
-      delete graveyard[i];
-    graveyard.clear();
-    death_list.clear();
-
-    read_population();
-    population_changed = false;
-  }
-  else {
-    for (int p = 0; p < pop_size; p++){
-      pop[p]->reset(Sim_Start_Date);
-    }
+  
+  // clear individuals
+  for (int p = 0; p < pop_size; p++){
+    pop[p]->reset(Sim_Date);
   }
 
   // empty out the incremental list of Person's who have changed
@@ -217,18 +181,21 @@ void Population::reset(int run) {
       Disease* s = &disease[0];
       if(pop[p]->get_health()->is_immune(s)) count++;
     }
-    cout << "Number of Residually Immune people = "<<count << "\n";
+    fprintf(Statusfp, "number of residually immune people = %d\n", count);
+    fflush(Statusfp);
   }
   av_manager->reset();
   vacc_manager->reset();
   
   if (Verbose) {
-    fprintf(Statusfp, "reset population completed\n");
+    fprintf(Statusfp, "population setup finished\n");
     fflush(Statusfp);
   }
 }
 
+
 void Population::read_population() {
+  // FILE * popfp = fopen("new_alleg_pop.txt", "w");
   if (Verbose) {
     fprintf(Statusfp, "read population entered\n"); fflush(Statusfp);
   }
@@ -261,9 +228,8 @@ void Population::read_population() {
     char sex;
     
     // fprintf(Statusfp, "reading person %d\n", p); fflush(Statusfp); // DEBUG
-    if (fscanf(fp, "%d %d %c %d %d %d %d %d %d %d %d %d %*s",
-               &id, &age, &sex, &married, &prof, &house, &hood, &school,
-               &classroom, &work, &office, &profile) != 12) {
+    if (fscanf(fp, "%d %d %c %d %d %d %d %d",
+               &id, &age, &sex, &married, &prof, &house, &school, &work) != 8) {
       fprintf(Statusfp, "Help! Read failure for person %d\n", p);
       abort();
     }
@@ -272,8 +238,14 @@ void Population::read_population() {
     if(Population::next_id <= id)
       Population::next_id = id + 1;
 
-    // ignore the neighborhood entry
+    // ignore deprecated entries
     hood = -1;
+    classroom = -1;
+    office = -1;
+    profile = -1;
+
+    // fprintf(popfp, "%d %d %c %d %d %d %d %d\n",
+    // id, age, sex, married, prof, house, school, work);
 
     Place *favorite_place[] = { 
       Places.get_place(house),
@@ -284,12 +256,10 @@ void Population::read_population() {
       Places.get_place(office)
     }; 
 
-    person->setup(id, age, sex, married, prof, favorite_place, profile, this, Sim_Start_Date, true);
-    person->reset(Sim_Start_Date);
+    person->setup(id, age, sex, married, prof, favorite_place, this, Sim_Date, true);
     person->register_event_handler(this);
     add_person(person);
   }
-
   fclose(fp);
   assert(pop_size == psize);
   
@@ -297,17 +267,26 @@ void Population::read_population() {
     fprintf(Statusfp, "finished reading population = %d\n", pop_size);
     fflush(Statusfp);
   }
-
+  // fclose(popfp); exit(0);
 }
 
-void Population::update(int day) {
+void Population::begin_day(int day) {
 
+  // clear lists of births and deaths
   death_list.clear();
   birth_list.clear();
 
+  // update activity profiles on July 1
+  if (Enable_Aging && Sim_Date->get_month(day) == Date::JULY &&
+      Sim_Date->get_day_of_month(day) == 1) {
+    for (int p = 0; p < pop_size; p++) {
+      pop[p]->update_activity_profile();
+    }
+  }
+
   // update everyone's demographics
   for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_demographics(Sim_Start_Date, day);
+    pop[p]->update_demographics(Sim_Date, day);
   }
 
   // update everyone's health status
@@ -317,12 +296,10 @@ void Population::update(int day) {
 
   // add the births to the population
   size_t births = birth_list.size();
-
   for (size_t i = 0; i < births; i++) {
     Person * baby = birth_list[i]->give_birth(day);
     baby->register_event_handler(this);
     add_person(baby);
-
     //For reporting
     if (Verbose > 1) {
       int age_lookup = birth_list[i]->get_age();
@@ -330,7 +307,6 @@ void Population::update(int day) {
       Population::birth_count[age_lookup]++;
     }
   }
-
   if (Verbose > 1) {
     fprintf(Statusfp, "births = %d\n", (int)births);fflush(stdout);
   }
@@ -338,7 +314,6 @@ void Population::update(int day) {
   // remove the dead from the population
   size_t deaths = death_list.size();
   for (size_t i = 0; i < deaths; i++) {
-
     //For reporting
     if (Verbose > 1) {
       int age_lookup = death_list[i]->get_age();
@@ -348,36 +323,24 @@ void Population::update(int day) {
       else
         Population::death_count_male[age_lookup]++;
     }
-
     delete_person(death_list[i]);
   }
-
   if (Verbose > 1) {
     fprintf(Statusfp, "deaths = %d\n", (int)deaths);fflush(stdout);
   }
 
   // update adult decisions
   for (int p = 0; p < pop_size; p++) {
-    if (18 <= pop[p]->get_age()) {
-      pop[p]->update_cognition(day);
+    if (ADULT_AGE <= pop[p]->get_age()) {
+      pop[p]->update_behavior(day);
     }
   }
 
   // update child decisions
   for (int p = 0; p < pop_size; p++) {
-    if (pop[p]->get_age() < 18) {
-      pop[p]->update_cognition(day);
+    if (pop[p]->get_age() < ADULT_AGE) {
+      pop[p]->update_behavior(day);
     }
-  }
-
-  // update actions of infectious agents
-  for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_infectious_behavior(Sim_Start_Date, day);
-  }
-
-  // update actions of susceptible agents
-  for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_susceptible_behavior(Sim_Start_Date, day);
   }
 
   // distribute vaccines
@@ -386,21 +349,54 @@ void Population::update(int day) {
   // distribute AVs
   av_manager->update(day);
 
+  if (Verbose>1) {
+    fprintf(Statusfp, "population begin_day finished\n");fflush(stdout);
+  }
+}
+
+void Population::get_visitors_to_infectious_places(int day) {
+
+  // find places visited by infectious agents
+  for (int p = 0; p < pop_size; p++) {
+    pop[p]->update_infectious_activities(Sim_Date, day);
+  }
+
+  // add susceptibles to infectious places
+  for (int p = 0; p < pop_size; p++) {
+    pop[p]->update_susceptible_activities(Sim_Date, day);
+  }
+
+  if (Verbose>1) {
+    fprintf(Statusfp, "find_infectious_places finished\n");fflush(stdout);
+  }
+
+}
+
+void Population::transmit_infection(int day) {
+
   // apply transmission model in all infectious places
   for (int s = 0; s < diseases; s++) {
     if (Verbose > 1) {
       fprintf(Statusfp, "disease = %d day = %d\n",s,day);fflush(stdout);
       disease[s].print();
     }
-    disease[s].update(Sim_Start_Date, day);
+    disease[s].update(Sim_Date, day);
   }
+
+  if (Verbose>1) {
+    fprintf(Statusfp, "find_infectious_places finished\n");fflush(stdout);
+  }
+
+}
+
+void Population::end_day(int day) {
 
   // give out anti-virals (after today's infections)
   av_manager->disseminate(day);
 
-
   //Only print the statistics on December 31 of each year of the simulation
-  if (Verbose > 1 && Sim_Start_Date->get_day_of_month(day) == 31 && Sim_Start_Date->get_month(day) == Date::DECEMBER) {
+  if (Verbose && Sim_Date->get_day_of_month(day) == 31 &&
+      Sim_Date->get_month(day) == Date::DECEMBER) {
 
     for (int i = 0; i < pop_size; ++i) {
       int age_lookup = pop[i]->get_age();
@@ -411,17 +407,16 @@ void Population::update(int day) {
         Population::age_count_male[age_lookup]++;
     }
 
-    for (int i = 0; i < Demographics::MAX_AGE; ++i)
-    {
-      fprintf(Statusfp, "DEMOGRAPHICS Year %d TotalPop %d Age %d Females [Count:Deaths:Births] [ %d %d %d ] Males [Count:Deaths] [ %d %d ]\n",
-          Sim_Start_Date->get_year(day), pop_size,
-          i, Population::age_count_female[i], Population::death_count_female[i],
-          Population::birth_count[(i <= Demographics::MAX_PREGNANCY_AGE ? i : Demographics::MAX_PREGNANCY_AGE)],
-          Population::age_count_male[i], Population::death_count_male[i]);
+    for (int i = 0; i < Demographics::MAX_AGE; ++i) {
+      fprintf(Statusfp,
+	      "DEMOGRAPHICS Year %d TotalPop %d Age %d Females [Count:Deaths:Births] [ %d %d %d ] Males [Count:Deaths] [ %d %d ]\n",
+	      Sim_Date->get_year(day), pop_size,
+	      i, Population::age_count_female[i], Population::death_count_female[i],
+	      Population::birth_count[(i <= Demographics::MAX_PREGNANCY_AGE ? i : Demographics::MAX_PREGNANCY_AGE)],
+	      Population::age_count_male[i], Population::death_count_male[i]);
       fflush(stdout);
     }
-
-    Population::reset_static_arrays();
+    Population::clear_static_arrays();
   }
 
   if (Verbose > 1) {
@@ -494,8 +489,9 @@ void Population::end_of_run() {
   
   // print out all those agents who never changed
   this->print(-1);
-
 }
+
+
 
 Disease *Population::get_disease(int s) {
   return &disease[s];
@@ -509,7 +505,7 @@ void Population::quality_control() {
   
   // check population
   for (int p = 0; p < pop_size; p++) {
-    if (pop[p]->get_behavior()->get_household() == NULL) {
+    if (pop[p]->get_activities()->get_household() == NULL) {
       fprintf(Statusfp, "Help! Person %d has no home.\n",p);
       pop[p]->print(0);
     }
@@ -571,15 +567,14 @@ void Population::set_changed(Person *p){
   // (might already be gone, but this won't hurt)
 }
 
-//Static function to reset arrays
-void Population::reset_static_arrays() {
+//Static function to clear arrays
+void Population::clear_static_arrays() {
   for (int i = 0; i <= Demographics::MAX_AGE; ++i) {
     Population::age_count_male[i] = 0;
     Population::age_count_female[i] = 0;
     Population::death_count_male[i] = 0;
     Population::death_count_female[i] = 0;
   }
-
   for (int i = 0; i <= Demographics::MAX_PREGNANCY_AGE; ++i) {
     Population::birth_count[i] = 0;
   }
@@ -605,5 +600,29 @@ int Population::get_next_id() {
   int return_val = Population::next_id;
   Population::next_id++;
   return return_val;
+}
+
+void Population::assign_classrooms() {
+  if (Verbose) {
+    fprintf(Statusfp, "assign classrooms entered\n"); fflush(Statusfp);
+  }
+  for (int p = 0; p < pop_size; p++){
+    pop[p]->assign_classroom();
+  }
+  if (Verbose) {
+    fprintf(Statusfp, "assign classrooms finished\n"); fflush(Statusfp);
+  }
+}
+
+void Population::assign_offices() {
+  if (Verbose) {
+    fprintf(Statusfp, "assign offices entered\n"); fflush(Statusfp);
+  }
+  for (int p = 0; p < pop_size; p++){
+    pop[p]->assign_office();
+  }
+  if (Verbose) {
+    fprintf(Statusfp, "assign offices finished\n"); fflush(Statusfp);
+  }
 }
 

@@ -23,7 +23,7 @@ class Patch {
 public:
   Patch() {}
   void setup(Grid * patch_mgr, int i, int j, double xmin, double xmax, double ymin, double ymax);
-  void reset(int run);
+  void record_favorite_places();
   void print();
   void print_coord();
   double get_min_y() { return min_y;}
@@ -36,7 +36,7 @@ public:
   void add_household(Place *p);
   int get_houses() { return houses;}
   Place * get_neighborhood() { return neighborhood; }
-  void add_person(Person *per) { neighborhood->add_person(per); }
+  void enroll(Person *per) { neighborhood->enroll(per); }
   Place *select_random_household();
   Place *select_random_school(int age);
   Place *select_random_workplace();

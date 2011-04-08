@@ -15,6 +15,8 @@
 #include "Random.h"
 #include "Person.h"
 #include "Disease.h"
+#include "Place_List.h"
+#include "Classroom.h"
 
 double * school_contacts_per_day;
 double *** school_contact_prob;
@@ -23,17 +25,22 @@ int school_closure_day;
 double school_closure_threshold;
 int school_closure_period;
 int school_closure_delay;
+int school_classroom_size;
 int school_parameters_set = 0;
 
 School::School(int loc, const char *lab, double lon, double lat, Place* container, Population *pop) {
   type = SCHOOL;
   setup(loc, lab, lon, lat, container, pop);
   get_parameters(population->get_diseases());
-  for (int i = 0; i < 20; i++) grade[i] = 0;
+  for (int i = 0; i < 20; i++) {
+    students_with_age[i] = 0;
+    classrooms[i].clear();
+  }
+  total_classrooms = 0;
 }
 
 
-void School::reset() {
+void School::prepare() {
   int diseases = population->get_diseases();
   for (int s = 0; s < diseases; s++) {
     susceptibles[s].clear();
@@ -41,13 +48,17 @@ void School::reset() {
     Sympt[s] = S[s] = I[s] = 0;
     total_cases[s] = total_deaths[s] = 0;
   }
-  if (Verbose > 2) {
-    printf("reset place: %d\n", id);
-    print(0);
-    fflush(stdout);
+  for (int i = 0; i < 20; i++) {
+    next_classroom[i] = 0;
+    next_classroom_without_teacher[i] = 0;
   }
   close_date = INT_MAX;
   open_date = 0;
+  if (Verbose > 2) {
+    printf("prepare place: %d\n", id);
+    print(0);
+    fflush(stdout);
+  }
 }
 
 
@@ -77,6 +88,7 @@ void School::get_parameters(int diseases) {
     }
   }
   
+  get_param((char *) "school_classroom_size", &school_classroom_size);
   get_param((char *) "school_closure_policy", school_closure_policy);
   get_param((char *) "school_closure_day", &school_closure_day);
   get_param((char *) "school_closure_threshold", &school_closure_threshold);
@@ -90,7 +102,7 @@ int School::get_group(int disease, Person * per) {
   int age = per->get_age();
   if (age <12) { return 0; }
   else if (age < 16) { return 1; }
-  else if (age < 19) { return 2; }
+  else if (age < ADULT_AGE) { return 2; }
   else return 3;
 }
 
@@ -147,29 +159,127 @@ double School::get_contacts_per_day(int disease) {
   return school_contacts_per_day[disease];
 }
 
-void School::add_person(Person * per) {
+void School::enroll(Person * per) {
   N++;
   int age = per->get_age();
-  if (age < 20) {
-    grade[age]++;
+  if (age < ADULT_AGE) {
+    students_with_age[age]++;
   }
-  else {
-    grade[19]++;
-  }
-  // printf("added person of age %d to school %d  grade size = %d\n",age,id, grade[age]); fflush(stdout);
+  // else {students_with_age[19]++;}
 }
 
 void School::print(int disease) {
-  printf("Place %d label %s type %c ", id, label, type);
-  printf("S %d I %d N %d\n", S[disease], I[disease], N);
+  fprintf(Statusfp, "Place %d label %s type %c ", id, label, type);
+  fprintf(Statusfp, "S %d I %d N %d\n", S[disease], I[disease], N);
   for (int g = 0; g < 20; g++) {
-    printf("grade %d = %d  ",g,grade[g]);
+    fprintf(Statusfp, "%d students with age %d | ",students_with_age[g],g);
   }
-  printf("\n");
-  fflush(stdout);
+  fprintf(Statusfp, "\n");
+  fflush(Statusfp);
 }
 
-void School::clear_counts() {
-  N = 0; 
-  for (int i = 0; i < 20; i++) grade[i] = 0;
+void School::setup_classrooms() {
+  for (int a = 0; a < 20; a++) {
+    int n = students_with_age[a];
+    next_classroom[a] = 0;
+    next_classroom_without_teacher[a] = 0;
+    if (n == 0) continue;
+    int rooms = n / school_classroom_size; 
+    if (n % school_classroom_size) rooms++;
+    if (Verbose > 1) {
+      fprintf(Statusfp, "school %d %s age %d number %d rooms %d\n",
+	      id, label,a,n,rooms);
+      fflush(Statusfp);
+    }
+    for (int c = 0; c < rooms; c++) {
+      int new_id = Places.get_max_id() + 1;
+      char new_label[128];
+      sprintf(new_label, "%s-%02d-%02d", this->get_label(), a, c+1);
+      new_label[0] = 'C';
+      Place *p = new (nothrow) Classroom(new_id, new_label,
+					 this->get_longitude(),
+					 this->get_latitude(),
+					 this,
+					 this->get_population());
+      Places.add_place(p);
+      classrooms[a].push_back(p);
+      total_classrooms++;
+      if (Verbose > 1) {
+	fprintf(Statusfp, "school %d %s age %d added classroom %d %s %d\n",
+		id, label,a,c,p->get_label(),p->get_id());
+	fflush(Statusfp);
+      }
+    }
+  }
+}
+
+
+Place * School::assign_classroom(Person *per) {
+  int age = per->get_age();
+  if (age < ADULT_AGE) {
+    // assign classroom to a student
+    if (Verbose > 1) {
+      fprintf(Statusfp,
+	      "assign classroom for student %d in school %d %s for age %d == ",
+	      per->get_id(), id, label, age);
+      fflush(Statusfp);
+    }
+    assert(classrooms[age].size() > 0);
+
+    // pick next classroom, round-robin
+    int c = next_classroom[age];
+    next_classroom[age]++;
+    if (next_classroom[age]+1 > (int) classrooms[age].size())
+      next_classroom[age] = 0;
+    
+    if (Verbose > 1) {
+      fprintf(Statusfp, "room = %d %s %d\n",
+	      c, classrooms[age][c]->get_label(), classrooms[age][c]->get_id());
+      fflush(Statusfp);
+    }
+    return classrooms[age][c];
+  }
+  else {
+    // assign classroom to a teacher
+    if (Verbose > 1) {
+      fprintf(Statusfp,
+	      "assign classroom for teacher %d in school %d %s for age %d == ",
+	      per->get_id(), id, label, age);
+      fflush(Statusfp);
+    }
+
+    // pick next classroom, round-robin
+    for (int a = 0; a < 20; a++) {
+      int n = (int) classrooms[a].size();
+      if (n == 0) continue;
+      if (next_classroom_without_teacher[a] < n) {
+	int c = next_classroom_without_teacher[a];
+	next_classroom_without_teacher[a]++;
+	if (Verbose > 1) {
+	  fprintf(Statusfp, "room = %d %s %d\n",
+		  c, classrooms[a][c]->get_label(), classrooms[a][c]->get_id());
+	  fflush(Statusfp);
+	}
+	return classrooms[a][c];
+      }
+    }
+
+    // all classrooms have a teacher, so assign to a random classroom
+    int x = IRAND(0,total_classrooms-1);
+    for (int a = 0; a < 20; a++) {
+      for (unsigned int c = 0 ; c < classrooms[a].size(); c++) {
+	if (x == 0) {
+	  if (Verbose > 1) {
+	    fprintf(Statusfp, "room = %d %s %d\n",
+		    c, classrooms[a][c]->get_label(), classrooms[a][c]->get_id());
+	    fflush(Statusfp);
+	  }
+	  return classrooms[a][c];
+	}
+	else { x--; }
+      } 
+    }
+    printf("Help! Can't find classroom for teacher\n\n");
+    abort();
+  }
 }

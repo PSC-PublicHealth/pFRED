@@ -36,8 +36,10 @@ public:
   UNIT_TEST_VIRTUAL void quality_control();
   UNIT_TEST_VIRTUAL void print(int incremental=0, int day=0); // 0:print all, 1:incremental, -1:unchanged
   UNIT_TEST_VIRTUAL void end_of_run();
-  UNIT_TEST_VIRTUAL void reset(int run);
-  UNIT_TEST_VIRTUAL void update(int day);
+  void begin_day(int day);
+  void get_visitors_to_infectious_places(int day);
+  void transmit_infection(int day);
+  void end_day(int day);
   UNIT_TEST_VIRTUAL void report(int day);
   UNIT_TEST_VIRTUAL Disease * get_disease(int s);
   UNIT_TEST_VIRTUAL int get_diseases() { return diseases; }
@@ -59,11 +61,13 @@ public:
   UNIT_TEST_VIRTUAL void handle_property_change_event(Person *source, string property_name, int prev_val, int new_val);
   UNIT_TEST_VIRTUAL void handle_property_change_event(Person *source, string property_name, bool new_val);
 
-
   // track those agents that have changed since the last incremental dump
   UNIT_TEST_VIRTUAL void set_changed(Person *p);
   
   static int get_next_id();
+  void assign_classrooms();
+  void assign_offices();
+  void read_population();
 
 private:
   char popfile[256];
@@ -72,30 +76,23 @@ private:
   vector <Person *> graveyard;		      // list of all dead agents
   vector <Person *> death_list;		      // list agents to die today
   vector <Person *> birth_list;         // list agents to give birth today
-
+  static int next_id;
+  int pop_size;
+  int diseases;
+  Disease *disease;
+  double **mutation_prob;
   map<Person *,int> pop_map;
-  bool population_changed;	  // true if any person added or deleted
   ChangeMap incremental_changes; // incremental "list" (actually a C++ map)
 				 // of those agents whose stats
 				 // have changed since the last history dump
   ChangeMap never_changed;       // agents who have *never* changed
-  int pop_size;
-  Disease *disease;
 
   //Mitigation Managers
   AV_Manager *av_manager;
   Vaccine_Manager *vacc_manager;
-  
-  int diseases;
-  double **mutation_prob;
-  void read_population();
-
-  static int next_id;
 
   //Used for reporting
-  static void reset_static_arrays();
-
-  static bool is_intialized;
+  static void clear_static_arrays();
   static int age_count_male[Demographics::MAX_AGE + 1];
   static int age_count_female[Demographics::MAX_AGE + 1];
   static int birth_count[Demographics::MAX_PREGNANCY_AGE + 1];

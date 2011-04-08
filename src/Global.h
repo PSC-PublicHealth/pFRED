@@ -26,12 +26,14 @@
 
 // global constants
 #define DAYS_PER_WEEK 7
+#define ADULT_AGE 18
+#define SCHOOL_AGE 5
+#define RETIREMENT_AGE 67
 
 // global runtime parameters
 extern int Verbose;
 extern int Debug;
 extern int Test;
-extern int Runs;
 extern int Days;
 extern int Reseed_day;
 extern unsigned long Seed;
@@ -47,7 +49,7 @@ extern int All_diseases_antigenically_identical;
 extern int Incremental_Trace;
 extern int Trace_Headers;
 extern int Random_start_day;
-extern char Cognitive_model_type[];
+extern char Behavior_model_type[];
 extern int Quality_control;
 extern int Diseases;
 extern double Prob_accept_vaccine;
@@ -70,10 +72,10 @@ class Place_List;
 extern Place_List Places;
 
 class Grid;
-extern Grid Patches;
+extern Grid Environment;
 
 class Date;
-extern Date * Sim_Start_Date;
+extern Date * Sim_Date;
 
 void get_global_parameters();
 

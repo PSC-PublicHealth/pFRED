@@ -13,6 +13,7 @@
 #define _FRED_SCHOOL_H
 
 #include "Place.h"
+#include <vector>
 
 extern double * school_contacts_per_day;
 extern double *** school_contact_prob;
@@ -28,19 +29,27 @@ public:
   School() {}
   ~School() {}
   School(int,const char*,double,double,Place *, Population *pop);
-  void reset();
+  void prepare();
   void get_parameters(int diseases);
   int get_group(int disease, Person * per);
   double get_transmission_prob(int disease, Person * i, Person * s);
   int should_be_open(int day, int disease);
   double get_contacts_per_day(int disease);
-  void add_person(Person * per);
-  int children_in_grade(int age) { if (-1 < age && age < 20) return grade[age]; else return 0; }
+  void enroll(Person * per);
+  int children_in_grade(int age) {
+    if (-1 < age && age < 20) return students_with_age[age];
+    else return 0;
+  }
   void print(int disease);
-  void clear_counts();
+  void setup_classrooms();
+  Place * assign_classroom(Person *per);
 
 private:
-  int grade[20];
+  int students_with_age[20];
+  vector <Place *> classrooms[20];
+  int next_classroom[20];
+  int next_classroom_without_teacher[20];
+  int total_classrooms;
 };
 
 #endif // _FRED_SCHOOL_H

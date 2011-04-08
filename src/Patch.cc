@@ -37,15 +37,17 @@ void Patch::setup(Grid * patch_mgr, int i, int j, double xmin, double xmax, doub
   neighbors = patch_mgr->get_neighbors(i,j);
   houses = 0;
   household.clear();
+  make_neighborhood();
 }
 
 void Patch::make_neighborhood() {
   char str[80];
   double lat, lon;
   sprintf(str, "Patch_%04d_%04d",row,col);
-  int id = 900000000 + 10000*row + col;
+  // int new_id = Places.get_max_id() + 1;
+  int new_id = 900000000 + 10000*row + col;
   patch_manager->translate_to_lat_lon(center_x,center_y,&lat,&lon);
-  neighborhood = new (nothrow) Neighborhood(id, str, lon, lat, 0, &Pop);
+  neighborhood = new (nothrow) Neighborhood(new_id, str, lon, lat, 0, &Pop);
   Places.add_place(neighborhood);
 }
 
@@ -63,7 +65,7 @@ void Patch::add_household(Place *p) {
   }
 }
 
-void Patch::reset(int run) {
+void Patch::record_favorite_places() {
   Household * house;
   Person * per;
   Place * p;
@@ -72,20 +74,20 @@ void Patch::reset(int run) {
   // create lists of persons, workplaces, schools (by age)
   person.clear();
   workplace.clear();
-  for (int age = 0; age < 20; age++) school[age].clear();
+  for (int age = 0; age < ADULT_AGE; age++) school[age].clear();
 
   for (int i = 0; i < houses; i++) {
     house = (Household *) household[i];
     int hsize = house->get_size();
     for (int j = 0; j < hsize; j++) {
       per = house->get_housemate(j);
-      neighborhood->add_person(per);
+      neighborhood->enroll(per);
       person.push_back(per);
-      p = per->get_behavior()->get_workplace();
+      p = per->get_activities()->get_workplace();
       if (p != NULL) workplace.push_back(p);
-      s = (School *) per->get_behavior()->get_school();
+      s = (School *) per->get_activities()->get_school();
       if (s != NULL) {
-	for (int age = 0; age < 20; age++) {
+	for (int age = 0; age < ADULT_AGE; age++) {
 	  if (s->children_in_grade(age) > 0)
 	    school[age].push_back(s);
 	}

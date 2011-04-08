@@ -11,11 +11,11 @@
 
 #include "Person.h"
 
-#include "Behavior.h"
+#include "Activities.h"
 #include "Demographics.h"
 #include "Global.h"
 #include "Health.h"
-#include "Cognition.h"
+#include "Behavior.h"
 #include "Place.h"
 #include "Disease.h"
 #include "Population.h"
@@ -33,29 +33,29 @@ Person::Person() {
   pop = NULL;
   demographics = NULL;
   health = NULL;
+  activities = NULL;
   behavior = NULL;
-  cognition = NULL;
   registered_event_handlers = NULL;
 }
 
 Person::~Person() {
   if (demographics != NULL) delete demographics;
   if (health != NULL) delete health;
+  if (activities != NULL) delete activities;
   if (behavior != NULL) delete behavior;
-  if (cognition != NULL) delete cognition;
   if (registered_event_handlers != NULL) delete registered_event_handlers;
 }
 
-void Person::setup(int index, int age, char sex, int marital,
-                   int profession, Place **favorite_places, int profile,
-                   Population* Pop, Date *sim_start_date, bool has_random_birthday)
+void Person::setup(int index, int age, char sex, int marital, int profession,
+		   Place **favorite_places, Population* Pop,
+		   Date *sim_start_date, bool has_random_birthday)
 {
   idx = index;
   pop = Pop;
   demographics = new Demographics(this, age, sex, marital, profession, sim_start_date, has_random_birthday);
   health = new Health(this);
-  behavior = new Behavior(this, favorite_places, profile);
-  cognition = new Cognition(this);
+  activities = new Activities(this, favorite_places);
+  behavior = new Behavior(this);
 }
 
 void Person::print(int disease) const {
@@ -102,15 +102,15 @@ void Person::reset(Date * sim_start_date) {
   if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", idx); fflush(Statusfp); }
   demographics->reset(sim_start_date);
   health->reset();
-  cognition->reset();
   behavior->reset();
+  activities->reset();
 	
   for (int disease = 0; disease < Pop.get_diseases(); disease++) {
     Disease* s = Pop.get_disease(disease);
     if (!s->get_residual_immunity()->is_empty()) {
       double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
       if (RANDOM() < residual_immunity_prob)
-	      become_immune(s);
+	become_immune(s);
     }
   }
 }
@@ -128,11 +128,11 @@ void Person::become_immune(Disease* disease) {
 }
 
 Place * Person::get_household() const {
-  return behavior->get_household();
+  return activities->get_household();
 }
 
 Place * Person::get_neighborhood() const {
-  return behavior->get_neighborhood();
+  return activities->get_neighborhood();
 }
 
 char Person::get_sex() const { return demographics->get_sex(); }
@@ -189,7 +189,7 @@ Person * Person::give_birth(int day) {
 
   int id = Population::get_next_id(), age = 0, married = -1, prof = 2;
   int school = -1, classroom = -1, work = -1;
-  int office = -1, profile = 0;
+  int office = -1;
   char sex = (URAND(0.0, 1.0) < 0.5 ? 'M' : 'F');
 
   Place *favorite_place[] = {
@@ -202,12 +202,12 @@ Person * Person::give_birth(int day) {
   };
 
   Person * baby = new Person();
-  Date * birth_date = new Date(Sim_Start_Date->get_year(day),
-                              Sim_Start_Date->get_month(day),
-                              Sim_Start_Date->get_day_of_month(day));
-  baby->setup(id, age, sex, married, prof, favorite_place, profile, this->pop, birth_date, false);
+  Date * birth_date = new Date(Sim_Date->get_year(day),
+			       Sim_Date->get_month(day),
+			       Sim_Date->get_day_of_month(day));
+  baby->setup(id, age, sex, married, prof, favorite_place, this->pop, birth_date, false);
+  baby->reset(Sim_Date);
   delete birth_date;
-
   return baby;
 }
 
@@ -259,6 +259,5 @@ void Person::notify_property_change(string property_name, bool new_val) {
   }
 
 }
-
 
 

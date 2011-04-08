@@ -13,46 +13,26 @@
 #define _FRED_BEHAVIOR_H
 
 #include "Global.h"
-class Person;
-class Place;
+#include "Behavior_Model.h"
 
-#define HOUSEHOLD_INDEX 0
-#define NEIGHBORHOOD_INDEX 1
-#define SCHOOL_INDEX 2
-#define CLASSROOM_INDEX 3
-#define WORKPLACE_INDEX 4
-#define OFFICE_INDEX 5
-#define FAVORITE_PLACES 6
+class Person;
+extern int V_count;
 
 class Behavior {
-public:
-  Behavior (Person *person, Place **favorite_place, int pro);
-  UNIT_TEST_VIRTUAL void reset();
-  UNIT_TEST_VIRTUAL void update(int day);
-  void update_infectious_behavior(Date *sim_start_date, int day);
-  void update_susceptible_behavior(Date *sim_start_date, int day);
-  UNIT_TEST_VIRTUAL void update_schedule(Date *sim_start_date, int day);
-  UNIT_TEST_VIRTUAL void print_schedule();
-  UNIT_TEST_VIRTUAL bool acceptance_of_vaccine();
-  UNIT_TEST_VIRTUAL bool acceptance_of_another_vaccine_dose();
-  // UNIT_TEST_VIRTUAL int get_profile() { return profile; }
-  UNIT_TEST_VIRTUAL Place * get_household() { return favorite_place[HOUSEHOLD_INDEX]; }
-  UNIT_TEST_VIRTUAL Place * get_neighborhood() { return favorite_place[NEIGHBORHOOD_INDEX]; }
-  UNIT_TEST_VIRTUAL Place * get_school() { return favorite_place[SCHOOL_INDEX]; }
-  UNIT_TEST_VIRTUAL Place * get_classroom() { return favorite_place[CLASSROOM_INDEX]; }
-  UNIT_TEST_VIRTUAL Place * get_workplace() { return favorite_place[WORKPLACE_INDEX]; }
-  UNIT_TEST_VIRTUAL Place * get_office() { return favorite_place[OFFICE_INDEX]; }
-	
-private:
-  Person * self;	 // pointer to person using having this behavior
-  int profile;				 // index of usual visit pattern
-  Place * favorite_place[FAVORITE_PLACES];    // list of expected places
-  bool on_schedule[FAVORITE_PLACES]; // true iff favorite place is on schedule
-  int schedule_updated;			 // date of last schedule update
-  
-protected:
-  Behavior() { }
+ public:
+  Behavior(Person *p);
+  ~Behavior() {}
+  void reset() { model->reset(); }
+  void update(int day) { model->update(day); V_count += will_accept_vaccine(0); }
+  bool will_accept_vaccine(int disease) { return model->will_accept_vaccine(disease); }
+  bool will_accept_another_vaccine_dose(int disease) { return model->will_accept_another_vaccine_dose(disease);}
+  bool will_keep_kids_home() { return false; }
+  bool acceptance_of_vaccine() { return will_accept_vaccine(0); }
+  bool acceptance_of_another_vaccine_dose() { return will_accept_another_vaccine_dose(0); }
+ private:
+  void get_parameters();
+  Behavior_Model* model;	     // behavior model does all the real work
 };
 
-
 #endif // _FRED_BEHAVIOR_H
+

@@ -26,7 +26,8 @@ int Classroom_closure_delay;
 int Classroom_parameters_set = 0;
 
 
-Classroom::Classroom(int loc, const char *lab, double lon, double lat, Place *container, Population *pop) {
+Classroom::Classroom(int loc, const char *lab, double lon,
+		     double lat, Place *container, Population *pop) {
   type = CLASSROOM;
   setup(loc, lab, lon, lat, container, pop);
   get_parameters(population->get_diseases());
@@ -66,7 +67,7 @@ int Classroom::get_group(int disease, Person * per) {
   int age = per->get_age();
   if (age < 12) { return 0; }
   else if (age < 16) { return 1; }
-  else if (age < 19) { return 2; }
+  else if (age < ADULT_AGE) { return 2; }
   else return 3;
 }
 

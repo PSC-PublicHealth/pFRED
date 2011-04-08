@@ -18,10 +18,11 @@
 class Grid {
 public:
   Grid() {}
-  void get_parameters();
   void setup();
-  void reset(int run);
+  void get_parameters();
+  void record_favorite_places();
   Patch * get_patch(int row, int col);
+  Patch * select_random_patch();
   Patch * get_patch_from_cartesian(double x, double y);
   Patch * get_patch_from_lat_lon(double lat, double lon);
   void translate_to_cartesian(double lat, double lon, double *x, double *y);

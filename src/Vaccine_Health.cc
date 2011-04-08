@@ -58,7 +58,7 @@ void Vaccine_Health::printTrace() const {
 void Vaccine_Health::update(int day, int age){
   // First check for immunity 
   if (is_effective() && (day == vaccination_effective_day)) {
-    // Going out to Person, so that behavior can be accessed
+    // Going out to Person, so that activities can be accessed
     Disease* s = health->get_self()->get_population()->get_disease(0);
     health->get_self()->become_immune(s);
     if(Debug < 1) {

@@ -21,8 +21,8 @@ using namespace std;
 #include "Population.h"
 #include "Demographics.h"
 #include "Health.h"
-#include "Cognition.h"
 #include "Behavior.h"
+#include "Activities.h"
 #include "Infection.h"
 #include "Person_Event_Interface.h"
 class Place;
@@ -36,11 +36,15 @@ public:
   Person();
   UNIT_TEST_VIRTUAL ~Person();
   UNIT_TEST_VIRTUAL void setup(int index, int age, char sex, int marital, int profession,
-                               Place **favorite_places, int profile, Population* pop,
-                               Date *sim_start_date, bool has_random_birthday);
+                               Place **favorite_places, Population* pop,
+			       Date *sim_start_date, bool has_random_birthday);
   UNIT_TEST_VIRTUAL void reset(Date *sim_start_date);
-  UNIT_TEST_VIRTUAL void update_infectious_behavior(Date *sim_start_date, int day) { behavior->update_infectious_behavior(sim_start_date, day); }
-  UNIT_TEST_VIRTUAL void update_susceptible_behavior(Date *sim_start_date, int day)  { behavior->update_susceptible_behavior(sim_start_date, day); }
+  UNIT_TEST_VIRTUAL void update_infectious_activities(Date *sim_start_date, int day) {
+    activities->update_infectious_activities(sim_start_date, day);
+  }
+  UNIT_TEST_VIRTUAL void update_susceptible_activities(Date *sim_start_date, int day) {
+    activities->update_susceptible_activities(sim_start_date, day);
+  }
   UNIT_TEST_VIRTUAL void print(int disease) const;
   UNIT_TEST_VIRTUAL void print_out(int disease) const;
   UNIT_TEST_VIRTUAL void print_schedule() const;
@@ -72,16 +76,17 @@ public:
   UNIT_TEST_VIRTUAL int is_new_case(int day, int disease) const;
   
   UNIT_TEST_VIRTUAL Health *get_health() const { return health; }
-  UNIT_TEST_VIRTUAL Behavior* get_behavior() const { return behavior; }
+  UNIT_TEST_VIRTUAL Activities* get_activities() const { return activities; }
   UNIT_TEST_VIRTUAL Demographics* get_demographics() const { return demographics; }
-  UNIT_TEST_VIRTUAL Cognition* get_cognition() const { return cognition; }
+  UNIT_TEST_VIRTUAL Behavior* get_behavior() const { return behavior; }
   UNIT_TEST_VIRTUAL Population* get_population() const { return pop; }
   
   UNIT_TEST_VIRTUAL void set_changed(); // notify the population that this Person has changed
   void update_demographics(Date *sim_start_date, int day) { demographics->update(sim_start_date, day); }
   void update_health(int day) { health->update(day); }
-  void update_cognition(int day) { cognition->update(day); }
   void update_behavior(int day) { behavior->update(day); }
+  void update_activities(int day) { activities->update(day); }
+  void update_activity_profile() { activities->update_profile(); }
 
   void become_susceptible(int disease) { health->become_susceptible(disease); }
   void become_exposed(Infection * infection) { health->become_exposed(infection); }
@@ -91,6 +96,8 @@ public:
   bool is_deceased() { return demographics->is_deceased(); }
   
   Person * give_birth(int day);
+  void assign_classroom() { activities->assign_classroom(); }
+  void assign_office() { activities->assign_office(); }
 
   //Event Handling
   UNIT_TEST_VIRTUAL void register_event_handler(Person_Event_Interface *event_handler);
@@ -103,8 +110,8 @@ private:
   Population *pop;
   Demographics *demographics;
   Health *health;
+  Activities *activities;
   Behavior *behavior;
-  Cognition *cognition;
   vector<Person_Event_Interface *> *registered_event_handlers;
 };
 

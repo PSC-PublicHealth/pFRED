@@ -22,21 +22,11 @@ using namespace std;
 #include "Random.h"
 
 // global singleton object
-Grid Patches;
-
-
-void Grid::get_parameters() {
-  get_param((char *) "km_per_deg_longitude", &km_per_deg_longitude);
-  get_param((char *) "km_per_deg_latitude", &km_per_deg_latitude);
-  get_param((char *) "patch_size", &patch_size);
-  get_param((char *) "max_latitude", &max_lat);
-  get_param((char *) "min_latitude", &min_lat);
-  get_param((char *) "max_longitude", &max_lon);
-  get_param((char *) "min_longitude", &min_lon);
-}
+Grid Environment;
 
 
 void Grid::setup() {
+  get_parameters();
   min_x = 0.0;
   max_x = (max_lon-min_lon)*km_per_deg_longitude;
   min_y = 0.0;
@@ -80,6 +70,16 @@ void Grid::setup() {
   }
 }
 
+void Grid::get_parameters() {
+  get_param((char *) "km_per_deg_longitude", &km_per_deg_longitude);
+  get_param((char *) "km_per_deg_latitude", &km_per_deg_latitude);
+  get_param((char *) "patch_size", &patch_size);
+  get_param((char *) "max_latitude", &max_lat);
+  get_param((char *) "min_latitude", &min_lat);
+  get_param((char *) "max_longitude", &max_lon);
+  get_param((char *) "min_longitude", &min_lon);
+}
+
 void Grid::make_neighborhoods() {
   for (int row = 0; row < rows; row++) {
     for (int col = 0; col < cols; col++) {
@@ -88,14 +88,13 @@ void Grid::make_neighborhoods() {
   }
 }
 
-void Grid::reset(int run) {
+void Grid::record_favorite_places() {
   for (int row = 0; row < rows; row++) {
     for (int col = 0; col < cols; col++) {
-      patch[row][col].reset(run);
+      patch[row][col].record_favorite_places();
       patch_pop[row][col] = patch[row][col].get_neighborhood()->get_size();
     }
   }
-  // test_gravity_model();
 }
 
 Patch * Grid::get_patch(int row, int col) {
@@ -103,6 +102,13 @@ Patch * Grid::get_patch(int row, int col) {
     return &patch[row][col];
   else
     return NULL;
+}
+
+
+Patch * Grid::select_random_patch() {
+  int row = IRAND(0, rows-1);
+  int col = IRAND(0, cols-1);
+  return &patch[row][col];
 }
 
 
@@ -218,5 +224,6 @@ void Grid::quality_control() {
     fprintf(Statusfp, "patches quality control finished\n");
     fflush(Statusfp);
   }
-  
 }
+
+

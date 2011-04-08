@@ -59,15 +59,17 @@ Disease::~Disease() {
   delete at_risk;
 }
 
-void Disease::reset() {
-  epidemic->reset();
+void Disease::clear() {
+  epidemic->clear();
 }
 
 void Disease::setup(int disease, Population *pop, double *mut_prob) {
-  //  char s[80];
-  id = disease;
   int n;
-  
+  id = disease;
+  if (Verbose) {
+    fprintf(Statusfp, "disease %d setup entered\n", id);
+    fflush(Statusfp);
+  }
   get_indexed_param("trans",id,&transmissibility);
   get_indexed_param("symp",id,&prob_symptomatic);
   get_indexed_param("mortality_rate",id,&mortality_rate);
@@ -93,7 +95,7 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   get_indexed_param("immunity_loss_rate",id,&immunity_loss_rate);
   get_indexed_param("infection_model",id,&infection_model);
   
-  // This needs to be moved to Cognition
+  // This needs to be moved to Behavior
   get_param((char *) "prob_stay_home", &Prob_stay_home);
   
   if (max_days_asymp > max_days_symp) {
@@ -115,7 +117,7 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   sprintf(param_name,"primary_cases[%d]",id);
   string param_name_str(param_name);
   epidemic = new Epidemic(this, new Timestep_Map(param_name_str));
-  
+
   // Define residual immunity
   residual_immunity = new Age_Map("Residual Immunity");
   residual_immunity->read_from_input("residual_immunity",id);
@@ -126,29 +128,33 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   at_risk->read_from_input("at_risk",id);
   if(at_risk->is_empty() == false ) at_risk->print();	
 	
-  printf("Disease setup finished\n"); fflush(stdout);
-  if (Verbose) print();
+  if (Verbose) {
+    fprintf(Statusfp, "disease %d setup finished\n", id);
+    fflush(Statusfp);
+    print();
+  }
 }
 
 void Disease::print() {
-  printf("disease %d symp %.3f trans %e symp_infectivity %.3f asymp_infectivity %.3f\n",
+  fprintf(Statusfp,
+	  "disease %d symp %.3f trans %e symp_infectivity %.3f asymp_infectivity %.3f\n",
          id, prob_symptomatic, transmissibility, symp_infectivity, asymp_infectivity);
-  printf("days latent: ");
+  fprintf(Statusfp, "days latent: ");
   for (int i = 0; i <= max_days_latent; i++)
-    printf("%.3f ", days_latent[i]);
-  printf("\n");
-  printf("days incubating: ");
+    fprintf(Statusfp, "%.3f ", days_latent[i]);
+  fprintf(Statusfp, "\n");
+  fprintf(Statusfp, "days incubating: ");
   for (int i = 0; i <= max_days_incubating; i++)
-    printf("%.3f ", days_incubating[i]);
-  printf("\n");
-  printf("days symp: ");
+    fprintf(Statusfp, "%.3f ", days_incubating[i]);
+  fprintf(Statusfp, "\n");
+  fprintf(Statusfp, "days symp: ");
   for (int i = 0; i <= max_days_symp; i++)
-    printf("%.3f ", days_symp[i]);
-  printf("\n");
-  printf("days asymp: ");
+    fprintf(Statusfp, "%.3f ", days_symp[i]);
+  fprintf(Statusfp, "\n");
+  fprintf(Statusfp, "days asymp: ");
   for (int i = 0; i <= max_days_asymp; i++)
-    printf("%.3f ", days_asymp[i]);
-  printf("\n");
+    fprintf(Statusfp, "%.3f ", days_asymp[i]);
+  fprintf(Statusfp, "\n");
 }
 
 Disease* Disease::should_mutate_to() {

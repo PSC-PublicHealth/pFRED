@@ -12,25 +12,6 @@
 #ifndef _FRED_H
 
 int main(int argc, char* argv[]);
-void setup(char *paramfile);
-void cleanup(int run);
-void run_sim(int run);
-
-//class Population;
-
-//class Fred {
-//
-//public:
-//  Fred();
-//  virtual ~Fred();
-//  void setup(char *paramfile);
-//  void cleanup(int run);
-//  void run_sim(int run);
-//
-//private:
-//  Population static_pop;
-//
-//};
 
 #define _FRED_H
 

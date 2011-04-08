@@ -10,7 +10,6 @@
 int Verbose;
 int Debug;
 int Test;
-int Runs;
 int Days;
 unsigned long Seed;
 int Epidemic_offset;
@@ -25,7 +24,7 @@ int All_diseases_antigenically_identical;
 int Incremental_Trace;
 int Trace_Headers;
 int Random_start_day;
-char Cognitive_model_type[256];
+char Behavior_model_type[256];
 int Quality_control;
 int Diseases;
 int Enable_Aging;
@@ -45,7 +44,6 @@ void get_global_parameters() {
   get_param((char *) "debug", &Debug);
   get_param((char *) "test", &Test);
   get_param((char *) "quality_control", &Quality_control);
-  get_param((char *) "runs", &Runs);
   get_param((char *) "days", &Days);
   get_param((char *) "seed", &Seed);
   get_param((char *) "epidemic_offset", &Epidemic_offset);
@@ -59,7 +57,7 @@ void get_global_parameters() {
   get_param((char *) "all_diseases_antigenically_identical", &All_diseases_antigenically_identical);
   get_param((char *) "incremental_trace", &Incremental_Trace);
   get_param((char *) "trace_headers", &Trace_Headers);
-  get_param((char *) "cognitive_model", Cognitive_model_type);
+  get_param((char *) "behavior_model", Behavior_model_type);
   get_param((char *) "diseases", &Diseases);
   get_param((char *) "prob_accept_vaccine", &Prob_accept_vaccine);
   get_param((char *) "prob_accept_another_vaccine_dose",&Prob_accept_vaccine_dose);

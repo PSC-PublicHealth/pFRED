@@ -12,12 +12,12 @@
 #ifndef _FRED_HEALTH_BELIEF_MODEL_H
 #define _FRED_HEALTH_BELIEF_MODEL_H
 
-#include "Cognitive_Model.h"
+#include "Behavior_Model.h"
 #include "Perceptions.h"
 
 class Person;
 
-class Health_Belief_Model : public Cognitive_Model {
+class Health_Belief_Model : public Behavior_Model {
  public:
   Health_Belief_Model(Person *p);
   void reset();

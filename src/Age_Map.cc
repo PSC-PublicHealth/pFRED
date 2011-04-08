@@ -78,7 +78,6 @@ void Age_Map::read_from_input(string Input) {
   
   get_param_vector(values_string,values);
   
-  //print();
   if(quality_control() != true)
     abort();
   return;
