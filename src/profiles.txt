@@ -1,13 +1,13 @@
-Profile 0 Child
+Profile 0 Pre-school
 Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
-Mon Home 1.0 Nbrhood 0.67 School 1.0 Work 0.0 Travel 0.0
-Tue Home 1.0 Nbrhood 0.67 School 1.0 Work 0.0 Travel 0.0
-Wed Home 1.0 Nbrhood 0.67 School 1.0 Work 0.0 Travel 0.0
-Thu Home 1.0 Nbrhood 0.67 School 1.0 Work 0.0 Travel 0.0
-Fri Home 1.0 Nbrhood 0.67 School 1.0 Work 0.0 Travel 0.0
+Mon Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Tue Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Wed Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Thu Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
+Fri Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
 Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
 
-Profile 1 Older_student
+Profile 1 Student
 Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
 Mon Home 1.0 Nbrhood 0.67 School 1.0 Work 1.0 Travel 0.0
 Tue Home 1.0 Nbrhood 0.67 School 1.0 Work 1.0 Travel 0.0
