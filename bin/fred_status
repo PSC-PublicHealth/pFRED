@@ -21,15 +21,14 @@ die "Can't find directory $dir\n" if not -d $dir;
 my $id = get_id($mykey);
 die "NOT_FOUND\n" if $id eq "";
 
-my $status = `cat $dir/RUN/$id/META/STATUS`;
+my $status = `cat $dir/JOB/$id/META/STATUS`;
 chomp $status;
 
 if ($status =~ /RUNNING/) {
-  my $z = `grep 'runs =' $dir/RUN/$id/META/PARAMS`;
-  my ($x, $y, $runs) = split " ", $z;
+  my $runs = `cat $dir/JOB/$id/META/RUNS`;
   chomp $runs;
-  if (-e "$dir/RUN/$id/DATA/OUT/out1.txt") {
-    my $finished = `ls $dir/RUN/$id/DATA/OUT/out* | wc -l`;
+  if (-e "$dir/JOB/$id/DATA/OUT/out1.txt") {
+    my $finished = `ls $dir/JOB/$id/DATA/OUT/out* | wc -l`;
     chomp $finished;
     $finished =~ s/\s//g;
     $finished--;
@@ -40,7 +39,7 @@ if ($status =~ /RUNNING/) {
   }
 }
 if ($status =~ /FINISHED/) {
-  my $t = (stat("$dir/RUN/$id/META/STATUS"))[9];
+  my $t = (stat("$dir/JOB/$id/META/STATUS"))[9];
   $status .= " " . localtime($t) . "\n";
 }
 else {
@@ -51,20 +50,20 @@ print $status;
 if (defined $secs and $secs =~ /^\d+$/) {
   while ($status !~ /FINISHED/ and $status !~ /NOT_FOUND/) {
     sleep $secs;
-    $status = `cat $dir/RUN/$id/META/STATUS`;
+    $status = `cat $dir/JOB/$id/META/STATUS`;
     chomp $status;
     if ($status =~ /RUNNING/) {
-      my $z = `grep 'runs =' $dir/RUN/$id/META/PARAMS`;
-      my ($x, $y, $runs) = split " ", $z;
+      my $runs = `cat $dir/JOB/$id/META/RUNS`;
       chomp $runs;
-      my $finished = `ls $dir/RUN/$id/DATA/OUT/out* | wc -l`;
+      my $z = `grep 'runs =' $dir/JOB/$id/META/PARAMS`;
+      my $finished = `ls $dir/JOB/$id/DATA/OUT/out* | wc -l`;
       chomp $finished;
       $finished =~ s/\s//g;
       $finished--;
       $status = sprintf "RUNNING-%02d", int(0.5+100*$finished/$runs);
     }
     if ($status =~ /FINISHED/) {
-      my $t = (stat("$dir/RUN/$id/META/STATUS"))[9];
+      my $t = (stat("$dir/JOB/$id/META/STATUS"))[9];
       $status .= " " . localtime($t) . "\n";
     }
     else {

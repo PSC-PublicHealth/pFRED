@@ -18,4 +18,12 @@ if (not $open or (not -x $open)) {
   exit;
 }
 
-system "$open `$FRED/bin/fred_plot @ARGV`";
+my $results = `$FRED/bin/fred_plot @ARGV`;
+if ($results =~ /bad status/) {
+  $results =~ s/fred_plot/fred_display_plot/;
+  print "$results";
+}
+else {
+  system "$open $results";
+}
+

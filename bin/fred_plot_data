@@ -26,7 +26,7 @@ chomp $status;
 $status =~ s/\s.*//;
 die "fred_plot_data: bad status: $status\n" if $status ne "FINISHED";
 
-my $reportsdir = "$FRED/RESULTS/RUN/$id/DATA/REPORTS";
+my $reportsdir = "$FRED/RESULTS/JOB/$id/DATA/REPORTS";
 system "cat $reportsdir/$x.dat";
 exit;
 

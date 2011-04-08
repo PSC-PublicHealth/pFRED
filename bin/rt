@@ -20,7 +20,10 @@ if [ ! -x $FRED ]; then
 fi
 
 # run the regression test
-$FRED params.test > OUT.TEST/LOG
+echo -n regression test running ... run 1 ...  
+$FRED params.test 1 > OUT.TEST/LOG1
+echo run 2 ...
+$FRED params.test 2 > OUT.TEST/LOG2
 
 # check the results
 cmp OUT.TEST/out1.txt OUT.RT/out1.txt

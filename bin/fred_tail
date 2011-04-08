@@ -35,7 +35,7 @@ my $id = get_id($mykey);
 die "NOT_FOUND\n" if $id eq "";
 
 # set up some variables for output
-my $outpath = "$dir/RUN/$id/DATA/OUT/";
+my $outpath = "$dir/JOB/$id/DATA/OUT/";
 my $len = length("$outpath/out");
 my $output = `ls $outpath/out*`;
 my @outputs = split /\n/,$output;

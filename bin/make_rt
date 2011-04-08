@@ -1,0 +1,6 @@
+#!/bin/bash
+echo 'making files for regression test'
+cd $FRED_HOME/src
+rt
+cp OUT.TEST/* OUT.RT
+rt

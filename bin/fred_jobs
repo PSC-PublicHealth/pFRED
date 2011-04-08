@@ -14,7 +14,7 @@ open FH, "$dir/KEY" or die "Can't find $dir/KEY\n";
 while (<FH>) {
   chomp;
   my ($key, $id) = split;
-  printf "KEY = %-20s\tRUN = %3d\t", $key, $id;
+  printf "KEY = %-20s\tJOB = %3d\t", $key, $id;
   print "STATUS = ", `$FRED/bin/fred_status -k $key`;
 }
 close FH;
