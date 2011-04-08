@@ -1,0 +1,114 @@
+How to run FRED
+8 April 2011
+
+There are several options for running FRED.
+
+1. COMMAND LINE EXECUTABLE
+
+The FRED executable is copied to the $FRED/bin directory after each
+make, so you can run FRED as follows:
+
+% FRED [paramfile [run_number [directory]]]
+
+The arguments are optional from right to left.  If all three arguments
+are given, FRED uses the given paramfile, runs a single replication with
+number "run_number", and writes output files to the given directory.
+
+If the third argument is omitted, the output directory is taken from the
+runtime parameter "outdir".
+
+If both the second and third arguments are missing, run_number defaults
+to 1.
+
+If all arguments are missing, paramfile defaults to "params".
+
+Examples:
+
+% FRED
+% FRED params.test
+% FRED params 2
+% FRED params 2 OUT.test
+
+2. USE run_fred SCRIPT FOR MULTIPLE REALIZATIONS
+
+The run_fred script has been rewritten to perform multiple realizations.  The format is:
+
+% run_fred -p paramfile -d directory -s start_run -n end_run
+
+The order of the arguments doesn't matter, and all arguments have default values:
+
+-p "params"
+-d ""
+-s 1
+-n 1
+
+The command:
+
+% run_fred -p params -d FOO -s 1 -n 3
+
+translates to a set of commands:
+
+% FRED params 1 FOO > FOO/LOG1
+% FRED params 2 FOO > FOO/LOG2
+% FRED params 3 FOO > FOO/LOG3
+
+after first creating directory FOO if necessary. The run_fred script
+also copies the params file into the output directory, for future
+reference.
+
+The default value for -d uses the output directory specified in the
+outdir runtime parameters.  For example, if params does not specify an
+output directory, it will use the value "OUT" from params.def:
+
+% run_fred -n 3
+
+translates to:
+
+% FRED params 1 OUT > OUT/LOG1
+% FRED params 2 OUT > OUT/LOG2
+% FRED params 3 OUT > OUT/LOG3
+
+The LOG files are individually numbered, so that you should get the same
+results in the output directory from
+
+% run_fred -n 20
+
+as from:
+
+% run_fred -n 10
+% run_fred -s 11 -n 20
+
+
+3. USE fred_job SCRIPT FOR SAVING RUNS IN THE RESULTS DATABASE
+
+The old "run_fred" script has been renamed "fred_job" and has been
+changed as follows:
+
+- fred_job uses JOB instead of RUN to describe a batch of realizations
+  using the same parameter file.
+
+- fred_job uses the new run_fred script to run multiple realizations.
+
+[NOTE: fred_job currently only works locally; it needs to be updated to
+run batch jobs on the PSC.]
+
+If you use fred_job, you can use all the fred_* scripts below (all in
+the bin directory) to query job status, retrieve data from curves, and
+plot results, just like before.
+
+$FRED/bin:
+  fred_AR
+  fred_clear_all_results
+  fred_delete
+  fred_display_multiplot
+  fred_display_plot
+  fred_id
+  fred_job
+  fred_jobs
+  fred_multiplot
+  fred_plot
+  fred_plot_data
+  fred_status
+  fred_sweep
+  fred_tail
+
