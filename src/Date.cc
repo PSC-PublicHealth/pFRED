@@ -421,6 +421,23 @@ string Date::to_string() {
   return oss.str();
 }
 
+char * Date::get_YYYYMMDD(int day) {
+  sprintf(date_string, "%04d-%02d-%02d", get_year(day), get_month(day), get_day_of_month(day));
+  return date_string;
+}
+
+char * Date::get_YYYYMM(int day) {
+  sprintf(date_string, "%04d-%02d", get_year(day), get_month(day));
+  return date_string;
+}
+
+char * Date::get_MMDD(int day) {
+  sprintf(date_string, "%02d-%02d", get_month(day), get_day_of_month(day));
+  return date_string;
+}
+
+
+
 //Static Methods
 int Date::days_between(Date * date_1, Date * date_2) {
 

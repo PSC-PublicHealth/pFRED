@@ -51,7 +51,7 @@ public:
   void add_person(Person * per);
   void delete_person(Person * per);
   void prepare_to_die(Person *per);
-  void prepare_for_birth(Person *per);
+  void prepare_to_give_birth(Person *per);
   Person *get_person(int n) { return pop[n]; }
   
   // Modifiers on the entire pop;
@@ -64,7 +64,7 @@ public:
   // track those agents that have changed since the last incremental dump
   UNIT_TEST_VIRTUAL void set_changed(Person *p);
   
-  static int get_next_id();
+  int get_next_id();
   void assign_classrooms();
   void assign_offices();
   void read_population();
@@ -74,9 +74,9 @@ private:
   char profilefile[256];
   vector <Person *> pop;			// list of all agents
   vector <Person *> graveyard;		      // list of all dead agents
-  vector <Person *> death_list;		      // list agents to die today
-  vector <Person *> birth_list;         // list agents to give birth today
-  static int next_id;
+  vector <Person *> death_list;		     // list agents to die today
+  vector <Person *> maternity_list;   // list agents to give birth today
+  int next_id;
   int pop_size;
   int diseases;
   Disease *disease;
@@ -92,12 +92,7 @@ private:
   Vaccine_Manager *vacc_manager;
 
   //Used for reporting
-  static void clear_static_arrays();
-  static int age_count_male[Demographics::MAX_AGE + 1];
-  static int age_count_female[Demographics::MAX_AGE + 1];
-  static int birth_count[Demographics::MAX_PREGNANCY_AGE + 1];
-  static int death_count_male[Demographics::MAX_AGE + 1];
-  static int death_count_female[Demographics::MAX_AGE + 1];
+  void clear_static_arrays();
 
 };
 

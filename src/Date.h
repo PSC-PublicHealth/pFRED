@@ -103,6 +103,9 @@ public:
   static int parse_year_from_date_string(string date_string, string format_string);
 
   string to_string();
+  char * get_YYYYMMDD(int day);
+  char * get_YYYYMM(int day);
+  char * get_MMDD(int day);
 
   virtual ~Date();
 
@@ -126,6 +129,7 @@ private:
   { return Date::doomsday_month_val[(Date::is_leap_year(year) ? 1 : 0)][month]; }
   static int get_doomsday_century(int year);
   static int get_day_of_week(int year, int month, int day_of_month);
+  char date_string[16];
 };
 
 #endif /* DATE_H_ */

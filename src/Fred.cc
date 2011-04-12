@@ -150,16 +150,26 @@ int main(int argc, char* argv[]) {
 
   for (int day = 0; day < Days; day++) {
     if (day == Reseed_day) {
-      printf("************** reseed day = %d\n", day); fflush(stdout);
+      fprintf(Statusfp, "************** reseed day = %d\n", day);
+      fflush(Statusfp);
       INIT_RANDOM(new_seed + run - 1);
     }
-    printf("================\nsim day = %d\n", day); fflush(stdout);
+    fprintf(Statusfp, "================\nsim day = %d  date = %s\n",
+	    day, Sim_Date->get_MMDD(day));
+    fflush(stdout);
     Places.update(day);
     Pop.begin_day(day);
     Pop.get_visitors_to_infectious_places(day);
     Pop.transmit_infection(day);
     Pop.end_day(day);
     Pop.report(day);
+
+    if (Enable_Aging && Verbose && strcmp(Sim_Date->get_MMDD(day),"12-31")==0) {
+      Pop.quality_control();
+      Places.quality_control();
+      Environment.quality_control();
+    }
+
     fprintf(Statusfp, "day %d finished  ", day);
     // incremental trace
     if (Incremental_Trace && day && !(day%Incremental_Trace))

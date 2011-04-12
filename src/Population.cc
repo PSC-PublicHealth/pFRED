@@ -33,20 +33,16 @@ using namespace std;
 // global singleton object
 Population Pop;
 
+// used for reporting
 int V_count;
-
-//Static variables
-int Population::next_id = 0;
-
-//Used for reporting
-int Population::age_count_male[Demographics::MAX_AGE + 1];
-int Population::age_count_female[Demographics::MAX_AGE + 1];
-int Population::birth_count[Demographics::MAX_PREGNANCY_AGE + 1];
-int Population::death_count_male[Demographics::MAX_AGE + 1];
-int Population::death_count_female[Demographics::MAX_AGE + 1];
+int age_count_male[Demographics::MAX_AGE + 1];
+int age_count_female[Demographics::MAX_AGE + 1];
+int birth_count[Demographics::MAX_AGE + 1];
+int death_count_male[Demographics::MAX_AGE + 1];
+int death_count_female[Demographics::MAX_AGE + 1];
 
 Population::Population() {
-  Population::clear_static_arrays();
+  clear_static_arrays();
   pop.clear();
   pop_map.clear();
   pop_size = 0;
@@ -55,6 +51,7 @@ Population::Population() {
   vacc_manager = NULL;
   diseases = -1;
   mutation_prob = NULL;
+  next_id = 0;
 }
 
 Population::~Population() {
@@ -121,8 +118,10 @@ void Population::delete_person(Person * person) {
   pop_size--;
   pop_map.erase(it);
   pop_map[last] = n;
-  if ((unsigned) pop_size != pop.size()) { printf("pop_size = %d  pop.size() = %d\n",
-				       pop_size, (int) pop.size()); }
+  if ((unsigned) pop_size != pop.size()) {
+    printf("pop_size = %d  pop.size() = %d\n",
+	   pop_size, (int) pop.size());
+  }
   assert((unsigned) pop_size == pop.size());
   graveyard.push_back(person);
 }
@@ -130,11 +129,13 @@ void Population::delete_person(Person * person) {
 void Population::prepare_to_die(Person *per) {
   // add person to daily death_list
   death_list.push_back(per);
+  // printf("prepare to die: "); per->print_out(0);
 }
 
-void Population::prepare_for_birth(Person *per) {
-  // add person to daily birth_list
-  birth_list.push_back(per);
+void Population::prepare_to_give_birth(Person *per) {
+  // add person to daily maternity_list
+  maternity_list.push_back(per);
+  //printf("prepare to give birth: "); per->print_out(0);
 }
 
 void Population::setup() {
@@ -153,7 +154,7 @@ void Population::setup() {
   pop.clear();
   pop_map.clear();
   pop_size = 0;
-  birth_list.clear();
+  maternity_list.clear();
   graveyard.clear();
   death_list.clear();
   read_population();
@@ -234,9 +235,9 @@ void Population::read_population() {
       abort();
     }
     
-    //Increment the static next_id and make certain that it is always at least one greater than the max id read in
-    if(Population::next_id <= id)
-      Population::next_id = id + 1;
+    //Increment next_id and make certain that it is always at least one greater than the max id read in
+    if(next_id <= id)
+      next_id = id + 1;
 
     // ignore deprecated entries
     hood = -1;
@@ -274,11 +275,10 @@ void Population::begin_day(int day) {
 
   // clear lists of births and deaths
   death_list.clear();
-  birth_list.clear();
+  maternity_list.clear();
 
   // update activity profiles on July 1
-  if (Enable_Aging && Sim_Date->get_month(day) == Date::JULY &&
-      Sim_Date->get_day_of_month(day) == 1) {
+  if (Enable_Aging && strcmp(Sim_Date->get_MMDD(day), "07-01")==0) {
     for (int p = 0; p < pop_size; p++) {
       pop[p]->update_activity_profile();
     }
@@ -295,19 +295,17 @@ void Population::begin_day(int day) {
   }
 
   // add the births to the population
-  size_t births = birth_list.size();
+  size_t births = maternity_list.size();
   for (size_t i = 0; i < births; i++) {
-    Person * baby = birth_list[i]->give_birth(day);
+    Person * baby = maternity_list[i]->give_birth(day);
     baby->register_event_handler(this);
     add_person(baby);
     //For reporting
-    if (Verbose > 1) {
-      int age_lookup = birth_list[i]->get_age();
-      age_lookup = (age_lookup <= Demographics::MAX_PREGNANCY_AGE ? age_lookup : Demographics::MAX_PREGNANCY_AGE);
-      Population::birth_count[age_lookup]++;
-    }
+    int age_lookup = maternity_list[i]->get_age();
+    age_lookup = (age_lookup <= Demographics::MAX_AGE ? age_lookup : Demographics::MAX_AGE);
+    birth_count[age_lookup]++;
   }
-  if (Verbose > 1) {
+  if (Verbose) {
     fprintf(Statusfp, "births = %d\n", (int)births);fflush(stdout);
   }
 
@@ -315,17 +313,15 @@ void Population::begin_day(int day) {
   size_t deaths = death_list.size();
   for (size_t i = 0; i < deaths; i++) {
     //For reporting
-    if (Verbose > 1) {
-      int age_lookup = death_list[i]->get_age();
-      age_lookup = (age_lookup <= Demographics::MAX_AGE ? age_lookup : Demographics::MAX_AGE);
-      if (death_list[i]->get_sex() == 'F')
-        Population::death_count_female[age_lookup]++;
-      else
-        Population::death_count_male[age_lookup]++;
-    }
+    int age_lookup = death_list[i]->get_age();
+    age_lookup = (age_lookup <= Demographics::MAX_AGE ? age_lookup : Demographics::MAX_AGE);
+    if (death_list[i]->get_sex() == 'F')
+      death_count_female[age_lookup]++;
+    else
+      death_count_male[age_lookup]++;
     delete_person(death_list[i]);
   }
-  if (Verbose > 1) {
+  if (Verbose) {
     fprintf(Statusfp, "deaths = %d\n", (int)deaths);fflush(stdout);
   }
 
@@ -394,29 +390,39 @@ void Population::end_day(int day) {
   // give out anti-virals (after today's infections)
   av_manager->disseminate(day);
 
-  //Only print the statistics on December 31 of each year of the simulation
-  if (Verbose && Sim_Date->get_day_of_month(day) == 31 &&
-      Sim_Date->get_month(day) == Date::DECEMBER) {
-
+  if (Verbose && strcmp(Sim_Date->get_MMDD(day), "12-31")==0) {
+    // print the statistics on December 31 of each year
     for (int i = 0; i < pop_size; ++i) {
       int age_lookup = pop[i]->get_age();
       age_lookup = (age_lookup <= Demographics::MAX_AGE ? age_lookup : Demographics::MAX_AGE);
       if (pop[i]->get_sex() == 'F')
-        Population::age_count_female[age_lookup]++;
+	age_count_female[age_lookup]++;
       else
-        Population::age_count_male[age_lookup]++;
+	age_count_male[age_lookup]++;
     }
-
-    for (int i = 0; i < Demographics::MAX_AGE; ++i) {
+    for (int i = 0; i <= Demographics::MAX_AGE; ++i) {
+      int count, num_deaths, num_births;
+      double birthrate, deathrate;
       fprintf(Statusfp,
-	      "DEMOGRAPHICS Year %d TotalPop %d Age %d Females [Count:Deaths:Births] [ %d %d %d ] Males [Count:Deaths] [ %d %d ]\n",
-	      Sim_Date->get_year(day), pop_size,
-	      i, Population::age_count_female[i], Population::death_count_female[i],
-	      Population::birth_count[(i <= Demographics::MAX_PREGNANCY_AGE ? i : Demographics::MAX_PREGNANCY_AGE)],
-	      Population::age_count_male[i], Population::death_count_male[i]);
+	      "DEMOGRAPHICS Year %d TotalPop %d Age %d ", 
+	      Sim_Date->get_year(day), pop_size, i);
+      count = age_count_female[i];
+      num_births = birth_count[i];
+      num_deaths = death_count_female[i];
+      birthrate = count>0 ? ((100.0*num_births)/count) : 0.0;
+      deathrate = count>0 ? ((100.0*num_deaths)/count) : 0.0;
+      fprintf(Statusfp,
+	      "count_f %d births_f %d birthrate_f %.03f deaths_f %d deathrate_f %.03f ",
+	      count, num_births, birthrate, num_deaths, deathrate);
+      count = age_count_male[i];
+      num_deaths = death_count_male[i];
+      deathrate = count?((100.0*num_deaths)/count):0.0;
+      fprintf(Statusfp,
+	      "count_m %d deaths_m %d deathrate_m %.03f\n",
+	      count, num_deaths, deathrate);
       fflush(stdout);
     }
-    Population::clear_static_arrays();
+    clear_static_arrays();
   }
 
   if (Verbose > 1) {
@@ -570,35 +576,38 @@ void Population::set_changed(Person *p){
 //Static function to clear arrays
 void Population::clear_static_arrays() {
   for (int i = 0; i <= Demographics::MAX_AGE; ++i) {
-    Population::age_count_male[i] = 0;
-    Population::age_count_female[i] = 0;
-    Population::death_count_male[i] = 0;
-    Population::death_count_female[i] = 0;
+    age_count_male[i] = 0;
+    age_count_female[i] = 0;
+    death_count_male[i] = 0;
+    death_count_female[i] = 0;
   }
-  for (int i = 0; i <= Demographics::MAX_PREGNANCY_AGE; ++i) {
-    Population::birth_count[i] = 0;
+  for (int i = 0; i <= Demographics::MAX_AGE; ++i) {
+    birth_count[i] = 0;
   }
 }
 
 //Implement the interface
-void Population::handle_property_change_event(Person *source, string property_name, int prev_val, int new_val) {
-
+void Population::handle_property_change_event(Person *source,
+					      string property_name,
+					      int prev_val,
+					      int new_val) {
 }
 
-void Population::handle_property_change_event(Person *source, string property_name, bool new_val) {
-
+void Population::handle_property_change_event(Person *source,
+					      string property_name,
+					      bool new_val) {
   if (property_name.compare("deceased") == 0 && new_val) {
     this->prepare_to_die(source);
   } else if (property_name.compare("deliver") == 0 && new_val) {
-    this->prepare_for_birth(source);
+    this->prepare_to_give_birth(source);
   }
 }
 
 
 //Static function to get and increment the next_id
 int Population::get_next_id() {
-  int return_val = Population::next_id;
-  Population::next_id++;
+  int return_val = next_id;
+  next_id++;
   return return_val;
 }
 

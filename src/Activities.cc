@@ -70,12 +70,10 @@ void Activities::assign_profile() {
        profile == WEEKEND_WORKER_PROFILE) && RANDOM() < 0.1) {
     profile = UNEMPLOYED_PROFILE;		// 10% unemployed
   }
-
 }
 
 void Activities::reset() {
-
-  // register in all the favorite places
+  // enroll in all the favorite places
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     if (favorite_place[i] != NULL) {
       favorite_place[i]->enroll(self);
@@ -189,6 +187,19 @@ void Activities::print_schedule() {
   fflush(Statusfp);
 }
 
+void Activities::print() {
+  fprintf(Statusfp, "Activities for person %d: ", self->get_id());
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
+    if (favorite_place[p] != NULL)
+      fprintf(Statusfp, "%d ", favorite_place[p]->get_id());
+    else {
+      fprintf(Statusfp, "-1 ");
+    }
+  }
+  fprintf(Statusfp, "\n");
+  fflush(Statusfp);
+}
+
 void Activities::assign_school() {
   int age = self->get_age();
   if (age < SCHOOL_AGE || ADULT_AGE <= age) return;
@@ -269,11 +280,20 @@ void Activities::assign_office() {
 
 void Activities::update_profile() {
   int age = self->get_age();
+  // int old_profile = profile;
 
-  if (SCHOOL_AGE <= age && age < ADULT_AGE) {
+  if (profile == PRESCHOOL_PROFILE && SCHOOL_AGE <= age && age < ADULT_AGE) {
     // start school
     profile = STUDENT_PROFILE;
     assign_school();
+    if (Verbose>1) {
+      fprintf(Statusfp,
+	      "changed behavior profile to STUDENT: id %d age %d sex %c\n",
+	      self->get_id(), age, self->get_sex());
+      print();
+      fflush(Statusfp);
+    }
+    return;
   }
 
   if (profile == STUDENT_PROFILE && ADULT_AGE <= age) {
@@ -283,6 +303,14 @@ void Activities::update_profile() {
     // get a job
     profile = WORKER_PROFILE;
     assign_workplace();
+    if (Verbose>1) {
+      fprintf(Statusfp,
+	      "changed behavior profile to WORKER: id %d age %d sex %c\n",
+	      self->get_id(), age, self->get_sex());
+      print();
+      fflush(Statusfp);
+    }
+    return;
   }
 
   if (profile != RETIRED_PROFILE && RETIREMENT_AGE <= age) {
@@ -291,6 +319,14 @@ void Activities::update_profile() {
       favorite_place[WORKPLACE_INDEX] = NULL;
       favorite_place[OFFICE_INDEX] = NULL;
       profile = RETIRED_PROFILE;
+      if (Verbose>1) {
+	fprintf(Statusfp,
+		"changed behavior profile to RETIRED: age %d age %d sex %c\n",
+		self->get_id(), age, self->get_sex());
+	print();
+	fflush(Statusfp);
     }
+    }
+    return;
   }
 }

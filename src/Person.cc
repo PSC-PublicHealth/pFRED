@@ -52,7 +52,9 @@ void Person::setup(int index, int age, char sex, int marital, int profession,
 {
   idx = index;
   pop = Pop;
-  demographics = new Demographics(this, age, sex, marital, profession, sim_start_date, has_random_birthday);
+  demographics =
+    new Demographics(this, age, sex, marital,
+		     profession, sim_start_date, has_random_birthday);
   health = new Health(this);
   activities = new Activities(this, favorite_places);
   behavior = new Behavior(this);
@@ -66,10 +68,13 @@ void Person::print(int disease) const {
           demographics->get_sex(),
           demographics->get_profession());
   fprintf(Tracefp, "exp: %2d  inf: %2d  rem: %2d ",
-          health->get_exposure_date(disease), health->get_infectious_date(disease), health->get_recovered_date(disease));
+          health->get_exposure_date(disease),
+	  health->get_infectious_date(disease),
+	  health->get_recovered_date(disease));
   fprintf(Tracefp, "places %d ", FAVORITE_PLACES);
   fprintf(Tracefp, "infected_at %c %6d ",
-          health->get_infected_place_type(disease), health->get_infected_place(disease));
+          health->get_infected_place_type(disease),
+	  health->get_infected_place(disease));
   fprintf(Tracefp, "infector %d ", health->get_infector(disease));
   fprintf(Tracefp, "infectees %d ", health->get_infectees(disease));
   fprintf(Tracefp, "antivirals: %2d ",health->get_number_av_taken());
@@ -89,17 +94,23 @@ void Person::print_out(int disease) const {
 	  demographics->get_sex(),
 	  demographics->get_profession());
   fprintf(stdout, "exp: %2d  inf: %2d  rem: %2d ",
-	  health->get_exposure_date(disease), health->get_infectious_date(disease), health->get_recovered_date(disease));
+	  health->get_exposure_date(disease),
+	  health->get_infectious_date(disease),
+	  health->get_recovered_date(disease));
   fprintf(stdout, "places %d ", FAVORITE_PLACES);
   fprintf(stdout, "infected_at %c %6d ",
-	  health->get_infected_place_type(disease), health->get_infected_place(disease));
+	  health->get_infected_place_type(disease),
+	  health->get_infected_place(disease));
   fprintf(stdout, "infector %d ", health->get_infector(disease));
   fprintf(stdout, "infectees %d\n", health->get_infectees(disease));
   fflush(stdout);
 }
   
 void Person::reset(Date * sim_start_date) {
-  if (Verbose > 2) { fprintf(Statusfp, "reset person %d\n", idx); fflush(Statusfp); }
+  if (Verbose > 2) {
+    fprintf(Statusfp, "reset person %d\n", idx);
+    fflush(Statusfp);
+  }
   demographics->reset(sim_start_date);
   health->reset();
   behavior->reset();
@@ -108,7 +119,8 @@ void Person::reset(Date * sim_start_date) {
   for (int disease = 0; disease < Pop.get_diseases(); disease++) {
     Disease* s = Pop.get_disease(disease);
     if (!s->get_residual_immunity()->is_empty()) {
-      double residual_immunity_prob = s->get_residual_immunity()->find_value(get_age());
+      double residual_immunity_prob =
+	s->get_residual_immunity()->find_value(get_age());
       if (RANDOM() < residual_immunity_prob)
 	become_immune(s);
     }
@@ -186,75 +198,60 @@ void Person::set_changed(){
 }
 
 Person * Person::give_birth(int day) {
-
-  int id = Population::get_next_id(), age = 0, married = -1, prof = 2;
-  int school = -1, classroom = -1, work = -1;
-  int office = -1;
+  int id = pop->get_next_id(), age = 0, married = -1, prof = 2;
   char sex = (URAND(0.0, 1.0) < 0.5 ? 'M' : 'F');
-
   Place *favorite_place[] = {
-    this->get_household(),
-    this->get_neighborhood(),
-    Places.get_place(school),
-    Places.get_place(classroom),
-    Places.get_place(work),
-    Places.get_place(office)
-  };
-
+    get_household(), get_neighborhood(),
+    NULL, NULL, NULL, NULL };
   Person * baby = new Person();
   Date * birth_date = new Date(Sim_Date->get_year(day),
 			       Sim_Date->get_month(day),
 			       Sim_Date->get_day_of_month(day));
-  baby->setup(id, age, sex, married, prof, favorite_place, this->pop, birth_date, false);
+  baby->setup(id, age, sex, married, prof, favorite_place, pop, birth_date, false);
   baby->reset(Sim_Date);
   delete birth_date;
   return baby;
 }
 
 void Person::register_event_handler(Person_Event_Interface *event_handler) {
-
   if(this->registered_event_handlers == NULL) {
     this->registered_event_handlers = new vector<Person_Event_Interface *>();
   }
-
   this->registered_event_handlers->push_back(event_handler);
-
 }
 
 void Person::deregister_event_handler(Person_Event_Interface *event_handler) {
-
   if (this->registered_event_handlers != NULL) {
     size_t vec_size = this->registered_event_handlers->size();
     size_t found_index = -1;
     bool found = false;
-
     for (size_t i = 0; i < vec_size && !found; i++) {
       if (this->registered_event_handlers->at(i) == event_handler) {
         found = true;
         found_index = i;
       }
     }
-
     if (found) {
-      this->registered_event_handlers->erase(this->registered_event_handlers->begin() + found_index);
+      this->registered_event_handlers->
+	erase(this->registered_event_handlers->begin() + found_index);
     }
   }
 }
 
 void Person::notify_property_change(string property_name, int prev_val, int new_val) {
-
   if (this->registered_event_handlers != NULL) {
     vector<Person_Event_Interface *>::iterator itr;
-    for (itr = this->registered_event_handlers->begin(); itr < this->registered_event_handlers->end(); itr++ )
+    for (itr = this->registered_event_handlers->begin();
+	 itr < this->registered_event_handlers->end(); itr++ )
       (*itr)->handle_property_change_event(this, property_name, prev_val, new_val);
   }
 }
 
 void Person::notify_property_change(string property_name, bool new_val) {
-
   if (this->registered_event_handlers != NULL) {
     vector<Person_Event_Interface *>::iterator itr;
-    for (itr = this->registered_event_handlers->begin(); itr < this->registered_event_handlers->end(); itr++ )
+    for (itr = this->registered_event_handlers->begin();
+	 itr < this->registered_event_handlers->end(); itr++ )
       (*itr)->handle_property_change_event(this, property_name, new_val);
   }
 

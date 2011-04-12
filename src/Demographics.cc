@@ -152,7 +152,7 @@ void Demographics::setup(Date * anchor_date) {
                                 anchor_date->get_day_of_month());
       this->due_date->advance(IRAND(1, 280));
       this->pregnant = true;
-      this->self->notify_property_change("pregnant", pregnant);
+      // this->self->notify_property_change("pregnant", pregnant);
     }
   }
 
@@ -179,9 +179,9 @@ void Demographics::update(Date * sim_start_date, int day) {
 
     //Notify any classes that have registered as event handlers
     if (Enable_Aging > 0) {
-      int prev_age = age;
+      // int prev_age = age;
       age++;
-      this->self->notify_property_change("age", prev_age, age);
+      // this->self->notify_property_change("age", prev_age, age);
     }
 
     //Will this person die in the next year?
@@ -213,17 +213,13 @@ void Demographics::update(Date * sim_start_date, int day) {
       this->conception_date == NULL &&
       this->due_date == NULL &&
       URAND(0.0, 1.0) <= Demographics::age_daily_birth_rate[age_lookup]) {
-
     this->conception_date = new Date(cur_year, cur_month, cur_day_of_month);
     this->due_date = new Date(cur_year, cur_month, cur_day_of_month);
     double random_due_date = draw_normal(Demographics::MEAN_PREG_DAYS, Demographics::STDDEV_PREG_DAYS);
-
     this->due_date->advance((int)(random_due_date + 0.5)); //round the random_due_date
-
     this->pregnant = true;
-
     //Notify any classes that have registered as event handlers
-    this->self->notify_property_change("pregnant", true);
+    // this->self->notify_property_change("pregnant", true);
   }
 
   //Is this your day to give birth
@@ -234,19 +230,17 @@ void Demographics::update(Date * sim_start_date, int day) {
      this->due_date->get_year() == cur_year &&
      this->due_date->get_month() == cur_month &&
      this->due_date->get_day_of_month() == cur_day_of_month) {
-
     if (this->conception_date != NULL) {
       delete this->conception_date;
       this->conception_date = NULL;
     }
-
     delete this->due_date;
     this->due_date = NULL;
-
     this->pregnant = false;
     //Notify any classes that have registered as event handlers
-    this->self->notify_property_change("pregnant", false);
-    this->self->notify_property_change("deliver", true);
+    // this->self->notify_property_change("pregnant", false);
+    // this->self->notify_property_change("deliver", true);
+    self->get_population()->prepare_to_give_birth(self);
   }
 
   //Is this your day to die?
@@ -255,10 +249,10 @@ void Demographics::update(Date * sim_start_date, int day) {
      this->deceased_date->get_year() == cur_year &&
      this->deceased_date->get_month() == cur_month &&
      this->deceased_date->get_day_of_month() == cur_day_of_month) {
-
     this->deceased = true;
     //Notify any classes that have registered as event handlers
-    this->self->notify_property_change("deceased", true);
+    // this->self->notify_property_change("deceased", true);
+    self->get_population()->prepare_to_die(self);
   }
 
 }
@@ -359,7 +353,7 @@ void Demographics::reset(Date * sim_start_date) {
 
   //If we are going back to a younger age, notify any classes that have registered as event handlers
   if (Enable_Aging > 0 && prev_age > age) {
-    this->self->notify_property_change("age", prev_age, age);
+    // this->self->notify_property_change("age", prev_age, age);
   }
 
   int age_lookup = (age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE);
@@ -393,7 +387,7 @@ void Demographics::reset(Date * sim_start_date) {
                               sim_start_date->get_day_of_month());
       this->due_date->advance(IRAND(1, 280));
       this->pregnant = true;
-      this->self->notify_property_change("pregnant", pregnant);
+      // this->self->notify_property_change("pregnant", pregnant);
     }
   }
 }

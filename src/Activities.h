@@ -34,6 +34,7 @@ public:
   void update_susceptible_activities(Date *sim_start_date, int day);
   UNIT_TEST_VIRTUAL void update_schedule(Date *sim_start_date, int day);
   UNIT_TEST_VIRTUAL void print_schedule();
+  UNIT_TEST_VIRTUAL void print();
   UNIT_TEST_VIRTUAL Place * get_household() { return favorite_place[HOUSEHOLD_INDEX]; }
   UNIT_TEST_VIRTUAL Place * get_neighborhood() { return favorite_place[NEIGHBORHOOD_INDEX]; }
   UNIT_TEST_VIRTUAL Place * get_school() { return favorite_place[SCHOOL_INDEX]; }
