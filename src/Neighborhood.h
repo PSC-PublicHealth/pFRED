@@ -27,7 +27,7 @@ public:
   int get_group(int disease, Person * per);
   double get_transmission_prob(int disease, Person * i, Person * s);
   double get_contacts_per_day(int disease);
-  
+  bool should_be_open(int day, int disease) { return true; }
 };
 
 #endif // _FRED_NEIGHBORHOOD_H

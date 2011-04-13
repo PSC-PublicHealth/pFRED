@@ -46,14 +46,14 @@ public:
   UNIT_TEST_VIRTUAL void print_susceptibles(int disease);
   UNIT_TEST_VIRTUAL void print_infectious(int disease);
   virtual void spread_infection(int day, int disease);
-  UNIT_TEST_VIRTUAL int is_open(int day);
+  UNIT_TEST_VIRTUAL bool is_open(int day);
   bool is_infectious(int disease) { return I[disease] > 0; }
   
   virtual void get_parameters(int disease) = 0;
   virtual int get_group(int disease, Person * per) = 0;
   virtual double get_transmission_prob(int disease, Person * i, Person * s) = 0;
   virtual double get_contacts_per_day(int disease) = 0; // access functions
-  virtual int should_be_open(int day, int disease) { return 1; }
+  virtual bool should_be_open(int day, int disease) = 0;
   UNIT_TEST_VIRTUAL int get_id() { return id; }
   UNIT_TEST_VIRTUAL char * get_label() { return label; }
   UNIT_TEST_VIRTUAL int get_type() { return type; }

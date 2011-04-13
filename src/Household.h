@@ -35,6 +35,7 @@ public:
   Place * select_neighborhood() { return patch->select_neighborhood(); }
   UNIT_TEST_VIRTUAL int get_adults() { return adults; }
   UNIT_TEST_VIRTUAL int get_children() { return children; }
+  bool should_be_open(int day, int disease) { return true; }
 private:
   Person * HoH;
   vector <Person *> housemate;

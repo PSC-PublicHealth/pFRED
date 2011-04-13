@@ -31,6 +31,7 @@ public:
   double get_contacts_per_day(int disease);
   void setup_offices();
   Place * assign_office(Person *per);
+  bool should_be_open(int day, int disease) { return true; }
  private:
   vector <Place *> offices;
   int next_office;

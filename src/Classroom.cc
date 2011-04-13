@@ -80,7 +80,7 @@ double Classroom::get_transmission_prob(int disease, Person * i, Person * s) {
   return tr_pr;
 }
 
-int Classroom::should_be_open(int day, int disease) {
+bool Classroom::should_be_open(int day, int disease) {
 	return container->should_be_open(day, disease);
 }
 

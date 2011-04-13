@@ -92,11 +92,8 @@ int main(int argc, char* argv[]) {
   INIT_RANDOM(Seed);
   Random_start_day = (Epidemic_offset > 6);
 
-  // If Start_date parameter is "today", then do default constructor
-  if (strncmp(Start_date, "today", 5)==0)
-    Sim_Date = new Date();
-  else
-    Sim_Date = new Date(string(Start_date), Date::MMDDYYYY);
+  // Start_date must have format 'YYYY-MM-DD'
+  Sim_Date = new Date(string(Start_date), Date::YYYYMMDD);
   Sim_Date->setup(directory, Days);
 
   // set random number seed based on run number
@@ -154,9 +151,9 @@ int main(int argc, char* argv[]) {
       fflush(Statusfp);
       INIT_RANDOM(new_seed + run - 1);
     }
-    fprintf(Statusfp, "================\nsim day = %d  date = %s\n",
-	    day, Sim_Date->get_MMDD(day));
-    fflush(stdout);
+    // fprintf(Statusfp, "================\nsim day = %d  date = %s\n",
+    // day, Sim_Date->get_MMDD(day));
+    // fflush(stdout);
     Places.update(day);
     Pop.begin_day(day);
     Pop.get_visitors_to_infectious_places(day);

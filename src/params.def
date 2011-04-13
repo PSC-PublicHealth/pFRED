@@ -12,9 +12,8 @@ epidemic_offset = 0
 
 vaccine_offset = 0
 
-# set to 'today' to use the system clock, otherwise set it to 
-# a date in the format 'MM/DD/YYYY'
-start_date = 01/01/2011
+# a date in the format 'YYYY-MM-DD'
+start_date = 2011-01-01
 reseed_day = -1
 popfile = alleg_v2_pop.txt
 locfile = alleg_v2_loc.txt
@@ -90,7 +89,17 @@ neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 # community_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 
 #### SCHOOLS
+
+# set to 1 if schools closed during summer
+school_summer_schedule = 0
+
+# summer schedule dates (format MM-DD)
+school_summer_start = 06-01
+school_summer_end = 08-31
+
+# recommended max size per classroom
 school_classroom_size = 40
+
 school_closure_policy = none
 # school_closure_policy = global
 # school_closure_policy = individual

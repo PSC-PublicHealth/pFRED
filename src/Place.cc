@@ -126,7 +126,7 @@ void Place::print_infectious(int disease) {
   printf("\n");
 }
 
-int Place::is_open(int day) {
+bool Place::is_open(int day) {
   if (container) {
     return container->is_open(day);
   } else {

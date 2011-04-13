@@ -33,7 +33,7 @@ public:
   void get_parameters(int diseases);
   int get_group(int disease, Person * per);
   double get_transmission_prob(int disease, Person * i, Person * s);
-  int should_be_open(int day, int disease);
+  bool should_be_open(int day, int disease);
   double get_contacts_per_day(int disease);
   void enroll(Person * per);
   int children_in_grade(int age) {

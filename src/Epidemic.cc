@@ -24,6 +24,7 @@ using namespace std;
 #include "Place_List.h"
 #include "Place.h"
 #include "Timestep_Map.h"
+#include "Date.h"
 
 extern int V_count;
 
@@ -118,9 +119,14 @@ void Epidemic::print_stats(int day) {
 	  day, id, S_count, E_count, I_count+i_count,
 	  I_count, R_count+r_count, M_count);
   fprintf(Outfp,
-	  "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f\n",
+	  "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
 	  C_count, N, attack_rate, clinical_incidents,
 	  vaccine_acceptance, RR,NR, clinical_attack_rate);
+  fprintf(Outfp, "%s %s Year %d Week %d\n",
+	  Sim_Date->get_day_of_week_string(day).c_str(),
+	  Sim_Date->get_YYYYMMDD(day),
+	  Sim_Date->get_epi_week_year(day),
+	  Sim_Date->get_epi_week(day));
   fflush(Outfp);
   
   if (Verbose) {
@@ -129,9 +135,14 @@ void Epidemic::print_stats(int day) {
 	    day, id, S_count, E_count, I_count+i_count,
 	    I_count, R_count+r_count, M_count);
     fprintf(Statusfp,
-	    "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f\n",
+	    "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
 	    C_count, N, attack_rate, clinical_incidents,
 	    vaccine_acceptance, RR,NR, clinical_attack_rate);
+  fprintf(Statusfp, "%s %s Year %d Week %d\n",
+	  Sim_Date->get_day_of_week_string(day).c_str(),
+	  Sim_Date->get_YYYYMMDD(day),
+	  Sim_Date->get_epi_week_year(day),
+	  Sim_Date->get_epi_week(day));
     fflush(Statusfp);
   }
   C_count = c_count = 0;

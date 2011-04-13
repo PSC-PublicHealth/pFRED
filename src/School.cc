@@ -17,6 +17,7 @@
 #include "Disease.h"
 #include "Place_List.h"
 #include "Classroom.h"
+#include "Date.h"
 
 double * school_contacts_per_day;
 double *** school_contact_prob;
@@ -27,6 +28,9 @@ int school_closure_period;
 int school_closure_delay;
 int school_classroom_size;
 int school_parameters_set = 0;
+int school_summer_schedule;
+char school_summer_start[8];
+char school_summer_end[8];
 
 School::School(int loc, const char *lab, double lon, double lat, Place* container, Population *pop) {
   type = SCHOOL;
@@ -94,6 +98,9 @@ void School::get_parameters(int diseases) {
   get_param((char *) "school_closure_threshold", &school_closure_threshold);
   get_param((char *) "school_closure_period", &school_closure_period);
   get_param((char *) "school_closure_delay", &school_closure_delay);
+  get_param((char *) "school_summer_schedule", &school_summer_schedule);
+  get_param((char *) "school_summer_start", school_summer_start);
+  get_param((char *) "school_summer_end", school_summer_end);
  
   school_parameters_set = 1;
 }
@@ -115,8 +122,29 @@ double School::get_transmission_prob(int disease, Person * i, Person * s) {
   return tr_pr;
 }
 
-int School::should_be_open(int day, int disease) {
+bool School::should_be_open(int day, int disease) {
   
+  if (school_summer_schedule) {
+    char current_day[10];
+    strcpy(current_day, Sim_Date->get_MMDD(day));
+    if (Verbose > 1) {
+      fprintf(Statusfp,"School %s on summer schedule, current day is %s\n", label, current_day);
+    }
+    if (Date::day_is_between_MMDD(current_day, school_summer_start, school_summer_end)) {
+      if (Verbose > 1) {
+	fprintf(Statusfp,"School %s closed for summer\n", label);
+	fflush(Statusfp);
+      }
+      return false;
+    }
+    else {
+      if (Verbose > 1) {
+	fprintf(Statusfp,"School %s is open\n", label);
+	fflush(Statusfp);
+      }
+    }
+  }
+
   if (strcmp(school_closure_policy, "global") == 0) {
     //
     // Setting school_closure_day > -1 overrides other global triggers
@@ -140,7 +168,7 @@ int School::should_be_open(int day, int disease) {
   }
   
   if (strcmp(school_closure_policy, "individual") == 0) {
-    if (N == 0) return 0;
+    if (N == 0) return false;
     double frac = (double) Sympt[disease] / (double) N;
     if (frac >= school_closure_threshold) {
       if (is_open(day)) {
@@ -152,7 +180,7 @@ int School::should_be_open(int day, int disease) {
   }
   
   // if school_closure_policy is not recognized, then open
-  return 1;
+  return true;
 }
 
 double School::get_contacts_per_day(int disease) {
@@ -283,3 +311,4 @@ Place * School::assign_classroom(Person *per) {
     abort();
   }
 }
+

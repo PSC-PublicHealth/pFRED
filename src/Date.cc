@@ -31,6 +31,7 @@ const string Date::MMDDYYYY = string("MM/DD/YYYY");
 const string Date::MMDDYY = string("MM/DD/YY");
 const string Date::DDMMYYYY = string("DD/MM/YYYY");
 const string Date::DDMMYY = string("DD/MM/YY");
+const string Date::YYYYMMDD = string("YYYY-MM-DD");
 
 bool Date::is_initialized = false;
 vector<int> * Date::day_of_month_vec = NULL;
@@ -421,23 +422,6 @@ string Date::to_string() {
   return oss.str();
 }
 
-char * Date::get_YYYYMMDD(int day) {
-  sprintf(date_string, "%04d-%02d-%02d", get_year(day), get_month(day), get_day_of_month(day));
-  return date_string;
-}
-
-char * Date::get_YYYYMM(int day) {
-  sprintf(date_string, "%04d-%02d", get_year(day), get_month(day));
-  return date_string;
-}
-
-char * Date::get_MMDD(int day) {
-  sprintf(date_string, "%02d-%02d", get_month(day), get_day_of_month(day));
-  return date_string;
-}
-
-
-
 //Static Methods
 int Date::days_between(Date * date_1, Date * date_2) {
 
@@ -522,9 +506,22 @@ int Date::parse_month_from_date_string(string date_string, string format_string)
 
   string temp_str;
 
-  if (format_string.compare(Date::MMDDYYYY) == 0 ||
-     format_string.compare(Date::MMDDYY) == 0) {
-
+  if (format_string.compare(Date::YYYYMMDD) == 0) {
+    size_t pos_1, pos_2;
+    pos_1 = date_string.find('-');
+    if (pos_1 != string::npos) {
+      pos_2 = date_string.find('-', pos_1 + 1);
+      if (pos_2 != string::npos) {
+        temp_str = date_string.substr(pos_1 + 1, pos_2 - pos_1 - 1);
+        int i;
+        istringstream my_stream(temp_str);
+        if(my_stream >> i)
+          return i;
+      }
+    }
+  }
+  else if (format_string.compare(Date::MMDDYYYY) == 0 ||
+	   format_string.compare(Date::MMDDYY) == 0) {
     size_t pos;
     pos = date_string.find('/');
     if (pos != string::npos) {
@@ -565,7 +562,18 @@ int Date::parse_day_of_month_from_date_string(string date_string, string format_
 
   string temp_str;
 
-  if (format_string.compare(Date::MMDDYYYY) == 0 ||
+  if (format_string.compare(Date::YYYYMMDD) == 0) {
+    size_t pos;
+    pos = date_string.find('-', date_string.find('-') + 1);
+    if (pos != string::npos) {
+      temp_str = date_string.substr(pos + 1);
+      int i;
+      istringstream my_stream(temp_str);
+      if (my_stream >> i)
+        return i;
+    }
+  }
+  else if (format_string.compare(Date::MMDDYYYY) == 0 ||
       format_string.compare(Date::MMDDYY) == 0) {
 
     size_t pos_1, pos_2;
@@ -611,20 +619,27 @@ int Date::parse_year_from_date_string(string date_string, string format_string) 
 
   string temp_str;
 
-  if (format_string.compare(Date::MMDDYYYY) == 0 ||
-      format_string.compare(Date::DDMMYYYY) == 0 ) {
-
+  if (format_string.compare(Date::YYYYMMDD) == 0) {
+    size_t pos;
+    pos = date_string.find('-');
+    if (pos != string::npos) {
+      temp_str = date_string.substr(0, pos);
+      int i;
+      istringstream my_stream(temp_str);
+      if (my_stream >> i)
+        return i;
+    }
+  }
+  else if (format_string.compare(Date::MMDDYYYY) == 0 ||
+	   format_string.compare(Date::DDMMYYYY) == 0 ) {
     size_t pos;
     pos = date_string.find('/', date_string.find('/') + 1);
     if (pos != string::npos) {
       temp_str = date_string.substr(pos + 1);
       int i;
-
       istringstream my_stream(temp_str);
-
       if (my_stream >> i)
         return i;
-
     }
   } else if (format_string.compare(Date::MMDDYY) == 0 ||
              format_string.compare(Date::DDMMYY) == 0) {
@@ -752,4 +767,34 @@ void Date::setup(char * output_directory, int days) {
 	    this->get_epi_week(day));
   }
   fclose(fred_date_fp);
+}
+
+char * Date::get_YYYYMMDD(int day) {
+  sprintf(date_string, "%04d-%02d-%02d", get_year(day), get_month(day), get_day_of_month(day));
+  return date_string;
+}
+
+char * Date::get_YYYYMM(int day) {
+  sprintf(date_string, "%04d-%02d", get_year(day), get_month(day));
+  return date_string;
+}
+
+char * Date::get_MMDD(int day) {
+  sprintf(date_string, "%02d-%02d", get_month(day), get_day_of_month(day));
+  return date_string;
+}
+
+
+bool Date::day_is_between_MMDD(char * current, char * start, char * end) {
+  int current_mon, current_day, start_mon, start_day, end_mon, end_day;
+  sscanf(current, "%d-%d", &current_mon, &current_day);
+  sscanf(start, "%d-%d", &start_mon, &start_day);
+  sscanf(end, "%d-%d", &end_mon, &end_day);
+  if (current_mon < start_mon ||
+      (current_mon == start_mon && current_day < start_day))
+    return false;
+  if (end_mon < current_mon ||
+      (current_mon == end_mon && end_day < current_day))
+    return false;
+  return true;
 }
