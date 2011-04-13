@@ -136,7 +136,6 @@ void Demographics::setup(Date * anchor_date) {
                                      anchor_date->get_month(),
                                      anchor_date->get_day_of_month());
       this->deceased_date->advance(IRAND(1,364));
-
     }
   }
 
@@ -208,11 +207,11 @@ void Demographics::update(Date * sim_start_date, int day) {
   age_lookup = (age <= Demographics::MAX_PREGNANCY_AGE ? age : Demographics::MAX_PREGNANCY_AGE);
 
   //Is this your day to conceive?
-  if (this->sex == 'F' &&
+  if (this->sex == 'F' && age <= MAX_PREGNANCY_AGE &&
       !this->pregnant &&
       this->conception_date == NULL &&
       this->due_date == NULL &&
-      URAND(0.0, 1.0) <= Demographics::age_daily_birth_rate[age_lookup]) {
+      URAND(0.0, 1.0) <= Demographics::age_daily_birth_rate[age]) {
     this->conception_date = new Date(cur_year, cur_month, cur_day_of_month);
     this->due_date = new Date(cur_year, cur_month, cur_day_of_month);
     double random_due_date = draw_normal(Demographics::MEAN_PREG_DAYS, Demographics::STDDEV_PREG_DAYS);

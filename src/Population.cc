@@ -300,9 +300,9 @@ void Population::begin_day(int day) {
     Person * baby = maternity_list[i]->give_birth(day);
     baby->register_event_handler(this);
     add_person(baby);
-    //For reporting
     int age_lookup = maternity_list[i]->get_age();
-    age_lookup = (age_lookup <= Demographics::MAX_AGE ? age_lookup : Demographics::MAX_AGE);
+    if (age_lookup > Demographics::MAX_AGE)
+      age_lookup = Demographics::MAX_AGE;
     birth_count[age_lookup]++;
   }
   if (Verbose) {
@@ -314,7 +314,8 @@ void Population::begin_day(int day) {
   for (size_t i = 0; i < deaths; i++) {
     //For reporting
     int age_lookup = death_list[i]->get_age();
-    age_lookup = (age_lookup <= Demographics::MAX_AGE ? age_lookup : Demographics::MAX_AGE);
+    if (age_lookup > Demographics::MAX_AGE)
+      age_lookup = Demographics::MAX_AGE;
     if (death_list[i]->get_sex() == 'F')
       death_count_female[age_lookup]++;
     else
@@ -394,7 +395,8 @@ void Population::end_day(int day) {
     // print the statistics on December 31 of each year
     for (int i = 0; i < pop_size; ++i) {
       int age_lookup = pop[i]->get_age();
-      age_lookup = (age_lookup <= Demographics::MAX_AGE ? age_lookup : Demographics::MAX_AGE);
+      if (age_lookup > Demographics::MAX_AGE)
+	age_lookup = Demographics::MAX_AGE;
       if (pop[i]->get_sex() == 'F')
 	age_count_female[age_lookup]++;
       else
