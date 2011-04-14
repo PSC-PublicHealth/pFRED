@@ -215,6 +215,7 @@ int Disease::get_days_recovered() {
   if (immunity_loss_rate > 0.0) {
     // draw from exponential distribution
     days = floor(0.5 + draw_exponential(immunity_loss_rate));
+    // printf("DAYS RECOVERED = %d\n", days);
   } else {
     days = -1;
   }

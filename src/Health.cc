@@ -141,11 +141,6 @@ void Health::update(int day) {
       vaccine_health[i]->update(day, self->get_age());
   }
 
-  // possibly mutate infections
-  if (takes_av) {
-    update_mutations(day);
-  }
-  
   // update each infection
   symptomatic_status = false;
   for (int s = 0; s < diseases; s++) {
@@ -166,32 +161,6 @@ void Health::update(int day) {
   }
 
 }
-
-void Health::update_mutations(int day) {
-  // Possibly mutate each active disease
-  // TODO(alona) should consider diseases in random order, but that
-  // is not relevant right now (only 1 or 2 diseases)
-  // First, update vaccine status
-  for (int s = 0; s < diseases; s++) {
-    if (status[s] == 'S' || status[s] == 'M' || status[s] == 'R')
-      continue;
-    if (is_on_av_for_disease(day, s) == true) {
-      if (Verbose > 1) {
-        fprintf(Statusfp, "person %d IS ON AV on day %i\n", self->get_id(), day-1);
-        fflush(Statusfp);
-      }
-      if (infection[s]->possibly_mutate(this, day)) {
-        if (Verbose > 1) {
-          fprintf(Statusfp, "person %d disease %d mutated on day %i\n",
-                  self->get_id(), s, day);
-          fflush(Statusfp);
-        }
-        break;
-      }
-    }
-  }
-}
-
 
 void Health::become_exposed(Infection * infection_ptr) {
   Disease * disease = infection_ptr->get_disease();

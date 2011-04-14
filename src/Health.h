@@ -99,8 +99,6 @@ public:
   void modify_develops_symptoms(int disease, bool symptoms, int cur_day);
 
 private:
-  void update_mutations(int day);
-
   Person * self;
   int diseases;
   Infection ** infection;

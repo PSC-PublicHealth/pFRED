@@ -226,66 +226,6 @@ void Infection::modify_develops_symptoms(bool symptoms, int today) {
   host->set_changed();
 }
 
-bool Infection::possibly_mutate(Health* health, int day) {
-  // too late
-  if (day >= get_recovery_date())
-    return false;
-	
-  // attempt mutation
-  Disease* new_disease = disease->should_mutate_to();
-  if (!new_disease)
-    return false;
-	
-  if (Verbose)
-    fprintf(Statusfp, "Person %i will mutate from disease %i to disease %i on day %i\n",
-            host->get_id(), disease->get_id(), new_disease->get_id(), day);
-	
-  // mutated infection
-  Infection *mutated = new Infection(new_disease, infector, host, NULL, day);
-	
-  // we're past the latent period
-  if (day >= get_infectious_date()) 
-    mutated->latent_period = 0;
-  
-  // we're past the asympomatic period, we must be symptomatic
-  if (day >= get_symptomatic_date()) {
-    mutated->asymptomatic_period = 0;
-    mutated->modify_develops_symptoms(true, day);
-  }
-	
-  // switch to mutated infection
-  exposure_date = day;
-	
-  // update current infection's course
-  switch (status) {
-  case 'I':
-    symptomatic_period = day - get_symptomatic_date();
-    break;
-  case 'i':
-    symptomatic_period = 0;
-    asymptomatic_period = day - get_infectious_date();
-    break;
-  case 'E':
-    symptomatic_period = 0;
-    asymptomatic_period = 0;
-    latent_period = day - get_exposure_date();
-    break;
-  default:
-    throw out_of_range("should be either of E/i/I while mutating");
-  } 
-	
-  // recover from current infection
-  host->recover(disease);
-	
-  // expose to mutated infection
-  host->become_exposed(mutated);
-	
-  // note that the infection state changed
-  host->set_changed();
-	
-  return true;
-}
-
 void Infection::print() const {
   printf("Infection of disease type: %i in person %i current status: %c\n"
          "periods:  latent %i, asymp: %i, symp: %i recovery: %i \n"
