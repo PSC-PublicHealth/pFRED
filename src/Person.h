@@ -45,17 +45,13 @@ public:
   UNIT_TEST_VIRTUAL void update_susceptible_activities(Date *sim_start_date, int day) {
     activities->update_susceptible_activities(sim_start_date, day);
   }
-  UNIT_TEST_VIRTUAL void print(int disease) const;
-  UNIT_TEST_VIRTUAL void print_out(int disease) const;
-  UNIT_TEST_VIRTUAL void print_schedule() const;
+  UNIT_TEST_VIRTUAL void print(FILE *fp, int disease) const;
   UNIT_TEST_VIRTUAL void become_immune(Disease *disease);
   int is_symptomatic() { return health->is_symptomatic(); }
   bool is_susceptible(int dis) { return health->is_susceptible(dis); }
   bool is_infectious(int dis) { return health->is_infectious(dis); }
   int get_diseases();
   
-  // access functions:
-  UNIT_TEST_VIRTUAL int get_id() const { return idx; }
   UNIT_TEST_VIRTUAL Place *get_household() const;
   UNIT_TEST_VIRTUAL Place *get_neighborhood() const;
   int get_age() const { return demographics->get_age(); }
@@ -74,12 +70,6 @@ public:
   UNIT_TEST_VIRTUAL int get_infectees(int disease) const;
   UNIT_TEST_VIRTUAL int add_infectee(int disease);
   UNIT_TEST_VIRTUAL int is_new_case(int day, int disease) const;
-  
-  UNIT_TEST_VIRTUAL Health *get_health() const { return health; }
-  UNIT_TEST_VIRTUAL Activities* get_activities() const { return activities; }
-  UNIT_TEST_VIRTUAL Demographics* get_demographics() const { return demographics; }
-  UNIT_TEST_VIRTUAL Behavior* get_behavior() const { return behavior; }
-  UNIT_TEST_VIRTUAL Population* get_population() const { return pop; }
   
   UNIT_TEST_VIRTUAL void set_changed(); // notify the population that this Person has changed
   void update_demographics(Date *sim_start_date, int day) { demographics->update(sim_start_date, day); }
@@ -105,6 +95,14 @@ public:
   UNIT_TEST_VIRTUAL void notify_property_change(string property_name, int prev_val, int new_val);
   UNIT_TEST_VIRTUAL void notify_property_change(string property_name, bool new_val);
 
+  // access functions:
+  UNIT_TEST_VIRTUAL int get_id() const { return idx; }
+  UNIT_TEST_VIRTUAL Population* get_population() const { return pop; }
+  UNIT_TEST_VIRTUAL Demographics* get_demographics() const { return demographics; }
+  UNIT_TEST_VIRTUAL Health *get_health() const { return health; }
+  UNIT_TEST_VIRTUAL Activities* get_activities() const { return activities; }
+  UNIT_TEST_VIRTUAL Behavior* get_behavior() const { return behavior; }
+  
 private:
   int idx;
   Population *pop;

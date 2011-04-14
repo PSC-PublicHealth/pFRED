@@ -129,13 +129,19 @@ void Population::delete_person(Person * person) {
 void Population::prepare_to_die(Person *per) {
   // add person to daily death_list
   death_list.push_back(per);
-  // printf("prepare to die: "); per->print_out(0);
+  if (Verbose>1) {
+    fprintf(Statusfp, "prepare to die: ");
+    per->print(Statusfp,0);
+  }
 }
 
 void Population::prepare_to_give_birth(Person *per) {
   // add person to daily maternity_list
   maternity_list.push_back(per);
-  //printf("prepare to give birth: "); per->print_out(0);
+  if (Verbose>1) {
+    fprintf(Statusfp,"prepare to give birth: ");
+    per->print(Statusfp,0);
+  }
 }
 
 void Population::setup() {
@@ -447,7 +453,7 @@ void Population::print(int incremental, int day) {
     if (Trace_Headers) fprintf(Tracefp, "# All agents, by ID\n");
     for (int p = 0; p < pop_size; p++)
       for (int i=0; i<diseases; i++)
-	pop[p]->print(i);
+	pop[p]->print(Tracefp, i);
   } else if (1==incremental) {
     ChangeMap::const_iterator iter;
 		
@@ -466,7 +472,7 @@ void Population::print(int incremental, int day) {
     for (iter = this->incremental_changes.begin();
          iter != this->incremental_changes.end();
          iter++){
-      (iter->first)->print(0); // the map key is a Person*
+      (iter->first)->print(Tracefp, 0); // the map key is a Person*
     }
   } else {
     ChangeMap::const_iterator iter;
@@ -481,7 +487,7 @@ void Population::print(int incremental, int day) {
     for (iter = this->never_changed.begin();
          iter != this->never_changed.end();
          iter++){
-      (iter->first)->print(0); // the map key is a Person*
+      (iter->first)->print(Tracefp, 0); // the map key is a Person*
     }
   }
 	
@@ -515,7 +521,7 @@ void Population::quality_control() {
   for (int p = 0; p < pop_size; p++) {
     if (pop[p]->get_activities()->get_household() == NULL) {
       fprintf(Statusfp, "Help! Person %d has no home.\n",p);
-      pop[p]->print(0);
+      pop[p]->print(Statusfp, 0);
     }
   }
   

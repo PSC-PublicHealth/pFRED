@@ -60,52 +60,30 @@ void Person::setup(int index, int age, char sex, int marital, int profession,
   behavior = new Behavior(this);
 }
 
-void Person::print(int disease) const {
-  if (Tracefp == NULL) return;
-  fprintf(Tracefp, "%i %c id %7d  a %3d  s %c %d ",
+void Person::print(FILE *fp, int disease) const {
+  if (fp == NULL) return;
+  fprintf(fp, "%i %c id %7d  a %3d  s %c %d ",
           disease, health->get_disease_status(disease), idx,
           demographics->get_age(),
           demographics->get_sex(),
           demographics->get_profession());
-  fprintf(Tracefp, "exp: %2d  inf: %2d  rem: %2d ",
+  fprintf(fp, "exp: %2d  inf: %2d  rem: %2d ",
           health->get_exposure_date(disease),
 	  health->get_infectious_date(disease),
 	  health->get_recovered_date(disease));
-  fprintf(Tracefp, "places %d ", FAVORITE_PLACES);
-  fprintf(Tracefp, "infected_at %c %6d ",
+  fprintf(fp, "places %d ", FAVORITE_PLACES);
+  fprintf(fp, "infected_at %c %6d ",
           health->get_infected_place_type(disease),
 	  health->get_infected_place(disease));
-  fprintf(Tracefp, "infector %d ", health->get_infector(disease));
-  fprintf(Tracefp, "infectees %d ", health->get_infectees(disease));
-  fprintf(Tracefp, "antivirals: %2d ",health->get_number_av_taken());
+  fprintf(fp, "infector %d ", health->get_infector(disease));
+  fprintf(fp, "infectees %d ", health->get_infectees(disease));
+  fprintf(fp, "antivirals: %2d ",health->get_number_av_taken());
   for(int i=0;i<health->get_number_av_taken();i++)
-    fprintf(Tracefp," %2d",health->get_av_health(i)->get_av_start_day());
-  
-  fprintf(Tracefp,"\n");
-  fflush(Tracefp);
+    fprintf(fp," %2d",health->get_av_health(i)->get_av_start_day());
+  fprintf(fp,"\n");
+  fflush(fp);
 }
 
-void Person::print_out(int disease) const {
-  if (disease < 0) printf("DEAD: ");
-  disease = 0;
-  fprintf(stdout, "%c id %7d  a %3d  s %c %d ",
-	  health->get_disease_status(disease), idx,
-	  demographics->get_age(),
-	  demographics->get_sex(),
-	  demographics->get_profession());
-  fprintf(stdout, "exp: %2d  inf: %2d  rem: %2d ",
-	  health->get_exposure_date(disease),
-	  health->get_infectious_date(disease),
-	  health->get_recovered_date(disease));
-  fprintf(stdout, "places %d ", FAVORITE_PLACES);
-  fprintf(stdout, "infected_at %c %6d ",
-	  health->get_infected_place_type(disease),
-	  health->get_infected_place(disease));
-  fprintf(stdout, "infector %d ", health->get_infector(disease));
-  fprintf(stdout, "infectees %d\n", health->get_infectees(disease));
-  fflush(stdout);
-}
-  
 void Person::reset(Date * sim_start_date) {
   if (Verbose > 2) {
     fprintf(Statusfp, "reset person %d\n", idx);
