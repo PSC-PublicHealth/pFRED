@@ -61,6 +61,7 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
     else
       asymptomatic_period = disease->get_days_asymp();
   }
+  report_event();
   host->set_changed();
 }
 
@@ -267,3 +268,34 @@ int Infection::get_susceptible_date() const {
     return INT_MAX;
   }
 }
+
+
+void Infection::report_event() const {
+  if (Eventfp == NULL) return;
+  fprintf(Eventfp, "INFECTION dis %d host %d "
+	  " from %d at %s "
+	  "| PERIODS  latent %d, asymp %d, symp %d recovery %d "
+	  "| DATES exp %d, inf %d, symp %d, rec %d sus %d "
+	  "| will_be_symp? %d, susc %.3f infect %.3f "
+	  "inf_multp %.3f symptms %.3f\n",
+	  id,
+	  host->get_id(),
+	  infector == NULL ? -1 : infector->get_id(),
+	  place == NULL ? "X" : place->get_label(),
+	  latent_period,
+	  asymptomatic_period,
+	  symptomatic_period,
+	  recovery_period,
+	  exposure_date,
+	  get_infectious_date(),
+	  get_symptomatic_date(),
+	  get_recovery_date(),
+	  get_susceptible_date(),
+	  will_be_symptomatic,
+	  susceptibility,
+	  infectivity,
+	  infectivity_multp,
+	  symptoms);
+  fflush(Eventfp);
+}
+

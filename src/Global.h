@@ -44,6 +44,7 @@ extern char Start_date[];
 extern char Population_directory[];
 extern char Output_directory[];
 extern char Tracefilebase[];
+extern char Eventfilebase[];
 extern char VaccineTracefilebase[];
 extern int All_diseases_antigenically_identical;
 extern int Incremental_Trace;
@@ -62,6 +63,7 @@ extern int Enable_Deaths;
 extern FILE *Statusfp;
 extern FILE *Outfp;
 extern FILE *Tracefp;
+extern FILE *Eventfp;
 extern FILE *VaccineTracefp;
 
 // global singleton objects

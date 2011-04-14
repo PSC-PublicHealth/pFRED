@@ -155,6 +155,10 @@ int Person::get_infected_place(int disease) const {
   return health->get_infected_place(disease);
 }
 
+char * Person::get_infected_place_label(int disease) const {
+  return health->get_infected_place_label(disease);
+}
+
 char Person::get_infected_place_type(int disease) const {
   return health->get_infected_place_type(disease);
 }

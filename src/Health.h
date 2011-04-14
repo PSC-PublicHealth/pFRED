@@ -64,6 +64,7 @@ public:
   int get_symptomatic_date(int disease) const;
   int get_infector(int disease) const;
   int get_infected_place(int disease) const;
+  char * get_infected_place_label(int disease) const;
   char get_infected_place_type(int disease) const;
   int get_infectees(int disease) const;	
   double get_susceptibility(int disease) const;

@@ -30,6 +30,7 @@
 #include "Vaccine_Manager.h"
 
 int nantivirals = -1; // This global variable needs to be removed
+char dummy_label[8];
 
 Health::Health (Person * person) {
   self = person;
@@ -302,6 +303,19 @@ char Health::get_infected_place_type(int disease) const {
     return 'X';
   else
     return infection[disease]->get_infected_place()->get_type();
+}
+
+char * Health::get_infected_place_label(int disease) const {
+  if (infection[disease] == NULL) {
+    strcpy(dummy_label, "-");
+    return dummy_label;
+  }
+  else if (infection[disease]->get_infected_place() == NULL) {
+    strcpy(dummy_label, "X");
+    return dummy_label;
+  }
+  else
+    return infection[disease]->get_infected_place()->get_label();
 }
 
 int Health::get_infectees(int disease) const {

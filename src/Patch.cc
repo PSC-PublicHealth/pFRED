@@ -43,7 +43,7 @@ void Patch::setup(Grid * patch_mgr, int i, int j, double xmin, double xmax, doub
 void Patch::make_neighborhood() {
   char str[80];
   double lat, lon;
-  sprintf(str, "Patch_%04d_%04d",row,col);
+  sprintf(str, "N-%04d-%04d",row,col);
   // int new_id = Places.get_max_id() + 1;
   int new_id = 900000000 + 10000*row + col;
   patch_manager->translate_to_lat_lon(center_x,center_y,&lat,&lon);

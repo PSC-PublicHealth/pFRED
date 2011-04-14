@@ -66,6 +66,7 @@ public:
   UNIT_TEST_VIRTUAL int get_recovered_date(int disease) const;
   UNIT_TEST_VIRTUAL int get_infector(int disease) const;
   UNIT_TEST_VIRTUAL int get_infected_place(int disease) const;
+  UNIT_TEST_VIRTUAL char * get_infected_place_label(int disease) const;
   UNIT_TEST_VIRTUAL char get_infected_place_type(int disease) const;
   UNIT_TEST_VIRTUAL int get_infectees(int disease) const;
   UNIT_TEST_VIRTUAL int add_infectee(int disease);

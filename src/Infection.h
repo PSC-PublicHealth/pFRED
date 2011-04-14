@@ -48,6 +48,7 @@ class Infection {
   UNIT_TEST_VIRTUAL int get_infectee_count() const { return infectee_count; }
   UNIT_TEST_VIRTUAL int add_infectee() { return ++infectee_count; }
   UNIT_TEST_VIRTUAL void print() const;
+  void report_event() const;
 	
   // chrono
   UNIT_TEST_VIRTUAL int get_exposure_date() const { return exposure_date; }

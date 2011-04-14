@@ -79,6 +79,14 @@ int main(int argc, char* argv[]) {
       printf("Help! Can't open %s\n", filename); abort();
     }
   }
+  Eventfp = NULL;
+  if (strcmp(Eventfilebase, "none") != 0) {
+    sprintf(filename, "%s/events%d.txt", directory, run);
+    Eventfp = fopen(filename, "w");
+    if (Eventfp == NULL) {
+      printf("Help! Can't open %s\n", filename); abort();
+    }
+  }
   VaccineTracefp = NULL;
   if (strcmp(VaccineTracefilebase, "none") != 0) {
     sprintf(filename, "%s/vacctr%d.txt", directory, run);
@@ -180,6 +188,7 @@ int main(int argc, char* argv[]) {
   // fclose(Statusfp);
   fclose(Outfp);
   if (Tracefp != NULL) fclose(Tracefp);
+  if (Eventfp != NULL) fclose(Eventfp);
   if (VaccineTracefp != NULL) fclose(VaccineTracefp);
   time(&clock);
   fprintf(Statusfp, "FRED finished %s", ctime(&clock));

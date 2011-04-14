@@ -19,6 +19,7 @@ int Reseed_day;
 char Population_directory[256];
 char Output_directory[256];
 char Tracefilebase[256];
+char Eventfilebase[256];
 char VaccineTracefilebase[256];
 int All_diseases_antigenically_identical;
 int Incremental_Trace;
@@ -38,6 +39,7 @@ FILE *Statusfp;
 FILE *Outfp;
 FILE *Tracefp;
 FILE *VaccineTracefp;
+FILE *Eventfp;
 
 void get_global_parameters() {
   get_param((char *) "verbose", &Verbose);
@@ -53,6 +55,7 @@ void get_global_parameters() {
   get_param((char *) "popdir", Population_directory);
   get_param((char *) "outdir", Output_directory);
   get_param((char *) "tracefile", Tracefilebase);
+  get_param((char *) "eventfile", Eventfilebase);
   get_param((char *) "vaccine_tracefile", VaccineTracefilebase);
   get_param((char *) "all_diseases_antigenically_identical", &All_diseases_antigenically_identical);
   get_param((char *) "incremental_trace", &Incremental_Trace);
