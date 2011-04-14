@@ -23,6 +23,7 @@
 #include "Date.h"
 #include "Patch.h"
 #include "School.h"
+#include "Classroom.h"
 #include "Workplace.h"
 #include "Grid.h"
 
@@ -285,6 +286,7 @@ void Activities::update_profile() {
   if (profile == PRESCHOOL_PROFILE && SCHOOL_AGE <= age && age < ADULT_AGE) {
     // start school
     profile = STUDENT_PROFILE;
+    // select a school based on age and neighborhood
     assign_school();
     if (Verbose>1) {
       fprintf(Statusfp,
@@ -292,6 +294,71 @@ void Activities::update_profile() {
 	      self->get_id(), age, self->get_sex());
       print();
       fflush(Statusfp);
+    }
+    return;
+  }
+
+  if (profile == STUDENT_PROFILE && age < ADULT_AGE) {
+    // select a school based on age and neighborhood
+    School * s = (School *) favorite_place[SCHOOL_INDEX];
+    Classroom * c = (Classroom *) favorite_place[CLASSROOM_INDEX];
+    if (c != NULL && c->get_age_level() == age) {
+      // no change
+      if (Verbose>1) {
+	fprintf(Statusfp,
+		"KEPT CLASSROOM ASSIGNMENT: id %d age %d sex %c ",
+		self->get_id(), age, self->get_sex());
+	fprintf(Statusfp, "%s %s | ",
+		s->get_label(), c->get_label());
+	print();
+	fflush(Statusfp);
+      }
+      return;
+    }
+    else if (s != NULL && s->classrooms_for_age(age) > 0) {
+      // pick a new classrooms in current school
+      favorite_place[CLASSROOM_INDEX] = NULL;
+      assign_classroom();
+      if (Verbose>1) {
+	fprintf(Statusfp,
+		"CHANGED CLASSROOM ASSIGNMENT: id %d age %d sex %c ",
+		self->get_id(), age, self->get_sex());
+	if (s != NULL && c != NULL) {
+	  fprintf(Statusfp, "from %s %s to %s %s | ",
+		  s->get_label(), c->get_label(),
+		  favorite_place[SCHOOL_INDEX]->get_label(),
+		  favorite_place[CLASSROOM_INDEX]->get_label());
+	}
+	else {
+	  fprintf(Statusfp, "from NULL NULL to %s %s | ",
+		  favorite_place[SCHOOL_INDEX]->get_label(),
+		  favorite_place[CLASSROOM_INDEX]->get_label());
+	}
+	print();
+	fflush(Statusfp);
+      }
+    }
+    else {
+      // pick a new school and classroom
+      assign_school();
+      if (Verbose>1) {
+	fprintf(Statusfp,
+		"CHANGED SCHOOL ASSIGNMENT: id %d age %d sex %c ",
+		self->get_id(), age, self->get_sex());
+	if (s != NULL && c != NULL) {
+	  fprintf(Statusfp, "from %s %s to %s %s | ",
+		  s->get_label(), c->get_label(),
+		  favorite_place[SCHOOL_INDEX]->get_label(),
+		  favorite_place[CLASSROOM_INDEX]->get_label());
+	}
+	else {
+	  fprintf(Statusfp, "from NULL NULL to %s %s | ",
+		  favorite_place[SCHOOL_INDEX]->get_label(),
+		  favorite_place[CLASSROOM_INDEX]->get_label());
+	}
+	print();
+	fflush(Statusfp);
+      }
     }
     return;
   }

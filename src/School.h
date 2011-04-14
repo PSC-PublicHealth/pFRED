@@ -40,6 +40,7 @@ public:
     if (-1 < age && age < 20) return students_with_age[age];
     else return 0;
   }
+  int classrooms_for_age(int age) { return (int) classrooms[age].size(); }
   void print(int disease);
   void setup_classrooms();
   Place * assign_classroom(Person *per);

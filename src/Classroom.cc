@@ -31,6 +31,7 @@ Classroom::Classroom(int loc, const char *lab, double lon,
   type = CLASSROOM;
   setup(loc, lab, lon, lat, container, pop);
   get_parameters(population->get_diseases());
+  age_level = -1;
 }
 
 
@@ -61,6 +62,14 @@ void Classroom::get_parameters(int diseases) {
   }
   
   Classroom_parameters_set = 1;
+}
+
+void Classroom::enroll(Person * per) {
+  N++;
+  int age = per->get_age();
+  if (age_level == -1 && age < ADULT_AGE) {
+    age_level = age;
+  }
 }
 
 int Classroom::get_group(int disease, Person * per) {

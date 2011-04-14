@@ -30,10 +30,14 @@ public:
   ~Classroom() {}
   Classroom(int, const char*,double,double,Place *, Population *pop);
   void get_parameters(int diseases);
+  void enroll(Person * per);
   int get_group(int disease, Person * per);
   double get_transmission_prob(int disease, Person * i, Person * s);
   bool should_be_open(int day, int disease);
   double get_contacts_per_day(int disease);
+  int get_age_level() { return age_level; }
+ private:
+  int age_level;
 };
 
 #endif // _FRED_CLASSROOM_H
