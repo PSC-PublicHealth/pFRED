@@ -5,9 +5,19 @@ use Env;
 use Getopt::Std;
 
 my %options = ();
-getopts("ek:v:", \%options);
+getopts("ek:v:a:x:X:y:Y:", \%options);
 my $key = "";
 my $varlist = "";
+my $year = "0";
+$year = $options{a} if exists $options{a};
+my $xmin = $year;
+my $xmax = "*";
+my $ymin = "0";
+my $ymax = "*";
+$xmin = $options{x} if exists $options{x};
+$xmax = $options{X} if exists $options{X};
+$ymin = $options{y} if exists $options{y};
+$ymax = $options{Y} if exists $options{Y};
 my $errorbars = exists $options{e};
 $key = $options{k} if exists $options{k};
 die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r] [-e]\n" if not $key;
@@ -50,13 +60,19 @@ open FH, ">$pltfile";
 print FH <<"EOF";
 set title \"FRED: Allegheny County Model\"
 set terminal png font \"Arial Bold\" 12
-set output \"$pngfile\"
+set output \'$pngfile\'
 set grid
-set yrange [0:*]
-set xrange [0:*]
-set xlabel \"Days\" 0,0.5
-set ylabel \"Individuals\" 1.2,0
+set xrange [$xmin:$xmax]
+set yrange [$ymin:$ymax]
+set xlabel \'Days\' 0,0.5
+set ylabel \'Individuals\' 1.2,0
+set xtics out
 EOF
+if ($year) {
+  print FH "set xlabel 'Year' 0,0.5\n";
+  print FH "set xtics rotate by 90 1\n";
+  print FH "set mxtics 4\n";
+}
 
 for my $x (@args) {
   if ($x eq "AR" or $x eq "CAR") {
@@ -84,8 +100,14 @@ for my $x (@args) {
   $title = "Reproductive Rate" if $x eq "RR";
   print FH ($n == 0)? "plot " : ",\\\n";
   $n++;
-  print FH "\"$x.dat\" using 1:2:3 notitle with errorbars lw 1 lt $n, \\\n" if $errorbars;
-  print FH "\"$x.dat\" using  1:2 title \"$title\" with lines lw 3 lt $n";
+  if ($year) {
+    print FH "\"$x.dat\" using ($year + (\$1/365)):2:3 notitle with errorbars lw 1 lt $n, \\\n" if $errorbars;
+    print FH "\"$x.dat\" using  ($year + (\$1/365)):2 title \"$title\" with lines lw 3 lt $n";
+  }
+  else {
+    print FH "\"$x.dat\" using 1:2:3 notitle with errorbars lw 1 lt $n, \\\n" if $errorbars;
+    print FH "\"$x.dat\" using  1:2 title \"$title\" with lines lw 3 lt $n";
+  }
 }
 print FH "\n";
 close FH;
