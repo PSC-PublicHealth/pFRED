@@ -33,13 +33,16 @@ int Enable_Births;
 int Enable_Deaths;
 double Prob_accept_vaccine; // For Random_Congition_Model, need to find a way not to be global
 double Prob_accept_vaccine_dose; //  For Random_Congition_Model, need to find a way not to be global
+int Track_infection_events;
 
 // global file pointers
 FILE *Statusfp;
 FILE *Outfp;
 FILE *Tracefp;
 FILE *VaccineTracefp;
-FILE *Eventfp;
+FILE *Infectionfp;
+FILE *Birthfp;
+FILE *Deathfp;
 
 void get_global_parameters() {
   get_param((char *) "verbose", &Verbose);
@@ -55,7 +58,7 @@ void get_global_parameters() {
   get_param((char *) "popdir", Population_directory);
   get_param((char *) "outdir", Output_directory);
   get_param((char *) "tracefile", Tracefilebase);
-  get_param((char *) "eventfile", Eventfilebase);
+  get_param((char *) "track_infection_events", &Track_infection_events);
   get_param((char *) "vaccine_tracefile", VaccineTracefilebase);
   get_param((char *) "all_diseases_antigenically_identical", &All_diseases_antigenically_identical);
   get_param((char *) "incremental_trace", &Incremental_Trace);

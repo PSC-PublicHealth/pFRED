@@ -50,8 +50,8 @@ public:
   UNIT_TEST_VIRTUAL Vaccine_Manager *get_vaccine_manager() { return vacc_manager;}
   void add_person(Person * per);
   void delete_person(Person * per);
-  void prepare_to_die(Person *per);
-  void prepare_to_give_birth(Person *per);
+  void prepare_to_die(int day, Person *per);
+  void prepare_to_give_birth(int day, Person *per);
   Person *get_person(int n) { return pop[n]; }
   
   // Modifiers on the entire pop;
@@ -68,6 +68,8 @@ public:
   void assign_classrooms();
   void assign_offices();
   void read_population();
+  void report_birth(int day, Person *per) const;
+  void report_death(int day, Person *per) const;
 
 private:
   char popfile[256];

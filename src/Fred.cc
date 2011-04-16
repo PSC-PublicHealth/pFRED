@@ -79,11 +79,11 @@ int main(int argc, char* argv[]) {
       printf("Help! Can't open %s\n", filename); abort();
     }
   }
-  Eventfp = NULL;
-  if (strcmp(Eventfilebase, "none") != 0) {
-    sprintf(filename, "%s/events%d.txt", directory, run);
-    Eventfp = fopen(filename, "w");
-    if (Eventfp == NULL) {
+  Infectionfp = NULL;
+  if (Track_infection_events) {
+    sprintf(filename, "%s/infections%d.txt", directory, run);
+    Infectionfp = fopen(filename, "w");
+    if (Infectionfp == NULL) {
       printf("Help! Can't open %s\n", filename); abort();
     }
   }
@@ -92,6 +92,22 @@ int main(int argc, char* argv[]) {
     sprintf(filename, "%s/vacctr%d.txt", directory, run);
     VaccineTracefp = fopen(filename, "w");
     if (VaccineTracefp == NULL) {
+      printf("Help! Can't open %s\n", filename); abort();
+    }
+  }
+  Birthfp = NULL;
+  if (Enable_Births) {
+    sprintf(filename, "%s/births%d.txt", directory, run);
+    Birthfp = fopen(filename, "w");
+    if (Birthfp == NULL) {
+      printf("Help! Can't open %s\n", filename); abort();
+    }
+  }
+  Deathfp = NULL;
+  if (Enable_Deaths) {
+    sprintf(filename, "%s/deaths%d.txt", directory, run);
+    Deathfp = fopen(filename, "w");
+    if (Deathfp == NULL) {
       printf("Help! Can't open %s\n", filename); abort();
     }
   }
@@ -188,7 +204,7 @@ int main(int argc, char* argv[]) {
   // fclose(Statusfp);
   fclose(Outfp);
   if (Tracefp != NULL) fclose(Tracefp);
-  if (Eventfp != NULL) fclose(Eventfp);
+  if (Infectionfp != NULL) fclose(Infectionfp);
   if (VaccineTracefp != NULL) fclose(VaccineTracefp);
   time(&clock);
   fprintf(Statusfp, "FRED finished %s", ctime(&clock));

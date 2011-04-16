@@ -58,13 +58,16 @@ extern double Prob_accept_vaccine_dose;
 extern int Enable_Aging;
 extern int Enable_Births;
 extern int Enable_Deaths;
+extern int Track_infection_events;
 
 // global file pointers
 extern FILE *Statusfp;
 extern FILE *Outfp;
 extern FILE *Tracefp;
-extern FILE *Eventfp;
+extern FILE *Infectionfp;
 extern FILE *VaccineTracefp;
+extern FILE *Birthfp;
+extern FILE *Deathfp;
 
 // global singleton objects
 class Population;

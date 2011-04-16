@@ -126,18 +126,20 @@ void Population::delete_person(Person * person) {
   graveyard.push_back(person);
 }
 
-void Population::prepare_to_die(Person *per) {
+void Population::prepare_to_die(int day, Person *per) {
   // add person to daily death_list
   death_list.push_back(per);
+  report_death(day, per);
   if (Verbose>1) {
     fprintf(Statusfp, "prepare to die: ");
     per->print(Statusfp,0);
   }
 }
 
-void Population::prepare_to_give_birth(Person *per) {
+void Population::prepare_to_give_birth(int day, Person *per) {
   // add person to daily maternity_list
   maternity_list.push_back(per);
+  report_birth(day, per);
   if (Verbose>1) {
     fprintf(Statusfp,"prepare to give birth: ");
     per->print(Statusfp,0);
@@ -604,11 +606,13 @@ void Population::handle_property_change_event(Person *source,
 void Population::handle_property_change_event(Person *source,
 					      string property_name,
 					      bool new_val) {
+  /*
   if (property_name.compare("deceased") == 0 && new_val) {
     this->prepare_to_die(source);
   } else if (property_name.compare("deliver") == 0 && new_val) {
     this->prepare_to_give_birth(source);
   }
+  */
 }
 
 
@@ -641,5 +645,23 @@ void Population::assign_offices() {
   if (Verbose) {
     fprintf(Statusfp, "assign offices finished\n"); fflush(Statusfp);
   }
+}
+
+void Population::report_birth(int day, Person *per) const {
+  if (Birthfp == NULL) return;
+  fprintf(Birthfp, "day %d mother %d age %d\n",
+	  day,
+	  per->get_id(),
+	  per->get_age());
+  fflush(Birthfp);
+}
+
+void Population::report_death(int day, Person *per) const {
+  if (Deathfp == NULL) return;
+  fprintf(Deathfp, "day %d person %d age %d\n",
+	  day,
+	  per->get_id(),
+	  per->get_age());
+  fflush(Deathfp);
 }
 

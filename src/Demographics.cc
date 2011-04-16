@@ -239,7 +239,7 @@ void Demographics::update(Date * sim_start_date, int day) {
     //Notify any classes that have registered as event handlers
     // this->self->notify_property_change("pregnant", false);
     // this->self->notify_property_change("deliver", true);
-    self->get_population()->prepare_to_give_birth(self);
+    self->get_population()->prepare_to_give_birth(day, self);
   }
 
   //Is this your day to die?
@@ -251,7 +251,7 @@ void Demographics::update(Date * sim_start_date, int day) {
     this->deceased = true;
     //Notify any classes that have registered as event handlers
     // this->self->notify_property_change("deceased", true);
-    self->get_population()->prepare_to_die(self);
+    self->get_population()->prepare_to_die(day, self);
   }
 
 }
