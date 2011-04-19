@@ -55,6 +55,7 @@ public:
   UNIT_TEST_VIRTUAL Place *get_household() const;
   UNIT_TEST_VIRTUAL Place *get_neighborhood() const;
   int get_age() const { return demographics->get_age(); }
+  double get_real_age(int day) const { return demographics->get_real_age(day); }
   UNIT_TEST_VIRTUAL char get_sex() const;
   UNIT_TEST_VIRTUAL char get_marital_status() const;
   UNIT_TEST_VIRTUAL int get_profession() const;

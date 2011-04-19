@@ -272,32 +272,43 @@ int Infection::get_susceptible_date() const {
 
 void Infection::report_infection(int day) const {
   if (Infectionfp == NULL) return;
-  fprintf(Infectionfp, "day %d dis %d host %d age %d "
-	  " from %d inf_age %d at %s "
-	  "| PERIODS  latent %d asymp %d symp %d recovery %d "
-	  "| DATES exp %d inf %d symp %d rec %d sus %d "
-	  "| will_be_symp? %d susc %.3f infect %.3f "
-	  "inf_multp %.3f symptms %.3f\n",
+  fprintf(Infectionfp, "day %d dis %d host %d age %.3f "
+	  " from %d inf_age %.3f at %c ",
 	  day, id,
 	  host->get_id(),
-	  host->get_age(),
+	  host->get_real_age(day),
 	  infector == NULL ? -1 : infector->get_id(),
-	  infector == NULL ? -1 : infector->get_age(),
-	  place == NULL ? "X" : place->get_label(),
-	  latent_period,
-	  asymptomatic_period,
-	  symptomatic_period,
-	  recovery_period,
-	  exposure_date,
-	  get_infectious_date(),
-	  get_symptomatic_date(),
-	  get_recovery_date(),
-	  get_susceptible_date(),
-	  will_be_symptomatic,
-	  susceptibility,
-	  infectivity,
-	  infectivity_multp,
-	  symptoms);
+	  infector == NULL ? -1 : infector->get_real_age(day),
+	  place == NULL ? 'X' : place->get_type());
+
+  if (Track_infection_events > 1)
+    fprintf(Infectionfp,
+	    "| PERIODS  latent %d asymp %d symp %d recovery %d ",
+	    latent_period,
+	    asymptomatic_period,
+	    symptomatic_period,
+	    recovery_period);
+
+  if (Track_infection_events > 2)
+    fprintf(Infectionfp,
+	    "| DATES exp %d inf %d symp %d rec %d sus %d ",
+	    exposure_date,
+	    get_infectious_date(),
+	    get_symptomatic_date(),
+	    get_recovery_date(),
+	    get_susceptible_date());
+
+  if (Track_infection_events > 3)
+    fprintf(Infectionfp,
+	    "| will_be_symp? %d susc %.3f infect %.3f "
+	    "inf_multp %.3f symptms %.3f ",
+	    will_be_symptomatic,
+	    susceptibility,
+	    infectivity,
+	    infectivity_multp,
+	    symptoms);
+
+  fprintf(Infectionfp, "\n");
   fflush(Infectionfp);
 }
 

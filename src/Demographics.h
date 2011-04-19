@@ -32,6 +32,7 @@ public:
   void reset(Date * sim_start_date);
   void update(Date * sim_start_date, int day);
   int get_age()            { return age; }
+  double get_real_age(int day);
   char get_sex()           { return sex; }
   int get_marital_status() { return marital_status; }
   int get_profession()     { return profession; }

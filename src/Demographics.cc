@@ -394,3 +394,12 @@ void Demographics::reset(Date * sim_start_date) {
 void Demographics::print() {
 }
 
+double Demographics::get_real_age(int day) {
+  Date * today = new Date(Sim_Date->get_year(day),
+			       Sim_Date->get_month(day),
+			       Sim_Date->get_day_of_month(day));
+  int days_of_life = Date::days_between(today, birthdate);
+  delete today;
+  return ((double) days_of_life / 365.0);
+}
+
