@@ -29,14 +29,14 @@ void Vaccines::setup(void) {
 
   int number_vacc;
   get_param_from_string("number_of_vaccines",&number_vacc);
-  
-  for(int iv=0;iv<number_vacc;iv++) {
+
+  for(int iv=0; iv<number_vacc; iv++) {
     int ta;
     int apd;
     int std;
     int tbd;
     int num_doses;
-   
+
     get_indexed_param("vaccine_number_of_doses",iv,&num_doses);
     get_indexed_param("vaccine_total_avail",iv,&ta);
     get_indexed_param("vaccine_additional_per_day",iv,&apd);
@@ -45,73 +45,83 @@ void Vaccines::setup(void) {
     stringstream name;
     name << "Vaccine#"<<iv+1;
     vaccines.push_back(new Vaccine(name.str(),iv,0,ta,apd,std));
-    
-    for(int id=0;id<num_doses;id++) {
+
+    for(int id=0; id<num_doses; id++) {
       Age_Map* efficacy_map = new Age_Map("Dose Efficacy");
       Age_Map* efficacy_delay_map = new Age_Map("Dose Efficacy Delay");
       get_double_indexed_param("vaccine_next_dosage_day",iv,id,&tbd);
       efficacy_map->read_from_input("vaccine_dose_efficacy",iv,id);
       efficacy_delay_map->read_from_input("vaccine_dose_efficacy_delay",iv,id);
       vaccines[iv]->add_dose(new Vaccine_Dose(efficacy_map,efficacy_delay_map,tbd));
+      }
     }
   }
-}	
 
 void Vaccines::print() const {
   cout <<"Vaccine Package Information\n";
   cout <<"There are "<<vaccines.size() <<" vaccines in the package\n";
   fflush(stdout);
-  for(unsigned int i=0;i<vaccines.size(); i++){
+
+  for(unsigned int i=0; i<vaccines.size(); i++) {
     vaccines[i]->print();
-  }
+    }
+
   fflush(stdout);
-}
+  }
 
 void Vaccines::print_current_stocks() const {
   cout << "Vaccine Stockk Information\n";
   cout << "\nVaccines# " << "Current Stock      " << "Current Reserve    \n";
+
   for(unsigned int i=0; i<vaccines.size(); i++) {
     cout << setw(10) << i+1 << setw(20) << vaccines[i]->get_current_stock()
-    << setw(20) << vaccines[i]->get_current_reserve() << "\n";
+         << setw(20) << vaccines[i]->get_current_reserve() << "\n";
+    }
   }
-}
 
 void Vaccines::update(int day) {
-  for(unsigned int i=0;i<vaccines.size(); i++) {
+  for(unsigned int i=0; i<vaccines.size(); i++) {
     vaccines[i]->update(day);
+    }
   }
-}
 
 void Vaccines::reset() {
-  for(unsigned int i=0;i<vaccines.size();i++) {
+  for(unsigned int i=0; i<vaccines.size(); i++) {
     vaccines[i]->reset();
+    }
   }
-}
 
 
 int Vaccines::pick_from_applicable_vaccines(int age) const {
   vector <int> app_vaccs;
-  for(unsigned int i=0;i<vaccines.size();i++){
+
+  for(unsigned int i=0; i<vaccines.size(); i++) {
     // if first dose is applicable, add to vector.
     if(vaccines[i]->get_dose(0)->is_within_age(age) &&
-       vaccines[i]->get_current_stock() > 0){
+        vaccines[i]->get_current_stock() > 0) {
       app_vaccs.push_back(i);
+      }
     }
-  }
-  
-  if(app_vaccs.size() == 0){ return -1; }
-  
+
+  if(app_vaccs.size() == 0) {
+    return -1;
+    }
+
   int randnum = 0;
-  if(app_vaccs.size() > 1){
+
+  if(app_vaccs.size() > 1) {
     randnum = (int)(RANDOM()*app_vaccs.size());
-  }
+    }
+
   return app_vaccs[randnum];
-}
+  }
 
 int Vaccines::get_total_vaccines_avail_today() const {
   int total=0;
-  for(unsigned int i=0;i<vaccines.size();i++){
+
+  for(unsigned int i=0; i<vaccines.size(); i++) {
     total += vaccines[i]->get_current_stock();
-  }
+    }
+
   return total;
-}
+  }

@@ -21,24 +21,28 @@ int Profiles = 0;
 
 void read_profiles(char *filename) {
   char name[80];
-  
+
   if (Verbose) {
-    fprintf(Statusfp, "read profiles entered\n"); fflush(Statusfp);
-  }
-  
+    fprintf(Statusfp, "read profiles entered\n");
+    fflush(Statusfp);
+    }
+
   FILE *fp = fopen(filename, "r");
+
   if (fp == NULL) {
     fprintf(Statusfp, "Profile file %s not found\n", filename);
     exit(1);
-  }
-  
+    }
+
   int i;
+
   while (fscanf(fp, " Profile %d %s ", &i, name) == 2) {
     for (int d = 0; d < 7; d++) {
       double h, n, s, w, t;
       int nr = fscanf(fp,
                       " %*s Home %lf Nbrhood %lf School %lf Work %lf Travel %lf ",
                       &h, &n, &s, &w, &t);
+
       if (nr == 5) {
         Prof[i].set_prob_visit(d, 0, h);
         Prof[i].set_prob_visit(d, 1, n);
@@ -46,16 +50,16 @@ void read_profiles(char *filename) {
         Prof[i].set_prob_visit(d, 4, w);
         Prof[i].set_prob_travel(d, t);
         Profiles++;
-      }
+        }
       else {
         printf("Help! Bad format in profile %d -- number read = %d\n", i, nr);
         abort();
+        }
       }
     }
   }
-}
 
 
 int is_visited(int pos, int prof, int day) {
   return (RANDOM() < Prof[prof].get_prob_visit(day, pos));
-}
+  }

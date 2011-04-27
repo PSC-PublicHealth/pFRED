@@ -33,6 +33,8 @@ int Enable_Births;
 int Enable_Deaths;
 double Prob_accept_vaccine; // For Random_Congition_Model, need to find a way not to be global
 double Prob_accept_vaccine_dose; //  For Random_Congition_Model, need to find a way not to be global
+char Prevfilebase[256];
+char Incfilebase[256];
 int Track_infection_events;
 
 // global file pointers
@@ -40,6 +42,8 @@ FILE *Statusfp;
 FILE *Outfp;
 FILE *Tracefp;
 FILE *VaccineTracefp;
+FILE *Prevfp;
+FILE *Incfp;
 FILE *Infectionfp;
 FILE *Birthfp;
 FILE *Deathfp;
@@ -70,4 +74,6 @@ void get_global_parameters() {
   get_param((char *) "enable_aging",&Enable_Aging);
   get_param((char *) "enable_births",&Enable_Births);
   get_param((char *) "enable_deaths",&Enable_Deaths);
-}
+  get_param((char *) "prevalencefile", Prevfilebase);
+  get_param((char *) "incidencefile", Incfilebase);
+  }

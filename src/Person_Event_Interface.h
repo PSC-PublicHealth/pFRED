@@ -15,13 +15,13 @@ using namespace std;
 class Person;
 
 class Person_Event_Interface {
-public:
+  public:
 
-  Person_Event_Interface();
-  virtual ~Person_Event_Interface();
+    Person_Event_Interface();
+    virtual ~Person_Event_Interface();
 
-  virtual void handle_property_change_event(Person *source, string property_name, int prev_val, int new_val) = 0;
-  virtual void handle_property_change_event(Person *source, string property_name, bool new_val) = 0;
-};
+    virtual void handle_property_change_event(Person *source, string property_name, int prev_val, int new_val) = 0;
+    virtual void handle_property_change_event(Person *source, string property_name, bool new_val) = 0;
+  };
 
 #endif /* FRED_PERSON_EVENT_INTERFACE_H_ */

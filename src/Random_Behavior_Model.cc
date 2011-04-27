@@ -33,6 +33,6 @@ Random_Behavior_Model::Random_Behavior_Model(Person *p) {
   //  Random_Behavior_Model_parameters_set = 1;
   //}
   //  cout << "Prob of accept vaccine Dose = "<< Prob_accept_vaccine_dose << "\n";
-}
+  }
 
 

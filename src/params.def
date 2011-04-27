@@ -2,6 +2,7 @@ diseases = 1
 all_diseases_antigenically_identical = 1
 days = 240
 seed = 123456
+runs = 2
 verbose = 1
 debug = 1
 test = 0
@@ -12,16 +13,17 @@ epidemic_offset = 0
 
 vaccine_offset = 0
 
-# a date in the format 'YYYY-MM-DD'
-start_date = 2011-01-01
+# set to 'today' to use the system clock, otherwise set it to 
+# a date in the format 'MM/DD/YYYY'
+start_date = today
+#start_date = 01/1/2011
 reseed_day = -1
-popfile = alleg_v2_pop.txt
-locfile = alleg_v2_loc.txt
+popfile = alleg_pop.txt
+locfile = alleg_loc.txt
 profiles = profiles.txt
 popdir = .
 outdir = OUT
 tracefile = none
-track_infection_events = 1
 quality_control = 1
 
 # set 0 for end-of-run trace printout only, non-zero to print every n-th day
@@ -51,7 +53,7 @@ residual_immunity_values[0] = 0
 at_risk_ages[0] = 14 0 1 2 4 5 18 19 24 25 49 50 64 65 110
 at_risk_values[0] = 7 0.039 0.0883 0.1168 0.1235 0.1570 0.3056 0.4701
 
-# aging, births and deaths
+#Aging, Births and Deaths
 enable_aging = 0
 enable_births = 0
 enable_deaths = 0 
@@ -65,11 +67,15 @@ mutation_prob = 1 0.0
 # for a 33% clinical attack rate
 # using the bifurcating SEIR model (SEiIR = 0)
 household_contacts[0] = 0.475
-neighborhood_contacts[0] = 120
-school_contacts[0] = 9
-classroom_contacts[0] = 13
-workplace_contacts[0] = 5
+neighborhood_contacts[0] = 59
+# community_contacts[0] = 0
+school_contacts[0] = 8
+classroom_contacts[0] = 13.5
+workplace_contacts[0] = 2
 office_contacts[0] = 8
+
+# community_limit[0] = -1
+# community_limit_trials = 50
 
 # groups = children adults
 household_prob[0] = 4 0.6 0.3 0.3 0.4
@@ -89,18 +95,7 @@ classroom_prob[0] = 16 0.0435 0 0 0.0435 0 0.0375 0 0.0375 0 0 0.0315 0.0315 0.0
 neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 # community_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 
-#### SCHOOLS
-
-# set to 1 if schools closed during summer
-school_summer_schedule = 0
-
-# summer schedule dates (format MM-DD)
-school_summer_start = 06-01
-school_summer_end = 08-31
-
-# recommended max size per classroom
-school_classroom_size = 40
-
+#### SCHOOL CLOSURE
 school_closure_policy = none
 # school_closure_policy = global
 # school_closure_policy = individual
@@ -118,8 +113,6 @@ school_closure_day = 10
 # reactive closure triggered when school attack rate >= threshold
 school_closure_threshold = 0.1
 
-#### WORKPLACES
-office_size = 50
 
 #### ANTIVIRALS
 number_antivirals = 0
@@ -148,10 +141,10 @@ vaccine_dose_efficacy_delay_ages[0][0] = 2 0 100
 vaccine_dose_efficacy_delay_values[0][0] = 1 14
 
 ##### COGNITION PARAMETERS
-behavior_model = random
-# behavior_model = HBM
+cognitive_model = random
+# cognitive_model = HBM
 
-# Random behavior model params
+# Random cognitive model params
 prob_accept_vaccine = 0.6
 prob_accept_another_vaccine_dose = 1.0
 
@@ -174,4 +167,68 @@ min_latitude = 40.1955
 max_latitude = 40.6742
 min_longitude = -80.3581
 max_longitude = -79.6906
+
+############ NEW PARAMETERS FOR IntraHost/EVOLUTION BELOW ##################################
+
+infection_model[0] = 1
+all_diseases_antigenically_identical = 0
+
+# Evolution Stuff
+evolution[0] = 0
+num_strains[0] = 1
+strain_data[0][0] = a:1
+transmissibility[0][0] = 1
+
+# evolution visualization stuff
+prevalencefile = prev.txt
+incidencefile = incd.txt
+
+# default IntraHost - 1; fixed IntraHost - 1; ODEIntraHost - 2
+intra_host_model[0] = 0
+
+# for default IntraHost
+infection_model[0] = 1
+
+# for fixed IntraHost
+infectivity_profile_probabilities[0] = 16   0.0066 0.0198 0.0396 0.066 0.0794 0.1062 0.1464 0.2 0.2264 0.2792 0.3584 0.464 0.5176 0.6248 0.7856 1
+
+fixed_infectivity_profile[0][0] = 8    0 0 0.5 0.5 0.5 0.5 0.5 0.5
+fixed_infectivity_profile[0][1] = 7    0 0 0.5 0.5 0.5 0.5 0.5
+fixed_infectivity_profile[0][2] = 5    0 0 0.5 0.5 0.5
+fixed_infectivity_profile[0][3] = 6    0 0 0.5 0.5 0.5 0.5
+fixed_infectivity_profile[0][4] = 8    0 0 1 1 1 1 1 1
+fixed_infectivity_profile[0][5] = 7    0 0 1 1 1 1 1
+fixed_infectivity_profile[0][6] = 5    0 0 1 1 1
+fixed_infectivity_profile[0][7] = 6    0 0 1 1 1 1
+fixed_infectivity_profile[0][8] = 7    0 0.5 0.5 0.5 0.5 0.5 0.5
+fixed_infectivity_profile[0][9] = 6    0 0.5 0.5 0.5 0.5 0.5
+fixed_infectivity_profile[0][10] = 4    0 0.5 0.5 0.5
+fixed_infectivity_profile[0][11] = 5    0 0.5 0.5 0.5 0.5
+fixed_infectivity_profile[0][12] = 7    0 1 1 1 1 1 1
+fixed_infectivity_profile[0][13] = 6    0 1 1 1 1 1
+fixed_infectivity_profile[0][14] = 4    0 1 1 1
+fixed_infectivity_profile[0][15] = 5    0 1 1 1 1
+
+fixed_symptomaticity_profile[0][0] = 8   0 0 0 0 0 0 0 0
+fixed_symptomaticity_profile[0][1] = 7   0 0 0 0 0 0 0
+fixed_symptomaticity_profile[0][2] = 5   0 0 0 0 0
+fixed_symptomaticity_profile[0][3] = 6   0 0 0 0 0 0
+fixed_symptomaticity_profile[0][4] = 8   0 0 1 1 1 1 1 1
+fixed_symptomaticity_profile[0][5] = 7   0 0 1 1 1 1 1
+fixed_symptomaticity_profile[0][6] = 5   0 0 1 1 1
+fixed_symptomaticity_profile[0][7] = 6   0 0 1 1 1 1
+fixed_symptomaticity_profile[0][8] = 7   0 0 0 0 0 0 0
+fixed_symptomaticity_profile[0][9] = 6   0 0 0 0 0 0
+fixed_symptomaticity_profile[0][10] = 4   0 0 0 0
+fixed_symptomaticity_profile[0][11] = 5   0 0 0 0 0
+fixed_symptomaticity_profile[0][12] = 7   0 1 1 1 1 1 1
+fixed_symptomaticity_profile[0][13] = 6   0 1 1 1 1 1
+fixed_symptomaticity_profile[0][14] = 4   0 1 1 1
+fixed_symptomaticity_profile[0][15] = 5   0 1 1 1 1
+
+# for ODEIntraHost
+viral_titer_scaling = 20;
+viral_titer_latent_threshold = 0.01;
+interferon_scaling = 20000;
+interferon_threshold = 0.01;
 

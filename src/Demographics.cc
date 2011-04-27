@@ -29,7 +29,7 @@ Demographics::Demographics() {
   if (!Demographics::is_initialized) {
     read_init_files();
     Demographics::is_initialized = true;
-  }
+    }
 
   self = NULL;
   init_age = -1;
@@ -46,16 +46,16 @@ Demographics::Demographics() {
   pregnant = false;
   deceased = false;
 
-}
+  }
 
 Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_status,
-               int _profession, Date * anchor_date, bool has_random_birthday) {
+                           int _profession, Date * anchor_date, bool has_random_birthday) {
 
   //Create the static arrays one time
   if (!Demographics::is_initialized) {
     read_init_files();
     Demographics::is_initialized = true;
-  }
+    }
 
   self                = _self;
   init_age            = _age;
@@ -82,34 +82,39 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
     // found using system_year - init_age, else it is system_year - (init_age + 1)
     if (((int) ceil(rand_birthday)) <= anchor_day_of_year) {
       birthyear = anchor_date->get_year() - init_age;
-    } else {
+      }
+    else {
       birthyear = anchor_date->get_year() - (init_age + 1);
-    }
+      }
 
     //If the birthyear would have been a leap year, adjust the random number
     // so that it is based on 366 days
     if (Date::is_leap_year(birthyear)) {
       rand_birthday = rand_birthday * 366.0 / 365.0;
-    }
+      }
 
     this->birthdate = new Date(birthyear, (int) ceil(rand_birthday));
 
-  } else {
+    }
+  else {
 
     this->birthdate = new Date(anchor_date->get_year(),
                                anchor_date->get_month(),
                                anchor_date->get_day_of_month());
-  }
+    }
 
-  setup(anchor_date);
-}
+  reset(anchor_date);
+  }
 
 Demographics::~Demographics() {
   if (birthdate != NULL) delete birthdate;
+
   if (deceased_date != NULL) delete deceased_date;
+
   if (conception_date != NULL) delete conception_date;
+
   if (due_date != NULL) delete due_date;
-}
+  }
 
 void Demographics::setup(Date * anchor_date) {
 
@@ -136,8 +141,8 @@ void Demographics::setup(Date * anchor_date) {
                                      anchor_date->get_month(),
                                      anchor_date->get_day_of_month());
       this->deceased_date->advance(IRAND(1,364));
+      }
     }
-  }
 
   age_lookup = (age <= Demographics::MAX_PREGNANCY_AGE ? age : Demographics::MAX_PREGNANCY_AGE);
 
@@ -152,10 +157,10 @@ void Demographics::setup(Date * anchor_date) {
       this->due_date->advance(IRAND(1, 280));
       this->pregnant = true;
       // this->self->notify_property_change("pregnant", pregnant);
+      }
     }
-  }
 
-}
+  }
 
 void Demographics::update(Date * sim_start_date, int day) {
 
@@ -181,7 +186,7 @@ void Demographics::update(Date * sim_start_date, int day) {
       // int prev_age = age;
       age++;
       // this->self->notify_property_change("age", prev_age, age);
-    }
+      }
 
     //Will this person die in the next year?
     if (Enable_Deaths > 0) {
@@ -193,15 +198,15 @@ void Demographics::update(Date * sim_start_date, int day) {
         pct_chance_to_die = Demographics::age_yearly_mortality_rate_male[age_lookup];
 
       if(!this->deceased &&
-         this->deceased_date == NULL &&
-         URAND(0.0, 1.0) <= pct_chance_to_die) {
+          this->deceased_date == NULL &&
+          URAND(0.0, 1.0) <= pct_chance_to_die) {
 
         //Yes, so set the death day (in simulation days)
         this->deceased_date = new Date(cur_year, cur_month, cur_day_of_month);
         this->deceased_date->advance(IRAND(0,364));
+        }
       }
     }
-  }
 
   //The age to look up should be an integer between 0 and the MAX_PREGNANCY_AGE
   age_lookup = (age <= Demographics::MAX_PREGNANCY_AGE ? age : Demographics::MAX_PREGNANCY_AGE);
@@ -219,20 +224,21 @@ void Demographics::update(Date * sim_start_date, int day) {
     this->pregnant = true;
     //Notify any classes that have registered as event handlers
     // this->self->notify_property_change("pregnant", true);
-  }
+    }
 
   //Is this your day to give birth
   if(Enable_Births &&
-     this->sex == 'F' &&
-     this->pregnant &&
-     this->due_date != NULL &&
-     this->due_date->get_year() == cur_year &&
-     this->due_date->get_month() == cur_month &&
-     this->due_date->get_day_of_month() == cur_day_of_month) {
+      this->sex == 'F' &&
+      this->pregnant &&
+      this->due_date != NULL &&
+      this->due_date->get_year() == cur_year &&
+      this->due_date->get_month() == cur_month &&
+      this->due_date->get_day_of_month() == cur_day_of_month) {
     if (this->conception_date != NULL) {
       delete this->conception_date;
       this->conception_date = NULL;
-    }
+      }
+
     delete this->due_date;
     this->due_date = NULL;
     this->pregnant = false;
@@ -240,21 +246,21 @@ void Demographics::update(Date * sim_start_date, int day) {
     // this->self->notify_property_change("pregnant", false);
     // this->self->notify_property_change("deliver", true);
     self->get_population()->prepare_to_give_birth(day, self);
-  }
+    }
 
   //Is this your day to die?
   if(Enable_Deaths > 0 &&
-     this->deceased_date != NULL &&
-     this->deceased_date->get_year() == cur_year &&
-     this->deceased_date->get_month() == cur_month &&
-     this->deceased_date->get_day_of_month() == cur_day_of_month) {
+      this->deceased_date != NULL &&
+      this->deceased_date->get_year() == cur_year &&
+      this->deceased_date->get_month() == cur_month &&
+      this->deceased_date->get_day_of_month() == cur_day_of_month) {
     this->deceased = true;
     //Notify any classes that have registered as event handlers
     // this->self->notify_property_change("deceased", true);
     self->get_population()->prepare_to_die(day, self);
-  }
+    }
 
-}
+  }
 
 void Demographics::read_init_files() {
 
@@ -262,18 +268,20 @@ void Demographics::read_init_files() {
   char yearly_birth_rate_file[256];
 
   if (Verbose) {
-    fprintf(Statusfp, "read demographic init files entered\n"); fflush(Statusfp);
-  }
+    fprintf(Statusfp, "read demographic init files entered\n");
+    fflush(Statusfp);
+    }
 
   get_param((char *) "yearly_mortality_rate_file", yearly_mortality_rate_file);
   get_param((char *) "yearly_birth_rate_file", yearly_birth_rate_file);
 
   // read death rate file and load the values unt the death_rate_array
   FILE *fp = fopen(yearly_mortality_rate_file, "r");
+
   if (fp == NULL) {
     fprintf(Statusfp, "Demographic init_file %s not found\n", yearly_mortality_rate_file);
     exit(1);
-  }
+    }
 
   for (int i = 0; i <= Demographics::MAX_AGE; i++) {
     int age;
@@ -284,11 +292,11 @@ void Demographics::read_init_files() {
                &age, &female_rate, &male_rate) != 3) {
       fprintf(Statusfp, "Help! Read failure for age %d\n", i);
       abort();
-    }
+      }
 
     Demographics::age_yearly_mortality_rate_female[i] = (double)female_rate;
     Demographics::age_yearly_mortality_rate_male[i] = (double)male_rate;
-  }
+    }
 
   fclose(fp);
 
@@ -298,7 +306,8 @@ void Demographics::read_init_files() {
   if (fp == NULL) {
     fprintf(Statusfp, "Demographic init_file %s not found\n", yearly_birth_rate_file);
     exit(1);
-  }
+    }
+
   for (int i = 0; i <= Demographics::MAX_PREGNANCY_AGE; i++) {
     int age;
     float rate;
@@ -307,27 +316,30 @@ void Demographics::read_init_files() {
                &age, &rate) != 2) {
       fprintf(Statusfp, "Help! Read failure for age %d\n", i);
       abort();
-    }
+      }
 
     Demographics::age_yearly_birth_rate[i] = (double)rate;
-  }
+    }
 
   for (int i = 0; i <= Demographics::MAX_PREGNANCY_AGE; i++) {
     Demographics::age_daily_birth_rate[i] = Demographics::age_yearly_birth_rate[i] / 365.25;
-  }
+    }
 
   fclose(fp);
+
   if (Verbose) {
     fprintf(Statusfp, "finished reading Demographic init_file = %s\n", yearly_mortality_rate_file);
     fflush(Statusfp);
+    }
   }
-}
 
 
 void Demographics::reset(Date * sim_start_date) {
 
   //Capture the values prior to reseting
   int prev_age       = age;
+  // bool prev_pregnant = pregnant;
+  // bool prev_deceased = deceased;
 
   age                = init_age;
   marital_status     = init_marital_status;
@@ -335,25 +347,26 @@ void Demographics::reset(Date * sim_start_date) {
   pregnant           = false;
   deceased           = false;
 
+
   if (deceased_date != NULL) {
     delete deceased_date;
     deceased_date = NULL;
-  }
+    }
 
   if (due_date != NULL) {
     delete due_date;
     due_date = NULL;
-  }
+    }
 
   if (conception_date != NULL) {
     delete conception_date;
     conception_date = NULL;
-  }
+    }
 
   //If we are going back to a younger age, notify any classes that have registered as event handlers
   if (Enable_Aging > 0 && prev_age > age) {
     // this->self->notify_property_change("age", prev_age, age);
-  }
+    }
 
   int age_lookup = (age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE);
 
@@ -369,37 +382,39 @@ void Demographics::reset(Date * sim_start_date) {
     if(URAND(0.0, 1.0) <= pct_chance_to_die) {
       //Yes, so set the death day (in simulation days)
       this->deceased_date = new Date(sim_start_date->get_year(),
-                                   sim_start_date->get_month(),
-                                   sim_start_date->get_day_of_month());
+                                     sim_start_date->get_month(),
+                                     sim_start_date->get_day_of_month());
       this->deceased_date->advance(IRAND(1,364));
+      }
     }
-  }
+
 
   age_lookup = (age <= Demographics::MAX_PREGNANCY_AGE ? age : Demographics::MAX_PREGNANCY_AGE);
+
   //Is this person pregnant?
   if (Enable_Births > 0) {
     if (this->sex == 'F' && URAND(0.0, 1.0) <= ((0.75) * Demographics::age_yearly_birth_rate[age_lookup])) {
 
       //Yes, so set the due_date (in simulation days)
       this->due_date = new Date(sim_start_date->get_year(),
-                              sim_start_date->get_month(),
-                              sim_start_date->get_day_of_month());
+                                sim_start_date->get_month(),
+                                sim_start_date->get_day_of_month());
       this->due_date->advance(IRAND(1, 280));
       this->pregnant = true;
       // this->self->notify_property_change("pregnant", pregnant);
+      }
     }
   }
-}
 
 void Demographics::print() {
-}
+  }
 
 double Demographics::get_real_age(int day) {
   Date * today = new Date(Sim_Date->get_year(day),
-			       Sim_Date->get_month(day),
-			       Sim_Date->get_day_of_month(day));
+                          Sim_Date->get_month(day),
+                          Sim_Date->get_day_of_month(day));
   int days_of_life = Date::days_between(today, birthdate);
   delete today;
   return ((double) days_of_life / 365.0);
-}
+  }
 

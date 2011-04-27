@@ -21,21 +21,25 @@ class Person;
 
 using namespace std;
 
-class Decision{
-  
-protected:
-  string name;
-  string type; 
-  Policy *policy;  // This is the policy that the decision belongs to
-  
-public:
-  Decision();
-  Decision(Policy *p);
-  ~Decision();
-  
-  string get_name() const { return name; }
-  string get_type() const { return type; }
-  
-  virtual int evaluate(Person* person, int disease, int current_day) = 0;  
-};
+class Decision {
+
+  protected:
+    string name;
+    string type;
+    Policy *policy;  // This is the policy that the decision belongs to
+
+  public:
+    Decision();
+    Decision(Policy *p);
+    ~Decision();
+
+    string get_name() const {
+      return name;
+      }
+    string get_type() const {
+      return type;
+      }
+
+    virtual int evaluate(Person* person, int disease, int current_day) = 0;
+  };
 #endif

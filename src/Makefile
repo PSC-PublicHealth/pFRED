@@ -26,8 +26,20 @@ endif
 
 ###############################################
 
+# SUNDIALS ode solvers
+#SUNDIALS_DIR := sundials/osx
+#CVODE_LIB=/usr/local/lib/libsundials_cvode.a
+#NVECS_LIB=/usr/local/lib/libsundials_nvecserial.a
+
+#IFLAGS := -I$(SUNDIALS_DIR)/include
+#LFLAGS := -L$(SUNDIALS_DIR)/lib -lsundials_cvode -lsundials_nvecserial -lm
+
+#CPPFLAGS = -g -m64 -O3 $(IFLAGS) $(LFLAGS)
+
+###############################################
+
 %.o:%.c %.h
-	$(CPP) $(CPPFLAGS) -c $< $(INCLUDES)
+	$(CPP) $(CPPFLAGS) $(IFLAGS) $(LFLAGS) -c $< $(INCLUDES)
 
 OBJ =   Fred.o Global.o Decision.o Policy.o Manager.o \
         AV_Decisions.o AV_Policies.o AV_Manager.o AV_Health.o \
@@ -36,8 +48,13 @@ OBJ =   Fred.o Global.o Decision.o Policy.o Manager.o \
 	    Antiviral.o Antivirals.o Health_Belief_Model.o Random_Behavior_Model.o \
 	    Activities.o Classroom.o Behavior.o Demographics.o Epidemic.o Health.o \
         Hospital.o Household.o Infection.o Neighborhood.o Office.o \
-	    Params.o Perceptions.o Person.o Place.o Place_List.o Population.o Profile.o Random.o \
-	    School.o Disease.o Workplace.o Patch.o Grid.o Date.o Person_Event_Interface.o
+	    	Params.o Perceptions.o Person.o Place.o Place_List.o Population.o Profile.o Random.o \
+	    	School.o Disease.o Workplace.o Patch.o Grid.o Date.o Person_Event_Interface.o \
+				Trajectory.o StrainTable.o \
+				EvolutionFactory.o Evolution.o Strain.o \
+				IntraHost.o DefaultIntraHost.o FixedIntraHost.o
+
+#				ODEIntraHost.o ODE.o
 
 SRC = $(OBJ:.o=.cc)
 

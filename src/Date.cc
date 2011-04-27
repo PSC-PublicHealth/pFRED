@@ -16,16 +16,20 @@
 #include <sstream>
 #include <math.h>
 #include <string>
+#include <cstdlib>
+#include <cmath>
 
 using namespace std;
 
 const int Date::day_table[2][13] = {
     {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
-    {0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}};
+    {0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+  };
 
 const int Date::doomsday_month_val[2][13] = {
     {0, 31, 28, 7, 4, 9, 6, 11, 8, 5, 10, 7, 12},
-    {0, 32, 29, 7, 4, 9, 6, 11, 8, 5, 10, 7, 12}};
+    {0, 32, 29, 7, 4, 9, 6, 11, 8, 5, 10, 7, 12}
+  };
 
 const string Date::MMDDYYYY = string("MM/DD/YYYY");
 const string Date::MMDDYY = string("MM/DD/YY");
@@ -45,7 +49,7 @@ Date::Date() {
   //Create the vectors once
   if(!Date::is_initialized) {
     Date::initialize_vectors();
-  }
+    }
 
   //Get the system time
   time_t rawtime;
@@ -66,7 +70,7 @@ Date::Date() {
 
   this->set_date(year, month, day);
 
-}
+  }
 
 Date::Date(string date_string, string format_string) {
 
@@ -75,14 +79,14 @@ Date::Date(string date_string, string format_string) {
   //Create the vectors once
   if(!Date::is_initialized) {
     Date::initialize_vectors();
-  }
+    }
 
   int year = Date::parse_year_from_date_string(date_string, format_string);
   int month = Date::parse_month_from_date_string(date_string, format_string);
   int day_of_month = Date::parse_day_of_month_from_date_string(date_string, format_string);
 
   this->set_date(year, month, day_of_month);
-}
+  }
 
 Date::Date(int year, int day_of_year) {
 
@@ -91,7 +95,7 @@ Date::Date(int year, int day_of_year) {
   //Create the vectors once
   if(!Date::is_initialized) {
     Date::initialize_vectors();
-  }
+    }
 
   //Find month and day
   int month = 0;
@@ -101,24 +105,28 @@ Date::Date(int year, int day_of_year) {
 
   for (int i = Date::JANUARY; i <= Date::DECEMBER && !is_found; i++) {
     days_so_far += Date::day_table[Date::is_leap_year(year)][i];
+
     if (day_of_year <= days_so_far ) {
       month = i;
       int days_to_subtract = 0;
+
       for (int j = Date::JANUARY; j < month; j++) {
         days_to_subtract += Date::day_table[Date::is_leap_year(year)][j];
-      }
+        }
+
       day_of_month = day_of_year - days_to_subtract;
       is_found = true;
+      }
     }
-  }
 
   if(is_found) {
     this->set_date(year, month, day_of_month);
-  } else {
+    }
+  else {
     this->set_date(year, Date::JANUARY, 1);
-  }
+    }
 
-}
+  }
 
 Date::Date(int year, int month, int day_of_month) {
 
@@ -127,10 +135,10 @@ Date::Date(int year, int month, int day_of_month) {
   //Create the vectors once
   if(!Date::is_initialized) {
     Date::initialize_vectors();
-  }
+    }
 
   this->set_date(year, month, day_of_month);
-}
+  }
 
 /**
  * Sets the month, day, and year to the values.  The values will be set
@@ -143,17 +151,17 @@ void Date::set_date(int year, int month, int day_of_month) {
   if (year < 1600) {
     cout << "Help!  Year prior to 1600 [" << year << "] is not recognized." << endl;
     abort();
-  }
+    }
 
   if (month < Date::JANUARY || month > Date::DECEMBER) {
     cout << "Help!  Month must be between 1 and 12 inclusive." << endl;
     abort();
-  }
+    }
 
   if (day_of_month < 1 || day_of_month > Date::day_table[(Date::is_leap_year(year) ? 1 : 0)][month]) {
     cout << "Help!  Day of month is out of range for the given month." << endl;
     abort();
-  }
+    }
 
   //total years since 1600
   int temp_days = (year - 1600) * 365;
@@ -162,58 +170,60 @@ void Date::set_date(int year, int month, int day_of_month) {
   for (int i = 1600; i < year; i += 4) {
     if (i % 4 == 0)
       temp_days++;
-  }
+    }
 
   //subtract the leap days of centuries
   for (int i = 1600; i < year; i += 100) {
     if (i % 100 == 0)
       temp_days--;
-  }
+    }
 
   //add in the leap days for centuries divisible by 400
   for (int i = 1600; i < year; i += 400) {
     if (i % 400 == 0)
       temp_days++;
-  }
+    }
 
   //add in the days of the current year (up to the current month)
   for(int i = Date::JANUARY; i < month; i++) {
     temp_days += Date::day_table[(Date::is_leap_year(year) ? 1 : 0)][i];
-  }
+    }
 
   //add in the days of the current month
   temp_days += (day_of_month - 1);
 
   this->days_since_jan_1_1600 = temp_days;
 
-}
+  }
 
 int Date::get_year(int t) {
 
   if(Date::year_vec != NULL && (this->days_since_jan_1_1600 + t) < (int)Date::year_vec->size()) {
     int * temp = & Date::year_vec->at(this->days_since_jan_1_1600 + t);
     return * temp;
-  } else {
+    }
+  else {
     Date::add_to_vectors(this->days_since_jan_1_1600 + t);
 
     int * temp = & Date::year_vec->at(this->days_since_jan_1_1600 + t);
     return * temp;
-  }
+    }
 
-}
+  }
 
 int Date::get_month(int t) {
 
   if(Date::month_vec != NULL && (this->days_since_jan_1_1600 + t) < (int)Date::month_vec->size()) {
     int * temp = & Date::month_vec->at(this->days_since_jan_1_1600 + t);
     return * temp;
-  } else {
+    }
+  else {
     Date::add_to_vectors(this->days_since_jan_1_1600 + t);
 
     int * temp = & Date::month_vec->at(this->days_since_jan_1_1600 + t);
     return * temp;
+    }
   }
-}
 
 string Date::get_month_string(int t) {
   int temp_month = this->get_month(t);
@@ -243,34 +253,36 @@ string Date::get_month_string(int t) {
       return "Nov";
     case Date::DECEMBER:
       return "Dec";
-  }
+    }
 
   return "INVALID MONTH";
-}
+  }
 
 int Date::get_day_of_month(int t) {
 
   if(Date::day_of_month_vec != NULL && (this->days_since_jan_1_1600 + t) < (int)Date::day_of_month_vec->size()) {
     int * temp = & Date::day_of_month_vec->at(this->days_since_jan_1_1600 + t);
     return * temp;
-  } else {
+    }
+  else {
     Date::add_to_vectors(this->days_since_jan_1_1600 + t);
 
     int * temp = & Date::day_of_month_vec->at(this->days_since_jan_1_1600 + t);
     return * temp;
-  }
+    }
 
-}
+  }
 
 int Date::get_day_of_year(int t) {
 
   if(t >= 0) {
     return Date::get_day_of_year(this->get_year(t), this->get_month(t), this->get_day_of_month(t));
-  } else {
+    }
+  else {
     return Date::get_day_of_year(this->get_year(0), this->get_month(0), this->get_day_of_month(0));
-  }
+    }
 
-}
+  }
 
 int Date::get_day_of_week(int t) {
 
@@ -282,7 +294,7 @@ int Date::get_day_of_week(int t) {
 
   return Date::get_day_of_week(year, month, day_of_month);
 
-}
+  }
 
 string Date::get_day_of_week_string(int t) {
   int temp_day_of_week = this->get_day_of_week(t);
@@ -302,14 +314,14 @@ string Date::get_day_of_week_string(int t) {
       return "Fri";
     case Date::SATURDAY:
       return "Sat";
-  }
+    }
 
   return "INVALID DAY OF WEEK";
-}
+  }
 
 int Date::get_day_of_week() {
   return Date::get_day_of_week(this->get_year(), this->get_month(), this->get_day_of_month());
-}
+  }
 
 /**
  *  For week and week year, we are using the CDC's definition:
@@ -343,13 +355,16 @@ int Date::get_epi_week(int t) {
   if (future_month == Date::DECEMBER && dec_31_day_of_week < Date::WEDNESDAY &&
       future_day_of_month >= (31 - dec_31_day_of_week)) {
     return 1;
-  } else {
+    }
+  else {
 
     int epi_week = (future_day_of_year + jan_1_day_of_week) / 7;
+
     if (((future_day_of_year + jan_1_day_of_week) % 7) > 0) epi_week++;
 
     if (jan_1_day_of_week > Date::WEDNESDAY) {
       epi_week--;
+
       if (epi_week < 1) {
         //Create a new date that represents the last day of the previous year
         Date * tmp_date = new Date(future_year - 1, Date::DECEMBER, 31);
@@ -357,15 +372,15 @@ int Date::get_epi_week(int t) {
         delete tmp_date;
 
         return epi_week;
+        }
       }
-    }
 
     return epi_week;
 
-  }
+    }
 
   return ret_value;
-}
+  }
 
 int Date::get_epi_week_year(int t) {
 
@@ -384,35 +399,38 @@ int Date::get_epi_week_year(int t) {
   if (future_month == Date::DECEMBER && dec_31_day_of_week < 3 &&
       future_day_of_month >= 31 - dec_31_day_of_week) {
     return future_year + 1;
-  } else {
+    }
+  else {
 
     int epi_week = (future_day_of_year + jan_1_day_of_week) / 7;
+
     if (((future_day_of_year + jan_1_day_of_week) % 7) > 0) epi_week++;
 
     if(jan_1_day_of_week > Date::WEDNESDAY) {
       epi_week--;
+
       if(epi_week < 1) {
         return future_year - 1;
+        }
       }
     }
-  }
 
   return future_year;
-}
+  }
 
 Date * Date::clone() {
   return new Date(this->get_year(), this->get_month(), this->get_day_of_month());
-}
+  }
 
 bool Date::equals(Date * check_date) {
   return (this->compare_to(check_date) == 0);
-}
+  }
 
 int Date::compare_to(Date * check_date) {
 
   return (this->days_since_jan_1_1600 - check_date->days_since_jan_1_1600);
 
-}
+  }
 
 string Date::to_string() {
   stringstream oss;
@@ -420,26 +438,28 @@ string Date::to_string() {
   oss << setw(2) << setfill('0') << this->get_month() << "-";
   oss << setw(2) << setfill('0') << get_day_of_month();
   return oss.str();
-}
+  }
 
 //Static Methods
 int Date::days_between(Date * date_1, Date * date_2) {
 
   return abs(date_1->days_since_jan_1_1600 - date_2->days_since_jan_1_1600);
 
-}
+  }
 
 bool Date::is_leap_year(int year) {
 
   if (year%400 == 0)
     return true;
+
   if (year%100 == 0)
     return false;
+
   if (year%4 == 0)
     return true;
 
   return false;
-}
+  }
 
 int Date::get_doomsday_century(int year) {
 
@@ -459,22 +479,22 @@ int Date::get_doomsday_century(int year) {
     case 300:
       r = 3;
       break;
-  }
+    }
 
   return r;
-}
+  }
 
 int Date::get_day_of_year(int year, int month, int day_of_month) {
   int day_of_year = 0;
 
   for (int i = 1; i < month; i++) {
     day_of_year += Date::day_table[(Date::is_leap_year(year) ? 1 : 0)][i];
-  }
+    }
 
   day_of_year += day_of_month;
 
   return day_of_year;
-}
+  }
 
 int Date::get_day_of_week(int year, int month, int day_of_month) {
   int x = 0, y = 0;
@@ -486,12 +506,15 @@ int Date::get_day_of_week(int year, int month, int day_of_month) {
   ddcentury = Date::get_doomsday_century(year);
 
   if (ddcentury < 0) return -1;
+
   if (ddmonth < 0) return -1;
+
   if (ddmonth > day_of_month) {
     weekday = (7 - ((ddmonth - day_of_month) % 7 ) + ddmonth);
-  } else {
+    }
+  else {
     weekday = day_of_month;
-  }
+    }
 
   x = (weekday - ddmonth);
   x %= 7;
@@ -500,7 +523,7 @@ int Date::get_day_of_week(int year, int month, int day_of_month) {
   weekday = (x + y) % 7;
 
   return weekday;
-}
+  }
 
 int Date::parse_month_from_date_string(string date_string, string format_string) {
 
@@ -509,21 +532,25 @@ int Date::parse_month_from_date_string(string date_string, string format_string)
   if (format_string.compare(Date::YYYYMMDD) == 0) {
     size_t pos_1, pos_2;
     pos_1 = date_string.find('-');
+
     if (pos_1 != string::npos) {
       pos_2 = date_string.find('-', pos_1 + 1);
+
       if (pos_2 != string::npos) {
         temp_str = date_string.substr(pos_1 + 1, pos_2 - pos_1 - 1);
         int i;
         istringstream my_stream(temp_str);
+
         if(my_stream >> i)
           return i;
+        }
       }
     }
-  }
   else if (format_string.compare(Date::MMDDYYYY) == 0 ||
-	   format_string.compare(Date::MMDDYY) == 0) {
+           format_string.compare(Date::MMDDYY) == 0) {
     size_t pos;
     pos = date_string.find('/');
+
     if (pos != string::npos) {
       temp_str = date_string.substr(0, pos);
       int i;
@@ -531,15 +558,18 @@ int Date::parse_month_from_date_string(string date_string, string format_string)
 
       if(my_stream >> i)
         return i;
-    }
+      }
 
-  } else if (format_string.compare(Date::DDMMYYYY) == 0 ||
-            format_string.compare(Date::DDMMYY) == 0) {
+    }
+  else if (format_string.compare(Date::DDMMYYYY) == 0 ||
+           format_string.compare(Date::DDMMYY) == 0) {
 
     size_t pos_1, pos_2;
     pos_1 = date_string.find('/');
+
     if (pos_1 != string::npos) {
       pos_2 = date_string.find('/', pos_1 + 1);
+
       if (pos_2 != string::npos) {
         temp_str = date_string.substr(pos_1 + 1, pos_2 - pos_1 - 1);
         int i;
@@ -547,16 +577,17 @@ int Date::parse_month_from_date_string(string date_string, string format_string)
 
         if(my_stream >> i)
           return i;
+        }
       }
-    }
 
-  } else {
+    }
+  else {
     cout << "Help!  Unrecognized date format string [" << format_string << "]" << endl;
     abort();
-  }
+    }
 
   return -1;
-}
+  }
 
 int Date::parse_day_of_month_from_date_string(string date_string, string format_string) {
 
@@ -565,22 +596,25 @@ int Date::parse_day_of_month_from_date_string(string date_string, string format_
   if (format_string.compare(Date::YYYYMMDD) == 0) {
     size_t pos;
     pos = date_string.find('-', date_string.find('-') + 1);
+
     if (pos != string::npos) {
       temp_str = date_string.substr(pos + 1);
       int i;
       istringstream my_stream(temp_str);
+
       if (my_stream >> i)
         return i;
+      }
     }
-  }
   else if (format_string.compare(Date::MMDDYYYY) == 0 ||
-      format_string.compare(Date::MMDDYY) == 0) {
+           format_string.compare(Date::MMDDYY) == 0) {
 
     size_t pos_1, pos_2;
     pos_1 = date_string.find('/');
 
     if (pos_1 != string::npos) {
       pos_2 = date_string.find('/', pos_1 + 1);
+
       if (pos_2 != string::npos) {
         temp_str = date_string.substr(pos_1 + 1, pos_2 - pos_1 - 1);
         int i;
@@ -588,14 +622,16 @@ int Date::parse_day_of_month_from_date_string(string date_string, string format_
 
         if (my_stream >> i)
           return i;
+        }
       }
-    }
 
-  } else if (format_string.compare(Date::DDMMYYYY) == 0 ||
-             format_string.compare(Date::DDMMYY) == 0) {
+    }
+  else if (format_string.compare(Date::DDMMYYYY) == 0 ||
+           format_string.compare(Date::DDMMYY) == 0) {
 
     size_t pos;
     pos = date_string.find('/');
+
     if (pos != string::npos) {
       temp_str = date_string.substr(0, pos);
       int i;
@@ -604,16 +640,17 @@ int Date::parse_day_of_month_from_date_string(string date_string, string format_
 
       if (my_stream >> i)
         return i;
-    }
+      }
 
-  } else {
+    }
+  else {
     cout << "Help!  Unrecognized date format string [" << format_string << "]" << endl;
     abort();
-  }
+    }
 
   return -1;
 
-}
+  }
 
 int Date::parse_year_from_date_string(string date_string, string format_string) {
 
@@ -622,30 +659,36 @@ int Date::parse_year_from_date_string(string date_string, string format_string) 
   if (format_string.compare(Date::YYYYMMDD) == 0) {
     size_t pos;
     pos = date_string.find('-');
+
     if (pos != string::npos) {
       temp_str = date_string.substr(0, pos);
       int i;
       istringstream my_stream(temp_str);
+
       if (my_stream >> i)
         return i;
+      }
     }
-  }
   else if (format_string.compare(Date::MMDDYYYY) == 0 ||
-	   format_string.compare(Date::DDMMYYYY) == 0 ) {
+           format_string.compare(Date::DDMMYYYY) == 0 ) {
     size_t pos;
     pos = date_string.find('/', date_string.find('/') + 1);
+
     if (pos != string::npos) {
       temp_str = date_string.substr(pos + 1);
       int i;
       istringstream my_stream(temp_str);
+
       if (my_stream >> i)
         return i;
+      }
     }
-  } else if (format_string.compare(Date::MMDDYY) == 0 ||
-             format_string.compare(Date::DDMMYY) == 0) {
+  else if (format_string.compare(Date::MMDDYY) == 0 ||
+           format_string.compare(Date::DDMMYY) == 0) {
 
     size_t pos;
     pos = date_string.find('/', date_string.find('/') + 1);
+
     if (pos != string::npos) {
       temp_str = date_string.substr(pos + 1, 2);
       int i;
@@ -657,23 +700,24 @@ int Date::parse_year_from_date_string(string date_string, string format_string) 
         // assumed to be 1900s otherwise, it is 2000s
         i += (i >= 70 ? 1900 : 2000);
         return i;
+        }
       }
-     }
 
-  } else {
+    }
+  else {
     cout << "Help!  Unrecognized date format string [" << format_string << "]" << endl;
     abort();
-  }
+    }
 
   return -1;
-}
+  }
 
 void Date::initialize_vectors() {
 
   Date::add_to_vectors(Date::DEFAULT_MAX_DAYS);
   Date::is_initialized = true;
 
-}
+  }
 
 void Date::add_to_vectors(int days_since_jan_1_1600) {
 
@@ -683,20 +727,21 @@ void Date::add_to_vectors(int days_since_jan_1_1600) {
   if (Date::year_vec == NULL) {
     Date::year_vec = new vector<int>;
     Date::year_vec->reserve(vec_size);
-  }
+    }
 
   if (Date::month_vec == NULL) {
     Date::month_vec = new vector<int>;
     Date::month_vec->reserve(vec_size);
-  }
+    }
 
   if (Date::day_of_month_vec == NULL) {
     Date::day_of_month_vec = new vector<int>;
     Date::day_of_month_vec->reserve(vec_size);
-  }
+    }
 
   //Check to see if the vector is empty
   size_t current_vec_size = Date::day_of_month_vec->size();
+
   if (current_vec_size == 0) {
     int current_year = 1600;
     int current_month = Date::JANUARY;
@@ -709,15 +754,17 @@ void Date::add_to_vectors(int days_since_jan_1_1600) {
       Date::day_of_month_vec->push_back(current_day_of_month);
 
       if (++current_day_of_month >
-        Date::day_table[(Date::is_leap_year(current_year) ? 1 : 0)][current_month]) {
+          Date::day_table[(Date::is_leap_year(current_year) ? 1 : 0)][current_month]) {
         current_day_of_month = 1;
+
         if(++current_month > Date::DECEMBER) {
           current_month = Date::JANUARY;
           current_year++;
+          }
         }
       }
     }
-  } else if (current_vec_size <= (size_t)days_since_jan_1_1600) {
+  else if (current_vec_size <= (size_t)days_since_jan_1_1600) {
 
     int current_year = Date::year_vec->back();
     int current_month = Date::month_vec->back();
@@ -726,63 +773,66 @@ void Date::add_to_vectors(int days_since_jan_1_1600) {
     for (size_t i = 0; i <= ((size_t)days_since_jan_1_1600 - current_vec_size); i++) {
 
       if (++current_day_of_month >
-        Date::day_table[(Date::is_leap_year(current_year) ? 1 : 0)][current_month]) {
+          Date::day_table[(Date::is_leap_year(current_year) ? 1 : 0)][current_month]) {
         current_day_of_month = 1;
+
         if(++current_month > Date::DECEMBER) {
           current_month = Date::JANUARY;
           current_year++;
+          }
         }
-      }
 
       Date::year_vec->push_back(current_year);
       Date::month_vec->push_back(current_month);
       Date::day_of_month_vec->push_back(current_day_of_month);
+      }
     }
-  }
 
-}
+  }
 
 Date::~Date() {
 
-}
+  }
 
 void Date::setup(char * output_directory, int days) {
   // Write the date info to a file
   char filename[256];
   sprintf(filename, "%s/dates.txt", output_directory);
   FILE *fred_date_fp = fopen(filename, "w");
+
   if (fred_date_fp == NULL) {
     printf("Help! Can't open %s\n", filename);
     abort();
-  }
-  
+    }
+
   for (int day = 0; day < days; day++) {
     fprintf(fred_date_fp, "%d\t%s\t%d-%02d-%02d\t%d Week %d\n",
-	    day,
-	    this->get_day_of_week_string(day).c_str(),
-	    this->get_year(day),
-	    this->get_month(day),
-	    this->get_day_of_month(day),
-	    this->get_epi_week_year(day),
-	    this->get_epi_week(day));
-  }
+            day,
+            this->get_day_of_week_string(day).c_str(),
+            this->get_year(day),
+            this->get_month(day),
+            this->get_day_of_month(day),
+            this->get_epi_week_year(day),
+            this->get_epi_week(day));
+    }
+
   fclose(fred_date_fp);
-}
+  }
 
 char * Date::get_YYYYMMDD(int day) {
   sprintf(date_string, "%04d-%02d-%02d", get_year(day), get_month(day), get_day_of_month(day));
   return date_string;
-}
+  }
 
 char * Date::get_YYYYMM(int day) {
   sprintf(date_string, "%04d-%02d", get_year(day), get_month(day));
   return date_string;
-}
+  }
 
 char * Date::get_MMDD(int day) {
   sprintf(date_string, "%02d-%02d", get_month(day), get_day_of_month(day));
   return date_string;
-}
+  }
 
 
 bool Date::day_is_between_MMDD(char * current, char * start, char * end) {
@@ -790,11 +840,14 @@ bool Date::day_is_between_MMDD(char * current, char * start, char * end) {
   sscanf(current, "%d-%d", &current_mon, &current_day);
   sscanf(start, "%d-%d", &start_mon, &start_day);
   sscanf(end, "%d-%d", &end_mon, &end_day);
+
   if (current_mon < start_mon ||
       (current_mon == start_mon && current_day < start_day))
     return false;
+
   if (end_mon < current_mon ||
       (current_mon == end_mon && end_day < current_day))
     return false;
+
   return true;
-}
+  }

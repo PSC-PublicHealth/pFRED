@@ -58,6 +58,9 @@ extern double Prob_accept_vaccine_dose;
 extern int Enable_Aging;
 extern int Enable_Births;
 extern int Enable_Deaths;
+extern int StrainEvolution;
+extern char Prevfilebase[256];
+extern char Incfilebase[256];
 extern int Track_infection_events;
 
 // global file pointers
@@ -66,6 +69,8 @@ extern FILE *Outfp;
 extern FILE *Tracefp;
 extern FILE *Infectionfp;
 extern FILE *VaccineTracefp;
+extern FILE *Prevfp;
+extern FILE *Incfp;
 extern FILE *Birthfp;
 extern FILE *Deathfp;
 
@@ -81,6 +86,9 @@ extern Grid Environment;
 
 class Date;
 extern Date * Sim_Date;
+
+class Evolution;
+extern Evolution *Evol;
 
 void get_global_parameters();
 

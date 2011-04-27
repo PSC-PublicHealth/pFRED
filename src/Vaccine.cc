@@ -18,29 +18,29 @@ using namespace std;
 #include "Vaccine.h"
 #include "Vaccine_Dose.h"
 
-Vaccine::Vaccine(string _name, int _id, int _disease, 
-                 int _total_avail, int _additional_per_day, int _start_day){
+Vaccine::Vaccine(string _name, int _id, int _disease,
+                 int _total_avail, int _additional_per_day, int _start_day) {
   name =               _name;
   id =                 _id;
   disease =             _disease;
   additional_per_day = _additional_per_day;
   start_day =          _start_day;
-  
+
   initial_stock = 0;
   stock = 0;
   reserve = _total_avail;
   total_avail = _total_avail;
   number_delivered = 0;
   number_effective = 0;
-}
+  }
 
-Vaccine::~Vaccine(){ 
+Vaccine::~Vaccine() {
   for(unsigned int i = 0; i < doses.size(); i++) delete doses[i];
-}
+  }
 
 void Vaccine::add_dose(Vaccine_Dose* _vaccine_dose) {
   doses.push_back(_vaccine_dose);
-}
+  }
 
 void Vaccine::print() const {
   cout << "Name = \t\t\t\t" <<name << "\n";
@@ -51,17 +51,18 @@ void Vaccine::print() const {
   cout << "Additional Stock per day =\t" << additional_per_day << "\n";
   cout << "Starting on day = \t\t" << start_day << "\n";
   cout << "Dose Information\n";
-  for(unsigned int i=0;i<doses.size();i++){
+
+  for(unsigned int i=0; i<doses.size(); i++) {
     cout <<"Dose #"<<i+1 << "\n";
     doses[i]->print();
+    }
   }
-}
 
 void Vaccine::reset() {
   stock = 0;
   reserve = total_avail;
-}
+  }
 
 void Vaccine::update(int day) {
   if(day >= start_day) add_stock(additional_per_day);
-}
+  }
