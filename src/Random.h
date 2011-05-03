@@ -35,20 +35,19 @@ int draw_from_distribution(int n, double *dist);
 double draw_standard_normal();
 double draw_normal(double mu, double sigma);
 
-template <typename T>
-void FYShuffle( vector <T> &array) {
+template <typename T> 
+void FYShuffle( vector <T> &array){
   int m,randIndx;
   T tmp;
   unsigned int n = array.size();
   m=n;
-
-  while (m > 0) {
+  while (m > 0){
     randIndx = (int)(RANDOM()*n);
     m--;
     tmp = array[m];
     array[m] = array[randIndx];
     array[randIndx] = tmp;
-    }
   }
+}
 
 #endif // _FRED_RANDOM_H

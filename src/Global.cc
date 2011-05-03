@@ -42,11 +42,11 @@ FILE *Statusfp;
 FILE *Outfp;
 FILE *Tracefp;
 FILE *VaccineTracefp;
-FILE *Prevfp;
-FILE *Incfp;
 FILE *Infectionfp;
 FILE *Birthfp;
 FILE *Deathfp;
+FILE *Prevfp;
+FILE *Incfp;
 
 void get_global_parameters() {
   get_param((char *) "verbose", &Verbose);
@@ -76,4 +76,4 @@ void get_global_parameters() {
   get_param((char *) "enable_deaths",&Enable_Deaths);
   get_param((char *) "prevalencefile", Prevfilebase);
   get_param((char *) "incidencefile", Incfilebase);
-  }
+}

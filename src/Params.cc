@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -28,386 +28,319 @@ int read_parameters(char *paramfile) {
   FILE *fp;
   char name[MAX_PARAM_SIZE];
   Params = 0;
-
+  
   fp = fopen("params.def", "r");
-
   if (fp != NULL) {
     while (fscanf(fp, "%s", name) == 1) {
       if (name[0] == '#') {
         int ch = 1;
-
         while (ch != '\n')
           ch = fgetc(fp);
-
         continue;
-        }
-      else {
+      } else {
         if (fscanf(fp, " = %[^\n]", Param_value[Params]) == 1) {
-
+          
           //Remove end of line comments if they are there
           string temp_str(Param_value[Params]);
           size_t pos;
           string whitespaces(" \t\f\v\n\r");
-
+          
           pos = temp_str.find("#");
-
           if (pos != string::npos)
             temp_str = temp_str.substr(0, pos);
-
+          
           //trim trailing whitespace
           pos = temp_str.find_last_not_of(whitespaces);
-
           if (pos != string::npos) {
             if(pos != (temp_str.length() - 1))
               temp_str.erase(pos + 1);
-            }
+          }
           else
             temp_str.clear(); //str is all whitespace
-
+          
           strcpy(Param_value[Params], temp_str.c_str());
-
+          
           strcpy(Param_name[Params], name);
-
           if (Debug > 2) {
             printf("READ_PARAMS: %s = %s\n", Param_name[Params],
                    Param_value[Params]);
-            }
-
+          }
           Params++;
-          }
-        else {
+        } else {
           printf(
-            "Help! Bad format in params.def file on line starting with %s\n",
-            name);
+                 "Help! Bad format in params.def file on line starting with %s\n",
+                 name);
           abort();
-          }
         }
       }
     }
-  else {
+  } else {
     printf("Help!  Can't read paramfile %s\n", "params.def");
     abort();
-    }
-
+  }
   fclose(fp);
-
+  
   fp = fopen(paramfile, "r");
-
   if (fp != NULL) {
     while (fscanf(fp, "%s", name) == 1) {
       if (name[0] == '#') {
         int ch = 1;
-
         while (ch != '\n')
           ch = fgetc(fp);
-
         continue;
-        }
-      else {
+      } else {
         if (fscanf(fp, " = %[^\n]", Param_value[Params]) == 1) {
-
+          
           //Remove end of line comments if they are there
           string temp_str(Param_value[Params]);
           size_t pos;
           string whitespaces(" \t\f\v\n\r");
-
+          
           pos = temp_str.find("#");
-
           if (pos != string::npos)
             temp_str = temp_str.substr(0, pos);
-
+          
           //trim trailing whitespace
           pos = temp_str.find_last_not_of(whitespaces);
-
           if (pos != string::npos) {
             if(pos != (temp_str.length() - 1))
               temp_str.erase(pos + 1);
-            }
+          }
           else
             temp_str.clear(); //str is all whitespace
-
+          
           strcpy(Param_value[Params], temp_str.c_str());
-
+          
           strcpy(Param_name[Params], name);
-
           if (Debug > 2) {
             printf("READ_PARAMS: %s = %s\n", Param_name[Params],
                    Param_value[Params]);
-            }
-
-          Params++;
           }
-        else {
+          Params++;
+        } else {
           printf("Help! Bad format in file %s on line starting with %s\n",
                  paramfile, name);
           abort();
-          }
         }
       }
     }
-  else {
+  } else {
     printf("Help!  Can't read paramfile %s\n", paramfile);
     abort();
-    }
-
+  }
   fclose(fp);
-
+  
   if (Debug > 1) {
     for (int i = 0; i < Params; i++) {
       printf("READ_PARAMS: %s = %s\n", Param_name[i], Param_value[i]);
-      }
     }
-
-  return Params;
   }
+  
+  return Params;
+}
 
 int get_param(char *s, int *p) {
   int found = 0;
-
   for (int i = 0; i < Params; i++) {
     if (strcmp(Param_name[i], s) == 0) {
       if (sscanf(Param_value[i], "%d", p)) {
         found = 1;
-        }
       }
     }
-
+  }
   if (found) {
     if (Debug > 0) {
       printf("PARAMS: %s = %d\n", s, *p);
       fflush( stdout);
-      }
-
-    return 1;
     }
-  else {
+    return 1;
+  } else {
     if (Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
-      }
-
-    abort();
     }
-
-  return 0;
+    abort();
   }
+  return 0;
+}
 
 int get_param(char *s, unsigned long *p) {
   int found = 0;
-
   for (int i = 0; i < Params; i++) {
     if (strcmp(Param_name[i], s) == 0) {
       if (sscanf(Param_value[i], "%lu", p)) {
         found = 1;
-        }
       }
     }
-
+  }
   if (found) {
     if (Debug > 0) {
       printf("PARAMS: %s = %lu\n", s, *p);
       fflush( stdout);
-      }
-
-    return 1;
     }
-  else {
+    return 1;
+  } else {
     if (Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
-      }
-
-    abort();
     }
-
-  return 0;
+    abort();
   }
+  return 0;
+}
 
 int get_param(char *s, double *p) {
   int found = 0;
-
   for (int i = 0; i < Params; i++) {
     if (strcmp(Param_name[i], s) == 0) {
       if (sscanf(Param_value[i], "%lf", p)) {
         found = 1;
-        }
       }
     }
-
+  }
   if (found) {
     if (Debug > 0) {
       printf("PARAMS: %s = %f\n", s, *p);
       fflush( stdout);
-      }
-
-    return 1;
     }
-  else {
+    return 1;
+  } else {
     if (Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
-      }
-
-    abort();
     }
-
-  return 0;
+    abort();
   }
+  return 0;
+}
 
 int get_param(char *s, float *p) {
   int found = 0;
-
   for (int i = 0; i < Params; i++) {
     if (strcmp(Param_name[i], s) == 0) {
       if (sscanf(Param_value[i], "%f", p)) {
         found = 1;
-        }
       }
     }
-
+  }
   if (found) {
     if (Debug > 0) {
       printf("PARAMS: %s = %f\n", s, *p);
       fflush( stdout);
-      }
-
-    return 1;
     }
-  else {
+    return 1;
+  } else {
     if (Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
-      }
-
-    abort();
     }
-
-  return 0;
+    abort();
   }
+  return 0;
+}
 
-int get_param(char *s, string &p) {
+int get_param(char *s, string &p){
   int found = 0;
-
   for (int i = 0; i < Params; i++) {
     if (strcmp(Param_name[i], s) == 0) {
       stringstream ss;
       ss << Param_value[i];
-
-      if(ss.str().size() > 0) {
+      if(ss.str().size() > 0){
         p = ss.str();
         found = 1;
-        }
       }
     }
-
+  }
   if (found) {
     if (Debug > 0) {
       printf("PARAMS: %s = %s\n", s, p.c_str());
       fflush( stdout);
-      }
-
-    return 1;
     }
-  else {
+    return 1;
+  } else {
     if (Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
-      }
-
-    abort();
     }
-
-  return 0;
+    abort();
   }
+  return 0;
+}
 
 int get_param(char *s, char *p) {
   int found = 0;
-
   for (int i = 0; i < Params; i++) {
     if (strcmp(Param_name[i], s) == 0) {
       if (strcpy(p, Param_value[i])) {
         found = 1;
-        }
       }
     }
-
+  }
   if (found) {
     if (Debug > 0) {
       printf("PARAMS: %s = %s\n", s, p);
       fflush( stdout);
-      }
-
-    return 1;
     }
-  else {
+    return 1;
+  } else {
     if (Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
-      }
-
-    abort();
     }
-
-  return 0;
+    abort();
   }
+  return 0;
+}
 
-int get_param_vector(char *s, vector < int > &p) {
+int get_param_vector(char *s, vector < int > &p){
   char str[1024];
   int n;
   char *pch;
   int v;
   get_param(s,str);
   pch = strtok(str," ");
-
-  if(sscanf(pch,"%d",&n) == 1) {
-    for (int i=0; i<n; i++) {
+  if(sscanf(pch,"%d",&n) == 1){
+    for (int i=0;i<n;i++){
       pch = strtok(NULL," ");
-
       if(pch == NULL) {
         printf("Help! bad param vector: %s\n", s);
         abort();
-        }
-
+      }
       sscanf(pch,"%d",&v);
       p.push_back(v);
-      }
     }
+  }
   else {
     printf("Incorrect format for vector %s\n",s);
     abort();
-    }
-
-  return n;
   }
+  return n;
+}
 
-int get_param_vector(char *s, vector < double > &p) {
+int get_param_vector(char *s, vector < double > &p){
   char str[1024];
   int n;
   char *pch;
   double v;
   get_param(s, str);
   pch = strtok(str," ");
-
   if (sscanf(pch, "%d", &n) == 1) {
     for (int i = 0; i < n; i++) {
       pch = strtok (NULL, " ");
-
       if (pch == NULL) {
         printf("Help! bad param vector: %s\n", s);
         abort();
-        }
-
+      }
       sscanf(pch, "%lf", &v);
       p.push_back(v);
-      }
     }
+  }
   else {
     printf("Incorrect format for vector %s\n",s);
     abort();
-    }
-
-  return n;
   }
+  return n;
+}
 
 int get_param_vector(char *s, double *p) {
   char str[1024];
@@ -415,62 +348,51 @@ int get_param_vector(char *s, double *p) {
   char *pch;
   get_param(s, str);
   pch = strtok(str, " ");
-
   if (sscanf(pch, "%d", &n) == 1) {
     for (int i = 0; i < n; i++) {
       pch = strtok(NULL, " ");
-
       if (pch == NULL) {
         printf("Help! bad param vector: %s\n", s);
         abort();
-        }
-
-      sscanf(pch, "%lf", &p[i]);
       }
+      sscanf(pch, "%lf", &p[i]);
     }
-  else {
+  } else {
     abort();
-    }
-
-  return n;
   }
+  return n;
+}
 
 int get_param_matrix(char *s, double ***p) {
   int n = 0;
   get_param((char *) s, &n);
-
   if (n) {
     double *tmp;
     tmp = new double[n];
     get_param_vector((char *) s, tmp);
     int temp_n = (int) sqrt((double) n);
-
     if (n != temp_n * temp_n) {
       printf("Improper matrix dimensions: matricies must be square,"
              " found dimension %i\n", n);
       abort();
-      }
-
+    }
     n = temp_n;
     (*p) = new double *[n];
-
     for (int i = 0; i < n; i++)
       (*p)[i] = new double[n];
-
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
         (*p)[i][j] = tmp[i * n + j];
-        }
       }
-
+    }
     delete[] tmp;
     return n;
-    }
-
-  return -1;
   }
+  return -1;
+}
+
 /*
-int get_param_map(char *s, map<char *, double> *p) {
+  int get_param_map(char *s, map<char *, double> *p) {
   char str[1024];
   int n = 0;
   char *pch;
@@ -478,30 +400,30 @@ int get_param_map(char *s, map<char *, double> *p) {
   pch = strtok(str, " ");
 
   if (sscanf(pch, "%d", &n) == 1) {
-    for (int i = 0; i < n; i++) {
-      pch = strtok(NULL, " ");
-      if (pch == NULL) {
-        printf("Help! bad param vector: %s\n", s);
-        abort();
-      }
+  for (int i = 0; i < n; i++) {
+  pch = strtok(NULL, " ");
+  if (pch == NULL) {
+  printf("Help! bad param vector: %s\n", s);
+  abort();
+  }
 
-      char *key, *valStr; double val;
-      key = strtok(pch, ":");
-      valStr = strtok(NULL, ":");
+  char *key, *valStr; double val;
+  key = strtok(pch, ":");
+  valStr = strtok(NULL, ":");
 
-      if (valStr == NULL) {
-        printf("Help! bad param vector: %s\n", s);
-        abort();
-      }
-      sscanf(valStr, "%lf", &val);
+  if (valStr == NULL) {
+  printf("Help! bad param vector: %s\n", s);
+  abort();
+  }
+  sscanf(valStr, "%lf", &val);
 
-      p->insert( pair<char *, double> (key, val) );
-    }
+  p->insert( pair<char *, double> (key, val) );
+  }
   } else {
-    abort();
+  abort();
   }
   return n;
-}
+  }
 */
 
 int get_param_map(char *s, map<string, double> *p) {
@@ -521,46 +443,37 @@ int get_param_map(char *s, map<string, double> *p) {
       double valDouble = atof(val.c_str());
       //p->insert( pair<string, double> ( (char *)key.c_str(), val1) );
       (*p)[key] = valDouble;
-      }
+    }
     else {
       printf("Help! bad param vector: %s\n", s);
       abort();
-      }
     }
+  }
 
   return err; // TODO: <<< is this correct?
-  }
+}
 
 int get_double_indexed_param_map(string s, int index_i, int index_j, map<string, double> *p) {
   char st[80];
   sprintf(st, "%s[%d][%d]",s.c_str(),index_i,index_j);
   int err = get_param_map(st,p);
   return err;
-  }
+}
 
 bool does_param_exist(char *s) {
-
+  
   bool found = false;
-
   for (int i = 0; i < Params && !found; i++) {
     if (strcmp(Param_name[i], s) == 0) {
       found = true;
-      }
     }
-
-  return found;
   }
+  
+  return found;
+}
 
 bool does_param_exist(string s) {
   char st[80];
   sprintf(st,"%s",s.c_str());
   return does_param_exist(st);
-  }
-
-int get_indexed_param_map(string s, int index, map<string, double> *p) {
-  char st[80];
-  sprintf(st, "%s[%d]",s.c_str(),index);
-  int err = get_param_map(st,p);
-  return err;
-  }
-
+}

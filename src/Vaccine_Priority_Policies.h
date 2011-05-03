@@ -26,27 +26,27 @@ class Manager;
 using namespace std;
 
 class Vaccine_Priority_Policy_No_Priority: public Policy {
-    Vaccine_Manager *vacc_manager;
-
-  public:
-    Vaccine_Priority_Policy_No_Priority() { }
-    Vaccine_Priority_Policy_No_Priority(Vaccine_Manager* vcm);
-  };
+  Vaccine_Manager *vacc_manager;
+  
+public:
+  Vaccine_Priority_Policy_No_Priority() { }
+  Vaccine_Priority_Policy_No_Priority(Vaccine_Manager* vcm);
+};
 
 class Vaccine_Priority_Policy_Specific_Age:public Policy {
-    Vaccine_Manager *vacc_manager;
-
-  public:
-    Vaccine_Priority_Policy_Specific_Age();
-    Vaccine_Priority_Policy_Specific_Age(Vaccine_Manager* vcm);
-  };
+  Vaccine_Manager *vacc_manager;
+  
+public:
+  Vaccine_Priority_Policy_Specific_Age();
+  Vaccine_Priority_Policy_Specific_Age(Vaccine_Manager* vcm);
+};  
 
 class Vaccine_Priority_Policy_ACIP:public Policy {
-    Vaccine_Manager *vacc_manager;
-
-  public:
-    Vaccine_Priority_Policy_ACIP();
-    Vaccine_Priority_Policy_ACIP(Vaccine_Manager* vcm);
-  };
+  Vaccine_Manager *vacc_manager;
+  
+ public: 
+  Vaccine_Priority_Policy_ACIP();
+  Vaccine_Priority_Policy_ACIP(Vaccine_Manager* vcm);
+};
 
 #endif

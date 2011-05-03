@@ -55,12 +55,12 @@ extern int Quality_control;
 extern int Diseases;
 extern double Prob_accept_vaccine;
 extern double Prob_accept_vaccine_dose;
+extern int StrainEvolution;
+extern char Prevfilebase[];
+extern char Incfilebase[];
 extern int Enable_Aging;
 extern int Enable_Births;
 extern int Enable_Deaths;
-extern int StrainEvolution;
-extern char Prevfilebase[256];
-extern char Incfilebase[256];
 extern int Track_infection_events;
 
 // global file pointers
@@ -69,10 +69,10 @@ extern FILE *Outfp;
 extern FILE *Tracefp;
 extern FILE *Infectionfp;
 extern FILE *VaccineTracefp;
-extern FILE *Prevfp;
-extern FILE *Incfp;
 extern FILE *Birthfp;
 extern FILE *Deathfp;
+extern FILE *Prevfp;
+extern FILE *Incfp;
 
 // global singleton objects
 class Population;

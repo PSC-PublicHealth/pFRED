@@ -25,31 +25,29 @@ class Person;
 
 using namespace std;
 
-class Policy {
-
-  public:
-    Policy();
-    ~Policy();
-
-    Policy(Manager* mgr);
-
-    virtual int choose(Person* person, int disease, int current_day);
-    virtual bool choose_first_positive(Person* person, int disease, int current_day);
-    virtual bool choose_first_negative(Person* person, int disease, int current_day);
-    // decision will return -1 if the decision is no
-    // or the integer result of the policies in the decision
-
-    Manager* get_manager() const {
-      return manager;
-      }
-    void print() const;
-    void reset();
-
-  protected:
-    vector < Decision * > decision_list;
-    string Name;
-    Manager* manager;
-
-  };
+class Policy{
+  
+public:
+  Policy();
+  ~Policy();
+  
+  Policy(Manager* mgr);
+  
+  virtual int choose(Person* person, int disease, int current_day);
+  virtual bool choose_first_positive(Person* person, int disease, int current_day);
+  virtual bool choose_first_negative(Person* person, int disease, int current_day);
+  // decision will return -1 if the decision is no
+  // or the integer result of the policies in the decision   
+  
+  Manager* get_manager() const { return manager; }
+  void print() const;
+  void reset();
+  
+protected:
+  vector < Decision * > decision_list;
+  string Name;
+  Manager* manager;
+  
+};
 
 #endif

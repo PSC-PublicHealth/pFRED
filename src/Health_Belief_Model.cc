@@ -45,57 +45,49 @@ Health_Belief_Model::Health_Belief_Model(Person *p) {
   get_parameters();
 
   perceived_susceptibility = new (nothrow) int [diseases];
-
   if (perceived_susceptibility == NULL) {
     printf("Help! sus allocation failure\n");
     abort();
-    }
-
+  }
+  
   perceived_severity = new (nothrow) int [diseases];
-
   if (perceived_severity == NULL) {
     printf("Help! sev allocation failure\n");
     abort();
-    }
-
+  }
+  
   perceived_benefits_accept_vaccine = new (nothrow) double [diseases];
-
   if (perceived_benefits_accept_vaccine == NULL) {
     printf("Help! benefits allocation failure\n");
     abort();
-    }
-
+  }
+  
   perceived_barriers_accept_vaccine = new (nothrow) double [diseases];
-
   if (perceived_barriers_accept_vaccine == NULL) {
     printf("Help! barrier allocation failure\n");
     abort();
-    }
+  }
 
   cumm_susceptibility = new (nothrow) double [diseases];
-
   if (cumm_susceptibility == NULL) {
     printf("Help! cumm_susceptibility allocation failure\n");
     abort();
-    }
+  }
 
   cumm_severity = new (nothrow) double [diseases];
-
   if (cumm_severity == NULL) {
     printf("Help! cumm_severity allocation failure\n");
     abort();
-    }
+  }
 
   accept_vaccine = new (nothrow) bool [diseases];
-
   if (accept_vaccine == NULL) {
     printf("Help! accept_vaccine allocation failure\n");
     abort();
-    }
+  }
 
   // individual differences:
   memory_decay = draw_normal(memory_decay_distr[0],memory_decay_distr[1]);
-
   if (memory_decay < 0.001) memory_decay = 0.0001;
 
   susceptibility_threshold = draw_normal(susceptibility_threshold_distr[0],susceptibility_threshold_distr[1]);
@@ -107,15 +99,14 @@ Health_Belief_Model::Health_Belief_Model(Person *p) {
   if (self->get_id() == 0) {
     memory_decay = memory_decay_distr[0] + memory_decay_distr[1];
     susceptibility_threshold = susceptibility_threshold_distr[0] + susceptibility_threshold_distr[1];
-    }
-
+  }
   if (self->get_id() == 1) {
     memory_decay = memory_decay_distr[0] - memory_decay_distr[1];
     susceptibility_threshold = susceptibility_threshold_distr[0] - susceptibility_threshold_distr[1];
-    }
-
-
   }
+
+
+}
 
 void Health_Belief_Model::get_parameters() {
   double coeff[5];
@@ -124,47 +115,22 @@ void Health_Belief_Model::get_parameters() {
   if (HBM_parameters_set) return;
 
   n = get_param_vector((char *) "HBM_memory_decay", memory_decay_distr);
-
-  if (n != 2) {
-    printf("bad HBM_memory_decay\n");
-    abort();
-    }
-
+  if (n != 2) { printf("bad HBM_memory_decay\n"); abort(); }
+  
   n = get_param_vector((char *) "HBM_susceptibility_threshold", susceptibility_threshold_distr);
-
-  if (n != 2) {
-    printf("bad HBM_susceptibility_threshold\n");
-    abort();
-    }
-
+  if (n != 2) { printf("bad HBM_susceptibility_threshold\n"); abort(); }
+  
   n = get_param_vector((char *) "HBM_severity_threshold", severity_threshold_distr);
-
-  if (n != 2) {
-    printf("bad HBM_severity_threshold\n");
-    abort();
-    }
-
+  if (n != 2) { printf("bad HBM_severity_threshold\n"); abort(); }
+  
   n = get_param_vector((char *) "HBM_benefits_threshold", benefits_threshold_distr);
-
-  if (n != 2) {
-    printf("bad HBM_benefits_threshold\n");
-    abort();
-    }
-
+  if (n != 2) { printf("bad HBM_benefits_threshold\n"); abort(); }
+  
   n = get_param_vector((char *) "HBM_barriers_threshold", barriers_threshold_distr);
-
-  if (n != 2) {
-    printf("bad HBM_barriers_threshold\n");
-    abort();
-    }
-
+  if (n != 2) { printf("bad HBM_barriers_threshold\n"); abort(); }
+  
   n = get_param_vector((char *) "HBM_accept_vaccine", coeff);
-
-  if (n != 5) {
-    printf("bad HBM_accept_vaccine");
-    abort();
-    }
-
+  if (n != 5) { printf("bad HBM_accept_vaccine"); abort(); }
   base_accept_vaccine = coeff[0];
   susceptibility_accept_vaccine = coeff[1];
   severity_accept_vaccine = coeff[2];
@@ -172,31 +138,27 @@ void Health_Belief_Model::get_parameters() {
   barriers_accept_vaccine = coeff[4];
 
   HBM_parameters_set = 1;
-  }
+}
 
 void Health_Belief_Model::reset() {
   int diseases = self->get_population()->get_diseases();
-
   for (int s = 0; s < diseases; s++) {
     cumm_susceptibility[s] = 0.0;
     cumm_severity[s] = 0.0;
     accept_vaccine[s] = false;
-    }
-
+  }
   total_deaths = 0;
   pop_cumm_susceptibility = 0.0;
   pop_susceptibility = 0.0;
-
   if (self->get_id() == 0) {
     FILE *fp;
     fp = fopen("HBM_trace", "w");
     fclose(fp);
-    }
   }
+}
 
 void Health_Belief_Model::update(int day) {
   int diseases = self->get_population()->get_diseases();
-
   for (int s = 0; s < diseases; s++) {
 
     // perceptions of current state of epidemic
@@ -205,35 +167,33 @@ void Health_Belief_Model::update(int day) {
     double current_deaths = self->get_population()->get_disease(s)->get_mortality_rate()*total_cases;
     double current_incidence = (double) current_cases / (double) self->get_population()->get_pop_size();
     total_deaths += current_deaths;
-
+    
     // update memory
     if (day < 0) {
       cumm_susceptibility[s] = day*cumm_susceptibility[s] + current_incidence;
       cumm_susceptibility[s] /= day;
-      }
+    }
     else {
       cumm_susceptibility[s] = (1.0 - memory_decay) * cumm_susceptibility[s] + memory_decay * current_incidence;
-      }
+    }
 
     cumm_severity[s] = (1.0 - memory_decay) * cumm_severity[s] + memory_decay * current_deaths;
 
     // update HBM constructs
-
+    
     // perceived susceptibility
     if (susceptibility_threshold <= cumm_susceptibility[s])
       perceived_susceptibility[s] = 1;
     else
       perceived_susceptibility[s] = 0;
-
+    
     // perceived severity
     if (total_cases > 0 && severity_threshold <= total_deaths/total_cases)
       perceived_severity[s] = 1;
     else
       perceived_severity[s] = 0;
-
     accept_vaccine[s] = decide_whether_to_accept_vaccine(s);
-    }
-
+  }
   if (self->get_id() == 0 && day > 0) {
     FILE *fp;
     int n = self->get_population()->get_pop_size();
@@ -243,8 +203,7 @@ void Health_Belief_Model::update(int day) {
     fclose(fp);
     pop_cumm_susceptibility = 0.0;
     pop_susceptibility = 0.0;
-    }
-
+  }
   if (self->get_id() == 1 && day > 0) {
     FILE *fp;
     // (following variable 'n' not used)
@@ -252,28 +211,22 @@ void Health_Belief_Model::update(int day) {
     fp = fopen("HBM_trace", "a");
     fprintf(fp, "%f %d\n", cumm_susceptibility[0], accept_vaccine[0]);
     fclose(fp);
-    }
-
+  }
   pop_cumm_susceptibility += cumm_susceptibility[0];
   pop_susceptibility += perceived_susceptibility[0];
-  }
+}
 
 bool Health_Belief_Model::decide_whether_to_accept_vaccine(int s) {
   double Odds;
   Odds = base_accept_vaccine;
-
   if (perceived_susceptibility[s] == 1)
     Odds *= susceptibility_accept_vaccine;
-
   if (perceived_severity[s] == 1)
     Odds *= severity_accept_vaccine;
-
   if (perceived_benefits_accept_vaccine[s] == 1)
     Odds *= benefits_accept_vaccine;
-
   if (perceived_barriers_accept_vaccine[s] == 1)
     Odds *= barriers_accept_vaccine;
-
   return (Odds > 1.0);
-  }
+}
 

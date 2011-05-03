@@ -27,69 +27,58 @@ int Classroom_parameters_set = 0;
 
 
 Classroom::Classroom(int loc, const char *lab, double lon,
-                     double lat, Place *container, Population *pop) {
+		     double lat, Place *container, Population *pop) {
   type = CLASSROOM;
   setup(loc, lab, lon, lat, container, pop);
   get_parameters(population->get_diseases());
   age_level = -1;
-  }
+}
 
 
 void Classroom::get_parameters(int diseases) {
   char param_str[80];
-
+  
   if (Classroom_parameters_set) return;
-
+  
   Classroom_contacts_per_day = new double [ diseases ];
   Classroom_contact_prob = new double** [ diseases ];
-
+  
   for (int s = 0; s < diseases; s++) {
     int n;
     sprintf(param_str, "classroom_contacts[%d]", s);
     get_param((char *) param_str, &Classroom_contacts_per_day[s]);
-
+    
     sprintf(param_str, "classroom_prob[%d]", s);
     n = get_param_matrix(param_str, &Classroom_contact_prob[s]);
-
     if (Verbose > 1) {
       printf("\nClassroom_contact_prob:\n");
-
       for (int i  = 0; i < n; i++)  {
         for (int j  = 0; j < n; j++) {
           printf("%f ", Classroom_contact_prob[s][i][j]);
-          }
-
-        printf("\n");
         }
+        printf("\n");
       }
     }
-
-  Classroom_parameters_set = 1;
   }
+  
+  Classroom_parameters_set = 1;
+}
 
 void Classroom::enroll(Person * per) {
   N++;
   int age = per->get_age();
-
   if (age_level == -1 && age < ADULT_AGE) {
     age_level = age;
-    }
   }
+}
 
 int Classroom::get_group(int disease, Person * per) {
   int age = per->get_age();
-
-  if (age < 12) {
-    return 0;
-    }
-  else if (age < 16) {
-    return 1;
-    }
-  else if (age < ADULT_AGE) {
-    return 2;
-    }
+  if (age < 12) { return 0; }
+  else if (age < 16) { return 1; }
+  else if (age < ADULT_AGE) { return 2; }
   else return 3;
-  }
+}
 
 double Classroom::get_transmission_prob(int disease, Person * i, Person * s) {
   // i = infected agent
@@ -98,13 +87,13 @@ double Classroom::get_transmission_prob(int disease, Person * i, Person * s) {
   int col = get_group(disease, s);
   double tr_pr = Classroom_contact_prob[disease][row][col];
   return tr_pr;
-  }
+}
 
 bool Classroom::should_be_open(int day, int disease) {
-  return container->should_be_open(day, disease);
-  }
+	return container->should_be_open(day, disease);
+}
 
 double Classroom::get_contacts_per_day(int disease) {
   return Classroom_contacts_per_day[disease];
-  }
+}
 

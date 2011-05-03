@@ -19,47 +19,45 @@
 using namespace std;
 
 class Timestep_Map {
-    // The Day Map class is an input structure to hold a list of values
-    // that are indexed by timesteps, this is used for values that
-    // need to be changed on certain timesteps throughout the simulation
-    // Based on David Galloway's initial seeding.
+  // The Day Map class is an input structure to hold a list of values
+  // that are indexed by timesteps, this is used for values that 
+  // need to be changed on certain timesteps throughout the simulation
+  // Based on David Galloway's initial seeding.
+  
+  // A Timestep_Map is to be specified in a seperate file
+  // If a Timestep_Map is specified with [] on the end, it is assumed to
+  // be disease specific 
+  
+  // This structure is designed so that if there is a specification in the 
+  // input that specifies "none" as the keyword, the structure is empty.
+  
+  // The input keyword will be the name of the structure_file.  So if the
+  // name of the Map is passed as "primary_cases", the param keyword will
+  // be "primary_cases_file".
 
-    // A Timestep_Map is to be specified in a seperate file
-    // If a Timestep_Map is specified with [] on the end, it is assumed to
-    // be disease specific
-
-    // This structure is designed so that if there is a specification in the
-    // input that specifies "none" as the keyword, the structure is empty.
-
-    // The input keyword will be the name of the structure_file.  So if the
-    // name of the Map is passed as "primary_cases", the param keyword will
-    // be "primary_cases_file".
-
-    // The format of the file is as such
-    // 0 100
-    // 1 0
-    //   Should be interpreted as 100 on timestep 0, 0 on timestep 1 and beyond
-    //
-    // 0 100
-    // 100 0
-    //   Should be interpreted as 100 for timestep 0 - 99, and 0 on timestep 100 and above
-    // Updated: Shawn Brown
-
-  public:
-    Timestep_Map();
-    Timestep_Map(string _name);
-    ~Timestep_Map();
-
-    // Utility Members
-    UNIT_TEST_VIRTUAL int get_value_for_timestep(int ts, int offset); // returns the value for the given timestep
-    UNIT_TEST_VIRTUAL bool is_empty() const {
-      return values->empty();
-      }
-    UNIT_TEST_VIRTUAL void print() const;
-  private:
-    map <int, int>* values;  // Map structure that holds <ts, value>
-    string name;             // Name of the map
-    int current_value;       // Holds the current value of th map.
-  };
+  // The format of the file is as such
+  // 0 100
+  // 1 0 
+  //   Should be interpreted as 100 on timestep 0, 0 on timestep 1 and beyond
+  //
+  // 0 100
+  // 100 0
+  //   Should be interpreted as 100 for timestep 0 - 99, and 0 on timestep 100 and above
+  // Updated: Shawn Brown
+  
+public:
+  Timestep_Map();	
+  Timestep_Map(string _name);
+  ~Timestep_Map();
+  
+  // Utility Members
+  UNIT_TEST_VIRTUAL int get_value_for_timestep(int ts, int offset); // returns the value for the given timestep - delay
+  UNIT_TEST_VIRTUAL bool is_empty() const { return values->empty(); }
+  UNIT_TEST_VIRTUAL void print() const;
+private:
+  map <int, int>* values;  // Map structure that holds <ts, value>
+  string name;             // Name of the map
+  int current_value;       // Holds the current value of th map.
+};
 
 #endif // _FRED_TIMESTEP_MAP_H

@@ -13,18 +13,18 @@
 #include "Policy.h"
 #include "Decision.h"
 
-Decision::Decision() {
+Decision::Decision(){
   name = "";
   type = "";
   policy = NULL;
-  }
+}
 
-Decision::~Decision() { }
+Decision::~Decision(){ }
 
-Decision::Decision(Policy *p) {
+Decision::Decision(Policy *p){
   policy = p;
   name = "Generic Decision";
   type = "Generic";
-  }
+}
 
 
