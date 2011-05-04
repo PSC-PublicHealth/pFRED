@@ -15,8 +15,8 @@ vaccine_offset = 0
 # a date in the format 'YYYY-MM-DD'
 start_date = 2011-01-01
 reseed_day = -1
-popfile = alleg_v2_pop.txt
-locfile = alleg_v2_loc.txt
+popfile = pop_Alleg.txt
+locfile = loc_Alleg.txt
 profiles = profiles.txt
 popdir = .
 outdir = OUT
@@ -70,6 +70,7 @@ school_contacts[0] = 9
 classroom_contacts[0] = 13
 workplace_contacts[0] = 5
 office_contacts[0] = 8
+hospital_contacts[0] = 0
 
 # groups = children adults
 household_prob[0] = 4 0.6 0.3 0.3 0.4
@@ -170,10 +171,7 @@ HBM_accept_vaccine = 5       0.6 0 0 0 0
 km_per_deg_longitude = 84.83063
 km_per_deg_latitude = 111.04326
 patch_size = 1.0
-min_latitude = 40.1955
-max_latitude = 40.6742
-min_longitude = -80.3581
-max_longitude = -79.6906
+
 
 ############ PARAMETERS FOR IntraHost/EVOLUTION BELOW ##################################
 
