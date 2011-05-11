@@ -11,6 +11,7 @@
 
 #include "Date.h"
 #include <time.h>
+#include <stdio.h>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
