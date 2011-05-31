@@ -18,7 +18,15 @@ if (not $open or (not -x $open)) {
   exit;
 }
 
-my $results = `$FRED/bin/fred_plot @ARGV`;
+my $results;
+my $args = join " ", @ARGV;
+if ($args =~ /E/) {
+  $results = `$FRED/bin/fred_event_plot @ARGV`;
+}
+else {
+  $results = `$FRED/bin/fred_plot @ARGV`;
+}
+
 if ($results =~ /bad status/) {
   $results =~ s/fred_plot/fred_display_plot/;
   print "$results";

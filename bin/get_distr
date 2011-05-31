@@ -11,9 +11,10 @@ my ($dir) = @ARGV;
 $dir = "OUT" if not $dir;
 open FH, ">distr";
 for my $i (1..20) {
-  if (-e "$dir/trace$i.txt") {
+  if (-e "$dir/infections$i.txt") {
     # print "distr for run $i\n";
-    `grep -v 'S id' $dir/trace$i.txt | grep -v 'M id' > tmp`;
+    # `grep -v 'S id' $dir/infections$i.txt | grep -v 'M id' > tmp`;
+    `cp $dir/infections$i.txt tmp`;
     my $n = `wc -l tmp | awk '{print \$1}'`;
     my $tot = 0.0;
     for my $p (@places) {
