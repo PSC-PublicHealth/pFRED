@@ -69,18 +69,24 @@ void Patch::record_favorite_places() {
   Person * per;
   Place * p;
   School * s;
+  // FILE *fp;
 
   // create lists of persons, workplaces, schools (by age)
   person.clear();
   workplace.clear();
   for (int age = 0; age < ADULT_AGE; age++) school[age].clear();
 
+  // char filename[256];
+  // sprintf(filename, "PATCHES/Patch-%d-%d-households", row, col);
+  // fp = fopen(filename, "w");
   for (int i = 0; i < houses; i++) {
     house = (Household *) household[i];
     int hsize = house->get_size();
+    // fprintf(fp, "%d ", hsize);
     for (int j = 0; j < hsize; j++) {
       per = house->get_housemate(j);
-      neighborhood->enroll(per);
+      // fprintf(fp, "%d ", house->get_household_age(j));
+      // neighborhood->enroll(per);
       person.push_back(per);
       p = per->get_activities()->get_workplace();
       if (p != NULL) workplace.push_back(p);
@@ -92,7 +98,9 @@ void Patch::record_favorite_places() {
 	}
       }
     }
+    // fprintf(fp, "\n");
   }
+  // fclose(fp);
 }
 
 
