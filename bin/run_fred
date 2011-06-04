@@ -51,7 +51,7 @@ die "usage: run_fred -d dir -p params -s start_run -n end_run\n" if $end_run =~ 
 my $cmd = "'run_fred @arg'";
 system "echo $cmd > $dir/COMMAND_LINE";
 for my $n ($start_run .. $end_run) {
-  $cmd = "FRED $paramsfile $n $dir > $dir/LOG$n";
+  $cmd = "FRED $paramsfile $n $dir >& $dir/LOG$n";
   print "$cmd\n";
   system $cmd;
 }
