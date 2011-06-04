@@ -21,7 +21,7 @@ die "fred_job: Please set environmental variable FRED_HOME to location of FRED h
 
 # get command line arguments
 my %options = ();
-getopts("scp:k:s:n:", \%options);
+getopts("cp:k:s:n:", \%options);
 
 my $paramsfile = "params";
 $paramsfile = $options{p} if exists $options{p};
