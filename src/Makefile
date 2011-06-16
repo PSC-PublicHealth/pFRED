@@ -4,7 +4,7 @@
 CPP = g++ 
 
 # use this for development:
-CPPFLAGS = -g -m64 -O3 -Wall # -fast #-Wall
+CPPFLAGS = -g -pg -m64 -O3 -Wall # -fast #-Wall
 
 # use this for profiling
 # CPPFLAGS = -g -m64 -O3 # -DNDEBUG
@@ -41,7 +41,7 @@ endif
 %.o:%.c %.h
 	$(CPP) $(CPPFLAGS) -c $< $(INCLUDES)
 
-OBJ =   Fred.o Global.o Decision.o Policy.o Manager.o \
+OBJ =   Fred.o Global.o Utils.o Decision.o Policy.o Manager.o \
         AV_Decisions.o AV_Policies.o AV_Manager.o AV_Health.o \
         Age_Map.o Timestep_Map.o Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
         Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \

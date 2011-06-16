@@ -11,6 +11,7 @@
 
 #include "Params.h"
 #include "Global.h"
+#include "Utils.h"
 #include <math.h>
 #include <string>
 #include <sstream>
@@ -67,10 +68,11 @@ int read_parameters(char *paramfile) {
           }
           Params++;
         } else {
-          printf(
-                 "Help! Bad format in params.def file on line starting with %s\n",
-                 name);
-          abort();
+        	Utils::fred_abort("Bad format in params.def file on line starting with %s\n",name);
+//          printf(
+//                 "Help! Bad format in params.def file on line starting with %s\n",
+//                 name);
+//          abort();
         }
       }
     }

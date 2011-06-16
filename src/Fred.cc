@@ -10,6 +10,7 @@
 //
 
 #include "Fred.h"
+#include "Utils.h"
 #include "Global.h"
 #include "Disease.h"
 #include "Population.h"
@@ -46,10 +47,24 @@ int main(int argc, char* argv[]) {
   fprintf(Statusfp, "param file = %s\n", paramfile);
   fflush(Statusfp);
 
+
   // get runtime parameters
   read_parameters(paramfile);
   get_global_parameters();
+
+  // STB Do the error file first so that it captures
+  // as much errors as possible.
+  ErrorLogfp = NULL;
+  sprintf(filename, "%s/err%d.txt", Output_directory, run);
+  ErrorLogfp = fopen(filename, "w");
+  if (ErrorLogfp == NULL) {
+	  printf("Help! Can't open %s\n", filename);
+	  abort();
+  }
+
+  // get runtime population parameters
   Pop.get_parameters();
+
 
   if (strcmp(directory, "") == 0) {
     // use the directory in the params file
@@ -64,20 +79,19 @@ int main(int argc, char* argv[]) {
   umask(mask);     // so now we have to put it back
   mode ^= mask;    // apply the user's existing umask
   if (0!=mkdir(directory, mode) && EEXIST!=errno) // make it
-    err(errno, "mkdir(Output_directory) failed");      // or die
-
+    Utils::fred_abort("mkdir(Output_directory) failed with %d\n",errno); // or die
   // open output files
   sprintf(filename, "%s/out%d.txt", directory, run);
   Outfp = fopen(filename, "w");
   if (Outfp == NULL) {
-    printf("Help! Can't open %s\n", filename); abort();
+    Utils::fred_abort("Can't open %s\n", filename);
   }
   Tracefp = NULL;
   if (strcmp(Tracefilebase, "none") != 0) {
     sprintf(filename, "%s/trace%d.txt", directory, run);
     Tracefp = fopen(filename, "w");
     if (Tracefp == NULL) {
-      printf("Help! Can't open %s\n", filename); abort();
+      Utils::fred_abort("Can't open %s\n", filename);
     }
   }
   Infectionfp = NULL;
@@ -85,7 +99,7 @@ int main(int argc, char* argv[]) {
     sprintf(filename, "%s/infections%d.txt", directory, run);
     Infectionfp = fopen(filename, "w");
     if (Infectionfp == NULL) {
-      printf("Help! Can't open %s\n", filename); abort();
+      Utils::fred_abort("Can't open %s\n", filename);
     }
   }
   VaccineTracefp = NULL;
@@ -93,7 +107,7 @@ int main(int argc, char* argv[]) {
     sprintf(filename, "%s/vacctr%d.txt", directory, run);
     VaccineTracefp = fopen(filename, "w");
     if (VaccineTracefp == NULL) {
-      printf("Help! Can't open %s\n", filename); abort();
+      Utils::fred_abort("Can't open %s\n", filename);
     }
   }
   Birthfp = NULL;
@@ -101,7 +115,7 @@ int main(int argc, char* argv[]) {
     sprintf(filename, "%s/births%d.txt", directory, run);
     Birthfp = fopen(filename, "w");
     if (Birthfp == NULL) {
-      printf("Help! Can't open %s\n", filename); abort();
+      Utils::fred_abort("Can't open %s\n", filename);
     }
   }
   Deathfp = NULL;
@@ -109,7 +123,7 @@ int main(int argc, char* argv[]) {
     sprintf(filename, "%s/deaths%d.txt", directory, run);
     Deathfp = fopen(filename, "w");
     if (Deathfp == NULL) {
-      printf("Help! Can't open %s\n", filename); abort();
+      Utils::fred_abort("Can't open %s\n", filename);
     }
   }
   Prevfp = NULL;
@@ -117,8 +131,7 @@ int main(int argc, char* argv[]) {
     sprintf(filename, "%s/prev%d.txt", Output_directory, run);
     Prevfp = fopen(filename, "w");
     if (Prevfp == NULL) {
-      printf("Help! Can't open %s\n", filename);
-      abort();
+      Utils::fred_abort("Can't open %s\n", filename);
     }
   }
   Incfp = NULL;
@@ -126,10 +139,11 @@ int main(int argc, char* argv[]) {
     sprintf(filename, "%s/inc%d.txt", Output_directory, run);
     Incfp = fopen(filename, "w");
     if (Incfp == NULL) {
-      printf("Help! Can't open %s\n", filename);
-      abort();
+      Utils::fred_abort("Help! Can't open %s\n", filename);
     }
   }
+
+
 
   // Date Setup
   INIT_RANDOM(Seed);
@@ -218,12 +232,7 @@ int main(int argc, char* argv[]) {
   // finish up
   Pop.end_of_run();
   // fclose(Statusfp);
-  fclose(Outfp);
-  if (Tracefp != NULL) fclose(Tracefp);
-  if (Infectionfp != NULL) fclose(Infectionfp);
-  if (VaccineTracefp != NULL) fclose(VaccineTracefp);
-  if (Prevfp != NULL) fclose(Prevfp);
-  if (Incfp != NULL) fclose(Incfp);
+  Utils::fred_end()
   time(&clock);
   fprintf(Statusfp, "FRED finished %s", ctime(&clock));
   return 0;

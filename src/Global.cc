@@ -35,6 +35,7 @@ double Prob_accept_vaccine; // For Random_Congition_Model, need to find a way no
 double Prob_accept_vaccine_dose; //  For Random_Congition_Model, need to find a way not to be global
 char Prevfilebase[256];
 char Incfilebase[256];
+char ErrorLogBase[256];
 int Track_infection_events;
 
 // global file pointers
@@ -47,6 +48,7 @@ FILE *Birthfp;
 FILE *Deathfp;
 FILE *Prevfp;
 FILE *Incfp;
+FILE *ErrorLogfp;
 
 void get_global_parameters() {
   get_param((char *) "verbose", &Verbose);

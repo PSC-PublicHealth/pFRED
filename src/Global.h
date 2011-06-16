@@ -58,6 +58,7 @@ extern double Prob_accept_vaccine_dose;
 extern int StrainEvolution;
 extern char Prevfilebase[];
 extern char Incfilebase[];
+extern char ErrorLogbase[];
 extern int Enable_Aging;
 extern int Enable_Births;
 extern int Enable_Deaths;
@@ -73,6 +74,7 @@ extern FILE *Birthfp;
 extern FILE *Deathfp;
 extern FILE *Prevfp;
 extern FILE *Incfp;
+extern FILE *ErrorLogfp;
 
 // global singleton objects
 class Population;
