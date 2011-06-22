@@ -64,6 +64,7 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
     will_be_symptomatic = false;
     }
 
+  report_infection(day);
   host->set_changed();
   }
 
@@ -452,5 +453,5 @@ void Infection::report_infection(int day) const {
 
   fprintf(Infectionfp, "\n");
   fflush(Infectionfp);
-  }
+}
 
