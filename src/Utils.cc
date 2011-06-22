@@ -38,6 +38,7 @@ void Utils::fred_abort(const char* format, ...){
 	fflush(stdout);
 
 	fred_end();
+        abort();
 }
 
 void Utils::fred_warning(const char* format, ...){
@@ -67,5 +68,4 @@ void Utils::fred_end(void){
 	if (VaccineTracefp != NULL) fclose(VaccineTracefp);
 	if (Prevfp != NULL) fclose(Prevfp);
 	if (Incfp != NULL) fclose(Incfp);
-	abort();
 }

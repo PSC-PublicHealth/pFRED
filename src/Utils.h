@@ -19,7 +19,7 @@ using namespace std;
 
 namespace Utils{
 	void fred_abort(const char* format,...);
-	//void fred_warning(const char* format,...);
+	void fred_warning(const char* format,...);
 	void fred_end();
 }
 #endif /* UTILS_H_ */

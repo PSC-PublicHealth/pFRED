@@ -52,16 +52,6 @@ int main(int argc, char* argv[]) {
   read_parameters(paramfile);
   get_global_parameters();
 
-  // STB Do the error file first so that it captures
-  // as much errors as possible.
-  ErrorLogfp = NULL;
-  sprintf(filename, "%s/err%d.txt", Output_directory, run);
-  ErrorLogfp = fopen(filename, "w");
-  if (ErrorLogfp == NULL) {
-	  printf("Help! Can't open %s\n", filename);
-	  abort();
-  }
-
   // get runtime population parameters
   Pop.get_parameters();
 
@@ -69,9 +59,8 @@ int main(int argc, char* argv[]) {
   if (strcmp(directory, "") == 0) {
     // use the directory in the params file
     strcpy(directory, Output_directory);
-    // printf("directory = %s\n",directory);
+    //printf("directory = %s\n",directory);
   }
-
   // create the output directory, if necessary
   mode_t mask;        // the user's current umask
   mode_t mode = 0777; // as a start
@@ -86,6 +75,17 @@ int main(int argc, char* argv[]) {
   if (Outfp == NULL) {
     Utils::fred_abort("Can't open %s\n", filename);
   }
+
+  // STB Do the error file first so that it captures
+  // as much errors as possible.
+  ErrorLogfp = NULL;
+  sprintf(filename, "%s/err%d.txt", Output_directory, run);
+  ErrorLogfp = fopen(filename, "w");
+  if (ErrorLogfp == NULL) {
+          printf("Help! Can't open %s\n", filename);
+          abort();
+  }
+
   Tracefp = NULL;
   if (strcmp(Tracefilebase, "none") != 0) {
     sprintf(filename, "%s/trace%d.txt", directory, run);
@@ -232,7 +232,7 @@ int main(int argc, char* argv[]) {
   // finish up
   Pop.end_of_run();
   // fclose(Statusfp);
-  Utils::fred_end()
+  Utils::fred_end(); 
   time(&clock);
   fprintf(Statusfp, "FRED finished %s", ctime(&clock));
   return 0;
