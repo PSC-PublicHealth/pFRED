@@ -86,6 +86,8 @@ void Person::print(FILE *fp, int disease) const {
           health->get_exposure_date(disease),
 	  health->get_infectious_date(disease),
 	  health->get_recovered_date(disease));
+  fprintf(fp, "sympt: %d ", health->get_symptomatic_date(disease));
+
   fprintf(fp, "places %d ", FAVORITE_PLACES);
   fprintf(fp, "infected_at %c %6d ",
           health->get_infected_place_type(disease),
