@@ -64,13 +64,16 @@ mutation_prob = 1 0.0
 # the folowing contacts are calibrated for Allegheny County
 # for a 33% clinical attack rate
 # using the bifurcating SEIR model (SEiIR = 0)
-household_contacts[0] = 0.475
-neighborhood_contacts[0] = 120
-school_contacts[0] = 9
-classroom_contacts[0] = 13
-workplace_contacts[0] = 5
-office_contacts[0] = 8
+household_contacts[0] = 0.58
+neighborhood_contacts[0] = 59
+school_contacts[0] = 26.7
+classroom_contacts[0] = 16.2
+workplace_contacts[0] = 4.2
+office_contacts[0] = 3.2
 hospital_contacts[0] = 0
+
+community_limit[0] = -1
+community_limit_trials = 50
 
 # groups = children adults
 household_prob[0] = 4 0.6 0.3 0.3 0.4
