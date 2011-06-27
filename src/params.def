@@ -175,7 +175,6 @@ patch_size = 1.0
 
 ############ PARAMETERS FOR IntraHost/EVOLUTION BELOW ##################################
 
-infection_model[0] = 1
 all_diseases_antigenically_identical = 0
 
 # Evolution Stuff
@@ -192,7 +191,7 @@ incidencefile = incd.txt
 intra_host_model[0] = 0
 
 # for default IntraHost
-infection_model[0] = 1
+infection_model[0] = 0
 
 # for fixed IntraHost
 infectivity_profile_probabilities[0] = 16   0.0066 0.0198 0.0396 0.066 0.0794 0.1062 0.1464 0.2 0.2264 0.2792 0.3584 0.464 0.5176 0.6248 0.7856 1
