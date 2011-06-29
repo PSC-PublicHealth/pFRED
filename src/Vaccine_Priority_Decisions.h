@@ -5,7 +5,7 @@
  */
 //
 //
-// File: AV_Decision.h
+// File: Vaccine_Priority_Decision.h
 //
 
 #ifndef _FRED_VACCINE_PRIORITY_DECISIONS_H

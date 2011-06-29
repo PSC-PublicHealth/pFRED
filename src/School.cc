@@ -18,6 +18,7 @@
 #include "Place_List.h"
 #include "Classroom.h"
 #include "Date.h"
+#include "Utils.h"
 
 double * school_contacts_per_day;
 double *** school_contact_prob;
@@ -307,8 +308,7 @@ Place * School::assign_classroom(Person *per) {
 	else { x--; }
       } 
     }
-    printf("Help! Can't find classroom for teacher\n\n");
-    abort();
+    Utils::fred_abort("Help! Can't find classroom for teacher\n\n"); 
   }
 }
 

@@ -16,6 +16,7 @@
 #include "Random.h"
 #include "Global.h"
 #include "Date.h"
+#include "Utils.h"
 
 bool Demographics::is_initialized = false;
 double Demographics::age_yearly_mortality_rate_male[Demographics::MAX_AGE + 1];
@@ -279,8 +280,7 @@ void Demographics::read_init_files() {
 
     if (fscanf(fp, "%d %f %f",
                &age, &female_rate, &male_rate) != 3) {
-      fprintf(Statusfp, "Help! Read failure for age %d\n", i);
-      abort();
+      Utils::fred_abort("Help! Read failure for age %d\n", i); 
     }
 
     Demographics::age_yearly_mortality_rate_female[i] = (double)female_rate;
@@ -302,8 +302,7 @@ void Demographics::read_init_files() {
 
     if (fscanf(fp, "%d %f",
                &age, &rate) != 2) {
-      fprintf(Statusfp, "Help! Read failure for age %d\n", i);
-      abort();
+      Utils::fred_abort("Help! Read failure for age %d\n", i); 
     }
 
     Demographics::age_yearly_birth_rate[i] = (double)rate;

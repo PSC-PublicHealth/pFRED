@@ -10,6 +10,7 @@
 //
 
 #include "Date.h"
+#include "Utils.h"
 #include <time.h>
 #include <stdio.h>
 #include <iostream>
@@ -144,18 +145,15 @@ Date::Date(int year, int month, int day_of_month) {
 void Date::set_date(int year, int month, int day_of_month) {
 
   if (year < 1600) {
-    cout << "Help!  Year prior to 1600 [" << year << "] is not recognized." << endl;
-    abort();
+    Utils::fred_abort("Help! Year prior to 1600 [\"%d\"] is not recognized\n",year); 
   }
 
   if (month < Date::JANUARY || month > Date::DECEMBER) {
-    cout << "Help!  Month must be between 1 and 12 inclusive." << endl;
-    abort();
+    Utils::fred_abort("Help!  Month must be between 1 and 12 inclusive.\n"); 
   }
 
   if (day_of_month < 1 || day_of_month > Date::day_table[(Date::is_leap_year(year) ? 1 : 0)][month]) {
-    cout << "Help!  Day of month is out of range for the given month." << endl;
-    abort();
+    Utils::fred_abort("Help!  Day of month is out of range for the given month.\n"); 
   }
 
   //total years since 1600
@@ -163,7 +161,7 @@ void Date::set_date(int year, int month, int day_of_month) {
 
   //add in the leap days
   for (int i = 1600; i < year; i += 4) {
-    if (i % 4 == 0)
+   if (i % 4 == 0)
       temp_days++;
   }
 
@@ -554,8 +552,7 @@ int Date::parse_month_from_date_string(string date_string, string format_string)
     }
 
   } else {
-    cout << "Help!  Unrecognized date format string [" << format_string << "]" << endl;
-    abort();
+    Utils::fred_abort("Help! Unrecognized date format string [\" %s \"]\n", format_string.c_str()); 
   }
 
   return -1;
@@ -610,8 +607,7 @@ int Date::parse_day_of_month_from_date_string(string date_string, string format_
     }
 
   } else {
-    cout << "Help!  Unrecognized date format string [" << format_string << "]" << endl;
-    abort();
+    Utils::fred_abort("Help!  Unrecognized date format string [\" %s \"]\n", format_string.c_str()); 
   }
 
   return -1;
@@ -664,8 +660,7 @@ int Date::parse_year_from_date_string(string date_string, string format_string) 
      }
 
   } else {
-    cout << "Help!  Unrecognized date format string [" << format_string << "]" << endl;
-    abort();
+    Utils::fred_abort("Help!  Unrecognized date format string [\" %s \"]\n", format_string.c_str()); 
   }
 
   return -1;
@@ -755,8 +750,7 @@ void Date::setup(char * output_directory, int days) {
   sprintf(filename, "%s/dates.txt", output_directory);
   FILE *fred_date_fp = fopen(filename, "w");
   if (fred_date_fp == NULL) {
-    printf("Help! Can't open %s\n", filename);
-    abort();
+    Utils::fred_abort("Help! Can't open %s\n", filename); 
   }
   
   for (int day = 0; day < days; day++) {

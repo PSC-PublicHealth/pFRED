@@ -14,6 +14,7 @@
 
 #include "Age_Map.h"
 #include "Params.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -65,8 +66,7 @@ void Age_Map::read_from_input(string Input) {
   int na  = get_param_vector(ages_string,ages_tmp);
   
   if(na % 2) {
-    cout <<"Error parsing Age_Map: " << Input << ": Must be an even number of age entries\n";
-    abort();
+    Utils::fred_abort("Error parsing Age_Map: %s: Must be an even number of age entries\n", Input.c_str()); 
   }
   
   for(int i=0;i<na; i+=2){
@@ -79,7 +79,7 @@ void Age_Map::read_from_input(string Input) {
   get_param_vector(values_string,values);
   
   if(quality_control() != true)
-    abort();
+    Utils::fred_abort("");
   return;
 }
 

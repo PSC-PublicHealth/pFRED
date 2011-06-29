@@ -4,7 +4,7 @@
 CPP = g++ 
 
 # use this for development:
-CPPFLAGS = -g -pg -m64 -O3 -Wall # -fast #-Wall
+CPPFLAGS = -g -pg -O3 -Wall # -fast #-Wall
 
 # use this for profiling
 # CPPFLAGS = -g -m64 -O3 # -DNDEBUG

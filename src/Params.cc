@@ -69,16 +69,11 @@ int read_parameters(char *paramfile) {
           Params++;
         } else {
         	Utils::fred_abort("Bad format in params.def file on line starting with %s\n",name);
-//          printf(
-//                 "Help! Bad format in params.def file on line starting with %s\n",
-//                 name);
-//          abort();
         }
       }
     }
   } else {
-    printf("Help!  Can't read paramfile %s\n", "params.def");
-    abort();
+    Utils::fred_abort("Help!  Can't read paramfile %s\n", "params.def");
   }
   fclose(fp);
   
@@ -120,15 +115,12 @@ int read_parameters(char *paramfile) {
           }
           Params++;
         } else {
-          printf("Help! Bad format in file %s on line starting with %s\n",
-                 paramfile, name);
-          abort();
+	  Utils::fred_abort("Help! Bad format in file %s on line starting with %s\n",paramfile, name);
         }
       }
     }
   } else {
-    printf("Help!  Can't read paramfile %s\n", paramfile);
-    abort();
+    Utils::fred_abort("Help!  Can't read paramfile %s\n", paramfile);
   }
   fclose(fp);
   
@@ -161,7 +153,7 @@ int get_param(char *s, int *p) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
-    abort();
+    Utils::fred_abort(""); 
   }
   return 0;
 }
@@ -186,7 +178,7 @@ int get_param(char *s, unsigned long *p) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
-    abort();
+    Utils::fred_abort(""); 
   }
   return 0;
 }
@@ -211,7 +203,7 @@ int get_param(char *s, double *p) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
-    abort();
+    Utils::fred_abort(""); 
   }
   return 0;
 }
@@ -236,7 +228,7 @@ int get_param(char *s, float *p) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
-    abort();
+    Utils::fred_abort("");
   }
   return 0;
 }
@@ -264,7 +256,7 @@ int get_param(char *s, string &p){
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
-    abort();
+    Utils::fred_abort(""); 
   }
   return 0;
 }
@@ -289,7 +281,7 @@ int get_param(char *s, char *p) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
-    abort();
+    Utils::fred_abort(""); 
   }
   return 0;
 }
@@ -305,16 +297,14 @@ int get_param_vector(char *s, vector < int > &p){
     for (int i=0;i<n;i++){
       pch = strtok(NULL," ");
       if(pch == NULL) {
-        printf("Help! bad param vector: %s\n", s);
-        abort();
+        Utils::fred_abort("Help! bad param vector: %s\n", s); 
       }
       sscanf(pch,"%d",&v);
       p.push_back(v);
     }
   }
   else {
-    printf("Incorrect format for vector %s\n",s);
-    abort();
+    Utils::fred_abort("Incorrect format for vector %s\n", s); 
   }
   return n;
 }
@@ -330,16 +320,14 @@ int get_param_vector(char *s, vector < double > &p){
     for (int i = 0; i < n; i++) {
       pch = strtok (NULL, " ");
       if (pch == NULL) {
-        printf("Help! bad param vector: %s\n", s);
-        abort();
+        Utils::fred_abort("Help! bad param vector: %s\n", s); 
       }
       sscanf(pch, "%lf", &v);
       p.push_back(v);
     }
   }
   else {
-    printf("Incorrect format for vector %s\n",s);
-    abort();
+    Utils::fred_abort("Incorrect format for vector %s\n", s); 
   }
   return n;
 }
@@ -354,13 +342,12 @@ int get_param_vector(char *s, double *p) {
     for (int i = 0; i < n; i++) {
       pch = strtok(NULL, " ");
       if (pch == NULL) {
-        printf("Help! bad param vector: %s\n", s);
-        abort();
+        Utils::fred_abort("Help! bad param vector: %s\n", s);
       }
       sscanf(pch, "%lf", &p[i]);
     }
   } else {
-    abort();
+    Utils::fred_abort(""); 
   }
   return n;
 }
@@ -374,9 +361,7 @@ int get_param_matrix(char *s, double ***p) {
     get_param_vector((char *) s, tmp);
     int temp_n = (int) sqrt((double) n);
     if (n != temp_n * temp_n) {
-      printf("Improper matrix dimensions: matricies must be square,"
-             " found dimension %i\n", n);
-      abort();
+      Utils::fred_abort("Improper matrix dimensions: matricies must be square found dimension %i\n", n); 
     }
     n = temp_n;
     (*p) = new double *[n];
@@ -447,8 +432,7 @@ int get_param_map(char *s, map<string, double> *p) {
       (*p)[key] = valDouble;
     }
     else {
-      printf("Help! bad param vector: %s\n", s);
-      abort();
+      Utils::fred_abort("Help! bad param vector: %s\n", s); 
     }
   }
 

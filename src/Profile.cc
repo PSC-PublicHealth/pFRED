@@ -15,6 +15,7 @@
 #include "Random.h"
 #include "Params.h"
 #include "Global.h"
+#include "Utils.h"
 
 Profile Prof[100];
 int Profiles = 0;
@@ -48,8 +49,7 @@ void read_profiles(char *filename) {
         Profiles++;
       }
       else {
-        printf("Help! Bad format in profile %d -- number read = %d\n", i, nr);
-        abort();
+        Utils::fred_abort("Help! Bad format in profile %d -- number read = %d\n", i, nr); 
       }
     }
   }

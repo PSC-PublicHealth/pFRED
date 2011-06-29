@@ -27,6 +27,7 @@
 #include "Workplace.h"
 #include "Grid.h"
 #include "Place_List.h"
+#include "Utils.h"
 
 Activities::Activities (Person *person, Place **fav_place) {
   self = person;
@@ -248,9 +249,7 @@ void Activities::assign_school() {
     }
     trials++;
   }
-  fprintf(Statusfp, "assign_school: can't locate school for person %d\n",
-	  self->get_id());
-  abort();
+  Utils::fred_abort("assign_school: can't locate school for person %d\n", self->get_id()); 
 }
 
 void Activities::assign_classroom() {
@@ -287,9 +286,7 @@ void Activities::assign_workplace() {
     }
     trials++;
   }
-  fprintf(Statusfp, "assign_workplace: can't locate workplace for person %d\n",
-	  self->get_id());
-  abort();
+  Utils::fred_abort("assign_workplace: can't locate workplace for person %d\n", self->get_id()); 
 }
 
 void Activities::assign_office() {

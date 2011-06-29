@@ -27,6 +27,7 @@
 #include "Age_Map.h"
 #include "Random.h"
 #include "Date.h"
+#include "Utils.h"
 
 using namespace std; 
 
@@ -241,8 +242,7 @@ void Population::read_population() {
     // fprintf(Statusfp, "reading person %d\n", p); fflush(Statusfp); // DEBUG
     if (fscanf(fp, "%s %d %c %d %d %s %s %s",
                label, &age, &sex, &married, &occ, house, school, work) != 8) {
-      fprintf(Statusfp, "Help! Read failure for new person %d\n", p);
-      abort();
+      Utils::fred_abort("Help! Read failure for new person %d\n", p); 
     }
     // printf("new person: %d %s %d %c %d %d %s %s %s\n",
     // next_id, label, age, sex, married, occ, house, school, work);

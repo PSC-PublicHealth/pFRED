@@ -16,6 +16,7 @@
 
 #include "Timestep_Map.h"
 #include "Params.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -60,8 +61,7 @@ Timestep_Map::Timestep_Map(string _name){
   
   ts_input.open(map_file_name);
   if(!ts_input.is_open()) {
-    cout << "Help!  Can't read " << map_file_name << " Timestep Map\n";
-    abort();
+    Utils::fred_abort("Help!  Can't read %s Timestep Map\n", map_file_name);
   }
   
   // There is a file, lets read in the data structure.

@@ -27,6 +27,7 @@
 #include "Person.h"
 #include "Grid.h"
 #include "Patch.h"
+#include "Utils.h"
 
 // global singleton object
 Place_List Places;
@@ -50,12 +51,10 @@ void Place_List::read_places() {
   sprintf(location_file, "%s/%s", Population_directory, locfile);
   fp = fopen(location_file, "r");
   if (fp == NULL) {
-    fprintf(Statusfp, "location file %s not found\n", location_file);
-    abort();
+    Utils::fred_abort("location file %s not found\n", location_file);
   }
   if (1!=fscanf(fp, "Locations = %d", &locations)){
-    fprintf(Statusfp, "failed to parse locations\n");
-    abort();
+    Utils::fred_abort("failed to parse location\n");
   }
   if (Verbose) {
     fprintf(Statusfp, "Locations = %d\n", locations); fflush(Statusfp);
@@ -94,10 +93,10 @@ void Place_List::read_places() {
       place = new (nothrow) Hospital(id, s, lon, lat, container, &Pop);
     }
     else {
-      printf ("Help! bad place_type = %c\n", place_type); abort();
+      Utils::fred_abort("Help! bad place_type %c\n", place_type); 
     }
     if (place == NULL) {
-      printf("Help! allocation failure for place_id %d\n", id); abort();
+      Utils::fred_abort("Help! allocation failure for place_id %d\n", id); 
     }
     add_place(place);
     place = NULL;

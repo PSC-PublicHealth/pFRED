@@ -23,6 +23,7 @@
 #include "Random.h"
 #include "Global.h"
 #include "Timestep_Map.h"
+#include "Utils.h"
 
 Vaccine_Manager::Vaccine_Manager(){
   vaccine_package = NULL;
@@ -178,9 +179,11 @@ string Vaccine_Manager::get_vaccine_dose_priority_string() const {
   case VACC_DOSE_LAST_PRIORITY:
     return "Priority, Place at End of Queue";
   default:
-    return "WARNING!!! Unrecognized Vaccine Dose Priority";
+    Utils::fred_warning("Unrecognized Vaccine Dose Priority\n");
+    return "";
   }
-  return "WARNING!!! Unrecognized Vaccine Dose Priority";
+    Utils::fred_warning("Unrecognized Vaccine Dose Priority\n");
+    return "";
 }
   
     

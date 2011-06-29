@@ -232,7 +232,7 @@ int main(int argc, char* argv[]) {
   // finish up
   Pop.end_of_run();
   // fclose(Statusfp);
-  Utils::fred_end(); 
+  Utils::fred_end();
   time(&clock);
   fprintf(Statusfp, "FRED finished %s", ctime(&clock));
   return 0;

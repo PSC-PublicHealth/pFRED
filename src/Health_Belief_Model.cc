@@ -16,6 +16,7 @@
 #include "Random.h"
 #include "Epidemic.h"
 #include "Perceptions.h"
+#include "Utils.h"
 
 int HBM_parameters_set = 0;
 
@@ -46,44 +47,37 @@ Health_Belief_Model::Health_Belief_Model(Person *p) {
 
   perceived_susceptibility = new (nothrow) int [diseases];
   if (perceived_susceptibility == NULL) {
-    printf("Help! sus allocation failure\n");
-    abort();
+    Utils::fred_abort("Help! sus allocation failure\n");
   }
   
   perceived_severity = new (nothrow) int [diseases];
   if (perceived_severity == NULL) {
-    printf("Help! sev allocation failure\n");
-    abort();
+    Utils::fred_abort("Help! sev allocation failure\n"); 
   }
   
   perceived_benefits_accept_vaccine = new (nothrow) double [diseases];
   if (perceived_benefits_accept_vaccine == NULL) {
-    printf("Help! benefits allocation failure\n");
-    abort();
+    Utils::fred_abort("Help! benefits allocation failure\n"); 
   }
   
   perceived_barriers_accept_vaccine = new (nothrow) double [diseases];
   if (perceived_barriers_accept_vaccine == NULL) {
-    printf("Help! barrier allocation failure\n");
-    abort();
+    Utils::fred_abort("Help! barrier allocation failure\n"); 
   }
 
   cumm_susceptibility = new (nothrow) double [diseases];
   if (cumm_susceptibility == NULL) {
-    printf("Help! cumm_susceptibility allocation failure\n");
-    abort();
+    Utils::fred_abort("Help! cumm_susceptibility allocation failure\n"); 
   }
 
   cumm_severity = new (nothrow) double [diseases];
   if (cumm_severity == NULL) {
-    printf("Help! cumm_severity allocation failure\n");
-    abort();
+    Utils::fred_abort("Help! cumm_severity allocation failure\n"); 
   }
 
   accept_vaccine = new (nothrow) bool [diseases];
   if (accept_vaccine == NULL) {
-    printf("Help! accept_vaccine allocation failure\n");
-    abort();
+    Utils::fred_abort("Help! accept_vaccine allocation failure\n");
   }
 
   // individual differences:
@@ -115,22 +109,34 @@ void Health_Belief_Model::get_parameters() {
   if (HBM_parameters_set) return;
 
   n = get_param_vector((char *) "HBM_memory_decay", memory_decay_distr);
-  if (n != 2) { printf("bad HBM_memory_decay\n"); abort(); }
+  if (n != 2) {  
+     Utils::fred_abort("bad HBM_memory_decay\n");  
+  }
   
   n = get_param_vector((char *) "HBM_susceptibility_threshold", susceptibility_threshold_distr);
-  if (n != 2) { printf("bad HBM_susceptibility_threshold\n"); abort(); }
+  if (n != 2) { 
+     Utils::fred_abort("bad HBM_susceptibility_threshold\n"); 
+  }
   
   n = get_param_vector((char *) "HBM_severity_threshold", severity_threshold_distr);
-  if (n != 2) { printf("bad HBM_severity_threshold\n"); abort(); }
+  if (n != 2) {  
+     Utils::fred_abort("bad HBM_severity_threshold\n"); 
+  }
   
   n = get_param_vector((char *) "HBM_benefits_threshold", benefits_threshold_distr);
-  if (n != 2) { printf("bad HBM_benefits_threshold\n"); abort(); }
+  if (n != 2) { 
+     Utils::fred_abort("bad HBM_benefits_threshold\n"); 
+  }
   
   n = get_param_vector((char *) "HBM_barriers_threshold", barriers_threshold_distr);
-  if (n != 2) { printf("bad HBM_barriers_threshold\n"); abort(); }
+  if (n != 2) {  
+     Utils::fred_abort("bad HBM_barriers_threshold\n"); 
+  }
   
   n = get_param_vector((char *) "HBM_accept_vaccine", coeff);
-  if (n != 5) { printf("bad HBM_accept_vaccine"); abort(); }
+  if (n != 5) {  
+     Utils::fred_abort("bad HBM_accept_vaccine"); 
+  }
   base_accept_vaccine = coeff[0];
   susceptibility_accept_vaccine = coeff[1];
   severity_accept_vaccine = coeff[2];

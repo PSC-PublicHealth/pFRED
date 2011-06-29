@@ -41,7 +41,7 @@ class Antiviral {
       if (av_course_start_day) delete[] av_course_start_day;
       }
 
-    //Paramter Access Members
+    //Parameter Access Members
     UNIT_TEST_VIRTUAL int     get_disease()                const {
       return disease;
       }
@@ -153,7 +153,7 @@ class Antiviral {
     double reduce_infectivity;       // What percentage does it reduce infectivity
     double reduce_susceptibility;    // What percentage does it reduce susceptability
     double reduce_infectious_period; // What percentage does AV reduce infectious period
-    double percent_symptomatics;     // Percentage of symptomatics recieving this drug
+    double percent_symptomatics;     // Percentage of symptomatics receiving this drug
     double reduce_asymp_period;      // What percentage does it reduce the asymptomatic period
     double reduce_symp_period;       // What percentage does it reduce the symptomatic period
     double prob_symptoms;            // What is the probability of being symptomatic

@@ -3,6 +3,7 @@
 #include "IntraHost.h"
 #include "DefaultIntraHost.h"
 #include "FixedIntraHost.h"
+#include "Utils.h"
 //#include "ODEIntraHost.h"
 
 using namespace std;
@@ -24,8 +25,7 @@ IntraHost *IntraHost :: newIntraHost(int type) {
       //      return new ODEIntraHost;
 
     default:
-      printf("Invalid IntraHost type: %d\n", type);
-      abort();
+      Utils::fred_abort("Invalid IntraHost type: %d\n", type);
     }
   }
 

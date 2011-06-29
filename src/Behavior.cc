@@ -14,6 +14,7 @@
 #include "Health_Belief_Model.h"
 #include "Person.h"
 #include "Global.h"
+#include "Utils.h"
 
 #include <string.h>
 
@@ -25,8 +26,7 @@ Behavior::Behavior(Person *p) {
     model = new Health_Belief_Model(p);
   }
   else {
-    printf("Help! Unrecognized behavior model: |%s|\n", Behavior_model_type);
-    abort();
+    Utils::fred_abort("Help! Unrecognized behavior model: |%s|\n", Behavior_model_type); 
   }
 }
 

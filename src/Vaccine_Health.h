@@ -6,7 +6,7 @@
 
 //
 //
-// File: VaccineStatus.h
+// File: VaccineHealth.h
 //
 
 #ifndef _FRED_VACCINEHEALTH_H
@@ -17,6 +17,7 @@
 #include <iostream>
 #include "Random.h"
 #include "Population.h"
+#include "Utils.h"
 
 class Vaccine;
 class Vaccine_Dose;
@@ -46,7 +47,7 @@ public:
     }
     else{
       //This is an error, but it will not stop a run, only pring a Warning.
-      cout << "\nWARNING! Vaccination Status, setting vaccine day of someone who has already been vaccinated";
+      Utils::fred_warning("WARNING! Vaccination Status, setting vaccine day of someone who has already been vaccinated\n");
     }
   }
   

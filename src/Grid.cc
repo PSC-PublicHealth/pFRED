@@ -20,6 +20,7 @@ using namespace std;
 #include "Grid.h"
 #include "Params.h"
 #include "Random.h"
+#include "Utils.h"
 
 // global singleton object
 Grid Environment;
@@ -161,7 +162,7 @@ Patch * Grid::select_patch_by_gravity_model(int row, int col) {
   // compute patch probabilities for gravity model
   Patch * p1 = &patch[row][col];
   double x1 = p1->get_center_x();
-  double y1 = p1->get_center_y();
+ double y1 = p1->get_center_y();
 
   double total = 0.0;
   for (int i = 0; i < rows; i++) {
@@ -191,8 +192,7 @@ Patch * Grid::select_patch_by_gravity_model(int row, int col) {
       }
     }
   }
-  printf("Help! patch gravity model failed.\n");
-  abort();
+  Utils::fred_abort("Help! patch gravity model failed.\n");
 }
 
 void Grid::test_gravity_model() {
