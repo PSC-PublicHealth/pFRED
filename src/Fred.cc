@@ -25,21 +25,30 @@
 Date * Sim_Date;
 
 int main(int argc, char* argv[]) {
-  time_t clock;					// current date
-  int run;					// number of current run
+  time_t clock;         // current date
+  int run;          // number of current run
   unsigned long new_seed;
   char filename[256];
   char directory[256];
   char paramfile[256];
 
-  if (argc > 1) { strcpy(paramfile, argv[1]); }
-  else { strcpy(paramfile, "params"); }
-	
-  if (argc > 2) { sscanf(argv[2], "%d", &run); }
-  else { run = 1; }
+  if (argc > 1) {
+    strcpy(paramfile, argv[1]);
+  } else {
+    strcpy(paramfile, "params");
+  }
 
-  if (argc > 3) { strcpy(directory, argv[3]); }
-  else { strcpy(directory, ""); }
+  if (argc > 2) {
+    sscanf(argv[2], "%d", &run);
+  } else {
+    run = 1;
+  }
+
+  if (argc > 3) {
+    strcpy(directory, argv[3]);
+  } else {
+    strcpy(directory, "");
+  }
 
   Global::Statusfp = stdout;
   time(&clock);
@@ -82,8 +91,8 @@ int main(int argc, char* argv[]) {
   sprintf(filename, "%s/err%d.txt", Global::Output_directory, run);
   Global::ErrorLogfp = fopen(filename, "w");
   if (Global::ErrorLogfp == NULL) {
-          printf("Help! Can't open %s\n", filename);
-          abort();
+    printf("Help! Can't open %s\n", filename);
+    abort();
   }
   Global::Tracefp = NULL;
   if (strcmp(Global::Tracefilebase, "none") != 0) {
@@ -153,15 +162,18 @@ int main(int argc, char* argv[]) {
   Global::Sim_Date->setup(directory, Global::Days);
 
   // set random number seed based on run number
-  if (run > 1 && Global::Reseed_day == -1) { new_seed = Global::Seed * 100 + (run-1); }
-  else { new_seed = Global::Seed; }
+  if (run > 1 && Global::Reseed_day == -1) {
+    new_seed = Global::Seed * 100 + (run-1);
+  } else {
+    new_seed = Global::Seed;
+  }
   fprintf(Global::Statusfp, "seed = %lu\n", new_seed);
   INIT_RANDOM(new_seed);
 
   time(&clock);
   fprintf(Global::Statusfp, "\nFRED run %d started %s\n", run, ctime(&clock));
   fflush(Global::Statusfp);
-	
+
   // initializations
 
   // read in the household, schools and workplaces

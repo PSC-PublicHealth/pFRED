@@ -39,9 +39,9 @@ Activities::Activities (Person *person, Place **fav_place) {
   // get the neighbhood from the household
   favorite_place[NEIGHBORHOOD_INDEX] =
     favorite_place[HOUSEHOLD_INDEX]->get_patch()->get_neighborhood();
-  if (get_neighborhood() == NULL) { 
+  if (get_neighborhood() == NULL) {
     printf("Help! NO NEIGHBORHOOD for person %d house %d \n",
-	   person->get_id(), get_household()->get_id());
+      person->get_id(), get_household()->get_id());
   }
   assert(get_neighborhood() != NULL);
   assign_profile();
@@ -61,9 +61,9 @@ Activities::Activities (Person *person, char *house, char *school, char *work) {
   // get the neighbhood from the household
   favorite_place[NEIGHBORHOOD_INDEX] =
     favorite_place[HOUSEHOLD_INDEX]->get_patch()->get_neighborhood();
-  if (get_neighborhood() == NULL) { 
+  if (get_neighborhood() == NULL) {
     printf("Help! NO NEIGHBORHOOD for person %d house %d \n",
-	   person->get_id(), get_household()->get_id());
+           person->get_id(), get_household()->get_id());
   }
   assert(get_neighborhood() != NULL);
   assign_profile();
@@ -73,27 +73,27 @@ Activities::Activities (Person *person, char *house, char *school, char *work) {
 void Activities::assign_profile() {
   int age = self->get_age();
   if (age < Global::SCHOOL_AGE && get_school() == NULL)
-    profile = PRESCHOOL_PROFILE;		// child at home
+    profile = PRESCHOOL_PROFILE;    // child at home
   else if (age < Global::SCHOOL_AGE && get_school() != NULL)
-    profile = STUDENT_PROFILE;			// child in preschool
+    profile = STUDENT_PROFILE;      // child in preschool
   else if (age < Global::ADULT_AGE && get_school() != NULL)
-    profile = STUDENT_PROFILE;			// student
+    profile = STUDENT_PROFILE;      // student
   else if (get_school() != NULL)
-    profile = TEACHER_PROFILE;			// teacher
+    profile = TEACHER_PROFILE;      // teacher
   else if (Global::RETIREMENT_AGE <= age && RANDOM() < 0.5)
-    profile = RETIRED_PROFILE;			// retired
+    profile = RETIRED_PROFILE;      // retired
   else
-    profile = WORKER_PROFILE;			// worker
+    profile = WORKER_PROFILE;     // worker
 
   // weekend worker
   if (profile == WORKER_PROFILE && RANDOM() < 0.2) {
-    profile = WEEKEND_WORKER_PROFILE;		// 20% weekend worker
+    profile = WEEKEND_WORKER_PROFILE;   // 20% weekend worker
   }
 
   // unemployed
   if ((profile == WORKER_PROFILE ||
        profile == WEEKEND_WORKER_PROFILE) && RANDOM() < 0.1) {
-    profile = UNEMPLOYED_PROFILE;		// 10% unemployed
+    profile = UNEMPLOYED_PROFILE;   // 10% unemployed
   }
 }
 
@@ -120,9 +120,9 @@ void Activities::update_infectious_activities(Date *sim_start_date, int day) {
       char status = self->get_disease_status(dis);
       if (schedule_updated < day) update_schedule(sim_start_date, day);
       for (int i = 0; i < FAVORITE_PLACES; i++) {
-	if (on_schedule[i]) {
-	  favorite_place[i]->add_infectious(dis, self, status);
-	}
+        if (on_schedule[i]) {
+          favorite_place[i]->add_infectious(dis, self, status);
+        }
       }
     }
   }
@@ -133,12 +133,12 @@ void Activities::update_susceptible_activities(Date *sim_start_date, int day) {
   for (int dis = 0; dis < diseases; dis++) {
     if (self->is_susceptible(dis)) {
       for (int i = 0; i < FAVORITE_PLACES; i++) {
-	if (favorite_place[i] != NULL && favorite_place[i]->is_infectious(dis)) {
-	  if (schedule_updated < day) update_schedule(sim_start_date, day);
-	  if (on_schedule[i]) {
-	    favorite_place[i]->add_susceptible(dis, self);
-	  }
-	}
+        if (favorite_place[i] != NULL && favorite_place[i]->is_infectious(dis)) {
+          if (schedule_updated < day) update_schedule(sim_start_date, day);
+          if (on_schedule[i]) {
+            favorite_place[i]->add_susceptible(dis, self);
+          }
+        }
       }
     }
   }
@@ -152,40 +152,40 @@ void Activities::update_schedule(Date *sim_start_date, int day) {
     for (int p = 0; p < FAVORITE_PLACES; p++) {
       on_schedule[p] = false;
     }
-		
+
     // decide whether to stay at home if symptomatic
     int is_symptomatic = self->is_symptomatic();
     if (is_symptomatic) {
       if (RANDOM() < Disease::get_prob_stay_home()) {
-	on_schedule[HOUSEHOLD_INDEX] = true;
-	return;
+        on_schedule[HOUSEHOLD_INDEX] = true;
+        return;
       }
     }
-		
+
     // decide whether to stay home from school
     if (0 < day_of_week && day_of_week < 6 && self->get_age() < Global::ADULT_AGE) {
       if (self->get_behavior()->will_keep_kids_home()) {
-	on_schedule[HOUSEHOLD_INDEX] = true;
-	return;
+        on_schedule[HOUSEHOLD_INDEX] = true;
+        return;
       }
     }
-		
+
     // if not staying home or traveling, consult usual schedule
     for (int p = 0; p < FAVORITE_PLACES; p++) {
       if (favorite_place[p] != NULL)
-	on_schedule[p] = is_visited(p, profile, day_of_week);
+        on_schedule[p] = is_visited(p, profile, day_of_week);
     }
 
     if (on_schedule[NEIGHBORHOOD_INDEX]) {
       // pick the neighborhood to visit today
       favorite_place[NEIGHBORHOOD_INDEX] =
-	favorite_place[HOUSEHOLD_INDEX]->get_patch()->select_neighborhood();
+        favorite_place[HOUSEHOLD_INDEX]->get_patch()->select_neighborhood();
     }
 
     // visit classroom or office iff going to school or work
     on_schedule[CLASSROOM_INDEX] = on_schedule[SCHOOL_INDEX];
     on_schedule[OFFICE_INDEX] = on_schedule[WORKPLACE_INDEX];
-		
+
     if (Global::Verbose > 2) {
       printf("update_schedule on day %d\n", day);
       print_schedule();
@@ -201,10 +201,9 @@ void Activities::print_schedule() {
       fprintf(Global::Statusfp, "%d ", favorite_place[p]->get_id());
     else {
       if (favorite_place[p] == NULL) {
-	fprintf(Global::Statusfp, "-1 ");
-      }
-      else {
-	fprintf(Global::Statusfp, "-%d ", favorite_place[p]->get_id());
+        fprintf(Global::Statusfp, "-1 ");
+      } else {
+        fprintf(Global::Statusfp, "-%d ", favorite_place[p]->get_id());
       }
     }
   }
@@ -249,7 +248,7 @@ void Activities::assign_school() {
     }
     trials++;
   }
-  Utils::fred_abort("assign_school: can't locate school for person %d\n", self->get_id()); 
+  Utils::fred_abort("assign_school: can't locate school for person %d\n", self->get_id());
 }
 
 void Activities::assign_classroom() {
@@ -286,7 +285,7 @@ void Activities::assign_workplace() {
     }
     trials++;
   }
-  Utils::fred_abort("assign_workplace: can't locate workplace for person %d\n", self->get_id()); 
+  Utils::fred_abort("assign_workplace: can't locate workplace for person %d\n", self->get_id());
 }
 
 void Activities::assign_office() {
@@ -310,8 +309,8 @@ void Activities::update_profile() {
     assign_school();
     if (Global::Verbose>1) {
       fprintf(Global::Statusfp,
-	      "changed behavior profile to STUDENT: id %d age %d sex %c\n",
-	      self->get_id(), age, self->get_sex());
+              "changed behavior profile to STUDENT: id %d age %d sex %c\n",
+              self->get_id(), age, self->get_sex());
       print();
       fflush(Global::Statusfp);
     }
@@ -325,59 +324,55 @@ void Activities::update_profile() {
     if (c != NULL && c->get_age_level() == age) {
       // no change
       if (Global::Verbose>1) {
-	fprintf(Global::Statusfp,
-		"KEPT CLASSROOM ASSIGNMENT: id %d age %d sex %c ",
-		self->get_id(), age, self->get_sex());
-	fprintf(Global::Statusfp, "%s %s | ",
-		s->get_label(), c->get_label());
-	print();
-	fflush(Global::Statusfp);
+        fprintf(Global::Statusfp,
+                "KEPT CLASSROOM ASSIGNMENT: id %d age %d sex %c ",
+                self->get_id(), age, self->get_sex());
+        fprintf(Global::Statusfp, "%s %s | ",
+                s->get_label(), c->get_label());
+        print();
+        fflush(Global::Statusfp);
       }
       return;
-    }
-    else if (s != NULL && s->classrooms_for_age(age) > 0) {
+    } else if (s != NULL && s->classrooms_for_age(age) > 0) {
       // pick a new classrooms in current school
       favorite_place[CLASSROOM_INDEX] = NULL;
       assign_classroom();
       if (Global::Verbose>1) {
-	fprintf(Global::Statusfp,
-		"CHANGED CLASSROOM ASSIGNMENT: id %d age %d sex %c ",
-		self->get_id(), age, self->get_sex());
-	if (s != NULL && c != NULL) {
-	  fprintf(Global::Statusfp, "from %s %s to %s %s | ",
-		  s->get_label(), c->get_label(),
-		  favorite_place[SCHOOL_INDEX]->get_label(),
-		  favorite_place[CLASSROOM_INDEX]->get_label());
-	}
-	else {
-	  fprintf(Global::Statusfp, "from NULL NULL to %s %s | ",
-		  favorite_place[SCHOOL_INDEX]->get_label(),
-		  favorite_place[CLASSROOM_INDEX]->get_label());
-	}
-	print();
-	fflush(Global::Statusfp);
+        fprintf(Global::Statusfp,
+                "CHANGED CLASSROOM ASSIGNMENT: id %d age %d sex %c ",
+                self->get_id(), age, self->get_sex());
+        if (s != NULL && c != NULL) {
+          fprintf(Global::Statusfp, "from %s %s to %s %s | ",
+                  s->get_label(), c->get_label(),
+                  favorite_place[SCHOOL_INDEX]->get_label(),
+                  favorite_place[CLASSROOM_INDEX]->get_label());
+        } else {
+          fprintf(Global::Statusfp, "from NULL NULL to %s %s | ",
+                  favorite_place[SCHOOL_INDEX]->get_label(),
+                  favorite_place[CLASSROOM_INDEX]->get_label());
+        }
+        print();
+        fflush(Global::Statusfp);
       }
-    }
-    else {
+    } else {
       // pick a new school and classroom
       assign_school();
       if (Global::Verbose>1) {
-	fprintf(Global::Statusfp,
-		"CHANGED SCHOOL ASSIGNMENT: id %d age %d sex %c ",
-		self->get_id(), age, self->get_sex());
-	if (s != NULL && c != NULL) {
-	  fprintf(Global::Statusfp, "from %s %s to %s %s | ",
-		  s->get_label(), c->get_label(),
-		  favorite_place[SCHOOL_INDEX]->get_label(),
-		  favorite_place[CLASSROOM_INDEX]->get_label());
-	}
-	else {
-	  fprintf(Global::Statusfp, "from NULL NULL to %s %s | ",
-		  favorite_place[SCHOOL_INDEX]->get_label(),
-		  favorite_place[CLASSROOM_INDEX]->get_label());
-	}
-	print();
-	fflush(Global::Statusfp);
+        fprintf(Global::Statusfp,
+                "CHANGED SCHOOL ASSIGNMENT: id %d age %d sex %c ",
+                self->get_id(), age, self->get_sex());
+        if (s != NULL && c != NULL) {
+          fprintf(Global::Statusfp, "from %s %s to %s %s | ",
+                  s->get_label(), c->get_label(),
+                  favorite_place[SCHOOL_INDEX]->get_label(),
+                  favorite_place[CLASSROOM_INDEX]->get_label());
+        } else {
+          fprintf(Global::Statusfp, "from NULL NULL to %s %s | ",
+                  favorite_place[SCHOOL_INDEX]->get_label(),
+                  favorite_place[CLASSROOM_INDEX]->get_label());
+        }
+        print();
+        fflush(Global::Statusfp);
       }
     }
     return;
@@ -392,8 +387,8 @@ void Activities::update_profile() {
     assign_workplace();
     if (Global::Verbose>1) {
       fprintf(Global::Statusfp,
-	      "changed behavior profile to WORKER: id %d age %d sex %c\n",
-	      self->get_id(), age, self->get_sex());
+              "changed behavior profile to WORKER: id %d age %d sex %c\n",
+              self->get_id(), age, self->get_sex());
       print();
       fflush(Global::Statusfp);
     }
@@ -407,11 +402,11 @@ void Activities::update_profile() {
       favorite_place[OFFICE_INDEX] = NULL;
       profile = RETIRED_PROFILE;
       if (Global::Verbose>1) {
-	fprintf(Global::Statusfp,
-		"changed behavior profile to RETIRED: age %d age %d sex %c\n",
-		self->get_id(), age, self->get_sex());
-	print();
-	fflush(Global::Statusfp);
+        fprintf(Global::Statusfp,
+                "changed behavior profile to RETIRED: age %d age %d sex %c\n",
+                self->get_id(), age, self->get_sex());
+        print();
+        fflush(Global::Statusfp);
       }
     }
     return;

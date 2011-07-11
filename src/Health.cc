@@ -46,13 +46,13 @@ Health::Health (Person * person) {
     infection[disease] = NULL;
     status[disease] = 'S';
     susceptible[disease] = true;
-    }
+  }
 
   susceptibility_multp = new double [diseases];
 
   if(nantivirals == -1) {
     get_param_from_string("number_antivirals",&nantivirals);
-    }
+  }
 
   checked_for_av.assign(nantivirals,false);
   immunity.assign(diseases,false);
@@ -142,8 +142,7 @@ void Health::become_removed(int disease) {
     infection[disease]->remove();
     delete infection[disease];
     infection[disease] = NULL;
-  }
-  else {
+  } else {
     self->get_population()->get_disease(disease)->decrement_S_count();
   }
 
@@ -209,8 +208,7 @@ void Health::become_exposed(Infection * infection_ptr) {
     assert(infection[disease_id]->get_disease_status() == 'R');
     delete infection[disease_id];
     infection[disease_id] = infection_ptr;
-  }
-  else {
+  } else {
     infection[disease_id] = infection_ptr;
   }
 
@@ -364,12 +362,10 @@ char * Health::get_infected_place_label(int disease) const {
   if (infection[disease] == NULL) {
     strcpy(dummy_label, "-");
     return dummy_label;
-  }
-  else if (infection[disease]->get_infected_place() == NULL) {
+  } else if (infection[disease]->get_infected_place() == NULL) {
     strcpy(dummy_label, "X");
     return dummy_label;
-  }
-  else
+  } else
     return infection[disease]->get_infected_place()->get_label();
 }
 
@@ -406,7 +402,7 @@ double Health::get_infectivity(int disease, int day) const {
 //Modify Operators
 void Health::modify_susceptibility(int disease, double multp) {
   if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " susceptibility for disease "
-                       << disease << " by " << multp << "\n";
+                               << disease << " by " << multp << "\n";
 
   susceptibility_multp[disease] *= multp;
 }
@@ -414,7 +410,7 @@ void Health::modify_susceptibility(int disease, double multp) {
 void Health::modify_infectivity(int disease, double multp) {
   if (infection[disease] != NULL) {
     if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " infectivity for disease " << disease
-                         << " by " << multp << "\n";
+                                 << " by " << multp << "\n";
 
     infection[disease]->modify_infectivity(multp);
   }
@@ -423,7 +419,7 @@ void Health::modify_infectivity(int disease, double multp) {
 void Health::modify_infectious_period(int disease, double multp, int cur_day) {
   if (infection[disease] != NULL) {
     if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " infectivity for disease " << disease
-                         << " by " << multp << "\n";
+                                 << " by " << multp << "\n";
 
     infection[disease]->modify_infectious_period(multp, cur_day);
   }
@@ -432,7 +428,7 @@ void Health::modify_infectious_period(int disease, double multp, int cur_day) {
 void Health::modify_asymptomatic_period(int disease, double multp, int cur_day) {
   if (infection[disease] != NULL) {
     if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " asymptomatic period  for disease " << disease
-                         << " by " << multp << "\n";
+                                 << " by " << multp << "\n";
 
     infection[disease]->modify_asymptomatic_period(multp, cur_day);
   }
@@ -441,7 +437,7 @@ void Health::modify_asymptomatic_period(int disease, double multp, int cur_day) 
 void Health::modify_symptomatic_period(int disease, double multp, int cur_day) {
   if (infection[disease] != NULL) {
     if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomatic period  for disease " << disease
-                         << " by " << multp << "\n";
+                                 << " by " << multp << "\n";
 
     infection[disease]->modify_symptomatic_period(multp, cur_day);
   }
@@ -452,7 +448,7 @@ void Health::modify_develops_symptoms(int disease, bool symptoms, int cur_day) {
       (infection[disease]->get_disease_status() == 'i' ||
        infection[disease]->get_disease_status() == 'E')) {
     if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomaticity  for disease " << disease
-                         << " to " << symptoms << "\n";
+                                 << " to " << symptoms << "\n";
 
     infection[disease]->modify_develops_symptoms(symptoms, cur_day);
     status[disease] = 'I';
@@ -475,8 +471,7 @@ void Health::take(Vaccine* vaccine, int day, Vaccine_Manager* vm) {
   if(vaccine_health_for_dose == NULL) { // This is our first dose of this vaccine
     vaccine_health.push_back(new Vaccine_Health(day,vaccine,age,this,vm));
     takes_vaccine = true;
-  }
-  else { // Already have a dose, need to take the next dose
+  } else { // Already have a dose, need to take the next dose
     vaccine_health_for_dose->update_for_next_dose(day,age);
   }
 
