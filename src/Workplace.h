@@ -15,9 +15,7 @@
 #include "Place.h"
 #include <vector>
 
-extern double * Workplace_contacts_per_day;
-extern double *** Workplace_contact_prob;
-extern int Workplace_parameters_set;
+
 
 class Workplace: public Place {
 public: 
@@ -33,6 +31,11 @@ public:
   Place * assign_office(Person *per);
   bool should_be_open(int day, int disease) { return true; }
  private:
+  static double * Workplace_contacts_per_day;
+  static double *** Workplace_contact_prob;
+  static bool Workplace_parameters_set;
+  static int office_size;
+
   vector <Place *> offices;
   int next_office;
 };

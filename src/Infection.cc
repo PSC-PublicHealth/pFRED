@@ -379,12 +379,12 @@ void Infection::addTransmission(Transmission *transmission) {
   if(infectious_date == -1) {
     trajectory = NULL;
 
-    if(Verbose > 1) {
+    if(Global::Verbose > 1) {
       printf("New transmission failed for person %d. \n", host->get_id());
       }
     }
   else {
-    if(Verbose > 1) {
+    if(Global::Verbose > 1) {
       printf("Transmission succeeded for person %d.\n", host->get_id());
       printf("New trajectories:\n");
       trajectory->print();
@@ -413,9 +413,9 @@ void Infection::setTrajectory(Trajectory *trajectory) {
   }
 
 void Infection::report_infection(int day) const {
-  if (Infectionfp == NULL) return;
+  if (Global::Infectionfp == NULL) return;
 
-  fprintf(Infectionfp, "day %d dis %d host %d age %.3f "
+  fprintf(Global::Infectionfp, "day %d dis %d host %d age %.3f "
           " from %d inf_age %.3f at %c ",
           day, id,
           host->get_id(),
@@ -424,16 +424,16 @@ void Infection::report_infection(int day) const {
           infector == NULL ? -1 : infector->get_real_age(day),
           place == NULL ? 'X' : place->get_type());
 
-  if (Track_infection_events > 1)
-    fprintf(Infectionfp,
+  if (Global::Track_infection_events > 1)
+    fprintf(Global::Infectionfp,
             "| PERIODS  latent %d asymp %d symp %d recovery %d ",
             latent_period,
             asymptomatic_period,
             symptomatic_period,
             recovery_period);
 
-  if (Track_infection_events > 2)
-    fprintf(Infectionfp,
+  if (Global::Track_infection_events > 2)
+    fprintf(Global::Infectionfp,
             "| DATES exp %d inf %d symp %d rec %d sus %d ",
             exposure_date,
             get_infectious_date(),
@@ -441,8 +441,8 @@ void Infection::report_infection(int day) const {
             get_recovery_date(),
             get_susceptible_date());
 
-  if (Track_infection_events > 3)
-    fprintf(Infectionfp,
+  if (Global::Track_infection_events > 3)
+    fprintf(Global::Infectionfp,
             "| will_be_symp? %d susc %.3f infect %.3f "
             "inf_multp %.3f symptms %.3f ",
             will_be_symptomatic,
@@ -451,7 +451,7 @@ void Infection::report_infection(int day) const {
             infectivity_multp,
             symptoms);
 
-  fprintf(Infectionfp, "\n");
-  fflush(Infectionfp);
+  fprintf(Global::Infectionfp, "\n");
+  fflush(Global::Infectionfp);
 }
 

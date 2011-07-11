@@ -16,27 +16,110 @@
 #include "Person.h"
 #include "Patch.h"
 
-extern double * Household_contacts_per_day;
-extern double *** Household_contact_prob;
-extern int Household_parameters_set;
 
+/**
+ * This class represents a household location in the FRED application. It inherits from <code>Place</code>.
+ * The class contains static variables that will be filled with values from the parameter file.
+ *
+ * @see Place
+ */
 class Household: public Place {
 public: 
   Household() {}
   ~Household() {}
   Household(int,const char *,double,double,Place *, Population *);
+
+  /**
+   * @see Place::get_parameters(int diseases)
+   *
+   * This method is called by the constructor
+   * <code>Household(int,const char *,double,double,Place *, Population *)</code>
+   */
   void get_parameters(int diseases);
+
+  /**
+   * @see Place::get_group(int disease, Person * per)
+   */
   int get_group(int disease, Person * per);
+
+  /**
+   * @see Place::get_transmission_prob(int disease, Person * i, Person * s)
+   *
+   * This method returns the value from the static array <code>Household::Household_contact_prob</code> that
+   * corresponds to a particular age-related value for each person.<br />
+   * The static array <code>Household_contact_prob</code> will be filled with values from the parameter
+   * file for the key <code>household_prob[]</code>.
+   */
   double get_transmission_prob(int disease, Person * i, Person * s);
+
+  /**
+   * @see Place::get_contacts_per_day(int disease)
+   *
+   * This method returns the value from the static array <code>Household::Household_contacts_per_day</code>
+   * that corresponds to a particular disease.<br />
+   * The static array <code>Household_contacts_per_day</code> will be filled with values from the parameter
+   * file for the key <code>household_contacts[]</code>.
+   */
   double get_contacts_per_day(int disease);
+
+  /**
+   * Add a person to the household. This method increments the number of people in
+   * the household and also increments the adult or child count as appropriate.<br />
+   * Overrides Place::enroll(Person * per)
+   *
+   * @param per a pointer to a Person object that will be added to the household
+   */
   void enroll(Person * per);
+
+  /**
+   * Get the head of the household.  It will be an adult who will make decisions for the household.
+   *
+   * @return a pointer to the person who is the head of the household
+   */
   Person * get_HoH() { return HoH; }
+
+  /**
+   * Get a person from the household.
+   *
+   * @param i the index of the person in the household
+   * @return a pointer the person with index i in the household
+   */
   Person * get_housemate(int i) { return housemate[i]; }
+
+  /**
+   * Get a neighborhood from the patch to which this household belongs.
+   *
+   * @return a pointer to the neighborhood selected
+   * @see Patch::select_neighborhood()
+   */
   Place * select_neighborhood() { return patch->select_neighborhood(); }
+
+  /**
+   * Get the number of adults in the household.
+   * @return the number of adults
+   */
   UNIT_TEST_VIRTUAL int get_adults() { return adults; }
+
+  /**
+   * Get the number of children in the household.
+   * @return the number of children
+   */
   UNIT_TEST_VIRTUAL int get_children() { return children; }
+
+  /**
+   * Determine if the household should be open. It is dependent on the disease and simulation day.
+   *
+   * @param day the simulation day
+   * @param disease an integer representation of the disease
+   * @return whether or not the household is open on the given day for the given disease
+   */
   bool should_be_open(int day, int disease) { return true; }
+
 private:
+  static double * Household_contacts_per_day;
+  static double *** Household_contact_prob;
+  static bool Household_parameters_set;
+
   Person * HoH;
   vector <Person *> housemate;
   int children;

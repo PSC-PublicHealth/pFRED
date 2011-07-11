@@ -44,7 +44,7 @@ Disease::Disease() {
   epidemic = NULL;
   population = NULL;
   strainTable = NULL;
-  }
+}
 
 Disease::~Disease() {
   delete epidemic;
@@ -52,25 +52,24 @@ Disease::~Disease() {
   delete at_risk;
   delete strainTable;
   delete ihm;
-  }
+}
 
 void Disease::reset() {
   clear();
-  }
+}
 
 void Disease::clear() {
   epidemic->clear();
   strainTable->reset();
-  }
+}
 
 void Disease::setup(int disease, Population *pop, double *mut_prob) {
-  int n;
   id = disease;
 
-  if (Verbose) {
-    fprintf(Statusfp, "disease %d setup entered\n", id);
-    fflush(Statusfp);
-    }
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "disease %d setup entered\n", id);
+    fflush(Global::Statusfp);
+  }
 
   get_indexed_param("trans",id,&transmissibility);
   get_indexed_param("mortality_rate",id,&mortality_rate);
@@ -117,18 +116,18 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
 
   if(at_risk->is_empty() == false ) at_risk->print();
 
-  if (Verbose) {
-    fprintf(Statusfp, "disease %d setup finished\n", id);
-    fflush(Statusfp);
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "disease %d setup finished\n", id);
+    fflush(Global::Statusfp);
     print();
-    }
   }
+}
 
 void Disease::print() {
   // Since most of Disease has been moved to IntraHost (or classes derived from it)
   // the old print() function no longer worked.
   // TODO: write new print() statement or remove
-  }
+}
 
 Disease* Disease::should_mutate_to() {
   int num_diseases = population->get_diseases();
@@ -146,8 +145,8 @@ Disease* Disease::should_mutate_to() {
 
     if (r < mutation_prob[disease_i]) {
       return population->get_disease(disease_i);
-      }
     }
+  }
 
   if (infection_id == id) {
     // Didn't mutate yet.
@@ -158,13 +157,13 @@ Disease* Disease::should_mutate_to() {
 
       if (r < mutation_prob[disease_i]) {
         return population->get_disease(disease_i);
-        }
-
       }
+
     }
+  }
 
   return NULL;
-  }
+}
 
 int Disease::get_days_recovered() {
   int days;
@@ -173,61 +172,61 @@ int Disease::get_days_recovered() {
     // draw from exponential distribution
     days = floor(0.5 + draw_exponential(immunity_loss_rate));
     // printf("DAYS RECOVERED = %d\n", days);
-    }
+  }
   else {
     days = -1;
-    }
+  }
 
   return days;
-  }
+}
 
 
 int Disease::get_days_symp() {
   return ihm->get_days_symp();
-  }
+}
 
 double Disease::get_attack_rate() {
   return epidemic->get_attack_rate();
-  }
+}
 
 void Disease::update_stats(int day) {
   epidemic->update_stats(day);
-  }
+}
 
 void Disease::print_stats(int day) {
   epidemic->print_stats(day);
-  }
+}
 
 // static
 double Disease::get_prob_stay_home() {
   return Prob_stay_home;
-  }
+}
 
 // static
 void Disease::set_prob_stay_home(double p) {
   Prob_stay_home = p;
-  }
+}
 
 // static
 void Disease::get_disease_parameters() {
-  }
+}
 
 void Disease::update(Date *sim_start_date, int day) {
   epidemic->update(sim_start_date, day);
-  }
+}
 
 double Disease :: get_transmissibility(int strain) {
   return strainTable->getTransmissibility(strain);
-  }
+}
 
 Trajectory *Disease :: getTrajectory(Infection *infection, map<int, double> *loads) {
   return ihm->getTrajectory(infection, loads);
-  }
+}
 
 map<int, double> *Disease :: getPrimaryLoads(int day) {
   return evol->getPrimaryLoads(day);
-  }
+}
 
 UNIT_TEST_VIRTUAL int Disease :: get_max_days() {
   return ihm->get_max_days();
-  }
+}

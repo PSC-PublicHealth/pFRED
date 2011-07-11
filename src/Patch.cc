@@ -44,17 +44,17 @@ void Patch::make_neighborhood() {
   char str[80];
   double lat, lon;
   sprintf(str, "N-%04d-%04d",row,col);
-  int id = Places.get_number_of_places();
+  int id = Global::Places.get_number_of_places();
   patch_manager->translate_to_lat_lon(center_x,center_y,&lat,&lon);
-  neighborhood = new (nothrow) Neighborhood(id, str, lon, lat, 0, &Pop);
-  Places.add_place(neighborhood);
+  neighborhood = new (nothrow) Neighborhood(id, str, lon, lat, 0, &Global::Pop);
+  Global::Places.add_place(neighborhood);
 }
 
 
 void Patch::add_household(Place *p) {
   houses++;
   household.push_back(p);
-  if (Verbose > 1) {
+  if (Global::Verbose > 1) {
     double lat, lon, x, y;
     lat = p->get_latitude();
     lon = p->get_longitude();
@@ -74,7 +74,7 @@ void Patch::record_favorite_places() {
   // create lists of persons, workplaces, schools (by age)
   person.clear();
   workplace.clear();
-  for (int age = 0; age < ADULT_AGE; age++) school[age].clear();
+  for (int age = 0; age < Global::ADULT_AGE; age++) school[age].clear();
 
   // char filename[256];
   // sprintf(filename, "PATCHES/Patch-%d-%d-households", row, col);
@@ -92,7 +92,7 @@ void Patch::record_favorite_places() {
       if (p != NULL) workplace.push_back(p);
       s = (School *) per->get_activities()->get_school();
       if (s != NULL) {
-	for (int age = 0; age < ADULT_AGE; age++) {
+	for (int age = 0; age < Global::ADULT_AGE; age++) {
 	  if (s->children_in_grade(age) > 0)
 	    school[age].push_back(s);
 	}
@@ -207,12 +207,12 @@ double Patch::distance_to_patch(Patch *p2) {
 
 void Patch::quality_control() {
   return;
-  fprintf(Statusfp,
+  fprintf(Global::Statusfp,
 	  "PATCH row = %d col = %d  pop = %d  houses = %d work = %d schools = ",
 	  row,col,(int)person.size(),(int)household.size(),(int)workplace.size());
   for (int age = 0; age < 20; age++) {
-    fprintf(Statusfp, "%d ", (int)school[age].size());
+    fprintf(Global::Statusfp, "%d ", (int)school[age].size());
   }
-  fprintf(Statusfp, "\n");
-  fflush(Statusfp);
+  fprintf(Global::Statusfp, "\n");
+  fflush(Global::Statusfp);
 }

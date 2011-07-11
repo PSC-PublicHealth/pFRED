@@ -21,13 +21,13 @@ using namespace std;
 
 void Utils::fred_abort(const char* format, ...){
 
-	if(ErrorLogfp != NULL){
+	if(Global::ErrorLogfp != NULL){
 		va_list ap;
 		va_start(ap,format);
-		fprintf(ErrorLogfp,"FRED ERROR: ");
-		vfprintf(ErrorLogfp,format,ap);
+		fprintf(Global::ErrorLogfp,"FRED ERROR: ");
+		vfprintf(Global::ErrorLogfp,format,ap);
 		va_end(ap);
-		fflush(ErrorLogfp);
+		fflush(Global::ErrorLogfp);
 	}
 	va_list ap;
 	va_start(ap,format);
@@ -42,13 +42,13 @@ void Utils::fred_abort(const char* format, ...){
 
 void Utils::fred_warning(const char* format, ...){
 
-	if(ErrorLogfp != NULL){
+	if(Global::ErrorLogfp != NULL){
 		va_list ap;
 		va_start(ap,format);
-		fprintf(ErrorLogfp,"FRED WARNING: ");
-		vfprintf(ErrorLogfp,format,ap);
+		fprintf(Global::ErrorLogfp,"FRED WARNING: ");
+		vfprintf(Global::ErrorLogfp,format,ap);
 		va_end(ap);
-		fflush(ErrorLogfp);
+		fflush(Global::ErrorLogfp);
 	}
 	va_list ap;
 	va_start(ap,format);
@@ -61,10 +61,10 @@ void Utils::fred_warning(const char* format, ...){
 
 void Utils::fred_end(void){
 	// This is a function that cleans up FRED and exits
-	if (Outfp != NULL) fclose(Outfp);
-	if (Tracefp != NULL) fclose(Tracefp);
-	if (Infectionfp != NULL) fclose(Infectionfp);
-	if (VaccineTracefp != NULL) fclose(VaccineTracefp);
-	if (Prevfp != NULL) fclose(Prevfp);
-	if (Incfp != NULL) fclose(Incfp);
+	if (Global::Outfp != NULL) fclose(Global::Outfp);
+	if (Global::Tracefp != NULL) fclose(Global::Tracefp);
+	if (Global::Infectionfp != NULL) fclose(Global::Infectionfp);
+	if (Global::VaccineTracefp != NULL) fclose(Global::VaccineTracefp);
+	if (Global::Prevfp != NULL) fclose(Global::Prevfp);
+	if (Global::Incfp != NULL) fclose(Global::Incfp);
 }

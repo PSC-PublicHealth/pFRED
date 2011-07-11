@@ -15,15 +15,6 @@
 #include "Place.h"
 #include <vector>
 
-extern double * school_contacts_per_day;
-extern double *** school_contact_prob;
-extern char school_closure_policy[];
-extern int school_closure_day;
-extern double school_closure_threshold;
-extern int school_closure_period;
-extern int school_closure_delay;
-extern int school_parameters_set;
-
 class School : public Place {
 public: 
   School() {}
@@ -46,6 +37,19 @@ public:
   Place * assign_classroom(Person *per);
 
 private:
+  static double *** school_contact_prob;
+  static char school_closure_policy[];
+  static int school_closure_day;
+  static double school_closure_threshold;
+  static int school_closure_period;
+  static int school_closure_delay;
+  static bool school_parameters_set;
+  static int school_summer_schedule;
+  static char school_summer_start[];
+  static char school_summer_end[];
+  static int school_classroom_size;
+  static double * school_contacts_per_day;
+
   int students_with_age[20];
   vector <Place *> classrooms[20];
   int next_classroom[20];

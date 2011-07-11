@@ -19,7 +19,6 @@ using namespace std;
 #include "Params.h"
 #include "Person.h"
 #include "Health.h"
-extern int Diseases;
 
 Antivirals::Antivirals(){
   char s[80];
@@ -64,7 +63,7 @@ Antivirals::Antivirals(){
     
   }
   print();
-  quality_control(Diseases);
+  quality_control(Global::Diseases);
 }
 
 int Antivirals::get_total_current_stock() const {
@@ -113,7 +112,7 @@ void Antivirals::print_stocks() const {
 
 void Antivirals::quality_control(int ndiseases) const {  
   for(unsigned int iav = 0;iav < AVs.size();iav++) {
-    if (Verbose > 1) {
+    if (Global::Verbose > 1) {
       AVs[iav]->print();
     }
     if(AVs[iav]->quality_control(ndiseases)){

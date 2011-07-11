@@ -36,7 +36,7 @@ void StrainTable :: setup(Disease *d) {
   get_indexed_param((char *) "num_strains", diseaseId, &numStrains);
   originalStrains = numStrains;
 
-  if(Verbose) printf("Reading %d strains for disease %d\n", numStrains, diseaseId);
+  if(Global::Verbose > 0) printf("Reading %d strains for disease %d\n", numStrains, diseaseId);
 
   strains = new vector<Strain *>();
 

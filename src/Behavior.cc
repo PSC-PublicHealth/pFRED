@@ -19,14 +19,14 @@
 #include <string.h>
 
 Behavior::Behavior(Person *p) {
-  if (strcmp(Behavior_model_type, "random") == 0) {
+  if (strcmp(Global::Behavior_model_type, "random") == 0) {
     model = new Random_Behavior_Model(p);
   }
-  else if (strcmp(Behavior_model_type, "HBM") == 0) {
+  else if (strcmp(Global::Behavior_model_type, "HBM") == 0) {
     model = new Health_Belief_Model(p);
   }
   else {
-    Utils::fred_abort("Help! Unrecognized behavior model: |%s|\n", Behavior_model_type); 
+    Utils::fred_abort("Help! Unrecognized behavior model: |%s|\n", Global::Behavior_model_type);
   }
 }
 

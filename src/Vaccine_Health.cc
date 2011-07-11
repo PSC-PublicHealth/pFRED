@@ -35,7 +35,7 @@ Vaccine_Health::Vaccine_Health(int _vaccination_day, Vaccine* _vaccine, int _age
     vaccination_effective_day = vaccination_day + efficacy_delay;
   current_dose =0;
   days_to_next_dose = -1;
-  if(Debug > 1) {
+  if(Global::Debug > 1) {
     cout << "Agent: " << health->get_self()->get_id() << " took dose " << current_dose << " on day "<< vaccination_day << "\n";
   }
   if(vaccine->get_number_doses() > 1){
@@ -50,9 +50,9 @@ void Vaccine_Health::print() const {
 }
 
 void Vaccine_Health::printTrace() const {
-  fprintf(VaccineTracefp," vaccday %5d age %3d iseff %2d effday %5d currentdose %3d",vaccination_day,
+  fprintf(Global::VaccineTracefp," vaccday %5d age %3d iseff %2d effday %5d currentdose %3d",vaccination_day,
 	  health->get_self()->get_age(),is_effective(), vaccination_effective_day, current_dose);
-  fflush(VaccineTracefp);
+  fflush(Global::VaccineTracefp);
 }
 
 void Vaccine_Health::update(int day, int age){
@@ -61,7 +61,7 @@ void Vaccine_Health::update(int day, int age){
     // Going out to Person, so that activities can be accessed
     Disease* s = health->get_self()->get_population()->get_disease(0);
     health->get_self()->become_immune(s);
-    if(Debug < 1) {
+    if(Global::Debug < 1) {
       cout << "Agent " << health->get_self()->get_id() 
 	   << " has become immune from dose "<< current_dose 
 	   << "on day " << day << "\n";
@@ -78,7 +78,7 @@ void Vaccine_Health::update(int day, int age){
       current_dose++;
       days_to_next_dose = day + vaccine->get_dose(current_dose)->get_days_between_doses();
       int vaccine_dose_priority = vaccine_manager->get_vaccine_dose_priority();
-      if(Debug < 1){
+      if(Global::Debug < 1){
 	cout << "Agent " << health->get_self()->get_id()
 	     << " being put in to the queue with priority " << vaccine_dose_priority
 	     << " for dose " << current_dose 

@@ -94,7 +94,7 @@ void Place::prepare() {
   update(0);
   open_date = 0;
   close_date = INT_MAX;
-  if (Verbose > 2) {
+  if (Global::Verbose > 2) {
     printf("prepare place: %d\n", id);
     print(0);
     fflush(stdout);
@@ -122,13 +122,11 @@ void Place::enroll(Person * per) {
   N++;
 }
 
-
 void Place::add_susceptible(int disease, Person * per) {
   susceptibles[disease].push_back(per);
   S[disease]++;
   assert (S[disease] == static_cast <int> (susceptibles[disease].size()));
 }
-
 
 void Place::add_infectious(int disease, Person * per, char status) {
   infectious[disease].push_back(per);
@@ -153,7 +151,6 @@ void Place::print_susceptibles(int disease) {
   }
   printf("\n");
 }
-
 
 void Place::print_infectious(int disease) {
   vector<Person *>::iterator itr;
@@ -180,7 +177,7 @@ void Place::spread_infection(int day, int s) {
   // since N is estimated only at reset time.
   int number_targets = (N-1 > S[s]? N-1 : S[s]);
 
-  if (Verbose > 1) { print(s); }
+  if (Global::Verbose > 1) { print(s); }
   if (number_targets == 0) return;
   if (is_open(day) == false) return;
   if (should_be_open(day, s) == false) return;
@@ -191,7 +188,7 @@ void Place::spread_infection(int day, int s) {
   // expected number of susceptible contacts for each infectious person
   // OLD: double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
   double contacts = get_contacts_per_day(s) * disease->get_transmissibility();
-  if (Verbose > 1) {
+  if (Global::Verbose > 1) {
     printf("Disease %d, expected contacts = %f\n", s, contacts);
     fflush(stdout);
   }
@@ -202,7 +199,7 @@ void Place::spread_infection(int day, int s) {
 		
     // reduce number of infective contacts by infector's infectivity
     double infector_contacts = contacts * infector->get_infectivity(s, day);
-    if (Verbose > 1) {
+    if (Global::Verbose > 1) {
       printf("infectivity = %f so ", infector->get_infectivity(s, day));
       printf("infector's effective contacts = %f\n", infector_contacts);
       fflush(stdout);
@@ -212,7 +209,7 @@ void Place::spread_infection(int day, int s) {
     int contact_count = (int) infector_contacts;
     double r = RANDOM();
     if (r < infector_contacts - contact_count) contact_count++;
-    if (Verbose > 1) {
+    if (Global::Verbose > 1) {
       printf("infector contact_count = %d  r = %f\n", contact_count, r);
       fflush(stdout);
     }
@@ -226,65 +223,64 @@ void Place::spread_infection(int day, int s) {
 
       // at this point we have a susceptible target:
       Person * infectee = susceptibles[s][pos];
-      if (Verbose > 1) {
-	printf("possible infectee = %d  pos = %d  S[%d] = %d\n",
+      if (Global::Verbose > 1) {
+	      printf("possible infectee = %d  pos = %d  S[%d] = %d\n",
                infectee->get_id(), pos, s, S[s]);
-	fflush(stdout);
+	      fflush(stdout);
       }
 
       // is the target still susceptible?
       if (infectee->is_susceptible(s)) {
-	if (Verbose > 1) { printf("Victim is susceptible\n"); }
+	      if (Global::Verbose > 1) { printf("Victim is susceptible\n"); }
     
-	// get the transmission probs for this infector/infectee pair
-	double transmission_prob = get_transmission_prob(s, infector, infectee);
-	double susceptibility = infectee->get_susceptibility(s);
-	if (Verbose > 1) {
-	  printf("trans_prob = %f  susceptibility = %f\n",
-		 transmission_prob, susceptibility);
-	  fflush(stdout);
-	}
+	      // get the transmission probs for this infector/infectee pair
+	      double transmission_prob = get_transmission_prob(s, infector, infectee);
+	      double susceptibility = infectee->get_susceptibility(s);
+	      if (Global::Verbose > 1) {
+	        printf("trans_prob = %f  susceptibility = %f\n",
+		      transmission_prob, susceptibility);
+	        fflush(stdout);
+	      }
     
-	// attempt transmission
-	double r = RANDOM();
-	if (r < transmission_prob*susceptibility) {
-	  if (Verbose > 1) {
-	    printf("transmission succeeded: r = %f  prob = %f\n",
-		   r, transmission_prob*susceptibility);
-	    fflush(stdout);
-	  }
+	      // attempt transmission
+	      double r = RANDOM();
+	      if (r < transmission_prob*susceptibility) {
+	        if (Global::Verbose > 1) {
+	          printf("transmission succeeded: r = %f  prob = %f\n",
+		                r, transmission_prob*susceptibility);
+	          fflush(stdout);
+	        }
 
-	  // successful transmission; create a new infection in infectee
-	  // Infection * infection = new Infection(disease, infector, infectee, this, day);
-	  // infectee->become_exposed(infection);
-	  // infector->add_infectee(s);
+	        // successful transmission; create a new infection in infectee
+	        // Infection * infection = new Infection(disease, infector, infectee, this, day);
+	        // infectee->become_exposed(infection);
+          // infector->add_infectee(s);
           Transmission *transmission = new Transmission(infector, this, day);
           infector->infect(infectee, s, transmission);
 
-	  if (Verbose > 1) {
-	    if (infector->get_exposure_date(s) == 0) {
-	      printf("SEED infection day %i from %d to %d\n",
-		     day, infector->get_id(),infectee->get_id());
-	    } else {
-	      printf("infection day %i of disease %i from %d to %d\n",
-		     day, s, infector->get_id(),infectee->get_id());
-	    }
-	    fflush(stdout);
-	  }
-	}
-	else {
-	  if (Verbose > 1) { 
-	    printf("transmission failed: r = %f  prob = %f\n",
-		   r, transmission_prob*susceptibility);
-	    fflush(stdout);
-	  }
-	}
+	        if (Global::Verbose > 1) {
+	          if (infector->get_exposure_date(s) == 0) {
+	            printf("SEED infection day %i from %d to %d\n",
+		                  day, infector->get_id(),infectee->get_id());
+	          } else {
+	            printf("infection day %i of disease %i from %d to %d\n",
+		                  day, s, infector->get_id(),infectee->get_id());
+	          }
+	          fflush(stdout);
+	        }
+	      }	else {
+	        if (Global::Verbose > 1) {
+	          printf("transmission failed: r = %f  prob = %f\n",
+		                r, transmission_prob*susceptibility);
+	          fflush(stdout);
+	        }
+        }
       } // end of susceptible infectee
     } // end contact loop
   } // end infectious list loop
 }
 
-void Place :: modifyIncidenceCount(int disease, vector<int> strains, int incr) {
+void Place::modifyIncidenceCount(int disease, vector<int> strains, int incr) {
   map<int, int>& inc = incidence[disease];
   for(int s=0; s < (int) strains.size(); s++) {
     if(inc.find(strains[s]) == inc.end()) inc[strains[s]] = 0;
@@ -292,7 +288,7 @@ void Place :: modifyIncidenceCount(int disease, vector<int> strains, int incr) {
   }
 }
 
-void Place :: modifyPrevalenceCount(int disease, vector<int> strains, int incr) {
+void Place::modifyPrevalenceCount(int disease, vector<int> strains, int incr) {
   map<int, int>& prev = prevalence[disease];
   for(int s=0; s < (int) strains.size(); s++) {
     prev[strains[s]] += 1;

@@ -52,7 +52,7 @@ AV_Manager::AV_Manager(Population *_pop) : Manager(_pop){
 void AV_Manager::update(int day){
   if(do_av==1){
     av_package->update(day);
-    if(Debug > 1){
+    if(Global::Debug > 1){
       av_package->print_stocks();
     }
   }
@@ -104,7 +104,7 @@ void AV_Manager::disseminate(int day){
 	//int yeah_or_ney = p->choose(current_person,av->get_disease(),day);
 	//if(yeah_or_ney == 0){
 	if(p->choose_first_negative(current_person,av->get_disease(),day) == true){
-          if(Debug > 3) cout << "Giving Antiviral for disease " << av->get_disease() << " to " <<ip << "\n";
+          if(Global::Debug > 3) cout << "Giving Antiviral for disease " << av->get_disease() << " to " <<ip << "\n";
           av->remove_stock(1);
           current_person->get_health()->take(av,day);
         }

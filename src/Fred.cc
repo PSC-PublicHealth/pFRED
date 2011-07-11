@@ -41,24 +41,24 @@ int main(int argc, char* argv[]) {
   if (argc > 3) { strcpy(directory, argv[3]); }
   else { strcpy(directory, ""); }
 
-  Statusfp = stdout;
+  Global::Statusfp = stdout;
   time(&clock);
-  fprintf(Statusfp, "FRED started %s", ctime(&clock));
-  fprintf(Statusfp, "param file = %s\n", paramfile);
-  fflush(Statusfp);
+  fprintf(Global::Statusfp, "FRED started %s", ctime(&clock));
+  fprintf(Global::Statusfp, "param file = %s\n", paramfile);
+  fflush(Global::Statusfp);
 
 
   // get runtime parameters
   read_parameters(paramfile);
-  get_global_parameters();
+  Global::get_global_parameters();
 
   // get runtime population parameters
-  Pop.get_parameters();
+  Global::Pop.get_parameters();
 
 
   if (strcmp(directory, "") == 0) {
     // use the directory in the params file
-    strcpy(directory, Output_directory);
+    strcpy(directory, Global::Output_directory);
     //printf("directory = %s\n",directory);
   }
   // create the output directory, if necessary
@@ -69,76 +69,75 @@ int main(int argc, char* argv[]) {
   mode ^= mask;    // apply the user's existing umask
   if (0!=mkdir(directory, mode) && EEXIST!=errno) // make it
     Utils::fred_abort("mkdir(Output_directory) failed with %d\n",errno); // or die
+
   // open output files
   sprintf(filename, "%s/out%d.txt", directory, run);
-  Outfp = fopen(filename, "w");
-  if (Outfp == NULL) {
+  Global::Outfp = fopen(filename, "w");
+  if (Global::Outfp == NULL) {
     Utils::fred_abort("Can't open %s\n", filename);
   }
-
   // STB Do the error file first so that it captures
   // as much errors as possible.
-  ErrorLogfp = NULL;
-  sprintf(filename, "%s/err%d.txt", Output_directory, run);
-  ErrorLogfp = fopen(filename, "w");
-  if (ErrorLogfp == NULL) {
+  Global::ErrorLogfp = NULL;
+  sprintf(filename, "%s/err%d.txt", Global::Output_directory, run);
+  Global::ErrorLogfp = fopen(filename, "w");
+  if (Global::ErrorLogfp == NULL) {
           printf("Help! Can't open %s\n", filename);
           abort();
   }
-
-  Tracefp = NULL;
-  if (strcmp(Tracefilebase, "none") != 0) {
+  Global::Tracefp = NULL;
+  if (strcmp(Global::Tracefilebase, "none") != 0) {
     sprintf(filename, "%s/trace%d.txt", directory, run);
-    Tracefp = fopen(filename, "w");
-    if (Tracefp == NULL) {
+    Global::Tracefp = fopen(filename, "w");
+    if (Global::Tracefp == NULL) {
       Utils::fred_abort("Can't open %s\n", filename);
     }
   }
-  Infectionfp = NULL;
-  if (Track_infection_events) {
+  Global::Infectionfp = NULL;
+  if (Global::Track_infection_events) {
     sprintf(filename, "%s/infections%d.txt", directory, run);
-    Infectionfp = fopen(filename, "w");
-    if (Infectionfp == NULL) {
+    Global::Infectionfp = fopen(filename, "w");
+    if (Global::Infectionfp == NULL) {
       Utils::fred_abort("Can't open %s\n", filename);
     }
   }
-  VaccineTracefp = NULL;
-  if (strcmp(VaccineTracefilebase, "none") != 0) {
+  Global::VaccineTracefp = NULL;
+  if (strcmp(Global::VaccineTracefilebase, "none") != 0) {
     sprintf(filename, "%s/vacctr%d.txt", directory, run);
-    VaccineTracefp = fopen(filename, "w");
-    if (VaccineTracefp == NULL) {
+    Global::VaccineTracefp = fopen(filename, "w");
+    if (Global::VaccineTracefp == NULL) {
       Utils::fred_abort("Can't open %s\n", filename);
     }
   }
-  Birthfp = NULL;
-  if (Enable_Births) {
+  Global::Birthfp = NULL;
+  if (Global::Enable_Births) {
     sprintf(filename, "%s/births%d.txt", directory, run);
-    Birthfp = fopen(filename, "w");
-    if (Birthfp == NULL) {
+    Global::Birthfp = fopen(filename, "w");
+    if (Global::Birthfp == NULL) {
       Utils::fred_abort("Can't open %s\n", filename);
     }
   }
-  Deathfp = NULL;
-  if (Enable_Deaths) {
+  Global::Deathfp = NULL;
+  if (Global::Enable_Deaths) {
     sprintf(filename, "%s/deaths%d.txt", directory, run);
-    Deathfp = fopen(filename, "w");
-    if (Deathfp == NULL) {
+    Global::Deathfp = fopen(filename, "w");
+    if (Global::Deathfp == NULL) {
       Utils::fred_abort("Can't open %s\n", filename);
     }
   }
-  Prevfp = NULL;
-  if (strcmp(Prevfilebase, "none") != 0) {
-    sprintf(filename, "%s/prev%d.txt", Output_directory, run);
-    Prevfp = fopen(filename, "w");
-    if (Prevfp == NULL) {
+  Global::Prevfp = NULL;
+  if (strcmp(Global::Prevfilebase, "none") != 0) {
+    sprintf(filename, "%s/prev%d.txt", Global::Output_directory, run);
+    Global::Prevfp = fopen(filename, "w");
+    if (Global::Prevfp == NULL) {
       Utils::fred_abort("Can't open %s\n", filename);
     }
   }
-  Incfp = NULL;
-  if (strcmp(Incfilebase, "none") != 0) {
-    sprintf(filename, "%s/inc%d.txt", Output_directory, run);
-    Incfp = fopen(filename, "w");
-    if (Incfp == NULL) {
+  Global::Incfp = NULL;
+  if (strcmp(Global::Incfilebase, "none") != 0) {
+    sprintf(filename, "%s/inc%d.txt", Global::Output_directory, run);
+    Global::Incfp = fopen(filename, "w");
+    if (Global::Incfp == NULL) {
       Utils::fred_abort("Help! Can't open %s\n", filename);
     }
   }
@@ -146,95 +145,95 @@ int main(int argc, char* argv[]) {
 
 
   // Date Setup
-  INIT_RANDOM(Seed);
-  Random_start_day = (Epidemic_offset > 6);
+  INIT_RANDOM(Global::Seed);
+  Global::Random_start_day = (Global::Epidemic_offset > 6);
 
   // Start_date must have format 'YYYY-MM-DD'
-  Sim_Date = new Date(string(Start_date), Date::YYYYMMDD);
-  Sim_Date->setup(directory, Days);
+  Global::Sim_Date = new Date(string(Global::Start_date), Date::YYYYMMDD);
+  Global::Sim_Date->setup(directory, Global::Days);
 
   // set random number seed based on run number
-  if (run > 1 && Reseed_day == -1) { new_seed = Seed * 100 + (run-1); }
-  else { new_seed = Seed; }
-  fprintf(Statusfp, "seed = %lu\n", new_seed);
+  if (run > 1 && Global::Reseed_day == -1) { new_seed = Global::Seed * 100 + (run-1); }
+  else { new_seed = Global::Seed; }
+  fprintf(Global::Statusfp, "seed = %lu\n", new_seed);
   INIT_RANDOM(new_seed);
 
   time(&clock);
-  fprintf(Statusfp, "\nFRED run %d started %s\n", run, ctime(&clock));
-  fflush(Statusfp);
+  fprintf(Global::Statusfp, "\nFRED run %d started %s\n", run, ctime(&clock));
+  fflush(Global::Statusfp);
 	
   // initializations
 
   // read in the household, schools and workplaces
-  Places.read_places();
+  Global::Places.read_places();
 
   // read in the population and have each person enroll
   // in each favorite place identified in the population file
-  Pop.setup();
+  Global::Pop.setup();
 
   // define FRED-specific places
-  Places.setup_classrooms();
-  Places.setup_offices();
+  Global::Places.setup_classrooms();
+  Global::Places.setup_offices();
 
   // define FRED-specific social networks,
   // and have each person enroll as needed
-  Pop.assign_classrooms();
-  Pop.assign_offices();
+  Global::Pop.assign_classrooms();
+  Global::Pop.assign_offices();
 
   // after all enrollments, prepare to receive visitors
-  Places.prepare();
+  Global::Places.prepare();
 
   // record the favorite places for households within each patch
-  Environment.record_favorite_places();
+  Global::Environment.record_favorite_places();
 
-  if (Quality_control) {
-    Pop.quality_control();
-    Places.quality_control();
-    Environment.quality_control();
+  if (Global::Quality_control) {
+    Global::Pop.quality_control();
+    Global::Places.quality_control();
+    Global::Environment.quality_control();
   }
 
   // allow for an offset in the start of the epidemic
-  if (Random_start_day) {
+  if (Global::Random_start_day) {
     // cycle through days of the week for start day
-    Epidemic_offset = (run-1) % 7;
+    Global::Epidemic_offset = (run-1) % 7;
   }
 
-  for (int day = 0; day < Days; day++) {
-    if (day == Reseed_day) {
-      fprintf(Statusfp, "************** reseed day = %d\n", day);
-      fflush(Statusfp);
+  for (int day = 0; day < Global::Days; day++) {
+    if (day == Global::Reseed_day) {
+      fprintf(Global::Statusfp, "************** reseed day = %d\n", day);
+      fflush(Global::Statusfp);
       INIT_RANDOM(new_seed + run - 1);
     }
     // fprintf(Statusfp, "================\nsim day = %d  date = %s\n",
     // day, Sim_Date->get_MMDD(day));
     // fflush(stdout);
-    Places.update(day);
-    Pop.begin_day(day);
-    Pop.get_visitors_to_infectious_places(day);
-    Pop.transmit_infection(day);
-    Pop.end_day(day);
-    Pop.report(day);
+    Global::Places.update(day);
+    Global::Pop.begin_day(day);
+    Global::Pop.get_visitors_to_infectious_places(day);
+    Global::Pop.transmit_infection(day);
+    Global::Pop.end_day(day);
+    Global::Pop.report(day);
 
-    if (Enable_Aging && Verbose && strcmp(Sim_Date->get_MMDD(day),"12-31")==0) {
-      Pop.quality_control();
-      Places.quality_control();
-      Environment.quality_control();
+    if (Global::Enable_Aging && Global::Verbose && strcmp(Global::Sim_Date->get_MMDD(day),"12-31")==0) {
+      Global::Pop.quality_control();
+      Global::Places.quality_control();
+      Global::Environment.quality_control();
     }
 
-    fprintf(Statusfp, "day %d finished  ", day);
+    fprintf(Global::Statusfp, "day %d finished  ", day);
     // incremental trace
-    if (Incremental_Trace && day && !(day%Incremental_Trace))
-      Pop.print(1, day);
+    if (Global::Incremental_Trace && day && !(day%Global::Incremental_Trace))
+      Global::Pop.print(1, day);
     time(&clock);
-    fprintf(Statusfp, "%s", ctime(&clock));
+    fprintf(Global::Statusfp, "%s", ctime(&clock));
   }
 
   // finish up
-  Pop.end_of_run();
+  Global::Pop.end_of_run();
   // fclose(Statusfp);
   Utils::fred_end();
   time(&clock);
-  fprintf(Statusfp, "FRED finished %s", ctime(&clock));
+  fprintf(Global::Statusfp, "FRED finished %s", ctime(&clock));
   return 0;
 }
 

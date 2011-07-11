@@ -14,10 +14,6 @@
 
 #include "Place.h"
 
-extern double * Hospital_contacts_per_day;
-extern double *** Hospital_contact_prob;
-extern int Hospital_parameters_set;
-
 class Hospital : public Place {
 public: 
   Hospital() {}
@@ -28,6 +24,11 @@ public:
   double get_transmission_prob(int disease, Person * i, Person * s);
   double get_contacts_per_day(int disease);
   bool should_be_open(int day, int disease) { return true; }
+
+private:
+  static double * Hospital_contacts_per_day;
+  static double *** Hospital_contact_prob;
+  static bool Hospital_parameters_set;
 };
 
 #endif // _FRED_HOSPITAL_H

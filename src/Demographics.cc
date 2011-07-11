@@ -18,6 +18,8 @@
 #include "Date.h"
 #include "Utils.h"
 
+class Global;
+
 bool Demographics::is_initialized = false;
 double Demographics::age_yearly_mortality_rate_male[Demographics::MAX_AGE + 1];
 double Demographics::age_yearly_mortality_rate_female[Demographics::MAX_AGE + 1];
@@ -120,7 +122,7 @@ void Demographics::setup(Date * anchor_date) {
   int age_lookup = (age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE);
 
   //Will this person die in the next year?
-  if (Enable_Deaths > 0) {
+  if (Global::Enable_Deaths > 0) {
     double pct_chance_to_die = 0.0;
 
     if (this->sex == 'F')
@@ -140,7 +142,7 @@ void Demographics::setup(Date * anchor_date) {
   age_lookup = (age <= Demographics::MAX_PREGNANCY_AGE ? age : Demographics::MAX_PREGNANCY_AGE);
 
   //Is this person pregnant?
-  if (Enable_Births > 0) {
+  if (Global::Enable_Births > 0) {
     if (this->sex == 'F' && URAND(0.0, 1.0) <= ((0.75) * Demographics::age_yearly_birth_rate[age_lookup])) {
 
       //Yes, so set the due_date (in simulation days)
@@ -175,14 +177,14 @@ void Demographics::update(Date * sim_start_date, int day) {
        !Date::is_leap_year(cur_year))) {
 
     //Notify any classes that have registered as event handlers
-    if (Enable_Aging > 0) {
+    if (Global::Enable_Aging > 0) {
       // int prev_age = age;
       age++;
       // this->self->notify_property_change("age", prev_age, age);
     }
 
     //Will this person die in the next year?
-    if (Enable_Deaths > 0) {
+    if (Global::Enable_Deaths > 0) {
       double pct_chance_to_die = 0.0;
 
       if (this->sex == 'F')
@@ -220,7 +222,7 @@ void Demographics::update(Date * sim_start_date, int day) {
   }
 
   //Is this your day to give birth
-  if(Enable_Births &&
+  if(Global::Enable_Births &&
      this->sex == 'F' &&
      this->pregnant &&
      this->due_date != NULL &&
@@ -241,7 +243,7 @@ void Demographics::update(Date * sim_start_date, int day) {
   }
 
   //Is this your day to die?
-  if(Enable_Deaths > 0 &&
+  if(Global::Enable_Deaths > 0 &&
      this->deceased_date != NULL &&
      this->deceased_date->get_year() == cur_year &&
      this->deceased_date->get_month() == cur_month &&
@@ -259,8 +261,8 @@ void Demographics::read_init_files() {
   char yearly_mortality_rate_file[256];
   char yearly_birth_rate_file[256];
 
-  if (Verbose) {
-    fprintf(Statusfp, "read demographic init files entered\n"); fflush(Statusfp);
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "read demographic init files entered\n"); fflush(Global::Statusfp);
   }
 
   get_param((char *) "yearly_mortality_rate_file", yearly_mortality_rate_file);
@@ -269,7 +271,7 @@ void Demographics::read_init_files() {
   // read death rate file and load the values unt the death_rate_array
   FILE *fp = fopen(yearly_mortality_rate_file, "r");
   if (fp == NULL) {
-    fprintf(Statusfp, "Demographic init_file %s not found\n", yearly_mortality_rate_file);
+    fprintf(Global::Statusfp, "Demographic init_file %s not found\n", yearly_mortality_rate_file);
     exit(1);
   }
 
@@ -293,7 +295,7 @@ void Demographics::read_init_files() {
   fp = fopen(yearly_birth_rate_file, "r");
 
   if (fp == NULL) {
-    fprintf(Statusfp, "Demographic init_file %s not found\n", yearly_birth_rate_file);
+    fprintf(Global::Statusfp, "Demographic init_file %s not found\n", yearly_birth_rate_file);
     exit(1);
   }
   for (int i = 0; i <= Demographics::MAX_PREGNANCY_AGE; i++) {
@@ -313,9 +315,9 @@ void Demographics::read_init_files() {
   }
 
   fclose(fp);
-  if (Verbose) {
-    fprintf(Statusfp, "finished reading Demographic init_file = %s\n", yearly_mortality_rate_file);
-    fflush(Statusfp);
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "finished reading Demographic init_file = %s\n", yearly_mortality_rate_file);
+    fflush(Global::Statusfp);
   }
 }
 
@@ -347,14 +349,14 @@ void Demographics::reset(Date * sim_start_date) {
   }
 
   //If we are going back to a younger age, notify any classes that have registered as event handlers
-  if (Enable_Aging > 0 && prev_age > age) {
+  if (Global::Enable_Aging > 0 && prev_age > age) {
     // this->self->notify_property_change("age", prev_age, age);
   }
 
   int age_lookup = (age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE);
 
   //Will this person die in the next year?
-  if (Enable_Deaths > 0) {
+  if (Global::Enable_Deaths > 0) {
     double pct_chance_to_die = 0.0;
 
     if (this->sex == 'F')
@@ -373,7 +375,7 @@ void Demographics::reset(Date * sim_start_date) {
 
   age_lookup = (age <= Demographics::MAX_PREGNANCY_AGE ? age : Demographics::MAX_PREGNANCY_AGE);
   //Is this person pregnant?
-  if (Enable_Births > 0) {
+  if (Global::Enable_Births > 0) {
     if (this->sex == 'F' && URAND(0.0, 1.0) <= ((0.75) * Demographics::age_yearly_birth_rate[age_lookup])) {
 
       //Yes, so set the due_date (in simulation days)
@@ -391,9 +393,9 @@ void Demographics::print() {
 }
 
 double Demographics::get_real_age(int day) {
-  Date * today = new Date(Sim_Date->get_year(day),
-			       Sim_Date->get_month(day),
-			       Sim_Date->get_day_of_month(day));
+  Date * today = new Date(Global::Sim_Date->get_year(day),
+                          Global::Sim_Date->get_month(day),
+                          Global::Sim_Date->get_day_of_month(day));
   int days_of_life = Date::days_between(today, birthdate);
   delete today;
   return ((double) days_of_life / 365.0);

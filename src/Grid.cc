@@ -43,7 +43,7 @@ void Grid::setup(double minlat, double maxlat, double minlon, double maxlon) {
   max_y = (max_lat-min_lat)*km_per_deg_latitude;
   rows = 1 + (int) (max_y/patch_size);
   cols = 1 + (int) (max_x/patch_size);
-  if (Verbose) {
+  if (Global::Verbose) {
     printf("rows = %d  cols = %d\n",rows,cols);
     printf("max_x = %f  max_y = %f\n",max_x,max_y);
     fflush(stdout);
@@ -70,7 +70,7 @@ void Grid::setup(double minlat, double maxlat, double minlon, double maxlon) {
     }
   }
 
-  if (Verbose > 1) {
+  if (Global::Verbose > 1) {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
 	printf("print patch[%d][%d]:\n",i,j);
@@ -193,6 +193,9 @@ Patch * Grid::select_patch_by_gravity_model(int row, int col) {
     }
   }
   Utils::fred_abort("Help! patch gravity model failed.\n");
+
+  //Will never get here, but will stop compiler warning
+  return NULL;
 }
 
 void Grid::test_gravity_model() {
@@ -214,9 +217,9 @@ void Grid::test_gravity_model() {
 }
 
 void Grid::quality_control() {
-  if (Verbose) {
-    fprintf(Statusfp, "patches quality control check\n");
-    fflush(Statusfp);
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "patches quality control check\n");
+    fflush(Global::Statusfp);
   }
   
   for (int row = 0; row < rows; row++) {
@@ -225,9 +228,9 @@ void Grid::quality_control() {
     }
   }
 
-  if (Verbose) {
-    fprintf(Statusfp, "patches quality control finished\n");
-    fflush(Statusfp);
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "patches quality control finished\n");
+    fflush(Global::Statusfp);
   }
 }
 

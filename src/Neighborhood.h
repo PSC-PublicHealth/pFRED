@@ -14,10 +14,6 @@
 
 #include "Place.h"
 
-extern double * Neighborhood_contacts_per_day;
-extern double *** Neighborhood_contact_prob;
-extern int Neighborhood_parameters_set;
-
 class Neighborhood : public Place {
 public: 
   Neighborhood() {};
@@ -28,6 +24,11 @@ public:
   double get_transmission_prob(int disease, Person * i, Person * s);
   double get_contacts_per_day(int disease);
   bool should_be_open(int day, int disease) { return true; }
+
+private:
+  static double * Neighborhood_contacts_per_day;
+  static double *** Neighborhood_contact_prob;
+  static bool Neighborhood_parameters_set;
 };
 
 #endif // _FRED_NEIGHBORHOOD_H

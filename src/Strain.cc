@@ -33,18 +33,18 @@ Strain::Strain() {
   transmissibility = -1.0;
   disease = NULL;
   strainData = NULL;
-  }
+}
 
 Strain::~Strain() {
   if(strainData != NULL) delete strainData;
-  }
+}
 
 void Strain::setup(int strain, Disease *disease, map<string, double> *data, double trans) {
   id = strain;
   this->disease = disease;
   strainData = data;
   transmissibility = trans;
-  }
+}
 
 void Strain::setup(int strain, Disease *disease) {
   map<string, double> *data = new map<string, double>;
@@ -58,8 +58,8 @@ void Strain::setup(int strain, Disease *disease) {
   printf("Strain setup finished\n");
   fflush(stdout);
 
-  if (Verbose) print();
-  }
+  if (Global::Verbose > 0) print();
+}
 
 void Strain::print() {
   printf("Strain %d trans %e\n", id, transmissibility);
@@ -68,9 +68,9 @@ void Strain::print() {
 
   for(map<string, double>::iterator it = strainData->begin(); it != strainData->end(); it++) {
     printf("%s:%lf ", (it->first).c_str(), it->second);
-    }
+  }
 
   printf("\n");
-  }
+}
 
 

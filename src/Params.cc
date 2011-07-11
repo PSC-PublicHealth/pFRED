@@ -62,7 +62,7 @@ int read_parameters(char *paramfile) {
           strcpy(Param_value[Params], temp_str.c_str());
           
           strcpy(Param_name[Params], name);
-          if (Debug > 2) {
+          if (Global::Debug > 2) {
             printf("READ_PARAMS: %s = %s\n", Param_name[Params],
                    Param_value[Params]);
           }
@@ -109,7 +109,7 @@ int read_parameters(char *paramfile) {
           strcpy(Param_value[Params], temp_str.c_str());
           
           strcpy(Param_name[Params], name);
-          if (Debug > 2) {
+          if (Global::Debug > 2) {
             printf("READ_PARAMS: %s = %s\n", Param_name[Params],
                    Param_value[Params]);
           }
@@ -124,7 +124,7 @@ int read_parameters(char *paramfile) {
   }
   fclose(fp);
   
-  if (Debug > 1) {
+  if (Global::Debug > 1) {
     for (int i = 0; i < Params; i++) {
       printf("READ_PARAMS: %s = %s\n", Param_name[i], Param_value[i]);
     }
@@ -143,13 +143,13 @@ int get_param(char *s, int *p) {
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s = %d\n", s, *p);
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
@@ -168,13 +168,13 @@ int get_param(char *s, unsigned long *p) {
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s = %lu\n", s, *p);
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
@@ -193,13 +193,13 @@ int get_param(char *s, double *p) {
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s = %f\n", s, *p);
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
@@ -218,13 +218,13 @@ int get_param(char *s, float *p) {
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s = %f\n", s, *p);
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
@@ -246,13 +246,13 @@ int get_param(char *s, string &p){
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s = %s\n", s, p.c_str());
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
@@ -271,13 +271,13 @@ int get_param(char *s, char *p) {
     }
   }
   if (found) {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s = %s\n", s, p);
       fflush( stdout);
     }
     return 1;
   } else {
-    if (Debug > 0) {
+    if (Global::Debug > 0) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }

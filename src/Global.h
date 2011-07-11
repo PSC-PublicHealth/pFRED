@@ -7,7 +7,6 @@
 //
 // File: Global.h
 //
-
 #ifndef _FRED_GLOBAL_H
 #define _FRED_GLOBAL_H
 
@@ -24,74 +23,86 @@
 #define UNIT_TEST_VIRTUAL
 #endif
 
-// global constants
-#define DAYS_PER_WEEK 7
-#define ADULT_AGE 18
-#define SCHOOL_AGE 5
-#define RETIREMENT_AGE 67
-
-// global runtime parameters
-extern int Verbose;
-extern int Debug;
-extern int Test;
-extern int Days;
-extern int Reseed_day;
-extern unsigned long Seed;
-extern int Epidemic_offset;
-extern int Vaccine_offset;
-extern char Start_date[];
-
-extern char Population_directory[];
-extern char Output_directory[];
-extern char Tracefilebase[];
-extern char Eventfilebase[];
-extern char VaccineTracefilebase[];
-extern int All_diseases_antigenically_identical;
-extern int Incremental_Trace;
-extern int Trace_Headers;
-extern int Random_start_day;
-extern char Behavior_model_type[];
-extern int Quality_control;
-extern int Diseases;
-extern double Prob_accept_vaccine;
-extern double Prob_accept_vaccine_dose;
-extern int StrainEvolution;
-extern char Prevfilebase[];
-extern char Incfilebase[];
-extern char ErrorLogbase[];
-extern int Enable_Aging;
-extern int Enable_Births;
-extern int Enable_Deaths;
-extern int Track_infection_events;
-
-// global file pointers
-extern FILE *Statusfp;
-extern FILE *Outfp;
-extern FILE *Tracefp;
-extern FILE *Infectionfp;
-extern FILE *VaccineTracefp;
-extern FILE *Birthfp;
-extern FILE *Deathfp;
-extern FILE *Prevfp;
-extern FILE *Incfp;
-extern FILE *ErrorLogfp;
-
-// global singleton objects
 class Population;
-extern Population Pop;
-
 class Place_List;
-extern Place_List Places;
-
 class Grid;
-extern Grid Environment;
-
 class Date;
-extern Date * Sim_Date;
-
 class Evolution;
-extern Evolution *Evol;
 
-void get_global_parameters();
+/**
+ * This class contains the static variables used by the FRED program.  The variables all have public access,
+ * so they can be modified by any class that uses the <code>Global</code> class.  However, by making them
+ * static class variables, the compiler forces the programmer to reference them using the full nomenclature
+ * <code>Global::variable_name</code>, which in turn makes it clear for code maintenance where the actual
+ * variable resides.
+ *
+ * The static method <code>get_global_parameters</code> is used to set the parameters from the parameter file.
+ */
+class Global {
+  public:
+    // global constants
+    static const int DAYS_PER_WEEK = 7;
+    static const int ADULT_AGE = 18;
+    static const int SCHOOL_AGE = 5;
+    static const int RETIREMENT_AGE = 67;
+
+    // global runtime parameters
+    static char Population_directory[];
+    static char Output_directory[];
+    static char Tracefilebase[];
+    static char Eventfilebase[];
+    static char VaccineTracefilebase[];
+    static int All_diseases_antigenically_identical;
+    static int Incremental_Trace;
+    static int Trace_Headers;
+    static int Random_start_day;
+    static char Behavior_model_type[];
+    static int Quality_control;
+    static int Diseases;
+    static double Prob_accept_vaccine;
+    static double Prob_accept_vaccine_dose;
+    static int StrainEvolution;
+    static char Prevfilebase[];
+    static char Incfilebase[];
+    static char ErrorLogbase[];
+    static int Enable_Aging;
+    static int Enable_Births;
+    static int Enable_Deaths;
+    static int Track_infection_events;
+
+    // global singleton objects
+    static Population Pop;
+    static Place_List Places;
+    static Grid Environment;
+    static Date *Sim_Date;
+    static Evolution *Evol;
+
+    static int Verbose;
+    static int Debug;
+    static int Test;
+    static int Days;
+    static int Reseed_day;
+    static unsigned long Seed;
+    static int Epidemic_offset;
+    static int Vaccine_offset;
+    static char Start_date[];
+
+    // global file pointers
+    static FILE *Statusfp;
+    static FILE *Outfp;
+    static FILE *Tracefp;
+    static FILE *Infectionfp;
+    static FILE *VaccineTracefp;
+    static FILE *Birthfp;
+    static FILE *Deathfp;
+    static FILE *Prevfp;
+    static FILE *Incfp;
+    static FILE *ErrorLogfp;
+
+    /**
+     * Fills the static variables with values from the parameter file.
+     */
+    static void get_global_parameters();
+};
 
 #endif // _FRED_GLOBAL_H

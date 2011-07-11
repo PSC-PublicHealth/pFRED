@@ -19,15 +19,13 @@
 
 class Person;
 
-//extern double Prob_accept_vaccine;
-
 class Random_Behavior_Model : public Behavior_Model {
  public:
   Random_Behavior_Model(Person *p);
   void reset() {};
   void update(int day) {
-    accept_vaccine = (RANDOM() < Prob_accept_vaccine);
-    accept_vaccine_dose = (RANDOM() < Prob_accept_vaccine_dose);
+    accept_vaccine = (RANDOM() < Global::Prob_accept_vaccine);
+    accept_vaccine_dose = (RANDOM() < Global::Prob_accept_vaccine_dose);
   }
   bool will_accept_vaccine(int disease)              { return accept_vaccine; }
   bool will_accept_another_vaccine_dose(int disease) { return accept_vaccine_dose; }
@@ -35,7 +33,6 @@ class Random_Behavior_Model : public Behavior_Model {
   Person* self;
   bool accept_vaccine;
   bool accept_vaccine_dose;              // If there is another dose, will someone take it
-  //  double Prob_accept_vaccine_dose;      // Probability used when someone is faced with taking another vaccine
 
  protected:
   ~Random_Behavior_Model() {}

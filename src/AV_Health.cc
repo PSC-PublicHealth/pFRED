@@ -38,31 +38,31 @@ void AV_Health::print() const {
 }
 
 void AV_Health::printTrace() const {
-  fprintf(Tracefp," %2d %2d %2d",av_day,disease,is_effective());
+  fprintf(Global::Tracefp," %2d %2d %2d",av_day,disease,is_effective());
 }
 
 void AV_Health::update(int day){
   if(day <= av_end_day){
     if(health->get_infection(0)!=NULL){
-      if(Debug > 3) {
+      if(Global::Debug > 3) {
         cout << "\nBefore\n"; 
         health->get_infection(0)->print();
       }
     }
     else{
-      if(Debug > 3)
+      if(Global::Debug > 3)
 	cout << "\nBefore: Suceptibility "<< health->get_susceptibility(0) << "\n";
     }
   }
   AV->effect(health,day,this);
   if(day <= av_end_day){
-    if(Debug > 3) {
+    if(Global::Debug > 3) {
       if(health->get_infection(0)!=NULL){
         cout << "\nAfter\n";
         health->get_infection(0)->print();
       }
       else{
-	if(Debug > 3)
+	if(Global::Debug > 3)
 	  cout << "\nAfter: Suceptibility "<< health->get_susceptibility(0) << "\n";
       }
     }

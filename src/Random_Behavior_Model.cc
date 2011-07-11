@@ -21,18 +21,8 @@
 
 using namespace std;
 
-int  Random_Behavior_Model_parameters_set = 0;
-
 Random_Behavior_Model::Random_Behavior_Model(Person *p) {
   self = p;
-  // printf("new Random Behavior Model\n"); fflush(stdout);
-
-  // get parameters (one time only)
-  //if (Random_Behavior_Model_parameters_set == 0) {
-  //
-  //  Random_Behavior_Model_parameters_set = 1;
-  //}
-  //  cout << "Prob of accept vaccine Dose = "<< Prob_accept_vaccine_dose << "\n";
 }
 
 

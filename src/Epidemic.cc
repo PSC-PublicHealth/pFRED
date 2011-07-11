@@ -34,9 +34,9 @@ Epidemic::Epidemic(Disease *str, Timestep_Map* _primary_cases_map) {
   id = disease->get_id();
   primary_cases_map = _primary_cases_map;
   primary_cases_map->print(); 
-  new_cases = new int [Days];
+  new_cases = new int [Global::Days];
 
-  int places = Places.get_number_of_places();
+  int places = Global::Places.get_number_of_places();
   inf_households.reserve(places);
   inf_neighborhoods.reserve(places);
   inf_classrooms.reserve(places);
@@ -50,9 +50,9 @@ Epidemic::~Epidemic() {
 }
 
 void Epidemic::clear() {
-  if (Verbose) {
-    fprintf(Statusfp, "clear epidemic %d started\n", id);
-    fflush(Statusfp);
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "clear epidemic %d started\n", id);
+    fflush(Global::Statusfp);
   }
   infected.clear();
   infectious.clear();
@@ -67,16 +67,16 @@ void Epidemic::clear() {
   total_clinical_incidents = 0;
   r_index = V_count = S_count = C_count = c_count = 0;
   E_count = I_count = i_count = R_count = r_count = M_count = 0;
-  if (Verbose) {
-    fprintf(Statusfp, "clear epidemic %d finished\n", id);
-    fflush(Statusfp);
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "clear epidemic %d finished\n", id);
+    fflush(Global::Statusfp);
   }
 }
 
 void Epidemic::update_stats(int day) {
-  if (Verbose>1) {
-    fprintf(Statusfp, "epidemic update\n");
-    fflush(Statusfp);
+  if (Global::Verbose>1) {
+    fprintf(Global::Statusfp, "epidemic update\n");
+    fflush(Global::Statusfp);
   }
 
   if (day == 0) {
@@ -107,44 +107,44 @@ void Epidemic::update_stats(int day) {
     if (NR)
       RR = (double)rcount / (double)NR;
   }
-  if (Verbose>1) {
-    fprintf(Statusfp, "epidemic update finished\n");
-    fflush(Statusfp);
+  if (Global::Verbose>1) {
+    fprintf(Global::Statusfp, "epidemic update finished\n");
+    fflush(Global::Statusfp);
   }
 
 }
 
 void Epidemic::print_stats(int day) {
-  fprintf(Outfp,
+  fprintf(Global::Outfp,
 	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
 	  day, id, S_count, E_count, I_count+i_count,
 	  I_count, R_count+r_count, M_count);
-  fprintf(Outfp,
+  fprintf(Global::Outfp,
 	  "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
 	  C_count, N, attack_rate, clinical_incidents,
 	  vaccine_acceptance, RR,NR, clinical_attack_rate);
-  fprintf(Outfp, "%s %s Year %d Week %d\n",
-	  Sim_Date->get_day_of_week_string(day).c_str(),
-	  Sim_Date->get_YYYYMMDD(day),
-	  Sim_Date->get_epi_week_year(day),
-	  Sim_Date->get_epi_week(day));
-  fflush(Outfp);
+  fprintf(Global::Outfp, "%s %s Year %d Week %d\n",
+      Global::Sim_Date->get_day_of_week_string(day).c_str(),
+      Global::Sim_Date->get_YYYYMMDD(day),
+      Global::Sim_Date->get_epi_week_year(day),
+	    Global::Sim_Date->get_epi_week(day));
+  fflush(Global::Outfp);
   
-  if (Verbose) {
-    fprintf(Statusfp,
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp,
 	    "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
 	    day, id, S_count, E_count, I_count+i_count,
 	    I_count, R_count+r_count, M_count);
-    fprintf(Statusfp,
+    fprintf(Global::Statusfp,
 	    "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
 	    C_count, N, attack_rate, clinical_incidents,
 	    vaccine_acceptance, RR,NR, clinical_attack_rate);
-  fprintf(Statusfp, "%s %s Year %d Week %d\n",
-	  Sim_Date->get_day_of_week_string(day).c_str(),
-	  Sim_Date->get_YYYYMMDD(day),
-	  Sim_Date->get_epi_week_year(day),
-	  Sim_Date->get_epi_week(day));
-    fflush(Statusfp);
+    fprintf(Global::Statusfp, "%s %s Year %d Week %d\n",
+      Global::Sim_Date->get_day_of_week_string(day).c_str(),
+      Global:: Sim_Date->get_YYYYMMDD(day),
+      Global::Sim_Date->get_epi_week_year(day),
+      Global::Sim_Date->get_epi_week(day));
+    fflush(Global::Statusfp);
   }
   C_count = c_count = 0;
 }
@@ -183,9 +183,9 @@ void Epidemic::get_infectious_places(int day) {
   vector<Person *>::iterator itr;
   vector<Place *>::iterator it;
 
-  int places = Places.get_number_of_places();
+  int places = Global::Places.get_number_of_places();
   for (int p = 0; p < places; p++) {
-    Place * place = Places.get_place_at_position(p);
+    Place * place = Global::Places.get_place_at_position(p);
     if (place->is_open(day) && place->should_be_open(day, id)) {
       switch (place->get_type()) {
       case HOUSEHOLD:
@@ -224,7 +224,7 @@ void Epidemic::update(Date *sim_start_date, int day){
   N = pop->get_pop_size();
   
   // See if there are changes to primary_cases_per_day from primary_cases_map
-  int primary_cases_per_day = primary_cases_map->get_value_for_timestep(day, Epidemic_offset);
+  int primary_cases_per_day = primary_cases_map->get_value_for_timestep(day, Global::Epidemic_offset);
   
   // Attempt to infect primary_cases_per_day.
   // This represents external sources of infection.
@@ -252,49 +252,56 @@ void Epidemic::update(Date *sim_start_date, int day){
   infectious_places += (int) inf_classrooms.size();
   infectious_places += (int) inf_workplaces.size();
   infectious_places += (int) inf_offices.size();
-  if (Verbose) {
-    fprintf(Statusfp, "Number of infectious places = %d\n", infectious_places);
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "Number of infectious places = %d\n", infectious_places);
+    fflush(Global::Statusfp);
   }
   
   for (it = inf_classrooms.begin(); it != inf_classrooms.end(); it++ ) {
     Place * place = *it;
-    if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
+    if (Global::Verbose > 1) {
+      fprintf(Global::Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id());
+      fflush(Global::Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_schools.begin(); it != inf_schools.end(); it++ ) {
     Place * place = *it;
-    if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
+    if (Global::Verbose > 1) {
+      fprintf(Global::Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id());
+      fflush(Global::Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_offices.begin(); it != inf_offices.end(); it++ ) {
     Place * place = *it;
-    if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
+    if (Global::Verbose > 1) {
+      fprintf(Global::Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id());
+      fflush(Global::Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_workplaces.begin(); it != inf_workplaces.end(); it++ ) {
     Place * place = *it;
-    if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
+    if (Global::Verbose > 1) {
+      fprintf(Global::Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id());
+      fflush(Global::Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_neighborhoods.begin(); it != inf_neighborhoods.end(); it++ ) {
     Place * place = *it;
-    if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
+    if (Global::Verbose > 1) {
+      fprintf(Global::Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id());
+      fflush(Global::Statusfp);
     }
     place->spread_infection(day, id);
   }
   for (it = inf_households.begin(); it != inf_households.end(); it++ ) {
     Place * place = *it;
-    if (Verbose > 1) {
-      fprintf(Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id()); fflush(Statusfp);
+    if (Global::Verbose > 1) {
+      fprintf(Global::Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id());
+      fflush(Global::Statusfp);
     }
     place->spread_infection(day, id);
   }

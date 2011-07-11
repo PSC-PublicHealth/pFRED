@@ -102,17 +102,17 @@ void Person::print(FILE *fp, int disease) const {
 }
 
 void Person::reset(Date * sim_start_date) {
-  if (Verbose > 2) {
-    fprintf(Statusfp, "reset person %d\n", idx);
-    fflush(Statusfp);
+  if (Global::Verbose > 2) {
+    fprintf(Global::Statusfp, "reset person %d\n", idx);
+    fflush(Global::Statusfp);
   }
   demographics->reset(sim_start_date);
   health->reset();
   behavior->reset();
   activities->reset();
 	
-  for (int disease = 0; disease < Pop.get_diseases(); disease++) {
-    Disease* s = Pop.get_disease(disease);
+  for (int disease = 0; disease < Global::Pop.get_diseases(); disease++) {
+    Disease* s = Global::Pop.get_disease(disease);
     if (!s->get_residual_immunity()->is_empty()) {
       double residual_immunity_prob =
 	s->get_residual_immunity()->find_value(get_age());
@@ -217,11 +217,11 @@ Person * Person::give_birth(int day) {
     get_household(), get_neighborhood(),
     NULL, NULL, NULL, NULL };
   Person * baby = new Person();
-  Date * birth_date = new Date(Sim_Date->get_year(day),
-			       Sim_Date->get_month(day),
-			       Sim_Date->get_day_of_month(day));
+  Date * birth_date = new Date(Global::Sim_Date->get_year(day),
+                               Global::Sim_Date->get_month(day),
+                               Global::Sim_Date->get_day_of_month(day));
   baby->setup(id, age, sex, married, prof, favorite_place, pop, birth_date, false);
-  baby->reset(Sim_Date);
+  baby->reset(Global::Sim_Date);
   delete birth_date;
   return baby;
 }

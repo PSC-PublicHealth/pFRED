@@ -23,13 +23,14 @@ int Profiles = 0;
 void read_profiles(char *filename) {
   char name[80];
   
-  if (Verbose) {
-    fprintf(Statusfp, "read profiles entered\n"); fflush(Statusfp);
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "read profiles entered\n");
+    fflush(Global::Statusfp);
   }
   
   FILE *fp = fopen(filename, "r");
   if (fp == NULL) {
-    fprintf(Statusfp, "Profile file %s not found\n", filename);
+    fprintf(Global::Statusfp, "Profile file %s not found\n", filename);
     exit(1);
   }
   
