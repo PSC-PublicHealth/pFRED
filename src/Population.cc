@@ -34,6 +34,8 @@ using namespace std;
 //// global singleton object
 //Population Pop;
 
+char ** pstring;
+
 // used for reporting
 int V_count;
 int age_count_male[Demographics::MAX_AGE + 1];
@@ -124,7 +126,9 @@ void Population::delete_person(Person * person) {
 	   pop_size, (int) pop.size());
   }
   assert((unsigned) pop_size == pop.size());
-  graveyard.push_back(person);
+  person->withdraw_from_activities();
+  delete person;
+  // graveyard.push_back(person);
 }
 
 void Population::prepare_to_die(int day, Person *per) {
@@ -228,6 +232,10 @@ void Population::read_population() {
     fflush(Global::Statusfp);
   }
   
+  // create strings for original individuals
+  // pstring = new char* [psize];
+  // for (int i = 0; i < psize; i++) pstring[i] = new char[256];
+
   // reserve population vector
   pop.reserve(psize);
 	
@@ -247,6 +255,8 @@ void Population::read_population() {
     person->setup(next_id, age, sex, married, occ, house, school, work, this, Global::Sim_Date, true);
     person->register_event_handler(this);
     add_person(person);
+    // sprintf(pstring[next_id], "%s %d %c %d %d %s %s %s", label, age, sex, married, occ, house, school, work);
+    // printf("pstring[%d]: %s\n", next_id, pstring[next_id]);
     next_id++;
   }
   fclose(fp);
@@ -262,6 +272,14 @@ void Population::begin_day(int day) {
   // clear lists of births and deaths
   death_list.clear();
   maternity_list.clear();
+
+  // update household mobility activity on July 1
+  // if (Global::Enable_Mobility && strcmp(Global::Sim_Date->get_MMDD(day), "07-01")==0) {
+  if (strcmp(Global::Sim_Date->get_MMDD(day), "07-01")==0) {
+    for (int p = 0; p < pop_size; p++) {
+      pop[p]->update_household_mobility();
+    }
+  }
 
   // update activity profiles on July 1
   if (Global::Enable_Aging && strcmp(Global::Sim_Date->get_MMDD(day), "07-01")==0) {
@@ -654,3 +672,35 @@ void Population::report_death(int day, Person *per) const {
   fflush(Global::Deathfp);
 }
 
+char * Population::get_pstring(int id) {
+  return pstring[id];
+}
+
+void Population::print_age_distribution(char * dir, char * date_string, int run) {
+  FILE *fp;
+  int count[21];
+  double pct[21];
+  char filename[256];
+  sprintf(filename, "%s/age_dist_%s.%02d", dir, date_string, run);
+  printf("print_age_dist entered, filename = %s\n", filename); fflush(stdout);
+  for (int i = 0; i < 21; i++) {
+    count[i] = 0;
+  }
+  for (int p = 0; p < pop_size; p++){
+    int age = pop[p]->get_age();
+    int bin = age/5;
+    if (-1 < bin && bin < 21) count[bin]++;
+    if (-1 < bin && bin > 20) count[20]++;
+  }
+  fp = fopen(filename, "w");
+  for (int i = 0; i < 21; i++) {
+    pct[i] = 100.0*count[i]/pop_size;
+    fprintf(fp, "%d  %d %f\n", i*5, count[i], pct[i]);
+  }
+  fclose(fp);
+}
+
+Person * Population::select_random_person() {
+  int i = IRAND(0,pop_size-1);
+  return pop[i];
+}

@@ -24,6 +24,7 @@ class Place;
 #define WORKPLACE_INDEX 4
 #define OFFICE_INDEX 5
 #define FAVORITE_PLACES 6
+#define MAX_MOBILITY_AGE 100
 
 class Activities {
 public:
@@ -48,6 +49,8 @@ public:
   void assign_workplace();
   void assign_office();
   void update_profile();
+  void update_household_mobility();
+  void withdraw();
   void addIncidence(int disease, std::vector<int> strains);
   void addPrevalence(int disease, std::vector<int> strains);
 	
@@ -58,6 +61,10 @@ private:
   bool on_schedule[FAVORITE_PLACES]; // true iff favorite place is on schedule
   int schedule_updated;			 // date of last schedule update
   
+  static double age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
+  static bool is_initialized;
+  void read_init_files();
+
 protected:
   Activities() { }
 };

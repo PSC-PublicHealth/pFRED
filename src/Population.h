@@ -70,6 +70,9 @@ public:
   void read_population();
   void report_birth(int day, Person *per) const;
   void report_death(int day, Person *per) const;
+  char * get_pstring(int id);
+  void print_age_distribution(char *dir, char * date_string, int run);
+  Person * select_random_person();
 
 private:
   char popfile[256];

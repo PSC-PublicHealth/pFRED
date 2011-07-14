@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
 
   // initializations
 
-  // read in the household, schools and workplaces
+  // read in the household, schools and workplaces (also sets up Environment)
   Global::Places.read_places();
 
   // read in the population and have each person enroll
@@ -210,6 +210,10 @@ int main(int argc, char* argv[]) {
     Global::Epidemic_offset = (run-1) % 7;
   }
 
+  if (Global::Track_age_distribution) {
+    Global::Pop.print_age_distribution(directory, Global::Sim_Date->get_YYYYMMDD(0), run);
+  }
+
   for (int day = 0; day < Global::Days; day++) {
     if (day == Global::Reseed_day) {
       fprintf(Global::Statusfp, "************** reseed day = %d\n", day);
@@ -219,17 +223,33 @@ int main(int argc, char* argv[]) {
     // fprintf(Statusfp, "================\nsim day = %d  date = %s\n",
     // day, Sim_Date->get_MMDD(day));
     // fflush(stdout);
+
     Global::Places.update(day);
     Global::Pop.begin_day(day);
     Global::Pop.get_visitors_to_infectious_places(day);
     Global::Pop.transmit_infection(day);
     Global::Pop.end_day(day);
     Global::Pop.report(day);
-
+    
+    char date_string[10];
+    strcpy(date_string, Global::Sim_Date->get_MMDD(day));
+    if (Global::Enable_Migration && (date_string[3] == '0' && date_string[4] == '2')) {
+      printf("MIGRATION called on %s\n", date_string); fflush(stdout);
+      Global::Environment.population_migration();
+    }
+    
     if (Global::Enable_Aging && Global::Verbose && strcmp(Global::Sim_Date->get_MMDD(day),"12-31")==0) {
       Global::Pop.quality_control();
       Global::Places.quality_control();
       Global::Environment.quality_control();
+    }
+
+    if (Global::Track_age_distribution && (strcmp(Global::Sim_Date->get_MMDD(day),"01-01")==0)) {
+      Global::Pop.print_age_distribution(directory, Global::Sim_Date->get_YYYYMMDD(day), run);
+    }
+
+    if (Global::Track_household_distribution && (strcmp(Global::Sim_Date->get_MMDD(day),"01-01")==0)) {
+      Global::Environment.print_household_distribution(directory, Global::Sim_Date->get_YYYYMMDD(day), run);
     }
 
     fprintf(Global::Statusfp, "day %d finished  ", day);
@@ -239,6 +259,7 @@ int main(int argc, char* argv[]) {
     time(&clock);
     fprintf(Global::Statusfp, "%s", ctime(&clock));
   }
+
 
   // finish up
   Global::Pop.end_of_run();

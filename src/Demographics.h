@@ -40,6 +40,10 @@ public:
   bool is_deceased()       { return deceased; }
   void set_occupation();
   void print();
+
+  int get_init_age()            { return init_age; }
+  int get_init_marital_status() { return init_marital_status; }
+  int get_init_profession()     { return init_profession; }
 	
 private:
   Person *self;                // Pointer to the person class belongs

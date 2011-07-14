@@ -32,6 +32,15 @@ public:
   void test_gravity_model();
   void make_neighborhoods();
   void quality_control();
+  void add_vacant_house(Place *house);
+  Place * get_vacant_house();
+  int get_target_popsize() { return target_popsize; }
+  int get_target_households() { return target_households; }
+  int get_vacant_houses() { return (int) vacant_houses.size(); }
+  void population_migration();
+  void select_emigrants();
+  void select_immigrants();
+  void print_household_distribution(char * dir, char * date_string, int run);
 
 protected:
   Patch ** patch;		 		// array of patches
@@ -50,6 +59,15 @@ protected:
   double km_per_deg_latitude;
   int rows;
   int cols;
+
+  // target population variables;
+  int target_popsize;
+  int target_households;
+  int target_pop_age[100];
+
+  // extra housing;
+  vector <Place *> vacant_houses;
+
 };
 
 #endif // _FRED_GRID_H

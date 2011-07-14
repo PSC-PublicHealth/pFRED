@@ -31,7 +31,11 @@ char Global::ErrorLogbase[256];
 int Global::Enable_Aging = 0;
 int Global::Enable_Births = 0;
 int Global::Enable_Deaths = 0;
+int Global::Enable_Mobility = 0;
+int Global::Enable_Migration = 0;
 int Global::Track_infection_events = 0;
+int Global::Track_age_distribution = 0;
+int Global::Track_household_distribution = 0;
 
 // global singleton objects
 Population Global::Pop;
@@ -49,6 +53,7 @@ unsigned long Global::Seed = 0;
 int Global::Epidemic_offset = 0;
 int Global::Vaccine_offset = 0;
 char Global::Start_date[256];
+
 
 // global file pointers
 FILE *Global::Statusfp = NULL;
@@ -77,6 +82,8 @@ void Global::get_global_parameters() {
   get_param((char *) "outdir", Global::Output_directory);
   get_param((char *) "tracefile", Global::Tracefilebase);
   get_param((char *) "track_infection_events", &Global::Track_infection_events);
+  get_param((char *) "track_age_distribution", &Global::Track_age_distribution);
+  get_param((char *) "track_household_distribution", &Global::Track_household_distribution);
   get_param((char *) "vaccine_tracefile", Global::VaccineTracefilebase);
   get_param((char *) "all_diseases_antigenically_identical", &Global::All_diseases_antigenically_identical);
   get_param((char *) "incremental_trace", &Global::Incremental_Trace);
@@ -88,6 +95,8 @@ void Global::get_global_parameters() {
   get_param((char *) "enable_aging", &Global::Enable_Aging);
   get_param((char *) "enable_births", &Global::Enable_Births);
   get_param((char *) "enable_deaths", &Global::Enable_Deaths);
+  get_param((char *) "enable_mobility",&Global::Enable_Mobility);
+  get_param((char *) "enable_migration",&Global::Enable_Migration);
   get_param((char *) "prevalencefile", Global::Prevfilebase);
   get_param((char *) "incidencefile", Global::Incfilebase);
 }

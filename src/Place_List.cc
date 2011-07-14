@@ -282,8 +282,7 @@ void Place_List::quality_control() {
     fprintf(Global::Statusfp, "\n");
   }
   
-  /*
-  if (Verbose) {
+  if (Global::Verbose) {
     int count[20];
     int total = 0;
     // age distribution of heads of households with children
@@ -301,14 +300,13 @@ void Place_List::quality_control() {
         total++;
       }
     }
-    fprintf(Statusfp, "\nAge distribution of heads of households with children: %d households\n", total);
+    fprintf(Global::Statusfp, "\nAge distribution of heads of households with children: %d households\n", total);
     for (int c = 0; c < 10; c++) {
-      fprintf(Statusfp, "age %2d to %d: %6d (%.2f%%)\n",
+      fprintf(Global::Statusfp, "age %2d to %d: %6d (%.2f%%)\n",
               10*c, 10*(c+1)-1, count[c], (100.0*count[c])/total);
     }
-    fprintf(Statusfp, "\n");
+    fprintf(Global::Statusfp, "\n");
   }
-  */
 
   if (Global::Verbose) {
     int count[20];

@@ -14,6 +14,7 @@
 #include "Params.h"
 #include "Person.h"
 #include "Patch.h"
+#include "Grid.h";
 
 //Private static variables that will be set by parameter lookups
 double * Household::Household_contacts_per_day;
@@ -77,12 +78,94 @@ double Household::get_contacts_per_day(int disease) {
 }
 
 void Household::enroll(Person * per) {
+  int age = per->get_age();
   N++;
-  if (per->get_age() < Global::ADULT_AGE)
+  if (age < Global::ADULT_AGE)
     children++;
   else {
     adults++;
-    if (adults == 1) HoH = per;
+  }
+  if (Global::Verbose>1) {
+    printf("Add person %d to household %d\n", per->get_id(), get_id()); fflush(stdout);
   }
   housemate.push_back(per);
+  // for (int i = 0; i < N; i++)
+  // printf("%d ", housemate[i]->get_id()); 
+  // printf("\n"); fflush(stdout);
+  if (N == 1) {
+    patch->add_occupied_house();
+  }
+}
+
+void Household::unenroll(Person * per) {
+  int age = per->get_age();
+  if (Global::Verbose>1) {
+    printf("Removing person %d age %d from household %d\n",
+	   per->get_id(), age, get_id()); fflush(stdout);
+    for (int i = 0; i < N; i++)
+      printf("%d ", housemate[i]->get_id()); 
+    printf("\n"); fflush(stdout);
+    fflush(stdout);
+  }
+
+  // erase from housemates
+  vector <Person *>::iterator it;
+  for (it = housemate.begin(); *it != per; it++);
+  if (*it == per) {
+    housemate.erase(it);
+    N--;
+    if (Global::Verbose>1) {
+      printf("Removed person %d from household %d\n", per->get_id(), get_id());
+      for (int i = 0; i < N; i++)
+	printf("%d ", housemate[i]->get_id()); 
+      printf("\n\n"); fflush(stdout);
+    }
+    if (N == 0) { 
+      Global::Environment.add_vacant_house(this);
+      HoH = NULL;
+      patch->subtract_occupied_house();
+    }
+    else {
+      if (HoH == per) {
+	// pick a new head of household
+	// record the ages in sorted order
+	vector <int> xages;
+	for (int i = 0; i < N; i++)
+	  xages.push_back(housemate[i]->get_age()); 
+	sort(xages.begin(), xages.end());
+	for (int i = 0; i < N; i++) {
+	  if (housemate[i]->get_age() == xages.back()) {
+	    HoH = housemate[i];
+	  }
+	} 
+      }
+    }
+  }
+  else {
+    printf("Removing person %d age %d from household %d\n",
+	   per->get_id(), age, get_id()); fflush(stdout);
+    printf("Household::unenroll -- Help! unenrolled person not found in housemate list\n");
+    for (int i = 0; i < N; i++)
+      printf("%d ", housemate[i]->get_id()); 
+    printf("\n"); fflush(stdout);
+    abort();
+  }
+}
+
+void Household::record_profile() {
+  // record the ages in sorted order
+  ages.clear();
+  for (int i = 0; i < N; i++)
+    ages.push_back(housemate[i]->get_age()); 
+  sort(ages.begin(), ages.end());
+  for (int i = 0; i < N; i++) {
+    if (housemate[i]->get_age() == ages.back()) {
+      HoH = housemate[i];
+    }
+  } 
+
+  // record the id's of the original members of the household
+  ids.clear();
+  for (int i = 0; i < N; i++)
+    ids.push_back(housemate[i]->get_id()); 
 }

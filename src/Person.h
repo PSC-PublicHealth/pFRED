@@ -60,6 +60,9 @@ public:
   UNIT_TEST_VIRTUAL Place *get_household() const;
   UNIT_TEST_VIRTUAL Place *get_neighborhood() const;
   int get_age() const { return demographics->get_age(); }
+  int get_init_age() const { return demographics->get_init_age(); }
+  int get_init_profession() const { return demographics->get_init_profession(); }
+  int get_init_marital_status() const { return demographics->get_init_marital_status(); }
   double get_real_age(int day) const { return demographics->get_real_age(day); }
   UNIT_TEST_VIRTUAL char get_sex() const;
   UNIT_TEST_VIRTUAL char get_marital_status() const;
@@ -90,6 +93,8 @@ public:
   void update_behavior(int day) { behavior->update(day); }
   void update_activities(int day) { activities->update(day); }
   void update_activity_profile() { activities->update_profile(); }
+  void withdraw_from_activities() { activities->withdraw(); }
+  void update_household_mobility() { activities->update_household_mobility(); }
 
   void become_susceptible(int disease) { health->become_susceptible(disease); }
   void become_exposed(Infection * infection) { health->become_exposed(infection); }

@@ -57,6 +57,14 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
     Demographics::is_initialized = true;
   }
 
+  // adjust age for those over 89 (due to binning in the synthetic pop)
+  if (0) {
+    if (_age > 89) {
+      _age = 90;
+      while (RANDOM() < 0.6) _age++;
+    }
+  }
+
   self                = _self;
   init_age            = _age;
   age                 = -1;
@@ -260,6 +268,7 @@ void Demographics::read_init_files() {
 
   char yearly_mortality_rate_file[256];
   char yearly_birth_rate_file[256];
+  double birth_rate_multiplier;
 
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "read demographic init files entered\n"); fflush(Global::Statusfp);
@@ -267,6 +276,7 @@ void Demographics::read_init_files() {
 
   get_param((char *) "yearly_mortality_rate_file", yearly_mortality_rate_file);
   get_param((char *) "yearly_birth_rate_file", yearly_birth_rate_file);
+  get_param((char *) "birth_rate_multiplier", &birth_rate_multiplier);
 
   // read death rate file and load the values unt the death_rate_array
   FILE *fp = fopen(yearly_mortality_rate_file, "r");
@@ -307,7 +317,7 @@ void Demographics::read_init_files() {
       Utils::fred_abort("Help! Read failure for age %d\n", i); 
     }
 
-    Demographics::age_yearly_birth_rate[i] = (double)rate;
+    Demographics::age_yearly_birth_rate[i] = birth_rate_multiplier * (double)rate;
   }
 
   for (int i = 0; i <= Demographics::MAX_PREGNANCY_AGE; i++) {

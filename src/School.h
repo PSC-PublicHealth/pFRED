@@ -27,6 +27,7 @@ public:
   bool should_be_open(int day, int disease);
   double get_contacts_per_day(int disease);
   void enroll(Person * per);
+  void unenroll(Person * per);
   int children_in_grade(int age) {
     if (-1 < age && age < 20) return students_with_age[age];
     else return 0;

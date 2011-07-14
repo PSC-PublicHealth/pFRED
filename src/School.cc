@@ -199,6 +199,15 @@ void School::enroll(Person * per) {
   // else {students_with_age[19]++;}
 }
 
+void School::unenroll(Person * per) {
+  N--;
+  int age = per->get_age();
+  if (age < Global::ADULT_AGE) {
+    students_with_age[age]--;
+  }
+  // else {students_with_age[19]--;}
+}
+
 void School::print(int disease) {
   fprintf(Global::Statusfp, "Place %d label %s type %c ", id, label, type);
   fprintf(Global::Statusfp, "S %d I %d N %d\n", S[disease], I[disease], N);

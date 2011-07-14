@@ -28,8 +28,17 @@
 #include "Grid.h"
 #include "Place_List.h"
 #include "Utils.h"
+#include "Household.h"
+
+bool Activities::is_initialized = false;
+double Activities::age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
 
 Activities::Activities (Person *person, Place **fav_place) {
+  //Create the static arrays one time
+  if (!Activities::is_initialized) {
+    read_init_files();
+    Activities::is_initialized = true;
+  }
   self = person;
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     favorite_place[i] = fav_place[i];
@@ -49,6 +58,11 @@ Activities::Activities (Person *person, Place **fav_place) {
 }
 
 Activities::Activities (Person *person, char *house, char *school, char *work) {
+  //Create the static arrays one time
+  if (!Activities::is_initialized) {
+    read_init_files();
+    Activities::is_initialized = true;
+  }
   self = person;
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     favorite_place[i] = NULL;
@@ -413,6 +427,55 @@ void Activities::update_profile() {
   }
 }
 
+static int mobility_count[MAX_MOBILITY_AGE + 1];
+static int mobility_moved[MAX_MOBILITY_AGE + 1];
+static int mcount = 0;
+
+void Activities::update_household_mobility() {
+  if (!Global::Enable_Mobility) return;
+  if (Global::Verbose>1) {
+    fprintf(Global::Statusfp, "update_household_mobility entered with mcount = %d\n", mcount);
+    fflush(Global::Statusfp);
+  }
+  
+  if (mcount == 0) {
+    for (int i = 0; i <= MAX_MOBILITY_AGE; i++) {
+      mobility_count[i] = mobility_moved[i] = 0;
+    }
+  }
+
+  int age = self->get_age();
+  mobility_count[age]++;
+  mcount++;
+
+  Household * household = (Household *) self->get_household();
+  if (household->get_HoH() == self) {
+    if (RANDOM() < Activities::age_yearly_mobility_rate[age]) {
+      int size = household->get_size();
+      for (int i = 0; i < size; i++) {
+	Person *p = household->get_housemate(i);
+	mobility_moved[p->get_age()]++;
+      }
+    }
+  }
+
+
+  int popsize = self->get_population()->get_pop_size();
+  if (mcount == popsize) {
+    double mobility_rate[MAX_MOBILITY_AGE + 1];
+    FILE *fp;
+    fp = fopen("mobility.out", "w");
+    for (int i = 0; i <= MAX_MOBILITY_AGE; i++) {
+      mobility_rate[i] = 0;
+      if (mobility_count[i]> 0) mobility_rate[i] = (1.0*mobility_moved[i])/mobility_count[i];
+      fprintf(fp, "%d %d %d %f\n", i, mobility_count[i], mobility_moved[i], mobility_rate[i]);
+    }
+    fclose(fp);
+  }
+
+
+}
+
 void Activities::addIncidence(int disease, vector<int> strains) {
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     if(favorite_place[i] == NULL) continue;
@@ -426,3 +489,48 @@ void Activities::addPrevalence(int disease, vector<int> strains) {
     favorite_place[i]->modifyPrevalenceCount(disease, strains, 1);
   }
 }
+
+
+void Activities::read_init_files() {
+  char yearly_mobility_rate_file[256];
+  if (!Global::Enable_Mobility) return;
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "read activities init files entered\n"); fflush(Global::Statusfp);
+  }
+  get_param((char *) "yearly_mobility_rate_file", yearly_mobility_rate_file);
+  // read mobility rate file and load the values into the mobility_rate_array
+  FILE *fp = fopen(yearly_mobility_rate_file, "r");
+  if (fp == NULL) {
+    fprintf(Global::Statusfp, "Activities init_file %s not found\n", yearly_mobility_rate_file);
+    exit(1);
+  }
+  for (int i = 0; i <= MAX_MOBILITY_AGE; i++) {
+    int age;
+    double mobility_rate;
+    if (fscanf(fp, "%d %lf",
+               &age, &mobility_rate) != 2) {
+      fprintf(Global::Statusfp, "Help! Read failure for age %d\n", i);
+      abort();
+    }
+    Activities::age_yearly_mobility_rate[age] = mobility_rate;
+  }
+  fclose(fp);
+    if (Global::Verbose) {
+      fprintf(Global::Statusfp, "finished reading Activities init_file = %s\n", yearly_mobility_rate_file);
+    for (int i = 0; i <= MAX_MOBILITY_AGE; i++) {
+      fprintf(Global::Statusfp, "%d %f\n", i, Activities::age_yearly_mobility_rate[i]);
+    }
+    fflush(Global::Statusfp);
+  }
+}
+
+
+void Activities::withdraw() {
+  // unenroll from all the favorite places
+  for (int i = 0; i < FAVORITE_PLACES; i++) {
+    if (favorite_place[i] != NULL) {
+      favorite_place[i]->unenroll(self);
+    }
+  }
+}
+

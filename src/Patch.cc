@@ -36,6 +36,7 @@ void Patch::setup(Grid * patch_mgr, int i, int j, double xmin, double xmax, doub
   center_x = (min_x+max_x)/2.0;
   neighbors = patch_mgr->get_neighbors(i,j);
   houses = 0;
+  occupied_houses = 0;
   household.clear();
   make_neighborhood();
 }
@@ -81,12 +82,11 @@ void Patch::record_favorite_places() {
   // fp = fopen(filename, "w");
   for (int i = 0; i < houses; i++) {
     house = (Household *) household[i];
+    house->record_profile();
     int hsize = house->get_size();
     // fprintf(fp, "%d ", hsize);
     for (int j = 0; j < hsize; j++) {
       per = house->get_housemate(j);
-      // fprintf(fp, "%d ", house->get_household_age(j));
-      // neighborhood->enroll(per);
       person.push_back(per);
       p = per->get_activities()->get_workplace();
       if (p != NULL) workplace.push_back(p);
@@ -101,6 +101,9 @@ void Patch::record_favorite_places() {
     // fprintf(fp, "\n");
   }
   // fclose(fp);
+  // set target values
+  target_popsize = (int) person.size();
+  target_households = houses;
 }
 
 
@@ -216,3 +219,5 @@ void Patch::quality_control() {
   fprintf(Global::Statusfp, "\n");
   fflush(Global::Statusfp);
 }
+
+

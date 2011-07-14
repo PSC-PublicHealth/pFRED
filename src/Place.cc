@@ -122,6 +122,10 @@ void Place::enroll(Person * per) {
   N++;
 }
 
+void Place::unenroll(Person * per) {
+  N--;
+}
+
 void Place::add_susceptible(int disease, Person * per) {
   susceptibles[disease].push_back(per);
   S[disease]++;

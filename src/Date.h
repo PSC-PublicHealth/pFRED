@@ -102,7 +102,7 @@ private:
   { return Date::doomsday_month_val[(Date::is_leap_year(year) ? 1 : 0)][month]; }
   static int get_doomsday_century(int year);
   static int get_day_of_week(int year, int month, int day_of_month);
-  char date_string[16];
+  char date_string[32];
 };
 
 #endif /* DATE_H_ */

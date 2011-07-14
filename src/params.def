@@ -22,6 +22,8 @@ popdir = .
 outdir = OUT
 tracefile = none
 track_infection_events = 1
+track_age_distribution = 0
+track_household_distribution = 0
 quality_control = 1
 
 # set 0 for end-of-run trace printout only, non-zero to print every n-th day
@@ -55,8 +57,12 @@ at_risk_values[0] = 7 0.039 0.0883 0.1168 0.1235 0.1570 0.3056 0.4701
 enable_aging = 0
 enable_births = 0
 enable_deaths = 0 
+enable_mobility = 0 
+enable_migration = 0 
 yearly_mortality_rate_file = mortality_rate.txt
+yearly_mobility_rate_file = mobility_rate.txt
 yearly_birth_rate_file = birth_rate.txt
+birth_rate_multiplier = 1
 
 prob_stay_home = 0.5
 mutation_prob = 1 0.0

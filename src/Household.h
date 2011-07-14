@@ -72,6 +72,15 @@ public:
   void enroll(Person * per);
 
   /**
+   * Delete a person from the household. This method decrements the number of people in
+   * the household and also decrements the adult or child count as appropriate.<br />
+   * Overrides Place::enroll(Person * per)
+   *
+   * @param per a pointer to a Person object that will be added to the household
+   */
+  void unenroll(Person * per);
+
+  /**
    * Get the head of the household.  It will be an adult who will make decisions for the household.
    *
    * @return a pointer to the person who is the head of the household
@@ -115,6 +124,11 @@ public:
    */
   bool should_be_open(int day, int disease) { return true; }
 
+  void record_profile();
+  int get_age_of_member(int i) { return ages[i]; }
+  int get_orig_size() { return (int) ids.size(); }
+  int get_orig_id(int i) { return ids[i]; }
+
 private:
   static double * Household_contacts_per_day;
   static double *** Household_contact_prob;
@@ -124,6 +138,10 @@ private:
   vector <Person *> housemate;
   int children;
   int adults;
+
+  // profile of original housemates
+  vector <int> ages;
+  vector <int> ids;
 };
 
 #endif // _FRED_HOUSEHOLD_H

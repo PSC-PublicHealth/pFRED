@@ -45,6 +45,13 @@ public:
   Place *select_neighborhood();
   double distance_to_patch(Patch *p2);
   void quality_control();
+  int get_row() { return row; }
+  int get_col() { return col; }
+  int get_occupied_houses() { return occupied_houses; }
+  void add_occupied_house() { occupied_houses++; }
+  void subtract_occupied_house() { occupied_houses--; }
+  int get_target_households() { return target_households; }
+  int get_target_popsize() { return target_popsize; }
 
 protected:
   Place * select_neighboring_patch();
@@ -68,6 +75,11 @@ protected:
   vector <Place *> school[20];
   vector <Place *> workplace;
   vector <Person *> person;
+
+  // target patch variables;
+  int target_households;
+  int target_popsize;
+  int occupied_houses;
 };
 
 #endif // _FRED_PATCH_H

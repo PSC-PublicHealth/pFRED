@@ -21,6 +21,9 @@ using namespace std;
 #include "Params.h"
 #include "Random.h"
 #include "Utils.h"
+#include "Household.h"
+#include "Population.h"
+#include "Date.h"
 
 // global singleton object
 Grid Environment;
@@ -78,6 +81,7 @@ void Grid::setup(double minlat, double maxlat, double minlon, double maxlon) {
       }
     }
   }
+  vacant_houses.clear();
 }
 
 void Grid::get_parameters() {
@@ -99,6 +103,8 @@ void Grid::record_favorite_places() {
     for (int col = 0; col < cols; col++) {
       patch[row][col].record_favorite_places();
       patch_pop[row][col] = patch[row][col].get_neighborhood()->get_size();
+      target_popsize += patch_pop[row][col];
+      target_households += patch[row][col].get_houses();
     }
   }
 }
@@ -234,4 +240,162 @@ void Grid::quality_control() {
   }
 }
 
+
+void Grid::add_vacant_house(Place * house) {
+  vacant_houses.push_back(house);
+}
+
+Place * Grid::get_vacant_house() {
+  Place * house = NULL;
+  int count = vacant_houses.size();
+  if (count > 0) {
+    // pick a random vacant house
+    int i = IRAND(0, count-1);
+    house = vacant_houses[i];
+    vacant_houses[i] = vacant_houses.back();
+    vacant_houses.pop_back();
+  }
+  return house;
+}
+
+void Grid::population_migration() {
+  select_emigrants();
+  select_immigrants();
+}
+
+
+void Grid::select_emigrants() {
+  Person * resident[100];
+  if (Global::Verbose) {
+    printf("EMIG oldpopsize = %d\n", Global::Pop.get_pop_size());
+  }
+  double epct;
+  // monthly prob of emigrating
+  epct = 0.02/12.0;
+  int houses_to_emigrate;
+  houses_to_emigrate = epct * target_households;
+  printf("houses_to_emigrate = %d\n", houses_to_emigrate); fflush(stdout);
+  int houses_vacated = 0;
+  int people_removed = 0;
+  for (int h = 0; h < houses_to_emigrate; h++) {
+
+    Person * per = Global::Pop.select_random_person();
+    if (RANDOM() < 0.5) {
+      // pick a random person between 50 and 60
+      int age = per->get_age();
+      while (age < 50 || age > 60) {
+	per = Global::Pop.select_random_person();
+	age = per->get_age();
+      }
+    }
+    Household * house_to_vacate = (Household *) per->get_household();
+
+    // vacate the house
+    int size = house_to_vacate->get_size();
+    printf("house_to_vacate = %d  size = %d\n", house_to_vacate->get_id(), size); fflush(stdout);
+
+    // get a list of all housemates:
+    for (int i = 0; i < size; i++) { resident[i] = house_to_vacate->get_housemate(i); }
+
+    for (int i = 0; i < size; i++) {
+      Person * emigrant = resident[i];
+      // unenroll for all favorite places, including the house
+      printf("person_to_emigrate = %d  age = %d\n", emigrant->get_id(), emigrant->get_age()); fflush(stdout);
+      printf("deleting from population\n"); fflush(stdout);
+      // remove from population after withdrawing from activities
+      Global::Pop.delete_person(emigrant);
+      printf("deleted from population\n"); fflush(stdout);
+      people_removed++;
+    }
+    houses_vacated++;
+  }
+  if (Global::Verbose) {
+    printf("newpopsize = %d  people_removed = %d houses_vacated = %d\n",
+	   Global::Pop.get_pop_size(), people_removed, houses_vacated);
+    fflush(stdout);
+  }
+}
+
+void Grid::select_immigrants() {
+  int current_year = Global::Sim_Date->get_year();
+  int current_popsize = Global::Pop.get_pop_size();
+  printf("IMM curr = %d target = %d ", current_popsize, target_popsize);
+  printf("vacant houses = %d  current_year = %d\n", get_vacant_houses(), current_year);
+  int n = 0;
+  int houses_filled = 0;
+  while (current_popsize < target_popsize && get_vacant_houses() > 0) {
+    // pick a vacant house
+    Place * vacant = get_vacant_house();
+    printf("vacant house = %d\n", vacant->get_id());
+    // find its patch
+    Patch * p = vacant->get_patch();
+    printf("Patch row = %d col = %d\n", p->get_row(), p->get_col());
+    // pick a random household from the patch
+    Household * clone_house = (Household *) p->select_random_household();
+    int size = clone_house->get_orig_size();
+    printf("IMM: clone house = %d size = %d\n", clone_house->get_id(), size);
+    houses_filled++;
+    // clone the original residents of this house
+    for (int i = 0; i < size; i++) {
+      // clone the ith original housemate
+      int idx = clone_house->get_orig_id(i);
+      char pstring[256];
+      strcpy(pstring, Global::Pop.get_pstring(idx));
+
+      int next_id = Global::Pop.get_next_id();
+      Person * clone = new Person;
+      int age, married, occ;
+      char label[32], house[32], school[32], work[32];
+      char sex;
+      sscanf(pstring, "%s %d %c %d %d %s %s %s",
+	     label, &age, &sex, &married, &occ, house, school, work);
+
+      // make younger to reflect age based on next decennial
+      int year_diff = 2010-current_year;
+      if (age >= year_diff) age = age - year_diff;
+
+      // redirect to the vacant house
+      strcpy(house, vacant->get_label());
+
+      // setup to clone
+      clone->setup(next_id, age, sex, married, occ, house, school, work, &Global::Pop, Global::Sim_Date, true);
+
+      // add to the popualtion
+      Global::Pop.add_person(clone);
+
+      // enroll on favorite places
+      clone->reset(Global::Sim_Date);
+
+      clone->print(stdout,0);
+      current_popsize++;
+      n++;
+    }
+  }
+  if (houses_filled > 0) {
+    printf("IMM: %d house filled, %d people added, new popsize = %d = %d\n",
+	   houses_filled, n, current_popsize, Global::Pop.get_pop_size());
+    fflush(stdout);
+  }
+}
+
+void Grid::print_household_distribution(char * dir, char * date_string, int run) {
+  FILE *fp;
+  int targ, count;
+  double pct;
+  char filename[256];
+  sprintf(filename, "%s/household_dist_%s.%02d", dir, date_string, run);
+  printf("print_household_dist entered, filename = %s\n", filename); fflush(stdout);
+
+  fp = fopen(filename, "w");
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      count = patch[i][j].get_occupied_houses();
+      targ = patch[i][j].get_target_households();
+      if (targ > 0) pct = (100.0*count)/targ;
+      else pct = 0.0;
+      fprintf(fp, "%d %d %d %d %f\n", i, j, targ, count, pct);
+    }
+  }
+  fclose(fp);
+}
 

@@ -68,7 +68,11 @@ class Global {
     static int Enable_Aging;
     static int Enable_Births;
     static int Enable_Deaths;
+    static int Enable_Migration;
+    static int Enable_Mobility;
     static int Track_infection_events;
+    static int Track_age_distribution;
+    static int Track_household_distribution;
 
     // global singleton objects
     static Population Pop;

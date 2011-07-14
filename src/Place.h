@@ -60,6 +60,8 @@ public:
    */
   virtual void enroll(Person * per);
 
+  virtual void unenroll(Person * per);
+
   /**
    * Add a susceptible person to the place. This method adds the person to the susceptibles vector and
    * increments the number of susceptibles in the place (S).
