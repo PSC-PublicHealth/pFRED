@@ -1,6 +1,19 @@
 #!/bin/bash
-echo 'making files for regression test'
+echo 'making files for regression test.  please wait ...'
 cd $FRED_HOME/src
-rt
+# look for the FRED binary
+FRED="./FRED"
+
+# sanity checks
+if [ ! -x $FRED ]; then
+    echo "No FRED binary found"
+    echo ">>> You must either build FRED or properly define FRED_HOME"
+    exit 1
+fi
+
+rm -rf OUT.TEST OUT.RT
+mkdir OUT.TEST OUT.RT
+$FRED params.test 1 > OUT.TEST/LOG1
+$FRED params.test 2 > OUT.TEST/LOG2
 cp OUT.TEST/* OUT.RT
 rt
