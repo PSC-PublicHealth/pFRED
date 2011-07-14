@@ -52,7 +52,6 @@ class Global {
     static char Tracefilebase[];
     static char Eventfilebase[];
     static char VaccineTracefilebase[];
-    static int All_diseases_antigenically_identical;
     static int Incremental_Trace;
     static int Trace_Headers;
     static int Random_start_day;

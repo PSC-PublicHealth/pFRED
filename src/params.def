@@ -1,5 +1,4 @@
 diseases = 1
-all_diseases_antigenically_identical = 1
 days = 240
 seed = 123456
 verbose = 1
@@ -9,7 +8,6 @@ test = 0
 # To delay the start of the epidemic up to 6 days.  If the value is > 6, 
 #  the system will assign a random delay based on the run number
 epidemic_offset = 0
-
 vaccine_offset = 0
 
 # a date in the format 'YYYY-MM-DD'
@@ -18,7 +16,7 @@ reseed_day = -1
 popfile = pop_Alleg.txt
 locfile = loc_Alleg.txt
 profiles = profiles.txt
-popdir = .
+popdir = ../region
 outdir = OUT
 tracefile = none
 track_infection_events = 1
@@ -40,7 +38,6 @@ mortality_rate[0] = 0.0
 # infection model: BIFURCATING = 0 , SEQUENTIAL = 1
 # Bifurcating model: each agent is either SEIR or SEiR
 # Sequential model: each agent is SEiIR
-infection_model[0] = 0
 days_latent[0] = 3       0.0 0.8 1.0
 days_incubating[0] = 4   0.0 0.3 0.8 1.0
 days_asymp[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
@@ -50,8 +47,10 @@ symp_infectivity[0] = 1.0
 asymp_infectivity[0] = 0.5
 residual_immunity_ages[0] = 0
 residual_immunity_values[0] = 0
-at_risk_ages[0] = 14 0 1 2 4 5 18 19 24 25 49 50 64 65 110
-at_risk_values[0] = 7 0.039 0.0883 0.1168 0.1235 0.1570 0.3056 0.4701
+# at_risk_ages[0] = 14 0 1 2 4 5 18 19 24 25 49 50 64 65 110
+# at_risk_values[0] = 7 0.039 0.0883 0.1168 0.1235 0.1570 0.3056 0.4701
+at_risk_ages[0] = 0
+at_risk_values[0] = 0
 
 # aging, births and deaths
 enable_aging = 0
@@ -78,9 +77,6 @@ workplace_contacts[0] = 4.2
 office_contacts[0] = 3.2
 hospital_contacts[0] = 0
 
-community_limit[0] = -1
-community_limit_trials = 50
-
 # groups = children adults
 household_prob[0] = 4 0.6 0.3 0.3 0.4
 
@@ -97,7 +93,6 @@ classroom_prob[0] = 16 0.0435 0 0 0.0435 0 0.0375 0 0.0375 0 0 0.0315 0.0315 0.0
 
 # goups = children adults
 neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
-# community_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 
 #### SCHOOLS
 
@@ -203,6 +198,7 @@ intra_host_model[0] = 0
 infection_model[0] = 0
 
 # for fixed IntraHost
+# infection_model[0] = 1
 infectivity_profile_probabilities[0] = 16   0.0066 0.0198 0.0396 0.066 0.0794 0.1062 0.1464 0.2 0.2264 0.2792 0.3584 0.464 0.5176 0.6248 0.7856 1
 
 fixed_infectivity_profile[0][0] = 8    0 0 0.5 0.5 0.5 0.5 0.5 0.5

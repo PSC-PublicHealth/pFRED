@@ -213,23 +213,6 @@ void Health::become_exposed(Infection * infection_ptr) {
   }
 
   status[disease_id] = 'E';
-
-  if (Global::All_diseases_antigenically_identical) {
-    // HACK - this is probably NOT how we want to do this.  But disease
-    // representation/mutation is still a very open problem for us.
-    // become immune to equivalent diseases.
-    for (int i = 0; i < diseases; i++) {
-      if (infection[i] == NULL) {
-        // Could also check some sort of antigenic status here, but for now,
-        // just assume all diseases are antigenically identical.
-        Disease* s = Global::Pop.get_disease(i);
-        Infection* dummy_i = Infection::get_dummy_infection(s, self, infection_ptr->get_exposure_date());
-        become_exposed(dummy_i);
-        become_infectious(s);
-        recover(s);
-      }
-    }
-  }
 }
 
 void Health::become_infectious(Disease * disease) {

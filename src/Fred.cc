@@ -22,7 +22,6 @@
 #include "Date.h"
 #include "Evolution.h"
 
-Date * Sim_Date;
 
 int main(int argc, char* argv[]) {
   time_t clock;         // current date
@@ -221,7 +220,7 @@ int main(int argc, char* argv[]) {
       INIT_RANDOM(new_seed + run - 1);
     }
     // fprintf(Statusfp, "================\nsim day = %d  date = %s\n",
-    // day, Sim_Date->get_MMDD(day));
+    // day, Global::Sim_Date->get_MMDD(day));
     // fflush(stdout);
 
     Global::Places.update(day);

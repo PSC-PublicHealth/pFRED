@@ -58,11 +58,9 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
   }
 
   // adjust age for those over 89 (due to binning in the synthetic pop)
-  if (0) {
-    if (_age > 89) {
-      _age = 90;
-      while (RANDOM() < 0.6) _age++;
-    }
+  if (_age > 89) {
+    _age = 90;
+    while (RANDOM() < 0.6) _age++;
   }
 
   self                = _self;

@@ -15,7 +15,6 @@ char Global::Output_directory[256];
 char Global::Tracefilebase[256];
 char Global::Eventfilebase[256];
 char Global::VaccineTracefilebase[256];
-int Global::All_diseases_antigenically_identical = 0;
 int Global::Incremental_Trace = 0;
 int Global::Trace_Headers = 0;
 int Global::Random_start_day = 0;
@@ -85,7 +84,6 @@ void Global::get_global_parameters() {
   get_param((char *) "track_age_distribution", &Global::Track_age_distribution);
   get_param((char *) "track_household_distribution", &Global::Track_household_distribution);
   get_param((char *) "vaccine_tracefile", Global::VaccineTracefilebase);
-  get_param((char *) "all_diseases_antigenically_identical", &Global::All_diseases_antigenically_identical);
   get_param((char *) "incremental_trace", &Global::Incremental_Trace);
   get_param((char *) "trace_headers", &Global::Trace_Headers);
   get_param((char *) "behavior_model", Global::Behavior_model_type);
