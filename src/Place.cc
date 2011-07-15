@@ -228,56 +228,56 @@ void Place::spread_infection(int day, int s) {
       // at this point we have a susceptible target:
       Person * infectee = susceptibles[s][pos];
       if (Global::Verbose > 1) {
-	      printf("possible infectee = %d  pos = %d  S[%d] = %d\n",
+	printf("possible infectee = %d  pos = %d  S[%d] = %d\n",
                infectee->get_id(), pos, s, S[s]);
-	      fflush(stdout);
+	fflush(stdout);
       }
 
       // is the target still susceptible?
       if (infectee->is_susceptible(s)) {
-	      if (Global::Verbose > 1) { printf("Victim is susceptible\n"); }
+	if (Global::Verbose > 1) { printf("Victim is susceptible\n"); }
     
-	      // get the transmission probs for this infector/infectee pair
-	      double transmission_prob = get_transmission_prob(s, infector, infectee);
-	      double susceptibility = infectee->get_susceptibility(s);
-	      if (Global::Verbose > 1) {
-	        printf("trans_prob = %f  susceptibility = %f\n",
-		      transmission_prob, susceptibility);
-	        fflush(stdout);
-	      }
+	// get the transmission probs for this infector/infectee pair
+	double transmission_prob = get_transmission_prob(s, infector, infectee);
+	double susceptibility = infectee->get_susceptibility(s);
+	if (Global::Verbose > 1) {
+	  printf("trans_prob = %f  susceptibility = %f\n",
+		 transmission_prob, susceptibility);
+	  fflush(stdout);
+	}
     
-	      // attempt transmission
-	      double r = RANDOM();
-	      if (r < transmission_prob*susceptibility) {
-	        if (Global::Verbose > 1) {
-	          printf("transmission succeeded: r = %f  prob = %f\n",
-		                r, transmission_prob*susceptibility);
-	          fflush(stdout);
-	        }
+	// attempt transmission
+	double r = RANDOM();
+	if (r < transmission_prob*susceptibility) {
+	  if (Global::Verbose > 1) {
+	    printf("transmission succeeded: r = %f  prob = %f\n",
+		   r, transmission_prob*susceptibility);
+	    fflush(stdout);
+	  }
 
-	        // successful transmission; create a new infection in infectee
-	        // Infection * infection = new Infection(disease, infector, infectee, this, day);
-	        // infectee->become_exposed(infection);
+	  // successful transmission; create a new infection in infectee
+	  // Infection * infection = new Infection(disease, infector, infectee, this, day);
+	  // infectee->become_exposed(infection);
           // infector->add_infectee(s);
           Transmission *transmission = new Transmission(infector, this, day);
           infector->infect(infectee, s, transmission);
 
-	        if (Global::Verbose > 1) {
-	          if (infector->get_exposure_date(s) == 0) {
-	            printf("SEED infection day %i from %d to %d\n",
-		                  day, infector->get_id(),infectee->get_id());
-	          } else {
-	            printf("infection day %i of disease %i from %d to %d\n",
-		                  day, s, infector->get_id(),infectee->get_id());
-	          }
-	          fflush(stdout);
-	        }
-	      }	else {
-	        if (Global::Verbose > 1) {
-	          printf("transmission failed: r = %f  prob = %f\n",
-		                r, transmission_prob*susceptibility);
-	          fflush(stdout);
-	        }
+	  if (Global::Verbose > 1) {
+	    if (infector->get_exposure_date(s) == 0) {
+	      printf("SEED infection day %i from %d to %d\n",
+		     day, infector->get_id(),infectee->get_id());
+	    } else {
+	      printf("infection day %i of disease %i from %d to %d\n",
+		     day, s, infector->get_id(),infectee->get_id());
+	    }
+	    fflush(stdout);
+	  }
+	}	else {
+	  if (Global::Verbose > 1) {
+	    printf("transmission failed: r = %f  prob = %f\n",
+		   r, transmission_prob*susceptibility);
+	    fflush(stdout);
+	  }
         }
       } // end of susceptible infectee
     } // end contact loop
