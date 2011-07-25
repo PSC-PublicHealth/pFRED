@@ -4,10 +4,10 @@
 # 
 # Above command saves orignial file, renamed as *.orig
 
---style=banner
+--style=java
 --indent=spaces=2
 --indent-col1-comments
---max-instatement-indent=40
 --convert-tabs
 --preserve-date
---break-blocks
+--keep-one-line-statements
+--brackets=attach
