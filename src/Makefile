@@ -49,8 +49,9 @@ OBJ =   Fred.o Global.o Utils.o Decision.o Policy.o Manager.o \
 	Activities.o Classroom.o Behavior.o Demographics.o Epidemic.o Health.o \
         Hospital.o Household.o Infection.o Neighborhood.o Office.o \
 	Params.o Perceptions.o Person.o Place.o Place_List.o Population.o Profile.o Random.o \
-	School.o Disease.o Workplace.o Patch.o Grid.o Date.o Person_Event_Interface.o \
-	Trajectory.o StrainTable.o \
+	School.o Disease.o Workplace.o \
+	Geo_Utils.o Cell.o Grid.o Large_Grid.o Large_Cell.o Small_Grid.o Small_Cell.o \
+	Date.o Person_Event_Interface.o Trajectory.o StrainTable.o \
 	EvolutionFactory.o Evolution.o Strain.o \
 	IntraHost.o DefaultIntraHost.o FixedIntraHost.o  # ODEIntraHost.o ODE.o
 

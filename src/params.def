@@ -171,10 +171,15 @@ HBM_memory_decay_upper = 1.0
 
 HBM_accept_vaccine = 5       0.6 0 0 0 0
 
-#### PATCHES
-km_per_deg_longitude = 84.83063
-km_per_deg_latitude = 111.04326
-patch_size = 1.0
+#### Geographical Grids
+enable_large_grid = 1
+enable_small_grid = 1
+# size of large-scale grid cells in km
+grid_large_cell_size = 20.0
+# size of normal grid cells in km
+grid_cell_size = 1.0
+# size of high resolution grid cells in km
+grid_small_cell_size = 0.01
 
 
 ############ PARAMETERS FOR IntraHost/EVOLUTION BELOW ##################################

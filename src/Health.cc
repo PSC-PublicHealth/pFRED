@@ -57,7 +57,6 @@ Health::Health (Person * person) {
   checked_for_av.assign(nantivirals,false);
   immunity.assign(diseases,false);
   at_risk.assign(diseases,false);
-  // reset();
 }
 
 Health::~Health() {

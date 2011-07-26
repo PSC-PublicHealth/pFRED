@@ -13,25 +13,25 @@
 #define _FRED_GRID_H
 
 #include <string.h>
-#include "Patch.h"
+#include "Place.h"
+class Cell;
 
 class Grid {
 public:
-  Grid() {}
-  void setup(double minlat, double maxlat, double minlon, double maxlon);
+  Grid(double minlon, double minlat, double maxlon, double maxlat);
+  ~Grid() {}
   void get_parameters();
-  void record_favorite_places();
-  Patch * get_patch(int row, int col);
-  Patch * select_random_patch();
-  Patch * get_patch_from_cartesian(double x, double y);
-  Patch * get_patch_from_lat_lon(double lat, double lon);
+  Cell ** get_neighbors(int row, int col);
+  Cell * get_grid_cell(int row, int col);
+  Cell * select_random_grid_cell();
+  Cell * get_grid_cell_from_cartesian(double x, double y);
+  Cell * get_grid_cell_from_lat_lon(double lat, double lon);
   void translate_to_cartesian(double lat, double lon, double *x, double *y);
   void translate_to_lat_lon(double x, double y, double *lat, double *lon);
-  Patch ** get_neighbors(int row, int col);
-  Patch * select_patch_by_gravity_model(int row, int col);
-  void test_gravity_model();
-  void make_neighborhoods();
   void quality_control();
+
+  // Specific to Cell grid:
+  void record_favorite_places();
   void add_vacant_house(Place *house);
   Place * get_vacant_house();
   int get_target_popsize() { return target_popsize; }
@@ -43,10 +43,10 @@ public:
   void print_household_distribution(char * dir, char * date_string, int run);
 
 protected:
-  Patch ** patch;		 		// array of patches
-  int ** patch_pop;			   // array of patch populations
-  double ** patch_prob;   // array of patch probablities, for gravity model
-  double patch_size; 				// km per side
+  Cell ** grid;			      // Rectangular array of grid_cells
+  int rows;					// number of rows
+  int cols;					// number of columns
+  double grid_cell_size;			// km per side
   double min_lat;
   double min_lon;
   double max_lat;
@@ -55,19 +55,12 @@ protected:
   double max_x;
   double min_y;
   double max_y;
-  double km_per_deg_longitude;
-  double km_per_deg_latitude;
-  int rows;
-  int cols;
 
-  // target population variables;
+  // Specific to Cell grid:
   int target_popsize;
   int target_households;
   int target_pop_age[100];
-
-  // extra housing;
   vector <Place *> vacant_houses;
-
 };
 
 #endif // _FRED_GRID_H

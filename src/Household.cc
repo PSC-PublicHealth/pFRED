@@ -13,7 +13,7 @@
 #include "Global.h"
 #include "Params.h"
 #include "Person.h"
-#include "Patch.h"
+#include "Cell.h"
 #include "Grid.h";
 
 //Private static variables that will be set by parameter lookups
@@ -93,7 +93,7 @@ void Household::enroll(Person * per) {
   // printf("%d ", housemate[i]->get_id()); 
   // printf("\n"); fflush(stdout);
   if (N == 1) {
-    patch->add_occupied_house();
+    grid_cell->add_occupied_house();
   }
 }
 
@@ -121,9 +121,9 @@ void Household::unenroll(Person * per) {
       printf("\n\n"); fflush(stdout);
     }
     if (N == 0) { 
-      Global::Environment.add_vacant_house(this);
+      Global::Cells->add_vacant_house(this);
       HoH = NULL;
-      patch->subtract_occupied_house();
+      grid_cell->subtract_occupied_house();
     }
     else {
       if (HoH == per) {

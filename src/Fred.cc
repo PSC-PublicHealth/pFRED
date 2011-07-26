@@ -63,7 +63,6 @@ int main(int argc, char* argv[]) {
   // get runtime population parameters
   Global::Pop.get_parameters();
 
-
   if (strcmp(directory, "") == 0) {
     // use the directory in the params file
     strcpy(directory, Global::Output_directory);
@@ -151,7 +150,6 @@ int main(int argc, char* argv[]) {
   }
 
 
-
   // Date Setup
   INIT_RANDOM(Global::Seed);
   Global::Random_start_day = (Global::Epidemic_offset > 6);
@@ -175,7 +173,7 @@ int main(int argc, char* argv[]) {
 
   // initializations
 
-  // read in the household, schools and workplaces (also sets up Environment)
+  // read in the household, schools and workplaces (also sets up grids)
   Global::Places.read_places();
 
   // read in the population and have each person enroll
@@ -194,13 +192,13 @@ int main(int argc, char* argv[]) {
   // after all enrollments, prepare to receive visitors
   Global::Places.prepare();
 
-  // record the favorite places for households within each patch
-  Global::Environment.record_favorite_places();
+  // record the favorite places for households within each grid_cell
+  Global::Cells->record_favorite_places();
 
   if (Global::Quality_control) {
     Global::Pop.quality_control();
     Global::Places.quality_control();
-    Global::Environment.quality_control();
+    Global::Cells->quality_control();
   }
 
   // allow for an offset in the start of the epidemic
@@ -234,13 +232,13 @@ int main(int argc, char* argv[]) {
     strcpy(date_string, Global::Sim_Date->get_MMDD(day));
     if (Global::Enable_Migration && (date_string[3] == '0' && date_string[4] == '2')) {
       printf("MIGRATION called on %s\n", date_string); fflush(stdout);
-      Global::Environment.population_migration();
+      Global::Cells->population_migration();
     }
     
     if (Global::Enable_Aging && Global::Verbose && strcmp(Global::Sim_Date->get_MMDD(day),"12-31")==0) {
       Global::Pop.quality_control();
       Global::Places.quality_control();
-      Global::Environment.quality_control();
+      Global::Cells->quality_control();
     }
 
     if (Global::Track_age_distribution && (strcmp(Global::Sim_Date->get_MMDD(day),"01-01")==0)) {
@@ -248,7 +246,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (Global::Track_household_distribution && (strcmp(Global::Sim_Date->get_MMDD(day),"01-01")==0)) {
-      Global::Environment.print_household_distribution(directory, Global::Sim_Date->get_YYYYMMDD(day), run);
+      Global::Cells->print_household_distribution(directory, Global::Sim_Date->get_YYYYMMDD(day), run);
     }
 
     fprintf(Global::Statusfp, "day %d finished  ", day);

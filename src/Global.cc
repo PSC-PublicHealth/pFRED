@@ -8,6 +8,8 @@
 #include "Population.h"
 #include "Place_List.h"
 #include "Grid.h"
+#include "Large_grid.h"
+#include "Small_grid.h"
 
 // global runtime parameters
 char Global::Population_directory[256];
@@ -27,6 +29,8 @@ int Global::StrainEvolution = 0;
 char Global::Prevfilebase[256];
 char Global::Incfilebase[256];
 char Global::ErrorLogbase[256];
+int Global::Enable_Large_grid = 0;
+int Global::Enable_Small_grid = 0;
 int Global::Enable_Aging = 0;
 int Global::Enable_Births = 0;
 int Global::Enable_Deaths = 0;
@@ -35,14 +39,6 @@ int Global::Enable_Migration = 0;
 int Global::Track_infection_events = 0;
 int Global::Track_age_distribution = 0;
 int Global::Track_household_distribution = 0;
-
-// global singleton objects
-Population Global::Pop;
-Place_List Global::Places;
-Grid Global::Environment;
-Date *Global::Sim_Date = NULL;
-Evolution *Global::Evol = NULL;
-
 int Global::Verbose = 0;
 int Global::Debug = 0;
 int Global::Test = 0;
@@ -53,6 +49,14 @@ int Global::Epidemic_offset = 0;
 int Global::Vaccine_offset = 0;
 char Global::Start_date[256];
 
+// global singleton objects
+Population Global::Pop;
+Place_List Global::Places;
+Grid *Global::Cells = NULL;
+Large_grid *Global::Large_cells;
+Small_grid *Global::Small_cells;
+Date *Global::Sim_Date = NULL;
+Evolution *Global::Evol = NULL;
 
 // global file pointers
 FILE *Global::Statusfp = NULL;
@@ -90,6 +94,8 @@ void Global::get_global_parameters() {
   get_param((char *) "diseases", &Global::Diseases);
   get_param((char *) "prob_accept_vaccine", &Global::Prob_accept_vaccine);
   get_param((char *) "prob_accept_another_vaccine_dose", &Global::Prob_accept_vaccine_dose);
+  get_param((char *) "enable_large_grid", &Global::Enable_Large_grid);
+  get_param((char *) "enable_small_grid", &Global::Enable_Small_grid);
   get_param((char *) "enable_aging", &Global::Enable_Aging);
   get_param((char *) "enable_births", &Global::Enable_Births);
   get_param((char *) "enable_deaths", &Global::Enable_Deaths);
@@ -98,3 +104,4 @@ void Global::get_global_parameters() {
   get_param((char *) "prevalencefile", Global::Prevfilebase);
   get_param((char *) "incidencefile", Global::Incfilebase);
 }
+

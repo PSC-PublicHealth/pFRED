@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -15,9 +15,11 @@
 using namespace std;
 
 #include "Global.h"
+#include "Geo_Utils.h"
+#include "Grid.h"
+#include "Cell.h"
 #include "Place_List.h"
 #include "Place.h"
-#include "Grid.h"
 #include "Params.h"
 #include "Random.h"
 #include "Utils.h"
@@ -25,59 +27,47 @@ using namespace std;
 #include "Population.h"
 #include "Date.h"
 
-// global singleton object
-Grid Environment;
-
-void Grid::setup(double minlat, double maxlat, double minlon, double maxlon) {
-  get_parameters();
-  min_lat  = minlat;
-  max_lat  = maxlat;
+Grid::Grid(double minlon, double minlat, double maxlon, double maxlat) {
   min_lon  = minlon;
+  min_lat  = minlat;
   max_lon  = maxlon;
-  printf("min_lat = %f\n", min_lat);
-  printf("max_lat = %f\n", max_lat);
+  max_lat  = maxlat;
   printf("min_lon = %f\n", min_lon);
+  printf("min_lat = %f\n", min_lat);
   printf("max_lon = %f\n", max_lon);
+  printf("max_lat = %f\n", max_lat);
   fflush(stdout);
 
+  get_parameters();
   min_x = 0.0;
-  max_x = (max_lon-min_lon)*km_per_deg_longitude;
+  max_x = (max_lon-min_lon) * Geo_Utils::km_per_deg_longitude;
   min_y = 0.0;
-  max_y = (max_lat-min_lat)*km_per_deg_latitude;
-  rows = 1 + (int) (max_y/patch_size);
-  cols = 1 + (int) (max_x/patch_size);
+  max_y = (max_lat-min_lat) * Geo_Utils::km_per_deg_latitude;
+  rows = 1 + (int) (max_y/grid_cell_size);
+  cols = 1 + (int) (max_x/grid_cell_size);
   if (Global::Verbose) {
     printf("rows = %d  cols = %d\n",rows,cols);
     printf("max_x = %f  max_y = %f\n",max_x,max_y);
     fflush(stdout);
   }
-  patch = new Patch*[rows];
+
+  grid = new Cell * [rows];
   for (int i = 0; i < rows; i++) {
-    patch[i] = new Patch[cols];
+    grid[i] = new Cell[cols];
   }
-  
-  patch_pop = new int*[rows];
-  for (int i = 0; i < rows; i++) {
-    patch_pop[i] = new int[cols];
-  }
-  
-  patch_prob = new double*[rows];
-  for (int i = 0; i < rows; i++) {
-    patch_prob[i] = new double[cols];
-  }
-  
+
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      patch[i][j].setup(this,i,j,j*patch_size,(j+1)*patch_size,
-			(rows-i-1)*patch_size,(rows-i)*patch_size);
+      grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
+		       (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
     }
   }
 
   if (Global::Verbose > 1) {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
-	printf("print patch[%d][%d]:\n",i,j);
-	patch[i][j].print();
+	printf("print grid[%d][%d]:\n",i,j);
+	grid[i][j].print();
       }
     }
   }
@@ -85,161 +75,115 @@ void Grid::setup(double minlat, double maxlat, double minlon, double maxlon) {
 }
 
 void Grid::get_parameters() {
-  get_param((char *) "km_per_deg_longitude", &km_per_deg_longitude);
-  get_param((char *) "km_per_deg_latitude", &km_per_deg_latitude);
-  get_param((char *) "patch_size", &patch_size);
+  get_param((char *) "grid_cell_size", &grid_cell_size);
 }
 
-void Grid::make_neighborhoods() {
-  for (int row = 0; row < rows; row++) {
-    for (int col = 0; col < cols; col++) {
-      patch[row][col].make_neighborhood();
-    }
-  }
-}
-
-void Grid::record_favorite_places() {
-  for (int row = 0; row < rows; row++) {
-    for (int col = 0; col < cols; col++) {
-      patch[row][col].record_favorite_places();
-      patch_pop[row][col] = patch[row][col].get_neighborhood()->get_size();
-      target_popsize += patch_pop[row][col];
-      target_households += patch[row][col].get_houses();
-    }
-  }
-}
-
-Patch * Grid::get_patch(int row, int col) {
-  if ( row >= 0 && col >= 0 && row < rows && col < cols)
-    return &patch[row][col];
-  else
-    return NULL;
-}
-
-
-Patch * Grid::select_random_patch() {
-  int row = IRAND(0, rows-1);
-  int col = IRAND(0, cols-1);
-  return &patch[row][col];
-}
-
-
-Patch * Grid::get_patch_from_cartesian(double x, double y) {
-  int row, col;
-  row = rows-1 - (int) (y/patch_size);
-  col = (int) (x/patch_size);
-  // printf("x = %f y = %f, row = %d col = %d\n",x,y,row,col);
-  return get_patch(row, col);
-}
-
-
-Patch * Grid::get_patch_from_lat_lon(double lat, double lon) {
-  double x, y;
-  translate_to_cartesian(lat,lon,&x,&y);
-  return get_patch_from_cartesian(x,y);
-}
-
-
-void Grid::translate_to_cartesian(double lat, double lon, double *x, double *y) {
-  *x = (lon - min_lon) * km_per_deg_longitude;
-  *y = (lat - min_lat) * km_per_deg_latitude;
-}
-
-
-void Grid::translate_to_lat_lon(double x, double y, double *lat, double *lon) {
-  *lon = min_lon + x * km_per_deg_longitude;
-  *lat = min_lat + y * km_per_deg_latitude;
-}
-
-
-Patch ** Grid::get_neighbors(int row, int col) {
-  Patch ** neighbors = new Patch*[9];
+Cell ** Grid::get_neighbors(int row, int col) {
+  Cell ** neighbors = new Cell*[9];
   int n = 0;
   for (int i = row-1; i <= row+1; i++) {
     for (int j = col-1; j <= col+1; j++) {
-      neighbors[n++] = get_patch(i,j);
+      neighbors[n++] = get_grid_cell(i,j);
     }
   }
   return neighbors;
 }
 
 
-Patch * Grid::select_patch_by_gravity_model(int row, int col) {
-  // compute patch probabilities for gravity model
-  Patch * p1 = &patch[row][col];
-  double x1 = p1->get_center_x();
- double y1 = p1->get_center_y();
-
-  double total = 0.0;
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      Patch * p2 = &patch[i][j];
-      double x2 = p2->get_center_x();
-      double y2 = p2->get_center_y();
-      double pop2 = (double) p2->get_neighborhood()->get_size();
-      double dist = ((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-      if (dist == 0.0) {
-	dist = 0.5*patch_size*0.5*patch_size;
-      }
-      patch_prob[i][j] = pop2 / dist;
-      total += patch_prob[i][j];
-    }
-  }
-
-  // select a patch at random using the computed probabilities
-  double r = RANDOM()*total;
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      if (r < patch_prob[i][j]) {
-	return &patch[i][j];
-      }
-      else {
-	r -= patch_prob[i][j];
-      }
-    }
-  }
-  Utils::fred_abort("Help! patch gravity model failed.\n");
-
-  //Will never get here, but will stop compiler warning
-  return NULL;
+Cell * Grid::get_grid_cell(int row, int col) {
+  if ( row >= 0 && col >= 0 && row < rows && col < cols)
+    return &grid[row][col];
+  else
+    return NULL;
 }
 
-void Grid::test_gravity_model() {
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      for (int n = 0; n < 1000; n++) {
-	Patch * p1 = &patch[i][j];
-	Patch * p2 = select_patch_by_gravity_model(i,j);
-	double x1 = p1->get_center_x();
-	double y1 = p1->get_center_y();
-	double x2 = p2->get_center_x();
-	double y2 = p2->get_center_y();
-	double dist = ((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-	printf("DIST: %f\n", dist);
-      }
-    }
-  }
-  exit(0);
+
+Cell * Grid::select_random_grid_cell() {
+  int row = IRAND(0, rows-1);
+  int col = IRAND(0, cols-1);
+  return &grid[row][col];
 }
+
+
+Cell * Grid::get_grid_cell_from_cartesian(double x, double y) {
+  int row, col;
+  row = rows-1 - (int) (y/grid_cell_size);
+  col = (int) (x/grid_cell_size);
+  // printf("x = %f y = %f, row = %d col = %d\n",x,y,row,col);
+  return get_grid_cell(row, col);
+}
+
+
+Cell * Grid::get_grid_cell_from_lat_lon(double lat, double lon) {
+  double x, y;
+  translate_to_cartesian(lat,lon,&x,&y);
+  return get_grid_cell_from_cartesian(x,y);
+}
+
+
+void Grid::translate_to_cartesian(double lat, double lon, double *x, double *y) {
+  *x = (lon - min_lon) * Geo_Utils::km_per_deg_longitude;
+  *y = (lat - min_lat) * Geo_Utils::km_per_deg_latitude;
+}
+
+
+void Grid::translate_to_lat_lon(double x, double y, double *lat, double *lon) {
+  *lon = min_lon + x * Geo_Utils::km_per_deg_longitude;
+  *lat = min_lat + y * Geo_Utils::km_per_deg_latitude;
+}
+
 
 void Grid::quality_control() {
   if (Global::Verbose) {
-    fprintf(Global::Statusfp, "patches quality control check\n");
+    fprintf(Global::Statusfp, "grid quality control check\n");
     fflush(Global::Statusfp);
   }
   
   for (int row = 0; row < rows; row++) {
     for (int col = 0; col < cols; col++) {
-      patch[row][col].quality_control();
+      grid[row][col].quality_control();
     }
   }
-
+  
+  FILE *fp;
+  fp = fopen("grid.dat", "w");
+  for (int row = 0; row < rows; row++) {
+    if (row%2) {
+      for (int col = cols-1; col >= 0; col--) {
+	double x = grid[row][col].get_center_x();
+	double y = grid[row][col].get_center_y();
+	fprintf(fp, "%f %f\n",x,y);
+      }
+    }
+    else {
+      for (int col = 0; col < cols; col++) {
+	double x = grid[row][col].get_center_x();
+	double y = grid[row][col].get_center_y();
+	fprintf(fp, "%f %f\n",x,y);
+      }
+    }
+  }
+  fclose(fp);
+  
   if (Global::Verbose) {
-    fprintf(Global::Statusfp, "patches quality control finished\n");
+    fprintf(Global::Statusfp, "grid quality control finished\n");
     fflush(Global::Statusfp);
   }
 }
 
+
+// Specific to Cell Grid:
+
+void Grid::record_favorite_places() {
+  for (int row = 0; row < rows; row++) {
+    for (int col = 0; col < cols; col++) {
+      Cell * cell = (Cell *) &grid[row][col];
+      cell->record_favorite_places();
+      target_popsize += cell->get_neighborhood()->get_size();
+      target_households += cell->get_houses();
+    }
+  }
+}
 
 void Grid::add_vacant_house(Place * house) {
   vacant_houses.push_back(house);
@@ -327,10 +271,10 @@ void Grid::select_immigrants() {
     // pick a vacant house
     Place * vacant = get_vacant_house();
     printf("vacant house = %d\n", vacant->get_id());
-    // find its patch
-    Patch * p = vacant->get_patch();
-    printf("Patch row = %d col = %d\n", p->get_row(), p->get_col());
-    // pick a random household from the patch
+    // find its grid_cell
+    Cell * p = vacant->get_grid_cell();
+    printf("Cell row = %d col = %d\n", p->get_row(), p->get_col());
+    // pick a random household from the grid_cell
     Household * clone_house = (Household *) p->select_random_household();
     int size = clone_house->get_orig_size();
     printf("IMM: clone house = %d size = %d\n", clone_house->get_id(), size);
@@ -389,8 +333,9 @@ void Grid::print_household_distribution(char * dir, char * date_string, int run)
   fp = fopen(filename, "w");
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      count = patch[i][j].get_occupied_houses();
-      targ = patch[i][j].get_target_households();
+      Cell * cell = (Cell *) &grid[i][j];
+      count = cell->get_occupied_houses();
+      targ = cell->get_target_households();
       if (targ > 0) pct = (100.0*count)/targ;
       else pct = 0.0;
       fprintf(fp, "%d %d %d %d %f\n", i, j, targ, count, pct);

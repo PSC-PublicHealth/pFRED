@@ -21,11 +21,11 @@
 #include "Vaccine_Manager.h"
 #include "Manager.h"
 #include "Date.h"
-#include "Patch.h"
+#include "Cell.h"
+#include "Grid.h"
 #include "School.h"
 #include "Classroom.h"
 #include "Workplace.h"
-#include "Grid.h"
 #include "Place_List.h"
 #include "Utils.h"
 #include "Household.h"
@@ -47,7 +47,7 @@ Activities::Activities (Person *person, Place **fav_place) {
 
   // get the neighbhood from the household
   favorite_place[NEIGHBORHOOD_INDEX] =
-    favorite_place[HOUSEHOLD_INDEX]->get_patch()->get_neighborhood();
+    favorite_place[HOUSEHOLD_INDEX]->get_grid_cell()->get_neighborhood();
   if (get_neighborhood() == NULL) {
     printf("Help! NO NEIGHBORHOOD for person %d house %d \n",
       person->get_id(), get_household()->get_id());
@@ -74,7 +74,7 @@ Activities::Activities (Person *person, char *house, char *school, char *work) {
 
   // get the neighbhood from the household
   favorite_place[NEIGHBORHOOD_INDEX] =
-    favorite_place[HOUSEHOLD_INDEX]->get_patch()->get_neighborhood();
+    favorite_place[HOUSEHOLD_INDEX]->get_grid_cell()->get_neighborhood();
   if (get_neighborhood() == NULL) {
     printf("Help! NO NEIGHBORHOOD for person %d house %d \n",
            person->get_id(), get_household()->get_id());
@@ -193,7 +193,7 @@ void Activities::update_schedule(Date *sim_start_date, int day) {
     if (on_schedule[NEIGHBORHOOD_INDEX]) {
       // pick the neighborhood to visit today
       favorite_place[NEIGHBORHOOD_INDEX] =
-        favorite_place[HOUSEHOLD_INDEX]->get_patch()->select_neighborhood();
+        favorite_place[HOUSEHOLD_INDEX]->get_grid_cell()->select_neighborhood();
     }
 
     // visit classroom or office iff going to school or work
@@ -241,9 +241,9 @@ void Activities::print() {
 void Activities::assign_school() {
   int age = self->get_age();
   if (age < Global::SCHOOL_AGE || Global::ADULT_AGE <= age) return;
-  Patch *patch = favorite_place[HOUSEHOLD_INDEX]->get_patch();
-  assert(patch != NULL);
-  Place *p = patch->select_random_school(age);
+  Cell *grid_cell = favorite_place[HOUSEHOLD_INDEX]->get_grid_cell();
+  assert(grid_cell != NULL);
+  Place *p = grid_cell->select_random_school(age);
   if (p != NULL) {
     favorite_place[SCHOOL_INDEX] = p;
     favorite_place[CLASSROOM_INDEX] = NULL;
@@ -252,8 +252,8 @@ void Activities::assign_school() {
   }
   int trials = 0;
   while (trials < 100) {
-    patch = Global::Environment.select_random_patch();
-    p = patch->select_random_school(age);
+    grid_cell = (Cell *) Global::Cells->select_random_grid_cell();
+    p = grid_cell->select_random_school(age);
     if (p != NULL) {
       favorite_place[SCHOOL_INDEX] = p;
       favorite_place[CLASSROOM_INDEX] = NULL;
@@ -278,9 +278,9 @@ void Activities::assign_classroom() {
 void Activities::assign_workplace() {
   int age = self->get_age();
   if (age < Global::ADULT_AGE) return;
-  Patch *patch = favorite_place[HOUSEHOLD_INDEX]->get_patch();
-  assert(patch != NULL);
-  Place *p = patch->select_random_workplace();
+  Cell *grid_cell = favorite_place[HOUSEHOLD_INDEX]->get_grid_cell();
+  assert(grid_cell != NULL);
+  Place *p = grid_cell->select_random_workplace();
   if (p != NULL) {
     favorite_place[WORKPLACE_INDEX] = p;
     favorite_place[OFFICE_INDEX] = NULL;
@@ -289,8 +289,8 @@ void Activities::assign_workplace() {
   }
   int trials = 0;
   while (trials < 100) {
-    patch = Global::Environment.select_random_patch();
-    p = patch->select_random_workplace();
+    grid_cell = (Cell *) Global::Cells->select_random_grid_cell();
+    p = grid_cell->select_random_workplace();
     if (p != NULL) {
       favorite_place[WORKPLACE_INDEX] = p;
       favorite_place[OFFICE_INDEX] = NULL;

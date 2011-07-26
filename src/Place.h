@@ -26,9 +26,8 @@ using namespace std;
 
 #include "Population.h"
 #include "Global.h"
-class Patch;
+class Cell;
 class Person;
-
 
 
 class Place {
@@ -382,18 +381,18 @@ public:
   UNIT_TEST_VIRTUAL void add_deaths() { deaths++; }
 
   /**
-   * Get the patch where this place is.
+   * Get the grid_cell where this place is.
    *
-   * @return a pointer to the patch where this place is
+   * @return a pointer to the grid_cell where this place is
    */
-  Patch * get_patch() { return patch; }
+  Cell * get_grid_cell() { return grid_cell; }
 
   /**
-   * Set the patch where this place will be.
+   * Set the grid_cell where this place will be.
    *
-   * @param p the new patch
+   * @param p the new grid_cell
    */
-  void set_patch(Patch *p) { patch = p; }
+  void set_grid_cell(Cell *p) { grid_cell = p; }
   
 protected:
   int id;					// place id
@@ -416,7 +415,7 @@ protected:
   int * total_deaths;				// total deaths
   Population *population;
   int diseases;					// number of diseases
-  Patch * patch;			     // geo patch for this place
+  Cell * grid_cell;			 // geo grid_cell for this place
   vector< map<int, int> > incidence;
   vector< map<int, int> > prevalence;
 

@@ -26,6 +26,8 @@
 class Population;
 class Place_List;
 class Grid;
+class Large_grid;
+class Small_grid;
 class Date;
 class Evolution;
 
@@ -64,6 +66,8 @@ class Global {
     static char Prevfilebase[];
     static char Incfilebase[];
     static char ErrorLogbase[];
+    static int Enable_Large_grid;
+    static int Enable_Small_grid;
     static int Enable_Aging;
     static int Enable_Births;
     static int Enable_Deaths;
@@ -72,14 +76,6 @@ class Global {
     static int Track_infection_events;
     static int Track_age_distribution;
     static int Track_household_distribution;
-
-    // global singleton objects
-    static Population Pop;
-    static Place_List Places;
-    static Grid Environment;
-    static Date *Sim_Date;
-    static Evolution *Evol;
-
     static int Verbose;
     static int Debug;
     static int Test;
@@ -89,6 +85,15 @@ class Global {
     static int Epidemic_offset;
     static int Vaccine_offset;
     static char Start_date[];
+
+    // global singleton objects
+    static Population Pop;
+    static Place_List Places;
+    static Grid *Cells;
+    static Large_grid *Large_cells;
+    static Small_grid *Small_cells;
+    static Date *Sim_Date;
+    static Evolution *Evol;
 
     // global file pointers
     static FILE *Statusfp;

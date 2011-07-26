@@ -14,7 +14,7 @@
 
 #include "Place.h"
 #include "Person.h"
-#include "Patch.h"
+#include "Cell.h"
 
 
 /**
@@ -96,12 +96,12 @@ public:
   Person * get_housemate(int i) { return housemate[i]; }
 
   /**
-   * Get a neighborhood from the patch to which this household belongs.
+   * Get a neighborhood from the grid_cell to which this household belongs.
    *
    * @return a pointer to the neighborhood selected
-   * @see Patch::select_neighborhood()
+   * @see Cell::select_neighborhood()
    */
-  Place * select_neighborhood() { return patch->select_neighborhood(); }
+  Place * select_neighborhood() { return grid_cell->select_neighborhood(); }
 
   /**
    * Get the number of adults in the household.

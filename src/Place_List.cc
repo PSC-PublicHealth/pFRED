@@ -9,6 +9,7 @@
 // File: Place_List.cc
 //
 
+#include <math.h>
 #include "Place_List.h"
 #include <set>
 #include <new>
@@ -26,8 +27,10 @@
 #include "Params.h"
 #include "Person.h"
 #include "Grid.h"
-#include "Patch.h"
+#include "Large_grid.h"
+#include "Small_grid.h"
 #include "Utils.h"
+#include "Geo_Utils.h"
 
 //// global singleton object
 //Place_List Places;
@@ -105,7 +108,17 @@ void Place_List::read_places() {
   }
   fclose(fp);
 
-  Global::Environment.setup(min_lat, max_lat, min_lon, max_lon);
+  // NOTE: Use code below to make projection based on the location file.
+  // CURRENT DEFAULT: Use mean US lat-lon (see Geo_Utils.cc)
+  // double mean_lat = (min_lat + max_lat) / 2.0;
+  // Geo_Utils::set_km_per_degree(mean_lat);
+
+  // create geographical grids
+  Global::Cells = new Grid(min_lon, min_lat, max_lon, max_lat);
+  if (Global::Enable_Large_grid)
+    Global::Large_cells = new Large_grid(min_lon, min_lat, max_lon, max_lat);
+  if (Global::Enable_Small_grid)
+    Global::Small_cells = new Small_grid(min_lon, min_lat, max_lon, max_lat);
 
   int number_places = (int) places.size();
   for (int p = 0; p < number_places; p++) {
@@ -113,16 +126,16 @@ void Place_List::read_places() {
       Place *place = places[p];
       double lat = place->get_latitude();
       double lon = place->get_longitude();
-      Patch * patch = Global::Environment.get_patch_from_lat_lon(lat,lon);
-      if (patch == NULL) {
+      Cell * grid_cell = (Cell *) Global::Cells->get_grid_cell_from_lat_lon(lat,lon);
+      if (grid_cell == NULL) {
 	double x, y;
-	Global::Environment.translate_to_cartesian(lat,lon,&x,&y);
-	printf("Help: household %d has bad patch,  lat = %f  lon = %f  x = %f  y = %f\n",
+	Global::Cells->translate_to_cartesian(lat,lon,&x,&y);
+	printf("Help: household %d has bad grid_cell,  lat = %f  lon = %f  x = %f  y = %f\n",
 	       place->get_id(),lat,lon,x,y);
       }
-      assert(patch != NULL);
-      patch->add_household(place);
-      place->set_patch(patch);
+      assert(grid_cell != NULL);
+      grid_cell->add_household(place);
+      place->set_grid_cell(grid_cell);
     }
   }
 
