@@ -113,7 +113,6 @@ void Workplace::setup_offices() {
     int new_id = Global::Places.get_max_id() + 1;
     char new_label[128];
     sprintf(new_label, "%s-%03d", this->get_label(), i);
-    new_label[0] = 'O';
     Place *p = new Office(new_id, new_label,
 			  this->get_longitude(),
 			  this->get_latitude(),

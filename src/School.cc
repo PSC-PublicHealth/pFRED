@@ -235,7 +235,6 @@ void School::setup_classrooms() {
       int new_id = Global::Places.get_max_id() + 1;
       char new_label[128];
       sprintf(new_label, "%s-%02d-%02d", this->get_label(), a, c+1);
-      new_label[0] = 'C';
       Place *p = new (nothrow) Classroom(new_id, new_label,
 					 this->get_longitude(),
 					 this->get_latitude(),
