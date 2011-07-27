@@ -287,7 +287,6 @@ void Grid::select_immigrants() {
       strcpy(pstring, Global::Pop.get_pstring(idx));
 
       int next_id = Global::Pop.get_next_id();
-      Person * clone = new Person;
       int age, married, occ;
       char label[32], house[32], school[32], work[32];
       char sex;
@@ -301,14 +300,11 @@ void Grid::select_immigrants() {
       // redirect to the vacant house
       strcpy(house, vacant->get_label());
 
-      // setup to clone
-      clone->setup(next_id, age, sex, married, occ, house, school, work, &Global::Pop, Global::Sim_Date, true);
+      // creeat clone
+      Person * clone = new Person(next_id, age, sex, married, occ, house, school, work, &Global::Pop, Global::Sim_Date);
 
       // add to the popualtion
       Global::Pop.add_person(clone);
-
-      // enroll on favorite places
-      clone->reset(Global::Sim_Date);
 
       clone->print(stdout,0);
       current_popsize++;

@@ -54,6 +54,14 @@ Activities::Activities (Person *person, Place **fav_place) {
   }
   assert(get_neighborhood() != NULL);
   assign_profile();
+
+  // enroll in all the favorite places
+  for (int i = 0; i < FAVORITE_PLACES; i++) {
+    if (favorite_place[i] != NULL) {
+      favorite_place[i]->enroll(self);
+    }
+  }
+  // need to set the daily schedule
   schedule_updated = -1;
 }
 
@@ -81,7 +89,16 @@ Activities::Activities (Person *person, char *house, char *school, char *work) {
   }
   assert(get_neighborhood() != NULL);
   assign_profile();
+
+  // enroll in all the favorite places
+  for (int i = 0; i < FAVORITE_PLACES; i++) {
+    if (favorite_place[i] != NULL) {
+      favorite_place[i]->enroll(self);
+    }
+  }
+  // need to set the daily schedule
   schedule_updated = -1;
+
 }
 
 void Activities::assign_profile() {
@@ -109,17 +126,6 @@ void Activities::assign_profile() {
        profile == WEEKEND_WORKER_PROFILE) && RANDOM() < 0.1) {
     profile = UNEMPLOYED_PROFILE;   // 10% unemployed
   }
-}
-
-void Activities::reset() {
-  // enroll in all the favorite places
-  for (int i = 0; i < FAVORITE_PLACES; i++) {
-    if (favorite_place[i] != NULL) {
-      favorite_place[i]->enroll(self);
-    }
-  }
-  // reset the daily schedule
-  schedule_updated = -1;
 }
 
 void Activities::update(int day) {

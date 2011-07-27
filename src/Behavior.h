@@ -27,9 +27,6 @@ class Behavior {
 public:
   Behavior(Person *p);
   ~Behavior() {}
-  void reset() {
-    model->reset();
-  }
   void update(int day) {
     model->update(day);
     V_count += will_accept_vaccine(0);

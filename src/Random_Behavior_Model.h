@@ -22,7 +22,6 @@ class Person;
 class Random_Behavior_Model : public Behavior_Model {
  public:
   Random_Behavior_Model(Person *p);
-  void reset() {};
   void update(int day) {
     accept_vaccine = (RANDOM() < Global::Prob_accept_vaccine);
     accept_vaccine_dose = (RANDOM() < Global::Prob_accept_vaccine_dose);

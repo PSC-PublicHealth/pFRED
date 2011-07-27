@@ -31,8 +31,6 @@ public:
   Disease();
   UNIT_TEST_VIRTUAL ~Disease();
 
-  UNIT_TEST_VIRTUAL void reset();
-  UNIT_TEST_VIRTUAL void clear();
   UNIT_TEST_VIRTUAL void setup(int s, Population *pop,  double *mut_prob);
   UNIT_TEST_VIRTUAL void print();
   UNIT_TEST_VIRTUAL void update(Date *sim_start_date, int day);

@@ -54,15 +54,6 @@ Disease::~Disease() {
   delete ihm;
 }
 
-void Disease::reset() {
-  clear();
-}
-
-void Disease::clear() {
-  epidemic->clear();
-  strainTable->reset();
-}
-
 void Disease::setup(int disease, Population *pop, double *mut_prob) {
   id = disease;
 
@@ -89,6 +80,7 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   sprintf(param_name,"primary_cases[%d]",id);
   string param_name_str(param_name);
   epidemic = new Epidemic(this, new Timestep_Map(param_name_str));
+  epidemic->clear();
 
   // Define residual immunity
   residual_immunity = new Age_Map("Residual Immunity");
@@ -103,6 +95,7 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   // Initialize StrainTable
   strainTable = new StrainTable;
   strainTable->setup(this);
+  strainTable->reset();
 
   // Initialize IntraHost
   int ihmType;
@@ -121,6 +114,7 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
     fflush(Global::Statusfp);
     print();
   }
+
 }
 
 void Disease::print() {

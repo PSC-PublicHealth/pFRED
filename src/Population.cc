@@ -157,9 +157,10 @@ void Population::setup() {
     fflush(Global::Statusfp);
   }
   disease = new Disease [diseases];
-  for (int is = 0; is < diseases; is++) {
-    disease[is].setup(is, this, mutation_prob[is]);
+  for (int dis = 0; dis < diseases; dis++) {
+    disease[dis].setup(dis, this, mutation_prob[dis]);
   }
+  
   read_profiles(profilefile);
   vacc_manager = new Vaccine_Manager(this);
   av_manager   = new AV_Manager(this);
@@ -171,16 +172,6 @@ void Population::setup() {
   graveyard.clear();
   death_list.clear();
   read_population();
-
-  // clear population level infections
-  for (int s = 0; s < diseases; s++) {
-    disease[s].clear();
-  }
-  
-  // clear individuals
-  for (int p = 0; p < pop_size; p++){
-    pop[p]->reset(Global::Sim_Date);
-  }
 
   // empty out the incremental list of Person's who have changed
   incremental_changes.clear();
@@ -244,7 +235,6 @@ void Population::read_population() {
 
   next_id = 0;
   for (int p = 0; p < psize; p++) {
-    Person * person = new Person;
     int age, married, occ;
     char label[32], house[32], school[32], work[32];
     char sex;
@@ -252,8 +242,8 @@ void Population::read_population() {
                label, &age, &sex, &married, &occ, house, school, work) != 8) {
       Utils::fred_abort("Help! Read failure for new person %d\n", p); 
     }
-    person->setup(next_id, age, sex, married, occ, house, school, work, this, Global::Sim_Date, true);
-    person->register_event_handler(this);
+    Person * person = new Person(next_id, age, sex, married, occ, house, school, work, this, Global::Sim_Date);
+    // person->register_event_handler(this);
     add_person(person);
     // sprintf(pstring[next_id], "%s %d %c %d %d %s %s %s", label, age, sex, married, occ, house, school, work);
     // printf("pstring[%d]: %s\n", next_id, pstring[next_id]);
@@ -302,7 +292,7 @@ void Population::begin_day(int day) {
   size_t births = maternity_list.size();
   for (size_t i = 0; i < births; i++) {
     Person * baby = maternity_list[i]->give_birth(day);
-    baby->register_event_handler(this);
+    // baby->register_event_handler(this);
     add_person(baby);
     int age_lookup = maternity_list[i]->get_age();
     if (age_lookup > Demographics::MAX_AGE)

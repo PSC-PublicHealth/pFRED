@@ -34,29 +34,47 @@
 int nantivirals = -1; // This global variable needs to be removed
 char dummy_label[8];
 
+
 Health::Health (Person * person) {
   self = person;
   diseases = self->get_population()->get_diseases();
-
   infection = new Infection* [diseases];
+  susceptibility_multp = new double [diseases];
   status = new char [diseases];
   susceptible = new bool [diseases];
+  symptomatic_status = false;
 
   for (int disease = 0; disease < diseases; disease++) {
     infection[disease] = NULL;
-    status[disease] = 'S';
-    susceptible[disease] = true;
+    become_susceptible(disease);
   }
-
-  susceptibility_multp = new double [diseases];
 
   if(nantivirals == -1) {
     get_param_from_string("number_antivirals",&nantivirals);
   }
 
-  checked_for_av.assign(nantivirals,false);
   immunity.assign(diseases,false);
+
+  vaccine_health.clear();
+  takes_vaccine = false;
+
+  av_health.clear();
+  takes_av = false;
+  checked_for_av.assign(nantivirals,false);
+
+  // Determine if the agent is at risk
   at_risk.assign(diseases,false);
+  for(int disease = 0; disease < diseases; disease++) {
+    Disease* s = self->get_population()->get_disease(disease);
+
+    if(!s->get_at_risk()->is_empty()) {
+      double at_risk_prob = s->get_at_risk()->find_value(self->get_age());
+
+      if(RANDOM() < at_risk_prob) { // Now a probability <=1.0
+        declare_at_risk(s);
+      }
+    }
+  }
 }
 
 Health::~Health() {
@@ -76,45 +94,6 @@ Health::~Health() {
 
   av_health.clear();
   takes_av = false;
-}
-
-void Health::reset() {
-  // printf("reset health for person %d  diseases = %d\n",self->get_id(),diseases); fflush(stdout);
-  symptomatic_status = false;
-  immunity.assign(immunity.size(),false);
-  at_risk.assign(at_risk.size(),false);
-
-  for (int disease = 0; disease < diseases; disease++) {
-    become_susceptible(disease);
-  }
-
-  //Clean out the stats objects
-  for(unsigned int i=0; i<vaccine_health.size(); i++)
-    delete vaccine_health[i];
-
-  vaccine_health.clear();
-  takes_vaccine = false;
-
-  for(unsigned int i=0; i<av_health.size(); i++)
-    delete av_health[i];
-
-  av_health.clear();
-  takes_av = false;
-
-  checked_for_av.assign(checked_for_av.size(),false);
-
-  // Determine if the agent is at risk
-  for(int disease = 0; disease < diseases; disease++) {
-    Disease* s = self->get_population()->get_disease(disease);
-
-    if(!s->get_at_risk()->is_empty()) {
-      double at_risk_prob = s->get_at_risk()->find_value(self->get_age());
-
-      if(RANDOM() < at_risk_prob) { // Now a probability <=1.0
-        declare_at_risk(s);
-      }
-    }
-  }
 }
 
 void Health::become_susceptible(int disease) {

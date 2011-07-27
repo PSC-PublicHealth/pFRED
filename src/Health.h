@@ -34,7 +34,6 @@ class Health {
 public:
   Health(Person * person);
   ~Health();
-  void reset();
   void update(int day);
   void become_susceptible(int disease);
   void become_unsusceptible(int disease);

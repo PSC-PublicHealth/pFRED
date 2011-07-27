@@ -178,7 +178,7 @@ void Place::spread_infection(int day, int s) {
   // the number of possible infectees per infector is max of (N-1) and S[s]
   // where N is the capacity of this place and S[s] is the number of current susceptibles
   // visiting this place.  S[s] might exceed N if we have some ad hoc visitors,
-  // since N is estimated only at reset time.
+  // since N is estimated only at startup.
   int number_targets = (N-1 > S[s]? N-1 : S[s]);
 
   if (Global::Verbose > 1) { print(s); }

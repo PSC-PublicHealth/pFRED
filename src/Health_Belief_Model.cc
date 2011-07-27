@@ -99,6 +99,19 @@ Health_Belief_Model::Health_Belief_Model(Person *p) {
     susceptibility_threshold = susceptibility_threshold_distr[0] - susceptibility_threshold_distr[1];
   }
 
+  for (int s = 0; s < diseases; s++) {
+    cumm_susceptibility[s] = 0.0;
+    cumm_severity[s] = 0.0;
+    accept_vaccine[s] = false;
+  }
+  total_deaths = 0;
+  pop_cumm_susceptibility = 0.0;
+  pop_susceptibility = 0.0;
+  if (self->get_id() == 0) {
+    FILE *fp;
+    fp = fopen("HBM_trace", "w");
+    fclose(fp);
+  }
 
 }
 
@@ -146,22 +159,6 @@ void Health_Belief_Model::get_parameters() {
   HBM_parameters_set = 1;
 }
 
-void Health_Belief_Model::reset() {
-  int diseases = self->get_population()->get_diseases();
-  for (int s = 0; s < diseases; s++) {
-    cumm_susceptibility[s] = 0.0;
-    cumm_severity[s] = 0.0;
-    accept_vaccine[s] = false;
-  }
-  total_deaths = 0;
-  pop_cumm_susceptibility = 0.0;
-  pop_susceptibility = 0.0;
-  if (self->get_id() == 0) {
-    FILE *fp;
-    fp = fopen("HBM_trace", "w");
-    fclose(fp);
-  }
-}
 
 void Health_Belief_Model::update(int day) {
   int diseases = self->get_population()->get_diseases();

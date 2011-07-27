@@ -47,32 +47,49 @@ Person::~Person() {
   if (registered_event_handlers != NULL) delete registered_event_handlers;
 }
 
-void Person::setup(int index, int age, char sex, int marital, int profession,
-		   Place **favorite_places, Population* Pop,
-		   Date *sim_start_date, bool has_random_birthday)
+void Person::newborn_setup(int index, int age, char sex, int marital, int occ,
+		   Place **favorite_places, Population* Pop, Date *birth_date)
 {
   idx = index;
   pop = Pop;
-  demographics =
-    new Demographics(this, age, sex, marital,
-		     profession, sim_start_date, has_random_birthday);
+  demographics = new Demographics(this, age, sex, marital, occ, birth_date, true);
   health = new Health(this);
   activities = new Activities(this, favorite_places);
   behavior = new Behavior(this);
+	
+  for (int disease = 0; disease < Global::Pop.get_diseases(); disease++) {
+    Disease* s = Global::Pop.get_disease(disease);
+    if (!s->get_residual_immunity()->is_empty()) {
+      double residual_immunity_prob =
+	s->get_residual_immunity()->find_value(get_age());
+      if (RANDOM() < residual_immunity_prob)
+	become_immune(s);
+    }
+  }
 }
 
-void Person::setup(int index, int age, char sex, int marital, int occ,
+Person::Person(int index, int age, char sex, int marital, int occ,
 		   char *house, char *school, char *work, Population *Pop,
-		   Date *sim_start_date, bool has_random_birthday)
+		   Date *sim_start_date)
 {
+  registered_event_handlers = NULL;
   idx = index;
   pop = Pop;
   demographics =
-    new Demographics(this, age, sex, marital,
-		     occ, sim_start_date, has_random_birthday);
+    new Demographics(this, age, sex, marital, occ, sim_start_date, false);
   health = new Health(this);
   activities = new Activities(this, house, school, work);
   behavior = new Behavior(this);
+	
+  for (int disease = 0; disease < Global::Pop.get_diseases(); disease++) {
+    Disease* s = Global::Pop.get_disease(disease);
+    if (!s->get_residual_immunity()->is_empty()) {
+      double residual_immunity_prob =
+	s->get_residual_immunity()->find_value(get_age());
+      if (RANDOM() < residual_immunity_prob)
+	become_immune(s);
+    }
+  }
 }
 
 void Person::print(FILE *fp, int disease) const {
@@ -99,27 +116,6 @@ void Person::print(FILE *fp, int disease) const {
     fprintf(fp," %2d",health->get_av_health(i)->get_av_start_day());
   fprintf(fp,"\n");
   fflush(fp);
-}
-
-void Person::reset(Date * sim_start_date) {
-  if (Global::Verbose > 2) {
-    fprintf(Global::Statusfp, "reset person %d\n", idx);
-    fflush(Global::Statusfp);
-  }
-  demographics->reset(sim_start_date);
-  health->reset();
-  behavior->reset();
-  activities->reset();
-	
-  for (int disease = 0; disease < Global::Pop.get_diseases(); disease++) {
-    Disease* s = Global::Pop.get_disease(disease);
-    if (!s->get_residual_immunity()->is_empty()) {
-      double residual_immunity_prob =
-	s->get_residual_immunity()->find_value(get_age());
-      if (RANDOM() < residual_immunity_prob)
-	become_immune(s);
-    }
-  }
 }
 
 int Person::get_diseases() {
@@ -220,8 +216,7 @@ Person * Person::give_birth(int day) {
   Date * birth_date = new Date(Global::Sim_Date->get_year(day),
                                Global::Sim_Date->get_month(day),
                                Global::Sim_Date->get_day_of_month(day));
-  baby->setup(id, age, sex, married, prof, favorite_place, pop, birth_date, false);
-  baby->reset(Global::Sim_Date);
+  baby->newborn_setup(id, age, sex, married, prof, favorite_place, pop, birth_date);
   delete birth_date;
   return baby;
 }

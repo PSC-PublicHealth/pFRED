@@ -26,13 +26,11 @@ public:
   Demographics();
   Demographics(Person* _self, int _age, char _sex,
                int _marital_status,int _profession,
-               Date * anchor_date, bool has_random_birthday = true);
+               Date * anchor_date, bool is_newborn = false);
   ~Demographics();
-  void setup(Date * anchor_date);
-  void reset(Date * sim_start_date);
   void update(Date * sim_start_date, int day);
-  int get_age()            { return age; }
   double get_real_age(int day);
+  int get_age()            { return age; }
   char get_sex()           { return sex; }
   int get_marital_status() { return marital_status; }
   int get_profession()     { return profession; }

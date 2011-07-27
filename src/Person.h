@@ -35,14 +35,15 @@ class Transmission;
 class Person {
 public:
   Person();
+  Person(int index, int age, char sex, int marital, int occ,
+	 char *house, char *school, char *work, Population *Pop,
+	 Date *sim_start_date);
   UNIT_TEST_VIRTUAL ~Person();
-  UNIT_TEST_VIRTUAL void setup(int index, int age, char sex, int marital, int profession,
-                               Place **favorite_places, Population* pop,
-			       Date *sim_start_date, bool has_random_birthday);
-  void setup(int index, int age, char sex, int marital, int occ,
-	     char *house, char *school, char *work, Population *Pop,
-	     Date *sim_start_date, bool has_random_birthday);
-  UNIT_TEST_VIRTUAL void reset(Date *sim_start_date);
+  UNIT_TEST_VIRTUAL void newborn_setup(int index, int age, char sex, int marital, int profession,
+				       Place **favorite_places, Population* pop, Date *sim_start_date);
+  //void setup(int index, int age, char sex, int marital, int occ,
+  //     char *house, char *school, char *work, Population *Pop,
+  //     Date *sim_start_date);
   UNIT_TEST_VIRTUAL void become_unsusceptible(int disease);
   UNIT_TEST_VIRTUAL void become_immune(Disease *disease);
   UNIT_TEST_VIRTUAL void update_infectious_activities(Date *sim_start_date, int day) {

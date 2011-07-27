@@ -20,7 +20,6 @@ class Person;
 class Health_Belief_Model : public Behavior_Model {
  public:
   Health_Belief_Model(Person *p);
-  void reset();
   void update(int day);
   bool will_accept_vaccine(int disease) { return accept_vaccine[disease]; }
   bool will_accept_another_vaccine_dose(int disease) { return true; } // Not implemented

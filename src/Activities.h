@@ -31,7 +31,6 @@ public:
   Activities (Person *person, Place **favorite_place);
   Activities (Person *person, char *house, char *school, char *work);
   UNIT_TEST_VIRTUAL void assign_profile();
-  UNIT_TEST_VIRTUAL void reset();
   UNIT_TEST_VIRTUAL void update(int day);
   void update_infectious_activities(Date *sim_start_date, int day);
   void update_susceptible_activities(Date *sim_start_date, int day);

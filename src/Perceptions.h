@@ -22,7 +22,6 @@
 class Perceptions {
 public:
   Perceptions(Person *p) { self = p; }
-  UNIT_TEST_VIRTUAL void reset() {}
   UNIT_TEST_VIRTUAL void update(int day) {}
   UNIT_TEST_VIRTUAL int get_global_cases(int disease) {
     return self->get_population()->get_disease(disease)->get_epidemic()->get_clinical_incidents();
