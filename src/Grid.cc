@@ -184,6 +184,55 @@ void Grid::record_favorite_places() {
     }
   }
 }
+/**
+ * @brief Get all people living within a specified radius of a point.
+ *
+ * Finds patches overlapping radius_in_km from point, then finds all housholds in those patches radius_in_km distance from point.
+ * Returns list of people in those housholds radius_in_km from point.
+ * Used in Epidemic::update for geographical seeding.
+ *
+ * @author Jay DePasse
+ */
+
+
+vector < Place * >  Grid::get_households_by_distance(double lat, double lon, double radius_in_km) {
+  double px, py;
+  translate_to_cartesian(lat, lon, &px, &py);
+  //  get cells around the point, make sure their rows & cols are in bounds
+  int r1 = rows-1 - (int) ( ( py + radius_in_km ) / grid_cell_size );
+  r1 = ( r1 >= 0 ) ? r1 : 0;
+  int r2 = rows-1 - (int) ( ( py - radius_in_km ) / grid_cell_size );
+  r2 = ( r2 <= rows-1 ) ? r2 : rows-1;
+
+  int c1 = (int) ( ( px - radius_in_km ) / grid_cell_size );
+  c1 = ( c1 >= 0 ) ? c1 : 0;
+  int c2 = (int) ( ( px + radius_in_km ) / grid_cell_size );
+  c2 = ( c2 <= cols-1 ) ? c2 : cols-1;
+
+  printf("DEBUG: r1 %d r2 %d c1 %d c2 %d\n", r1,r2,c1,c2);
+
+  vector <Place *> households; // store all households in cells ovelapping the radius
+
+  for (int r = r1; r <= r2; r++ ) {
+    for (int c = c1; c <= c2; c++ ) {
+      Cell * p = get_grid_cell(r,c);
+      vector <Place *> h = p->get_households();
+      for (vector <Place *>::iterator hi = h.begin(); hi != h.end(); hi++) { 
+        double hlat = (*hi)->get_latitude();
+        double hlon = (*hi)->get_longitude();
+        
+        printf("DEBUG: household_latitude %f, household_longitude %f\n",hlat,hlon);
+        double hx, hy;
+        translate_to_cartesian(hlat, hlon, &hx, &hy);
+        if (sqrt((px-hx)*(px-hx)+(py-hy)*(py-hy)) <= radius_in_km) {
+          households.push_back((*hi));
+        }
+      }
+    }
+  }
+  return households;
+}
+
 
 void Grid::add_vacant_house(Place * house) {
   vacant_houses.push_back(house);
@@ -300,7 +349,7 @@ void Grid::select_immigrants() {
       // redirect to the vacant house
       strcpy(house, vacant->get_label());
 
-      // creeat clone
+      // create clone
       Person * clone = new Person(next_id, age, sex, married, occ, house, school, work, &Global::Pop, Global::Sim_Date);
 
       // add to the popualtion

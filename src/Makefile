@@ -53,6 +53,7 @@ OBJ =   Fred.o Global.o Utils.o Decision.o Policy.o Manager.o \
 	Geo_Utils.o Cell.o Grid.o Large_Grid.o Large_Cell.o Small_Grid.o Small_Cell.o \
 	Date.o Person_Event_Interface.o Trajectory.o StrainTable.o \
 	EvolutionFactory.o Evolution.o Strain.o \
+	Multistrain_Timestep_Map.o \
 	IntraHost.o DefaultIntraHost.o FixedIntraHost.o  # ODEIntraHost.o ODE.o
 
 SRC = $(OBJ:.o=.cc)

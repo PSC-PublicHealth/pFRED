@@ -64,3 +64,9 @@ map<int, double> *Evolution :: getPrimaryLoads(int day) {
   loads->insert( pair<int, double> (0, 1) );
   return loads;
 }
+
+map<int, double> *Evolution :: getPrimaryLoads(int day, int strain) {
+  map<int, double> *loads = new map<int, double>;
+  loads->insert( pair<int, double> (strain, 1) );
+  return loads;
+}

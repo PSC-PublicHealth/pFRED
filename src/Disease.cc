@@ -30,6 +30,8 @@ using namespace std;
 #include "Evolution.h"
 #include "EvolutionFactory.h"
 
+#include "Multistrain_Timestep_Map.h"
+
 double Prob_stay_home;
 
 Disease::Disease() {
@@ -79,7 +81,9 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   char param_name[80];
   sprintf(param_name,"primary_cases[%d]",id);
   string param_name_str(param_name);
-  epidemic = new Epidemic(this, new Timestep_Map(param_name_str));
+  Multistrain_Timestep_Map * msts = new Multistrain_Timestep_Map(param_name_str);
+  msts->read_map();
+  epidemic = new Epidemic(this, msts);
   epidemic->clear();
 
   // Define residual immunity
@@ -114,7 +118,6 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
     fflush(Global::Statusfp);
     print();
   }
-
 }
 
 void Disease::print() {
@@ -218,6 +221,10 @@ Trajectory *Disease :: getTrajectory(Infection *infection, map<int, double> *loa
 
 map<int, double> *Disease :: getPrimaryLoads(int day) {
   return evol->getPrimaryLoads(day);
+}
+/// @brief Overloaded to allow specification of a single strain to be used for the initial loads.
+map<int, double> *Disease :: getPrimaryLoads(int day, int strain) {
+  return evol->getPrimaryLoads(day, strain);
 }
 
 UNIT_TEST_VIRTUAL int Disease :: get_max_days() {

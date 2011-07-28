@@ -49,6 +49,7 @@ public:
   UNIT_TEST_VIRTUAL Age_Map* get_residual_immunity() const { return residual_immunity;}
   UNIT_TEST_VIRTUAL Age_Map* get_at_risk() const { return at_risk;}
   map<int, double> *getPrimaryLoads(int day);
+  map<int, double> *getPrimaryLoads(int day, int strain);
   Evolution *get_evolution() { return evol;}
 
   Trajectory *getTrajectory(Infection *infection, map<int, double> *loads);

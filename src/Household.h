@@ -96,6 +96,12 @@ public:
   Person * get_housemate(int i) { return housemate[i]; }
 
   /**
+   * Use to get list of all people in the household.
+   * @return vector of pointers to people in household.
+   */
+  vector <Person *> get_inhabitants() { return housemate; }
+
+  /**
    * Get a neighborhood from the grid_cell to which this household belongs.
    *
    * @return a pointer to the neighborhood selected

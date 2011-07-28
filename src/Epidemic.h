@@ -22,6 +22,7 @@ using namespace std;
 class Disease;
 class Person;
 class Timestep_Map;
+class Multistrain_Timestep_Map;
 class Place;
 
 class Epidemic {

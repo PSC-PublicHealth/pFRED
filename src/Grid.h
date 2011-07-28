@@ -29,7 +29,7 @@ public:
   void translate_to_cartesian(double lat, double lon, double *x, double *y);
   void translate_to_lat_lon(double x, double y, double *lat, double *lon);
   void quality_control();
-
+  vector < Place * > get_households_by_distance(double lat, double lon, double radius_in_km);
   // Specific to Cell grid:
   void record_favorite_places();
   void add_vacant_house(Place *house);

@@ -24,8 +24,12 @@ using namespace std;
 #include "Place_List.h"
 #include "Place.h"
 #include "Timestep_Map.h"
+#include "Multistrain_Timestep_Map.h"
 #include "Transmission.h"
 #include "Date.h"
+#include "Grid.h"
+#include "Household.h"
+#include "Utils.h"
 
 extern int V_count;
 
@@ -222,27 +226,73 @@ void Epidemic::update(Date *sim_start_date, int day){
   vector<Place *>::iterator it;
   Population *pop = disease->get_population();
   N = pop->get_pop_size();
-  
-  // See if there are changes to primary_cases_per_day from primary_cases_map
-  int primary_cases_per_day = primary_cases_map->get_value_for_timestep(day, Global::Epidemic_offset);
-  
-  // Attempt to infect primary_cases_per_day.
-  // This represents external sources of infection.
-  // Note: infectees are chosen at random, and previously infected individuals
-  // are not affected, so the number of new cases may be less than specified in
-  // the file.
-  for (int i = 0; i < primary_cases_per_day; i++) {
-    int n = IRAND(0, N-1);
-    Person * person = pop->get_person(n);
-    if (person->get_disease_status(id) == 'S') {
-      // Infection * infection = new Infection(disease, NULL, person, NULL, day);
-      // person->become_exposed(infection);
-      Transmission *transmission = new Transmission(NULL, NULL, day);
-      transmission->setInitialLoads(disease->getPrimaryLoads(day));
-      person->getInfected(this->disease, transmission);
+
+  Multistrain_Timestep_Map * ms_map = ( ( Multistrain_Timestep_Map * ) primary_cases_map );
+
+  for (Multistrain_Timestep_Map::iterator ms_map_itr = ms_map->begin(); ms_map_itr != ms_map->end(); ms_map_itr++) {
+
+    Multistrain_Timestep_Map::Multistrain_Timestep * mst = *ms_map_itr;
+    
+    if ( mst->is_applicable( day, Global::Epidemic_offset ) ) {
+      
+      int extra_attempts = 1000;
+      int successes = 0;
+
+      vector < Person * > people;
+       
+      if ( mst->has_location() ) {
+        vector < Place * > households = Global::Cells->get_households_by_distance(mst->get_lat(), mst->get_lon(), mst->get_radius());
+        for (vector < Place * >::iterator hi = households.begin(); hi != households.end(); hi++) {
+          vector <Person *> hs = ((Household *) (*hi))->get_inhabitants();  
+          // This cast is ugly and should be fixed.  
+          // Problem is that Place::update (which clears susceptible list for the place) is called before Epidemic::update.
+          // If households were stored as Household in the Cell (rather than the base Place class) this wouldn't be needed.
+          people.insert(people.end(), hs.begin(), hs.end());
+        }
+      }     
+
+      for ( int i = 0; i < mst->get_num_seeding_attempts(); i++ ) {  
+        int r, n;
+        Person * person;
+
+        // each seeding attempt is independent
+        if ( mst->get_seeding_prob() < 1 ) { 
+          if ( RANDOM() > mst->get_seeding_prob() ) { continue; }
+        }
+        // if a location is specified in the timestep map select from that area, otherwise pick a person from the entire population
+        if ( mst->has_location() ) {
+          r = IRAND( 0, people.size()-1 );
+          person = people[r];
+        } else {
+          n = IRAND(0, N-1);
+          person = pop->get_person(n);
+        }
+
+        if (person == NULL) { // nobody home
+          Utils::fred_warning("Person selected for seeding in Epidemic update is NULL.");
+          continue;
+        }
+
+        if (person->get_disease_status(id) == 'S') {
+          Transmission *transmission = new Transmission(NULL, NULL, day);
+          transmission->setInitialLoads(disease->getPrimaryLoads(day));
+          person->getInfected(this->disease, transmission);
+          successes++;
+        }
+
+        if (successes < mst->get_min_successes() && i == (mst->get_num_seeding_attempts() - 1) && extra_attempts > 0 ) {
+          extra_attempts--;
+          i--;
+        }
+      }
+
+      if (successes < mst->get_min_successes()) {
+        Utils::fred_warning(
+            "A minimum of %d successes was specified, but only %d successful transmissions occurred.",
+            mst->get_min_successes(),successes);
+      }
     }
   }
-  
   // get_infectious_places(day);
 
   int infectious_places;

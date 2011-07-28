@@ -54,9 +54,13 @@ public:
   UNIT_TEST_VIRTUAL int get_value_for_timestep(int ts, int offset); // returns the value for the given timestep - delay
   UNIT_TEST_VIRTUAL bool is_empty() const { return values->empty(); }
   UNIT_TEST_VIRTUAL void print() const;
-private:
+
+  virtual void read_map();
+
+protected:
   map <int, int>* values;  // Map structure that holds <ts, value>
   string name;             // Name of the map
+  char map_file_name[255];
   int current_value;       // Holds the current value of th map.
 };
 

@@ -10,15 +10,16 @@ class Infection;
 class Health;
 
 class Evolution {
-  public:
-    static Evolution *newEvolution(int type);
+public:
+  static Evolution *newEvolution(int type);
 
-    virtual void reset(int reset);
-    virtual void doEvolution(Infection *infection, std :: map<int, double> *loads);
-    virtual void avEffect(Antiviral *av, Health *health, int disease, int cur_day, AV_Health *av_health);
-    std::map<int, double> *getPrimaryLoads(int day);
-    virtual void print();
-  };
+  virtual void reset(int reset);
+  virtual void doEvolution(Infection *infection, std :: map<int, double> *loads);
+  virtual void avEffect(Antiviral *av, Health *health, int disease, int cur_day, AV_Health *av_health);
+  std::map<int, double> *getPrimaryLoads(int day);
+  std::map<int, double> *getPrimaryLoads(int day, int strain);
+  virtual void print();
+};
 
 #endif
 

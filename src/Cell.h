@@ -48,6 +48,8 @@ public:
   Place *select_random_school(int age);
   Person *select_random_person_from_neighbors();
   int get_houses() { return houses;}
+  /// @brief Return list of households in this grid cell.
+  vector <Place *> get_households() { return household; }
   Place * get_neighborhood() { return neighborhood; }
   void enroll(Person *per) { neighborhood->enroll(per); }
   int get_occupied_houses() { return occupied_houses; }

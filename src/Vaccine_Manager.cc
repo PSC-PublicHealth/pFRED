@@ -93,6 +93,7 @@ Manager(_pop) {
   assert(vaccine_dose_priority < 4);
   //get_param((char*)"vaccination_capacity",&vaccination_capacity);
   vaccination_capacity_map = new Timestep_Map("vaccination_capacity");
+  vaccination_capacity_map->read_map();
   if(Global::Verbose > 1)
     vaccination_capacity_map->print();
   

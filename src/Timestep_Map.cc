@@ -5,6 +5,7 @@
  *  Created by Shawn Brown on 4/30/10.
  *  Copyright 2010 University of Pittsburgh. All rights reserved.
  *
+ *  Note: changed behavior of constructor; now necessary to call read_map() after instantiation -- JVD
  */
 
 #include <iostream>
@@ -31,7 +32,6 @@ Timestep_Map::Timestep_Map(string _name){
   current_value = 0;
   
   char map_file_param[255];
-  char map_file_name[255];
   // Need Special parsing if this is an array from input
   // Allows for Disease specific values
   if(name.find("[") != string::npos) {
@@ -56,7 +56,9 @@ Timestep_Map::Timestep_Map(string _name){
     values = NULL;
     return;
   }
-  
+}
+
+void Timestep_Map::read_map() {
   ifstream ts_input;
   
   ts_input.open(map_file_name);
