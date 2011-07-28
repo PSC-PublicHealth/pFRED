@@ -155,7 +155,7 @@ int main(int argc, char* argv[]) {
   Global::Random_start_day = (Global::Epidemic_offset > 6);
 
   // Start_date must have format 'YYYY-MM-DD'
-  Global::Sim_Date = new Date(string(Global::Start_date), Date::YYYYMMDD);
+  Global::Sim_Date = new Date(string(Global::Start_date));
   Global::Sim_Date->setup(directory, Global::Days);
 
   // set random number seed based on run number
@@ -217,9 +217,6 @@ int main(int argc, char* argv[]) {
       fflush(Global::Statusfp);
       INIT_RANDOM(new_seed + run - 1);
     }
-    // fprintf(Statusfp, "================\nsim day = %d  date = %s\n",
-    // day, Global::Sim_Date->get_MMDD(day));
-    // fflush(stdout);
 
     Global::Places.update(day);
     Global::Pop.begin_day(day);
@@ -228,25 +225,23 @@ int main(int argc, char* argv[]) {
     Global::Pop.end_day(day);
     Global::Pop.report(day);
     
-    char date_string[10];
-    strcpy(date_string, Global::Sim_Date->get_MMDD(day));
-    if (Global::Enable_Migration && (date_string[3] == '0' && date_string[4] == '2')) {
-      printf("MIGRATION called on %s\n", date_string); fflush(stdout);
-      Global::Cells->population_migration();
+    if (Global::Enable_Migration && Date::match_pattern(day, "02-*-*")) {
+      Global::Cells->population_migration(day);
     }
     
-    if (Global::Enable_Aging && Global::Verbose && strcmp(Global::Sim_Date->get_MMDD(day),"12-31")==0) {
+    if (Global::Enable_Aging && Global::Verbose && Date::match_pattern(day, "12-31-*")) {
       Global::Pop.quality_control();
       Global::Places.quality_control();
       Global::Cells->quality_control();
     }
 
-    if (Global::Track_age_distribution && (strcmp(Global::Sim_Date->get_MMDD(day),"01-01")==0)) {
-      Global::Pop.print_age_distribution(directory, Global::Sim_Date->get_YYYYMMDD(day), run);
-    }
-
-    if (Global::Track_household_distribution && (strcmp(Global::Sim_Date->get_MMDD(day),"01-01")==0)) {
-      Global::Cells->print_household_distribution(directory, Global::Sim_Date->get_YYYYMMDD(day), run);
+    if (Date::match_pattern(day,"01-01-*")) {
+      if (Global::Track_age_distribution) {
+	Global::Pop.print_age_distribution(directory, Global::Sim_Date->get_YYYYMMDD(day), run);
+      }
+      if (Global::Track_household_distribution) {
+	Global::Cells->print_household_distribution(directory, Global::Sim_Date->get_YYYYMMDD(day), run);
+      }
     }
 
     fprintf(Global::Statusfp, "day %d finished  ", day);

@@ -32,9 +32,9 @@ public:
   Activities (Person *person, char *house, char *school, char *work);
   UNIT_TEST_VIRTUAL void assign_profile();
   UNIT_TEST_VIRTUAL void update(int day);
-  void update_infectious_activities(Date *sim_start_date, int day);
-  void update_susceptible_activities(Date *sim_start_date, int day);
-  UNIT_TEST_VIRTUAL void update_schedule(Date *sim_start_date, int day);
+  void update_infectious_activities(int day);
+  void update_susceptible_activities(int day);
+  UNIT_TEST_VIRTUAL void update_schedule(int day);
   UNIT_TEST_VIRTUAL void print_schedule();
   UNIT_TEST_VIRTUAL void print();
   UNIT_TEST_VIRTUAL Place * get_household() { return favorite_place[HOUSEHOLD_INDEX]; }

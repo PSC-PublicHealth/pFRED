@@ -242,7 +242,7 @@ void Population::read_population() {
                label, &age, &sex, &married, &occ, house, school, work) != 8) {
       Utils::fred_abort("Help! Read failure for new person %d\n", p); 
     }
-    Person * person = new Person(next_id, age, sex, married, occ, house, school, work, this, Global::Sim_Date);
+    Person * person = new Person(next_id, age, sex, married, occ, house, school, work, this, 0);
     // person->register_event_handler(this);
     add_person(person);
     // sprintf(pstring[next_id], "%s %d %c %d %d %s %s %s", label, age, sex, married, occ, house, school, work);
@@ -264,15 +264,14 @@ void Population::begin_day(int day) {
   maternity_list.clear();
 
   // update household mobility activity on July 1
-  // if (Global::Enable_Mobility && strcmp(Global::Sim_Date->get_MMDD(day), "07-01")==0) {
-  if (strcmp(Global::Sim_Date->get_MMDD(day), "07-01")==0) {
+  if (Date::match_pattern(day, "07-01-*")) {
     for (int p = 0; p < pop_size; p++) {
       pop[p]->update_household_mobility();
     }
   }
 
   // update activity profiles on July 1
-  if (Global::Enable_Aging && strcmp(Global::Sim_Date->get_MMDD(day), "07-01")==0) {
+    if (Global::Enable_Aging && Date::match_pattern(day, "07-01-*")) {
     for (int p = 0; p < pop_size; p++) {
       pop[p]->update_activity_profile();
     }
@@ -280,7 +279,7 @@ void Population::begin_day(int day) {
 
   // update everyone's demographics
   for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_demographics(Global::Sim_Date, day);
+    pop[p]->update_demographics(day);
   }
 
   // update everyone's health status
@@ -352,12 +351,12 @@ void Population::get_visitors_to_infectious_places(int day) {
 
   // find places visited by infectious agents
   for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_infectious_activities(Global::Sim_Date, day);
+    pop[p]->update_infectious_activities(day);
   }
 
   // add susceptibles to infectious places
   for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_susceptible_activities(Global::Sim_Date, day);
+    pop[p]->update_susceptible_activities(day);
   }
 
   if (Global::Verbose > 1) {
@@ -391,7 +390,7 @@ void Population::end_day(int day) {
   // give out anti-virals (after today's infections)
   av_manager->disseminate(day);
 
-  if (Global::Verbose > 0 && strcmp(Global::Sim_Date->get_MMDD(day), "12-31") == 0) {
+  if (Global::Verbose > 0 && Date::match_pattern(day, "12-31-*")) {
     // print the statistics on December 31 of each year
     for (int i = 0; i < pop_size; ++i) {
       int age_lookup = pop[i]->get_age();
@@ -407,7 +406,7 @@ void Population::end_day(int day) {
       double birthrate, deathrate;
       fprintf(Global::Statusfp,
 	      "DEMOGRAPHICS Year %d TotalPop %d Age %d ", 
-	      Global::Sim_Date->get_year(day), pop_size, i);
+	      Date::get_current_year(day), pop_size, i);
       count = age_count_female[i];
       num_births = birth_count[i];
       num_deaths = death_count_female[i];

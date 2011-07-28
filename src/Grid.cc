@@ -251,13 +251,13 @@ Place * Grid::get_vacant_house() {
   return house;
 }
 
-void Grid::population_migration() {
-  select_emigrants();
-  select_immigrants();
+void Grid::population_migration(int day) {
+  select_emigrants(day);
+  select_immigrants(day);
 }
 
 
-void Grid::select_emigrants() {
+void Grid::select_emigrants(int day) {
   Person * resident[100];
   if (Global::Verbose) {
     printf("EMIG oldpopsize = %d\n", Global::Pop.get_pop_size());
@@ -309,8 +309,8 @@ void Grid::select_emigrants() {
   }
 }
 
-void Grid::select_immigrants() {
-  int current_year = Global::Sim_Date->get_year();
+void Grid::select_immigrants(int day) {
+  int current_year = Date::get_current_year(day);
   int current_popsize = Global::Pop.get_pop_size();
   printf("IMM curr = %d target = %d ", current_popsize, target_popsize);
   printf("vacant houses = %d  current_year = %d\n", get_vacant_houses(), current_year);
@@ -350,7 +350,7 @@ void Grid::select_immigrants() {
       strcpy(house, vacant->get_label());
 
       // create clone
-      Person * clone = new Person(next_id, age, sex, married, occ, house, school, work, &Global::Pop, Global::Sim_Date);
+      Person * clone = new Person(next_id, age, sex, married, occ, house, school, work, &Global::Pop, day);
 
       // add to the popualtion
       Global::Pop.add_person(clone);

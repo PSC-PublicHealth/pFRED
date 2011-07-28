@@ -48,11 +48,10 @@ Person::~Person() {
 }
 
 void Person::newborn_setup(int index, int age, char sex, int marital, int occ,
-		   Place **favorite_places, Population* Pop, Date *birth_date)
-{
+			   Place **favorite_places, Population* Pop, int day) {
   idx = index;
   pop = Pop;
-  demographics = new Demographics(this, age, sex, marital, occ, birth_date, true);
+  demographics = new Demographics(this, age, sex, marital, occ, day, true);
   health = new Health(this);
   activities = new Activities(this, favorite_places);
   behavior = new Behavior(this);
@@ -69,14 +68,13 @@ void Person::newborn_setup(int index, int age, char sex, int marital, int occ,
 }
 
 Person::Person(int index, int age, char sex, int marital, int occ,
-		   char *house, char *school, char *work, Population *Pop,
-		   Date *sim_start_date)
-{
+	       char *house, char *school, char *work, Population *Pop,
+	       int day) {
   registered_event_handlers = NULL;
   idx = index;
   pop = Pop;
   demographics =
-    new Demographics(this, age, sex, marital, occ, sim_start_date, false);
+    new Demographics(this, age, sex, marital, occ, day, false);
   health = new Health(this);
   activities = new Activities(this, house, school, work);
   behavior = new Behavior(this);
@@ -213,11 +211,7 @@ Person * Person::give_birth(int day) {
     get_household(), get_neighborhood(),
     NULL, NULL, NULL, NULL };
   Person * baby = new Person();
-  Date * birth_date = new Date(Global::Sim_Date->get_year(day),
-                               Global::Sim_Date->get_month(day),
-                               Global::Sim_Date->get_day_of_month(day));
-  baby->newborn_setup(id, age, sex, married, prof, favorite_place, pop, birth_date);
-  delete birth_date;
+  baby->newborn_setup(id, age, sex, married, prof, favorite_place, pop, day);
   return baby;
 }
 

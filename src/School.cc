@@ -127,25 +127,13 @@ double School::get_transmission_prob(int disease, Person * i, Person * s) {
 
 bool School::should_be_open(int day, int disease) {
   
-  if (School::school_summer_schedule > 0) {
-    char current_day[10];
-    strcpy(current_day, Global::Sim_Date->get_MMDD(day));
+  if (School::school_summer_schedule > 0 && 
+      Date::day_in_range_MMDD(day, School::school_summer_start, School::school_summer_end)) {
     if (Global::Verbose > 1) {
-      fprintf(Global::Statusfp,"School %s on summer schedule, current day is %s\n", label, current_day);
+      fprintf(Global::Statusfp,"School %s closed for summer\n", label);
+      fflush(Global::Statusfp);
     }
-    if (Date::day_is_between_MMDD(current_day, School::school_summer_start, School::school_summer_end)) {
-      if (Global::Verbose > 1) {
-	      fprintf(Global::Statusfp,"School %s closed for summer\n", label);
-	      fflush(Global::Statusfp);
-      }
-      return false;
-    }
-    else {
-      if (Global::Verbose > 1) {
-	      fprintf(Global::Statusfp,"School %s is open\n", label);
-	      fflush(Global::Statusfp);
-      }
-    }
+    return false;
   }
 
   if (strcmp(School::school_closure_policy, "global") == 0) {

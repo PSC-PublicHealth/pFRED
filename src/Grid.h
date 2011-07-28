@@ -37,9 +37,9 @@ public:
   int get_target_popsize() { return target_popsize; }
   int get_target_households() { return target_households; }
   int get_vacant_houses() { return (int) vacant_houses.size(); }
-  void population_migration();
-  void select_emigrants();
-  void select_immigrants();
+  void population_migration(int day);
+  void select_emigrants(int day);
+  void select_immigrants(int day);
   void print_household_distribution(char * dir, char * date_string, int run);
 
 protected:

@@ -11,6 +11,7 @@
 
 #include "Date.h"
 #include "Utils.h"
+#include "Global.h"
 #include <time.h>
 #include <stdio.h>
 #include <iostream>
@@ -425,10 +426,19 @@ string Date::to_string() {
 
 //Static Methods
 int Date::days_between(Date * date_1, Date * date_2) {
-
   return abs(date_1->days_since_jan_1_1600 - date_2->days_since_jan_1_1600);
-
 }
+
+int Date::days_between(int sim_day, Date * date_2) {
+  Date * today = new Date(Global::Sim_Date->get_year(sim_day),
+                          Global::Sim_Date->get_month(sim_day),
+                          Global::Sim_Date->get_day_of_month(sim_day));
+  int total_days = abs(today->days_since_jan_1_1600 - date_2->days_since_jan_1_1600);
+  delete today;
+  return total_days;
+}
+
+
 
 bool Date::is_leap_year(int year) {
 
@@ -795,3 +805,58 @@ bool Date::day_is_between_MMDD(char * current, char * start, char * end) {
     return false;
   return true;
 }
+
+
+bool Date::match_pattern(int simulation_day, string pattern) {
+  size_t pos1 = pattern.find_first_of("-");
+  size_t pos2 = pattern.find_last_of("-");
+  assert(pos1 != string::npos && pos2 != string::npos && pos1 < pos2);
+  string mon = pattern.substr(0,pos1);
+  string day = pattern.substr(pos1+1,pos2-pos1-1);
+  string year = pattern.substr(pos2+1);
+  // cout << " pattern = " << mon << "|" << day << "|" << year << endl;
+  char * sim_cstr = new char [12];
+  sim_cstr = Global::Sim_Date->get_YYYYMMDD(simulation_day);
+  string tmp;
+  tmp.assign(sim_cstr);
+  string sim_year = tmp.substr(0,4);
+  string sim_mon = tmp.substr(5,2);
+  string sim_day = tmp.substr(8,2);
+  // cout << " sim_day = " << sim_mon << "-" << sim_day << "-" << sim_year << endl;
+  if (year != "*" && year != sim_year) return false;
+  if (mon != "*" && mon != sim_mon) return false;
+  if (day != "*" && day != sim_day) return false;
+  return true;
+}
+
+
+bool Date::day_in_range_MMDD(int day, char * start_day, char * end_day) {
+  char current_day[10];
+  strcpy(current_day, Global::Sim_Date->get_MMDD(day));
+  return Date::day_is_between_MMDD(current_day, start_day, end_day);
+}
+
+int Date::get_current_year(int day) {
+  return Global::Sim_Date->get_year(day);
+}
+
+int Date::get_current_month(int day) {
+  return Global::Sim_Date->get_month(day);
+}
+
+int Date::get_current_day_of_month(int day) {
+  return Global::Sim_Date->get_day_of_month(day);
+}
+
+int Date::get_current_day_of_week(int day) {
+  return Global::Sim_Date->get_day_of_week(day);
+}
+
+Date * Date::new_date(int day) {
+  Date * current_date = new Date(Global::Sim_Date->get_year(day),
+				 Global::Sim_Date->get_month(day),
+				 Global::Sim_Date->get_day_of_month(day));
+  return current_date;
+}
+
+

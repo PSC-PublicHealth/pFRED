@@ -18,39 +18,34 @@
 #include <vector>
 using namespace std;
 
-#include "Population.h"
+class Population;
+class Place;
+class Disease;
+class Infection;
+class Population;
+class Transmission;
+class Person_Event_Interface;
 #include "Demographics.h"
 #include "Health.h"
 #include "Behavior.h"
 #include "Activities.h"
-#include "Infection.h"
-#include "Person_Event_Interface.h"
-class Place;
-class Disease;
-class Date;
 
-class Population;
-class Transmission;
 
 class Person {
 public:
   Person();
-  Person(int index, int age, char sex, int marital, int occ,
-	 char *house, char *school, char *work, Population *Pop,
-	 Date *sim_start_date);
+  Person(int index, int age, char sex, int marital, int occ, char *house,
+	 char *school, char *work, Population *Pop, int day);
   UNIT_TEST_VIRTUAL ~Person();
   UNIT_TEST_VIRTUAL void newborn_setup(int index, int age, char sex, int marital, int profession,
-				       Place **favorite_places, Population* pop, Date *sim_start_date);
-  //void setup(int index, int age, char sex, int marital, int occ,
-  //     char *house, char *school, char *work, Population *Pop,
-  //     Date *sim_start_date);
+				       Place **favorite_places, Population* pop, int day);
   UNIT_TEST_VIRTUAL void become_unsusceptible(int disease);
   UNIT_TEST_VIRTUAL void become_immune(Disease *disease);
-  UNIT_TEST_VIRTUAL void update_infectious_activities(Date *sim_start_date, int day) {
-    activities->update_infectious_activities(sim_start_date, day);
+  UNIT_TEST_VIRTUAL void update_infectious_activities(int day) {
+    activities->update_infectious_activities(day);
   }
-  UNIT_TEST_VIRTUAL void update_susceptible_activities(Date *sim_start_date, int day) {
-    activities->update_susceptible_activities(sim_start_date, day);
+  UNIT_TEST_VIRTUAL void update_susceptible_activities(int day) {
+    activities->update_susceptible_activities(day);
   }
   UNIT_TEST_VIRTUAL void print(FILE *fp, int disease) const;
   int is_symptomatic() { return health->is_symptomatic(); }
@@ -89,7 +84,7 @@ public:
   void addPrevalence(int disease, vector<int> strains);
   
   UNIT_TEST_VIRTUAL void set_changed(); // notify the population that this Person has changed
-  void update_demographics(Date *sim_start_date, int day) { demographics->update(sim_start_date, day); }
+  void update_demographics(int day) { demographics->update(day); }
   void update_health(int day) { health->update(day); }
   void update_behavior(int day) { behavior->update(day); }
   void update_activities(int day) { activities->update(day); }

@@ -49,7 +49,7 @@ Demographics::Demographics() {
 }
 
 Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_status,
-               int _profession, Date * current_date, bool is_newborn) {
+               int _profession, int day, bool is_newborn) {
 
   //Create the static arrays one time
   if (!Demographics::is_initialized) {
@@ -78,6 +78,8 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
   due_date            = NULL;
   pregnant            = false;
   deceased            = false;
+
+  Date * current_date = Date::new_date(day);
 
   if (is_newborn == false) {
 
@@ -137,6 +139,7 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
       this->pregnant = true;
     }
   }
+  delete current_date;
 }
 
 Demographics::~Demographics() {
@@ -146,11 +149,11 @@ Demographics::~Demographics() {
   if (due_date != NULL) delete due_date;
 }
 
-void Demographics::update(Date * sim_start_date, int day) {
+void Demographics::update(int day) {
 
-  int cur_year = sim_start_date->get_year(day);
-  int cur_month = sim_start_date->get_month(day);
-  int cur_day_of_month = sim_start_date->get_day_of_month(day);
+  int cur_year = Date::get_current_year(day);
+  int cur_month = Date::get_current_month(day);
+  int cur_day_of_month = Date::get_current_day_of_month(day);
 
   //The age to look up should be an integer between 0 and the MAX_AGE
   int age_lookup = (age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE);
@@ -317,11 +320,7 @@ void Demographics::print() {
 }
 
 double Demographics::get_real_age(int day) {
-  Date * today = new Date(Global::Sim_Date->get_year(day),
-                          Global::Sim_Date->get_month(day),
-                          Global::Sim_Date->get_day_of_month(day));
-  int days_of_life = Date::days_between(today, birthdate);
-  delete today;
+  int days_of_life = Date::days_between(day, birthdate);
   return ((double) days_of_life / 365.0);
 }
 

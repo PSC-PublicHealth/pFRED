@@ -47,7 +47,7 @@ public:
   static const int INVALID = -1;
 
   Date();
-  Date(string date_string, string format_string);
+  Date(string date_string, string format_string =  Date::YYYYMMDD);
   Date(int year, int day_of_year);
   Date(int year, int month, int day_of_month);
   void set_date(int year, int month, int day_of_month);
@@ -75,19 +75,28 @@ public:
   Date * clone();
   bool equals(Date * check_date);
   int compare_to(Date * check_date);
-  static int days_between(Date * date_1, Date * date_2);
-  static bool is_leap_year(int year);
-  static int get_day_of_year(int year, int month, int day);
-  static int parse_month_from_date_string(string date_string, string format_string);
-  static int parse_day_of_month_from_date_string(string date_string, string format_string);
-  static int parse_year_from_date_string(string date_string, string format_string);
   string to_string();
   virtual ~Date();
   void setup(char * output_directory, int days);
   char * get_YYYYMMDD(int day);
   char * get_YYYYMM(int day);
   char * get_MMDD(int day);
+
+  static int days_between(Date * date_1, Date * date_2);
+  static int days_between(int sim_day, Date * date_2);
+  static bool is_leap_year(int year);
+  static int get_day_of_year(int year, int month, int day);
+  static int parse_month_from_date_string(string date_string, string format_string);
+  static int parse_day_of_month_from_date_string(string date_string, string format_string);
+  static int parse_year_from_date_string(string date_string, string format_string);
   static bool day_is_between_MMDD(char * current, char * start, char * end);
+  static bool match_pattern(int simulation_day, string pattern);
+  static bool day_in_range_MMDD(int day, char * start_day, char * end_day);
+  static int get_current_year(int day);
+  static int get_current_month(int day);
+  static int get_current_day_of_month(int day);
+  static int get_current_day_of_week(int day);
+  static Date * new_date(int day);
 private:
   static const int day_table[2][13];
   static const int doomsday_month_val[2][13];

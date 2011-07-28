@@ -24,11 +24,10 @@ public:
   static const double STDDEV_PREG_DAYS = 7.0; //1 week
 
   Demographics();
-  Demographics(Person* _self, int _age, char _sex,
-               int _marital_status,int _profession,
-               Date * anchor_date, bool is_newborn = false);
+  Demographics(Person* _self, int _age, char _sex, int _marital_status,
+	       int _profession, int day, bool is_newborn = false);
   ~Demographics();
-  void update(Date * sim_start_date, int day);
+  void update(int day);
   double get_real_age(int day);
   int get_age()            { return age; }
   char get_sex()           { return sex; }
