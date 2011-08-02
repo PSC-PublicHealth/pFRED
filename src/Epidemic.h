@@ -28,7 +28,7 @@ class Place;
 class Epidemic {
 public:
   Epidemic(Disease * str, Timestep_Map *);
-  UNIT_TEST_VIRTUAL ~Epidemic();
+  ~Epidemic();
   
   void clear();
   void update_stats(int day);

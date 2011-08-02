@@ -36,65 +36,65 @@ public:
   // if primary infection, infector and place are null.
   // if mutation, place is null.
   Infection(Disease *s, Person *infector, Person *infectee, Place* place, int day);
-  UNIT_TEST_VIRTUAL ~Infection() { }
+  ~Infection() { }
 
   // infection state
-  UNIT_TEST_VIRTUAL char get_disease_status() const {
+  char get_disease_status() const {
     return status;
   }
-  UNIT_TEST_VIRTUAL void become_infectious();
-  UNIT_TEST_VIRTUAL void become_symptomatic();
-  UNIT_TEST_VIRTUAL void become_susceptible();
-  UNIT_TEST_VIRTUAL void become_unsusceptible();
-  UNIT_TEST_VIRTUAL void recover();
-  UNIT_TEST_VIRTUAL void remove();
-  UNIT_TEST_VIRTUAL void update(int today);
+  void become_infectious();
+  void become_symptomatic();
+  void become_susceptible();
+  void become_unsusceptible();
+  void recover();
+  void remove();
+  void update(int today);
   bool is_infectious() const { return (status == 'I' || status == 'i'); }
 
   // general
-  UNIT_TEST_VIRTUAL Disease *get_disease() const { return disease; }
-  UNIT_TEST_VIRTUAL Person *get_infector() const { return infector; }
-  UNIT_TEST_VIRTUAL Place *get_infected_place() const { return place; }
-  UNIT_TEST_VIRTUAL int get_infectee_count() const { return infectee_count; }
-  UNIT_TEST_VIRTUAL int add_infectee() { return ++infectee_count; }
-  UNIT_TEST_VIRTUAL void print() const;
+  Disease *get_disease() const { return disease; }
+  Person *get_infector() const { return infector; }
+  Place *get_infected_place() const { return place; }
+  int get_infectee_count() const { return infectee_count; }
+  int add_infectee() { return ++infectee_count; }
+  void print() const;
   void report_infection(int day) const;
 
   // chrono
-  UNIT_TEST_VIRTUAL int get_exposure_date() const { return exposure_date; }
-  UNIT_TEST_VIRTUAL int get_infectious_date() const { return infectious_date - offset; }
-  UNIT_TEST_VIRTUAL int get_symptomatic_date() const { return symptomatic_date - offset; }
+  int get_exposure_date() const { return exposure_date; }
+  int get_infectious_date() const { return infectious_date - offset; }
+  int get_symptomatic_date() const { return symptomatic_date - offset; }
   int get_asymptomatic_date() const { return asymptomatic_date - offset; }
-  UNIT_TEST_VIRTUAL int get_recovery_date() const { return recovery_date - offset; }
-  UNIT_TEST_VIRTUAL int get_susceptible_date() const {
+  int get_recovery_date() const { return recovery_date - offset; }
+  int get_susceptible_date() const {
     if (recovery_period > -1) {
       return get_recovery_date() + recovery_period;
     } else {
       return INT_MAX;
     }
   }
-  UNIT_TEST_VIRTUAL int set_susceptibility_period(int period) {
+  int set_susceptibility_period(int period) {
     return susceptibility_period = period;
   }
-  UNIT_TEST_VIRTUAL int get_unsusceptible_date() const {
+  int get_unsusceptible_date() const {
     return exposure_date + susceptibility_period;
   }
 
-  UNIT_TEST_VIRTUAL void modify_asymptomatic_period(double multp, int cur_day);
-  UNIT_TEST_VIRTUAL void modify_symptomatic_period(double multp, int cur_day);
-  UNIT_TEST_VIRTUAL void modify_infectious_period(double multp, int cur_day);
+  void modify_asymptomatic_period(double multp, int cur_day);
+  void modify_symptomatic_period(double multp, int cur_day);
+  void modify_infectious_period(double multp, int cur_day);
 
   // parameters
   bool is_infectious() { return infectivity > trajectory_infectivity_threshold; }
-  UNIT_TEST_VIRTUAL bool is_symptomatic() { return symptoms > trajectory_symptomaticity_threshold; }
-  UNIT_TEST_VIRTUAL double get_susceptibility() const { return susceptibility; }
+  bool is_symptomatic() { return symptoms > trajectory_symptomaticity_threshold; }
+  double get_susceptibility() const { return susceptibility; }
 
-  UNIT_TEST_VIRTUAL double get_symptoms() const { return symptoms; }
-  UNIT_TEST_VIRTUAL void modify_develops_symptoms(bool symptoms, int cur_day);
-  UNIT_TEST_VIRTUAL void modify_susceptibility(double multp) { susceptibility *= multp; }
-  UNIT_TEST_VIRTUAL void modify_infectivity(double multp) { infectivity_multp *= multp; }
+  double get_symptoms() const { return symptoms; }
+  void modify_develops_symptoms(bool symptoms, int cur_day);
+  void modify_susceptibility(double multp) { susceptibility *= multp; }
+  void modify_infectivity(double multp) { infectivity_multp *= multp; }
 
-  UNIT_TEST_VIRTUAL double get_infectivity(int day) const {
+  double get_infectivity(int day) const {
     day = day - exposure_date + offset;
     Trajectory::point point = trajectory->get_data_point(day);
     return point.infectivity * infectivity_multp;

@@ -31,24 +31,24 @@ public:
   Age_Map(string Name);
   Age_Map();
   
-  UNIT_TEST_VIRTUAL int get_num_ages() const { return ages.size(); }
-  UNIT_TEST_VIRTUAL int get_minimum_age() const;
-  UNIT_TEST_VIRTUAL int get_maximum_age() const;
+  int get_num_ages() const { return ages.size(); }
+  int get_minimum_age() const;
+  int get_maximum_age() const;
   
-  UNIT_TEST_VIRTUAL bool is_empty() const { return ages.empty(); }
+  bool is_empty() const { return ages.empty(); }
   
   // Additional creation operations for building an Age_Map
-  UNIT_TEST_VIRTUAL void read_from_input(string Input);
-  UNIT_TEST_VIRTUAL void read_from_input(string Input, int i);
-  UNIT_TEST_VIRTUAL void read_from_input(string Input, int i, int j);
-  UNIT_TEST_VIRTUAL void add_value(int lower_age, int upper_age, double val);
+  void read_from_input(string Input);
+  void read_from_input(string Input, int i);
+  void read_from_input(string Input, int i, int j);
+  void add_value(int lower_age, int upper_age, double val);
   
   // Operations
-  UNIT_TEST_VIRTUAL double find_value(int age) const;
+  double find_value(int age) const;
   
   // Utility functions
-  UNIT_TEST_VIRTUAL void print() const;
-  UNIT_TEST_VIRTUAL bool quality_control() const;
+  void print() const;
+  bool quality_control() const;
   
 private:
   string Name;

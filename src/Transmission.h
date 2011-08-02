@@ -22,25 +22,25 @@ class Transmission {
     // if primary transmission, infector and place are null.
     // if mutation, place is null.
     Transmission(Person *infector, Place* place, int day) : infector(infector), place(place), exposure_date(day) { }
-    UNIT_TEST_VIRTUAL ~Transmission();
+    ~Transmission();
 
     // general
-    UNIT_TEST_VIRTUAL Person *getInfector() const {
+    Person *getInfector() const {
       return infector;
       }
-    UNIT_TEST_VIRTUAL Place *getInfectedPlace() const {
+    Place *getInfectedPlace() const {
       return place;
       }
-    UNIT_TEST_VIRTUAL void setInitialLoads(std::map<int, double> *initialLoads) {
+    void setInitialLoads(std::map<int, double> *initialLoads) {
       this->initialLoads = initialLoads;
       }
-    UNIT_TEST_VIRTUAL std::map<int, double> * getInitialLoads() {
+    std::map<int, double> * getInitialLoads() {
       return initialLoads;
       }
-    UNIT_TEST_VIRTUAL void print() const;
+    void print() const;
 
     // chrono
-    UNIT_TEST_VIRTUAL int get_exposure_date() const {
+    int get_exposure_date() const {
       return exposure_date;
       }
 

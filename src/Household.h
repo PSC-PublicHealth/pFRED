@@ -113,13 +113,13 @@ public:
    * Get the number of adults in the household.
    * @return the number of adults
    */
-  UNIT_TEST_VIRTUAL int get_adults() { return adults; }
+  int get_adults() { return adults; }
 
   /**
    * Get the number of children in the household.
    * @return the number of children
    */
-  UNIT_TEST_VIRTUAL int get_children() { return children; }
+  int get_children() { return children; }
 
   /**
    * Determine if the household should be open. It is dependent on the disease and simulation day.

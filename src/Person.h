@@ -36,54 +36,54 @@ public:
   Person();
   Person(int index, int age, char sex, int marital, int occ, char *house,
 	 char *school, char *work, Population *Pop, int day);
-  UNIT_TEST_VIRTUAL ~Person();
-  UNIT_TEST_VIRTUAL void newborn_setup(int index, int age, char sex, int marital, int profession,
+  ~Person();
+  void newborn_setup(int index, int age, char sex, int marital, int profession,
 				       Place **favorite_places, Population* pop, int day);
-  UNIT_TEST_VIRTUAL void become_unsusceptible(int disease);
-  UNIT_TEST_VIRTUAL void become_immune(Disease *disease);
-  UNIT_TEST_VIRTUAL void update_infectious_activities(int day) {
+  void become_unsusceptible(int disease);
+  void become_immune(Disease *disease);
+  void update_infectious_activities(int day) {
     activities->update_infectious_activities(day);
   }
-  UNIT_TEST_VIRTUAL void update_susceptible_activities(int day) {
+  void update_susceptible_activities(int day) {
     activities->update_susceptible_activities(day);
   }
-  UNIT_TEST_VIRTUAL void print(FILE *fp, int disease) const;
+  void print(FILE *fp, int disease) const;
   int is_symptomatic() { return health->is_symptomatic(); }
   bool is_susceptible(int dis) { return health->is_susceptible(dis); }
   bool is_infectious(int dis) { return health->is_infectious(dis); }
   int get_diseases();
   
-  UNIT_TEST_VIRTUAL Place *get_household() const;
-  UNIT_TEST_VIRTUAL Place *get_neighborhood() const;
+  Place *get_household() const;
+  Place *get_neighborhood() const;
   int get_age() const { return demographics->get_age(); }
   int get_init_age() const { return demographics->get_init_age(); }
   int get_init_profession() const { return demographics->get_init_profession(); }
   int get_init_marital_status() const { return demographics->get_init_marital_status(); }
   double get_real_age(int day) const { return demographics->get_real_age(day); }
-  UNIT_TEST_VIRTUAL char get_sex() const;
-  UNIT_TEST_VIRTUAL char get_marital_status() const;
-  UNIT_TEST_VIRTUAL int get_profession() const;
-  UNIT_TEST_VIRTUAL char get_disease_status(int disease) const { return health->get_disease_status(disease); }
-  UNIT_TEST_VIRTUAL double get_susceptibility(int disease) const { return health->get_susceptibility(disease); }
-  UNIT_TEST_VIRTUAL double get_infectivity(int disease, int day) const { return health->get_infectivity(disease, day); }
-  UNIT_TEST_VIRTUAL int get_exposure_date(int disease) const;
-  UNIT_TEST_VIRTUAL int get_infectious_date(int disease) const;
-  UNIT_TEST_VIRTUAL int get_recovered_date(int disease) const;
-  UNIT_TEST_VIRTUAL int get_infector(int disease) const;
-  UNIT_TEST_VIRTUAL int get_infected_place(int disease) const;
-  UNIT_TEST_VIRTUAL char * get_infected_place_label(int disease) const;
-  UNIT_TEST_VIRTUAL char get_infected_place_type(int disease) const;
-  UNIT_TEST_VIRTUAL int get_infectees(int disease) const;
-  UNIT_TEST_VIRTUAL int add_infectee(int disease);
-  UNIT_TEST_VIRTUAL int is_new_case(int day, int disease) const;
-  UNIT_TEST_VIRTUAL int addInfected(int disease, vector<int> strains);
+  char get_sex() const;
+  char get_marital_status() const;
+  int get_profession() const;
+  char get_disease_status(int disease) const { return health->get_disease_status(disease); }
+  double get_susceptibility(int disease) const { return health->get_susceptibility(disease); }
+  double get_infectivity(int disease, int day) const { return health->get_infectivity(disease, day); }
+  int get_exposure_date(int disease) const;
+  int get_infectious_date(int disease) const;
+  int get_recovered_date(int disease) const;
+  int get_infector(int disease) const;
+  int get_infected_place(int disease) const;
+  char * get_infected_place_label(int disease) const;
+  char get_infected_place_type(int disease) const;
+  int get_infectees(int disease) const;
+  int add_infectee(int disease);
+  int is_new_case(int day, int disease) const;
+  int addInfected(int disease, vector<int> strains);
   
-  UNIT_TEST_VIRTUAL void infect(Person *infectee, int disease, Transmission *transmission);
-  UNIT_TEST_VIRTUAL void getInfected(Disease *disease, Transmission *transmission);
+  void infect(Person *infectee, int disease, Transmission *transmission);
+  void getInfected(Disease *disease, Transmission *transmission);
   void addIncidence(int disease, vector<int> strains);
   void addPrevalence(int disease, vector<int> strains);
   
-  UNIT_TEST_VIRTUAL void set_changed(); // notify the population that this Person has changed
+  void set_changed(); // notify the population that this Person has changed
   void update_demographics(int day) { demographics->update(day); }
   void update_health(int day) { health->update(day); }
   void update_behavior(int day) { behavior->update(day); }
@@ -104,18 +104,18 @@ public:
   void assign_office() { activities->assign_office(); }
 
   //Event Handling
-  UNIT_TEST_VIRTUAL void register_event_handler(Person_Event_Interface *event_handler);
-  UNIT_TEST_VIRTUAL void deregister_event_handler(Person_Event_Interface *event_handler);
-  UNIT_TEST_VIRTUAL void notify_property_change(string property_name, int prev_val, int new_val);
-  UNIT_TEST_VIRTUAL void notify_property_change(string property_name, bool new_val);
+  void register_event_handler(Person_Event_Interface *event_handler);
+  void deregister_event_handler(Person_Event_Interface *event_handler);
+  void notify_property_change(string property_name, int prev_val, int new_val);
+  void notify_property_change(string property_name, bool new_val);
 
   // access functions:
-  UNIT_TEST_VIRTUAL int get_id() const { return idx; }
-  UNIT_TEST_VIRTUAL Population* get_population() const { return pop; }
-  UNIT_TEST_VIRTUAL Demographics* get_demographics() const { return demographics; }
-  UNIT_TEST_VIRTUAL Health *get_health() const { return health; }
-  UNIT_TEST_VIRTUAL Activities* get_activities() const { return activities; }
-  UNIT_TEST_VIRTUAL Behavior* get_behavior() const { return behavior; }
+  int get_id() const { return idx; }
+  Population* get_population() const { return pop; }
+  Demographics* get_demographics() const { return demographics; }
+  Health *get_health() const { return health; }
+  Activities* get_activities() const { return activities; }
+  Behavior* get_behavior() const { return behavior; }
   
 private:
   int idx;

@@ -37,36 +37,36 @@ public:
             int _max_av_course_start_day, int _start_day, bool _prophylaxis,
             double _percent_symptomatics);
 
-  UNIT_TEST_VIRTUAL ~Antiviral() {
+  ~Antiviral() {
     if (av_course_start_day) delete[] av_course_start_day;
   }
 
   //Parameter Access Members
-  UNIT_TEST_VIRTUAL int     get_disease()                const { return disease;}
-  UNIT_TEST_VIRTUAL double  get_reduce_infectivity()    const { return reduce_infectivity;}
-  UNIT_TEST_VIRTUAL double  get_reduce_susceptibility() const { return reduce_susceptibility;}
-  UNIT_TEST_VIRTUAL double  get_reduce_asymp_period()   const { return reduce_asymp_period;}
-  UNIT_TEST_VIRTUAL double  get_reduce_symp_period()    const { return reduce_symp_period;}
-  UNIT_TEST_VIRTUAL double  get_prob_symptoms()         const { return prob_symptoms;}
-  UNIT_TEST_VIRTUAL int     get_course_length()         const { return course_length;}
-  UNIT_TEST_VIRTUAL double  get_percent_symptomatics()  const { return percent_symptomatics;}
-  UNIT_TEST_VIRTUAL double  get_efficacy()              const { return efficacy;}
-  UNIT_TEST_VIRTUAL int     get_start_day()             const { return start_day;}
-  UNIT_TEST_VIRTUAL bool    is_prophylaxis()            const { return prophylaxis;}
+  int     get_disease()                const { return disease;}
+  double  get_reduce_infectivity()    const { return reduce_infectivity;}
+  double  get_reduce_susceptibility() const { return reduce_susceptibility;}
+  double  get_reduce_asymp_period()   const { return reduce_asymp_period;}
+  double  get_reduce_symp_period()    const { return reduce_symp_period;}
+  double  get_prob_symptoms()         const { return prob_symptoms;}
+  int     get_course_length()         const { return course_length;}
+  double  get_percent_symptomatics()  const { return percent_symptomatics;}
+  double  get_efficacy()              const { return efficacy;}
+  int     get_start_day()             const { return start_day;}
+  bool    is_prophylaxis()            const { return prophylaxis;}
 
   // Roll operators
-  UNIT_TEST_VIRTUAL int roll_will_have_symp()           const;
-  UNIT_TEST_VIRTUAL int roll_efficacy()                 const;
-  UNIT_TEST_VIRTUAL int roll_course_start_day()         const;
+  int roll_will_have_symp()           const;
+  int roll_efficacy()                 const;
+  int roll_course_start_day()         const;
 
   // Logistics Functions
-  UNIT_TEST_VIRTUAL int get_initial_stock()         const { return initial_stock;}
-  UNIT_TEST_VIRTUAL int get_total_avail()           const { return total_avail;}
-  UNIT_TEST_VIRTUAL int get_current_reserve()       const { return reserve;}
-  UNIT_TEST_VIRTUAL int get_current_stock()         const { return stock;}
-  UNIT_TEST_VIRTUAL int get_additional_per_day()    const { return additional_per_day;}
+  int get_initial_stock()         const { return initial_stock;}
+  int get_total_avail()           const { return total_avail;}
+  int get_current_reserve()       const { return reserve;}
+  int get_current_stock()         const { return stock;}
+  int get_additional_per_day()    const { return additional_per_day;}
 
-  UNIT_TEST_VIRTUAL void add_stock( int amount ) {
+  void add_stock( int amount ) {
     if(amount < reserve) {
       stock += amount;
       reserve -= amount;
@@ -77,22 +77,22 @@ public:
     }
   }
 
-  UNIT_TEST_VIRTUAL void remove_stock(int remove) {
+  void remove_stock(int remove) {
     stock -= remove;
 
     if(stock < 0) stock = 0;
   }
 
   // Utility Functions
-  UNIT_TEST_VIRTUAL void update(int day);
-  UNIT_TEST_VIRTUAL void print() const;
-  UNIT_TEST_VIRTUAL void reset();
-  UNIT_TEST_VIRTUAL void report(int day) const;
-  UNIT_TEST_VIRTUAL int quality_control(int ndiseases) const;
-  UNIT_TEST_VIRTUAL void print_stocks() const;
+  void update(int day);
+  void print() const;
+  void reset();
+  void report(int day) const;
+  int quality_control(int ndiseases) const;
+  void print_stocks() const;
 
   //Effect the Health of Person
-  UNIT_TEST_VIRTUAL void effect(Health *h, int cur_day, AV_Health* av_health);
+  void effect(Health *h, int cur_day, AV_Health* av_health);
   void modify_susceptiblilty(Health *health, int disease);
   void modify_infectivity(Health *health, int disease);
   void modify_infectivity_strain(Health *health, int disease, int strain);
@@ -100,12 +100,12 @@ public:
 
   // Policies members
   // Antivirals need a policy associated with them to determine who gets them.
-  UNIT_TEST_VIRTUAL void set_policy(Policy* p)                {policy = p;}
-  UNIT_TEST_VIRTUAL Policy* get_policy() const                {return policy;}
+  void set_policy(Policy* p)                {policy = p;}
+  Policy* get_policy() const                {return policy;}
 
   // To Be depricated
-  UNIT_TEST_VIRTUAL void add_given_out(int amount)            {given_out+=amount;}
-  UNIT_TEST_VIRTUAL void add_ineff_given_out(int amount)      {ineff_given_out+=amount;}
+  void add_given_out(int amount)            {given_out+=amount;}
+  void add_ineff_given_out(int amount)      {ineff_given_out+=amount;}
 
 private:
   int disease;

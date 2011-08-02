@@ -21,20 +21,20 @@ class Vaccine_Dose {
 public:
   // Creation Operators
   Vaccine_Dose(Age_Map* _efficacy, Age_Map* _efficacy_delay, int _days_between_doses);
-  UNIT_TEST_VIRTUAL ~Vaccine_Dose();
+  ~Vaccine_Dose();
   
   //Parameter Access
-  UNIT_TEST_VIRTUAL Age_Map* get_efficacy_map()       const { return efficacy;}
-  UNIT_TEST_VIRTUAL Age_Map* get_efficacy_delay_map() const { return efficacy_delay;}
+  Age_Map* get_efficacy_map()       const { return efficacy;}
+  Age_Map* get_efficacy_delay_map() const { return efficacy_delay;}
   
-  UNIT_TEST_VIRTUAL double  get_efficacy(int age)         const { return efficacy->find_value(age);  }
-  UNIT_TEST_VIRTUAL double  get_efficacy_delay(int age)   const { return efficacy_delay->find_value(age); }
-  UNIT_TEST_VIRTUAL int     get_days_between_doses()  const { return days_between_doses; }
+  double  get_efficacy(int age)         const { return efficacy->find_value(age);  }
+  double  get_efficacy_delay(int age)   const { return efficacy_delay->find_value(age); }
+  int     get_days_between_doses()  const { return days_between_doses; }
   
-  UNIT_TEST_VIRTUAL bool    is_within_age(int age) const;
+  bool    is_within_age(int age) const;
   
   //Utility Functions... no need for update or reset.
-  UNIT_TEST_VIRTUAL void print() const;
+  void print() const;
   
 private:
   int days_between_doses;       // Number of days until the next dose is administered

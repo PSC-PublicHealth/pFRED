@@ -26,17 +26,17 @@ class Age_Map;
 class Strain {
   public:
     Strain();
-    UNIT_TEST_VIRTUAL ~Strain();
+    ~Strain();
 
-    UNIT_TEST_VIRTUAL void reset();
-    UNIT_TEST_VIRTUAL void setup(int s, Disease *d);
+    void reset();
+    void setup(int s, Disease *d);
     void setup(int strain, Disease *disease, map<string, double> *data, double trans);
-    UNIT_TEST_VIRTUAL void print();
+    void print();
 
-    UNIT_TEST_VIRTUAL int get_id() {
+    int get_id() {
       return id;
       }
-    UNIT_TEST_VIRTUAL double getTransmissibility() {
+    double getTransmissibility() {
       return transmissibility;
       }
   private:

@@ -30,24 +30,24 @@ typedef map <Person*, bool> ChangeMap;
 class Population : public Person_Event_Interface {
 public:
   Population();
-  UNIT_TEST_VIRTUAL ~Population();
-  UNIT_TEST_VIRTUAL void get_parameters();
-  UNIT_TEST_VIRTUAL void setup();
-  UNIT_TEST_VIRTUAL void quality_control();
-  UNIT_TEST_VIRTUAL void print(int incremental=0, int day=0); // 0:print all, 1:incremental, -1:unchanged
-  UNIT_TEST_VIRTUAL void end_of_run();
+  ~Population();
+  void get_parameters();
+  void setup();
+  void quality_control();
+  void print(int incremental=0, int day=0); // 0:print all, 1:incremental, -1:unchanged
+  void end_of_run();
   void begin_day(int day);
   void get_visitors_to_infectious_places(int day);
   void transmit_infection(int day);
   void end_day(int day);
-  UNIT_TEST_VIRTUAL void report(int day);
-  UNIT_TEST_VIRTUAL Disease * get_disease(int s);
-  UNIT_TEST_VIRTUAL int get_diseases() { return diseases; }
-  UNIT_TEST_VIRTUAL int get_pop_size() { return pop_size; }
+  void report(int day);
+  Disease * get_disease(int s);
+  int get_diseases() { return diseases; }
+  int get_pop_size() { return pop_size; }
 
   //Mitigation Managers
-  UNIT_TEST_VIRTUAL AV_Manager *get_av_manager(){ return av_manager; }
-  UNIT_TEST_VIRTUAL Vaccine_Manager *get_vaccine_manager() { return vacc_manager;}
+  AV_Manager *get_av_manager(){ return av_manager; }
+  Vaccine_Manager *get_vaccine_manager() { return vacc_manager;}
   void add_person(Person * per);
   void delete_person(Person * per);
   void prepare_to_die(int day, Person *per);
@@ -58,11 +58,11 @@ public:
   // void apply_residual_immunity(Disease *disease) {}
 
   //Implement the interface
-  UNIT_TEST_VIRTUAL void handle_property_change_event(Person *source, string property_name, int prev_val, int new_val);
-  UNIT_TEST_VIRTUAL void handle_property_change_event(Person *source, string property_name, bool new_val);
+  void handle_property_change_event(Person *source, string property_name, int prev_val, int new_val);
+  void handle_property_change_event(Person *source, string property_name, bool new_val);
 
   // track those agents that have changed since the last incremental dump
-  UNIT_TEST_VIRTUAL void set_changed(Person *p);
+  void set_changed(Person *p);
   
   int get_next_id();
   void assign_classrooms();

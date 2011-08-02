@@ -227,6 +227,6 @@ map<int, double> *Disease :: getPrimaryLoads(int day, int strain) {
   return evol->getPrimaryLoads(day, strain);
 }
 
-UNIT_TEST_VIRTUAL int Disease :: get_max_days() {
+int Disease :: get_max_days() {
   return ihm->get_max_days();
 }

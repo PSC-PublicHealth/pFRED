@@ -27,22 +27,22 @@ public:
   // Creation
   Vaccine(string _name, int _id, int _disease, 
           int _total_avail, int _additional_per_day, int _start_day);
-  UNIT_TEST_VIRTUAL ~Vaccine();
+  ~Vaccine();
   
-  UNIT_TEST_VIRTUAL void add_dose(Vaccine_Dose* dose);
+  void add_dose(Vaccine_Dose* dose);
   
-  UNIT_TEST_VIRTUAL int get_disease()                 const { return disease; }
-  UNIT_TEST_VIRTUAL int get_ID()                     const { return id; }
-  UNIT_TEST_VIRTUAL int get_number_doses()           const { return doses.size(); }
-  UNIT_TEST_VIRTUAL Vaccine_Dose* get_dose(int i)    const { return doses[i]; }
+  int get_disease()                 const { return disease; }
+  int get_ID()                     const { return id; }
+  int get_number_doses()           const { return doses.size(); }
+  Vaccine_Dose* get_dose(int i)    const { return doses[i]; }
   
   // Logistics Functions
-  UNIT_TEST_VIRTUAL int get_initial_stock()          const { return initial_stock; }
-  UNIT_TEST_VIRTUAL int get_total_avail()            const { return total_avail; }
-  UNIT_TEST_VIRTUAL int get_current_reserve()        const { return reserve; }
-  UNIT_TEST_VIRTUAL int get_current_stock()          const { return stock; }
-  UNIT_TEST_VIRTUAL int get_additional_per_day()     const { return additional_per_day; }
-  UNIT_TEST_VIRTUAL void add_stock( int add ){ 
+  int get_initial_stock()          const { return initial_stock; }
+  int get_total_avail()            const { return total_avail; }
+  int get_current_reserve()        const { return reserve; }
+  int get_current_stock()          const { return stock; }
+  int get_additional_per_day()     const { return additional_per_day; }
+  void add_stock( int add ){ 
     if(add <= reserve){
       stock   += add;
       reserve -= add;
@@ -53,15 +53,15 @@ public:
     }
   }
   
-  UNIT_TEST_VIRTUAL void remove_stock( int remove ) {
+  void remove_stock( int remove ) {
     stock-=remove;
     if(stock < 0) stock = 0;
   }
   
   //Utility Functions
-  UNIT_TEST_VIRTUAL void print() const;
-  UNIT_TEST_VIRTUAL void update(int day);
-  UNIT_TEST_VIRTUAL void reset();
+  void print() const;
+  void update(int day);
+  void reset();
   
 private:
   string name;

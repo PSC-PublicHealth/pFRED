@@ -18,27 +18,27 @@ class DefaultIntraHost : public IntraHost {
     ~DefaultIntraHost();
     Trajectory *getTrajectory(Infection *infection, std :: map<int, double> *loads);
     void setup(Disease *disease);
-    UNIT_TEST_VIRTUAL int get_days_latent();
-    UNIT_TEST_VIRTUAL int get_days_incubating();
-    UNIT_TEST_VIRTUAL int get_days_asymp();
-    UNIT_TEST_VIRTUAL int get_days_symp();
-    UNIT_TEST_VIRTUAL int get_days_susceptible();
+    int get_days_latent();
+    int get_days_incubating();
+    int get_days_asymp();
+    int get_days_symp();
+    int get_days_susceptible();
 
-    UNIT_TEST_VIRTUAL int get_symptoms();
-    UNIT_TEST_VIRTUAL double get_asymp_infectivity() {
+    int get_symptoms();
+    double get_asymp_infectivity() {
       return asymp_infectivity;
       }
-    UNIT_TEST_VIRTUAL double get_symp_infectivity() {
+    double get_symp_infectivity() {
       return symp_infectivity;
       }
-    UNIT_TEST_VIRTUAL int get_max_days() {
+    int get_max_days() {
       return max_days;
       }
-    UNIT_TEST_VIRTUAL double get_prob_symptomatic() {
+    double get_prob_symptomatic() {
       return prob_symptomatic;
       }
 
-    UNIT_TEST_VIRTUAL int get_infection_model() {
+    int get_infection_model() {
       return infection_model;
       }
 

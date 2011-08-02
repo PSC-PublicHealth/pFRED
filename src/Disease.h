@@ -29,25 +29,25 @@ class Infection;
 class Disease {
 public:
   Disease();
-  UNIT_TEST_VIRTUAL ~Disease();
+  ~Disease();
 
-  UNIT_TEST_VIRTUAL void setup(int s, Population *pop,  double *mut_prob);
-  UNIT_TEST_VIRTUAL void print();
-  UNIT_TEST_VIRTUAL void update(Date *sim_start_date, int day);
+  void setup(int s, Population *pop,  double *mut_prob);
+  void print();
+  void update(Date *sim_start_date, int day);
 
   // The methods draw from the underlying distributions to randomly determine some aspect of the infection
   // have been moved to the DefaultIntraHost class
 
-  UNIT_TEST_VIRTUAL int get_days_symp();
-  UNIT_TEST_VIRTUAL int get_days_recovered();
-  UNIT_TEST_VIRTUAL int get_max_days();
-  UNIT_TEST_VIRTUAL double get_mortality_rate() { return mortality_rate;}
-  UNIT_TEST_VIRTUAL int get_id() { return id;}
-  UNIT_TEST_VIRTUAL double get_transmissibility() { return transmissibility;}
-  UNIT_TEST_VIRTUAL double get_transmissibility(int strain);
-  UNIT_TEST_VIRTUAL double get_attack_rate();
-  UNIT_TEST_VIRTUAL Age_Map* get_residual_immunity() const { return residual_immunity;}
-  UNIT_TEST_VIRTUAL Age_Map* get_at_risk() const { return at_risk;}
+  int get_days_symp();
+  int get_days_recovered();
+  int get_max_days();
+  double get_mortality_rate() { return mortality_rate;}
+  int get_id() { return id;}
+  double get_transmissibility() { return transmissibility;}
+  double get_transmissibility(int strain);
+  double get_attack_rate();
+  Age_Map* get_residual_immunity() const { return residual_immunity;}
+  Age_Map* get_at_risk() const { return at_risk;}
   map<int, double> *getPrimaryLoads(int day);
   map<int, double> *getPrimaryLoads(int day, int strain);
   Evolution *get_evolution() { return evol;}
@@ -59,14 +59,14 @@ public:
   Disease* should_mutate_to();
 
   void add_infectious_place(Place *p, char type);
-  UNIT_TEST_VIRTUAL void insert_into_infected_list(Person *person);
-  UNIT_TEST_VIRTUAL void insert_into_infectious_list(Person *person);
-  UNIT_TEST_VIRTUAL void remove_from_infectious_list(Person *person);
-  UNIT_TEST_VIRTUAL void update_stats(int day);
-  UNIT_TEST_VIRTUAL void print_stats(int day);
+  void insert_into_infected_list(Person *person);
+  void insert_into_infectious_list(Person *person);
+  void remove_from_infectious_list(Person *person);
+  void update_stats(int day);
+  void print_stats(int day);
 
-  UNIT_TEST_VIRTUAL Population * get_population() { return population;}
-  UNIT_TEST_VIRTUAL Epidemic * get_epidemic() { return epidemic;}
+  Population * get_population() { return population;}
+  Epidemic * get_epidemic() { return epidemic;}
 
   static double get_prob_stay_home();
   static void set_prob_stay_home(double);

@@ -30,19 +30,19 @@ class Activities {
 public:
   Activities (Person *person, Place **favorite_place);
   Activities (Person *person, char *house, char *school, char *work);
-  UNIT_TEST_VIRTUAL void assign_profile();
-  UNIT_TEST_VIRTUAL void update(int day);
+  void assign_profile();
+  void update(int day);
   void update_infectious_activities(int day);
   void update_susceptible_activities(int day);
-  UNIT_TEST_VIRTUAL void update_schedule(int day);
-  UNIT_TEST_VIRTUAL void print_schedule();
-  UNIT_TEST_VIRTUAL void print();
-  UNIT_TEST_VIRTUAL Place * get_household() { return favorite_place[HOUSEHOLD_INDEX]; }
-  UNIT_TEST_VIRTUAL Place * get_neighborhood() { return favorite_place[NEIGHBORHOOD_INDEX]; }
-  UNIT_TEST_VIRTUAL Place * get_school() { return favorite_place[SCHOOL_INDEX]; }
-  UNIT_TEST_VIRTUAL Place * get_classroom() { return favorite_place[CLASSROOM_INDEX]; }
-  UNIT_TEST_VIRTUAL Place * get_workplace() { return favorite_place[WORKPLACE_INDEX]; }
-  UNIT_TEST_VIRTUAL Place * get_office() { return favorite_place[OFFICE_INDEX]; }
+  void update_schedule(int day);
+  void print_schedule();
+  void print();
+  Place * get_household() { return favorite_place[HOUSEHOLD_INDEX]; }
+  Place * get_neighborhood() { return favorite_place[NEIGHBORHOOD_INDEX]; }
+  Place * get_school() { return favorite_place[SCHOOL_INDEX]; }
+  Place * get_classroom() { return favorite_place[CLASSROOM_INDEX]; }
+  Place * get_workplace() { return favorite_place[WORKPLACE_INDEX]; }
+  Place * get_office() { return favorite_place[OFFICE_INDEX]; }
   void assign_school();
   void assign_classroom();
   void assign_workplace();

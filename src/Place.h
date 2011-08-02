@@ -35,14 +35,14 @@ public:
   Place() {}
   ~Place() {}
 
-  UNIT_TEST_VIRTUAL void setup(int loc_id, const char *lab, double lon, double lat, Place *cont, Population *pop);
+  void setup(int loc_id, const char *lab, double lon, double lat, Place *cont, Population *pop);
   virtual void prepare();
 
   /**
    * Perform a daily update of this place.  The daily count arrays will all be reset and the vectors
    * containing infectious and symptomatics will be cleared.
    */
-  UNIT_TEST_VIRTUAL void update(int day);
+  void update(int day);
 
   /**
    * Display the information for a given disease.
@@ -85,14 +85,14 @@ public:
    *
    * @param disease an integer representation of the disease
    */
-  UNIT_TEST_VIRTUAL void print_susceptibles(int disease);
+  void print_susceptibles(int disease);
 
   /**
    * Prints the id of every person in the infectious vector for a given disease.
    *
    * @param disease an integer representation of the disease
    */
-  UNIT_TEST_VIRTUAL void print_infectious(int disease);
+  void print_infectious(int disease);
 
   /**
    * Attempt to spread the infection for a given disease on a given day.
@@ -108,7 +108,7 @@ public:
    * @param day the simulation day
    * @return <code>true</code> if the place is open; <code>false</code> if not
    */
-  UNIT_TEST_VIRTUAL bool is_open(int day);
+  bool is_open(int day);
 
   /**
    * Test whether or not any infectious people are in this place.
@@ -187,35 +187,35 @@ public:
    * Get the id.
    * @return the id
    */
-  UNIT_TEST_VIRTUAL int get_id() { return id; }
+  int get_id() { return id; }
 
   /**
    * Get the label.
    *
    * @return the label
    */
-  UNIT_TEST_VIRTUAL char * get_label() { return label; }
+  char * get_label() { return label; }
 
   /**
    * Get the type (H)OME, (W)ORK, (S)CHOOL, (C)OMMUNITY).
    *
    * @return the type
    */
-  UNIT_TEST_VIRTUAL int get_type() { return type; }
+  int get_type() { return type; }
 
   /**
    * Get the latitude.
    *
    * @return the latitude
    */
-  UNIT_TEST_VIRTUAL double get_latitude() { return latitude; }
+  double get_latitude() { return latitude; }
 
   /**
    * Get the longitude.
    *
    * @return the longitude
    */
-  UNIT_TEST_VIRTUAL double get_longitude() { return longitude; }
+  double get_longitude() { return longitude; }
 
   /**
    * Get the count of (S)usceptibles for a given disease in this place.
@@ -223,7 +223,7 @@ public:
    * @param disease an integer representation of the disease
    * @return the suceptible count for the given disease
    */
-  UNIT_TEST_VIRTUAL int get_S(int disease) { return S[disease]; }
+  int get_S(int disease) { return S[disease]; }
 
   /**
    * Get the count of (I)nfectious for a given disease in this place.
@@ -231,7 +231,7 @@ public:
    * @param disease an integer representation of the disease
    * @return the infectious count for the given disease
    */
-  UNIT_TEST_VIRTUAL int get_I(int disease) { return (int) (infectious[disease].size()); }
+  int get_I(int disease) { return (int) (infectious[disease].size()); }
 
   /**
    * Get the count of (S)ymptomatics for a given disease in this place.
@@ -239,35 +239,35 @@ public:
    * @param disease an integer representation of the disease
    * @return the symptomatic count for the given disease
    */
-  UNIT_TEST_VIRTUAL int get_symptomatic(int disease) { return Sympt[disease]; }
+  int get_symptomatic(int disease) { return Sympt[disease]; }
 
   /**
    * Get the count of agents in this place.
    *
    * @return the count of agents
    */
-  UNIT_TEST_VIRTUAL int get_size() { return N; }
+  int get_size() { return N; }
 
   /**
    * Get the simulation day (an integer value of days from the start of the simulation) when the place will close.
    *
    * @return the close_date
    */
-  UNIT_TEST_VIRTUAL int get_close_date() { return close_date; }
+  int get_close_date() { return close_date; }
 
   /**
    * Get the simulation day (an integer value of days from the start of the simulation) when the place will open.
    *
    * @return the open_date
    */
-  UNIT_TEST_VIRTUAL int get_open_date() { return open_date; }
+  int get_open_date() { return open_date; }
 
   /**
    * Get the population.
    *
    * @return the population
    */
-  UNIT_TEST_VIRTUAL Population *get_population() { return population; }
+  Population *get_population() { return population; }
 
   /**
    * Get the number of cases of a given disease for day.
@@ -276,7 +276,7 @@ public:
    * @param disease an integer representation of the disease
    * @return the count of cases for a given disease
    */
-  UNIT_TEST_VIRTUAL int get_daily_cases(int disease) { return cases[disease]; }
+  int get_daily_cases(int disease) { return cases[disease]; }
 
   /**
    * Get the number of deaths from a given disease for a day.
@@ -285,7 +285,7 @@ public:
    * @param disease an integer representation of the disease
    * @return the count of deaths for a given disease
    */
-  UNIT_TEST_VIRTUAL int get_daily_deaths(int disease) { return deaths[disease]; }
+  int get_daily_deaths(int disease) { return deaths[disease]; }
 
   /**
    * Get the number of cases of a given disease for the simulation thus far.
@@ -294,7 +294,7 @@ public:
    * @param disease an integer representation of the disease
    * @return the count of cases for a given disease
    */
-  UNIT_TEST_VIRTUAL int get_total_cases(int disease) { return total_cases[disease]; }
+  int get_total_cases(int disease) { return total_cases[disease]; }
 
   /**
    * Get the number of deaths from a given disease for the simulation thus far.
@@ -303,7 +303,7 @@ public:
    * @param disease an integer representation of the disease
    * @return the count of deaths for a given disease
    */
-  UNIT_TEST_VIRTUAL int get_total_deaths(int disease) { return total_deaths[disease]; }
+  int get_total_deaths(int disease) { return total_deaths[disease]; }
 
   /**
    * Get the number of cases of a given disease for the simulation thus far divided by the
@@ -312,73 +312,73 @@ public:
    * @param disease an integer representation of the disease
    * @return the count of rate of cases per people for a given disease
    */
-  UNIT_TEST_VIRTUAL double get_incidence_rate(int disease) { return (double) total_cases[disease] / (double) N; }
+  double get_incidence_rate(int disease) { return (double) total_cases[disease] / (double) N; }
   
   /**
    * Set the id.
    *
    * @param n the new id
    */
-  UNIT_TEST_VIRTUAL void set_id(int n) { id = n; }
+  void set_id(int n) { id = n; }
 
   /**
    * Set the type.
    *
    * @param t the new type
    */
-  UNIT_TEST_VIRTUAL void set_type(char t) { type = t; }
+  void set_type(char t) { type = t; }
 
   /**
    * Set the latitude.
    *
    * @param x the new latitude
    */
-  UNIT_TEST_VIRTUAL void set_latitude(double x) { latitude = x; }
+  void set_latitude(double x) { latitude = x; }
 
   /**
    * Set the longitude.
    *
    * @param x the new longitude
    */
-  UNIT_TEST_VIRTUAL void set_longitude(double x) { longitude = x; }
+  void set_longitude(double x) { longitude = x; }
 
   /**
    * Set the simulation day (an integer value of days from the start of the simulation) when the place will close.
    *
    * @param day the simulation day when the place will close
    */
-  UNIT_TEST_VIRTUAL void set_close_date(int day) { close_date = day; }
+  void set_close_date(int day) { close_date = day; }
 
   /**
    * Set the simulation day (an integer value of days from the start of the simulation) when the place will open.
    *
    * @param day the simulation day when the place will open
    */
-  UNIT_TEST_VIRTUAL void set_open_date(int day) { open_date = day; }
+  void set_open_date(int day) { open_date = day; }
 
   /**
    * Set the population.
    *
    * @param p the new population
    */
-  UNIT_TEST_VIRTUAL void set_population(Population *p) {  population = p; }
+  void set_population(Population *p) {  population = p; }
 
   /**
    * Set the container.
    *
    * @param cont the new container
    */
-  UNIT_TEST_VIRTUAL void set_container(Place *cont) { container = cont; }
+  void set_container(Place *cont) { container = cont; }
 
   /**
    * Increment the cases count. Note that the cases variable will be reset when <code>update()</code> is called
    */
-  UNIT_TEST_VIRTUAL void add_case() { cases++; }
+  void add_case() { cases++; }
 
   /**
    * Increment the deaths count. Note that the deaths variable will be reset when <code>update()</code> is called
    */
-  UNIT_TEST_VIRTUAL void add_deaths() { deaths++; }
+  void add_deaths() { deaths++; }
 
   /**
    * Get the grid_cell where this place is.
