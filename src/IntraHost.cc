@@ -25,7 +25,8 @@ IntraHost *IntraHost :: newIntraHost(int type) {
       //      return new ODEIntraHost;
 
     default:
-      Utils::fred_abort("Invalid IntraHost type: %d\n", type);
+      Utils::fred_warning("Unknown IntraHost type (%d) supplied to IntraHost factory.  Using DefaultIntraHost.\n", type);
+      return new DefaultIntraHost;
     }
   }
 
