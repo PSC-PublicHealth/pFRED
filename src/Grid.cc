@@ -209,8 +209,7 @@ vector < Place * >  Grid::get_households_by_distance(double lat, double lon, dou
   int c2 = (int) ( ( px + radius_in_km ) / grid_cell_size );
   c2 = ( c2 <= cols-1 ) ? c2 : cols-1;
 
-  printf("DEBUG: r1 %d r2 %d c1 %d c2 %d\n", r1,r2,c1,c2);
-
+  //printf("DEBUG: r1 %d r2 %d c1 %d c2 %d\n", r1,r2,c1,c2);
   vector <Place *> households; // store all households in cells ovelapping the radius
 
   for (int r = r1; r <= r2; r++ ) {
@@ -220,8 +219,7 @@ vector < Place * >  Grid::get_households_by_distance(double lat, double lon, dou
       for (vector <Place *>::iterator hi = h.begin(); hi != h.end(); hi++) { 
         double hlat = (*hi)->get_latitude();
         double hlon = (*hi)->get_longitude();
-        
-        printf("DEBUG: household_latitude %f, household_longitude %f\n",hlat,hlon);
+        //printf("DEBUG: household_latitude %f, household_longitude %f\n",hlat,hlon);
         double hx, hy;
         translate_to_cartesian(hlat, hlon, &hx, &hy);
         if (sqrt((px-hx)*(px-hx)+(py-hy)*(py-hy)) <= radius_in_km) {
