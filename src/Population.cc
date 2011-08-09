@@ -31,9 +31,6 @@
 
 using namespace std; 
 
-//// global singleton object
-//Population Pop;
-
 char ** pstring;
 
 // used for reporting
@@ -161,7 +158,7 @@ void Population::setup() {
     disease[dis].setup(dis, this, mutation_prob[dis]);
   }
   
-  read_profiles(profilefile);
+  Profile::read_profiles(profilefile);
   vacc_manager = new Vaccine_Manager(this);
   av_manager   = new AV_Manager(this);
   if (Global::Verbose > 1) av_manager->print();

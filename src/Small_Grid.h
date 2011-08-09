@@ -6,7 +6,7 @@
 
 //
 //
-// File: Small_grid.h
+// File: Small_Grid.h
 //
 
 #ifndef _FRED_SMALL_GRID_H
@@ -14,26 +14,24 @@
 
 #include <string.h>
 #include "Place.h"
-class Small_cell;
+class Small_Cell;
 
-class Small_grid {
+class Small_Grid {
 public:
-  Small_grid(double minlon, double minlat, double maxlon, double maxlat);
-  ~Small_grid() {}
+  Small_Grid(double minlon, double minlat, double maxlon, double maxlat);
+  ~Small_Grid() {}
   void get_parameters();
-  Small_cell ** get_neighbors(int row, int col);
-  Small_cell * get_grid_cell(int row, int col);
-  Small_cell * select_random_grid_cell();
-  Small_cell * get_grid_cell_from_cartesian(double x, double y);
-  Small_cell * get_grid_cell_from_lat_lon(double lat, double lon);
-  void translate_to_cartesian(double lat, double lon, double *x, double *y);
-  void translate_to_lat_lon(double x, double y, double *lat, double *lon);
+  Small_Cell ** get_neighbors(int row, int col);
+  Small_Cell * get_grid_cell(int row, int col);
+  Small_Cell * select_random_grid_cell();
+  Small_Cell * get_grid_cell_from_cartesian(double x, double y);
+  Small_Cell * get_grid_cell_from_lat_lon(double lat, double lon);
   void quality_control();
 
-  // Specific to Small_cell grid:
+  // Specific to Small_Cell grid:
 
 protected:
-  Small_cell ** grid;			      // Rectangular array of grid_cells
+  Small_Cell ** grid;			      // Rectangular array of grid_cells
   int rows;					// number of rows
   int cols;					// number of columns
   double grid_cell_size;			// km per side
@@ -46,7 +44,7 @@ protected:
   double min_y;
   double max_y;
 
-  // Specific to Small_cell grid:
+  // Specific to Small_Cell grid:
 };
 
 #endif // _FRED_SMALL_GRID_H

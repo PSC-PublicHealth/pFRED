@@ -6,23 +6,26 @@
 
 //
 //
-// File: Large_cell.h
+// File: Large_Cell.h
 //
 
 #ifndef _FRED_LARGE_CELL_H
 #define _FRED_LARGE_CELL_H
 
-class Large_grid;
+#include <vector>
+#include "Person.h"
 
-class Large_cell {
+class Large_Grid;
+
+class Large_Cell {
 public:
-  Large_cell() {}
-  ~Large_cell() {}
-  void setup(Large_grid * grd, int i, int j, double xmin, double xmax, double ymin, double ymax);
+  Large_Cell() {}
+  ~Large_Cell() {}
+  void setup(Large_Grid * grd, int i, int j, double xmin, double xmax, double ymin, double ymax);
   void print();
   void print_coord();
   void quality_control();
-  double distance_to_grid_cell(Large_cell *grid_cell2);
+  double distance_to_grid_cell(Large_Cell *grid_cell2);
   int get_row() { return row; }
   int get_col() { return col; }
   double get_min_x() { return min_x;}
@@ -31,10 +34,13 @@ public:
   double get_max_y() { return max_y;}
   double get_center_y() { return center_y;}
   double get_center_x() { return center_x;}
+  void add_person(Person *p) { person.push_back(p); popsize++; }
+  int get_popsize() { return popsize; }
+  Person * select_random_person();
 
 protected:
-  Large_grid * grid;
-  Large_cell ** neighbors;
+  Large_Grid * grid;
+  Large_Cell ** neighbors;
   int row;
   int col;
   double min_x;
@@ -43,6 +49,8 @@ protected:
   double max_y;
   double center_x;
   double center_y;
+  int popsize;
+  vector <Person *> person;
 };
 
 #endif // _FRED_LARGE_CELL_H

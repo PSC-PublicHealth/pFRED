@@ -21,8 +21,10 @@ class Geo_Utils{
   static double haversine_distance (double lon1, double lat1, double lon2, double lat2);
   static double spherical_cosine_distance (double lon1, double lat1, double lon2, double lat2);
   static double spherical_projection_distance (double lon1, double lat1, double lon2, double lat2);
-  static void translate_to_cartesian(double lat, double lon, double *x, double *y);
-  static void translate_to_lat_lon(double x, double y, double *lat, double *lon);
+  static void translate_to_cartesian(double lat, double lon, double *x, double *y,
+				     double min_lat, double min_lon);
+  static void translate_to_lat_lon(double x, double y, double *lat, double *lon,
+				   double min_lat, double min_lon);
   static double km_per_deg_longitude;
   static double km_per_deg_latitude;
  private:

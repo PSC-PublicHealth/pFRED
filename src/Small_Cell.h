@@ -6,23 +6,23 @@
 
 //
 //
-// File: Small_cell.h
+// File: Small_Cell.h
 //
 
 #ifndef _FRED_SMALL_CELL_H
 #define _FRED_SMALL_CELL_H
 
-class Small_grid;
+class Small_Grid;
 
-class Small_cell {
+class Small_Cell {
 public:
-  Small_cell() {}
-  ~Small_cell() {}
-  void setup(Small_grid * grd, int i, int j, double xmin, double xmax, double ymin, double ymax);
+  Small_Cell() {}
+  ~Small_Cell() {}
+  void setup(Small_Grid * grd, int i, int j, double xmin, double xmax, double ymin, double ymax);
   void print();
   void print_coord();
   void quality_control();
-  double distance_to_grid_cell(Small_cell *grid_cell2);
+  double distance_to_grid_cell(Small_Cell *grid_cell2);
   int get_row() { return row; }
   int get_col() { return col; }
   double get_min_x() { return min_x;}
@@ -33,8 +33,8 @@ public:
   double get_center_x() { return center_x;}
 
 protected:
-  Small_grid * grid;
-  Small_cell ** neighbors;
+  Small_Grid * grid;
+  Small_Cell ** neighbors;
   int row;
   int col;
   double min_x;

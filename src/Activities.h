@@ -52,6 +52,9 @@ public:
   void withdraw();
   void addIncidence(int disease, std::vector<int> strains);
   void addPrevalence(int disease, std::vector<int> strains);
+  void start_traveling(Person *visited);
+  void stop_traveling();
+  bool get_travel_status() { return travel_status; }
 	
 private:
   Person * self;	 // pointer to person using having this activities
@@ -59,13 +62,16 @@ private:
   Place * favorite_place[FAVORITE_PLACES];    // list of expected places
   bool on_schedule[FAVORITE_PLACES]; // true iff favorite place is on schedule
   int schedule_updated;			 // date of last schedule update
-  
+  bool travel_status;				// true if traveling
+  Place ** tmp_favorite_place; // list of favorite places, stored while traveling
   static double age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
   static bool is_initialized;
   void read_init_files();
 
 protected:
   Activities() { }
+  void store_favorite_places();
+  void restore_favorite_places();
 };
 
 

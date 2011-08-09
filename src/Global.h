@@ -26,8 +26,8 @@
 class Population;
 class Place_List;
 class Grid;
-class Large_grid;
-class Small_grid;
+class Large_Grid;
+class Small_Grid;
 class Date;
 class Evolution;
 
@@ -66,13 +66,14 @@ class Global {
     static char Prevfilebase[];
     static char Incfilebase[];
     static char ErrorLogbase[];
-    static int Enable_Large_grid;
-    static int Enable_Small_grid;
+    static int Enable_Large_Grid;
+    static int Enable_Small_Grid;
     static int Enable_Aging;
     static int Enable_Births;
     static int Enable_Deaths;
     static int Enable_Migration;
     static int Enable_Mobility;
+    static int Enable_Travel;
     static int Track_infection_events;
     static int Track_age_distribution;
     static int Track_household_distribution;
@@ -90,8 +91,8 @@ class Global {
     static Population Pop;
     static Place_List Places;
     static Grid *Cells;
-    static Large_grid *Large_cells;
-    static Small_grid *Small_cells;
+    static Large_Grid *Large_Cells;
+    static Small_Grid *Small_Cells;
     static Date *Sim_Date;
     static Evolution *Evol;
 

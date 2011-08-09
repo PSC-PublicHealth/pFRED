@@ -26,10 +26,9 @@ public:
   Cell * select_random_grid_cell();
   Cell * get_grid_cell_from_cartesian(double x, double y);
   Cell * get_grid_cell_from_lat_lon(double lat, double lon);
-  void translate_to_cartesian(double lat, double lon, double *x, double *y);
-  void translate_to_lat_lon(double x, double y, double *lat, double *lon);
   void quality_control();
   vector < Place * > get_households_by_distance(double lat, double lon, double radius_in_km);
+
   // Specific to Cell grid:
   void record_favorite_places();
   void add_vacant_house(Place *house);
@@ -41,6 +40,8 @@ public:
   void select_emigrants(int day);
   void select_immigrants(int day);
   void print_household_distribution(char * dir, char * date_string, int run);
+  void translate_to_lat_lon(double x, double y, double *lat, double *lon);
+  void translate_to_cartesian(double lat, double lon, double *x, double *y);
 
 protected:
   Cell ** grid;			      // Rectangular array of grid_cells

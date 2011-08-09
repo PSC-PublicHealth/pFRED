@@ -20,7 +20,7 @@
 Profile Prof[100];
 int Profiles = 0;
 
-void read_profiles(char *filename) {
+void Profile::read_profiles(char *filename) {
   char name[80];
   
   if (Global::Verbose) {
@@ -57,6 +57,11 @@ void read_profiles(char *filename) {
 }
 
 
-int is_visited(int pos, int prof, int day) {
+bool Profile::is_visited(int pos, int prof, int day) {
   return (RANDOM() < Prof[prof].get_prob_visit(day, pos));
 }
+
+bool Profile::decide_to_travel(int prof, int day) {
+  return (RANDOM() < Prof[prof].get_prob_travel(day));
+}
+

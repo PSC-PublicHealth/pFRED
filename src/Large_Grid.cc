@@ -6,7 +6,7 @@
 
 //
 //
-// File: Large_grid.cc
+// File: Large_Grid.cc
 //
 
 #include <utility>
@@ -16,8 +16,8 @@ using namespace std;
 
 #include "Global.h"
 #include "Geo_Utils.h"
-#include "Large_grid.h"
-#include "Large_cell.h"
+#include "Large_Grid.h"
+#include "Large_Cell.h"
 #include "Place_List.h"
 #include "Place.h"
 #include "Params.h"
@@ -27,7 +27,7 @@ using namespace std;
 #include "Population.h"
 #include "Date.h"
 
-Large_grid::Large_grid(double minlon, double minlat, double maxlon, double maxlat) {
+Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxlat) {
   min_lon  = minlon;
   min_lat  = minlat;
   max_lon  = maxlon;
@@ -51,34 +51,27 @@ Large_grid::Large_grid(double minlon, double minlat, double maxlon, double maxla
     fflush(stdout);
   }
 
-  grid = new Large_cell * [rows];
+  grid = new Large_Cell * [rows];
   for (int i = 0; i < rows; i++) {
-    grid[i] = new Large_cell[cols];
-  }
-
-  for (int i = 0; i < rows; i++) {
+    grid[i] = new Large_Cell[cols];
     for (int j = 0; j < cols; j++) {
       grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
 		       (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
-    }
-  }
-
-  if (Global::Verbose > 1) {
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < cols; j++) {
+      if (Global::Verbose > 1) {
 	printf("print grid[%d][%d]:\n",i,j);
 	grid[i][j].print();
       }
     }
   }
+
 }
 
-void Large_grid::get_parameters() {
+void Large_Grid::get_parameters() {
   get_param((char *) "grid_large_cell_size", &grid_cell_size);
 }
 
-Large_cell ** Large_grid::get_neighbors(int row, int col) {
-  Large_cell ** neighbors = new Large_cell*[9];
+Large_Cell ** Large_Grid::get_neighbors(int row, int col) {
+  Large_Cell ** neighbors = new Large_Cell*[9];
   int n = 0;
   for (int i = row-1; i <= row+1; i++) {
     for (int j = col-1; j <= col+1; j++) {
@@ -89,7 +82,7 @@ Large_cell ** Large_grid::get_neighbors(int row, int col) {
 }
 
 
-Large_cell * Large_grid::get_grid_cell(int row, int col) {
+Large_Cell * Large_Grid::get_grid_cell(int row, int col) {
   if ( row >= 0 && col >= 0 && row < rows && col < cols)
     return &grid[row][col];
   else
@@ -97,14 +90,14 @@ Large_cell * Large_grid::get_grid_cell(int row, int col) {
 }
 
 
-Large_cell * Large_grid::select_random_grid_cell() {
+Large_Cell * Large_Grid::select_random_grid_cell() {
   int row = IRAND(0, rows-1);
   int col = IRAND(0, cols-1);
   return &grid[row][col];
 }
 
 
-Large_cell * Large_grid::get_grid_cell_from_cartesian(double x, double y) {
+Large_Cell * Large_Grid::get_grid_cell_from_cartesian(double x, double y) {
   int row, col;
   row = rows-1 - (int) (y/grid_cell_size);
   col = (int) (x/grid_cell_size);
@@ -113,26 +106,14 @@ Large_cell * Large_grid::get_grid_cell_from_cartesian(double x, double y) {
 }
 
 
-Large_cell * Large_grid::get_grid_cell_from_lat_lon(double lat, double lon) {
+Large_Cell * Large_Grid::get_grid_cell_from_lat_lon(double lat, double lon) {
   double x, y;
-  translate_to_cartesian(lat,lon,&x,&y);
+  Geo_Utils::translate_to_cartesian(lat,lon,&x,&y,min_lat,min_lon);
   return get_grid_cell_from_cartesian(x,y);
 }
 
 
-void Large_grid::translate_to_cartesian(double lat, double lon, double *x, double *y) {
-  *x = (lon - min_lon) * Geo_Utils::km_per_deg_longitude;
-  *y = (lat - min_lat) * Geo_Utils::km_per_deg_latitude;
-}
-
-
-void Large_grid::translate_to_lat_lon(double x, double y, double *lat, double *lon) {
-  *lon = min_lon + x * Geo_Utils::km_per_deg_longitude;
-  *lat = min_lat + y * Geo_Utils::km_per_deg_latitude;
-}
-
-
-void Large_grid::quality_control() {
+void Large_Grid::quality_control() {
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "grid quality control check\n");
     fflush(Global::Statusfp);
@@ -171,65 +152,36 @@ void Large_grid::quality_control() {
 }
 
 
-// Specific to Large_cell Large_grid:
+// Specific to Large_Cell Large_Grid:
 
-Large_cell * Large_grid::select_grid_cell_by_gravity_model(int row, int col) {
-  /*
-  // compute grid_cell probabilities for gravity model
-  Large_cell * p1 = &grid[row][col];
-  double x1 = p1->get_center_x();
-  double y1 = p1->get_center_y();
-  
-  double total = 0.0;
+void Large_Grid::set_population_size() {
+  int pop_size = Global::Pop.get_pop_size();
+  for (int p = 0; p < pop_size; p++) {
+    Person *per = Global::Pop.get_person(p);
+    Place * h = per->get_household();
+    assert (h != NULL);
+    double lat = h->get_latitude();
+    double lon = h->get_longitude();
+    Large_Cell * cell = get_grid_cell_from_lat_lon(lat, lon);
+    cell->add_person(per);
+  }
+  return;
+  FILE *fp;
+  char filename[256];
+  sprintf(filename, "OUT/largegrid.txt");
+  fp = fopen(filename,"w");
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      Large_cell * p2 = &grid[i][j];
-      double x2 = p2->get_center_x();
-      double y2 = p2->get_center_y();
-      double pop2 = (double) p2->get_neighborhood()->get_size();
-      double dist = ((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-      if (dist == 0.0) {
-	dist = 0.5*grid_cell_size*0.5*grid_cell_size;
-      }
-      grid_cell_prob[i][j] = pop2 / dist;
-      total += grid_cell_prob[i][j];
+      Large_Cell * cell = get_grid_cell(i,j);
+      double lon, lat;
+      double x = cell->get_center_x();
+      double y = cell->get_center_y();
+      Geo_Utils::translate_to_lat_lon(x,y,&lat,&lon,min_lat,min_lon);
+      int popsize = cell->get_popsize();
+      fprintf(fp, "%d %d %f %f %f %f %d\n", i,j,x,y,lon,lat,popsize);
     }
+    fprintf(fp, "\n");
   }
-  
-  // select a grid_cell at random using the computed probabilities
-  double r = RANDOM()*total;
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      if (r < grid_cell_prob[i][j]) {
-	return &grid[i][j];
-      }
-      else {
-	r -= grid_cell_prob[i][j];
-      }
-    }
-  }
-  Utils::fred_abort("Help! grid_cell gravity model failed.\n");
-
-  //Will never get here, but will stop compiler warning
-  */
-  return NULL;
-}
-
-void Large_grid::test_gravity_model() {
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      for (int n = 0; n < 1000; n++) {
-	Large_cell * p1 = &grid[i][j];
-	Large_cell * p2 = select_grid_cell_by_gravity_model(i,j);
-	double x1 = p1->get_center_x();
-	double y1 = p1->get_center_y();
-	double x2 = p2->get_center_x();
-	double y2 = p2->get_center_y();
-	double dist = ((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-	printf("DIST: %f\n", dist);
-      }
-    }
-  }
-  exit(0);
+  fclose(fp);
 }
 

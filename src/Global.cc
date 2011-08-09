@@ -8,8 +8,8 @@
 #include "Population.h"
 #include "Place_List.h"
 #include "Grid.h"
-#include "Large_grid.h"
-#include "Small_grid.h"
+#include "Large_Grid.h"
+#include "Small_Grid.h"
 
 // global runtime parameters
 char Global::Population_directory[256];
@@ -29,13 +29,14 @@ int Global::StrainEvolution = 0;
 char Global::Prevfilebase[256];
 char Global::Incfilebase[256];
 char Global::ErrorLogbase[256];
-int Global::Enable_Large_grid = 0;
-int Global::Enable_Small_grid = 0;
+int Global::Enable_Large_Grid = 0;
+int Global::Enable_Small_Grid = 0;
 int Global::Enable_Aging = 0;
 int Global::Enable_Births = 0;
 int Global::Enable_Deaths = 0;
 int Global::Enable_Mobility = 0;
 int Global::Enable_Migration = 0;
+int Global::Enable_Travel = 0;
 int Global::Track_infection_events = 0;
 int Global::Track_age_distribution = 0;
 int Global::Track_household_distribution = 0;
@@ -53,8 +54,8 @@ char Global::Start_date[256];
 Population Global::Pop;
 Place_List Global::Places;
 Grid *Global::Cells = NULL;
-Large_grid *Global::Large_cells;
-Small_grid *Global::Small_cells;
+Large_Grid *Global::Large_Cells;
+Small_Grid *Global::Small_Cells;
 Date *Global::Sim_Date = NULL;
 Evolution *Global::Evol = NULL;
 
@@ -94,13 +95,14 @@ void Global::get_global_parameters() {
   get_param((char *) "diseases", &Global::Diseases);
   get_param((char *) "prob_accept_vaccine", &Global::Prob_accept_vaccine);
   get_param((char *) "prob_accept_another_vaccine_dose", &Global::Prob_accept_vaccine_dose);
-  get_param((char *) "enable_large_grid", &Global::Enable_Large_grid);
-  get_param((char *) "enable_small_grid", &Global::Enable_Small_grid);
+  get_param((char *) "enable_large_grid", &Global::Enable_Large_Grid);
+  get_param((char *) "enable_small_grid", &Global::Enable_Small_Grid);
   get_param((char *) "enable_aging", &Global::Enable_Aging);
   get_param((char *) "enable_births", &Global::Enable_Births);
   get_param((char *) "enable_deaths", &Global::Enable_Deaths);
   get_param((char *) "enable_mobility",&Global::Enable_Mobility);
   get_param((char *) "enable_migration",&Global::Enable_Migration);
+  get_param((char *) "enable_travel",&Global::Enable_Travel);
   get_param((char *) "prevalencefile", Global::Prevfilebase);
   get_param((char *) "incidencefile", Global::Incfilebase);
 }

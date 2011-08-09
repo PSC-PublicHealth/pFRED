@@ -6,15 +6,15 @@
 
 //
 //
-// File: Small_cell.cc
+// File: Small_Cell.cc
 //
 
 #include "Global.h"
-#include "Small_cell.h"
-#include "Small_grid.h"
+#include "Small_Cell.h"
+#include "Small_Grid.h"
 #include "Random.h"
 
-void Small_cell::setup(Small_grid * grd, int i, int j, double xmin, double xmax, double ymin, double ymax) {
+void Small_Cell::setup(Small_Grid * grd, int i, int j, double xmin, double xmax, double ymin, double ymax) {
   grid = grd;
   row = i;
   col = j;
@@ -24,11 +24,11 @@ void Small_cell::setup(Small_grid * grd, int i, int j, double xmin, double xmax,
   max_y = ymax;
   center_y = (min_y+max_y)/2.0;
   center_x = (min_x+max_x)/2.0;
-  neighbors = (Small_cell **) grid->get_neighbors(i,j);
+  neighbors = (Small_Cell **) grid->get_neighbors(i,j);
 }
 
-void Small_cell::print() {
-  printf("Small_cell %d %d: %f, %f, %f, %f\n",row,col,min_x,max_x,min_y,max_y);
+void Small_Cell::print() {
+  printf("Small_Cell %d %d: %f, %f, %f, %f\n",row,col,min_x,max_x,min_y,max_y);
   for (int i = 0; i < 9; i++) {
     if (neighbors[i] == NULL) { printf("NULL ");}
     else {neighbors[i]->print_coord();}
@@ -36,15 +36,15 @@ void Small_cell::print() {
   }
 }
 
-void Small_cell::print_coord() {
+void Small_Cell::print_coord() {
   printf("(%d, %d)",row,col);
 }
 
-void Small_cell::quality_control() {
+void Small_Cell::quality_control() {
   return;
 }
 
-double Small_cell::distance_to_grid_cell(Small_cell *p2) {
+double Small_Cell::distance_to_grid_cell(Small_Cell *p2) {
   double x1 = center_x;
   double y1 = center_y;
   double x2 = p2->get_center_x();

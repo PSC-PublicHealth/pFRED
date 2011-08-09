@@ -16,12 +16,13 @@
 #include "Population.h"
 #include "Place_List.h"
 #include "Grid.h"
+#include "Large_Grid.h"
 #include "Params.h"
 #include "Random.h"
 #include "Vaccine_Manager.h"
 #include "Date.h"
 #include "Evolution.h"
-
+#include "Travel.h"
 
 int main(int argc, char* argv[]) {
   time_t clock;         // current date
@@ -78,19 +79,19 @@ int main(int argc, char* argv[]) {
     Utils::fred_abort("mkdir(Output_directory) failed with %d\n",errno); // or die
 
   // open output files
-  sprintf(filename, "%s/out%d.txt", directory, run);
-  Global::Outfp = fopen(filename, "w");
-  if (Global::Outfp == NULL) {
-    Utils::fred_abort("Can't open %s\n", filename);
-  }
   // STB Do the error file first so that it captures
   // as much errors as possible.
   Global::ErrorLogfp = NULL;
-  sprintf(filename, "%s/err%d.txt", Global::Output_directory, run);
+  sprintf(filename, "%s/err%d.txt", directory, run);
   Global::ErrorLogfp = fopen(filename, "w");
   if (Global::ErrorLogfp == NULL) {
     printf("Help! Can't open %s\n", filename);
     abort();
+  }
+  sprintf(filename, "%s/out%d.txt", directory, run);
+  Global::Outfp = fopen(filename, "w");
+  if (Global::Outfp == NULL) {
+    Utils::fred_abort("Can't open %s\n", filename);
   }
   Global::Tracefp = NULL;
   if (strcmp(Global::Tracefilebase, "none") != 0) {
@@ -134,7 +135,7 @@ int main(int argc, char* argv[]) {
   }
   Global::Prevfp = NULL;
   if (strcmp(Global::Prevfilebase, "none") != 0) {
-    sprintf(filename, "%s/prev%d.txt", Global::Output_directory, run);
+    sprintf(filename, "%s/prev%d.txt", directory, run);
     Global::Prevfp = fopen(filename, "w");
     if (Global::Prevfp == NULL) {
       Utils::fred_abort("Can't open %s\n", filename);
@@ -142,13 +143,12 @@ int main(int argc, char* argv[]) {
   }
   Global::Incfp = NULL;
   if (strcmp(Global::Incfilebase, "none") != 0) {
-    sprintf(filename, "%s/inc%d.txt", Global::Output_directory, run);
+    sprintf(filename, "%s/inc%d.txt", directory, run);
     Global::Incfp = fopen(filename, "w");
     if (Global::Incfp == NULL) {
       Utils::fred_abort("Help! Can't open %s\n", filename);
     }
   }
-
 
   // Date Setup
   INIT_RANDOM(Global::Seed);
@@ -175,30 +175,46 @@ int main(int argc, char* argv[]) {
 
   // read in the household, schools and workplaces (also sets up grids)
   Global::Places.read_places();
+  time(&clock);
+  fprintf(Global::Statusfp, "Places.read_places() complete at %s\n", ctime(&clock));
+  fflush(Global::Statusfp);
 
   // read in the population and have each person enroll
   // in each favorite place identified in the population file
   Global::Pop.setup();
+  time(&clock);
+  fprintf(Global::Statusfp, "Pop.setup() complete at %s\n", ctime(&clock));
+  fflush(Global::Statusfp);
 
   // define FRED-specific places
+  // and have each person enroll as needed
   Global::Places.setup_classrooms();
   Global::Places.setup_offices();
-
-  // define FRED-specific social networks,
-  // and have each person enroll as needed
   Global::Pop.assign_classrooms();
   Global::Pop.assign_offices();
+  time(&clock);
+  fprintf(Global::Statusfp, "assign classrooms and offices complete at %s\n", ctime(&clock));
+  fflush(Global::Statusfp);
 
   // after all enrollments, prepare to receive visitors
   Global::Places.prepare();
 
-  // record the favorite places for households within each grid_cell
+  // record the favorite places for households within each grid cell
   Global::Cells->record_favorite_places();
+  time(&clock);
+  fprintf(Global::Statusfp, "place prep complete at %s\n", ctime(&clock));
+  fflush(Global::Statusfp);
+
+  if (Global::Enable_Large_Grid && Global::Enable_Travel)
+    Travel::setup();
 
   if (Global::Quality_control) {
     Global::Pop.quality_control();
     Global::Places.quality_control();
     Global::Cells->quality_control();
+    time(&clock);
+    fprintf(Global::Statusfp, "quality control complete at %s\n", ctime(&clock));
+    fflush(Global::Statusfp);
   }
 
   // allow for an offset in the start of the epidemic
@@ -210,6 +226,10 @@ int main(int argc, char* argv[]) {
   if (Global::Track_age_distribution) {
     Global::Pop.print_age_distribution(directory, Global::Sim_Date->get_YYYYMMDD(0), run);
   }
+
+  time(&clock);
+  fprintf(Global::Statusfp, "FRED initializations complete at %s\n", ctime(&clock));
+  fflush(Global::Statusfp);
 
   for (int day = 0; day < Global::Days; day++) {
     if (day == Global::Reseed_day) {

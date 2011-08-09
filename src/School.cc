@@ -207,6 +207,8 @@ void School::print(int disease) {
 }
 
 void School::setup_classrooms() {
+  if (School::school_classroom_size == 0)
+    return;
   for (int a = 0; a < 20; a++) {
     int n = students_with_age[a];
     next_classroom[a] = 0;
@@ -242,6 +244,8 @@ void School::setup_classrooms() {
 
 
 Place * School::assign_classroom(Person *per) {
+  if (School::school_classroom_size == 0)
+    return NULL;
   int age = per->get_age();
   if (age < Global::ADULT_AGE) {
     // assign classroom to a student

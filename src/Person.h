@@ -98,6 +98,7 @@ public:
   void become_symptomatic(Disease *disease) { health->become_symptomatic(disease); }
   void recover(Disease * disease) { health->recover(disease); }
   bool is_deceased() { return demographics->is_deceased(); }
+  bool is_adult() { return demographics->get_age() >= Global::ADULT_AGE; }
   
   Person * give_birth(int day);
   void assign_classroom() { activities->assign_classroom(); }
@@ -116,7 +117,16 @@ public:
   Health *get_health() const { return health; }
   Activities* get_activities() const { return activities; }
   Behavior* get_behavior() const { return behavior; }
-  
+  Place * get_household() { return activities->get_household(); }
+  Place * get_neighborhood() { return activities->get_neighborhood(); }
+  Place * get_school() { return activities->get_school(); }
+  Place * get_classroom() { return activities->get_classroom(); }
+  Place * get_workplace() { return activities->get_workplace(); }
+  Place * get_office() { return activities->get_office(); }
+  void start_traveling(Person *visited){ activities->start_traveling(visited); }
+  void stop_traveling(){ activities->stop_traveling(); }
+  bool get_travel_status(){ return activities->get_travel_status(); }
+
 private:
   int idx;
   Population *pop;

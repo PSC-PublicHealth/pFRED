@@ -116,20 +116,8 @@ Cell * Grid::get_grid_cell_from_cartesian(double x, double y) {
 
 Cell * Grid::get_grid_cell_from_lat_lon(double lat, double lon) {
   double x, y;
-  translate_to_cartesian(lat,lon,&x,&y);
+  Geo_Utils::translate_to_cartesian(lat,lon,&x,&y,min_lat,min_lon);
   return get_grid_cell_from_cartesian(x,y);
-}
-
-
-void Grid::translate_to_cartesian(double lat, double lon, double *x, double *y) {
-  *x = (lon - min_lon) * Geo_Utils::km_per_deg_longitude;
-  *y = (lat - min_lat) * Geo_Utils::km_per_deg_latitude;
-}
-
-
-void Grid::translate_to_lat_lon(double x, double y, double *lat, double *lon) {
-  *lon = min_lon + x * Geo_Utils::km_per_deg_longitude;
-  *lat = min_lat + y * Geo_Utils::km_per_deg_latitude;
 }
 
 
@@ -197,7 +185,7 @@ void Grid::record_favorite_places() {
 
 vector < Place * >  Grid::get_households_by_distance(double lat, double lon, double radius_in_km) {
   double px, py;
-  translate_to_cartesian(lat, lon, &px, &py);
+  Geo_Utils::translate_to_cartesian(lat, lon, &px, &py, min_lat, min_lon);
   //  get cells around the point, make sure their rows & cols are in bounds
   int r1 = rows-1 - (int) ( ( py + radius_in_km ) / grid_cell_size );
   r1 = ( r1 >= 0 ) ? r1 : 0;
@@ -221,7 +209,7 @@ vector < Place * >  Grid::get_households_by_distance(double lat, double lon, dou
         double hlon = (*hi)->get_longitude();
         //printf("DEBUG: household_latitude %f, household_longitude %f\n",hlat,hlon);
         double hx, hy;
-        translate_to_cartesian(hlat, hlon, &hx, &hy);
+	Geo_Utils::translate_to_cartesian(hlat, hlon, &hx, &hy, min_lat, min_lon);
         if (sqrt((px-hx)*(px-hx)+(py-hy)*(py-hy)) <= radius_in_km) {
           households.push_back((*hi));
         }
@@ -385,5 +373,13 @@ void Grid::print_household_distribution(char * dir, char * date_string, int run)
     }
   }
   fclose(fp);
+}
+
+void Grid::translate_to_lat_lon(double x, double y, double *lat, double *lon) {
+  Geo_Utils::translate_to_lat_lon(x,y,lat,lon,min_lat,min_lon);
+}
+
+void Grid::translate_to_cartesian(double lat, double lon, double *x, double *y) {
+  Geo_Utils::translate_to_cartesian(lat,lon,x,y,min_lat,min_lon);
 }
 

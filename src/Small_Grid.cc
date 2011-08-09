@@ -6,7 +6,7 @@
 
 //
 //
-// File: Small_grid.cc
+// File: Small_Grid.cc
 //
 
 #include <utility>
@@ -16,8 +16,8 @@ using namespace std;
 
 #include "Global.h"
 #include "Geo_Utils.h"
-#include "Small_grid.h"
-#include "Small_cell.h"
+#include "Small_Grid.h"
+#include "Small_Cell.h"
 #include "Place_List.h"
 #include "Place.h"
 #include "Params.h"
@@ -27,7 +27,7 @@ using namespace std;
 #include "Population.h"
 #include "Date.h"
 
-Small_grid::Small_grid(double minlon, double minlat, double maxlon, double maxlat) {
+Small_Grid::Small_Grid(double minlon, double minlat, double maxlon, double maxlat) {
   min_lon  = minlon;
   min_lat  = minlat;
   max_lon  = maxlon;
@@ -51,9 +51,9 @@ Small_grid::Small_grid(double minlon, double minlat, double maxlon, double maxla
     fflush(stdout);
   }
 
-  grid = new Small_cell * [rows];
+  grid = new Small_Cell * [rows];
   for (int i = 0; i < rows; i++) {
-    grid[i] = new Small_cell[cols];
+    grid[i] = new Small_Cell[cols];
   }
 
   for (int i = 0; i < rows; i++) {
@@ -73,12 +73,12 @@ Small_grid::Small_grid(double minlon, double minlat, double maxlon, double maxla
   }
 }
 
-void Small_grid::get_parameters() {
+void Small_Grid::get_parameters() {
   get_param((char *) "grid_small_cell_size", &grid_cell_size);
 }
 
-Small_cell ** Small_grid::get_neighbors(int row, int col) {
-  Small_cell ** neighbors = new Small_cell*[9];
+Small_Cell ** Small_Grid::get_neighbors(int row, int col) {
+  Small_Cell ** neighbors = new Small_Cell*[9];
   int n = 0;
   for (int i = row-1; i <= row+1; i++) {
     for (int j = col-1; j <= col+1; j++) {
@@ -89,7 +89,7 @@ Small_cell ** Small_grid::get_neighbors(int row, int col) {
 }
 
 
-Small_cell * Small_grid::get_grid_cell(int row, int col) {
+Small_Cell * Small_Grid::get_grid_cell(int row, int col) {
   if ( row >= 0 && col >= 0 && row < rows && col < cols)
     return &grid[row][col];
   else
@@ -97,14 +97,14 @@ Small_cell * Small_grid::get_grid_cell(int row, int col) {
 }
 
 
-Small_cell * Small_grid::select_random_grid_cell() {
+Small_Cell * Small_Grid::select_random_grid_cell() {
   int row = IRAND(0, rows-1);
   int col = IRAND(0, cols-1);
   return &grid[row][col];
 }
 
 
-Small_cell * Small_grid::get_grid_cell_from_cartesian(double x, double y) {
+Small_Cell * Small_Grid::get_grid_cell_from_cartesian(double x, double y) {
   int row, col;
   row = rows-1 - (int) (y/grid_cell_size);
   col = (int) (x/grid_cell_size);
@@ -113,26 +113,14 @@ Small_cell * Small_grid::get_grid_cell_from_cartesian(double x, double y) {
 }
 
 
-Small_cell * Small_grid::get_grid_cell_from_lat_lon(double lat, double lon) {
+Small_Cell * Small_Grid::get_grid_cell_from_lat_lon(double lat, double lon) {
   double x, y;
-  translate_to_cartesian(lat,lon,&x,&y);
+  Geo_Utils::translate_to_cartesian(lat,lon,&x,&y,min_lat,min_lon);
   return get_grid_cell_from_cartesian(x,y);
 }
 
 
-void Small_grid::translate_to_cartesian(double lat, double lon, double *x, double *y) {
-  *x = (lon - min_lon) * Geo_Utils::km_per_deg_longitude;
-  *y = (lat - min_lat) * Geo_Utils::km_per_deg_latitude;
-}
-
-
-void Small_grid::translate_to_lat_lon(double x, double y, double *lat, double *lon) {
-  *lon = min_lon + x * Geo_Utils::km_per_deg_longitude;
-  *lat = min_lat + y * Geo_Utils::km_per_deg_latitude;
-}
-
-
-void Small_grid::quality_control() {
+void Small_Grid::quality_control() {
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "grid quality control check\n");
     fflush(Global::Statusfp);
@@ -171,6 +159,6 @@ void Small_grid::quality_control() {
 }
 
 
-// Specific to Small_cell Small_grid:
+// Specific to Small_Cell Small_Grid:
 
 

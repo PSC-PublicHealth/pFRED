@@ -49,6 +49,63 @@ double draw_normal(double mu, double sigma) {
 }
 
 
+int draw_from_cdf(double *v, int size) {
+  double r = RANDOM();
+  int top = size-1;
+  int bottom = 0;
+  int s = top / 2;
+  while (bottom <= top) {
+    if (r <= v[s]) {
+      if (s == 0 || r > v[s-1])
+	return s;
+      else {
+	top = s-1;
+      }
+    }
+    else { // r > v[s]
+      if (s == size-1)
+	return s;
+      if (r < v[s+1])
+	return s+1;
+      else {
+	bottom = s+1;
+      }
+    }
+    s = bottom + (top-bottom)/2;
+  }
+  // assert(bottom <= top);
+  return -1;
+}
+
+int draw_from_cdf_vector(const vector <double>& v) {
+  int size = v.size();
+  double r = RANDOM();
+  int top = size-1;
+  int bottom = 0;
+  int s = top / 2;
+  while (bottom <= top) {
+    if (r <= v[s]) {
+      if (s == 0 || r > v[s-1])
+	return s;
+      else {
+	top = s-1;
+      }
+    }
+    else { // r > v[s]
+      if (s == size-1)
+	return s;
+      if (r < v[s+1])
+	return s+1;
+      else {
+	bottom = s+1;
+      }
+    }
+    s = bottom + (top-bottom)/2;
+  }
+  // assert(bottom <= top);
+  return -1;
+}
+
 using namespace std;
 /*
  algorithm poisson random number (Knuth):

@@ -27,13 +27,12 @@
 #include "Params.h"
 #include "Person.h"
 #include "Grid.h"
-#include "Large_grid.h"
-#include "Small_grid.h"
+#include "Large_Grid.h"
+#include "Small_Grid.h"
 #include "Utils.h"
 #include "Geo_Utils.h"
+#include "Travel.h"
 
-//// global singleton object
-//Place_List Places;
 
 void Place_List::get_parameters() {
 }
@@ -115,10 +114,10 @@ void Place_List::read_places() {
 
   // create geographical grids
   Global::Cells = new Grid(min_lon, min_lat, max_lon, max_lat);
-  if (Global::Enable_Large_grid)
-    Global::Large_cells = new Large_grid(min_lon, min_lat, max_lon, max_lat);
-  if (Global::Enable_Small_grid)
-    Global::Small_cells = new Small_grid(min_lon, min_lat, max_lon, max_lat);
+  if (Global::Enable_Large_Grid)
+    Global::Large_Cells = new Large_Grid(min_lon, min_lat, max_lon, max_lat);
+  if (Global::Enable_Small_Grid)
+    Global::Small_Cells = new Small_Grid(min_lon, min_lat, max_lon, max_lat);
 
   int number_places = (int) places.size();
   for (int p = 0; p < number_places; p++) {
@@ -128,10 +127,8 @@ void Place_List::read_places() {
       double lon = place->get_longitude();
       Cell * grid_cell = (Cell *) Global::Cells->get_grid_cell_from_lat_lon(lat,lon);
       if (grid_cell == NULL) {
-	double x, y;
-	Global::Cells->translate_to_cartesian(lat,lon,&x,&y);
-	printf("Help: household %d has bad grid_cell,  lat = %f  lon = %f  x = %f  y = %f\n",
-	       place->get_id(),lat,lon,x,y);
+	printf("Help: household %d has bad grid_cell,  lat = %f  lon = %f\n",
+	       place->get_id(),lat,lon);
       }
       assert(grid_cell != NULL);
       grid_cell->add_household(place);

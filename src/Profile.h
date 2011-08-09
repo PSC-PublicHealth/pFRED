@@ -25,16 +25,19 @@ class Profile {
   double prob_visit[7][20];
   double prob_travel[7];
   
-public:
+ public:
   Profile() {}
+  static void read_profiles(char *filename);
+  static bool is_visited(int pos, int prof, int day);
+  static bool decide_to_travel(int prof, int day);
+
+ private:
   void set_prob_visit(int day, int place, double p) { prob_visit[day][place] = p; }
   void set_prob_travel(int day, double p) { prob_travel[day] = p; }
   double get_prob_visit(int day, int place) { return prob_visit[day][place]; }
   double get_prob_travel(int day) { return prob_travel[day]; }
 };
 
-void read_profiles(char *filename);
-int is_visited(int pos, int prof, int day);
 
 extern int Profiles;
 extern Profile Prof[];

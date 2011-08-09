@@ -101,6 +101,8 @@ double Workplace::get_contacts_per_day(int disease) {
 }
 
 void Workplace::setup_offices() {
+  if (Workplace::office_size == 0)
+    return;
   int rooms = N / Workplace::office_size;
   next_office = 0;
   if (N % Workplace::office_size) rooms++;
@@ -130,6 +132,8 @@ void Workplace::setup_offices() {
 }
 
 Place * Workplace::assign_office(Person *per) {
+  if (Workplace::office_size == 0)
+    return NULL;
   if (Global::Verbose>1) {
     fprintf(Global::Statusfp,
 	    "assign office for person %d at workplace %d %s == ",

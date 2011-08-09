@@ -17,8 +17,8 @@ double Geo_Utils::km_per_deg_latitude = MEAN_US_KM_PER_DEG_LAT;
 
 void Geo_Utils::set_km_per_degree(double lat) {
   lat *= Geo_Utils::DEG_TO_RAD;
-  Geo_Utils::km_per_deg_longitude = cos(lat) * Geo_Utils::KM_PER_DEG_LAT;
-  Geo_Utils::km_per_deg_latitude = Geo_Utils::KM_PER_DEG_LAT;
+  km_per_deg_longitude = cos(lat) * KM_PER_DEG_LAT;
+  km_per_deg_latitude = KM_PER_DEG_LAT;
 }
 
 double Geo_Utils::haversine_distance (double lon1, double lat1, double lon2, double lat2) {
@@ -60,6 +60,22 @@ double Geo_Utils::spherical_projection_distance (double lon1, double lat1, doubl
   tmp *= tmp;
   return EARTH_RADIUS*sqrt(dlat+tmp);
 }
+
+void Geo_Utils::translate_to_cartesian(double lat, double lon, double *x, double *y,
+				       double min_lat, double min_lon) {
+  *x = (lon - min_lon) * km_per_deg_longitude;
+  *y = (lat - min_lat) * km_per_deg_latitude;
+}
+
+
+void Geo_Utils::translate_to_lat_lon(double x, double y, double *lat, double *lon,
+				     double min_lat, double min_lon) {
+  *lon = min_lon + x / km_per_deg_longitude;
+  *lat = min_lat + y / km_per_deg_latitude;
+}
+
+
+
 
 /*
 

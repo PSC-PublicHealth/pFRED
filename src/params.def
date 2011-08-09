@@ -30,6 +30,14 @@ incremental_trace = 0
 # set non-zero to get headers printed in the trace file
 trace_headers = 0
 
+# long-distance overnight travel 
+enable_travel = 0
+travel_rate = 0.01
+travel_duration = 6 0 0.2 0.4 0.6 0.8 1.0
+min_travel_distance = 100.0
+outside_travel_rate = 0.0
+test_gravity_model = 0
+
 # parameters for disease 0
 primary_cases_file[0] = primary_case_schedule-0.txt
 trans[0] = 1.0
