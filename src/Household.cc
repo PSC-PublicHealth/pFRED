@@ -14,7 +14,7 @@
 #include "Params.h"
 #include "Person.h"
 #include "Cell.h"
-#include "Grid.h";
+#include "Grid.h"
 
 //Private static variables that will be set by parameter lookups
 double * Household::Household_contacts_per_day;

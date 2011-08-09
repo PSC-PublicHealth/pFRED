@@ -71,8 +71,11 @@ void Place_List::read_places() {
   Place *container = NULL;
 
   // skip header line
-  fscanf(fp, "%*s %*s %*s %*s");
-  
+  int skip = fscanf(fp, "%*s %*s %*s %*s");
+  if (Global::Verbose > 99) {
+    fprintf(Global::Statusfp, "skip = %d\n", skip);
+  }
+
   int id = (int) places.size();;
   while (fscanf(fp, "%s %c %lf %lf", s, &place_type, &lat, &lon) == 4) {
     if (place_type == 'H' && lat != 0.0) {

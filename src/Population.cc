@@ -228,7 +228,10 @@ void Population::read_population() {
   pop.reserve(psize);
 	
   // skip header line
-  fscanf(fp, "%*s %*s %*s %*s %*s %*s %*s %*s");
+  int skip = fscanf(fp, "%*s %*s %*s %*s %*s %*s %*s %*s");
+  if (Global::Verbose > 99) {
+    fprintf(Global::Statusfp, "skip = %d\n", skip);
+  }
 
   next_id = 0;
   for (int p = 0; p < psize; p++) {

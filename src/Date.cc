@@ -21,6 +21,7 @@
 #include <string>
 #include <cstdlib>
 #include <cmath>
+#include <string.h>
 
 using namespace std;
 
