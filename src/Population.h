@@ -13,7 +13,6 @@
 #define _FRED_POPULATION_H
 
 #include "Global.h"
-#include "Person_Event_Interface.h"
 #include "Demographics.h"
 
 class Person;
@@ -27,7 +26,7 @@ using namespace std;
 #include <vector>
 typedef map <Person*, bool> ChangeMap;	
 
-class Population : public Person_Event_Interface {
+class Population {
 public:
   Population();
   ~Population();
@@ -56,10 +55,6 @@ public:
   
   // Modifiers on the entire pop;
   // void apply_residual_immunity(Disease *disease) {}
-
-  //Implement the interface
-  void handle_property_change_event(Person *source, string property_name, int prev_val, int new_val);
-  void handle_property_change_event(Person *source, string property_name, bool new_val);
 
   // track those agents that have changed since the last incremental dump
   void set_changed(Person *p);

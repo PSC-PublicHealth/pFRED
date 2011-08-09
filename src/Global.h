@@ -52,7 +52,6 @@ class Global {
     static char Population_directory[];
     static char Output_directory[];
     static char Tracefilebase[];
-    static char Eventfilebase[];
     static char VaccineTracefilebase[];
     static int Incremental_Trace;
     static int Trace_Headers;

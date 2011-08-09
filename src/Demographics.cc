@@ -168,11 +168,8 @@ void Demographics::update(int day) {
        cur_day_of_month == 28 &&
        !Date::is_leap_year(cur_year))) {
 
-    //Notify any classes that have registered as event handlers
     if (Global::Enable_Aging > 0) {
-      // int prev_age = age;
       age++;
-      // this->self->notify_property_change("age", prev_age, age);
     }
 
     //Will this person die in the next year?
@@ -209,8 +206,6 @@ void Demographics::update(int day) {
     double random_due_date = draw_normal(Demographics::MEAN_PREG_DAYS, Demographics::STDDEV_PREG_DAYS);
     this->due_date->advance((int)(random_due_date + 0.5)); //round the random_due_date
     this->pregnant = true;
-    //Notify any classes that have registered as event handlers
-    // this->self->notify_property_change("pregnant", true);
   }
 
   //Is this your day to give birth
@@ -228,9 +223,6 @@ void Demographics::update(int day) {
     delete this->due_date;
     this->due_date = NULL;
     this->pregnant = false;
-    //Notify any classes that have registered as event handlers
-    // this->self->notify_property_change("pregnant", false);
-    // this->self->notify_property_change("deliver", true);
     self->get_population()->prepare_to_give_birth(day, self);
   }
 
@@ -241,8 +233,6 @@ void Demographics::update(int day) {
      this->deceased_date->get_month() == cur_month &&
      this->deceased_date->get_day_of_month() == cur_day_of_month) {
     this->deceased = true;
-    //Notify any classes that have registered as event handlers
-    // this->self->notify_property_change("deceased", true);
     self->get_population()->prepare_to_die(day, self);
   }
 

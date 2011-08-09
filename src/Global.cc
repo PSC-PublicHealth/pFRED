@@ -15,7 +15,6 @@
 char Global::Population_directory[256];
 char Global::Output_directory[256];
 char Global::Tracefilebase[256];
-char Global::Eventfilebase[256];
 char Global::VaccineTracefilebase[256];
 int Global::Incremental_Trace = 0;
 int Global::Trace_Headers = 0;

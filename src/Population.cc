@@ -240,7 +240,6 @@ void Population::read_population() {
       Utils::fred_abort("Help! Read failure for new person %d\n", p); 
     }
     Person * person = new Person(next_id, age, sex, married, occ, house, school, work, this, 0);
-    // person->register_event_handler(this);
     add_person(person);
     // sprintf(pstring[next_id], "%s %d %c %d %d %s %s %s", label, age, sex, married, occ, house, school, work);
     // printf("pstring[%d]: %s\n", next_id, pstring[next_id]);
@@ -288,7 +287,6 @@ void Population::begin_day(int day) {
   size_t births = maternity_list.size();
   for (size_t i = 0; i < births; i++) {
     Person * baby = maternity_list[i]->give_birth(day);
-    // baby->register_event_handler(this);
     add_person(baby);
     int age_lookup = maternity_list[i]->get_age();
     if (age_lookup > Demographics::MAX_AGE)
@@ -584,26 +582,6 @@ void Population::clear_static_arrays() {
     birth_count[i] = 0;
   }
 }
-
-//Implement the interface
-void Population::handle_property_change_event(Person *source,
-					      string property_name,
-					      int prev_val,
-					      int new_val) {
-}
-
-void Population::handle_property_change_event(Person *source,
-					      string property_name,
-					      bool new_val) {
-  /*
-  if (property_name.compare("deceased") == 0 && new_val) {
-    this->prepare_to_die(source);
-  } else if (property_name.compare("deliver") == 0 && new_val) {
-    this->prepare_to_give_birth(source);
-  }
-  */
-}
-
 
 //Static function to get and increment the next_id
 int Population::get_next_id() {

@@ -24,7 +24,6 @@ class Disease;
 class Infection;
 class Population;
 class Transmission;
-class Person_Event_Interface;
 #include "Demographics.h"
 #include "Health.h"
 #include "Behavior.h"
@@ -104,12 +103,6 @@ public:
   void assign_classroom() { activities->assign_classroom(); }
   void assign_office() { activities->assign_office(); }
 
-  //Event Handling
-  void register_event_handler(Person_Event_Interface *event_handler);
-  void deregister_event_handler(Person_Event_Interface *event_handler);
-  void notify_property_change(string property_name, int prev_val, int new_val);
-  void notify_property_change(string property_name, bool new_val);
-
   // access functions:
   int get_id() const { return idx; }
   Population* get_population() const { return pop; }
@@ -134,7 +127,6 @@ private:
   Health *health;
   Activities *activities;
   Behavior *behavior;
-  vector<Person_Event_Interface *> *registered_event_handlers;
 };
 
 #endif // _FRED_PERSON_H

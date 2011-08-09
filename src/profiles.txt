@@ -27,11 +27,11 @@ Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
 
 Profile 3 Worker
 Sun Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
-Mon Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
-Tue Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
-Wed Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
-Thu Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
-Fri Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.0
+Mon Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.001
+Tue Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.001
+Wed Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.001
+Thu Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.001
+Fri Home 1.0 Nbrhood 1.0 School 0.0 Work 1.0 Travel 0.001
 Sat Home 1.0 Nbrhood 1.0 School 0.0 Work 0.0 Travel 0.0
 
 Profile 4 Weekend_worker
