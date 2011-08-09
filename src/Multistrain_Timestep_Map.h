@@ -58,6 +58,7 @@ public:
   public:
 
     Multistrain_Timestep() {
+      strain = 0;
       is_complete = false;
       seedingAttemptProb = 1;
       minNumSuccessful = 0;
@@ -79,14 +80,14 @@ public:
           p1 = p2 + 1;
         }
         int n = tsVec.size(); 
-        if ( n < 4 ) {
-          Utils::fred_abort("Need to specify at least SimulationDayStart, Strain, NumSeedingAttempts,and SimulationDayEnd for Multistrain_Timestep_Map");
+        if ( n < 3 ) {
+          Utils::fred_abort("Need to specify at least SimulationDayStart, SimulationDayEnd and NumSeedingAttempts for Multistrain_Timestep_Map. ");
           abort();
         } else {
           stringstream( tsVec[0] ) >> simDayStart;
           stringstream( tsVec[1] ) >> simDayEnd;
           stringstream( tsVec[2] ) >> numSeedingAttempts;
-          stringstream( tsVec[3] ) >> strain;
+          if ( n > 3 ) { stringstream( tsVec[3] ) >> strain; }
           if ( n > 4 ) { stringstream( tsVec[4] ) >> seedingAttemptProb; }
           if ( n > 5 ) { stringstream( tsVec[5] ) >> minNumSuccessful; }
           if ( n >= 9 ) {
@@ -131,7 +132,6 @@ public:
 
   private:
 
-    // SimulationDayStart Strain NumSeedingAttempts SimulationDayEnd [SeedingAttemptProbability MinNumSuccessful GeoLon GeoLat GeoRadius]
     int simDayStart, simDayEnd, strain, numSeedingAttempts, minNumSuccessful;
     double seedingAttemptProb, lat, lon, radius;
     

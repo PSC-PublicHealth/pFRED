@@ -44,7 +44,7 @@ void Multistrain_Timestep_Map::read_map() {
       read_map_structured(ts_input);
     }
     else {
-      Utils::fred_abort("First line has to specify either #line_format or #structured_format");
+      Utils::fred_abort("First line has to specify either #line_format or #structured_format; see primary_case_schedule-0.txt for an example. ");
     }
   } else { 
     Utils::fred_abort("Nothing in the file!");

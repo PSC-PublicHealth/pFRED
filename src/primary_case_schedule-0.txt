@@ -1,8 +1,8 @@
 #line_format
 # Format is:
-# start end attempts strain [ prob [ min [ lat lon radius ] ] ]
+# start end attempts [ strain [ prob [ min [ lat lon radius ] ] ] ]
 #
-# Only the first four fields are mandatory.  The others are optional, but, if
+# Only the first three fields are mandatory.  The others are optional, but, if
 # present, must be given in the order above.  If a location is specified, then
 # all three location fields must be present (lat, lon & radius).
 #
@@ -18,4 +18,4 @@
 # 0 0 100 0 1 100 40.44181 -80.01278 100
 #
 # the default 100 seeds on day zero...
-0 0 100 0
+0 0 100
