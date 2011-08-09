@@ -82,7 +82,6 @@ public:
         int n = tsVec.size(); 
         if ( n < 3 ) {
           Utils::fred_abort("Need to specify at least SimulationDayStart, SimulationDayEnd and NumSeedingAttempts for Multistrain_Timestep_Map. ");
-          abort();
         } else {
           stringstream( tsVec[0] ) >> simDayStart;
           stringstream( tsVec[1] ) >> simDayEnd;
