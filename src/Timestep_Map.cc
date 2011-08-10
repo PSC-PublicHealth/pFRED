@@ -96,7 +96,7 @@ int Timestep_Map::get_value_for_timestep(int ts, int offset) {
   return current_value;
 }
 
-void Timestep_Map::print() const {
+void Timestep_Map::print() {
   cout << "\n";
   cout << name << " Timestep Map  " << values->size() <<"\n";
   map<int,int>::iterator itr;

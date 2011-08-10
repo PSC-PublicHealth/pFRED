@@ -57,8 +57,7 @@ void Multistrain_Timestep_Map::read_map_line(ifstream * ts_input) {
   string line;
   while(getline(*ts_input,line)){
     Multistrain_Timestep * msts = new Multistrain_Timestep();
-    msts->parse_line_format(line);
-    insert(msts); 
+    if (msts->parse_line_format(line)) { insert(msts); } 
   }
 }
 
@@ -67,4 +66,14 @@ void Multistrain_Timestep_Map::read_map_structured(ifstream * ts_input) {
 
 void Multistrain_Timestep_Map::insert(Multistrain_Timestep * mst) {
    multistrain_timestep_map.push_back(mst);
+}
+
+void Multistrain_Timestep_Map::print() {
+  cout << "\n";
+  cout << name << " Multistrain_Timestep_Map size = " << (int) multistrain_timestep_map.size() <<"\n";
+  vector < Multistrain_Timestep * >::iterator itr;
+  for(itr=begin(); itr!=end(); ++itr){
+    (*itr)->print(); 
+  }
+  cout << "\n";
 }

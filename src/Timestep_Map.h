@@ -53,7 +53,7 @@ public:
   // Utility Members
   int get_value_for_timestep(int ts, int offset); // returns the value for the given timestep - delay
   bool is_empty() const { return values->empty(); }
-  void print() const;
+  virtual void print();
 
   virtual void read_map();
 

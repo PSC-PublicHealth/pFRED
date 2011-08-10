@@ -53,6 +53,8 @@ public:
   void read_map_line(ifstream * ts_input);
   void read_map_structured(ifstream * ts_input);
 
+  void print() ;
+
   class Multistrain_Timestep {
 
   public:
@@ -67,10 +69,11 @@ public:
       radius = 40075; // in kilometers
     }
 
-    void parse_line_format(string tsStr) {
+    bool parse_line_format(string tsStr) {
 
-      if ( tsStr.at(0) != '#' ) { // # comments
-
+      if ( tsStr.size() <= 0 || tsStr.at(0) == '#' ) { // empty line or comment
+        return false;
+      } else {
         vector<string> tsVec; 
         size_t p1 = 0;
         size_t p2 = 0;
@@ -97,7 +100,7 @@ public:
         }
         is_complete = true;   
       }
-
+      return is_complete;
     }
 
     bool is_applicable(int ts, int offset) {
@@ -128,6 +131,10 @@ public:
     double get_lon() { return lon; }
     double get_lat() { return lat; }
     double get_radius() { return radius; }
+
+    void print() {
+      printf("start day = %d, end day = %d, number of attempts = %d, strain = %d\n",simDayStart,simDayEnd,numSeedingAttempts,strain);
+    }
 
   private:
 
