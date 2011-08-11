@@ -150,7 +150,7 @@ void Health::update(int day) {
   symptomatic_status = false;
 
   for (int s = 0; s < diseases; s++) {
-    if (status[s] == 'S' || status[s] == 'M')
+    if (status[s] == 'S' || status[s] == 'M' || status[s] == 'R')
       continue;
 
     infection[s]->update(day);
