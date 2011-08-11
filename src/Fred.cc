@@ -25,12 +25,14 @@
 #include "Travel.h"
 
 int main(int argc, char* argv[]) {
-  time_t clock;         // current date
+  time_t start_timer, stop_timer, fred_timer;
   int run;          // number of current run
   unsigned long new_seed;
   char filename[256];
   char directory[256];
   char paramfile[256];
+
+  time(&fred_timer);
 
   if (argc > 1) {
     strcpy(paramfile, argv[1]);
@@ -51,8 +53,8 @@ int main(int argc, char* argv[]) {
   }
 
   Global::Statusfp = stdout;
-  time(&clock);
-  fprintf(Global::Statusfp, "FRED started %s", ctime(&clock));
+  time(&start_timer);
+  fprintf(Global::Statusfp, "FRED started %s", ctime(&start_timer));
   fprintf(Global::Statusfp, "param file = %s\n", paramfile);
   fflush(Global::Statusfp);
 
@@ -167,53 +169,69 @@ int main(int argc, char* argv[]) {
   fprintf(Global::Statusfp, "seed = %lu\n", new_seed);
   INIT_RANDOM(new_seed);
 
-  time(&clock);
-  fprintf(Global::Statusfp, "\nFRED run %d started %s\n", run, ctime(&clock));
+  time(&start_timer);
+  fprintf(Global::Statusfp, "\nFRED run %d started %s\n", run, ctime(&start_timer));
   fflush(Global::Statusfp);
 
   // initializations
 
   // read in the household, schools and workplaces (also sets up grids)
+  time(&start_timer);
   Global::Places.read_places();
-  time(&clock);
-  fprintf(Global::Statusfp, "Places.read_places() complete at %s\n", ctime(&clock));
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "Places.read_places() took %d seconds\n",
+	  (int) (stop_timer - start_timer));
   fflush(Global::Statusfp);
 
   // read in the population and have each person enroll
   // in each favorite place identified in the population file
+  time(&start_timer);
   Global::Pop.setup();
-  time(&clock);
-  fprintf(Global::Statusfp, "Pop.setup() complete at %s\n", ctime(&clock));
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "Pop.setup() took %d seconds\n",
+	  (int) (stop_timer - start_timer));
   fflush(Global::Statusfp);
 
   // define FRED-specific places
   // and have each person enroll as needed
+  time(&start_timer);
   Global::Places.setup_classrooms();
   Global::Places.setup_offices();
   Global::Pop.assign_classrooms();
   Global::Pop.assign_offices();
-  time(&clock);
-  fprintf(Global::Statusfp, "assign classrooms and offices complete at %s\n", ctime(&clock));
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "assign classrooms and offices took %d seconds\n",
+	  (int) (stop_timer - start_timer));
   fflush(Global::Statusfp);
 
   // after all enrollments, prepare to receive visitors
+  time(&start_timer);
   Global::Places.prepare();
 
   // record the favorite places for households within each grid cell
   Global::Cells->record_favorite_places();
-  time(&clock);
-  fprintf(Global::Statusfp, "place prep complete at %s\n", ctime(&clock));
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "place prep took %d seconds\n",
+	  (int) (stop_timer - start_timer));
   fflush(Global::Statusfp);
 
-  if (Global::Enable_Large_Grid && Global::Enable_Travel)
+  if (Global::Enable_Large_Grid && Global::Enable_Travel) {
+    time(&start_timer);
     Travel::setup();
+    time(&stop_timer);
+    fprintf(Global::Statusfp, "Travel setup took %d seconds\n",
+	    (int) (stop_timer - start_timer));
+    fflush(Global::Statusfp);
+  }
 
   if (Global::Quality_control) {
+    time(&start_timer);
     Global::Pop.quality_control();
     Global::Places.quality_control();
     Global::Cells->quality_control();
-    time(&clock);
-    fprintf(Global::Statusfp, "quality control complete at %s\n", ctime(&clock));
+    time(&stop_timer);
+    fprintf(Global::Statusfp, "quality control took %d seconds\n",
+	    (int) (stop_timer - start_timer));
     fflush(Global::Statusfp);
   }
 
@@ -227,24 +245,66 @@ int main(int argc, char* argv[]) {
     Global::Pop.print_age_distribution(directory, Global::Sim_Date->get_YYYYMMDD(0), run);
   }
 
-  time(&clock);
-  fprintf(Global::Statusfp, "FRED initializations complete at %s\n", ctime(&clock));
+  stop_timer = time(&stop_timer);
+  fprintf(Global::Statusfp, "FRED initializations complete at %s\n",
+	  ctime(&stop_timer));
+  fprintf(Global::Statusfp, "FRED initializations took %d secs\n",
+	  (int) (stop_timer-start_timer));
+  start_timer = stop_timer;
   fflush(Global::Statusfp);
 
   for (int day = 0; day < Global::Days; day++) {
+    time_t day_timer;
+    time(&day_timer);
     if (day == Global::Reseed_day) {
       fprintf(Global::Statusfp, "************** reseed day = %d\n", day);
       fflush(Global::Statusfp);
       INIT_RANDOM(new_seed + run - 1);
     }
+    time(&start_timer);
 
     Global::Places.update(day);
+    time(&stop_timer);
+    fprintf(Global::Statusfp, "day %d  Places.update took %d seconds\n",
+	    day,(int)(stop_timer-start_timer));
+    fflush(Global::Statusfp);
+    start_timer = stop_timer;
+
     Global::Pop.begin_day(day);
+    time(&stop_timer);
+    fprintf(Global::Statusfp, "day %d  Pop.begin took %d seconds\n",
+	    day,(int)(stop_timer-start_timer));
+    fflush(Global::Statusfp);
+    start_timer = stop_timer;
+
     Global::Pop.get_visitors_to_infectious_places(day);
+    time(&stop_timer);
+    fprintf(Global::Statusfp, "day %d  Pop.get_visitors took %d seconds\n",
+	    day,(int)(stop_timer-start_timer));
+    fflush(Global::Statusfp);
+    start_timer = stop_timer;
+
     Global::Pop.transmit_infection(day);
+    time(&stop_timer);
+    fprintf(Global::Statusfp, "day %d  Pop.transmit took %d seconds\n",
+	    day,(int)(stop_timer-start_timer));
+    fflush(Global::Statusfp);
+    start_timer = stop_timer;
+
     Global::Pop.end_day(day);
+    time(&stop_timer);
+    fprintf(Global::Statusfp, "day %d  Pop.end_day took %d seconds\n",
+	    day,(int)(stop_timer-start_timer));
+    fflush(Global::Statusfp);
+    start_timer = stop_timer;
+
     Global::Pop.report(day);
-    
+    time(&stop_timer);
+    fprintf(Global::Statusfp, "day %d  Pop.report took %d seconds\n",
+	    day,(int)(stop_timer-start_timer));
+    fflush(Global::Statusfp);
+    start_timer = stop_timer;
+
     if (Global::Enable_Migration && Date::match_pattern(day, "02-*-*")) {
       Global::Cells->population_migration(day);
     }
@@ -264,21 +324,27 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    fprintf(Global::Statusfp, "day %d finished  ", day);
     // incremental trace
     if (Global::Incremental_Trace && day && !(day%Global::Incremental_Trace))
       Global::Pop.print(1, day);
-    time(&clock);
-    fprintf(Global::Statusfp, "%s", ctime(&clock));
+
+    time(&stop_timer);
+    fprintf(Global::Statusfp, "day %d finished  %s", day, ctime(&stop_timer));
+    fprintf(Global::Statusfp, "day %d took %d seconds\n",
+	    day,(int)(stop_timer-day_timer));
+    fflush(Global::Statusfp);
   }
 
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "FRED finished %s", ctime(&stop_timer));
+  fprintf(Global::Statusfp, "FRED took %d seconds\n",
+	  (int)(stop_timer-fred_timer));
+  fflush(Global::Statusfp);
 
   // finish up
   Global::Pop.end_of_run();
-  // fclose(Statusfp);
   Utils::fred_end();
-  time(&clock);
-  fprintf(Global::Statusfp, "FRED finished %s", ctime(&clock));
+
   return 0;
 }
 

@@ -257,15 +257,18 @@ void Population::read_population() {
 }
 
 void Population::begin_day(int day) {
+  time_t start_timer, stop_timer;
 
   // clear lists of births and deaths
-  death_list.clear();
-  maternity_list.clear();
+  if (Global::Enable_Deaths) death_list.clear();
+  if (Global::Enable_Births) maternity_list.clear();
 
-  // update household mobility activity on July 1
-  if (Date::match_pattern(day, "07-01-*")) {
-    for (int p = 0; p < pop_size; p++) {
-      pop[p]->update_household_mobility();
+  if (Global::Enable_Mobility) {
+    // update household mobility activity on July 1
+    if (Date::match_pattern(day, "07-01-*")) {
+      for (int p = 0; p < pop_size; p++) {
+	pop[p]->update_household_mobility();
+      }
     }
   }
 
@@ -277,67 +280,101 @@ void Population::begin_day(int day) {
   }
 
   // update everyone's demographics
+  time(&start_timer);
   for (int p = 0; p < pop_size; p++) {
     pop[p]->update_demographics(day);
   }
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "day %d update_demographics took %d seconds\n",
+	  day, (int) (stop_timer-start_timer));
+  fflush(Global::Statusfp);
 
   // update everyone's health status
+  time(&start_timer);
   for (int p = 0; p < pop_size; p++) {
     pop[p]->update_health(day);
   }
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "day %d update_health took %d seconds\n",
+	  day, (int) (stop_timer-start_timer));
+  fflush(Global::Statusfp);
 
-  // add the births to the population
-  size_t births = maternity_list.size();
-  for (size_t i = 0; i < births; i++) {
-    Person * baby = maternity_list[i]->give_birth(day);
-    add_person(baby);
-    int age_lookup = maternity_list[i]->get_age();
-    if (age_lookup > Demographics::MAX_AGE)
-      age_lookup = Demographics::MAX_AGE;
-    birth_count[age_lookup]++;
-  }
-  if (Global::Verbose > 0) {
-    fprintf(Global::Statusfp, "births = %d\n", (int)births);
-    fflush(Global::Statusfp);
+  if (Global::Enable_Births) {
+    // add the births to the population
+    size_t births = maternity_list.size();
+    for (size_t i = 0; i < births; i++) {
+      Person * baby = maternity_list[i]->give_birth(day);
+      add_person(baby);
+      int age_lookup = maternity_list[i]->get_age();
+      if (age_lookup > Demographics::MAX_AGE)
+	age_lookup = Demographics::MAX_AGE;
+      birth_count[age_lookup]++;
+    }
+    if (Global::Verbose > 0) {
+      fprintf(Global::Statusfp, "births = %d\n", (int)births);
+      fflush(Global::Statusfp);
+    }
   }
 
-  // remove the dead from the population
-  size_t deaths = death_list.size();
-  for (size_t i = 0; i < deaths; i++) {
-    //For reporting
-    int age_lookup = death_list[i]->get_age();
-    if (age_lookup > Demographics::MAX_AGE)
-      age_lookup = Demographics::MAX_AGE;
-    if (death_list[i]->get_sex() == 'F')
-      death_count_female[age_lookup]++;
-    else
-      death_count_male[age_lookup]++;
-    delete_person(death_list[i]);
-  }
-  if (Global::Verbose > 0) {
-    fprintf(Global::Statusfp, "deaths = %d\n", (int)deaths);
-    fflush(Global::Statusfp);
+  if (Global::Enable_Births) {
+    // remove the dead from the population
+    size_t deaths = death_list.size();
+    for (size_t i = 0; i < deaths; i++) {
+      //For reporting
+      int age_lookup = death_list[i]->get_age();
+      if (age_lookup > Demographics::MAX_AGE)
+	age_lookup = Demographics::MAX_AGE;
+      if (death_list[i]->get_sex() == 'F')
+	death_count_female[age_lookup]++;
+      else
+	death_count_male[age_lookup]++;
+      delete_person(death_list[i]);
+    }
+    if (Global::Verbose > 0) {
+      fprintf(Global::Statusfp, "deaths = %d\n", (int)deaths);
+      fflush(Global::Statusfp);
+    }
   }
 
   // update adult decisions
+  time(&start_timer);
   for (int p = 0; p < pop_size; p++) {
     if (Global::ADULT_AGE <= pop[p]->get_age()) {
       pop[p]->update_behavior(day);
     }
   }
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "day %d update_behavior for adults took %d seconds\n",
+	  day, (int) (stop_timer-start_timer));
+  fflush(Global::Statusfp);
 
   // update child decisions
+  time(&start_timer);
   for (int p = 0; p < pop_size; p++) {
     if (pop[p]->get_age() < Global::ADULT_AGE) {
       pop[p]->update_behavior(day);
     }
   }
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "day %d update_behavior for children took %d seconds\n",
+	  day, (int) (stop_timer-start_timer));
+  fflush(Global::Statusfp);
 
   // distribute vaccines
+  time(&start_timer);
   vacc_manager->update(day);
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "day %d update vacc_manager took %d seconds\n",
+	  day, (int) (stop_timer-start_timer));
+  fflush(Global::Statusfp);
 
   // distribute AVs
+  time(&start_timer);
   av_manager->update(day);
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "day %d update av_manager took %d seconds\n",
+	  day, (int) (stop_timer-start_timer));
+  fflush(Global::Statusfp);
 
   if (Global::Verbose > 1) {
     fprintf(Global::Statusfp, "population begin_day finished\n");
