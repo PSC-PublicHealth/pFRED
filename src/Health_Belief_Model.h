@@ -19,12 +19,41 @@ class Person;
 
 class Health_Belief_Model : public Behavior_Model {
  public:
+  /**
+   * Default constructor
+   */
   Health_Belief_Model(Person *p);
+
+  /**
+   * Perform the daily update for this object
+   *
+   * @param day the simulation day
+   */
   void update(int day);
+
+  /**
+   * @param disease which disease
+   * @return <code>true</code> if agent will accept vaccine, <code>false</code> if not
+   * @see Behavior_Model::will_accept_vaccine(int disease)
+   */
   bool will_accept_vaccine(int disease) { return accept_vaccine[disease]; }
+
+  /**
+   * @param disease which disease
+   * @return <code>true</code> if agent will accept another vaccine dose, <code>false</code> if not
+   * @see Behavior_Model::will_accept_another_vaccine_dose(int disease)
+   */
   bool will_accept_another_vaccine_dose(int disease) { return true; } // Not implemented
  private:
+  /**
+   * Set the values from the parameter file
+   */
   void get_parameters();
+
+  /**
+   * @param disease which disease
+   * @return <code>true</code> if agent will accept vaccine, <code>false</code> if not
+   */
   bool decide_whether_to_accept_vaccine(int disease);
 
   // Pointer to agent

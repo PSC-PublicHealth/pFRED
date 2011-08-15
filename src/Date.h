@@ -46,8 +46,15 @@ public:
   static const string DDMMYY;
   static const int INVALID = -1;
 
+  /**
+   * Default constructor
+   */
   Date();
-  Date(string date_string, string format_string =  Date::YYYYMMDD);
+
+  /**
+   *
+   */
+  Date(string date_string, string format_string = Date::YYYYMMDD);
   Date(int year, int day_of_year);
   Date(int year, int month, int day_of_month);
   void set_date(int year, int month, int day_of_month);

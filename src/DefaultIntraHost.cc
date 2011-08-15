@@ -8,7 +8,7 @@
 #include "Params.h"
 #include "Random.h"
 
-DefaultIntraHost :: DefaultIntraHost() {
+DefaultIntraHost::DefaultIntraHost() {
   prob_symptomatic = -1.0;
   asymp_infectivity = -1.0;
   symp_infectivity = -1.0;
@@ -21,16 +21,16 @@ DefaultIntraHost :: DefaultIntraHost() {
   days_incubating = NULL;
   days_asymp = NULL;
   days_symp = NULL;
-  }
+}
 
-DefaultIntraHost :: ~DefaultIntraHost() {
+DefaultIntraHost::~DefaultIntraHost() {
   delete [] days_latent;
   delete [] days_incubating;
   delete [] days_asymp;
   delete [] days_symp;
-  }
+}
 
-void DefaultIntraHost :: setup(Disease *disease) {
+void DefaultIntraHost::setup(Disease *disease) {
   IntraHost::setup(disease);
 
   int id = disease->get_id();
@@ -59,13 +59,12 @@ void DefaultIntraHost :: setup(Disease *disease) {
 
   if (max_days_asymp > max_days_symp) {
     max_days = max_days_latent + max_days_asymp;
-    }
-  else {
+  } else {
     max_days = max_days_latent + max_days_symp;
-    }
   }
+}
 
-Trajectory * DefaultIntraHost :: getTrajectory(Infection *infection, std :: map<int, double> *loads) {
+Trajectory * DefaultIntraHost::getTrajectory(Infection *infection, std :: map<int, double> *loads) {
   // TODO  take loads into account - multiple strains
   Trajectory * trajectory = new Trajectory();
   int sequential = get_infection_model();
@@ -85,16 +84,14 @@ Trajectory * DefaultIntraHost :: getTrajectory(Infection *infection, std :: map<
 
     if (will_be_symptomatic) {
       days_symptomatic = get_days_symp();
-      }
     }
-  else { // SEIR/SEiR model
+  } else { // SEIR/SEiR model
     if (will_be_symptomatic) {
       days_symptomatic = get_days_symp();
-      }
-    else {
+    } else {
       days_asymptomatic = get_days_asymp();
-      }
     }
+  }
 
   days_incubating = days_latent + days_asymptomatic;
 
@@ -105,44 +102,44 @@ Trajectory * DefaultIntraHost :: getTrajectory(Infection *infection, std :: map<
     infectivity_trajectory.insert(infectivity_trajectory.end(), days_asymptomatic, asymptomatic_infectivity);
     infectivity_trajectory.insert(infectivity_trajectory.end(), days_symptomatic, symptomatic_infectivity);
     trajectory->set_infectivity_trajectory(it->first, infectivity_trajectory);
-    }
+  }
 
   vector<double> symptomaticity_trajectory(days_incubating, 0.0);
   symptomaticity_trajectory.insert(symptomaticity_trajectory.end(), days_symptomatic, symptomaticity);
   trajectory->set_symptomaticity_trajectory(symptomaticity_trajectory);
 
   return trajectory;
-  }
+}
 
 int DefaultIntraHost::get_days_latent() {
   int days = 0;
   days = draw_from_distribution(max_days_latent, days_latent);
   return days;
-  }
+}
 
 int DefaultIntraHost::get_days_incubating() {
   int days = 0;
   days = draw_from_distribution(max_days_incubating, days_incubating);
   return days;
-  }
+}
 
 int DefaultIntraHost::get_days_asymp() {
   int days = 0;
   days = draw_from_distribution(max_days_asymp, days_asymp);
   return days;
-  }
+}
 
 int DefaultIntraHost::get_days_symp() {
   int days = 0;
   days = draw_from_distribution(max_days_symp, days_symp);
   return days;
-  }
+}
 
 int DefaultIntraHost::get_days_susceptible() {
   return 0;
-  }
+}
 
 int DefaultIntraHost::get_symptoms() {
   return (RANDOM() < prob_symptomatic);
-  }
+}
 

@@ -14,9 +14,20 @@ class Trajectory {
   public:
     Trajectory();
     Trajectory(std::map< int, trajectory_t > infectivity_copy, trajectory_t symptomaticity_copy);
+
+    /**
+     * Create a copy of this Trajectory and return a pointer to it
+     * @return a pointer to the new Trajectory
+     */
     Trajectory * clone();
 
+    /**
+     * @param strain the strain to check for
+     * @return <code>true</code> if the Trajectory contains the strain, <code>false</code> if not
+     */
     bool contains(int strain);
+
+
     trajectory_t get_infectivity_trajectory(int strain);
     trajectory_t get_symptomaticity_trajectory();
     void getAllStrains(std::vector<int> &);
@@ -37,11 +48,14 @@ class Trajectory {
       point( double infectivity_value, double symptomaticity_value) {
         infectivity = infectivity_value;
         symptomaticity = symptomaticity_value;
-        };
       };
+    };
 
     point get_data_point(int t);
 
+    /**
+     * The class to allow iteration over a set of Trajectory objects
+     */
     class iterator {
       private:
         Trajectory * trajectory;
@@ -52,19 +66,23 @@ class Trajectory {
           trajectory = trj;
           next_exists = false;
           current = -1;
-          }
+        }
+
         bool has_next() {
           current++;
           next_exists = ( current < trajectory->duration );
           return next_exists;
-          }
+        }
+
         int get_current() {
           return current;
-          }
+        }
+
         Trajectory::point next() {
           return trajectory->get_data_point(current);
-          }
-      };
+        }
+    };
+
 
     void calculate_aggregate_infectivity();
     std::map<int, double> *getInoculum(int day);

@@ -23,8 +23,18 @@
 class Classroom: public Place {
   
 public: 
+
+  /**
+   * Default constructor
+   */
   Classroom() {}
   ~Classroom() {}
+
+  /**
+   * Convenience constructor that sets most of the values by calling Place::setup
+   *
+   * @see Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop)
+   */
   Classroom(int loc, const char *lab, double lon, double lat, Place *container, Population *pop);
 
   /**

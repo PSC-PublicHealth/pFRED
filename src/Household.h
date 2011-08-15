@@ -25,9 +25,20 @@
  */
 class Household: public Place {
 public: 
+
+  /**
+   * Default constructor
+   */
   Household() {}
+
+  /**
+   * Convenience constructor that sets most of the values by calling Place::setup
+   *
+   * @see Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop)
+   */
+  Household(int loc, const char *lab, double lon, double lat, Place *container, Population* pop);
+
   ~Household() {}
-  Household(int,const char *,double,double,Place *, Population *);
 
   /**
    * @see Place::get_parameters(int diseases)
@@ -130,9 +141,26 @@ public:
    */
   bool should_be_open(int day, int disease) { return true; }
 
+  /**
+   * Record the ages in sorted order, and record the id's of the original members of the household
+   */
   void record_profile();
+
+  /*
+   * @param i the index of the agent
+   * @return the age of the household member with index i
+   */
   int get_age_of_member(int i) { return ages[i]; }
+
+  /**
+   * @return the original count of agents in this Household
+   */
   int get_orig_size() { return (int) ids.size(); }
+
+  /*
+   * @param i the index of the agent
+   * @return the id of the original household member with index i
+   */
   int get_orig_id(int i) { return ids[i]; }
 
 private:

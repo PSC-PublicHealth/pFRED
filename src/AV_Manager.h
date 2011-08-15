@@ -24,24 +24,69 @@ class Policy;
 
 class AV_Manager: public Manager {
 public:
+
+  /**
+   * Constructor that sets the Population to which this AV_Manager is tied
+   */
   AV_Manager(Population *_pop);
   
   //Parameters
+  /**
+   * @return  <code>true</code> if antivirals are being disseminated <code>false</code> otherwise
+   */
   bool do_antivirals()             const { return do_av; }
+
+  /**
+   * @return overall_start_day
+   */
   int get_overall_start_day()      const { return overall_start_day; }
+
+  /**
+   * @return a pointer to current_av
+   */
   Antiviral* get_current_av()      const { return current_av; }
   
   //Paramters
+  /**
+   * @return a pointer to this manager's Antiviral package
+   */
   Antivirals* get_antivirals()     const { return av_package; }
+
+  /**
+   * @return a count of this manager's antivirals
+   * @see Antivirals::get_number_antivirals()
+   */
   int get_num_antivirals()         const { return av_package->get_number_antivirals(); }
+
+  /**
+   * @return <code>true</code> if policies are set, <code>false</code> otherwise
+   */
   bool get_are_policies_set()      const { return are_policies_set; }
   
   // Manager Functions
-  void disseminate(int day);      // push avs to agents, needed for prophylaxis
+  /**
+   * Push antivirals to agents, needed for prophylaxis
+   *
+   * @param day the simulation day
+   */
+  void disseminate(int day);
   
   // Utility Functions
+  /**
+   * Perform the daily update for this object
+   *
+   * @param day the simulation day
+   */
   void update(int day);
+
+  /**
+   * Put this object back to its original state
+   */
   void reset();
+
+  /**
+   * Print out information about this object
+   */
   void print();
   
 private:
@@ -49,7 +94,11 @@ private:
   Antivirals* av_package;          //The package of avs available to this manager
   // Parameters 
   int overall_start_day;           //Day to start the av procedure
-  void set_policies();             //member to set the policy of all of the avs
+
+  /**
+   * Member to set the policy of all of the Antivirals
+   */
+  void set_policies();
   bool are_policies_set;         //Ensure that the policies for AVs have been set.
   
   Antiviral* current_av;           //NEED TO ELIMINATE, HIDDEN to IMPLEMENTATION

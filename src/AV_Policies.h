@@ -32,6 +32,14 @@ public:
   AV_Policy_Distribute_To_Symptomatics();
   AV_Policy_Distribute_To_Symptomatics(AV_Manager* avm);
   
+  /**
+   * @param person a pointer to a person object
+   * @param disease the disease
+   * @param current_day the simulation day
+   *
+   * @return
+   * @see Policy::choose(Person* person, int disease, int current_day)
+   */
   virtual int choose(Person* person, int disease, int current_day);
 };
 
@@ -41,6 +49,14 @@ public:
   AV_Policy_Distribute_To_Everyone();
   AV_Policy_Distribute_To_Everyone(AV_Manager* avm);
   
+  /**
+   * @param person a pointer to a person object
+   * @param disease the disease
+   * @param current_day the simulation day
+   *
+   * @return
+   * @see Policy::choose(Person* person, int disease, int current_day)
+   */
   virtual int choose(Person* person, int disease, int current_day);
 };
 #endif

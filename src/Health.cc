@@ -253,16 +253,14 @@ void Health::recover(Disease * disease) {
   susceptible[disease_id] = false;
 }
 
-int Health::is_symptomatic() const {
+bool Health::is_symptomatic() const {
   for (int disease = 0; disease < diseases; disease++) {
     if (infection[disease] != NULL && infection[disease]->is_symptomatic())
-      return 1;
+      return true;
   }
 
-  return 0;
+  return false;
 }
-
-
 
 int Health::get_exposure_date(int disease) const {
   if (infection[disease] == NULL)

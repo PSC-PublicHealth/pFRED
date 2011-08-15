@@ -13,14 +13,14 @@
 
 using namespace std;
 
-void Evolution :: doEvolution(Infection *infection, map<int, double> *loads) {
-  Disease * disease = infection->get_disease();
+void Evolution::doEvolution(Infection *infection, map<int, double> *loads) {
+  Disease *disease = infection->get_disease();
   Trajectory *trajectory = disease->getTrajectory(infection, loads);
   infection->setTrajectory(trajectory);
   infection->set_susceptibility_period(0);
 }
 
-void Evolution :: avEffect(Antiviral *av, Health *health, int disease, int cur_day, AV_Health* av_health) {
+void Evolution::avEffect(Antiviral *av, Health *health, int disease, int cur_day, AV_Health *av_health) {
   // If this is the first day of AV Course
   if(cur_day == av_health->get_av_start_day()) {
     av->modify_susceptiblilty(health, disease);
@@ -56,16 +56,16 @@ void Evolution :: avEffect(Antiviral *av, Health *health, int disease, int cur_d
   // do evolutions...
 }
 
-void Evolution :: print() {}
-void Evolution :: reset(int run) {}
+void Evolution::print() {}
+void Evolution::reset(int run) {}
 
-map<int, double> *Evolution :: getPrimaryLoads(int day) {
+map<int, double> * Evolution::getPrimaryLoads(int day) {
   map<int, double> *loads = new map<int, double>;
   loads->insert( pair<int, double> (0, 1) );
   return loads;
 }
 
-map<int, double> *Evolution :: getPrimaryLoads(int day, int strain) {
+map<int, double> * Evolution::getPrimaryLoads(int day, int strain) {
   map<int, double> *loads = new map<int, double>;
   loads->insert( pair<int, double> (strain, 1) );
   return loads;

@@ -23,23 +23,79 @@ public:
   static const double MEAN_PREG_DAYS = 280.0; //40 weeks
   static const double STDDEV_PREG_DAYS = 7.0; //1 week
 
+  /**
+   * Default constructor
+   */
   Demographics();
+
+  /**
+   * Constructor that sets all of the attributes of a Demographics object
+   */
   Demographics(Person* _self, int _age, char _sex, int _marital_status,
 	       int _profession, int day, bool is_newborn = false);
+
   ~Demographics();
+
+  /**
+   * Perform the daily update for this object
+   *
+   * @param day the simulation day
+   */
   void update(int day);
+
+  /**
+   * @return the number of days the agent has been alive / 365.0
+   */
   double get_real_age(int day);
+
+  /**
+   * @return the agent's age
+   */
   int get_age()            { return age; }
+
+  /**
+   * @return the agent's sex
+   */
   char get_sex()           { return sex; }
+
+  /**
+   * @return the agent's marital_status
+   */
   int get_marital_status() { return marital_status; }
+
+  /**
+   * @return the agent's profession
+   */
   int get_profession()     { return profession; }
+
+  /**
+   * @return <code>true</code> if the agent is pregnant, <code>false</code> otherwise
+   */
   bool is_pregnant()       { return pregnant; }
+
+  /**
+   * @return <code>true</code> if the agent is deceased, <code>false</code> otherwise
+   */
   bool is_deceased()       { return deceased; }
-  void set_occupation();
+
+  /**
+   * Print out information about this object
+   */
   void print();
 
+  /**
+   * @return the agent's init_age
+   */
   int get_init_age()            { return init_age; }
+
+  /**
+   * @return the agent's init_marital_status
+   */
   int get_init_marital_status() { return init_marital_status; }
+
+  /**
+   * @return the agent's init_profession
+   */
   int get_init_profession()     { return init_profession; }
 	
 private:
@@ -64,6 +120,9 @@ private:
   static double age_daily_birth_rate[MAX_PREGNANCY_AGE + 1];
   static bool is_initialized;
 
+  /**
+   * This method is only used one time during initialization to load the birth rate and mortality rate arrays from files
+   */
   void read_init_files();
 };
 

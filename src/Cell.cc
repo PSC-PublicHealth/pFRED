@@ -36,7 +36,7 @@ void Cell::setup(Grid * grd, int i, int j, double xmin, double xmax, double ymin
   col = j;
   center_y = (min_y+max_y)/2.0;
   center_x = (min_x+max_x)/2.0;
-  neighbors = (Cell **) grid->get_neighbors(i,j);
+  neighbor_cells = (Cell **) grid->get_neighbors(i,j);
   houses = 0;
   occupied_houses = 0;
   household.clear();
@@ -119,7 +119,7 @@ Place * Cell::select_neighborhood() {
   else {
     r = (r - self_prob)/(1.0 - self_prob);
     int n = (int) (8.0*r);
-    grid_cell = neighbors[n];
+    grid_cell = neighbor_cells[n];
     if (grid_cell == NULL) grid_cell = this; // fall back to local grid_cell
   }
   return grid_cell->get_neighborhood();
@@ -165,11 +165,11 @@ Person *Cell::select_random_person_from_neighbors() {
 
     // otherwise select a random neighbor:
     int n = IRAND(0,8);
-    if (neighbors[n] == NULL) 
+    if (neighbor_cells[n] == NULL)
       // current grid_cell if neighbor is off the array
       pat = this;
     else
-      pat = neighbors[n];
+      pat = neighbor_cells[n];
 
     // choose a random person from selected grid_cell
     per = pat->select_random_person();
@@ -194,8 +194,8 @@ void Cell::quality_control() {
 void Cell::print() {
   printf("Cell %d %d: %f, %f, %f, %f\n",row,col,min_x,max_x,min_y,max_y);
   for (int i = 0; i < 9; i++) {
-    if (neighbors[i] == NULL) { printf("NULL ");}
-    else {neighbors[i]->print_coord();}
+    if (neighbor_cells[i] == NULL) { printf("NULL ");}
+    else {neighbor_cells[i]->print_coord();}
     printf("\n");
   }
 }

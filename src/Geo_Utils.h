@@ -17,14 +17,66 @@
 
 class Geo_Utils{
  public:
+
+  /**
+   * Sets the kilometers per degree longitude at a given latitiude
+   *
+   * @param lat the latitude to set KM / degree
+   */
   static void set_km_per_degree(double lat);
+
+  /**
+   * @param lon1
+   * @param lat1
+   * @param lon2
+   * @param lat2
+   *
+   * @return the haversine distance between the two points on the Earth's surface
+   */
   static double haversine_distance (double lon1, double lat1, double lon2, double lat2);
+
+  /**
+   * @param lon1
+   * @param lat1
+   * @param lon2
+   * @param lat2
+   *
+   * @return the spherical cosine distance between the two points on the Earth's surface
+   */
   static double spherical_cosine_distance (double lon1, double lat1, double lon2, double lat2);
+
+  /**
+   * @param lon1
+   * @param lat1
+   * @param lon2
+   * @param lat2
+   *
+   * @return the spherical projection distance between the two points on the Earth's surface
+   */
   static double spherical_projection_distance (double lon1, double lat1, double lon2, double lat2);
+
+  /**
+   * Translate a given latitude and longitude to an (x,y) coordinate.
+   *
+   * @param lat the latitude of the point
+   * @param lon the longitude of the point
+   * @param x pointer to the x coordinate of the point
+   * @param y pointer to the y coordinate of the point
+   */
   static void translate_to_cartesian(double lat, double lon, double *x, double *y,
 				     double min_lat, double min_lon);
+
+  /**
+   * Translate a given (x,y) coordinate to a latitude and longitude.
+   *
+   * @param x the x coordinate of the point
+   * @param y the y coordinate of the point
+   * @param lat pointer to the latitude of the point
+   * @param lon pointer to the longitude of the point
+   */
   static void translate_to_lat_lon(double x, double y, double *lat, double *lon,
 				   double min_lat, double min_lon);
+
   static double km_per_deg_longitude;
   static double km_per_deg_latitude;
  private:

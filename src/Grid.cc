@@ -172,16 +172,6 @@ void Grid::record_favorite_places() {
     }
   }
 }
-/**
- * @brief Get all people living within a specified radius of a point.
- *
- * Finds patches overlapping radius_in_km from point, then finds all housholds in those patches radius_in_km distance from point.
- * Returns list of people in those housholds radius_in_km from point.
- * Used in Epidemic::update for geographical seeding.
- *
- * @author Jay DePasse
- */
-
 
 vector < Place * >  Grid::get_households_by_distance(double lat, double lon, double radius_in_km) {
   double px, py;

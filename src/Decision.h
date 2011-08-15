@@ -33,9 +33,25 @@ public:
   Decision(Policy *p);
   ~Decision();
   
+  /**
+   * @return the name of this Decision
+   */
   string get_name() const { return name; }
+
+  /**
+   * @return the type of this Decision
+   */
   string get_type() const { return type; }
   
+  /**
+   * Evaluate the Decision for an agent and disease on a given day
+   *
+   * @param person a pointer to a Person object
+   * @param disease the disease to evaluate for
+   * @param current_day the simulation day
+   *
+   * @return the evaluation value
+   */
   virtual int evaluate(Person* person, int disease, int current_day) = 0;  
 };
 #endif

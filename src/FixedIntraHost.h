@@ -13,15 +13,33 @@ class Trajectory;
 
 class FixedIntraHost : public IntraHost {
   public:
-    Trajectory *getTrajectory(Infection *infection, std :: map<int, double> *loads);
+
+    /**
+     * Get the infection Trajectory
+     *
+     * @param infection
+     * @param loads
+     * @return a pointer to a Trajectory object
+     */
+    Trajectory * getTrajectory(Infection *infection, std :: map<int, double> *loads);
+
+    /**
+     * Set the attributes for the IntraHost
+     *
+     * @param dis the disease to which this IntraHost model is associated
+     */
     void setup(Disease *disease);
+
+    /**
+     * @return this intrahost model's days symptomatic
+     */
     virtual int get_days_symp();
 
   private:
     // library of trajectories and cdf over them
-    std :: vector< std :: vector<double> > infLibrary;
-    std :: vector< std :: vector<double> > sympLibrary;
-    std :: vector<double> probabilities;
-  };
+    std::vector< std::vector<double> > infLibrary;
+    std::vector< std::vector<double> > sympLibrary;
+    std::vector<double> probabilities;
+};
 
 #endif

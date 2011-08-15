@@ -410,7 +410,7 @@ void Population::transmit_infection(int day) {
       fflush(Global::Statusfp);
       disease[s].print();
     }
-    disease[s].update(Global::Sim_Date, day);
+    disease[s].update(day);
   }
 
   if (Global::Verbose > 1) {

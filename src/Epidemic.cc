@@ -220,8 +220,8 @@ void Epidemic::get_infectious_places(int day) {
   }
 }
   
-
-void Epidemic::update(Date *sim_start_date, int day){
+//void Epidemic::update(Date *sim_start_date, int day){
+void Epidemic::update(int day){
   vector<Person *>::iterator itr;
   vector<Place *>::iterator it;
   Population *pop = disease->get_population();

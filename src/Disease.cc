@@ -32,7 +32,7 @@ using namespace std;
 
 #include "Multistrain_Timestep_Map.h"
 
-double Prob_stay_home;
+double Disease::Prob_stay_home;
 
 Disease::Disease() {
   // note that the code that establishes the latent/asymptomatic/symptomatic
@@ -69,7 +69,7 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   get_indexed_param("immunity_loss_rate",id,&immunity_loss_rate);
 
   // This needs to be moved to Behavior
-  get_param((char *) "prob_stay_home", &Prob_stay_home);
+  get_param((char *) "prob_stay_home", &Disease::Prob_stay_home);
   mutation_prob = mut_prob;
   population = pop;
 
@@ -126,7 +126,7 @@ void Disease::print() {
   // TODO: write new print() statement or remove
 }
 
-Disease* Disease::should_mutate_to() {
+Disease * Disease::should_mutate_to() {
   int num_diseases = population->get_diseases();
   // Pick a random index to consider mutations from, so that mutating to all diseases is
   // dependent only on muation_prob, and not on the order of the diseases.
@@ -195,35 +195,35 @@ void Disease::print_stats(int day) {
 
 // static
 double Disease::get_prob_stay_home() {
-  return Prob_stay_home;
+  return Disease::Prob_stay_home;
 }
 
 // static
 void Disease::set_prob_stay_home(double p) {
-  Prob_stay_home = p;
+  Disease::Prob_stay_home = p;
 }
 
 // static
 void Disease::get_disease_parameters() {
 }
 
-void Disease::update(Date *sim_start_date, int day) {
-  epidemic->update(sim_start_date, day);
+void Disease::update(int day) {
+  epidemic->update(day);
 }
 
 double Disease :: get_transmissibility(int strain) {
   return strainTable->getTransmissibility(strain);
 }
 
-Trajectory *Disease :: getTrajectory(Infection *infection, map<int, double> *loads) {
+Trajectory * Disease :: getTrajectory(Infection *infection, map<int, double> *loads) {
   return ihm->getTrajectory(infection, loads);
 }
 
-map<int, double> *Disease :: getPrimaryLoads(int day) {
+map<int, double> * Disease :: getPrimaryLoads(int day) {
   return evol->getPrimaryLoads(day);
 }
 /// @brief Overloaded to allow specification of a single strain to be used for the initial loads.
-map<int, double> *Disease :: getPrimaryLoads(int day, int strain) {
+map<int, double> * Disease :: getPrimaryLoads(int day, int strain) {
   return evol->getPrimaryLoads(day, strain);
 }
 

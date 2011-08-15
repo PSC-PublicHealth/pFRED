@@ -35,7 +35,22 @@ public:
   Place() {}
   ~Place() {}
 
+  /**
+   *  Sets the id, label, logitude, latitude , container and population of this Place
+   *  Allocates disease-related memory for this place
+   *
+   *  @param loc_id this Place's id
+   *  @param lab this Place's label
+   *  @param lon this Place's longitude
+   *  @param lat this Place's latitude
+   *  @param cont this Place's container
+   *  @param pop this Place's population
+   */
   void setup(int loc_id, const char *lab, double lon, double lat, Place *cont, Population *pop);
+
+  /**
+   * Get this place ready
+   */
   virtual void prepare();
 
   /**
@@ -59,6 +74,12 @@ public:
    */
   virtual void enroll(Person * per);
 
+  /**
+   * Remove a person from the place. This method decrements the number of people in
+   * the place.
+   *
+   * @param per a pointer to a Person object that may be removed to the place
+   */
   virtual void unenroll(Person * per);
 
   /**

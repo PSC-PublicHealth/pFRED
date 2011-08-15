@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void FixedIntraHost :: setup(Disease *disease) {
+void FixedIntraHost::setup(Disease *disease) {
   IntraHost::setup(disease);
 
   char s[80];
@@ -37,17 +37,17 @@ void FixedIntraHost :: setup(Disease *disease) {
     sympLibrary.push_back(sympProfile);
 
     if( (int) infProfile.size() > max_days) max_days = infProfile.size();
-    }
   }
+}
 
-Trajectory * FixedIntraHost :: getTrajectory(Infection *infection, map<int, double> *loads) {
+Trajectory * FixedIntraHost::getTrajectory(Infection *infection, map<int, double> *loads) {
   double r = RANDOM();
   int index = 0;
   vector<double> :: iterator it;
 
   for(it = probabilities.begin(); it != probabilities.end(); it++, index++) {
     if (r <= *it) break;
-    }
+  }
 
   map<int, vector<double> > infectivities;
   map<int, double> :: iterator lit;
@@ -62,17 +62,17 @@ Trajectory * FixedIntraHost :: getTrajectory(Infection *infection, map<int, doub
 
     for(infIt = infLibrary[index].begin(); infIt != infLibrary[index].end(); infIt++) {
       infectivity.push_back( (*infIt) * load );
-      }
+    }
 
     infectivities.insert( pair<int, vector<double> > (strain, infectivity) );
-    }
+  }
 
   vector<double> symptomaticity = sympLibrary[index];
 
   return new Trajectory(infectivities, symptomaticity);
-  }
+}
 
-int FixedIntraHost :: get_days_symp() {
+int FixedIntraHost::get_days_symp() {
   // Change implementation to take exact trajectory values...
   int num = sympLibrary.size();
   int idx = IRAND(0, num);
@@ -81,9 +81,9 @@ int FixedIntraHost :: get_days_symp() {
 
   for(int i=0; i < (int) traj.size(); i++) {
     if(traj[i] != 0) days+= 1;
-    }
+  }
 
   return days;
-  }
+}
 
 
