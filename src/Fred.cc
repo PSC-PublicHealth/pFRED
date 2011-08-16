@@ -227,8 +227,17 @@ int main(int argc, char* argv[]) {
   if (Global::Quality_control) {
     time(&start_timer);
     Global::Pop.quality_control();
-    Global::Places.quality_control();
-    Global::Cells->quality_control();
+    Global::Places.quality_control(directory);
+    if (Global::Enable_Large_Grid) {
+      Global::Large_Cells->quality_control(directory);
+      // get coordinates of large grid as alinged to global grid
+      double min_x = Global::Large_Cells->get_min_x();
+      double min_y = Global::Large_Cells->get_min_y();
+      Global::Cells->quality_control(directory,min_x, min_y);
+    }
+    else {
+      Global::Cells->quality_control(directory);
+    }
     time(&stop_timer);
     fprintf(Global::Statusfp, "quality control took %d seconds\n",
 	    (int) (stop_timer - start_timer));
@@ -311,8 +320,8 @@ int main(int argc, char* argv[]) {
     
     if (Global::Enable_Aging && Global::Verbose && Date::match_pattern(day, "12-31-*")) {
       Global::Pop.quality_control();
-      Global::Places.quality_control();
-      Global::Cells->quality_control();
+      Global::Places.quality_control(directory);
+      Global::Cells->quality_control(directory);
     }
 
     if (Date::match_pattern(day,"01-01-*")) {

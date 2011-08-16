@@ -37,7 +37,6 @@
 void Place_List::get_parameters() {
 }
 
-
 void Place_List::read_places() {
   FILE *fp;
   char location_file[256];
@@ -116,9 +115,15 @@ void Place_List::read_places() {
   // Geo_Utils::set_km_per_degree(mean_lat);
 
   // create geographical grids
-  Global::Cells = new Grid(min_lon, min_lat, max_lon, max_lat);
-  if (Global::Enable_Large_Grid)
+  if (Global::Enable_Large_Grid) {
     Global::Large_Cells = new Large_Grid(min_lon, min_lat, max_lon, max_lat);
+    // get coordinates of large grid as alinged to global grid
+    min_lon = Global::Large_Cells->get_min_lon();
+    min_lat = Global::Large_Cells->get_min_lat();
+    max_lon = Global::Large_Cells->get_max_lon();
+    max_lat = Global::Large_Cells->get_max_lat();
+  }
+  Global::Cells = new Grid(min_lon, min_lat, max_lon, max_lat);
   if (Global::Enable_Small_Grid)
     Global::Small_Cells = new Small_Grid(min_lon, min_lat, max_lon, max_lat);
 
@@ -200,11 +205,32 @@ void Place_List::add_place(Place * p) {
   // printf("places now = %d\n", (int)(places.size())); fflush(stdout);
 }
 
-void Place_List::quality_control() {
+void Place_List::quality_control(char *directory) {
   int number_places = places.size();
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "places quality control check for %d places\n", number_places);
     fflush(Global::Statusfp);
+  }
+  
+  if (Global::Verbose>1) {
+    if (Global::Enable_Large_Grid) {
+      char filename [256];
+      sprintf(filename, "%s/houses.dat", directory);
+      FILE *fp = fopen(filename, "w");
+      for (int p = 0; p < number_places; p++) {
+	if (places[p]->get_type() == HOUSEHOLD) {
+	  double lat = places[p]->get_latitude();
+	  double lon = places[p]->get_longitude();
+	  double x, y;
+	  Global::Large_Cells->translate_to_cartesian(lat, lon, &x, &y);
+	  // get coordinates of large grid as alinged to global grid
+	  double min_x = Global::Large_Cells->get_min_x();
+	  double min_y = Global::Large_Cells->get_min_y();
+	  fprintf(fp, "%f %f\n", min_x+x, min_y+y);
+	}
+      }
+      fclose(fp);
+    }
   }
   
   if (Global::Verbose) {

@@ -27,11 +27,37 @@ public:
   Large_Cell * get_grid_cell_from_cartesian(double x, double y);
   Large_Cell * get_grid_cell_from_lat_lon(double lat, double lon);
   void set_population_size();
-  void quality_control();
+  void quality_control(char * directory);
   int get_rows() { return rows; }
   int get_cols() { return cols; }
   double get_min_lat() { return min_lat; }
   double get_min_lon() { return min_lon; }
+  double get_max_lat() { return max_lat; }
+  double get_max_lon() { return max_lon; }
+  double get_min_x() { return min_x; }
+  double get_min_y() { return min_y; }
+
+  /**
+   * Translate a given (x,y) coordinate to a latitude and longitude.
+   *
+   * @param x the x coordinate of the point
+   * @param y the y coordinate of the point
+   * @param lat pointer to the latitude of the point
+   * @param lon pointer to the longitude of the point
+   * @see Geo_Utils::translate_to_lat_lon(double x, double y, double *lat, double *lon, double min_lat, double min_lon)
+   */
+  void translate_to_lat_lon(double x, double y, double *lat, double *lon);
+
+  /**
+   * Translate a given latitude and longitude to an (x,y) coordinate.
+   *
+   * @param lat the latitude of the point
+   * @param lon the longitude of the point
+   * @param x pointer to the x coordinate of the point
+   * @param y pointer to the y coordinate of the point
+   * @see Geo_Utils::translate_to_cartesian(double lat, double lon, double *x, double *y, double min_lat, double min_lon)
+   */
+  void translate_to_cartesian(double lat, double lon, double *x, double *y);
 
 protected:
   Large_Cell ** grid;			      // Rectangular array of grid_cells
@@ -46,6 +72,10 @@ protected:
   double max_x;
   double min_y;
   double max_y;
+  int global_row_min;
+  int global_col_min;
+  int global_row_max;
+  int global_col_max;
 };
 
 #endif // _FRED_LARGE_GRID_H

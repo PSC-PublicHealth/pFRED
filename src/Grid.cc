@@ -32,10 +32,10 @@ Grid::Grid(double minlon, double minlat, double maxlon, double maxlat) {
   min_lat  = minlat;
   max_lon  = maxlon;
   max_lat  = maxlat;
-  printf("min_lon = %f\n", min_lon);
-  printf("min_lat = %f\n", min_lat);
-  printf("max_lon = %f\n", max_lon);
-  printf("max_lat = %f\n", max_lat);
+  printf("Grid min_lon = %f\n", min_lon);
+  printf("Grid min_lat = %f\n", min_lat);
+  printf("Grid max_lon = %f\n", max_lon);
+  printf("Grid max_lat = %f\n", max_lat);
   fflush(stdout);
 
   get_parameters();
@@ -45,11 +45,9 @@ Grid::Grid(double minlon, double minlat, double maxlon, double maxlat) {
   max_y = (max_lat-min_lat) * Geo_Utils::km_per_deg_latitude;
   rows = 1 + (int) (max_y/grid_cell_size);
   cols = 1 + (int) (max_x/grid_cell_size);
-  if (Global::Verbose) {
-    printf("rows = %d  cols = %d\n",rows,cols);
-    printf("max_x = %f  max_y = %f\n",max_x,max_y);
-    fflush(stdout);
-  }
+  printf("Grid rows = %d  cols = %d\n",rows,cols);
+  printf("Grid max_x = %f  max_y = %f\n",max_x,max_y);
+  fflush(stdout);
 
   grid = new Cell * [rows];
   for (int i = 0; i < rows; i++) {
@@ -59,6 +57,7 @@ Grid::Grid(double minlon, double minlat, double maxlon, double maxlat) {
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
+		       //       i*grid_cell_size,(i+1)*grid_cell_size);
 		       (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
     }
   }
@@ -108,6 +107,7 @@ Cell * Grid::select_random_grid_cell() {
 Cell * Grid::get_grid_cell_from_cartesian(double x, double y) {
   int row, col;
   row = rows-1 - (int) (y/grid_cell_size);
+  // row = (int) (y/grid_cell_size);
   col = (int) (x/grid_cell_size);
   // printf("x = %f y = %f, row = %d col = %d\n",x,y,row,col);
   return get_grid_cell(row, col);
@@ -121,7 +121,7 @@ Cell * Grid::get_grid_cell_from_lat_lon(double lat, double lon) {
 }
 
 
-void Grid::quality_control() {
+void Grid::quality_control(char * directory) {
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "grid quality control check\n");
     fflush(Global::Statusfp);
@@ -133,25 +133,69 @@ void Grid::quality_control() {
     }
   }
   
-  FILE *fp;
-  fp = fopen("grid.dat", "w");
-  for (int row = 0; row < rows; row++) {
-    if (row%2) {
-      for (int col = cols-1; col >= 0; col--) {
-	double x = grid[row][col].get_center_x();
-	double y = grid[row][col].get_center_y();
-	fprintf(fp, "%f %f\n",x,y);
+  if (Global::Verbose>1) {
+    char filename [256];
+    sprintf(filename, "%s/grid.dat", directory);
+    FILE *fp = fopen(filename, "w");
+    for (int row = 0; row < rows; row++) {
+      if (row%2) {
+	for (int col = cols-1; col >= 0; col--) {
+	  double x = grid[row][col].get_center_x();
+	  double y = grid[row][col].get_center_y();
+	  fprintf(fp, "%f %f\n",x,y);
+	}
+      }
+      else {
+	for (int col = 0; col < cols; col++) {
+	  double x = grid[row][col].get_center_x();
+	  double y = grid[row][col].get_center_y();
+	  fprintf(fp, "%f %f\n",x,y);
+	}
       }
     }
-    else {
-      for (int col = 0; col < cols; col++) {
-	double x = grid[row][col].get_center_x();
-	double y = grid[row][col].get_center_y();
-	fprintf(fp, "%f %f\n",x,y);
-      }
+    fclose(fp);
+  }
+  
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "grid quality control finished\n");
+    fflush(Global::Statusfp);
+  }
+}
+
+void Grid::quality_control(char * directory, double min_x, double min_y) {
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp, "grid quality control check\n");
+    fflush(Global::Statusfp);
+  }
+  
+  for (int row = 0; row < rows; row++) {
+    for (int col = 0; col < cols; col++) {
+      grid[row][col].quality_control();
     }
   }
-  fclose(fp);
+  
+  if (Global::Verbose>1) {
+    char filename [256];
+    sprintf(filename, "%s/grid.dat", directory);
+    FILE *fp = fopen(filename, "w");
+    for (int row = 0; row < rows; row++) {
+      if (row%2) {
+	for (int col = cols-1; col >= 0; col--) {
+	  double x = min_x + grid[row][col].get_center_x();
+	  double y = min_y + grid[row][col].get_center_y();
+	  fprintf(fp, "%f %f\n",x,y);
+	}
+      }
+      else {
+	for (int col = 0; col < cols; col++) {
+	  double x = min_x + grid[row][col].get_center_x();
+	  double y = min_y + grid[row][col].get_center_y();
+	  fprintf(fp, "%f %f\n",x,y);
+	}
+      }
+    }
+    fclose(fp);
+  }
   
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "grid quality control finished\n");

@@ -25,7 +25,7 @@ public:
   void read_places();
   void prepare();
   void update(int day);
-  void quality_control();
+  void quality_control(char * directory);
   void get_parameters();
   Place * get_place_from_label(char *s);
   Place * get_place_at_position(int i) { return places[i]; }

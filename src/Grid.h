@@ -75,7 +75,8 @@ public:
   /**
    * Used during debugging to verify that code is functioning properly.
    */
-  void quality_control();
+  void quality_control(char *directory);
+  void quality_control(char *directory, double min_x, double min_y);
 
   /**
    * @brief Get all people living within a specified radius of a point.

@@ -32,32 +32,66 @@ Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxla
   min_lat  = minlat;
   max_lon  = maxlon;
   max_lat  = maxlat;
-  printf("min_lon = %f\n", min_lon);
-  printf("min_lat = %f\n", min_lat);
-  printf("max_lon = %f\n", max_lon);
-  printf("max_lat = %f\n", max_lat);
+  printf("Large_Grid min_lon = %f\n", min_lon);
+  printf("Large_Grid min_lat = %f\n", min_lat);
+  printf("Large_Grid max_lon = %f\n", max_lon);
+  printf("Large_Grid max_lat = %f\n", max_lat);
   fflush(stdout);
 
   get_parameters();
   min_x = 0.0;
-  max_x = (max_lon-min_lon)*Geo_Utils::km_per_deg_longitude;
   min_y = 0.0;
-  max_y = (max_lat-min_lat)*Geo_Utils::km_per_deg_latitude;
-  rows = 1 + (int) (max_y/grid_cell_size);
-  cols = 1 + (int) (max_x/grid_cell_size);
-  if (Global::Verbose) {
-    printf("rows = %d  cols = %d\n",rows,cols);
-    printf("max_x = %f  max_y = %f\n",max_x,max_y);
-    fflush(stdout);
-  }
+
+  // find the global x,y coordinates of SW corner of grid
+  min_x = (min_lon + 180.0)*Geo_Utils::km_per_deg_longitude;
+  min_y = (min_lat + 180.0)*Geo_Utils::km_per_deg_latitude;
+  
+  // find the global row and col in which SW corner occurs
+  global_row_min = (int) (min_y / grid_cell_size);
+  global_col_min = (int) (min_x / grid_cell_size);
+
+  // align min_x and min_y to global grid
+  min_x = global_col_min * grid_cell_size;
+  min_y = global_row_min * grid_cell_size;
+
+  // find the global x,y coordinates of NE corner of grid
+  max_x = (max_lon + 180.0)*Geo_Utils::km_per_deg_longitude;
+  max_y = (max_lat + 180.0)*Geo_Utils::km_per_deg_latitude;
+  
+  // find the global row and col in which NE corner occurs
+  global_row_max = (int) (max_y / grid_cell_size);
+  global_col_max = (int) (max_x / grid_cell_size);
+
+  // align max_x and max_y to global grid
+  max_x = (global_col_max +1) * grid_cell_size;
+  max_y = (global_row_max +1) * grid_cell_size;
+
+  rows = global_row_max - global_row_min + 1;
+  cols = global_col_max - global_col_min + 1;
+
+  // compute lat,lon of aligned grid
+  min_lat = min_y / Geo_Utils::km_per_deg_latitude - 180.0;
+  min_lon = min_x / Geo_Utils::km_per_deg_longitude - 180.0;
+  max_lat = max_y / Geo_Utils::km_per_deg_latitude - 180.0;
+  max_lon = max_x / Geo_Utils::km_per_deg_longitude - 180.0;
+
+  printf("Large_Grid new min_lon = %f\n", min_lon);
+  printf("Large_Grid new min_lat = %f\n", min_lat);
+  printf("Large_Grid new max_lon = %f\n", max_lon);
+  printf("Large_Grid new max_lat = %f\n", max_lat);
+  printf("Large_Grid rows = %d  cols = %d\n",rows,cols);
+  printf("Large_Grid min_x = %f  min_y = %f\n",min_x,min_y);
+  printf("Large_Grid max_x = %f  max_y = %f\n",max_x,max_y);
+  fflush(stdout);
 
   grid = new Large_Cell * [rows];
   for (int i = 0; i < rows; i++) {
     grid[i] = new Large_Cell[cols];
     for (int j = 0; j < cols; j++) {
       grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
-		       (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
-      if (Global::Verbose > 1) {
+		       i*grid_cell_size,(i+1)*grid_cell_size);
+      // upper-left first: (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
+      if (Global::Verbose > 2) {
 	printf("print grid[%d][%d]:\n",i,j);
 	grid[i][j].print();
       }
@@ -99,9 +133,8 @@ Large_Cell * Large_Grid::select_random_grid_cell() {
 
 Large_Cell * Large_Grid::get_grid_cell_from_cartesian(double x, double y) {
   int row, col;
-  row = rows-1 - (int) (y/grid_cell_size);
+  row = (int) (y/grid_cell_size);
   col = (int) (x/grid_cell_size);
-  // printf("x = %f y = %f, row = %d col = %d\n",x,y,row,col);
   return get_grid_cell(row, col);
 }
 
@@ -113,7 +146,7 @@ Large_Cell * Large_Grid::get_grid_cell_from_lat_lon(double lat, double lon) {
 }
 
 
-void Large_Grid::quality_control() {
+void Large_Grid::quality_control(char * directory) {
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "grid quality control check\n");
     fflush(Global::Statusfp);
@@ -125,25 +158,28 @@ void Large_Grid::quality_control() {
     }
   }
   
-  FILE *fp;
-  fp = fopen("large_grid.dat", "w");
-  for (int row = 0; row < rows; row++) {
-    if (row%2) {
-      for (int col = cols-1; col >= 0; col--) {
-	double x = grid[row][col].get_center_x();
-	double y = grid[row][col].get_center_y();
-	fprintf(fp, "%f %f\n",x,y);
+  if (Global::Verbose>1) {
+    char filename [256];
+    sprintf(filename, "%s/large_grid.dat", directory);
+    FILE *fp = fopen(filename, "w");
+    for (int row = 0; row < rows; row++) {
+      if (row%2) {
+	for (int col = cols-1; col >= 0; col--) {
+	  double x = min_x + grid[row][col].get_center_x();
+	  double y = min_y + grid[row][col].get_center_y();
+	  fprintf(fp, "%f %f\n",x,y);
+	}
+      }
+      else {
+	for (int col = 0; col < cols; col++) {
+	  double x = min_x + grid[row][col].get_center_x();
+	  double y = min_y + grid[row][col].get_center_y();
+	  fprintf(fp, "%f %f\n",x,y);
+      }
       }
     }
-    else {
-      for (int col = 0; col < cols; col++) {
-	double x = grid[row][col].get_center_x();
-	double y = grid[row][col].get_center_y();
-	fprintf(fp, "%f %f\n",x,y);
-      }
-    }
+    fclose(fp);
   }
-  fclose(fp);
   
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "grid quality control finished\n");
@@ -185,3 +221,10 @@ void Large_Grid::set_population_size() {
   fclose(fp);
 }
 
+void Large_Grid::translate_to_lat_lon(double x, double y, double *lat, double *lon) {
+  Geo_Utils::translate_to_lat_lon(x,y,lat,lon,min_lat,min_lon);
+}
+
+void Large_Grid::translate_to_cartesian(double lat, double lon, double *x, double *y) {
+  Geo_Utils::translate_to_cartesian(lat,lon,x,y,min_lat,min_lon);
+}
