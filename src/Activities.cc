@@ -210,8 +210,11 @@ void Activities::update_schedule(int day) {
   }
 
   // visit classroom or office iff going to school or work
-  on_schedule[CLASSROOM_INDEX] = on_schedule[SCHOOL_INDEX];
-  on_schedule[OFFICE_INDEX] = on_schedule[WORKPLACE_INDEX];
+  if (favorite_place[CLASSROOM_INDEX] !=  NULL)
+    on_schedule[CLASSROOM_INDEX] = on_schedule[SCHOOL_INDEX];
+
+  if (favorite_place[OFFICE_INDEX] !=  NULL)
+    on_schedule[OFFICE_INDEX] = on_schedule[WORKPLACE_INDEX];
 
   if (Global::Verbose > 2) {
     printf("update_schedule on day %d\n", day);
@@ -347,7 +350,7 @@ void Activities::update_profile() {
     // select a school based on age and neighborhood
     School * s = (School *) favorite_place[SCHOOL_INDEX];
     Classroom * c = (Classroom *) favorite_place[CLASSROOM_INDEX];
-    if (c != NULL && c->get_age_level() == age) {
+    if (c == NULL || c->get_age_level() == age) {
       // no change
       if (Global::Verbose>1) {
 	fprintf(Global::Statusfp,
@@ -395,7 +398,8 @@ void Activities::update_profile() {
 	} else {
 	  fprintf(Global::Statusfp, "from NULL NULL to %s %s | ",
 		  favorite_place[SCHOOL_INDEX]->get_label(),
-		  favorite_place[CLASSROOM_INDEX]->get_label());
+		  (favorite_place[CLASSROOM_INDEX] == NULL)?
+		  "NULL" : favorite_place[CLASSROOM_INDEX]->get_label());
 	}
 	print();
 	fflush(Global::Statusfp);
