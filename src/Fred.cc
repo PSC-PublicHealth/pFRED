@@ -87,8 +87,7 @@ int main(int argc, char* argv[]) {
   sprintf(filename, "%s/err%d.txt", directory, run);
   Global::ErrorLogfp = fopen(filename, "w");
   if (Global::ErrorLogfp == NULL) {
-    printf("Help! Can't open %s\n", filename);
-    abort();
+    Utils::fred_abort("Can't open %s\n", filename);
   }
   sprintf(filename, "%s/out%d.txt", directory, run);
   Global::Outfp = fopen(filename, "w");

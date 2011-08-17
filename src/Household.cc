@@ -15,6 +15,7 @@
 #include "Person.h"
 #include "Cell.h"
 #include "Grid.h"
+#include "Utils.h"
 
 //Private static variables that will be set by parameter lookups
 double * Household::Household_contacts_per_day;
@@ -148,7 +149,7 @@ void Household::unenroll(Person * per) {
     for (int i = 0; i < N; i++)
       printf("%d ", housemate[i]->get_id()); 
     printf("\n"); fflush(stdout);
-    abort();
+    Utils::fred_abort("");
   }
 }
 

@@ -526,7 +526,7 @@ void Activities::read_init_files() {
     if (fscanf(fp, "%d %lf",
 	       &age, &mobility_rate) != 2) {
       fprintf(Global::Statusfp, "Help! Read failure for age %d\n", i);
-      abort();
+      Utils::fred_abort("");
     }
     Activities::age_yearly_mobility_rate[age] = mobility_rate;
   }
