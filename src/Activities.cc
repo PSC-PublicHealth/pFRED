@@ -327,6 +327,18 @@ void Activities::assign_office() {
   }
 }
 
+int Activities::get_degree() {
+  int degree;
+  degree = 0;
+  if (favorite_place[NEIGHBORHOOD_INDEX] != NULL)
+    degree += favorite_place[NEIGHBORHOOD_INDEX]->get_size() - 1;
+  if (favorite_place[SCHOOL_INDEX] != NULL)
+    degree += favorite_place[SCHOOL_INDEX]->get_size() - 1;
+  if (favorite_place[WORKPLACE_INDEX] != NULL)
+    degree += favorite_place[WORKPLACE_INDEX]->get_size() - 1;
+  return degree;
+}
+
 void Activities::update_profile() {
   int age = self->get_age();
   // int old_profile = profile;

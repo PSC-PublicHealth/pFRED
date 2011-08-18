@@ -170,7 +170,13 @@ public:
    * @return <code>true</code> if the agent is traveling, <code>false</code> otherwise
    */
   bool get_travel_status() { return travel_status; }
-	
+  
+  /**
+   * Return the number of other agents in an agent's neighborhood, school,
+   * and workplace.
+   */
+  int get_degree();
+
 private:
   Person * self;	 // pointer to person using having this activities
   int profile;				 // index of usual visit pattern

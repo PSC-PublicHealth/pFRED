@@ -237,6 +237,7 @@ int main(int argc, char* argv[]) {
     else {
       Global::Cells->quality_control(directory);
     }
+    Global::Pop.get_network_stats(directory);
     time(&stop_timer);
     fprintf(Global::Statusfp, "quality control took %d seconds\n",
 	    (int) (stop_timer - start_timer));

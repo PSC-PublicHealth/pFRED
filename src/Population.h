@@ -62,6 +62,7 @@ public:
   int get_next_id();
   void assign_classrooms();
   void assign_offices();
+  void get_network_stats(char *directory);
   void read_population();
   void report_birth(int day, Person *per) const;
   void report_death(int day, Person *per) const;

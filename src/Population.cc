@@ -658,6 +658,27 @@ void Population::assign_offices() {
   }
 }
 
+void Population::get_network_stats(char *directory) {
+  if (Global::Verbose > 0) {
+    fprintf(Global::Statusfp, "get_network_stats entered\n");
+    fflush(Global::Statusfp);
+  }
+  char filename[256];
+  sprintf(filename, "%s/degree.txt", directory);
+  FILE *fp = fopen(filename, "w");
+  for (int p = 0; p < pop_size; p++){
+    fprintf(fp, "%d %d %d\n",
+	    pop[p]->get_id(),
+	    pop[p]->get_age(),
+	    pop[p]->get_degree());
+  }
+  fclose(fp);
+  if (Global::Verbose > 0) {
+    fprintf(Global::Statusfp, "get_network_stats finished\n");
+    fflush(Global::Statusfp);
+  }
+}
+
 void Population::report_birth(int day, Person *per) const {
   if (Global::Birthfp == NULL) return;
   fprintf(Global::Birthfp, "day %d mother %d age %d\n",

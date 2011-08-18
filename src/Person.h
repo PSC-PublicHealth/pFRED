@@ -102,6 +102,7 @@ public:
   Person * give_birth(int day);
   void assign_classroom() { activities->assign_classroom(); }
   void assign_office() { activities->assign_office(); }
+  int get_degree() { return activities->get_degree(); }
 
   // access functions:
   int get_id() const { return idx; }
