@@ -252,7 +252,7 @@ my $logfile = "$meta/LOG";
 my $version = "$meta/VERSION";
 mkdir $version or die "Can't make directory $version\n";
 `cp -p $FRED/src/FRED.tar.gz $FRED/src/FRED.md5 $version`;
-`cp -p $FRED/region/*_pop.md5 $FRED/region/*_loc.md5 $version`;
+`cp -p $FRED/region/pop*.md5 $FRED/region/loc*.md5 $version`;
 
 # return to original directory
 chdir $cwd;
