@@ -43,6 +43,13 @@ outside_travel_rate = 0.0
 # if set, print statistics from a sample of trips and exit
 test_gravity_model = 0
 
+# Parameters to allow for output of Population at scheduled times
+# Only done if output_population != 0
+output_population = 0 
+pop_outfile = pop_out.txt
+# date match should be in format MM-DD-YYYY with * as a wildcard for any of the fields
+output_population_date_match = 01-01-* 
+
 # parameters for disease 0
 primary_cases_file[0] = primary_case_schedule-0.txt
 trans[0] = 1.0

@@ -27,8 +27,9 @@
 
 #include <cstdio>
 #include <vector>
+#include <sstream>
 
-Person::Person() { 
+Person::Person() {
   idx = -1;
   pop = NULL;
   demographics = NULL;
@@ -47,6 +48,10 @@ Person::~Person() {
 void Person::newborn_setup(int index, int age, char sex, int marital, int occ,
 			   Place **favorite_places, Population* Pop, int day) {
   idx = index;
+
+  //Set the baby's label to the index since it has no value from the population file as a reference
+  sprintf(label, "%d", idx);
+
   pop = Pop;
   demographics = new Demographics(this, age, sex, marital, occ, day, true);
   health = new Health(this);
@@ -57,17 +62,18 @@ void Person::newborn_setup(int index, int age, char sex, int marital, int occ,
     Disease* s = Global::Pop.get_disease(disease);
     if (!s->get_residual_immunity()->is_empty()) {
       double residual_immunity_prob =
-	s->get_residual_immunity()->find_value(get_age());
+	      s->get_residual_immunity()->find_value(get_age());
       if (RANDOM() < residual_immunity_prob)
-	become_immune(s);
+	      become_immune(s);
     }
   }
 }
 
-Person::Person(int index, int age, char sex, int marital, int occ,
+Person::Person(int index, const char *label, int age, char sex, int marital, int occ,
 	       char *house, char *school, char *work, Population *Pop,
 	       int day) {
   idx = index;
+  strcpy(this->label, label);
   pop = Pop;
   demographics =
     new Demographics(this, age, sex, marital, occ, day, false);
@@ -138,7 +144,7 @@ Place * Person::get_neighborhood() const {
 
 char Person::get_sex() const { return demographics->get_sex(); }
 
-char Person::get_marital_status() const {
+int Person::get_marital_status() const {
   return demographics->get_marital_status();
 }
 
@@ -201,7 +207,7 @@ void Person::getInfected(Disease *disease, Transmission *transmission) {
 }
 
 Person * Person::give_birth(int day) {
-  int id = pop->get_next_id(), age = 0, married = -1, prof = 2;
+  int id = pop->get_next_id(), age = 0, married = 0, prof = 2;
   char sex = (URAND(0.0, 1.0) < 0.5 ? 'M' : 'F');
   Place *favorite_place[] = {
     get_household(), get_neighborhood(),
@@ -217,4 +223,43 @@ void Person::addIncidence(int disease, vector<int> strains) {
 
 void Person::addPrevalence(int disease, vector<int> strains) {
   activities->addPrevalence(disease, strains);
+}
+
+string Person::to_string() {
+
+  stringstream tmp_string_stream;
+  // (i.e Label *ID* Age Sex Married Occupation Household School *Classroom* Workplace *Office*)
+  tmp_string_stream << this->label << " " << this->idx << " " << this->get_age() << " ";
+  tmp_string_stream << this->get_sex() << " " << this->get_marital_status() << " " << this->get_profession() << " ";
+  Place *tmp_place = this->get_household();
+  if(tmp_place == NULL)
+    tmp_string_stream << "-1 ";
+  else
+    tmp_string_stream << tmp_place->get_label() << " ";
+
+  tmp_place = this->get_school();
+  if(tmp_place == NULL)
+    tmp_string_stream << "-1 ";
+  else
+    tmp_string_stream << tmp_place->get_label() << " ";
+
+  tmp_place = this->get_classroom();
+  if(tmp_place == NULL)
+    tmp_string_stream << "-1 ";
+  else
+    tmp_string_stream << tmp_place->get_label() << " ";
+
+  tmp_place = this->get_workplace();
+  if(tmp_place == NULL)
+    tmp_string_stream << "-1 ";
+  else
+    tmp_string_stream << tmp_place->get_label() << " ";
+
+  tmp_place = this->get_office();
+  if(tmp_place == NULL)
+    tmp_string_stream << "-1 ";
+  else
+    tmp_string_stream << tmp_place->get_label();
+
+  return tmp_string_stream.str();
 }

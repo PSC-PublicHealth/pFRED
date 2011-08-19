@@ -12,6 +12,7 @@
 #include <utility>
 #include <list>
 #include <string>
+#include <sstream>
 using namespace std;
 
 #include "Global.h"
@@ -369,8 +370,14 @@ void Grid::select_immigrants(int day) {
       // redirect to the vacant house
       strcpy(house, vacant->get_label());
 
+      //Create a new label based on the original
+      string tmp_result;
+      stringstream convert_stream;
+      convert_stream << label << "_" << next_id; //append the next_id onto the old label
+      tmp_result = convert_stream.str();
+
       // create clone
-      Person * clone = new Person(next_id, age, sex, married, occ, house, school, work, &Global::Pop, day);
+      Person * clone = new Person(next_id, tmp_result.c_str(), age, sex, married, occ, house, school, work, &Global::Pop, day);
 
       // add to the popualtion
       Global::Pop.add_person(clone);

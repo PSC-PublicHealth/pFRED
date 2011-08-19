@@ -32,49 +32,252 @@ class Transmission;
 
 class Person {
 public:
+
+  /**
+   * Default constructor
+   */
   Person();
-  Person(int index, int age, char sex, int marital, int occ, char *house,
+
+  /**
+   * Constructor that sets all of the attributes of a Person object
+   * @param index the person id
+   * @param label the person's external id (from the Population file)
+   * @param age
+   * @param sex (M or F)
+   * @param marital 1 if married, 0 if not
+   * @param occ the code for the Person's occupation
+   * @param house the label for this Person's Household
+   * @param school the label for this Person's School
+   * @param work the label for this Person's Workplace
+   * @param Pop a pointer to this Person's Population
+   * @param day the simulation day
+   */
+  Person(int index, const char *label, int age, char sex, int marital, int occ, char *house,
 	 char *school, char *work, Population *Pop, int day);
+
   ~Person();
+
+  /**
+   * Setup values for a newborn.  The newborn will have the same Household and Neighborhood as its mother.
+   *
+   * @param index the person id
+   * @param age
+   * @param sex (M or F)
+   * @param marital 1 if married, 0 if not
+   * @param occ the code for the Person's occupation
+   * @param favorite_places an array of the locations this agent visits (i.e. Household, Neighborhood, etc)
+   * @param Pop a pointer to this Person's Population
+   * @param day the simulation day
+   */
   void newborn_setup(int index, int age, char sex, int marital, int profession,
 				       Place **favorite_places, Population* pop, int day);
+
+  /**
+   * Make this agent unsusceptible to the given disease
+   * @param disease the disease to reference
+   */
   void become_unsusceptible(int disease);
+
+  /**
+   * Make this agent immune to the given disease
+   * @param disease the disease to reference
+   */
   void become_immune(Disease *disease);
+
+  /**
+   * Perform the daily update for an infectious agent
+   *
+   * @param day the simulation day
+   * @see Activities::update_infectious_activities(int day)
+   */
   void update_infectious_activities(int day) {
     activities->update_infectious_activities(day);
   }
+
+  /**
+   * Perform the daily update for a susceptible agent
+   *
+   * @param day the simulation day
+   * @see Activities::update_susceptible_activities(int day)
+   */
   void update_susceptible_activities(int day) {
     activities->update_susceptible_activities(day);
   }
+
+  /**
+   * Print out information about this object with regards to a disease to a file.
+   *
+   * @param fp a pointer to the file where this print should write
+   * @param disease the disease about which to get information
+   */
   void print(FILE *fp, int disease) const;
+
+  /**
+   * @return <code>true</code> if this agent is symptomatic, <code>false</code> otherwise
+   * @see Health::is_symptomatic()
+   */
   int is_symptomatic() { return health->is_symptomatic(); }
+
+  /**
+   * @param dis the disease to check
+   * @return <code>true</code> if this agent is susceptible to disease, <code>false</code> otherwise
+   * @see Health::is_susceptible(int dis)
+   */
   bool is_susceptible(int dis) { return health->is_susceptible(dis); }
+
+  /**
+   * @param dis the disease to check
+   * @return <code>true</code> if this agent is infectious with disease, <code>false</code> otherwise
+   * @see Health::is_infectious(int disease)
+   */
   bool is_infectious(int dis) { return health->is_infectious(dis); }
+
+  /**
+   * @return the diseases affecting the Population
+   * @see Population::get_diseases()
+   */
   int get_diseases();
   
-  Place *get_household() const;
-  Place *get_neighborhood() const;
+  /**
+   * @return the a pointer to this agent's Household
+   */
+  Place * get_household() const;
+
+  /**
+   * @return the a pointer to this agent's Neighborhood
+   */
+  Place * get_neighborhood() const;
+
+  /**
+   * @return the Person's age
+   * @see Demographics::get_age()
+   */
   int get_age() const { return demographics->get_age(); }
+
+  /**
+   * @return the Person's initial age
+   * @see Demographics::get_init_age()
+   */
   int get_init_age() const { return demographics->get_init_age(); }
+
+  /**
+   * @return the Person's initial profession
+   * @see Demographics::get_init_profession()
+   */
   int get_init_profession() const { return demographics->get_init_profession(); }
+
+  /**
+   * @return the Person's initial marital status
+   * @see Demographics::get_init_marital_status()
+   */
   int get_init_marital_status() const { return demographics->get_init_marital_status(); }
+
+  /**
+   * @return the Person's age as a double value based on the number of days alive
+   * @see Demographics::get_real_age()
+   */
   double get_real_age(int day) const { return demographics->get_real_age(day); }
+
+  /**
+   * @return the Person's sex
+   */
   char get_sex() const;
-  char get_marital_status() const;
+
+  /**
+   * @return the Person's marital status
+   */
+  int get_marital_status() const;
+
+  /**
+   * @return the Person's profession
+   */
   int get_profession() const;
+
+  /**
+   * @param disease the disease to check
+   * @return the specific Disease's status for this Person
+   * @see Health::get_disease_status(int disease)
+   */
   char get_disease_status(int disease) const { return health->get_disease_status(disease); }
+
+  /**
+   * @param disease the disease to check
+   * @return the specific Disease's susceptibility for this Person
+   * @see Health::get_susceptibility(int disease)
+   */
   double get_susceptibility(int disease) const { return health->get_susceptibility(disease); }
+
+  /**
+   * @param disease the disease to check
+   * @return the specific Disease's infectivity for this Person
+   * @see Health::get_susceptibility(int disease)
+   */
   double get_infectivity(int disease, int day) const { return health->get_infectivity(disease, day); }
+
+  /**
+   * @param disease the disease to check
+   * @return the simulation day that this agent became exposed to disease
+   */
   int get_exposure_date(int disease) const;
+
+  /**
+   * @param disease the disease to check
+   * @return the simulation day that this agent became infectious with disease
+   */
   int get_infectious_date(int disease) const;
+
+  /**
+   * @param disease the disease to check
+   * @return the simulation day that this agent became recovered from disease
+   */
   int get_recovered_date(int disease) const;
+
+  /**
+   * @param disease the disease to check
+   * @return the id of the Person who infected this agent with disease
+   */
   int get_infector(int disease) const;
+
+  /**
+   * @param disease the disease to check
+   * @return the id of the location where this agent became infected with disease
+   */
   int get_infected_place(int disease) const;
+
+  /**
+   * @param disease the disease to check
+   * @return the label of the location where this agent became infected with disease
+   */
   char * get_infected_place_label(int disease) const;
+
+  /**
+   * @param disease the disease to check
+   * @return the type of the location where this agent became infected with disease
+   */
   char get_infected_place_type(int disease) const;
+
+  /**
+   * @param disease the disease in question
+   * @return the infectees
+   * @see Health::get_infectees(int disease)
+   */
   int get_infectees(int disease) const;
+
+  /**
+   * @param disease the disease in question
+   * @return
+   * @see Health::add_infectee(int disease)
+   */
   int add_infectee(int disease);
+
+  /**
+   * @param day the simulation day
+   * @param disease the disease to check
+   * @return <code>true</code> if the exposure day to the disease = day, <code>false</code> otherwise
+   */
   int is_new_case(int day, int disease) const;
+
+
   int addInfected(int disease, vector<int> strains);
   
   void infect(Person *infectee, int disease, Transmission *transmission);
@@ -82,47 +285,219 @@ public:
   void addIncidence(int disease, vector<int> strains);
   void addPrevalence(int disease, vector<int> strains);
   
-  void set_changed(); // notify the population that this Person has changed
+  /**
+   * Notify the population that this Person has changed
+   */
+  void set_changed();
+
+  /**
+   * @param day the simulation day
+   * @see Demographics::update(int day)
+   */
   void update_demographics(int day) { demographics->update(day); }
+
+  /**
+   * @param day the simulation day
+   * @see Health::update(int day)
+   */
   void update_health(int day) { health->update(day); }
+
+  /**
+   * @param day the simulation day
+   * @see Behavior::update(int day)
+   */
   void update_behavior(int day) { behavior->update(day); }
+
+  /**
+   * @param day the simulation day
+   * @see Activities::update(int day)
+   */
   void update_activities(int day) { activities->update(day); }
+
+  /**
+   * @Activities::update_profile()
+   */
   void update_activity_profile() { activities->update_profile(); }
+
+  /**
+   * @see Activities::withdraw()
+   */
   void withdraw_from_activities() { activities->withdraw(); }
+
+  /**
+   * @see Activities::update_household_mobility()
+   */
   void update_household_mobility() { activities->update_household_mobility(); }
 
+  /**
+   * This agent will become susceptible to the disease
+   * @param disease the disease
+   */
   void become_susceptible(int disease) { health->become_susceptible(disease); }
+
+  /**
+   * This agent will become exposed to the infection
+   * @param infection a pointer to the Infection
+   */
   void become_exposed(Infection * infection) { health->become_exposed(infection); }
+
+  /**
+   * This agent will become infectious with the disease
+   * @param disease a pointer to the Disease
+   */
   void become_infectious(Disease * disease) { health->become_infectious(disease); }
+
+  /**
+   * This agent will become symptomatic with the disease
+   * @param disease a pointer to the Disease
+   */
   void become_symptomatic(Disease *disease) { health->become_symptomatic(disease); }
+
+  /**
+   * This agent will recover from the disease
+   * @param disease a pointer to the Disease
+   */
   void recover(Disease * disease) { health->recover(disease); }
+
+  /**
+   * @return <code>true</code> if this agent is deceased, <code>false</code> otherwise
+   */
   bool is_deceased() { return demographics->is_deceased(); }
+
+  /**
+   * @return <code>true</code> if this agent is an adult, <code>false</code> otherwise
+   */
   bool is_adult() { return demographics->get_age() >= Global::ADULT_AGE; }
   
+  /**
+   * This agent creates a new agent
+   * @return a pointer to the new Person
+   */
   Person * give_birth(int day);
+
+  /**
+   * Assign the agent to a Classroom
+   * @see Activities::assign_classroom()
+   */
   void assign_classroom() { activities->assign_classroom(); }
+
+  /**
+   * Assign the agent to an Office
+   * @see Activities::assign_office()
+   */
   void assign_office() { activities->assign_office(); }
+
+  /**
+   *  @return the number of other agents in an agent's neighborhood, school, and workplace.
+   *  @see Activities::get_degree()
+   */
   int get_degree() { return activities->get_degree(); }
 
+  /**
+   * Will print out a person in a format similar to that read from population file
+   * (with additional run-time values inserted (denoted by *)):<br />
+   * (i.e Label *ID* Age Sex Married Occupation Household School *Classroom* Workplace *Office*)
+   * @return a string representation of this Person object
+   */
+  string to_string();
+
   // access functions:
+  /**
+   * The id is generated at runtime
+   * @return the id of this Person
+   */
   int get_id() const { return idx; }
-  Population* get_population() const { return pop; }
-  Demographics* get_demographics() const { return demographics; }
-  Health *get_health() const { return health; }
-  Activities* get_activities() const { return activities; }
-  Behavior* get_behavior() const { return behavior; }
+
+  /**
+   * Get the label - this is the id from the population file
+   *
+   * @return the label
+   */
+  char * get_label() { return label; }
+
+  /**
+   * @return a pointer to the Population of which this Person is a part
+   */
+  Population * get_population() const { return pop; }
+
+  /**
+   * @return a pointer to this Person's Demographics
+   */
+  Demographics * get_demographics() const { return demographics; }
+
+  /**
+   * @return a pointer to this Person's Health
+   */
+  Health * get_health() const { return health; }
+
+  /**
+   * @return a pointer to this Person's Activities
+   */
+  Activities * get_activities() const { return activities; }
+
+  /**
+   * @return a pointer to this Person's Behavior
+   */
+  Behavior * get_behavior() const { return behavior; }
+
+  /**
+   * @return a pointer to this Person's Household
+   * @see Activities::get_household()
+   */
   Place * get_household() { return activities->get_household(); }
+
+  /**
+   * @return a pointer to this Person's Neighborhood
+   * @see Activities::get_neighborhood()
+   */
   Place * get_neighborhood() { return activities->get_neighborhood(); }
+
+  /**
+   * @return a pointer to this Person's School
+   * @see Activities::get_school()
+   */
   Place * get_school() { return activities->get_school(); }
+
+  /**
+   * @return a pointer to this Person's Classroom
+   * @see Activities::get_classroom()
+   */
   Place * get_classroom() { return activities->get_classroom(); }
+
+  /**
+   * @return a pointer to this Person's Workplace
+   * @see Activities::get_workplace()
+   */
   Place * get_workplace() { return activities->get_workplace(); }
+
+  /**
+   * @return a pointer to this Person's Office
+   * @see Activities::get_office()
+   */
   Place * get_office() { return activities->get_office(); }
+
+  /**
+   * Have this Person begin traveling
+   * @param visited the Person this agent will visit
+   * @see Activities::start_traveling(Person *visited)
+   */
   void start_traveling(Person *visited){ activities->start_traveling(visited); }
+
+  /**
+   * Have this Person stop traveling
+   * @see Activities::stop_traveling()
+   */
   void stop_traveling(){ activities->stop_traveling(); }
+
+  /**
+   * @return <code>true</code> if the Person is traveling, <code>false</code> if not
+   * @see Activities::get_travel_status()
+   */
   bool get_travel_status(){ return activities->get_travel_status(); }
 
 private:
-  int idx;
+  int idx;              // person id
+  char label[32];       // external id
   Population *pop;
   Demographics *demographics;
   Health *health;

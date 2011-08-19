@@ -41,6 +41,14 @@ int birth_count[Demographics::MAX_AGE + 1];
 int death_count_male[Demographics::MAX_AGE + 1];
 int death_count_female[Demographics::MAX_AGE + 1];
 
+char Population::popfile[256];
+char Population::profilefile[256];
+char Population::pop_outfile[256];
+char Population::output_population_date_match[256];
+int Population::output_population = 0;
+bool Population::is_initialized = false;
+int Population::next_id = 0;
+
 Population::Population() {
   clear_static_arrays();
   pop.clear();
@@ -51,7 +59,6 @@ Population::Population() {
   vacc_manager = NULL;
   diseases = -1;
   mutation_prob = NULL;
-  next_id = 0;
 }
 
 Population::~Population() {
@@ -67,10 +74,9 @@ Population::~Population() {
   if(mutation_prob != NULL) delete [] mutation_prob;
 }
 
-
 void Population::get_parameters() {
-  get_param((char *) "popfile", popfile);
-  get_param((char *) "profiles", profilefile);
+  get_param((char *) "popfile", Population::popfile);
+  get_param((char *) "profiles", Population::profilefile);
   diseases = Global::Diseases;
   
   int num_mutation_params =
@@ -91,8 +97,17 @@ void Population::get_parameters() {
       printf("\n");
     }
   }
-}
 
+  //Only do this one time
+  if(!Population::is_initialized) {
+    get_param((char *) "output_population", &Population::output_population);
+    if(Population::output_population > 0) {
+      get_param((char *) "pop_outfile", Population::pop_outfile);
+      get_param((char *) "output_population_date_match", Population::output_population_date_match);
+    }
+    Population::is_initialized = true;
+  }
+}
 
 void Population::add_person(Person * person) {
   assert(pop_map.find(person) == pop_map.end());
@@ -101,7 +116,6 @@ void Population::add_person(Person * person) {
   pop_map[person] = pop_size;
   pop_size = pop.size();
 }
-
 
 void Population::delete_person(Person * person) {
   map<Person *,int>::iterator it;
@@ -158,7 +172,7 @@ void Population::setup() {
     disease[dis].setup(dis, this, mutation_prob[dis]);
   }
   
-  Profile::read_profiles(profilefile);
+  Profile::read_profiles(Population::profilefile);
   vacc_manager = new Vaccine_Manager(this);
   av_manager   = new AV_Manager(this);
   if (Global::Verbose > 1) av_manager->print();
@@ -195,7 +209,6 @@ void Population::setup() {
   }
 }
 
-
 void Population::read_population() {
   if (Global::Verbose > 0) {
     fprintf(Global::Statusfp, "read population entered\n");
@@ -204,7 +217,7 @@ void Population::read_population() {
   
   // read in population
   char population_file[256];
-  sprintf(population_file, "%s/%s", Global::Population_directory, popfile);
+  sprintf(population_file, "%s/%s", Global::Population_directory, Population::popfile);
   FILE *fp = fopen(population_file, "r");
   if (fp == NULL) {
     fprintf(Global::Statusfp, "population_file %s not found\n", population_file);
@@ -233,7 +246,7 @@ void Population::read_population() {
     fprintf(Global::Statusfp, "skip = %d\n", skip);
   }
 
-  next_id = 0;
+  Population::next_id = 0;
   for (int p = 0; p < psize; p++) {
     int age, married, occ;
     char label[32], house[32], school[32], work[32];
@@ -242,11 +255,11 @@ void Population::read_population() {
                label, &age, &sex, &married, &occ, house, school, work) != 8) {
       Utils::fred_abort("Help! Read failure for new person %d\n", p); 
     }
-    Person * person = new Person(next_id, age, sex, married, occ, house, school, work, this, 0);
+    Person * person = new Person(next_id, label, age, sex, married, occ, house, school, work, this, 0);
     add_person(person);
     // sprintf(pstring[next_id], "%s %d %c %d %d %s %s %s", label, age, sex, married, occ, house, school, work);
     // printf("pstring[%d]: %s\n", next_id, pstring[next_id]);
-    next_id++;
+    Population::next_id++;
   }
   fclose(fp);
   assert(pop_size == psize);
@@ -461,11 +474,19 @@ void Population::end_day(int day) {
     clear_static_arrays();
   }
 
-  if (Global::Verbose > 1) {
+  //Write the population to the output file if the parameter is set
+  //  * Will write only on the first day of the simulation, days matching the date pattern in the parameter file,
+  //    and the last day of the simulation *
+  if(Population::output_population > 0) {
+    if((day == 0) || (Date::match_pattern(day, Population::output_population_date_match))) {
+      this->write_population_output_file(day);
+    }
+  }
+
+  if(Global::Verbose > 1) {
     fprintf(Global::Statusfp, "population update finished\n");
     fflush(Global::Statusfp);
   }
-
 }
 
 void Population::report(int day) {
@@ -532,6 +553,13 @@ void Population::end_of_run() {
   
   // print out all those agents who never changed
   this->print(-1);
+
+  //Write the population to the output file if the parameter is set
+  //  * Will write only on the first day of the simulation, days matching the date pattern in the parameter file,
+  //    and the last day of the simulation *
+  if(Population::output_population > 0) {
+    this->write_population_output_file(Global::Days);
+  }
 }
 
 
@@ -623,11 +651,8 @@ void Population::clear_static_arrays() {
   }
 }
 
-//Static function to get and increment the next_id
 int Population::get_next_id() {
-  int return_val = next_id;
-  next_id++;
-  return return_val;
+  return Population::next_id++;
 }
 
 void Population::assign_classrooms() {
@@ -668,9 +693,9 @@ void Population::get_network_stats(char *directory) {
   FILE *fp = fopen(filename, "w");
   for (int p = 0; p < pop_size; p++){
     fprintf(fp, "%d %d %d\n",
-	    pop[p]->get_id(),
-	    pop[p]->get_age(),
-	    pop[p]->get_degree());
+      pop[p]->get_id(),
+      pop[p]->get_age(),
+      pop[p]->get_degree());
   }
   fclose(fp);
   if (Global::Verbose > 0) {
@@ -728,4 +753,24 @@ void Population::print_age_distribution(char * dir, char * date_string, int run)
 Person * Population::select_random_person() {
   int i = IRAND(0,pop_size-1);
   return pop[i];
+}
+
+void Population::write_population_output_file(int day) {
+
+  //Loop over the whole population and write the output of each Person's to_string to the file
+  char population_output_file[256];
+  sprintf(population_output_file, "%s/%s.%s", Global::Output_directory,
+                Global::Sim_Date->get_YYYYMMDD(day), Population::pop_outfile);
+  FILE *fp = fopen(population_output_file, "w");
+  if (fp == NULL) {
+    Utils::fred_abort("Help! population_output_file %s not found\n", population_output_file);
+  }
+
+  fprintf(fp, "Population for day %d\n", day);
+  fprintf(fp, "------------------------------------------------------------------\n");
+  for (int p = 0; p < pop_size; ++p) {
+    fprintf(fp, "%s\n", pop[p]->to_string().c_str());
+  }
+  fflush(fp);
+  fclose(fp);
 }

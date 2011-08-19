@@ -30,6 +30,13 @@ public:
 
   /**
    * Constructor that sets all of the attributes of a Demographics object
+   * @param _self the Person object with which this Demographics object is associated
+   * @param _age
+   * @param _sex (M or F)
+   * @param _marital_status 1 if married, 0 if not
+   * @param _profession the code for the Person's occupation
+   * @param day the simulation day
+   * @param is_newborn needed to know how to set the date of birth
    */
   Demographics(Person* _self, int _age, char _sex, int _marital_status,
 	       int _profession, int day, bool is_newborn = false);
