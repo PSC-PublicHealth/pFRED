@@ -35,6 +35,10 @@ for my $i (0..6) {
   get_mean_std("distr", $i);
 }
 unlink "distr";
+print "\n\ntargets:\n";
+print "N 33\nX 0\nH 30\n";
+print "C 16.44\nS 8.22\n";
+print "O 8.22\nW 4.12\n";
 exit;
 
 
@@ -55,7 +59,9 @@ sub get_mean_std {
   }
   close FH;
   $mean = $sum/$n if $n;
-  $std = sqrt(($n*$sumsq - $sum*$sum)/($n*($n-1))) if ($n > 1);
+  my $sq = 0;
+  $sq = ($n*$sumsq - $sum*$sum)/($n*($n-1)) if ($n > 1);
+  $std = sqrt($sq) if ($sq > 0.000000001);
   printf "%5.2f %4.2f %d\n", $mean, $std, $n;  
   # return ($n, $mean, $std);
 }
