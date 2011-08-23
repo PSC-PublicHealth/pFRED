@@ -218,12 +218,26 @@ void Population::read_population() {
   
   // read in population
   char population_file[256];
+  bool use_gzip = false;
   sprintf(population_file, "%s/%s", Global::Population_directory, Population::popfile);
   FILE *fp = fopen(population_file, "r");
   if (fp == NULL) {
-    fprintf(Global::Statusfp, "population_file %s not found\n", population_file);
-    exit(1);
+    // try to find the gzipped version
+    char population_file_gz[256];
+    sprintf(population_file_gz, "%s/%s.gz", Global::Population_directory, Population::popfile);
+    if (fopen(population_file_gz, "r")) {
+      char cmd[256];
+      use_gzip = true;
+      sprintf(cmd, "gunzip -c %s > %s", population_file_gz, population_file);
+      system(cmd);
+      fp = fopen(population_file, "r");
+    }
+    // gunzip didn't work ...
+    if (fp == NULL) {
+      Utils::fred_abort("population_file %s not found\n", population_file);
+    }
   }
+    
   int psize;
   if (1 != fscanf(fp, "Population = %d", &psize)){
     fprintf(Global::Statusfp, "failed to parse pop_size\n");
@@ -264,6 +278,10 @@ void Population::read_population() {
   }
   fclose(fp);
   assert(pop_size == psize);
+  if (use_gzip) {
+    // remove the gunzipped file
+    unlink(population_file);
+  }
   if (Global::Verbose > 0) {
     fprintf(Global::Statusfp, "finished reading population = %d\n", pop_size);
     fflush(Global::Statusfp);

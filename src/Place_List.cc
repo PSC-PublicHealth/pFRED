@@ -38,8 +38,6 @@ void Place_List::get_parameters() {
 }
 
 void Place_List::read_places() {
-  FILE *fp;
-  char location_file[256];
   int locations;
   double min_lat, max_lat, min_lon, max_lon;
   min_lat = min_lon = 999;
@@ -50,10 +48,26 @@ void Place_List::read_places() {
     fflush(Global::Statusfp);
   }
   get_param((char *) "locfile", locfile);
+  // read in locations
+  char location_file[256];
   sprintf(location_file, "%s/%s", Global::Population_directory, locfile);
-  fp = fopen(location_file, "r");
+  bool use_gzip = false;
+  FILE *fp = fopen(location_file, "r");
   if (fp == NULL) {
-    Utils::fred_abort("location file %s not found\n", location_file);
+    // try to find the gzipped version
+    char location_file_gz[256];
+    sprintf(location_file_gz, "%s/%s.gz", Global::Population_directory, locfile);
+    if (fopen(location_file_gz, "r")) {
+      char cmd[256];
+      use_gzip = true;
+      sprintf(cmd, "gunzip -c %s > %s", location_file_gz, location_file);
+      system(cmd);
+      fp = fopen(location_file, "r");
+    }
+    // gunzip didn't work ...
+    if (fp == NULL) {
+      Utils::fred_abort("location_file %s not found\n", location_file);
+    }
   }
   if (1!=fscanf(fp, "Locations = %d", &locations)){
     Utils::fred_abort("failed to parse location\n");
@@ -108,6 +122,10 @@ void Place_List::read_places() {
     id++;
   }
   fclose(fp);
+  if (use_gzip) {
+    // remove the gunzipped file
+    unlink(location_file);
+  }
 
   // NOTE: Use code below to make projection based on the location file.
   // CURRENT DEFAULT: Use mean US lat-lon (see Geo_Utils.cc)
