@@ -38,7 +38,7 @@ parser.add_option("-t", "--infectionType", dest="infectionType", default="0.3333
     help="Probabilities for infection type (i.e., symptomatic/asymptomatic")
 
 parser.add_option("-d", "--dependentIncubation", dest="dependentIncubation", default="Y",
-    help="Should symptoms be allowed to start before infectiousness? (Y|N)")
+    help="Should incubation period always be greater than or equal to latent period? (Y|N)")
 
 
 #parser.add_option("-p", "--plot", dest="plot", default="N",
