@@ -184,6 +184,7 @@ private:
   bool on_schedule[FAVORITE_PLACES]; // true iff favorite place is on schedule
   int schedule_updated;			 // date of last schedule update
   bool travel_status;				// true if traveling
+  bool traveling_outside;			// true if traveling outside modeled area
   Place ** tmp_favorite_place; // list of favorite places, stored while traveling
   static double age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
   static bool is_initialized;

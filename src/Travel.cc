@@ -165,6 +165,15 @@ void Travel::update_travel(int day) {
   int trips_outside_region = Outside_Travel_Rate * trips;
   int trips_within_region = trips - trips_outside_region;
 
+  if (Global::Verbose > 0) {
+    fprintf(Global::Statusfp,
+	    "trips within region = %d  trip outside region = %d  total trips = %d\n",
+	    trips_within_region, trips_outside_region, trips);
+    fflush(Global::Statusfp);
+  }
+
+  // trips within region
+  // printf("trips within region:\n"); fflush(stdout);
   for (int i = 0; i < trips_within_region; i++) {
     select_visitor_and_visited(&visitor, &visited);
     assert(visitor != NULL);
@@ -178,9 +187,12 @@ void Travel::update_travel(int day) {
 
     // put traveler on list for given number of days to travel
     int duration = draw_from_distribution(Max_Travel_Duration, Travel_Duration_Cdf);
+    // printf("  for %d days\n", duration); fflush(stdout);
     travel_list_ptr[duration]->push_back(visitor);
   }
 
+  // trips outside region
+  // printf("trips outside region:\n"); fflush(stdout);
   for (int i = 0; i < trips_outside_region; i++) {
     // select a random person to travel
     visitor = Global::Pop.select_random_person();
@@ -193,10 +205,12 @@ void Travel::update_travel(int day) {
 
     // put traveler on list for given number of days to travel
     int duration = draw_from_distribution(Max_Travel_Duration, Travel_Duration_Cdf);
+    // printf("  for %d days\n", duration); fflush(stdout);
     travel_list_ptr[duration]->push_back(visitor);
   }
 
   // process travelers who are returning home
+  // printf("returning home:\n"); fflush(stdout);
   for (unsigned int i = 0; i < travel_list_ptr[0]->size(); i++) {
     visitor = travel_list_ptr[0]->at(i);
     visitor->stop_traveling();

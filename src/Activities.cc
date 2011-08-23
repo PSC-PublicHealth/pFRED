@@ -66,6 +66,7 @@ Activities::Activities (Person *person, Place **fav_place) {
   schedule_updated = -1;
 
   travel_status = false;
+  traveling_outside = false;
 }
 
 Activities::Activities (Person *person, char *house, char *school, char *work) {
@@ -136,6 +137,8 @@ void Activities::update(int day) {
 }
 
 void Activities::update_infectious_activities(int day) {
+  if (traveling_outside)
+    return;
   int diseases = self->get_diseases();
   for (int dis = 0; dis < diseases; dis++) {
     if (self->is_infectious(dis)) {
@@ -151,6 +154,8 @@ void Activities::update_infectious_activities(int day) {
 }
 
 void Activities::update_susceptible_activities(int day) {
+  if (traveling_outside)
+    return;
   int diseases = self->get_diseases();
   for (int dis = 0; dis < diseases; dis++) {
     if (self->is_susceptible(dis)) {
@@ -168,6 +173,9 @@ void Activities::update_susceptible_activities(int day) {
 
 
 void Activities::update_schedule(int day) {
+
+  if (traveling_outside)
+    return;
 
   // update this schedule only once per day
   if (day <= schedule_updated)
@@ -217,9 +225,9 @@ void Activities::update_schedule(int day) {
     on_schedule[OFFICE_INDEX] = on_schedule[WORKPLACE_INDEX];
 
   if (Global::Verbose > 2) {
-    printf("update_schedule on day %d\n", day);
+    fprintf(Global::Statusfp, "update_schedule on day %d\n", day);
     print_schedule();
-    fflush(stdout);
+    fflush(Global::Statusfp);
   }
 }
 
@@ -577,11 +585,14 @@ void Activities::restore_favorite_places() {
 }
 
 void Activities::start_traveling(Person * visited) {
-  store_favorite_places();
-  for (int i = 0; i < FAVORITE_PLACES; i++) {
-    favorite_place[i] = NULL;
+  if (visited == NULL) {
+    traveling_outside = true;
   }
-  if (visited != NULL) {
+  else {
+    store_favorite_places();
+    for (int i = 0; i < FAVORITE_PLACES; i++) {
+      favorite_place[i] = NULL;
+    }
     favorite_place[HOUSEHOLD_INDEX] = visited->get_household();
     favorite_place[NEIGHBORHOOD_INDEX] = visited->get_neighborhood();
     if (profile == WORKER_PROFILE) {
@@ -590,9 +601,20 @@ void Activities::start_traveling(Person * visited) {
     }
   }
   travel_status = true;
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "start traveling: id = %d\n", self->get_id());
+    fflush(Global::Statusfp);
+  }
 }
 
 void Activities::stop_traveling() {
-  restore_favorite_places();
+  if (!traveling_outside) {
+    restore_favorite_places();
+  }
   travel_status = false;
+  traveling_outside = false;
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "stop traveling: id = %d\n", self->get_id());
+    fflush(Global::Statusfp);
+  }
 }

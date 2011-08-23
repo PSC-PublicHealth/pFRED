@@ -27,6 +27,7 @@
 #include "Age_Map.h"
 #include "Random.h"
 #include "Date.h"
+#include "Travel.h"
 #include "Utils.h"
 
 using namespace std; 
@@ -349,6 +350,14 @@ void Population::begin_day(int day) {
     }
   }
 
+  // update travel decisions
+  time(&start_timer);
+  Travel::update_travel(day);
+  time(&stop_timer);
+  fprintf(Global::Statusfp, "day %d update_travel took %d seconds\n",
+	  day, (int) (stop_timer-start_timer));
+  fflush(Global::Statusfp);
+
   // update adult decisions
   time(&start_timer);
   for (int p = 0; p < pop_size; p++) {
@@ -397,9 +406,19 @@ void Population::begin_day(int day) {
 
 void Population::get_visitors_to_infectious_places(int day) {
 
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "get_visitors_to_infectious_places entered\n");
+    fflush(Global::Statusfp);
+  }
+
   // find places visited by infectious agents
   for (int p = 0; p < pop_size; p++) {
     pop[p]->update_infectious_activities(day);
+  }
+
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "update_infectious_activities finished\n");
+    fflush(Global::Statusfp);
   }
 
   // add susceptibles to infectious places
@@ -408,7 +427,12 @@ void Population::get_visitors_to_infectious_places(int day) {
   }
 
   if (Global::Verbose > 1) {
-    fprintf(Global::Statusfp, "find_infectious_places finished\n");
+    fprintf(Global::Statusfp, "update_susceptible_activities finished\n");
+    fflush(Global::Statusfp);
+  }
+
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "get_visitors_to_infectious_places finished\n");
     fflush(Global::Statusfp);
   }
 
