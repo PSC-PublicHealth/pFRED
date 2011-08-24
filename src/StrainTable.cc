@@ -19,21 +19,21 @@
 
 using namespace std;
 
-StrainTable :: StrainTable() {
+StrainTable::StrainTable() {
   strains = NULL;
   originalStrains = 1;
-  }
+}
 
-StrainTable :: ~StrainTable() {
+StrainTable::~StrainTable() {
   delete strains;
-  }
+}
 
-void StrainTable :: setup(Disease *d) {
+void StrainTable::setup(Disease *d) {
   disease = d;
   int diseaseId = disease->get_id();
 
   int numStrains = 1;
-  get_indexed_param((char *) "num_strains", diseaseId, &numStrains);
+  Params::get_indexed_param((char *) "num_strains", diseaseId, &numStrains);
   originalStrains = numStrains;
 
   if(Global::Verbose > 0) printf("Reading %d strains for disease %d\n", numStrains, diseaseId);
@@ -44,18 +44,18 @@ void StrainTable :: setup(Disease *d) {
     Strain *s = new Strain();
     s->setup(is, disease);
     strains->push_back(s);
-    }
   }
+}
 
-void StrainTable :: reset() {
+void StrainTable::reset() {
   strains->clear();
   setup(disease);
-  }
+}
 
-void StrainTable :: add(Strain *s) {
+void StrainTable::add(Strain *s) {
   strains->push_back(s);
-  }
+}
 
-double StrainTable :: getTransmissibility(int id) {
+double StrainTable::getTransmissibility(int id) {
   return strains->at(id)->getTransmissibility();
-  }
+}

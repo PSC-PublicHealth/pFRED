@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
 
 
   // get runtime parameters
-  read_parameters(paramfile);
+  Params::read_parameters(paramfile);
   Global::get_global_parameters();
 
   // get runtime population parameters
@@ -251,7 +251,7 @@ int main(int argc, char* argv[]) {
   }
 
   if (Global::Track_age_distribution) {
-    Global::Pop.print_age_distribution(directory, Global::Sim_Date->get_YYYYMMDD(0), run);
+    Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Date->get_YYYYMMDD(0).c_str(), run);
   }
 
   stop_timer = time(&stop_timer);
@@ -326,10 +326,10 @@ int main(int argc, char* argv[]) {
 
     if (Date::match_pattern(day,"01-01-*")) {
       if (Global::Track_age_distribution) {
-	Global::Pop.print_age_distribution(directory, Global::Sim_Date->get_YYYYMMDD(day), run);
+	Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Date->get_YYYYMMDD(day).c_str(), run);
       }
       if (Global::Track_household_distribution) {
-	Global::Cells->print_household_distribution(directory, Global::Sim_Date->get_YYYYMMDD(day), run);
+	Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Date->get_YYYYMMDD(day).c_str(), run);
       }
     }
 

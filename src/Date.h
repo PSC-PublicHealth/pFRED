@@ -85,9 +85,9 @@ public:
   string to_string();
   virtual ~Date();
   void setup(char * output_directory, int days);
-  char * get_YYYYMMDD(int day);
-  char * get_YYYYMM(int day);
-  char * get_MMDD(int day);
+  string get_YYYYMMDD(int day);
+  string get_YYYYMM(int day);
+  string get_MMDD(int day);
 
   static int days_between(Date * date_1, Date * date_2);
   static int days_between(int sim_day, Date * date_2);
@@ -118,7 +118,7 @@ private:
   { return Date::doomsday_month_val[(Date::is_leap_year(year) ? 1 : 0)][month]; }
   static int get_doomsday_century(int year);
   static int get_day_of_week(int year, int month, int day_of_month);
-  char date_string[32];
+  //char date_string[32];
 };
 
 #endif /* DATE_H_ */

@@ -25,7 +25,7 @@ AV_Manager::AV_Manager(Population *_pop) : Manager(_pop){
   are_policies_set = false;
   //char s[80];
   int nav;
-  get_param_from_string("number_antivirals",&nav);
+  Params::get_param_from_string("number_antivirals",&nav);
   
   do_av=0;
   if(nav > 0){

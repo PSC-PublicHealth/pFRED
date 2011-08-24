@@ -34,28 +34,28 @@ void DefaultIntraHost::setup(Disease *disease) {
   IntraHost::setup(disease);
 
   int id = disease->get_id();
-  get_indexed_param("symp",id,&prob_symptomatic);
-  get_indexed_param("symp_infectivity",id,&symp_infectivity);
-  get_indexed_param("asymp_infectivity",id,&asymp_infectivity);
+  Params::get_indexed_param("symp",id,&prob_symptomatic);
+  Params::get_indexed_param("symp_infectivity",id,&symp_infectivity);
+  Params::get_indexed_param("asymp_infectivity",id,&asymp_infectivity);
 
   int n;
-  get_indexed_param("days_latent",id,&n);
+  Params::get_indexed_param("days_latent",id,&n);
   days_latent = new double [n];
-  max_days_latent = get_indexed_param_vector("days_latent", id, days_latent) -1;
+  max_days_latent = Params::get_indexed_param_vector("days_latent", id, days_latent) -1;
 
-  get_indexed_param("days_incubating",id,&n);
+  Params::get_indexed_param("days_incubating",id,&n);
   days_incubating = new double [n];
-  max_days_incubating = get_indexed_param_vector("days_incubating",id, days_incubating) - 1;
+  max_days_incubating = Params::get_indexed_param_vector("days_incubating",id, days_incubating) - 1;
 
-  get_indexed_param("days_asymp",id,&n);
+  Params::get_indexed_param("days_asymp",id,&n);
   days_asymp = new double [n];
-  max_days_asymp = get_indexed_param_vector("days_asymp", id, days_asymp) -1;
+  max_days_asymp = Params::get_indexed_param_vector("days_asymp", id, days_asymp) -1;
 
-  get_indexed_param("days_symp",id,&n);
+  Params::get_indexed_param("days_symp",id,&n);
   days_symp = new double [n];
-  max_days_symp = get_indexed_param_vector("days_symp", id, days_symp) -1;
+  max_days_symp = Params::get_indexed_param_vector("days_symp", id, days_symp) -1;
 
-  get_indexed_param("infection_model",id,&infection_model);
+  Params::get_indexed_param("infection_model", id, &infection_model);
 
   if (max_days_asymp > max_days_symp) {
     max_days = max_days_latent + max_days_asymp;

@@ -80,10 +80,10 @@ void School::get_parameters(int diseases) {
   for (int s = 0; s < diseases; s++) {
     int n;
     sprintf(param_str, "school_contacts[%d]", s);
-    get_param((char *) param_str, &School::school_contacts_per_day[s]);
+    Params::get_param((char *) param_str, &School::school_contacts_per_day[s]);
     
     sprintf(param_str, "school_prob[%d]", s);
-    n = get_param_matrix(param_str, &School::school_contact_prob[s]);
+    n = Params::get_param_matrix(param_str, &School::school_contact_prob[s]);
     if (Global::Verbose > 1) {
       printf("\nschool_contact_prob:\n");
       for (int i  = 0; i < n; i++)  {
@@ -95,15 +95,15 @@ void School::get_parameters(int diseases) {
     }
   }
   
-  get_param((char *) "school_classroom_size", &School::school_classroom_size);
-  get_param((char *) "school_closure_policy", School::school_closure_policy);
-  get_param((char *) "school_closure_day", &School::school_closure_day);
-  get_param((char *) "school_closure_threshold", &School::school_closure_threshold);
-  get_param((char *) "school_closure_period", &School::school_closure_period);
-  get_param((char *) "school_closure_delay", &School::school_closure_delay);
-  get_param((char *) "school_summer_schedule", &School::school_summer_schedule);
-  get_param((char *) "school_summer_start", School::school_summer_start);
-  get_param((char *) "school_summer_end", School::school_summer_end);
+  Params::get_param((char *) "school_classroom_size", &School::school_classroom_size);
+  Params::get_param((char *) "school_closure_policy", School::school_closure_policy);
+  Params::get_param((char *) "school_closure_day", &School::school_closure_day);
+  Params::get_param((char *) "school_closure_threshold", &School::school_closure_threshold);
+  Params::get_param((char *) "school_closure_period", &School::school_closure_period);
+  Params::get_param((char *) "school_closure_delay", &School::school_closure_delay);
+  Params::get_param((char *) "school_summer_schedule", &School::school_summer_schedule);
+  Params::get_param((char *) "school_summer_start", School::school_summer_start);
+  Params::get_param((char *) "school_summer_end", School::school_summer_end);
  
   School::school_parameters_set = true;
 }

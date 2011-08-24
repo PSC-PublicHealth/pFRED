@@ -421,7 +421,7 @@ string Date::to_string() {
   stringstream oss;
   oss << setw(4) << setfill('0') << this->get_year() << "-";
   oss << setw(2) << setfill('0') << this->get_month() << "-";
-  oss << setw(2) << setfill('0') << get_day_of_month();
+  oss << setw(2) << setfill('0') << this->get_day_of_month();
   return oss.str();
 }
 
@@ -777,19 +777,32 @@ void Date::setup(char * output_directory, int days) {
   fclose(fred_date_fp);
 }
 
-char * Date::get_YYYYMMDD(int day) {
-  sprintf(date_string, "%04d-%02d-%02d", get_year(day), get_month(day), get_day_of_month(day));
-  return date_string;
+string Date::get_YYYYMMDD(int day) {
+  stringstream oss;
+  oss << setw(4) << setfill('0') << this->get_year(day) << "-";
+  oss << setw(2) << setfill('0') << this->get_month(day) << "-";
+  oss << setw(2) << setfill('0') << this->get_day_of_month(day);
+  return oss.str();
+//  sprintf(date_string, "%04d-%02d-%02d", get_year(day), get_month(day), get_day_of_month(day));
+//  return date_string;
 }
 
-char * Date::get_YYYYMM(int day) {
-  sprintf(date_string, "%04d-%02d", get_year(day), get_month(day));
-  return date_string;
+string Date::get_YYYYMM(int day) {
+  stringstream oss;
+  oss << setw(4) << setfill('0') << this->get_year(day) << "-";
+  oss << setw(2) << setfill('0') << this->get_month(day);
+  return oss.str();
+//  sprintf(date_string, "%04d-%02d", get_year(day), get_month(day));
+//  return date_string;
 }
 
-char * Date::get_MMDD(int day) {
-  sprintf(date_string, "%02d-%02d", get_month(day), get_day_of_month(day));
-  return date_string;
+string Date::get_MMDD(int day) {
+  stringstream oss;
+  oss << setw(2) << setfill('0') << this->get_month(day) << "-";
+  oss << setw(2) << setfill('0') << this->get_day_of_month(day);
+  return oss.str();
+//  sprintf(date_string, "%02d-%02d", get_month(day), get_day_of_month(day));
+//  return date_string;
 }
 
 
@@ -815,11 +828,8 @@ bool Date::match_pattern(int simulation_day, string pattern) {
   string mon = pattern.substr(0,pos1);
   string day = pattern.substr(pos1+1,pos2-pos1-1);
   string year = pattern.substr(pos2+1);
-  // cout << " pattern = " << mon << "|" << day << "|" << year << endl;
-  char * sim_cstr = new char [12];
-  sim_cstr = Global::Sim_Date->get_YYYYMMDD(simulation_day);
-  string tmp;
-  tmp.assign(sim_cstr);
+
+  string tmp  = Global::Sim_Date->get_YYYYMMDD(simulation_day);
   string sim_year = tmp.substr(0,4);
   string sim_mon = tmp.substr(5,2);
   string sim_day = tmp.substr(8,2);
@@ -833,7 +843,7 @@ bool Date::match_pattern(int simulation_day, string pattern) {
 
 bool Date::day_in_range_MMDD(int day, char * start_day, char * end_day) {
   char current_day[10];
-  strcpy(current_day, Global::Sim_Date->get_MMDD(day));
+  strcpy(current_day, Global::Sim_Date->get_MMDD(day).c_str());
   return Date::day_is_between_MMDD(current_day, start_day, end_day);
 }
 

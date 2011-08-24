@@ -43,9 +43,9 @@ void Household::get_parameters(int diseases) {
   for (int s = 0; s < diseases; s++) {
     int n;
     sprintf(param_str, "household_contacts[%d]", s);
-    get_param((char *) param_str, &Household::Household_contacts_per_day[s]);
+    Params::get_param((char *) param_str, &Household::Household_contacts_per_day[s]);
     sprintf(param_str, "household_prob[%d]", s);
-    n = get_param_matrix(param_str, &Household::Household_contact_prob[s]);
+    n = Params::get_param_matrix(param_str, &Household::Household_contact_prob[s]);
     if (Global::Verbose > 1) {
       printf("\nHousehold_contact_prob:\n");
       for (int i  = 0; i < n; i++)  {

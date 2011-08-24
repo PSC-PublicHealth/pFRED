@@ -47,10 +47,10 @@ void Classroom::get_parameters(int diseases) {
   for (int s = 0; s < diseases; s++) {
     int n;
     sprintf(param_str, "classroom_contacts[%d]", s);
-    get_param((char *) param_str, &Classroom::Classroom_contacts_per_day[s]);
+    Params::get_param((char *) param_str, &Classroom::Classroom_contacts_per_day[s]);
     
     sprintf(param_str, "classroom_prob[%d]", s);
-    n = get_param_matrix(param_str, &Classroom::Classroom_contact_prob[s]);
+    n = Params::get_param_matrix(param_str, &Classroom::Classroom_contact_prob[s]);
     if (Global::Verbose > 1) {
       printf("\nClassroom_contact_prob:\n");
       for (int i  = 0; i < n; i++)  {

@@ -43,15 +43,15 @@ void Workplace::get_parameters(int diseases) {
   Workplace::Workplace_contact_prob = new double** [ diseases ];
   
   // people per office
-  get_param((char *) "office_size", &Workplace::office_size);
+  Params::get_param((char *) "office_size", &Workplace::office_size);
 
   for (int s = 0; s < diseases; s++) {
     int n;
     sprintf(param_str, "workplace_contacts[%d]", s);
-    get_param((char *) param_str, &Workplace::Workplace_contacts_per_day[s]);
+    Params::get_param((char *) param_str, &Workplace::Workplace_contacts_per_day[s]);
     
     sprintf(param_str, "workplace_prob[%d]", s);
-    n = get_param_matrix(param_str, &Workplace::Workplace_contact_prob[s]);
+    n = Params::get_param_matrix(param_str, &Workplace::Workplace_contact_prob[s]);
     if (Global::Verbose > 1) {
       printf("\nWorkplace_contact_prob:\n");
       for (int i  = 0; i < n; i++) {

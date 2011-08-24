@@ -48,7 +48,7 @@ Timestep_Map::Timestep_Map(string _name){
   }
   
   // Read the filename from params
-  get_param(map_file_param,map_file_name);
+  Params::get_param(map_file_param,map_file_name);
   
   // If this parameter is "none", then there is no map
   if(strncmp(map_file_name,"none",4)==0){

@@ -64,12 +64,12 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
     fflush(Global::Statusfp);
   }
 
-  get_indexed_param("trans",id,&transmissibility);
-  get_indexed_param("mortality_rate",id,&mortality_rate);
-  get_indexed_param("immunity_loss_rate",id,&immunity_loss_rate);
+  Params::get_indexed_param("trans",id,&transmissibility);
+  Params::get_indexed_param("mortality_rate",id,&mortality_rate);
+  Params::get_indexed_param("immunity_loss_rate",id,&immunity_loss_rate);
 
   // This needs to be moved to Behavior
-  get_param((char *) "prob_stay_home", &Disease::Prob_stay_home);
+  Params::get_param((char *) "prob_stay_home", &Disease::Prob_stay_home);
   mutation_prob = mut_prob;
   population = pop;
 
@@ -103,12 +103,12 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
 
   // Initialize IntraHost
   int ihmType;
-  get_indexed_param("intra_host_model", id, &ihmType);
+  Params::get_indexed_param("intra_host_model", id, &ihmType);
   ihm = IntraHost :: newIntraHost(ihmType);
   ihm->setup(this);
 
   int evolType;
-  get_indexed_param("evolution", id, &evolType);
+  Params::get_indexed_param("evolution", id, &evolType);
   evol = EvolutionFactory :: newEvolution(evolType);
 
   if(at_risk->is_empty() == false ) at_risk->print();

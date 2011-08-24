@@ -44,7 +44,7 @@ public:
    * @see Place::get_parameters(int diseases)
    *
    * This method is called by the constructor
-   * <code>Household(int,const char *,double,double,Place *, Population *)</code>
+   * <code>Household(int loc, const char *lab, double lon, double lat, Place *container, Population* pop)</code>
    */
   void get_parameters(int diseases);
 

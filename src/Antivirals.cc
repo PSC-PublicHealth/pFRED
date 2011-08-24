@@ -25,7 +25,7 @@ Antivirals::Antivirals(){
   int nav;
   
   sprintf(s,"number_antivirals");
-  get_param((char *) "number_antivirals",&nav);
+  Params::get_param((char *) "number_antivirals",&nav);
   
   for(int iav=0;iav<nav;iav++){
     int Disease, CorLength, InitSt, TotAvail, PerDay;
@@ -33,27 +33,27 @@ Antivirals::Antivirals(){
     int StrtDay,Proph;
     bool isProph;
     
-    get_indexed_param("av_disease",iav,&Disease);
-    get_indexed_param("av_initial_stock",iav,&InitSt);
-    get_indexed_param("av_total_avail",iav,&TotAvail);
-    get_indexed_param("av_additional_per_day",iav,&PerDay);
+    Params::get_indexed_param("av_disease",iav,&Disease);
+    Params::get_indexed_param("av_initial_stock",iav,&InitSt);
+    Params::get_indexed_param("av_total_avail",iav,&TotAvail);
+    Params::get_indexed_param("av_additional_per_day",iav,&PerDay);
     //get_indexed_param("av_percent_resistance",iav,&Eff);
     Eff = 1.0; // Not implemented yet
-    get_indexed_param("av_course_length",iav,&CorLength);
-    get_indexed_param("av_reduce_infectivity",iav,&RedInf);
-    get_indexed_param("av_reduce_susceptibility",iav,&RedSusc);
-    get_indexed_param("av_reduce_symptomatic_period",iav,&RedSympPer);
-    get_indexed_param("av_reduce_asymptomatic_period",iav,&RedASympPer);
-    get_indexed_param("av_prob_symptoms",iav,&ProbSymp);
-    get_indexed_param("av_start_day",iav,&StrtDay);
-    get_indexed_param("av_prophylaxis",iav,&Proph);
+    Params::get_indexed_param("av_course_length",iav,&CorLength);
+    Params::get_indexed_param("av_reduce_infectivity",iav,&RedInf);
+    Params::get_indexed_param("av_reduce_susceptibility",iav,&RedSusc);
+    Params::get_indexed_param("av_reduce_symptomatic_period",iav,&RedSympPer);
+    Params::get_indexed_param("av_reduce_asymptomatic_period",iav,&RedASympPer);
+    Params::get_indexed_param("av_prob_symptoms",iav,&ProbSymp);
+    Params::get_indexed_param("av_start_day",iav,&StrtDay);
+    Params::get_indexed_param("av_prophylaxis",iav,&Proph);
     if(Proph == 1) isProph= true;
     else isProph = false;
-    get_indexed_param("av_percent_symptomatics",iav,&PerSympt);
+    Params::get_indexed_param("av_percent_symptomatics",iav,&PerSympt);
     int n;
-    get_indexed_param("av_course_start_day",iav,&n);
+    Params::get_indexed_param("av_course_start_day",iav,&n);
     double* AVCourseSt= new double [n];
-    int MaxAVCourseSt = get_indexed_param_vector("av_course_start_day",iav, AVCourseSt) -1;
+    int MaxAVCourseSt = Params::get_indexed_param_vector("av_course_start_day",iav, AVCourseSt) -1;
     
     AVs.push_back(new Antiviral(Disease, CorLength, RedInf, 
                                 RedSusc, RedASympPer, RedSympPer,

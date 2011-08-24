@@ -40,7 +40,7 @@ double pop_susceptibility;
 
 Health_Belief_Model::Health_Belief_Model(Person *p) {
   self = p;
-  int diseases = p->get_population()->get_diseases();
+  int diseases = Global::Pop.get_diseases();
 
   perceptions = new Perceptions(p);
   get_parameters();
@@ -121,32 +121,32 @@ void Health_Belief_Model::get_parameters() {
 
   if (HBM_parameters_set) return;
 
-  n = get_param_vector((char *) "HBM_memory_decay", memory_decay_distr);
+  n = Params::get_param_vector((char *) "HBM_memory_decay", memory_decay_distr);
   if (n != 2) {  
      Utils::fred_abort("bad HBM_memory_decay\n");  
   }
   
-  n = get_param_vector((char *) "HBM_susceptibility_threshold", susceptibility_threshold_distr);
+  n = Params::get_param_vector((char *) "HBM_susceptibility_threshold", susceptibility_threshold_distr);
   if (n != 2) { 
      Utils::fred_abort("bad HBM_susceptibility_threshold\n"); 
   }
   
-  n = get_param_vector((char *) "HBM_severity_threshold", severity_threshold_distr);
+  n = Params::get_param_vector((char *) "HBM_severity_threshold", severity_threshold_distr);
   if (n != 2) {  
      Utils::fred_abort("bad HBM_severity_threshold\n"); 
   }
   
-  n = get_param_vector((char *) "HBM_benefits_threshold", benefits_threshold_distr);
+  n = Params::get_param_vector((char *) "HBM_benefits_threshold", benefits_threshold_distr);
   if (n != 2) { 
      Utils::fred_abort("bad HBM_benefits_threshold\n"); 
   }
   
-  n = get_param_vector((char *) "HBM_barriers_threshold", barriers_threshold_distr);
+  n = Params::get_param_vector((char *) "HBM_barriers_threshold", barriers_threshold_distr);
   if (n != 2) {  
      Utils::fred_abort("bad HBM_barriers_threshold\n"); 
   }
   
-  n = get_param_vector((char *) "HBM_accept_vaccine", coeff);
+  n = Params::get_param_vector((char *) "HBM_accept_vaccine", coeff);
   if (n != 5) {  
      Utils::fred_abort("bad HBM_accept_vaccine"); 
   }
@@ -161,14 +161,14 @@ void Health_Belief_Model::get_parameters() {
 
 
 void Health_Belief_Model::update(int day) {
-  int diseases = self->get_population()->get_diseases();
+  int diseases = Global::Pop.get_diseases();
   for (int s = 0; s < diseases; s++) {
 
     // perceptions of current state of epidemic
     int current_cases = perceptions->get_global_cases(s);
-    int total_cases = self->get_population()->get_disease(s)->get_epidemic()->get_total_incidents();
-    double current_deaths = self->get_population()->get_disease(s)->get_mortality_rate()*total_cases;
-    double current_incidence = (double) current_cases / (double) self->get_population()->get_pop_size();
+    int total_cases = Global::Pop.get_disease(s)->get_epidemic()->get_total_incidents();
+    double current_deaths = Global::Pop.get_disease(s)->get_mortality_rate()*total_cases;
+    double current_incidence = (double) current_cases / (double) Global::Pop.get_pop_size();
     total_deaths += current_deaths;
     
     // update memory
@@ -199,7 +199,7 @@ void Health_Belief_Model::update(int day) {
   }
   if (self->get_id() == 0 && day > 0) {
     FILE *fp;
-    int n = self->get_population()->get_pop_size();
+    int n = Global::Pop.get_pop_size();
     fp = fopen("HBM_trace", "a");
     fprintf(fp, "%d %f %d ", day, cumm_susceptibility[0], accept_vaccine[0]);
     fprintf(fp, "%d %f %f ", day-1, pop_cumm_susceptibility/n, ((double)pop_susceptibility)/n);

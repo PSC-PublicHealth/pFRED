@@ -41,12 +41,10 @@ void Neighborhood::get_parameters(int diseases) {
   for (int s = 0; s < diseases; s++) {
     int n;
     sprintf(param_str, "neighborhood_contacts[%d]", s);
-    get_param((char *) param_str, &Neighborhood::Neighborhood_contacts_per_day[s]);
-    // printf("Neighborhood_contacts_per_day[%d]= %f\n",
-    // s, Neighborhood::Neighborhood_contacts_per_day[s]);
+    Params::get_param((char *) param_str, &Neighborhood::Neighborhood_contacts_per_day[s]);
     
     sprintf(param_str, "neighborhood_prob[%d]", s);
-    n = get_param_matrix(param_str, &Neighborhood::Neighborhood_contact_prob[s]);
+    n = Params::get_param_matrix(param_str, &Neighborhood::Neighborhood_contact_prob[s]);
     if (Global::Verbose > 1) {
       printf("\nNeighborhood_contact_prob:\n");
       for (int i  = 0; i < n; i++)  {
@@ -79,5 +77,3 @@ double Neighborhood::get_transmission_prob(int disease, Person * i, Person * s) 
 double Neighborhood::get_contacts_per_day(int disease) {
   return Neighborhood::Neighborhood_contacts_per_day[disease];
 }
-
-

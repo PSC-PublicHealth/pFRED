@@ -48,10 +48,10 @@ void Strain::setup(int strain, Disease *disease, map<string, double> *data, doub
 
 void Strain::setup(int strain, Disease *disease) {
   map<string, double> *data = new map<string, double>;
-  get_double_indexed_param_map ("strain_data", disease->get_id(), strain, data);
+  Params::get_double_indexed_param_map ("strain_data", disease->get_id(), strain, data);
 
   double trans;
-  get_double_indexed_param("transmissibility", disease->get_id(), strain, &trans);
+  Params::get_double_indexed_param("transmissibility", disease->get_id(), strain, &trans);
 
   setup(strain, disease, data, trans);
 

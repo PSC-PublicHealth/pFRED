@@ -45,15 +45,15 @@ void Travel::setup() {
   assert(Global::Enable_Large_Grid && Global::Enable_Travel);
 
   // get run-time parameters
-  get_param((char *) "travel_rate",&Travel_Rate);
-  get_param((char *) "min_travel_distance",&Min_Travel_Distance);
-  get_param((char *) "outside_travel_rate",&Outside_Travel_Rate);
-  get_param((char *) "test_gravity_model",&Test_Gravity_Model);
+  Params::get_param((char *) "travel_rate",&Travel_Rate);
+  Params::get_param((char *) "min_travel_distance",&Min_Travel_Distance);
+  Params::get_param((char *) "outside_travel_rate",&Outside_Travel_Rate);
+  Params::get_param((char *) "test_gravity_model",&Test_Gravity_Model);
 
   int n;
-  get_param((char *) "travel_duration",&n);
+  Params::get_param((char *) "travel_duration",&n);
   Travel_Duration_Cdf = new double [n];
-  Max_Travel_Duration = get_param_vector((char *) "travel_duration",
+  Max_Travel_Duration = Params::get_param_vector((char *) "travel_duration",
 					 Travel_Duration_Cdf) - 1;
   if (Global::Verbose > 0) {
     for (int i = 0; i <= Max_Travel_Duration; i++)

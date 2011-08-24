@@ -101,7 +101,7 @@ Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxla
 }
 
 void Large_Grid::get_parameters() {
-  get_param((char *) "grid_large_cell_size", &grid_cell_size);
+  Params::get_param((char *) "grid_large_cell_size", &grid_cell_size);
 }
 
 Large_Cell ** Large_Grid::get_neighbors(int row, int col) {

@@ -28,7 +28,7 @@ using namespace std;
 void Vaccines::setup(void) {
 
   int number_vacc;
-  get_param_from_string("number_of_vaccines",&number_vacc);
+  Params::get_param_from_string("number_of_vaccines",&number_vacc);
   
   for(int iv=0;iv<number_vacc;iv++) {
     int ta;
@@ -37,10 +37,10 @@ void Vaccines::setup(void) {
     int tbd;
     int num_doses;
    
-    get_indexed_param("vaccine_number_of_doses",iv,&num_doses);
-    get_indexed_param("vaccine_total_avail",iv,&ta);
-    get_indexed_param("vaccine_additional_per_day",iv,&apd);
-    get_indexed_param("vaccine_starting_day",iv,&std);
+    Params::get_indexed_param("vaccine_number_of_doses",iv,&num_doses);
+    Params::get_indexed_param("vaccine_total_avail",iv,&ta);
+    Params::get_indexed_param("vaccine_additional_per_day",iv,&apd);
+    Params::get_indexed_param("vaccine_starting_day",iv,&std);
 
     stringstream name;
     name << "Vaccine#"<<iv+1;
@@ -49,7 +49,7 @@ void Vaccines::setup(void) {
     for(int id=0;id<num_doses;id++) {
       Age_Map* efficacy_map = new Age_Map("Dose Efficacy");
       Age_Map* efficacy_delay_map = new Age_Map("Dose Efficacy Delay");
-      get_double_indexed_param("vaccine_next_dosage_day",iv,id,&tbd);
+      Params::get_double_indexed_param("vaccine_next_dosage_day",iv,id,&tbd);
       efficacy_map->read_from_input("vaccine_dose_efficacy",iv,id);
       efficacy_delay_map->read_from_input("vaccine_dose_efficacy_delay",iv,id);
       vaccines[iv]->add_dose(new Vaccine_Dose(efficacy_map,efficacy_delay_map,tbd));

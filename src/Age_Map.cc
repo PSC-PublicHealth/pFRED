@@ -63,7 +63,7 @@ void Age_Map::read_from_input(string Input) {
   }
   
   vector < int > ages_tmp;
-  int na  = get_param_vector(ages_string,ages_tmp);
+  int na  = Params::get_param_vector(ages_string,ages_tmp);
   
   if(na % 2) {
     Utils::fred_abort("Error parsing Age_Map: %s: Must be an even number of age entries\n", Input.c_str()); 
@@ -76,7 +76,7 @@ void Age_Map::read_from_input(string Input) {
     ages.push_back( ages_tmp2 );
   }
   
-  get_param_vector(values_string,values);
+  Params::get_param_vector(values_string,values);
   
   if(quality_control() != true)
     Utils::fred_abort("");
@@ -137,8 +137,8 @@ bool Age_Map::quality_control() const {
   }
   
   // Next check that the ages groups are correct, the low and high ages are right
-  for( unsigned int i=0; i < ages.size(); i++) {
-    if( ages[i][0] > ages[i][1] ) {
+  for(unsigned int i=0; i < ages.size(); i++) {
+    if(ages[i][0] > ages[i][1] ) {
       cout <<"Help! Age_Map: " << Name << ": Age Group " << i << " invalid, low age higher than high\n";
       cout <<" Low Age = "<< ages[i][0] << "  High Age = "<< ages[i][1] << "\n";
       return false;
@@ -146,11 +146,11 @@ bool Age_Map::quality_control() const {
   }
   
   // Make sure the age groups are mutually exclusive
-  for( unsigned int i=0; i < ages.size(); i++) {
+  for(unsigned int i=0; i < ages.size(); i++) {
     int lowage = ages[i][0];
     int highage = ages[i][1];
     
-    for( unsigned int j=0;j<ages.size();j++) {
+    for(unsigned int j=0;j<ages.size();j++) {
       if(j!=i){
         if((lowage >= ages[j][0] && lowage <= ages[j][1]) ||
            (highage >= ages[j][0] && highage <= ages[j][1])) {

@@ -42,7 +42,7 @@ Manager(_pop) {
   
   vaccine_package = new Vaccines();
   int num_vaccs = 0;
-  get_param_from_string("number_of_vaccines",&num_vaccs);
+  Params::get_param_from_string("number_of_vaccines",&num_vaccs);
   if(num_vaccs > 0){
     vaccine_package->setup();
     vaccine_package->print();
@@ -61,7 +61,7 @@ Manager(_pop) {
   // ACIP Priority takes precidence
   int do_acip_priority;
   current_policy = VACC_NO_PRIORITY;
-  get_param_from_string("vaccine_prioritize_acip",&do_acip_priority);
+  Params::get_param_from_string("vaccine_prioritize_acip",&do_acip_priority);
   if(do_acip_priority == 1){
     cout << "Vaccination Priority using ACIP recommendations\n";
     cout << "   Includes: \n";
@@ -74,12 +74,12 @@ Manager(_pop) {
   }
   else{
     int do_age_priority;
-    get_param_from_string("vaccine_prioritize_by_age",&do_age_priority);
+    Params::get_param_from_string("vaccine_prioritize_by_age",&do_age_priority);
     if(do_age_priority){ 
       cout <<"Vaccination Priority by Age\n";
       current_policy = VACC_AGE_PRIORITY;
-      get_param_from_string("vaccine_priority_age_low",&vaccine_priority_age_low);
-      get_param_from_string("vaccine_priority_age_high",&vaccine_priority_age_high);
+      Params::get_param_from_string("vaccine_priority_age_low",&vaccine_priority_age_low);
+      Params::get_param_from_string("vaccine_priority_age_high",&vaccine_priority_age_high);
       cout <<"      Between Ages "<< vaccine_priority_age_low << " and " 
 	   << vaccine_priority_age_high << "\n";
     }
@@ -89,7 +89,7 @@ Manager(_pop) {
     }
   }
   // get vaccine_dose_priority
-  get_param_from_string("vaccine_dose_priority",&vaccine_dose_priority);
+  Params::get_param_from_string("vaccine_dose_priority",&vaccine_dose_priority);
   assert(vaccine_dose_priority < 4);
   //get_param((char*)"vaccination_capacity",&vaccination_capacity);
   vaccination_capacity_map = new Timestep_Map("vaccination_capacity");

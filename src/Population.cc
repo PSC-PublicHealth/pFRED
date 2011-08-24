@@ -76,12 +76,12 @@ Population::~Population() {
 }
 
 void Population::get_parameters() {
-  get_param((char *) "popfile", Population::popfile);
-  get_param((char *) "profiles", Population::profilefile);
+  Params::get_param((char *) "popfile", Population::popfile);
+  Params::get_param((char *) "profiles", Population::profilefile);
   diseases = Global::Diseases;
   
   int num_mutation_params =
-    get_param_matrix((char *) "mutation_prob", &mutation_prob);
+      Params::get_param_matrix((char *) "mutation_prob", &mutation_prob);
   if (num_mutation_params != diseases) {
     fprintf(Global::Statusfp,
             "Improper mutation matrix: expected square matrix of %i rows, found %i",
@@ -101,10 +101,10 @@ void Population::get_parameters() {
 
   //Only do this one time
   if(!Population::is_initialized) {
-    get_param((char *) "output_population", &Population::output_population);
+    Params::get_param((char *) "output_population", &Population::output_population);
     if(Population::output_population > 0) {
-      get_param((char *) "pop_outfile", Population::pop_outfile);
-      get_param((char *) "output_population_date_match", Population::output_population_date_match);
+      Params::get_param((char *) "pop_outfile", Population::pop_outfile);
+      Params::get_param((char *) "output_population_date_match", Population::output_population_date_match);
     }
     Population::is_initialized = true;
   }
@@ -270,10 +270,9 @@ void Population::read_population() {
                label, &age, &sex, &married, &occ, house, school, work) != 8) {
       Utils::fred_abort("Help! Read failure for new person %d\n", p); 
     }
-    Person * person = new Person(next_id, label, age, sex, married, occ, house, school, work, this, 0);
+    Person * person = new Person(next_id, age, sex, married, occ, house, school, work, 0);
     add_person(person);
-    // sprintf(pstring[next_id], "%s %d %c %d %d %s %s %s", label, age, sex, married, occ, house, school, work);
-    // printf("pstring[%d]: %s\n", next_id, pstring[next_id]);
+
     Population::next_id++;
   }
   fclose(fp);
@@ -802,7 +801,7 @@ void Population::write_population_output_file(int day) {
   //Loop over the whole population and write the output of each Person's to_string to the file
   char population_output_file[256];
   sprintf(population_output_file, "%s/%s.%s", Global::Output_directory,
-                Global::Sim_Date->get_YYYYMMDD(day), Population::pop_outfile);
+                (char *) Global::Sim_Date->get_YYYYMMDD(day).c_str(), Population::pop_outfile);
   FILE *fp = fopen(population_output_file, "w");
   if (fp == NULL) {
     Utils::fred_abort("Help! population_output_file %s not found\n", population_output_file);

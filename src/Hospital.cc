@@ -40,15 +40,15 @@ void Hospital::get_parameters(int diseases) {
   for (int s = 0; s < diseases; s++) {
     int n;
     sprintf(param_str, "hospital_contacts[%d]", s);
-    get_param((char *) param_str, &Hospital::Hospital_contacts_per_day[s]);
+    Params::get_param((char *) param_str, &Hospital::Hospital_contacts_per_day[s]);
     
     sprintf(param_str, "hospital_prob[%d]", s);
     n = 0;
-    get_param((char *) param_str, &n);
+    Params::get_param((char *) param_str, &n);
     if (n) {
       double *tmp;
       tmp = new double [n];
-      get_param_vector((char *) param_str, tmp);
+      Params::get_param_vector((char *) param_str, tmp);
       n = (int) sqrt((double) n);
       Hospital::Hospital_contact_prob[s] = new double * [n];
       for (int i  = 0; i < n; i++) 

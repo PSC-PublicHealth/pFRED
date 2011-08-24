@@ -223,7 +223,7 @@ void Demographics::update(int day) {
     delete this->due_date;
     this->due_date = NULL;
     this->pregnant = false;
-    self->get_population()->prepare_to_give_birth(day, self);
+    Global::Pop.prepare_to_give_birth(day, self);
   }
 
   //Is this your day to die?
@@ -233,7 +233,7 @@ void Demographics::update(int day) {
      this->deceased_date->get_month() == cur_month &&
      this->deceased_date->get_day_of_month() == cur_day_of_month) {
     this->deceased = true;
-    self->get_population()->prepare_to_die(day, self);
+    Global::Pop.prepare_to_die(day, self);
   }
 
 }
@@ -248,9 +248,9 @@ void Demographics::read_init_files() {
     fprintf(Global::Statusfp, "read demographic init files entered\n"); fflush(Global::Statusfp);
   }
 
-  get_param((char *) "yearly_mortality_rate_file", yearly_mortality_rate_file);
-  get_param((char *) "yearly_birth_rate_file", yearly_birth_rate_file);
-  get_param((char *) "birth_rate_multiplier", &birth_rate_multiplier);
+  Params::get_param((char *) "yearly_mortality_rate_file", yearly_mortality_rate_file);
+  Params::get_param((char *) "yearly_birth_rate_file", yearly_birth_rate_file);
+  Params::get_param((char *) "birth_rate_multiplier", &birth_rate_multiplier);
 
   // read death rate file and load the values unt the death_rate_array
   FILE *fp = fopen(yearly_mortality_rate_file, "r");

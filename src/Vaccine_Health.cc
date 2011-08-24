@@ -59,7 +59,7 @@ void Vaccine_Health::update(int day, int age){
   // First check for immunity 
   if (is_effective() && (day == vaccination_effective_day)) {
     // Going out to Person, so that activities can be accessed
-    Disease* s = health->get_self()->get_population()->get_disease(0);
+    Disease* s = Global::Pop.get_disease(0);
     health->get_self()->become_immune(s);
     if(Global::Debug < 1) {
       cout << "Agent " << health->get_self()->get_id() 

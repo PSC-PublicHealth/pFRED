@@ -129,7 +129,7 @@ void Epidemic::print_stats(int day) {
 	  vaccine_acceptance, RR,NR, clinical_attack_rate);
   fprintf(Global::Outfp, "%s %s Year %d Week %d\n",
       Global::Sim_Date->get_day_of_week_string(day).c_str(),
-      Global::Sim_Date->get_YYYYMMDD(day),
+      Global::Sim_Date->get_YYYYMMDD(day).c_str(),
       Global::Sim_Date->get_epi_week_year(day),
 	    Global::Sim_Date->get_epi_week(day));
   fflush(Global::Outfp);
@@ -145,7 +145,7 @@ void Epidemic::print_stats(int day) {
 	    vaccine_acceptance, RR,NR, clinical_attack_rate);
     fprintf(Global::Statusfp, "%s %s Year %d Week %d\n",
       Global::Sim_Date->get_day_of_week_string(day).c_str(),
-      Global:: Sim_Date->get_YYYYMMDD(day),
+      Global:: Sim_Date->get_YYYYMMDD(day).c_str(),
       Global::Sim_Date->get_epi_week_year(day),
       Global::Sim_Date->get_epi_week(day));
     fflush(Global::Statusfp);

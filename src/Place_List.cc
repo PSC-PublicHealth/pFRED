@@ -47,7 +47,7 @@ void Place_List::read_places() {
     fprintf(Global::Statusfp, "read places entered\n");
     fflush(Global::Statusfp);
   }
-  get_param((char *) "locfile", locfile);
+  Params::get_param((char *) "locfile", locfile);
   // read in locations
   char location_file[256];
   sprintf(location_file, "%s/%s", Global::Population_directory, locfile);
@@ -153,8 +153,8 @@ void Place_List::read_places() {
       double lon = place->get_longitude();
       Cell * grid_cell = (Cell *) Global::Cells->get_grid_cell_from_lat_lon(lat,lon);
       if (grid_cell == NULL) {
-	printf("Help: household %d has bad grid_cell,  lat = %f  lon = %f\n",
-	       place->get_id(),lat,lon);
+        printf("Help: household %d has bad grid_cell,  lat = %f  lon = %f\n",
+               place->get_id(),lat,lon);
       }
       assert(grid_cell != NULL);
       grid_cell->add_household(place);

@@ -31,7 +31,6 @@
 
 Person::Person() {
   idx = -1;
-  pop = NULL;
   demographics = NULL;
   health = NULL;
   activities = NULL;
@@ -46,13 +45,9 @@ Person::~Person() {
 }
 
 void Person::newborn_setup(int index, int age, char sex, int marital, int occ,
-			   Place **favorite_places, Population* Pop, int day) {
+			   Place **favorite_places, int day) {
   idx = index;
 
-  //Set the baby's label to the index since it has no value from the population file as a reference
-  sprintf(label, "%d", idx);
-
-  pop = Pop;
   demographics = new Demographics(this, age, sex, marital, occ, day, true);
   health = new Health(this);
   activities = new Activities(this, favorite_places);
@@ -69,12 +64,9 @@ void Person::newborn_setup(int index, int age, char sex, int marital, int occ,
   }
 }
 
-Person::Person(int index, const char *label, int age, char sex, int marital, int occ,
-	       char *house, char *school, char *work, Population *Pop,
-	       int day) {
+Person::Person(int index, int age, char sex, int marital, int occ,
+	       char *house, char *school, char *work, int day) {
   idx = index;
-  strcpy(this->label, label);
-  pop = Pop;
   demographics =
     new Demographics(this, age, sex, marital, occ, day, false);
   health = new Health(this);
@@ -119,7 +111,7 @@ void Person::print(FILE *fp, int disease) const {
 }
 
 int Person::get_diseases() {
-  return pop->get_diseases();
+  return Global::Pop.get_diseases();
 }
 
 void Person::become_unsusceptible(int disease) {
@@ -193,7 +185,7 @@ int Person::is_new_case(int day, int disease) const {
 }
 
 void Person::set_changed(){
-  this->pop->set_changed(this);
+  Global::Pop.set_changed(this);
 }
 
 void Person::infect(Person *infectee, int disease, Transmission *transmission) {
@@ -207,13 +199,13 @@ void Person::getInfected(Disease *disease, Transmission *transmission) {
 }
 
 Person * Person::give_birth(int day) {
-  int id = pop->get_next_id(), age = 0, married = 0, prof = 2;
+  int id = Global::Pop.get_next_id(), age = 0, married = 0, prof = 2;
   char sex = (URAND(0.0, 1.0) < 0.5 ? 'M' : 'F');
   Place *favorite_place[] = {
     get_household(), get_neighborhood(),
     NULL, NULL, NULL, NULL };
   Person * baby = new Person();
-  baby->newborn_setup(id, age, sex, married, prof, favorite_place, pop, day);
+  baby->newborn_setup(id, age, sex, married, prof, favorite_place, day);
   return baby;
 }
 
@@ -228,9 +220,9 @@ void Person::addPrevalence(int disease, vector<int> strains) {
 string Person::to_string() {
 
   stringstream tmp_string_stream;
-  // (i.e Label *ID* Age Sex Married Occupation Household School *Classroom* Workplace *Office*)
-  tmp_string_stream << this->label << " " << this->idx << " " << this->get_age() << " ";
-  tmp_string_stream << this->get_sex() << " " << this->get_marital_status() << " " << this->get_profession() << " ";
+  // (i.e *ID* Age Sex Married Occupation Household School *Classroom* Workplace *Office*)
+  tmp_string_stream << this->idx << " " << this->get_age() << " " <<  this->get_sex() << " " ;
+  tmp_string_stream << this->get_marital_status() << " " << this->get_profession() << " ";
   Place *tmp_place = this->get_household();
   if(tmp_place == NULL)
     tmp_string_stream << "-1 ";

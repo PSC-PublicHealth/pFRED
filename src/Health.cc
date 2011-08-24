@@ -37,7 +37,7 @@ char dummy_label[8];
 
 Health::Health (Person * person) {
   self = person;
-  diseases = self->get_population()->get_diseases();
+  diseases = Global::Pop.get_diseases();
   infection = new Infection* [diseases];
   susceptibility_multp = new double [diseases];
   status = new char [diseases];
@@ -50,7 +50,7 @@ Health::Health (Person * person) {
   }
 
   if(nantivirals == -1) {
-    get_param_from_string("number_antivirals",&nantivirals);
+    Params::get_param_from_string("number_antivirals",&nantivirals);
   }
 
   immunity.assign(diseases,false);
@@ -65,7 +65,7 @@ Health::Health (Person * person) {
   // Determine if the agent is at risk
   at_risk.assign(diseases,false);
   for(int disease = 0; disease < diseases; disease++) {
-    Disease* s = self->get_population()->get_disease(disease);
+    Disease* s = Global::Pop.get_disease(disease);
 
     if(!s->get_at_risk()->is_empty()) {
       double at_risk_prob = s->get_at_risk()->find_value(self->get_age());
@@ -103,7 +103,7 @@ void Health::become_susceptible(int disease) {
   }
 
   susceptibility_multp[disease] = 1.0;
-  self->get_population()->get_disease(disease)->increment_S_count();
+  Global::Pop.get_disease(disease)->increment_S_count();
   status[disease] = 'S';
   susceptible[disease] = true;
 }
@@ -121,7 +121,7 @@ void Health::become_removed(int disease) {
     delete infection[disease];
     infection[disease] = NULL;
   } else {
-    self->get_population()->get_disease(disease)->decrement_S_count();
+    Global::Pop.get_disease(disease)->decrement_S_count();
   }
 
   status[disease] = 'D';

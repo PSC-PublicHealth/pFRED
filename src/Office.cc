@@ -40,10 +40,10 @@ void Office::get_parameters(int diseases) {
   for (int s = 0; s < diseases; s++) {
     int n;
     sprintf(param_str, "office_contacts[%d]", s);
-    get_param((char *) param_str, &Office::Office_contacts_per_day[s]);
+    Params::get_param((char *) param_str, &Office::Office_contacts_per_day[s]);
     
     sprintf(param_str, "office_prob[%d]", s);
-    n = get_param_matrix(param_str, &Office::Office_contact_prob[s]);
+    n =  Params::get_param_matrix(param_str, &Office::Office_contact_prob[s]);
     if (Global::Verbose > 1) {
       printf("\nOffice_contact_prob:\n");
       for (int i  = 0; i < n; i++)  {

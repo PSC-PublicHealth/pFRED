@@ -173,7 +173,6 @@ void Activities::update_susceptible_activities(int day) {
 
 
 void Activities::update_schedule(int day) {
-
   if (traveling_outside)
     return;
 
@@ -496,7 +495,7 @@ void Activities::update_household_mobility() {
   }
 
 
-  int popsize = self->get_population()->get_pop_size();
+  int popsize = Global::Pop.get_pop_size();
   if (mcount == popsize) {
     double mobility_rate[MAX_MOBILITY_AGE + 1];
     FILE *fp;
@@ -533,7 +532,7 @@ void Activities::read_init_files() {
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "read activities init files entered\n"); fflush(Global::Statusfp);
   }
-  get_param((char *) "yearly_mobility_rate_file", yearly_mobility_rate_file);
+  Params::get_param((char *) "yearly_mobility_rate_file", yearly_mobility_rate_file);
   // read mobility rate file and load the values into the mobility_rate_array
   FILE *fp = fopen(yearly_mobility_rate_file, "r");
   if (fp == NULL) {

@@ -20,20 +20,20 @@ void FixedIntraHost::setup(Disease *disease) {
   int id = disease->get_id();
 
   sprintf(s, "infectivity_profile_probabilities[%d]", id);
-  get_param(s, &numProfiles);
-  get_param_vector(s, probabilities);
+  Params::get_param(s, &numProfiles);
+  Params::get_param_vector(s, probabilities);
 
   max_days = 0;
 
   for(int i = 0; i < numProfiles; i++) {
     vector<double> infProfile;
     sprintf(s, "fixed_infectivity_profile[%d][%d]", id, i);
-    get_param_vector(s, infProfile);
+    Params::get_param_vector(s, infProfile);
     infLibrary.push_back(infProfile);
 
     vector<double> sympProfile;
     sprintf(s, "fixed_symptomaticity_profile[%d][%d]", id, i);
-    get_param_vector(s, sympProfile);
+    Params::get_param_vector(s, sympProfile);
     sympLibrary.push_back(sympProfile);
 
     if( (int) infProfile.size() > max_days) max_days = infProfile.size();
