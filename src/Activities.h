@@ -68,7 +68,7 @@ public:
   /**
    * Print the Activity schedule
    */
-  void print_schedule();
+  void print_schedule(int day);
 
   /**
    * Print out information about this object

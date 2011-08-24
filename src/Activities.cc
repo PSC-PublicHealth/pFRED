@@ -102,6 +102,9 @@ Activities::Activities (Person *person, char *house, char *school, char *work) {
   }
   // need to set the daily schedule
   schedule_updated = -1;
+
+  travel_status = false;
+  traveling_outside = false;
 }
 
 void Activities::assign_profile() {
@@ -137,8 +140,10 @@ void Activities::update(int day) {
 }
 
 void Activities::update_infectious_activities(int day) {
+  // skip scheduled activities if traveling abroad
   if (traveling_outside)
     return;
+
   int diseases = self->get_diseases();
   for (int dis = 0; dis < diseases; dis++) {
     if (self->is_infectious(dis)) {
@@ -154,8 +159,10 @@ void Activities::update_infectious_activities(int day) {
 }
 
 void Activities::update_susceptible_activities(int day) {
+  // skip scheduled activities if traveling abroad
   if (traveling_outside)
     return;
+
   int diseases = self->get_diseases();
   for (int dis = 0; dis < diseases; dis++) {
     if (self->is_susceptible(dis)) {
@@ -173,9 +180,6 @@ void Activities::update_susceptible_activities(int day) {
 
 
 void Activities::update_schedule(int day) {
-  if (traveling_outside)
-    return;
-
   // update this schedule only once per day
   if (day <= schedule_updated)
     return;
@@ -225,22 +229,19 @@ void Activities::update_schedule(int day) {
 
   if (Global::Verbose > 2) {
     fprintf(Global::Statusfp, "update_schedule on day %d\n", day);
-    print_schedule();
+    print_schedule(day);
     fflush(Global::Statusfp);
   }
 }
 
-void Activities::print_schedule() {
-  fprintf(Global::Statusfp, "Schedule for person %d  ", self->get_id());
+void Activities::print_schedule(int day) {
+  fprintf(Global::Statusfp, "day %d schedule for person %d  ", day, self->get_id());
   for (int p = 0; p < FAVORITE_PLACES; p++) {
-    if (on_schedule[p])
+    fprintf(Global::Statusfp, on_schedule[p]? "+" : "-");
+    if (favorite_place[p] == NULL) {
+      fprintf(Global::Statusfp, "-1 ");
+    } else {
       fprintf(Global::Statusfp, "%d ", favorite_place[p]->get_id());
-    else {
-      if (favorite_place[p] == NULL) {
-	fprintf(Global::Statusfp, "-1 ");
-      } else {
-	fprintf(Global::Statusfp, "-%d ", favorite_place[p]->get_id());
-      }
     }
   }
   fprintf(Global::Statusfp, "\n");
