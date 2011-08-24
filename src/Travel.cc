@@ -113,32 +113,37 @@ void Travel::setup() {
     }
   }      
 
-  // make a list of travel probs greater than the threshold
-  double threshold = 0.0;
-  double active_total = 0.0;
-  for (int row = 0; row < rows; row++) {
-    for (int col = 0; col < cols; col++) {
-      double * trav = travel_prob[row][col];
-      for (int i = 0; i < rows; i++) {
-	for (int j = 0; j < cols; j++) {
-	  double pr = trav[i*cols+j] / total;
-	  if (pr > threshold) {
-	    gravity_cdf.push_back(pr);
-	    trip_source.push_back(row*cols+col);
-	    trip_dest.push_back(i*cols+j);
-	    active_total += pr;
+  if (total == 0.0) {
+    Global::Enable_Travel = 0;
+  }
+  else {
+    // make a list of travel probs greater than the threshold
+    double threshold = 0.0;
+    double active_total = 0.0;
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols; col++) {
+	double * trav = travel_prob[row][col];
+	for (int i = 0; i < rows; i++) {
+	  for (int j = 0; j < cols; j++) {
+	    double pr = trav[i*cols+j] / total;
+	    if (pr > threshold) {
+	      gravity_cdf.push_back(pr);
+	      trip_source.push_back(row*cols+col);
+	      trip_dest.push_back(i*cols+j);
+	      active_total += pr;
+	    }
 	  }
 	}
       }
     }
-  }
 
-  // normalize and accumulate probabilities
-  double cumulative = 0.0;
-  n = gravity_cdf.size();
-  for (int i = 0; i < n; i++) {
-    gravity_cdf[i] = cumulative + gravity_cdf[i]/active_total;
-    cumulative = gravity_cdf[i];
+    // normalize and accumulate probabilities
+    double cumulative = 0.0;
+    n = gravity_cdf.size();
+    for (int i = 0; i < n; i++) {
+      gravity_cdf[i] = cumulative + gravity_cdf[i]/active_total;
+      cumulative = gravity_cdf[i];
+    }
   }
 
   // free memory for travel probability matrix
@@ -231,20 +236,22 @@ void Travel::update_travel(int day) {
 void Travel::select_visitor_and_visited(Person **v1, Person **v2) {
   Person * visitor = NULL;
   Person *visited = NULL;
-  int n = draw_from_cdf_vector(gravity_cdf);
-  int src = trip_source[n];
-  int isrc = src/cols;
-  int jsrc = src - isrc*cols;
-  Large_Cell * src_cell = Global::Large_Cells->get_grid_cell(isrc,jsrc);
-  visitor = src_cell->select_random_person();
-  assert(visitor != NULL);
-
-  int dest = trip_dest[n];
-  int idest = dest/cols;
-  int jdest = dest - idest*cols;
-  Large_Cell * dest_cell = Global::Large_Cells->get_grid_cell(idest,jdest);
-  visited = dest_cell->select_random_person();
-  assert(visited != NULL);
+  if (Global::Enable_Travel) {
+    int n = draw_from_cdf_vector(gravity_cdf);
+    int src = trip_source[n];
+    int isrc = src/cols;
+    int jsrc = src - isrc*cols;
+    Large_Cell * src_cell = Global::Large_Cells->get_grid_cell(isrc,jsrc);
+    visitor = src_cell->select_random_person();
+    assert(visitor != NULL);
+    
+    int dest = trip_dest[n];
+    int idest = dest/cols;
+    int jdest = dest - idest*cols;
+    Large_Cell * dest_cell = Global::Large_Cells->get_grid_cell(idest,jdest);
+    visited = dest_cell->select_random_person();
+    assert(visited != NULL);
+  }
   *v1 = visitor;
   *v2 = visited;
   return;
@@ -254,31 +261,33 @@ void Travel::select_visitor_and_visited(Person **v1, Person **v2) {
 void Travel::test_gravity_model() {
   Person * visitor;
   Person * visited;
-  double min_lat = Global::Large_Cells->get_min_lat();
-  double min_lon = Global::Large_Cells->get_min_lon();
-  FILE *fp = fopen("trips.plt", "w");
-  FILE *fp2 = fopen("point.txt", "w");
-  for (int i = 0; i < 1000; i++) {
-    // printf("trial = %d\n", i);fflush(stdout);
-    select_visitor_and_visited(&visitor, &visited);
-    assert(visitor != NULL);
-    assert(visited != NULL);
-    printf("visitor id %d\n", visitor->get_id()); fflush(stdout);
-    printf("visited id %d\n", visited->get_id()); fflush(stdout);
-    double lat1 = visitor->get_household()->get_latitude();
-    double lon1 = visitor->get_household()->get_longitude();
-    double lat2 = visited->get_household()->get_latitude();
-    double lon2 = visited->get_household()->get_longitude();
-    double x1, y1;
-    double x2, y2;
-    Geo_Utils::translate_to_cartesian(lat1, lon1, &x1, &y1, min_lat, min_lon);
-    Geo_Utils::translate_to_cartesian(lat2, lon2, &x2, &y2, min_lat, min_lon);
-    fprintf(fp, "set arrow from %f,%f to %f,%f nohead\n",x1,y1,x2,y2);
-    fprintf(fp2, "%f %f to %f %f\n",x1,y1,x2,y2);
+  if (Global::Enable_Travel) {
+    double min_lat = Global::Large_Cells->get_min_lat();
+    double min_lon = Global::Large_Cells->get_min_lon();
+    FILE *fp = fopen("trips.plt", "w");
+    FILE *fp2 = fopen("point.txt", "w");
+    for (int i = 0; i < 1000; i++) {
+      // printf("trial = %d\n", i);fflush(stdout);
+      select_visitor_and_visited(&visitor, &visited);
+      assert(visitor != NULL);
+      assert(visited != NULL);
+      printf("visitor id %d\n", visitor->get_id()); fflush(stdout);
+      printf("visited id %d\n", visited->get_id()); fflush(stdout);
+      double lat1 = visitor->get_household()->get_latitude();
+      double lon1 = visitor->get_household()->get_longitude();
+      double lat2 = visited->get_household()->get_latitude();
+      double lon2 = visited->get_household()->get_longitude();
+      double x1, y1;
+      double x2, y2;
+      Geo_Utils::translate_to_cartesian(lat1, lon1, &x1, &y1, min_lat, min_lon);
+      Geo_Utils::translate_to_cartesian(lat2, lon2, &x2, &y2, min_lat, min_lon);
+      fprintf(fp, "set arrow from %f,%f to %f,%f nohead\n",x1,y1,x2,y2);
+      fprintf(fp2, "%f %f to %f %f\n",x1,y1,x2,y2);
+    }
+    fprintf(fp, "plot 'point.txt' using 1:2 with dots\n");
+    fclose(fp);
+    fclose(fp2);
   }
-  fprintf(fp, "plot 'point.txt' using 1:2 with dots\n");
-  fclose(fp);
-  fclose(fp2);
   exit(0);
 }
 
