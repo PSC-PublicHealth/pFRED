@@ -25,39 +25,38 @@
 #include "Travel.h"
 
 int main(int argc, char* argv[]) {
-  time_t start_timer, stop_timer, fred_timer;
   int run;          // number of current run
   unsigned long new_seed;
   char filename[256];
   char directory[256];
   char paramfile[256];
 
-  time(&fred_timer);
+  Global::Statusfp = stdout;
+  Utils::fred_start_timer();
+  Utils::fred_print_wall_time("FRED started");
 
+  // read optional param file name from command line
   if (argc > 1) {
     strcpy(paramfile, argv[1]);
   } else {
     strcpy(paramfile, "params");
   }
+  fprintf(Global::Statusfp, "param file = %s\n", paramfile);
+  fflush(Global::Statusfp);
 
+  // read optional run number from command line (must be 2nd arg)
   if (argc > 2) {
     sscanf(argv[2], "%d", &run);
   } else {
     run = 1;
   }
 
+  // read optional working directory from command line (must be 3rd arg)
   if (argc > 3) {
     strcpy(directory, argv[3]);
   } else {
     strcpy(directory, "");
   }
-
-  Global::Statusfp = stdout;
-  time(&start_timer);
-  fprintf(Global::Statusfp, "FRED started %s", ctime(&start_timer));
-  fprintf(Global::Statusfp, "param file = %s\n", paramfile);
-  fflush(Global::Statusfp);
-
 
   // get runtime parameters
   Params::read_parameters(paramfile);
@@ -71,6 +70,7 @@ int main(int argc, char* argv[]) {
     strcpy(directory, Global::Output_directory);
     //printf("directory = %s\n",directory);
   }
+
   // create the output directory, if necessary
   mode_t mask;        // the user's current umask
   mode_t mode = 0777; // as a start
@@ -151,11 +151,12 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  // Date Setup
+  // initialize RNG
   INIT_RANDOM(Global::Seed);
-  Global::Random_start_day = (Global::Epidemic_offset > 6);
 
-  // Start_date must have format 'YYYY-MM-DD'
+  // Date Setup
+  Global::Random_start_day = (Global::Epidemic_offset > 6);
+  // Start_date parameter must have format 'YYYY-MM-DD'
   Global::Sim_Date = new Date(string(Global::Start_date));
   Global::Sim_Date->setup(directory, Global::Days);
 
@@ -168,63 +169,40 @@ int main(int argc, char* argv[]) {
   fprintf(Global::Statusfp, "seed = %lu\n", new_seed);
   INIT_RANDOM(new_seed);
 
-  time(&start_timer);
-  fprintf(Global::Statusfp, "\nFRED run %d started %s\n", run, ctime(&start_timer));
-  fflush(Global::Statusfp);
+  Utils::fred_print_wall_time("\nFRED run %d started", (int) run);
 
   // initializations
 
   // read in the household, schools and workplaces (also sets up grids)
-  time(&start_timer);
   Global::Places.read_places();
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "Places.read_places() took %d seconds\n",
-	  (int) (stop_timer - start_timer));
-  fflush(Global::Statusfp);
+  Utils::fred_print_lap_time("Places.read_places");
 
   // read in the population and have each person enroll
   // in each favorite place identified in the population file
-  time(&start_timer);
   Global::Pop.setup();
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "Pop.setup() took %d seconds\n",
-	  (int) (stop_timer - start_timer));
-  fflush(Global::Statusfp);
+  Utils::fred_print_lap_time("Pop.setup");
 
   // define FRED-specific places
   // and have each person enroll as needed
-  time(&start_timer);
   Global::Places.setup_classrooms();
   Global::Places.setup_offices();
   Global::Pop.assign_classrooms();
   Global::Pop.assign_offices();
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "assign classrooms and offices took %d seconds\n",
-	  (int) (stop_timer - start_timer));
-  fflush(Global::Statusfp);
+  Utils::fred_print_lap_time("assign classrooms and offices");
 
   // after all enrollments, prepare to receive visitors
-  time(&start_timer);
   Global::Places.prepare();
 
   // record the favorite places for households within each grid cell
   Global::Cells->record_favorite_places();
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "place prep took %d seconds\n",
-	  (int) (stop_timer - start_timer));
-  fflush(Global::Statusfp);
+  Utils::fred_print_lap_time("place prep");
 
   if (Global::Enable_Large_Grid && Global::Enable_Travel) {
-    time(&start_timer);
     Travel::setup();
-    time(&stop_timer);
-    fprintf(Global::Statusfp, "Travel setup took %d seconds\n",
-	    (int) (stop_timer - start_timer));
-    fflush(Global::Statusfp);
+    Utils::fred_print_lap_time("Travel setup");
   }
 
   if (Global::Quality_control) {
-    time(&start_timer);
     Global::Pop.quality_control();
     Global::Places.quality_control(directory);
     if (Global::Enable_Large_Grid) {
@@ -238,10 +216,7 @@ int main(int argc, char* argv[]) {
       Global::Cells->quality_control(directory);
     }
     Global::Pop.get_network_stats(directory);
-    time(&stop_timer);
-    fprintf(Global::Statusfp, "quality control took %d seconds\n",
-	    (int) (stop_timer - start_timer));
-    fflush(Global::Statusfp);
+    Utils::fred_print_lap_time("quality control");
   }
 
   // allow for an offset in the start of the epidemic
@@ -254,65 +229,34 @@ int main(int argc, char* argv[]) {
     Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Date->get_YYYYMMDD(0).c_str(), run);
   }
 
-  stop_timer = time(&stop_timer);
-  fprintf(Global::Statusfp, "FRED initializations complete at %s\n",
-	  ctime(&stop_timer));
-  fprintf(Global::Statusfp, "FRED initializations took %d secs\n",
-	  (int) (stop_timer-start_timer));
-  start_timer = stop_timer;
-  fflush(Global::Statusfp);
+  Utils::fred_print_lap_time("FRED initialization");
+  Utils::fred_print_wall_time("FRED initialization complete");
 
   for (int day = 0; day < Global::Days; day++) {
-    time_t day_timer;
-    time(&day_timer);
+    Utils::fred_start_day_timer();
     if (day == Global::Reseed_day) {
       fprintf(Global::Statusfp, "************** reseed day = %d\n", day);
       fflush(Global::Statusfp);
       INIT_RANDOM(new_seed + run - 1);
     }
-    time(&start_timer);
 
     Global::Places.update(day);
-    time(&stop_timer);
-    fprintf(Global::Statusfp, "day %d  Places.update took %d seconds\n",
-	    day,(int)(stop_timer-start_timer));
-    fflush(Global::Statusfp);
-    start_timer = stop_timer;
+    Utils::fred_print_lap_time("day %d Places.update", day);
 
     Global::Pop.begin_day(day);
-    time(&stop_timer);
-    fprintf(Global::Statusfp, "day %d  Pop.begin took %d seconds\n",
-	    day,(int)(stop_timer-start_timer));
-    fflush(Global::Statusfp);
-    start_timer = stop_timer;
+    Utils::fred_print_lap_time("day %d Pop.begin", day);
 
     Global::Pop.get_visitors_to_infectious_places(day);
-    time(&stop_timer);
-    fprintf(Global::Statusfp, "day %d  Pop.get_visitors took %d seconds\n",
-	    day,(int)(stop_timer-start_timer));
-    fflush(Global::Statusfp);
-    start_timer = stop_timer;
+    Utils::fred_print_lap_time("day %d Pop.get_visitors", day);
 
     Global::Pop.transmit_infection(day);
-    time(&stop_timer);
-    fprintf(Global::Statusfp, "day %d  Pop.transmit took %d seconds\n",
-	    day,(int)(stop_timer-start_timer));
-    fflush(Global::Statusfp);
-    start_timer = stop_timer;
+    Utils::fred_print_lap_time("day %d Pop.transmit", day);
 
     Global::Pop.end_day(day);
-    time(&stop_timer);
-    fprintf(Global::Statusfp, "day %d  Pop.end_day took %d seconds\n",
-	    day,(int)(stop_timer-start_timer));
-    fflush(Global::Statusfp);
-    start_timer = stop_timer;
+    Utils::fred_print_lap_time("day %d Pop.end_day", day);
 
     Global::Pop.report(day);
-    time(&stop_timer);
-    fprintf(Global::Statusfp, "day %d  Pop.report took %d seconds\n",
-	    day,(int)(stop_timer-start_timer));
-    fflush(Global::Statusfp);
-    start_timer = stop_timer;
+    Utils::fred_print_lap_time("day %d Pop.report", day);
 
     if (Global::Enable_Migration && Date::match_pattern(day, "02-*-*")) {
       Global::Cells->population_migration(day);
@@ -337,18 +281,13 @@ int main(int argc, char* argv[]) {
     if (Global::Incremental_Trace && day && !(day%Global::Incremental_Trace))
       Global::Pop.print(1, day);
 
-    time(&stop_timer);
-    fprintf(Global::Statusfp, "day %d finished  %s", day, ctime(&stop_timer));
-    fprintf(Global::Statusfp, "day %d took %d seconds\n",
-	    day,(int)(stop_timer-day_timer));
-    fflush(Global::Statusfp);
+    Utils::fred_print_wall_time("day %d finished", day);
+
+    Utils::fred_print_day_timer(day);
   }
 
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "FRED finished %s", ctime(&stop_timer));
-  fprintf(Global::Statusfp, "FRED took %d seconds\n",
-	  (int)(stop_timer-fred_timer));
-  fflush(Global::Statusfp);
+  Utils::fred_print_wall_time("FRED finished");
+  Utils::fred_print_finish_timer();
 
   // finish up
   Global::Pop.end_of_run();

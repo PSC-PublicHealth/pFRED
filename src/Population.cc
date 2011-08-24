@@ -288,7 +288,6 @@ void Population::read_population() {
 }
 
 void Population::begin_day(int day) {
-  time_t start_timer, stop_timer;
 
   // clear lists of births and deaths
   if (Global::Enable_Deaths) death_list.clear();
@@ -311,24 +310,16 @@ void Population::begin_day(int day) {
   }
 
   // update everyone's demographics
-  time(&start_timer);
   for (int p = 0; p < pop_size; p++) {
     pop[p]->update_demographics(day);
   }
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "day %d update_demographics took %d seconds\n",
-	  day, (int) (stop_timer-start_timer));
-  fflush(Global::Statusfp);
+  // Utils::fred_print_wall_time("day %d update_demographics", day);
 
   // update everyone's health status
-  time(&start_timer);
   for (int p = 0; p < pop_size; p++) {
     pop[p]->update_health(day);
   }
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "day %d update_health took %d seconds\n",
-	  day, (int) (stop_timer-start_timer));
-  fflush(Global::Statusfp);
+  // Utils::fred_print_wall_time("day %d update_health", day);
 
   if (Global::Enable_Births) {
     // add the births to the population
@@ -368,52 +359,32 @@ void Population::begin_day(int day) {
   }
 
   // update travel decisions
-  time(&start_timer);
   Travel::update_travel(day);
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "day %d update_travel took %d seconds\n",
-	  day, (int) (stop_timer-start_timer));
-  fflush(Global::Statusfp);
+  // Utils::fred_print_wall_time("day %d update_travel", day);
 
   // update adult decisions
-  time(&start_timer);
   for (int p = 0; p < pop_size; p++) {
     if (Global::ADULT_AGE <= pop[p]->get_age()) {
       pop[p]->update_behavior(day);
     }
   }
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "day %d update_behavior for adults took %d seconds\n",
-	  day, (int) (stop_timer-start_timer));
-  fflush(Global::Statusfp);
+  // Utils::fred_print_wall_time("day %d update_behavior", day);
 
   // update child decisions
-  time(&start_timer);
   for (int p = 0; p < pop_size; p++) {
     if (pop[p]->get_age() < Global::ADULT_AGE) {
       pop[p]->update_behavior(day);
     }
   }
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "day %d update_behavior for children took %d seconds\n",
-	  day, (int) (stop_timer-start_timer));
-  fflush(Global::Statusfp);
+  // Utils::fred_print_wall_time("day %d update_behavior for children", day);
 
   // distribute vaccines
-  time(&start_timer);
   vacc_manager->update(day);
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "day %d update vacc_manager took %d seconds\n",
-	  day, (int) (stop_timer-start_timer));
-  fflush(Global::Statusfp);
+  // Utils::fred_print_wall_time("day %d vacc_manager", day);
 
   // distribute AVs
-  time(&start_timer);
   av_manager->update(day);
-  time(&stop_timer);
-  fprintf(Global::Statusfp, "day %d update av_manager took %d seconds\n",
-	  day, (int) (stop_timer-start_timer));
-  fflush(Global::Statusfp);
+  // Utils::fred_print_wall_time("day %d av_manager", day);
 
   if (Global::Verbose > 1) {
     fprintf(Global::Statusfp, "population begin_day finished\n");
