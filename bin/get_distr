@@ -6,7 +6,7 @@ use Env;
 my $FRED = $ENV{FRED_HOME};
 die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
-my @places = qw/N X H C S O W/;
+my @places = qw/X H N S C W O/;
 my ($dir) = @ARGV;
 $dir = "OUT" if not $dir;
 open FH, ">distr";
@@ -30,15 +30,33 @@ for my $i (1..20) {
 }
 close FH;
 
+my @dis = ();
 for my $i (0..6) {
-  print "$places[$i] ";
-  get_mean_std("distr", $i);
+   print "$places[$i] ";
+   my $ans = get_mean_std("distr", $i);
+   print "$ans\n";
+   my @res = split " ", $ans;
+   $dis[$i] = $res[0];
 }
 unlink "distr";
-print "\n\ntargets:\n";
-print "N 33\nX 0\nH 30\n";
-print "C 16.44\nS 8.22\n";
-print "O 8.22\nW 4.12\n";
+
+print "\nobserved:\n";
+print "X $dis[0]\n";
+print "H $dis[1]\n";
+print "N $dis[2]\n";
+print "S+C ", $dis[3]+$dis[4], "\n";
+print "W+O ", $dis[5]+$dis[6], "\n\n";
+
+print "\ntargets:\n";
+print "X 0\n";
+print "H 30\n";
+print "N 33\n";
+print "S+C 24.66\n";
+print "W+O 12.34\n\n";
+
+open FH, ">get_distr.dat";
+print FH "$dis[1] $dis[2] ", $dis[3]+$dis[4], " ", $dis[5]+$dis[6], "\n";
+close FH;
 exit;
 
 
@@ -62,7 +80,8 @@ sub get_mean_std {
   my $sq = 0;
   $sq = ($n*$sumsq - $sum*$sum)/($n*($n-1)) if ($n > 1);
   $std = sqrt($sq) if ($sq > 0.000000001);
-  printf "%5.2f %4.2f %d\n", $mean, $std, $n;  
+  my $ans = sprintf "%5.2f %4.2f %d", $mean, $std, $n;
+  return $ans;
   # return ($n, $mean, $std);
 }
   
