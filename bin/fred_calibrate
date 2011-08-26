@@ -19,7 +19,7 @@ my $ARtarget = 33;
 
 # stopping criteria
 my $days = 100;
-my $threshold = 1.0;
+my $threshold = 0.5;
 
 my ($oldparams) = @ARGV;
 open FH, $oldparams or die "Can't open file old params file\nusage: calibrate params\n";
@@ -91,6 +91,7 @@ while ($error > $threshold) {
   
   # adjust to achieve desired AR 
   my $ar_ratio = $ARtarget / $AR;
+  if (abs($ea) < 1.0) { $ar_ratio = 1.0; }
   $h *= $ar_ratio * $Htarget / $H;
   $n *= $ar_ratio * $Ntarget / $N;
   $s *= $ar_ratio * $Starget / $S;
