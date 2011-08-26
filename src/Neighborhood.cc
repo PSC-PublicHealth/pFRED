@@ -17,8 +17,9 @@
 #include "Disease.h"
 
 //Private static variables that will be set by parameter lookups
-double * Neighborhood::Neighborhood_contacts_per_day;
-double *** Neighborhood::Neighborhood_contact_prob;
+double * Neighborhood::Neighborhood_contacts_per_day = NULL;
+double *** Neighborhood::Neighborhood_contact_prob = NULL;
+double * Neighborhood::Weekend_contact_rate = NULL;
 
 //Private static variable to assure we only lookup parameters once
 bool Neighborhood::Neighborhood_parameters_set = false;
@@ -35,11 +36,14 @@ void Neighborhood::get_parameters(int diseases) {
   
   if (Neighborhood::Neighborhood_parameters_set) return;
   
+  Neighborhood::Weekend_contact_rate = new double [ diseases ];
   Neighborhood::Neighborhood_contacts_per_day = new double [ diseases ];
   Neighborhood::Neighborhood_contact_prob = new double** [ diseases ];
   
   for (int s = 0; s < diseases; s++) {
     int n;
+    sprintf(param_str, "weekend_contact_rate[%d]", s);
+    Params::get_param((char *) param_str, &Neighborhood::Weekend_contact_rate[s]);
     sprintf(param_str, "neighborhood_contacts[%d]", s);
     Params::get_param((char *) param_str, &Neighborhood::Neighborhood_contacts_per_day[s]);
     

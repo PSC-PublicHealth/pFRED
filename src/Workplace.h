@@ -49,7 +49,7 @@ public:
   /**
    * @see Place::get_group(int disease, Person * per)
    */
-  int get_group(int disease, Person * per);
+  int get_group(int disease, Person * per) { return 0; }
 
   /**
     * @see Place::get_transmission_prob(int disease, Person * i, Person * s)

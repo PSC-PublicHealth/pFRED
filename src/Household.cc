@@ -16,6 +16,8 @@
 #include "Cell.h"
 #include "Grid.h"
 #include "Utils.h"
+#include "Random.h"
+#include "Transmission.h"
 
 //Private static variables that will be set by parameter lookups
 double * Household::Household_contacts_per_day;
@@ -170,3 +172,75 @@ void Household::record_profile() {
   for (int i = 0; i < N; i++)
     ids.push_back(housemate[i]->get_id()); 
 }
+
+void Household::spread_infection(int day, int s) {
+	
+  vector<Person *>::iterator itr;
+  Disease * disease = population->get_disease(s);
+
+  double contact_prob = get_contacts_per_day(s);
+  for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
+    Person * infector = *itr;			// infectious indiv
+    assert(infector->get_disease_status(s)=='I'||infector->get_disease_status(s)=='i');
+		
+    for (int pos = 0; pos < S[s]; pos++) {
+      Person * infectee = susceptibles[s][pos];
+      if (Global::Verbose > 1) {
+	printf("possible infectee = %d  pos = %d  S[%d] = %d\n",
+               infectee->get_id(), pos, s, S[s]);
+	fflush(stdout);
+      }
+
+      // is the target still susceptible?
+      if (infectee->is_susceptible(s)) {
+	if (Global::Verbose > 1) { printf("Victim is susceptible\n"); }
+    
+	// get the transmission probs for this infector/infectee pair
+	double transmission_prob = get_transmission_prob(s, infector, infectee);
+	double infectivity = infector->get_infectivity(s, day);
+	double susceptibility = infectee->get_susceptibility(s);
+	if (Global::Verbose > 1) {
+	  printf("trans_prob = %f  susceptibility = %f\n",
+		 transmission_prob, susceptibility);
+	  fflush(stdout);
+	}
+
+	double infection_prob = contact_prob * transmission_prob * infectivity * susceptibility;
+	// attempt transmission
+	double r = RANDOM();
+	if (r < infection_prob) {
+	  if (Global::Verbose > 1) {
+	    printf("household transmission succeeded: r = %f  prob = %f\n",
+		   r, infection_prob);
+	    fflush(stdout);
+	  }
+
+	  // successful transmission; create a new infection in infectee
+	  // Infection * infection = new Infection(disease, infector, infectee, this, day);
+	  // infectee->become_exposed(infection);
+          // infector->add_infectee(s);
+          Transmission *transmission = new Transmission(infector, this, day);
+          infector->infect(infectee, s, transmission);
+
+	  if (Global::Verbose > 1) {
+	    if (infector->get_exposure_date(s) == 0) {
+	      printf("SEED infection day %i from %d to %d\n",
+		     day, infector->get_id(),infectee->get_id());
+	    } else {
+	      printf("infection day %i of disease %i from %d to %d\n",
+		     day, s, infector->get_id(),infectee->get_id());
+	    }
+	    fflush(stdout);
+	  }
+	}	else {
+	  if (Global::Verbose > 1) {
+	    printf("household transmission failed: r = %f  prob = %f\n",
+		   r, infection_prob);
+	    fflush(stdout);
+	  }
+        }
+      } // end of susceptible infectee
+    } // end contact loop
+  } // end infectious list loop
+}
+

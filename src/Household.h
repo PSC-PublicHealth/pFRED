@@ -163,6 +163,8 @@ public:
    */
   int get_orig_id(int i) { return ids[i]; }
 
+  void spread_infection(int day, int s);
+
 private:
   static double * Household_contacts_per_day;
   static double *** Household_contact_prob;

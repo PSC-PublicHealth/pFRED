@@ -78,7 +78,15 @@ public:
    */
   bool should_be_open(int day, int disease) { return true; }
 
+  /**
+   * Returns the rate by which to increase neighborhood contacts on weekends
+   *
+   * @return the rate by which to increase neighborhood contacts on weekends
+   */
+  static double get_weekend_contact_rate(int disease) { return Weekend_contact_rate[disease]; }
+
 private:
+  static double * Weekend_contact_rate;
   static double * Neighborhood_contacts_per_day;
   static double *** Neighborhood_contact_prob;
   static bool Neighborhood_parameters_set;

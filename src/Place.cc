@@ -17,6 +17,8 @@
 #include "Disease.h"
 #include "Infection.h"
 #include "Transmission.h"
+#include "Date.h"
+#include "Neighborhood.h"
 
 void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop) {
   population = pop;
@@ -192,6 +194,14 @@ void Place::spread_infection(int day, int s) {
   // expected number of susceptible contacts for each infectious person
   // OLD: double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
   double contacts = get_contacts_per_day(s) * disease->get_transmissibility();
+  
+  // increase neighborhood contacts on weekends
+  if (type == NEIGHBORHOOD) {
+    int day_of_week = Date::get_current_day_of_week(day);
+    if (day_of_week == 0 || day_of_week == 6) {
+      contacts = Neighborhood::get_weekend_contact_rate(s) * contacts;
+    }
+  }
   if (Global::Verbose > 1) {
     printf("Disease %d, expected contacts = %f\n", s, contacts);
     fflush(stdout);

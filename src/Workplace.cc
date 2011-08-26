@@ -83,10 +83,6 @@ void Workplace::prepare() {
   }
 }
 
-int Workplace::get_group(int disease, Person * per) {
-  return 0;
-}
-
 double Workplace::get_transmission_prob(int disease, Person * i, Person * s) {
   // i = infected agent
   // s = susceptible agent

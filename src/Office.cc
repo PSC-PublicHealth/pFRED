@@ -25,6 +25,7 @@ bool Office::Office_parameters_set = false;
 
 Office::Office(int loc, const char *lab, double lon, double lat, Place *container, Population *pop) {
   type = OFFICE;
+  assert(container != NULL);
   setup(loc, lab, lon, lat, container, pop);
   get_parameters(population->get_diseases());
 }
@@ -41,6 +42,9 @@ void Office::get_parameters(int diseases) {
     int n;
     sprintf(param_str, "office_contacts[%d]", s);
     Params::get_param((char *) param_str, &Office::Office_contacts_per_day[s]);
+    if (Office::Office_contacts_per_day[s] == -1) {
+      Office::Office_contacts_per_day[s] = 2.0 * container->get_contacts_per_day(s);
+    }
     
     sprintf(param_str, "office_prob[%d]", s);
     n =  Params::get_param_matrix(param_str, &Office::Office_contact_prob[s]);

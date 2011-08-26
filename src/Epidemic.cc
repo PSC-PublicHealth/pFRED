@@ -307,14 +307,6 @@ void Epidemic::update(int day){
     fflush(Global::Statusfp);
   }
   
-  for (it = inf_classrooms.begin(); it != inf_classrooms.end(); it++ ) {
-    Place * place = *it;
-    if (Global::Verbose > 1) {
-      fprintf(Global::Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id());
-      fflush(Global::Statusfp);
-    }
-    place->spread_infection(day, id);
-  }
   for (it = inf_schools.begin(); it != inf_schools.end(); it++ ) {
     Place * place = *it;
     if (Global::Verbose > 1) {
@@ -323,7 +315,7 @@ void Epidemic::update(int day){
     }
     place->spread_infection(day, id);
   }
-  for (it = inf_offices.begin(); it != inf_offices.end(); it++ ) {
+  for (it = inf_classrooms.begin(); it != inf_classrooms.end(); it++ ) {
     Place * place = *it;
     if (Global::Verbose > 1) {
       fprintf(Global::Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id());
@@ -332,6 +324,14 @@ void Epidemic::update(int day){
     place->spread_infection(day, id);
   }
   for (it = inf_workplaces.begin(); it != inf_workplaces.end(); it++ ) {
+    Place * place = *it;
+    if (Global::Verbose > 1) {
+      fprintf(Global::Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id());
+      fflush(Global::Statusfp);
+    }
+    place->spread_infection(day, id);
+  }
+  for (it = inf_offices.begin(); it != inf_offices.end(); it++ ) {
     Place * place = *it;
     if (Global::Verbose > 1) {
       fprintf(Global::Statusfp, "\nspread disease %i in place: %d\n", id, place->get_id());
