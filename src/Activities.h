@@ -30,6 +30,8 @@ class Activities {
 public:
   Activities (Person *person, Place **favorite_place);
   Activities (Person *person, char *house, char *school, char *work);
+  void start_constructor (Person *person);
+  void finish_constructor ();
 
   /**
    * Assigns an activity profile to the agent

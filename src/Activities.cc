@@ -35,47 +35,16 @@ bool Activities::is_initialized = false;
 double Activities::age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
 
 Activities::Activities (Person *person, Place **fav_place) {
-  //Create the static arrays one time
-  if (!Activities::is_initialized) {
-    read_init_files();
-    Activities::is_initialized = true;
-  }
-  self = person;
+  start_constructor(person);
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     favorite_place[i] = fav_place[i];
   }
   assert(get_household() != NULL);
-
-  // get the neighbhood from the household
-  favorite_place[NEIGHBORHOOD_INDEX] =
-    favorite_place[HOUSEHOLD_INDEX]->get_grid_cell()->get_neighborhood();
-  if (get_neighborhood() == NULL) {
-    printf("Help! NO NEIGHBORHOOD for person %d house %d \n",
-	   person->get_id(), get_household()->get_id());
-  }
-  assert(get_neighborhood() != NULL);
-  assign_profile();
-
-  // enroll in all the favorite places
-  for (int i = 0; i < FAVORITE_PLACES; i++) {
-    if (favorite_place[i] != NULL) {
-      favorite_place[i]->enroll(self);
-    }
-  }
-  // need to set the daily schedule
-  schedule_updated = -1;
-
-  travel_status = false;
-  traveling_outside = false;
+  finish_constructor();
 }
 
 Activities::Activities (Person *person, char *house, char *school, char *work) {
-  //Create the static arrays one time
-  if (!Activities::is_initialized) {
-    read_init_files();
-    Activities::is_initialized = true;
-  }
-  self = person;
+  start_constructor(person);
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     favorite_place[i] = NULL;
   }
@@ -83,13 +52,25 @@ Activities::Activities (Person *person, char *house, char *school, char *work) {
   favorite_place[SCHOOL_INDEX] = Global::Places.get_place_from_label(school);
   favorite_place[WORKPLACE_INDEX] = Global::Places.get_place_from_label(work);
   assert(get_household() != NULL);
+  finish_constructor();
+}
 
+void Activities::start_constructor (Person *person) {
+  //Create the static arrays one time
+  if (!Activities::is_initialized) {
+    read_init_files();
+    Activities::is_initialized = true;
+  }
+  self = person;
+}
+
+void Activities::finish_constructor () {
   // get the neighbhood from the household
   favorite_place[NEIGHBORHOOD_INDEX] =
     favorite_place[HOUSEHOLD_INDEX]->get_grid_cell()->get_neighborhood();
   if (get_neighborhood() == NULL) {
     printf("Help! NO NEIGHBORHOOD for person %d house %d \n",
-           person->get_id(), get_household()->get_id());
+           self->get_id(), get_household()->get_id());
   }
   assert(get_neighborhood() != NULL);
   assign_profile();
@@ -102,7 +83,6 @@ Activities::Activities (Person *person, char *house, char *school, char *work) {
   }
   // need to set the daily schedule
   schedule_updated = -1;
-
   travel_status = false;
   traveling_outside = false;
 }
