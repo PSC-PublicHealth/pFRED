@@ -1,0 +1,101 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+$| = 1;
+
+#####################################
+#
+# File: fred_calibrate
+# Author: John Grefenstette
+# 26 Aug 2011
+#
+# Based on targets proposed by Phil Cooley:
+#
+my $Htarget = 30;
+my $Ntarget = 33;
+my $Starget = 24.66;
+my $Wtarget = 12.34;
+my $ARtarget = 33;
+
+# stopping criteria
+my $days = 100;
+my $threshold = 1.0;
+
+my ($oldparams) = @ARGV;
+open FH, $oldparams or die "Can't open file old params file\nusage: calibrate params\n";
+
+my @orig = <FH>;
+close FH;
+
+my $paramsfile = "$oldparams-cal";
+
+# get settings for calibration parameters from input file
+my $x = `grep household_contact $oldparams`;
+my @tmp = split " ", $x;
+my $h = pop @tmp;
+$x = `grep neighborhood_contact $oldparams`;
+@tmp = split " ", $x;
+my $n = pop @tmp;
+$x = `grep school_contact $oldparams`;
+@tmp = split " ", $x;
+my $s = pop @tmp;
+$x = `grep workplace_contact $oldparams`;
+@tmp = split " ", $x;
+my $w = pop @tmp;
+
+my $error = $threshold + 1.0;
+my $step = 0;
+while ($error > $threshold) {
+  $step++;
+  my $time = localtime();
+  open CAL, ">$paramsfile";
+  print CAL @orig;
+  print CAL "###  CALIBRATION STEP $step at $time\n";
+  printf CAL "household_contacts[0] = %0.2f\n", $h;
+  printf CAL "neighborhood_contacts[0] = %0.2f\n", $n;
+  printf CAL "school_contacts[0] = %0.2f\n", $s;
+  printf CAL "workplace_contacts[0] = %0.2f\n", $w;
+  print CAL "classroom_contacts[0] = -1\n";
+  print CAL "office_contacts[0] = -1\n";
+  print CAL "days = $days\n";
+  close CAL;
+
+  print "###  CALIBRATION STEP $step at $time\n";
+  printf "household_contacts[0] = %0.2f\n", $h;
+  printf "neighborhood_contacts[0] = %0.2f\n", $n;
+  printf "school_contacts[0] = %0.2f\n", $s;
+  printf "workplace_contacts[0] = %0.2f\n", $w;
+  print "classroom_contacts[0] = -1\n";
+  print "office_contacts[0] = -1\n";
+  print "days = $days\n\n";
+  system "rm -rf OUT.CAL";
+  system "run_fred -p $paramsfile -d OUT.CAL";
+  system "get_distr OUT.CAL";
+  system "cat get_distr.dat";
+  $x = `cat get_distr.dat`;
+  my ($H, $N, $S, $W) = split " ", $x;
+  $x = `tail -1 OUT.CAL/out1.txt`;
+  @tmp = split " ", $x;
+  my $AR = $tmp[31];
+
+  my $eh = $H - $Htarget;
+  my $en = $N - $Ntarget;
+  my $es = $S - $Starget;
+  my $ew = $W - $Wtarget;
+  my $ea = $AR - $ARtarget;;
+  printf "AR = %0.2f\n", $AR;
+  printf "errors: EH = %0.2f EN = %0.2f  ES = %0.2f  EW = %0.2f  EA = %0.2f\n",
+    $eh, $en, $es, $ew, $ea;
+  $error = abs($eh) + abs($en) + abs($es) + abs($ew) + abs($ea);
+  printf "total error = %0.2f\n\n\n", $error;
+  
+  # adjust to achieve desired AR 
+  my $ar_ratio = $ARtarget / $AR;
+  $h *= $ar_ratio * $Htarget / $H;
+  $n *= $ar_ratio * $Ntarget / $N;
+  $s *= $ar_ratio * $Starget / $S;
+  $w *= $ar_ratio * $Wtarget / $W;
+}
+
+
+
