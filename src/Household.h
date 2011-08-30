@@ -118,7 +118,7 @@ public:
    * @return a pointer to the neighborhood selected
    * @see Cell::select_neighborhood()
    */
-  Place * select_neighborhood() { return grid_cell->select_neighborhood(); }
+  // Place * select_neighborhood() { return grid_cell->select_neighborhood(); }
 
   /**
    * Get the number of adults in the household.

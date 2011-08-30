@@ -30,6 +30,11 @@ incremental_trace = 0
 # set non-zero to get headers printed in the trace file
 trace_headers = 0
 
+# neighborhood activities
+community_distance = 20
+community_prob = 0.1
+home_neighborhood_prob = 0.5
+
 # LONG-DISTANCE OVERNIGHT TRAVEL: 
 enable_travel = 0
 # the approximate fraction of population in travel model on any day
@@ -90,9 +95,9 @@ mutation_prob = 1 0.0
 # for a 33% clinical attack rate
 # using the bifurcating SEIR model (SEiIR = 0)
 household_contacts[0] = 0.19
-neighborhood_contacts[0] = 54.21
-school_contacts[0] = 15.44
-workplace_contacts[0] = 2.45
+neighborhood_contacts[0] = 42.02
+school_contacts[0] = 15.39
+workplace_contacts[0] = 1.65
 classroom_contacts[0] = -1
 office_contacts[0] = -1
 hospital_contacts[0] = 0

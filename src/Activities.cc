@@ -33,6 +33,12 @@
 
 bool Activities::is_initialized = false;
 double Activities::age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
+int Activities::last_update = -1;
+bool Activities::is_weekday = false;
+int Activities::day_of_week = 0;
+double Activities::Community_distance = 20;
+double Activities::Community_prob = 0.1;
+double Activities::Home_neighborhood_prob = 0.5;
 
 Activities::Activities (Person *person, Place **fav_place) {
   start_constructor(person);
@@ -124,13 +130,19 @@ void Activities::update_infectious_activities(int day) {
   if (traveling_outside)
     return;
 
+  // everyone decides which neighborhood they will visit today
+  favorite_place[NEIGHBORHOOD_INDEX] =
+    favorite_place[HOUSEHOLD_INDEX]->select_neighborhood(Activities::Community_prob,
+							 Activities::Community_distance,
+							 Activities::Home_neighborhood_prob);
+    
   int diseases = self->get_diseases();
   for (int dis = 0; dis < diseases; dis++) {
     if (self->is_infectious(dis)) {
       char status = self->get_disease_status(dis);
       if (schedule_updated < day) update_schedule(day);
       for (int i = 0; i < FAVORITE_PLACES; i++) {
-        if (on_schedule[i]) {
+        if (favorite_place[i] != NULL && on_schedule[i]) {
           favorite_place[i]->add_infectious(dis, self, status);
         }
       }
@@ -144,14 +156,14 @@ void Activities::update_susceptible_activities(int day) {
     return;
 
   int diseases = self->get_diseases();
-  for (int dis = 0; dis < diseases; dis++) {
+    for (int dis = 0; dis < diseases; dis++) {
     if (self->is_susceptible(dis)) {
       for (int i = 0; i < FAVORITE_PLACES; i++) {
         if (favorite_place[i] != NULL && favorite_place[i]->is_infectious(dis)) {
-          if (schedule_updated < day) update_schedule(day);
-          if (on_schedule[i]) {
-            favorite_place[i]->add_susceptible(dis, self);
-          }
+	  if (schedule_updated < day) update_schedule(day);
+	  if (on_schedule[i]) {
+	    favorite_place[i]->add_susceptible(dis, self);
+	  }
         }
       }
     }
@@ -164,48 +176,47 @@ void Activities::update_schedule(int day) {
   if (day <= schedule_updated)
     return;
 
+  // if this is the first person to update their schedule today,
+  // then decide if this is a weekday:
+  if (Activities::last_update < day) {
+    Activities::day_of_week = Date::get_current_day_of_week(day);
+    Activities::is_weekday = (0 < Activities::day_of_week && Activities::day_of_week < 6);
+    Activities::last_update = day;
+  }
   schedule_updated = day;
-  int day_of_week = Date::get_current_day_of_week(day);
 
   for (int p = 0; p < FAVORITE_PLACES; p++) {
     on_schedule[p] = false;
   }
-
+  on_schedule[HOUSEHOLD_INDEX] = true;
+  
   // decide whether to stay at home if symptomatic
-  int is_symptomatic = self->is_symptomatic();
-  if (is_symptomatic) {
-    if (RANDOM() < Disease::get_prob_stay_home()) {
-      on_schedule[HOUSEHOLD_INDEX] = true;
-      return;
-    }
-  }
+  if (self->is_symptomatic() && self->is_staying_home(day))
+    return;
 
-  // decide whether to stay home from school
-  if (0 < day_of_week && day_of_week < 6 && self->get_age() < Global::ADULT_AGE) {
+  // decide whether to stay home from school -- not finished
+  /**
+  if (Activities::is_weekday && self->get_age() < Global::ADULT_AGE) {
     if (self->get_behavior()->will_keep_kids_home()) {
-      on_schedule[HOUSEHOLD_INDEX] = true;
       return;
     }
   }
+  **/
 
-  // if not staying home, consult usual schedule
-  for (int p = 0; p < FAVORITE_PLACES; p++) {
-    if (favorite_place[p] != NULL)
-      on_schedule[p] = Profile::is_visited(p, profile, day_of_week);
+  // if not staying home, adopt usual schedule according to these rules:
+  on_schedule[NEIGHBORHOOD_INDEX] = true;
+  if (Activities::is_weekday) {
+    on_schedule[SCHOOL_INDEX] = true;
+    on_schedule[CLASSROOM_INDEX] = true;
+    on_schedule[WORKPLACE_INDEX] = true;
+    on_schedule[OFFICE_INDEX] = true;
   }
-
-  if (on_schedule[NEIGHBORHOOD_INDEX]) {
-    // pick the neighborhood to visit today
-    favorite_place[NEIGHBORHOOD_INDEX] =
-      favorite_place[HOUSEHOLD_INDEX]->get_grid_cell()->select_neighborhood();
+  else {
+    if (profile == WEEKEND_WORKER_PROFILE || profile == STUDENT_PROFILE) {
+      on_schedule[WORKPLACE_INDEX] = true;
+      on_schedule[OFFICE_INDEX] = true;
+    }
   }
-
-  // visit classroom or office iff going to school or work
-  if (favorite_place[CLASSROOM_INDEX] !=  NULL)
-    on_schedule[CLASSROOM_INDEX] = on_schedule[SCHOOL_INDEX];
-
-  if (favorite_place[OFFICE_INDEX] !=  NULL)
-    on_schedule[OFFICE_INDEX] = on_schedule[WORKPLACE_INDEX];
 
   if (Global::Verbose > 2) {
     fprintf(Global::Statusfp, "update_schedule on day %d\n", day);
@@ -508,8 +519,12 @@ void Activities::addPrevalence(int disease, vector<int> strains) {
 
 
 void Activities::read_init_files() {
-  char yearly_mobility_rate_file[256];
+  Params::get_param((char *) "community_distance", &Activities::Community_distance);
+  Params::get_param((char *) "community_prob", &Activities::Community_prob);
+  Params::get_param((char *) "home_neighborhood_prob", &Activities::Home_neighborhood_prob);
+
   if (!Global::Enable_Mobility) return;
+  char yearly_mobility_rate_file[256];
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "read activities init files entered\n"); fflush(Global::Statusfp);
   }

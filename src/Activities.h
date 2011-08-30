@@ -188,9 +188,16 @@ private:
   bool travel_status;				// true if traveling
   bool traveling_outside;			// true if traveling outside modeled area
   Place ** tmp_favorite_place; // list of favorite places, stored while traveling
-  static double age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
-  static bool is_initialized;
 
+  // static variables
+  static double age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
+  static bool is_initialized; // true if static arrays have been initialized
+  static int last_update;     // simulation day of last schdule update
+  static bool is_weekday;     // true if current day is Monday .. Friday
+  static int day_of_week;     // day of week index, where Sun = 0, ... Sat = 6
+  static double Community_distance;	    // size of community (in km)
+  static double Community_prob;	   // prob of visiting Community per day
+  static double Home_neighborhood_prob; // prob of visiting home neighborhood per day
   /**
    * Reads the yearly_mobility_rate_file set in params.def
    * Note: this is not used unless <code>Global::Enable_Mobility</code> is set to <code>true</code>

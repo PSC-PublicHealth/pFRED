@@ -56,6 +56,8 @@ class Health_Belief_Model : public Behavior_Model {
    */
   bool decide_whether_to_accept_vaccine(int disease);
 
+  bool is_staying_home(int day) { return false; }
+
   // Pointer to agent
   Person * self;
 

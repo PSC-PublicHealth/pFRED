@@ -94,8 +94,9 @@ public:
    */
   void getInfected(Disease *disease, Transmission *transmission) {};
 
-private:
+  bool is_staying_home(int day) { return model->is_staying_home(day); }
 
+private:
   void get_parameters();
   Behavior_Model* model;       // behavior model does all the real work
 };

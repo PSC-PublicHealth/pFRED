@@ -49,6 +49,8 @@ public:
    */
   Cell * get_grid_cell(int row, int col);
 
+  Cell * select_random_grid_cell(double x0, double y0, double dist);
+
   /**
    * @return a pointer to a random Cell in this Grid
    */

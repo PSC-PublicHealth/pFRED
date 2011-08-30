@@ -108,20 +108,26 @@ void Cell::record_favorite_places() {
 }
 
 
-Place * Cell::select_neighborhood() {
+Place * Cell::select_neighborhood(double community_prob,
+				  double community_distance, double local_prob) {
   Cell * grid_cell;
   double r = RANDOM();
-  double self_prob = 0.5;
-  if (r < self_prob) {
-    // select local grid_cell
+
+  // select a random cell with community_prob
+  if (r < community_prob) {
+    grid_cell = grid->select_random_grid_cell(center_x, center_y, community_distance);
+  }
+  else if (r < community_prob + local_prob) {
+    // select local grid_cell with local_prob
     grid_cell = this;
   }
   else {
-    r = (r - self_prob)/(1.0 - self_prob);
-    int n = (int) (8.0*r);
+    // select randomly from among immediate neighbors
+    int n = IRAND(0,7);
+    if (n>3) n++;				// excludes local grid_cell
     grid_cell = neighbor_cells[n];
-    if (grid_cell == NULL) grid_cell = this; // fall back to local grid_cell
   }
+  if (grid_cell == NULL) grid_cell = this; // fall back to local grid_cell
   return grid_cell->get_neighborhood();
 }
 
@@ -153,30 +159,6 @@ Place *Cell::select_random_school(int age) {
   return school[age][i];
 }
 
-
-Person *Cell::select_random_person_from_neighbors() {
-  Cell * pat = NULL;
-  Person * per = NULL;
-  int trial = 0;
-  while (per == NULL && trial < 20) {
-
-    // select current grid_cell with 10% prob.
-    if (RANDOM() < 0.1) pat = this;
-
-    // otherwise select a random neighbor:
-    int n = IRAND(0,8);
-    if (neighbor_cells[n] == NULL)
-      // current grid_cell if neighbor is off the array
-      pat = this;
-    else
-      pat = neighbor_cells[n];
-
-    // choose a random person from selected grid_cell
-    per = pat->select_random_person();
-    trial++;
-  }
-  return per;
-}
 
 void Cell::quality_control() {
   return;

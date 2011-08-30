@@ -6,7 +6,7 @@
 
 //
 //
-// File: Behavior_model.h
+// File: Behavior_Model.h
 //
 
 #ifndef _FRED_COGNITIVE_MODEL_H
@@ -38,6 +38,8 @@ class Behavior_Model {
    * @return <code>true</code> if agent will accept another vaccine dose, <code>false</code> if not
    */
   virtual bool will_accept_another_vaccine_dose(int disease) = 0;
+
+  virtual bool is_staying_home(int day) = 0;
 };
 
 #endif // _FRED_COGNITIVE_MODEL_H

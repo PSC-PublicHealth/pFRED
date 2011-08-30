@@ -79,9 +79,9 @@ class Geo_Utils{
 
   static double km_per_deg_longitude;
   static double km_per_deg_latitude;
+  static const double DEG_TO_RAD = 0.017453292519943295769236907684886; // PI/180
  private:
   // see http://andrew.hedges.name/experiments/haversine/
-  static const double DEG_TO_RAD = 0.017453292519943295769236907684886; // PI/180
   static const double EARTH_RADIUS = 6373.0; // earth's radius in kilometers
   static const double KM_PER_DEG_LAT = 111.325; // assuming spherical earth
   

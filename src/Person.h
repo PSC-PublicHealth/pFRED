@@ -305,6 +305,8 @@ public:
    */
   void update_behavior(int day) { behavior->update(day); }
 
+  bool is_staying_home(int day) { return behavior->is_staying_home(day); }
+
   /**
    * @param day the simulation day
    * @see Activities::update(int day)

@@ -415,6 +415,9 @@ public:
    */
   void set_grid_cell(Cell *p) { grid_cell = p; }
   
+  Place * select_neighborhood(double community_prob, double community_distance, double local_prob);
+
+
 protected:
   int id;					// place id
   char label[32];				// external id

@@ -97,6 +97,21 @@ Cell * Grid::get_grid_cell(int row, int col) {
 }
 
 
+Cell * Grid::select_random_grid_cell(double x0, double y0, double dist) {
+  // select a random cell within given distance.
+  // if no luck after 20 attempts, return NULL
+  for (int i = 0; i < 20; i++) {
+    double r = RANDOM()*dist;			// random distance
+    double ang = Geo_Utils::DEG_TO_RAD * URAND(0,360); // random angle
+    double x = x0 + r*cos(ang);			// corresponding x coord
+    double y = y0 + r*sin(ang);			// corresponding y coord
+    Cell * cell = get_grid_cell_from_cartesian(x,y);
+    if (cell != NULL) return cell;
+  }
+  return NULL;
+}
+
+
 Cell * Grid::select_random_grid_cell() {
   int row = IRAND(0, rows-1);
   int col = IRAND(0, cols-1);

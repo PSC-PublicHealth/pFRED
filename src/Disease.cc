@@ -32,8 +32,6 @@ using namespace std;
 
 #include "Multistrain_Timestep_Map.h"
 
-double Disease::Prob_stay_home;
-
 Disease::Disease() {
   // note that the code that establishes the latent/asymptomatic/symptomatic
   // periods has been moved to the IntraHost class (or classes derived from
@@ -68,8 +66,6 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   Params::get_indexed_param("mortality_rate",id,&mortality_rate);
   Params::get_indexed_param("immunity_loss_rate",id,&immunity_loss_rate);
 
-  // This needs to be moved to Behavior
-  Params::get_param((char *) "prob_stay_home", &Disease::Prob_stay_home);
   mutation_prob = mut_prob;
   population = pop;
 
@@ -191,16 +187,6 @@ void Disease::update_stats(int day) {
 
 void Disease::print_stats(int day) {
   epidemic->print_stats(day);
-}
-
-// static
-double Disease::get_prob_stay_home() {
-  return Disease::Prob_stay_home;
-}
-
-// static
-void Disease::set_prob_stay_home(double p) {
-  Disease::Prob_stay_home = p;
 }
 
 // static

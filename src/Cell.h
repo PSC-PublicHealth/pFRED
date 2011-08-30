@@ -128,7 +128,7 @@ public:
    *
    * @return a pointer to a Neighborhood
    */
-  Place * select_neighborhood();
+  Place * select_neighborhood(double community_prob, double community_distance, double local_prob);
 
   /**
    * @return a pointer to a random Person in this Cell
@@ -149,11 +149,6 @@ public:
    * @return a pointer to a random School in this Cell
    */
   Place * select_random_school(int age);
-
-  /**
-   * @return a pointer to a random Person in this Cell
-   */
-  Person * select_random_person_from_neighbors();
 
   /**
    * @return a count of houses in this Cell

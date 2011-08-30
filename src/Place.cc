@@ -19,6 +19,7 @@
 #include "Transmission.h"
 #include "Date.h"
 #include "Neighborhood.h"
+#include "Cell.h"
 
 void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop) {
   population = pop;
@@ -307,5 +308,9 @@ void Place::modifyPrevalenceCount(int disease, vector<int> strains, int incr) {
   for(int s=0; s < (int) strains.size(); s++) {
     prev[strains[s]] += 1;
   }
+}
+
+Place * Place::select_neighborhood(double community_prob, double community_distance, double local_prob) {
+  return grid_cell->select_neighborhood(community_prob, community_distance, local_prob);
 }
 

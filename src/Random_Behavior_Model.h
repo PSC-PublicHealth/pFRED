@@ -28,10 +28,18 @@ class Random_Behavior_Model : public Behavior_Model {
   }
   bool will_accept_vaccine(int disease)              { return accept_vaccine; }
   bool will_accept_another_vaccine_dose(int disease) { return accept_vaccine_dose; }
+  bool is_staying_home(int day);
+
  private:
   Person* self;
   bool accept_vaccine;
   bool accept_vaccine_dose;              // If there is another dose, will someone take it
+  bool staying_home;
+  bool have_decided;
+
+  // static values shared by all
+  static double prob_stay_home;
+  static bool initialized;
 
  protected:
   ~Random_Behavior_Model() {}
