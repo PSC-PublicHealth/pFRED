@@ -55,20 +55,14 @@ public:
    * @param disease which disease
    */
   void become_susceptible(int disease);
+  void become_susceptible(Disease * disease);
 
   /**
    * Agent is unsusceptible to the disease
    *
    * @param disease which disease
    */
-  void become_unsusceptible(int disease);
-
-  /**
-   * Agent is exposed to an Infection
-   *
-   * @param inf a pointer to the Infection object
-   */
-  void become_exposed(Infection *inf);
+  void become_unsusceptible(Disease * disease);
 
   /**
    * Agent is infectious
@@ -187,19 +181,6 @@ public:
   Person* get_self() const {
     return self;
   }
-
-  /**
-   *@return the count of diseases
-   */
-  int get_num_diseases() const {
-    return diseases;
-  }
-
-  /**
-   * @param disease
-   * @return
-   */
-  int add_infectee(int disease);
 
   /**
    * @param disease
@@ -432,7 +413,6 @@ public:
 
 private:
   Person * self;
-  int diseases;
   Infection **infection;
   vector < bool > immunity;
   vector < bool > at_risk;  // Agent is/isn't at risk for severe complications
@@ -443,6 +423,7 @@ private:
   char * status;
   bool * susceptible;
   bool symptomatic_status;
+  int * infectee_count;
 protected:
   Health() { }
 };

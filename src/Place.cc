@@ -23,7 +23,6 @@
 
 void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop) {
   population = pop;
-  diseases = population->get_diseases();
   id = loc_id;
   container = cont;
   strcpy(label, lab);
@@ -31,26 +30,26 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   latitude = lat;
   
   // allocate disease-related memory
-  susceptibles = new (nothrow) vector<Person *> [diseases];
+  susceptibles = new (nothrow) vector<Person *> [Global::Diseases];
   assert (susceptibles != NULL);
-  infectious = new (nothrow) vector<Person *> [diseases];
+  infectious = new (nothrow) vector<Person *> [Global::Diseases];
   assert (infectious != NULL);
-  S = new (nothrow) int [diseases];
+  S = new (nothrow) int [Global::Diseases];
   assert (S != NULL);
-  I = new (nothrow) int [diseases];
+  I = new (nothrow) int [Global::Diseases];
   assert (I != NULL);
-  Sympt = new (nothrow) int [diseases];
+  Sympt = new (nothrow) int [Global::Diseases];
   assert (Sympt != NULL);
-  cases = new (nothrow) int [diseases];
+  cases = new (nothrow) int [Global::Diseases];
   assert (cases != NULL);
-  total_cases = new (nothrow) int [diseases];
+  total_cases = new (nothrow) int [Global::Diseases];
   assert (total_cases != NULL);
-  deaths = new (nothrow) int [diseases];
+  deaths = new (nothrow) int [Global::Diseases];
   assert (deaths != NULL);
-  total_deaths = new (nothrow) int [diseases];
+  total_deaths = new (nothrow) int [Global::Diseases];
   assert (total_deaths != NULL);
-  incidence.resize(diseases);
-  prevalence.resize(diseases);
+  incidence.resize(Global::Diseases);
+  prevalence.resize(Global::Diseases);
   N = 0;
 }
 
@@ -89,7 +88,7 @@ void Place::print_stats(int day, int disease) {
 
 
 void Place::prepare() {
-  for (int s = 0; s < diseases; s++) {
+  for (int s = 0; s < Global::Diseases; s++) {
     susceptibles[s].reserve(N);
     infectious[s].reserve(N);
     total_cases[s] = total_deaths[s] = 0;
@@ -105,7 +104,7 @@ void Place::prepare() {
 }
 
 void Place::update(int day) {
-  for (int s = 0; s < diseases; s++) {
+  for (int s = 0; s < Global::Diseases; s++) {
     // if(day > 0) print_stats(day, s);
     cases[s] = deaths[s] = 0;
     susceptibles[s].clear();
@@ -267,9 +266,6 @@ void Place::spread_infection(int day, int s) {
 	  }
 
 	  // successful transmission; create a new infection in infectee
-	  // Infection * infection = new Infection(disease, infector, infectee, this, day);
-	  // infectee->become_exposed(infection);
-          // infector->add_infectee(s);
           Transmission *transmission = new Transmission(infector, this, day);
           infector->infect(infectee, s, transmission);
 

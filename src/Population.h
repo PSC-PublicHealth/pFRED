@@ -68,26 +68,7 @@ public:
    * Perform beginning of day operations
    * @param day the simulation day
    */
-  void begin_day(int day);
-
-
-  /**
-   * Find places visited by infectious agents, and add susceptibles to those places.
-   * @param day the simulation day
-   */
-  void get_visitors_to_infectious_places(int day);
-
-  /**
-   * Transmit the infection through the Population
-   * @param day the simulation day
-   */
-  void transmit_infection(int day);
-
-  /**
-   * Perform end of day operations
-   * @param day the simulation day
-   */
-  void end_day(int day);
+  void update(int day);
 
   /**
    * Report the disease statistics for a given day
@@ -100,11 +81,6 @@ public:
    * @return a pointer to the Disease indexed by s
    */
   Disease * get_disease(int s);
-
-  /**
-   * @return the diseases
-   */
-  int get_diseases() { return diseases; }
 
   /**
    * @return the pop_size
@@ -227,7 +203,6 @@ private:
   vector <Person *> death_list;		     // list agents to die today
   vector <Person *> maternity_list;   // list agents to give birth today
   int pop_size;
-  int diseases;
   Disease *disease;
   double **mutation_prob;
   map<Person *,int> pop_map;

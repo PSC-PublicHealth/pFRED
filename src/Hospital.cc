@@ -26,7 +26,7 @@ bool Hospital::Hospital_parameters_set = false;
 Hospital::Hospital(int loc, const char *lab, double lon, double lat, Place *container, Population *pop) {
   type = HOSPITAL;
   setup(loc, lab, lon, lat, container, pop);
-  get_parameters(population->get_diseases());
+  get_parameters(Global::Diseases);
 }
 
 void Hospital::get_parameters(int diseases) {

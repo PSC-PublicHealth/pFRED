@@ -54,7 +54,8 @@ public:
    *
    * @param day the simulation day
    */
-  void update(int day);
+  void update(int day){ epidemic->update(day); }
+  void transmit(int day) { epidemic->transmit(day); }
 
   // The methods draw from the underlying distributions to randomly determine some aspect of the infection
   // have been moved to the DefaultIntraHost class
@@ -153,30 +154,11 @@ public:
    * @param type the type of Place
    * @see Epidemic::add_infectious_place(Place *p, char type)
    */
-  void add_infectious_place(Place *p, char type);
+  void add_infectious_place(Place *p, char type) {
+    epidemic->add_infectious_place(p, type);
+  }
 
-  /**
-   * Add a person to the Epidemic's infected list
-   * @param per a pointer to a person
-   * @see Epidemic::insert_into_infected_list(Person *person)
-   */
-  void insert_into_infected_list(Person *person);
-
-  /**
-   * Add a person to the Epidemic's infectious list
-   * @param per a pointer to a Person
-   * @see Epidemic::insert_into_infectious_list(Person *person)
-   */
-  void insert_into_infectious_list(Person *person);
-
-  /**
-   * Remove a person to the Epidemic's infectious list
-   * @param per a pointer to a Person
-   * @see Epidemic::remove_from_infectious_list(Person *person)
-   */
-  void remove_from_infectious_list(Person *person);
-
-  /**
+ /**
    * @param day the simulation day
    * @see Epidemic::update_stats(int day);
    */
@@ -211,113 +193,14 @@ public:
 
   static void get_disease_parameters();
 
-  /**
-   * Increment the Susceptible count
-   * @see Epidemic::increment_S_count()
-   */
-  void increment_S_count() { epidemic->increment_S_count();}
-
-  /**
-   * Decrement the Susceptible
-   * @see Epidemic::decrement_S_count()
-   */
-  void decrement_S_count() { epidemic->decrement_S_count();}
-
-  /**
-   * Increment the Exposed count
-   * @see Epidemic::increment_E_count()
-   */
-  void increment_E_count() { epidemic->increment_E_count();}
-
-  /**
-   * Decrement the Exposed
-   * @see Epidemic::decrement_E_count()
-   */
-  void decrement_E_count() { epidemic->decrement_E_count();}
-
-  /**
-   * Increment the Infectious count
-   * @see Epidemic::increment_I_count()
-   */
-  void increment_I_count() { epidemic->increment_I_count();}
-
-  /**
-   * Decrement the Infectious
-   * @see Epidemic::decrement_I_count()
-   */
-  void decrement_I_count() { epidemic->decrement_I_count();}
-
-  /**
-   * Increment the i_count
-   * @see Epidemic::increment_i_count()
-   */
-  void increment_i_count() { epidemic->increment_i_count();}
-
-  /**
-   * Decrement the i_count
-   * @see Epidemic::decrement_i_count()
-   */
-  void decrement_i_count() { epidemic->decrement_i_count();}
-
-  /**
-   * Increment the Recovered count
-   * @see Epidemic::increment_R_count()
-   */
-  void increment_R_count() { epidemic->increment_R_count();}
-
-  /**
-   * Decrement the Recovered count
-   * @see Epidemic::decrement_R_count()
-   */
-  void decrement_R_count() { epidemic->decrement_R_count();}
-
-  /**
-   * Increment the r_count
-   * @see Epidemic::increment_r_count()
-   */
-  void increment_r_count() { epidemic->increment_r_count();}
-
-  /**
-   * Decrement the r_count
-   * @see Epidemic::decrement_r_count()
-   */
-  void decrement_r_count() { epidemic->decrement_r_count();}
-
-  /**
-   * Increment the C_count
-   * @see Epidemic::increment_C_count()
-   */
-  void increment_C_count() { epidemic->increment_C_count();}
-
-  /**
-   * Decrement the C_count
-   * @see Epidemic::decrement_C_count()
-   */
-  void decrement_C_count() { epidemic->decrement_C_count();}
-
-  /**
-   * Increment the c_count
-   * @see Epidemic::increment_c_count()
-   */
-  void increment_c_count() { epidemic->increment_c_count();}
-
-  /**
-   * Decrement the c_count
-   * @see Epidemic::decrement_c_count()
-   */
-  void decrement_c_count() { epidemic->decrement_c_count();}
-
-  /**
-   * Increment the Immune count
-   * @see Epidemic::increment_M_count()
-   */
-  void increment_M_count() { epidemic->increment_M_count();}
-
-  /**
-   * Decrement the Immune count
-   * @see Epidemic::decrement_M_count()
-   */
-  void decrement_M_count() { epidemic->decrement_M_count();}
+  void become_susceptible(Person *person) { epidemic->become_susceptible(person); }
+  void become_unsusceptible(Person *person) { epidemic->become_unsusceptible(person); }
+  void become_exposed(Person *person) { epidemic->become_exposed(person); }
+  void become_infectious(Person *person, char status) { epidemic->become_infectious(person, status); }
+  void become_uninfectious(Person *person) { epidemic->become_uninfectious(person); }
+  void become_symptomatic(Person *person, char status) { epidemic->become_symptomatic(person, status); }
+  void become_removed(Person *person, char status) { epidemic->become_removed(person, status); }
+  void become_immune(Person *person, char status) { epidemic->become_immune(person, status); }
 
 private:
   int id;
@@ -338,21 +221,5 @@ private:
   // Vars that are not Disease-specific (for updating global stats).
   Population *population;
 };
-
-inline void Disease::add_infectious_place(Place *p, char type) {
-  epidemic->add_infectious_place(p, type);
-}
-
-inline void Disease::insert_into_infected_list(Person *per) {
-  epidemic->insert_into_infected_list(per);
-}
-
-inline void Disease::insert_into_infectious_list(Person *per) {
-  epidemic->insert_into_infectious_list(per);
-}
-
-inline void Disease::remove_from_infectious_list(Person *per) {
-  epidemic->remove_from_infectious_list(per);
-}
 
 #endif // _FRED_Disease_H

@@ -46,36 +46,6 @@ public:
   }
 
   /**
-   *
-   */
-  void become_infectious();
-
-  /**
-   *
-   */
-  void become_symptomatic();
-
-  /**
-   *
-   */
-  void become_susceptible();
-
-  /**
-   *
-   */
-  void become_unsusceptible();
-
-  /**
-   *
-   */
-  void recover();
-
-  /**
-   *
-   */
-  void remove();
-
-  /**
     * Perform the daily update for this object
     *
     * @param day the simulation day

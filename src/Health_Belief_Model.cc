@@ -40,42 +40,41 @@ double pop_susceptibility;
 
 Health_Belief_Model::Health_Belief_Model(Person *p) {
   self = p;
-  int diseases = Global::Pop.get_diseases();
 
   perceptions = new Perceptions(p);
   get_parameters();
 
-  perceived_susceptibility = new (nothrow) int [diseases];
+  perceived_susceptibility = new (nothrow) int [Global::Diseases];
   if (perceived_susceptibility == NULL) {
     Utils::fred_abort("Help! sus allocation failure\n");
   }
   
-  perceived_severity = new (nothrow) int [diseases];
+  perceived_severity = new (nothrow) int [Global::Diseases];
   if (perceived_severity == NULL) {
     Utils::fred_abort("Help! sev allocation failure\n"); 
   }
   
-  perceived_benefits_accept_vaccine = new (nothrow) double [diseases];
+  perceived_benefits_accept_vaccine = new (nothrow) double [Global::Diseases];
   if (perceived_benefits_accept_vaccine == NULL) {
     Utils::fred_abort("Help! benefits allocation failure\n"); 
   }
   
-  perceived_barriers_accept_vaccine = new (nothrow) double [diseases];
+  perceived_barriers_accept_vaccine = new (nothrow) double [Global::Diseases];
   if (perceived_barriers_accept_vaccine == NULL) {
     Utils::fred_abort("Help! barrier allocation failure\n"); 
   }
 
-  cumm_susceptibility = new (nothrow) double [diseases];
+  cumm_susceptibility = new (nothrow) double [Global::Diseases];
   if (cumm_susceptibility == NULL) {
     Utils::fred_abort("Help! cumm_susceptibility allocation failure\n"); 
   }
 
-  cumm_severity = new (nothrow) double [diseases];
+  cumm_severity = new (nothrow) double [Global::Diseases];
   if (cumm_severity == NULL) {
     Utils::fred_abort("Help! cumm_severity allocation failure\n"); 
   }
 
-  accept_vaccine = new (nothrow) bool [diseases];
+  accept_vaccine = new (nothrow) bool [Global::Diseases];
   if (accept_vaccine == NULL) {
     Utils::fred_abort("Help! accept_vaccine allocation failure\n");
   }
@@ -99,7 +98,7 @@ Health_Belief_Model::Health_Belief_Model(Person *p) {
     susceptibility_threshold = susceptibility_threshold_distr[0] - susceptibility_threshold_distr[1];
   }
 
-  for (int s = 0; s < diseases; s++) {
+  for (int s = 0; s < Global::Diseases; s++) {
     cumm_susceptibility[s] = 0.0;
     cumm_severity[s] = 0.0;
     accept_vaccine[s] = false;
@@ -161,8 +160,7 @@ void Health_Belief_Model::get_parameters() {
 
 
 void Health_Belief_Model::update(int day) {
-  int diseases = Global::Pop.get_diseases();
-  for (int s = 0; s < diseases; s++) {
+  for (int s = 0; s < Global::Diseases; s++) {
 
     // perceptions of current state of epidemic
     int current_cases = perceptions->get_global_cases(s);

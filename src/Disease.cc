@@ -80,7 +80,6 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   Multistrain_Timestep_Map * msts = new Multistrain_Timestep_Map(param_name_str);
   msts->read_map();
   epidemic = new Epidemic(this, msts);
-  epidemic->clear();
 
   // Define residual immunity
   residual_immunity = new Age_Map("Residual Immunity");
@@ -123,7 +122,7 @@ void Disease::print() {
 }
 
 Disease * Disease::should_mutate_to() {
-  int num_diseases = population->get_diseases();
+  int num_diseases = Global::Diseases;
   // Pick a random index to consider mutations from, so that mutating to all diseases is
   // dependent only on muation_prob, and not on the order of the diseases.
   int disease_start = IRAND(0, num_diseases-1);
@@ -191,10 +190,6 @@ void Disease::print_stats(int day) {
 
 // static
 void Disease::get_disease_parameters() {
-}
-
-void Disease::update(int day) {
-  epidemic->update(day);
 }
 
 double Disease :: get_transmissibility(int strain) {

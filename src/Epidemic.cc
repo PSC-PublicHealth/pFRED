@@ -47,19 +47,9 @@ Epidemic::Epidemic(Disease *str, Timestep_Map* _primary_cases_map) {
   inf_schools.reserve(places);
   inf_workplaces.reserve(places);
   inf_offices.reserve(places);
-}
-
-Epidemic::~Epidemic() {
-  delete primary_cases_map;
-}
-
-void Epidemic::clear() {
-  if (Global::Verbose) {
-    fprintf(Global::Statusfp, "clear epidemic %d started\n", id);
-    fflush(Global::Statusfp);
-  }
-  infected.clear();
-  infectious.clear();
+  exposed_list.clear();
+  susceptible_list.clear();
+  infectious_list.clear();
   inf_households.clear();
   inf_neighborhoods.clear();
   inf_classrooms.clear();
@@ -69,17 +59,123 @@ void Epidemic::clear() {
   attack_rate = 0.0;
   total_incidents = 0;
   total_clinical_incidents = 0;
-  r_index = V_count = S_count = C_count = c_count = 0;
+  r_index = V_count = C_count = c_count = 0;
   E_count = I_count = i_count = R_count = r_count = M_count = 0;
-  if (Global::Verbose) {
-    fprintf(Global::Statusfp, "clear epidemic %d finished\n", id);
-    fflush(Global::Statusfp);
+}
+
+Epidemic::~Epidemic() {
+  delete primary_cases_map;
+}
+
+void Epidemic::become_susceptible(Person *person) {
+  susceptible_list.insert(person);
+}
+
+void Epidemic::become_unsusceptible(Person *person) {
+  susceptible_list.erase(person);
+}
+
+void Epidemic::become_exposed(Person *person) {
+  E_count++;
+  C_count++;
+  // exposed_list.push_back(person);
+}
+
+void Epidemic::become_infectious(Person *person, char status) {
+  E_count--;
+  infectious_list.insert(person);
+  if (status == 'I') {
+    I_count++;
+    c_count++;
+  } else {
+    i_count++;
   }
 }
 
+void Epidemic::become_uninfectious(Person *person) {
+  infectious_list.erase(person);
+}
+
+void Epidemic::become_symptomatic(Person *person, char status) {
+  return;
+  switch (status) {
+  case 'S':
+    Utils::fred_abort("Help! Can't go from Susceptible to Symptomatic! person: %d\n",
+	       person->get_id());
+  case 'E':
+    E_count--;
+    break;
+  case 'i':
+    i_count--;
+    I_count++;
+    break;
+  case 'I':
+    I_count++;
+    break;
+  case 'R':
+    Utils::fred_abort("Help! Can't go from Removed to Symptomatic! person: %d\n",
+	       person->get_id());
+    break;
+  case 'M':
+    Utils::fred_abort("Help! Can't go from Immune to Symptomatic! person: %d\n",
+	       person->get_id());
+    break;
+  }
+}
+
+void Epidemic::become_removed(Person *person, char status) {
+  switch (status) {
+  case 'S':
+    susceptible_list.erase(person);
+    break;
+  case 'E':
+    E_count--;
+    break;
+  case 'i':
+    i_count--;
+    infectious_list.erase(person);
+    break;
+  case 'I':
+    I_count--;
+    infectious_list.erase(person);
+    break;
+  case 'R':
+    return;
+    break;
+  case 'M':
+    break;
+  }
+  R_count++;
+}
+
+void Epidemic::become_immune(Person *person, char status) {
+  switch (status) {
+  case 'S':
+    susceptible_list.erase(person);
+    break;
+  case 'E':
+    E_count--;
+    break;
+  case 'i':
+    i_count--;
+    infectious_list.erase(person);
+    break;
+  case 'I':
+    I_count--;
+    infectious_list.erase(person);
+    break;
+  case 'R':
+    break;
+  case 'M':
+    break;
+  }
+  M_count++;
+}
+
+
 void Epidemic::update_stats(int day) {
   if (Global::Verbose>1) {
-    fprintf(Global::Statusfp, "epidemic update\n");
+    fprintf(Global::Statusfp, "epidemic update stats\n");
     fflush(Global::Statusfp);
   }
 
@@ -98,30 +194,40 @@ void Epidemic::update_stats(int day) {
   clinical_attack_rate = (100.0*total_clinical_incidents)/N_init;
 
   // get reproductive rate for those infected max_days ago;
-  int rday = day - disease->get_max_days();
-  int rcount = 0;
   RR = 0.0;
   NR = 0;
+
+  // BROKEN: get_max_days() always returns 0
+  /*
+  int rday = day - disease->get_max_days();
+  printf("day = %d max_days %d rday = %d\n",day, disease->get_max_days(), rday);
+  int rcount = 0;
   if (rday >= 0) {
     NR = new_cases[rday];
+    printf("rday = %d NR = %d\n",rday, NR);
     for (int i = r_index; i < r_index + NR; i++) {
-      rcount += infected[i]->get_infectees(id);
+      rcount += exposed_list[i]->get_infectees(id);
+      printf("  i = %d per_id = %d inf = %d  rcount = %d\n",i,exposed_list[i]->get_id(),exposed_list[i]->get_infectees(id),rcount); fflush(stdout);
     }
     r_index += NR;
     if (NR)
       RR = (double)rcount / (double)NR;
   }
+  */
+
   if (Global::Verbose>1) {
-    fprintf(Global::Statusfp, "epidemic update finished\n");
+    fprintf(Global::Statusfp, "epidemic update stats finished\n");
     fflush(Global::Statusfp);
   }
 
 }
 
 void Epidemic::print_stats(int day) {
+  int S_count = susceptible_list.size();
+  int Icount = infectious_list.size();
   fprintf(Global::Outfp,
 	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
-	  day, id, S_count, E_count, I_count+i_count,
+	  day, id, S_count, E_count, Icount,
 	  I_count, R_count+r_count, M_count);
   fprintf(Global::Outfp,
 	  "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
@@ -137,7 +243,7 @@ void Epidemic::print_stats(int day) {
   if (Global::Verbose) {
     fprintf(Global::Statusfp,
 	    "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
-	    day, id, S_count, E_count, I_count+i_count,
+	    day, id, S_count, E_count, Icount,
 	    I_count, R_count+r_count, M_count);
     fprintf(Global::Statusfp,
 	    "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
@@ -220,10 +326,7 @@ void Epidemic::get_infectious_places(int day) {
   }
 }
   
-//void Epidemic::update(Date *sim_start_date, int day){
-void Epidemic::update(int day){
-  vector<Person *>::iterator itr;
-  vector<Place *>::iterator it;
+void Epidemic::get_primary_infections(int day){
   Population *pop = disease->get_population();
   N = pop->get_pop_size();
 
@@ -293,7 +396,17 @@ void Epidemic::update(int day){
       }
     }
   }
-  // get_infectious_places(day);
+
+}
+
+void Epidemic::transmit(int day){
+  vector<Person *>::iterator itr;
+  vector<Place *>::iterator it;
+  Population *pop = disease->get_population();
+  N = pop->get_pop_size();
+
+  // import infections from unknown sources
+  get_primary_infections(day);
 
   int infectious_places;
   infectious_places = (int) inf_households.size();
@@ -361,4 +474,50 @@ void Epidemic::update(int day){
   inf_schools.clear();
   inf_workplaces.clear();
   inf_offices.clear();
+}
+
+void Epidemic::update(int day) {
+  for (int dis = 0; dis < Global::Diseases; dis++) {
+    Disease * disease = Global::Pop.get_disease(dis);
+    Epidemic * epidemic = disease->get_epidemic();
+    epidemic->find_infectious_places(day, dis);
+    epidemic->add_susceptibles_to_infectious_places(day, dis);
+    disease->transmit(day);
+  }
+}
+
+void Epidemic::find_infectious_places(int day, int dis) {
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "find_infectious_places entered\n");
+    fflush(Global::Statusfp);
+  }
+
+  set <Person *>::iterator it;
+  for (it = infectious_list.begin(); it != infectious_list.end(); it++) {
+    Person * person = *it;
+    person->get_activities()->update_infectious_activities(day, dis);
+  }
+
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "find_infectious_places finished\n");
+    fflush(Global::Statusfp);
+  }
+}
+
+void Epidemic::add_susceptibles_to_infectious_places(int day, int dis) {
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "add_susceptibles_to_infectious_places entered\n");
+    fflush(Global::Statusfp);
+  }
+
+  set <Person *>::iterator it;
+  for (it = susceptible_list.begin(); it != susceptible_list.end(); it++) {
+    Person * person = *it;
+    person->get_activities()->update_susceptible_activities(day, dis);
+  }
+
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "add_susceptibles_to_infectious_places finished\n");
+    fflush(Global::Statusfp);
+  }
 }

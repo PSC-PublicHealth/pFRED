@@ -53,7 +53,7 @@ void Person::newborn_setup(int index, int age, char sex, int marital, int occ,
   activities = new Activities(this, favorite_places);
   behavior = new Behavior(this);
 	
-  for (int disease = 0; disease < Global::Pop.get_diseases(); disease++) {
+  for (int disease = 0; disease < Global::Diseases; disease++) {
     Disease* s = Global::Pop.get_disease(disease);
     if (!s->get_residual_immunity()->is_empty()) {
       double residual_immunity_prob =
@@ -73,7 +73,7 @@ Person::Person(int index, int age, char sex, int marital, int occ,
   activities = new Activities(this, house, school, work);
   behavior = new Behavior(this);
 	
-  for (int disease = 0; disease < Global::Pop.get_diseases(); disease++) {
+  for (int disease = 0; disease < Global::Diseases; disease++) {
     Disease* s = Global::Pop.get_disease(disease);
     if (!s->get_residual_immunity()->is_empty()) {
       double residual_immunity_prob =
@@ -108,14 +108,6 @@ void Person::print(FILE *fp, int disease) const {
     fprintf(fp," %2d",health->get_av_health(i)->get_av_start_day());
   fprintf(fp,"\n");
   fflush(fp);
-}
-
-int Person::get_diseases() {
-  return Global::Pop.get_diseases();
-}
-
-void Person::become_unsusceptible(int disease) {
-  health->become_unsusceptible(disease);
 }
 
 void Person::become_immune(Disease* disease) {
@@ -176,10 +168,6 @@ int Person::get_infectees(int disease) const {
   return health->get_infectees(disease);
 }
 
-int Person::add_infectee(int disease) {
-  return health->add_infectee(disease);
-}
-
 int Person::is_new_case(int day, int disease) const {
   return (health->get_exposure_date(disease) == day);
 }
@@ -190,7 +178,6 @@ void Person::set_changed(){
 
 void Person::infect(Person *infectee, int disease, Transmission *transmission) {
   this->health->infect(infectee, disease, transmission);
-  this->add_infectee(disease);
 }
 
 void Person::getInfected(Disease *disease, Transmission *transmission) {

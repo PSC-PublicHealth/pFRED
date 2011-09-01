@@ -32,7 +32,7 @@ Classroom::Classroom(int loc, const char *lab, double lon,
 		     double lat, Place *container, Population *pop) {
   type = CLASSROOM;
   setup(loc, lab, lon, lat, container, pop);
-  get_parameters(population->get_diseases());
+  get_parameters(Global::Diseases);
   age_level = -1;
 }
 

@@ -39,26 +39,18 @@ public:
   void assign_profile();
 
   /**
-   * Perform the daily update for this object.  However, for this object, we avoid computing this except as happens in
-   * update_schedule(day)
-   *
-   * @param day the simulation day
-   */
-  void update(int day);
-
-  /**
    * Perform the daily update for an infectious agent
    *
    * @param day the simulation day
    */
-  void update_infectious_activities(int day);
+  void update_infectious_activities(int day, int dis);
 
   /**
    * Perform the daily update for a susceptible agent
    *
    * @param day the simulation day
    */
-  void update_susceptible_activities(int day);
+  void update_susceptible_activities(int day, int dis);
 
   /**
    * Perform the daily update to the schedule

@@ -23,6 +23,7 @@
 #include "Date.h"
 #include "Evolution.h"
 #include "Travel.h"
+#include "Epidemic.h"
 
 int main(int argc, char* argv[]) {
   int run;          // number of current run
@@ -81,7 +82,7 @@ int main(int argc, char* argv[]) {
     Utils::fred_abort("mkdir(Output_directory) failed with %d\n",errno); // or die
 
   // open output files
-  // STB Do the error file first so that it captures
+  // Do the error file first so that it captures
   // as much errors as possible.
   Global::ErrorLogfp = NULL;
   sprintf(filename, "%s/err%d.txt", directory, run);
@@ -241,22 +242,16 @@ int main(int argc, char* argv[]) {
     }
 
     Global::Places.update(day);
-    Utils::fred_print_lap_time("day %d Places.update", day);
+    Utils::fred_print_lap_time("day %d update places", day);
 
-    Global::Pop.begin_day(day);
-    Utils::fred_print_lap_time("day %d Pop.begin", day);
+    Global::Pop.update(day);
+    Utils::fred_print_lap_time("day %d update population", day);
 
-    Global::Pop.get_visitors_to_infectious_places(day);
-    Utils::fred_print_lap_time("day %d Pop.get_visitors", day);
-
-    Global::Pop.transmit_infection(day);
-    Utils::fred_print_lap_time("day %d Pop.transmit", day);
-
-    Global::Pop.end_day(day);
-    Utils::fred_print_lap_time("day %d Pop.end_day", day);
+    Epidemic::update(day);
+    Utils::fred_print_lap_time("day %d update epidemic", day);
 
     Global::Pop.report(day);
-    Utils::fred_print_lap_time("day %d Pop.report", day);
+    Utils::fred_print_lap_time("day %d report population", day);
 
     if (Global::Enable_Migration && Date::match_pattern(day, "02-*-*")) {
       Global::Cells->population_migration(day);

@@ -438,7 +438,6 @@ protected:
   int * total_cases;			      // total symptomatic cases
   int * total_deaths;				// total deaths
   Population *population;
-  int diseases;					// number of diseases
   Cell * grid_cell;			 // geo grid_cell for this place
   vector< map<int, int> > incidence;
   vector< map<int, int> > prevalence;

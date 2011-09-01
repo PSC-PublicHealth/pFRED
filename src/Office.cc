@@ -27,7 +27,7 @@ Office::Office(int loc, const char *lab, double lon, double lat, Place *containe
   type = OFFICE;
   assert(container != NULL);
   setup(loc, lab, lon, lat, container, pop);
-  get_parameters(population->get_diseases());
+  get_parameters(Global::Diseases);
 }
 
 void Office::get_parameters(int diseases) {

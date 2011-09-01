@@ -30,7 +30,7 @@ Household::Household(int loc, const  char *lab, double lon,
 		     double lat, Place *container, Population* pop) {
   type = HOUSEHOLD;
   setup(loc, lab, lon, lat, container, pop);
-  get_parameters(population->get_diseases());
+  get_parameters(Global::Diseases);
   housemate.clear();
   adults = children = 0;
   N = 0; 
@@ -174,10 +174,7 @@ void Household::record_profile() {
 }
 
 void Household::spread_infection(int day, int s) {
-	
   vector<Person *>::iterator itr;
-  Disease * disease = population->get_disease(s);
-
   double contact_prob = get_contacts_per_day(s);
   for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
     Person * infector = *itr;			// infectious indiv
@@ -216,9 +213,6 @@ void Household::spread_infection(int day, int s) {
 	  }
 
 	  // successful transmission; create a new infection in infectee
-	  // Infection * infection = new Infection(disease, infector, infectee, this, day);
-	  // infectee->become_exposed(infection);
-          // infector->add_infectee(s);
           Transmission *transmission = new Transmission(infector, this, day);
           infector->infect(infectee, s, transmission);
 

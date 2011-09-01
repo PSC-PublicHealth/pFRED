@@ -116,89 +116,6 @@ void Infection::determine_transition_dates() {
   }
 }
 
-void Infection::become_infectious() {
-  disease->decrement_E_count();
-
-  if (is_symptomatic()) {
-    status = 'I';
-    disease->increment_I_count();
-    disease->increment_c_count();
-  } else {
-    status = 'i';
-    disease->increment_i_count();
-  }
-
-  host->set_changed();
-}
-
-void Infection::become_susceptible() {
-  status = 'S';
-  disease->decrement_r_count();
-}
-
-void Infection::become_unsusceptible() {
-  isSusceptible = false;
-  disease->decrement_S_count();
-  host->set_changed();
-}
-
-void Infection::become_symptomatic() {
-  if (status == 'i') {
-    disease->decrement_i_count();
-  }
-
-  if (status != 'I') {
-    status = 'I';
-    disease->increment_I_count();
-  }
-
-  host->set_changed();
-}
-
-void Infection::recover() {
-  if (status == 'I') {
-    disease->decrement_I_count();
-  } else if (status == 'i') {
-    disease->decrement_i_count();
-  }
-
-  status = 'R';
-
-  if (recovery_period > -1) {
-    disease->increment_r_count();
-  } else {
-    disease->increment_R_count();
-  }
-
-  infectivity = 0.0;
-  susceptibility = 0.0;
-  symptoms = 0.0;
-  host->set_changed(); // note that the infection state changed
-}
-
-void Infection::remove() {
-  if (status == 'R') {
-    return;
-  }
-
-  if (status == 'E') {
-    disease->decrement_E_count();
-  }
-
-  if (status == 'I') {
-    disease->decrement_I_count();
-  }
-
-  if (status == 'i') {
-    disease->decrement_i_count();
-  }
-
-  status = 'R';
-  host->set_changed(); // note that the infection state changed
-  infectivity = 0.0;
-  susceptibility = 0.0;
-  symptoms = 0.0;
-}
 void Infection::update(int today) {
   if(trajectory == NULL) return;
 
@@ -210,6 +127,11 @@ void Infection::update(int today) {
   symptoms = trajectory_point.symptomaticity;
 
   if (today == get_infectious_date()) {
+    if (is_symptomatic()) {
+      status = 'I';
+    } else {
+      status = 'i';
+    }
     host->become_infectious(disease);
   }
 
@@ -222,11 +144,12 @@ void Infection::update(int today) {
   }
 
   if (today == get_susceptible_date()) {
-    host->become_susceptible(disease->get_id());
+    host->become_susceptible(disease);
   }
 
   if (today == get_unsusceptible_date()) {
-    host->become_unsusceptible(disease->get_id());
+    host->become_unsusceptible(disease);
+    isSusceptible = false;
   }
 
   if(today != get_recovery_date()) {
@@ -387,9 +310,6 @@ void Infection::addTransmission(Transmission *transmission) {
     }
 
     status = 'E';
-    disease->increment_E_count();
-    disease->increment_C_count();
-    disease->insert_into_infected_list(host);
 
     vector<int> strains;
     trajectory->getAllStrains(strains);
@@ -397,7 +317,8 @@ void Infection::addTransmission(Transmission *transmission) {
     host->addPrevalence(disease->get_id(), strains);
 
     if(isSusceptible && susceptibility_period == 0) {
-      host->become_unsusceptible(disease->get_id());
+      host->become_unsusceptible(disease);
+      isSusceptible = false;
     }
   }
 }

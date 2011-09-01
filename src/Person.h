@@ -73,33 +73,15 @@ public:
    * Make this agent unsusceptible to the given disease
    * @param disease the disease to reference
    */
-  void become_unsusceptible(int disease);
+  void become_unsusceptible(Disease *disease) {
+    health->become_unsusceptible(disease);
+  }
 
   /**
    * Make this agent immune to the given disease
    * @param disease the disease to reference
    */
   void become_immune(Disease *disease);
-
-  /**
-   * Perform the daily update for an infectious agent
-   *
-   * @param day the simulation day
-   * @see Activities::update_infectious_activities(int day)
-   */
-  void update_infectious_activities(int day) {
-    activities->update_infectious_activities(day);
-  }
-
-  /**
-   * Perform the daily update for a susceptible agent
-   *
-   * @param day the simulation day
-   * @see Activities::update_susceptible_activities(int day)
-   */
-  void update_susceptible_activities(int day) {
-    activities->update_susceptible_activities(day);
-  }
 
   /**
    * Print out information about this object with regards to a disease to a file.
@@ -129,12 +111,6 @@ public:
    */
   bool is_infectious(int dis) { return health->is_infectious(dis); }
 
-  /**
-   * @return the diseases affecting the Population
-   * @see Population::get_diseases()
-   */
-  int get_diseases();
-  
   /**
    * @return the a pointer to this agent's Household
    */
@@ -308,12 +284,6 @@ public:
   bool is_staying_home(int day) { return behavior->is_staying_home(day); }
 
   /**
-   * @param day the simulation day
-   * @see Activities::update(int day)
-   */
-  void update_activities(int day) { activities->update(day); }
-
-  /**
    * @Activities::update_profile()
    */
   void update_activity_profile() { activities->update_profile(); }
@@ -332,13 +302,7 @@ public:
    * This agent will become susceptible to the disease
    * @param disease the disease
    */
-  void become_susceptible(int disease) { health->become_susceptible(disease); }
-
-  /**
-   * This agent will become exposed to the infection
-   * @param infection a pointer to the Infection
-   */
-  void become_exposed(Infection * infection) { health->become_exposed(infection); }
+  void become_susceptible(Disease * disease) { health->become_susceptible(disease); }
 
   /**
    * This agent will become infectious with the disease

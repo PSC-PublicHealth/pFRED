@@ -120,51 +120,41 @@ void Activities::assign_profile() {
   }
 }
 
-void Activities::update(int day) {
-  // we avoid computing this except as happens below
-  // update_schedule(day);
-}
-
-void Activities::update_infectious_activities(int day) {
+void Activities::update_infectious_activities(int day, int dis) {
   // skip scheduled activities if traveling abroad
   if (traveling_outside)
     return;
 
-  // everyone decides which neighborhood they will visit today
+  // decide which neighborhood to visit today
   favorite_place[NEIGHBORHOOD_INDEX] =
     favorite_place[HOUSEHOLD_INDEX]->select_neighborhood(Activities::Community_prob,
 							 Activities::Community_distance,
 							 Activities::Home_neighborhood_prob);
-    
-  int diseases = self->get_diseases();
-  for (int dis = 0; dis < diseases; dis++) {
-    if (self->is_infectious(dis)) {
-      char status = self->get_disease_status(dis);
-      if (schedule_updated < day) update_schedule(day);
-      for (int i = 0; i < FAVORITE_PLACES; i++) {
-        if (favorite_place[i] != NULL && on_schedule[i]) {
-          favorite_place[i]->add_infectious(dis, self, status);
-        }
-      }
+  update_schedule(day);
+  char status = self->get_disease_status(dis);
+  for (int i = 0; i < FAVORITE_PLACES; i++) {
+    if (favorite_place[i] != NULL && on_schedule[i]) {
+      favorite_place[i]->add_infectious(dis, self, status);
     }
   }
 }
 
-void Activities::update_susceptible_activities(int day) {
+
+void Activities::update_susceptible_activities(int day, int dis) {
   // skip scheduled activities if traveling abroad
   if (traveling_outside)
     return;
 
-  int diseases = self->get_diseases();
-    for (int dis = 0; dis < diseases; dis++) {
-    if (self->is_susceptible(dis)) {
-      for (int i = 0; i < FAVORITE_PLACES; i++) {
-        if (favorite_place[i] != NULL && favorite_place[i]->is_infectious(dis)) {
-	  if (schedule_updated < day) update_schedule(day);
-	  if (on_schedule[i]) {
-	    favorite_place[i]->add_susceptible(dis, self);
-	  }
-        }
+  // decide which neighborhood to visit today
+  favorite_place[NEIGHBORHOOD_INDEX] =
+    favorite_place[HOUSEHOLD_INDEX]->select_neighborhood(Activities::Community_prob,
+							 Activities::Community_distance,
+							 Activities::Home_neighborhood_prob);
+  update_schedule(day);
+  for (int i = 0; i < FAVORITE_PLACES; i++) {
+    if (favorite_place[i] != NULL && favorite_place[i]->is_infectious(dis)) {
+      if (on_schedule[i]) {
+	favorite_place[i]->add_susceptible(dis, self);
       }
     }
   }

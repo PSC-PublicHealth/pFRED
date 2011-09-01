@@ -58,7 +58,6 @@ Population::Population() {
   disease = NULL;
   av_manager = NULL;
   vacc_manager = NULL;
-  diseases = -1;
   mutation_prob = NULL;
 }
 
@@ -78,21 +77,20 @@ Population::~Population() {
 void Population::get_parameters() {
   Params::get_param((char *) "popfile", Population::popfile);
   Params::get_param((char *) "profiles", Population::profilefile);
-  diseases = Global::Diseases;
   
   int num_mutation_params =
       Params::get_param_matrix((char *) "mutation_prob", &mutation_prob);
-  if (num_mutation_params != diseases) {
+  if (num_mutation_params != Global::Diseases) {
     fprintf(Global::Statusfp,
             "Improper mutation matrix: expected square matrix of %i rows, found %i",
-            diseases, num_mutation_params);
+            Global::Diseases, num_mutation_params);
     exit(1);
   }
 
   if (Global::Verbose > 1) {
     printf("\nmutation_prob:\n");
-    for (int i  = 0; i < diseases; i++)  {
-      for (int j  = 0; j < diseases; j++) {
+    for (int i  = 0; i < Global::Diseases; i++)  {
+      for (int j  = 0; j < Global::Diseases; j++) {
         printf("%f ", mutation_prob[i][j]);
       }
       printf("\n");
@@ -168,8 +166,8 @@ void Population::setup() {
     fprintf(Global::Statusfp, "setup population entered\n");
     fflush(Global::Statusfp);
   }
-  disease = new Disease [diseases];
-  for (int dis = 0; dis < diseases; dis++) {
+  disease = new Disease [Global::Diseases];
+  for (int dis = 0; dis < Global::Diseases; dis++) {
     disease[dis].setup(dis, this, mutation_prob[dis]);
   }
   
@@ -287,7 +285,7 @@ void Population::read_population() {
   }
 }
 
-void Population::begin_day(int day) {
+void Population::update(int day) {
 
   // clear lists of births and deaths
   if (Global::Enable_Deaths) death_list.clear();
@@ -392,60 +390,7 @@ void Population::begin_day(int day) {
   }
 }
 
-void Population::get_visitors_to_infectious_places(int day) {
-
-  if (Global::Verbose > 1) {
-    fprintf(Global::Statusfp, "get_visitors_to_infectious_places entered\n");
-    fflush(Global::Statusfp);
-  }
-
-  // find places visited by infectious agents
-  for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_infectious_activities(day);
-  }
-
-  if (Global::Verbose > 1) {
-    fprintf(Global::Statusfp, "update_infectious_activities finished\n");
-    fflush(Global::Statusfp);
-  }
-
-  // add susceptibles to infectious places
-  for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_susceptible_activities(day);
-  }
-
-  if (Global::Verbose > 1) {
-    fprintf(Global::Statusfp, "update_susceptible_activities finished\n");
-    fflush(Global::Statusfp);
-  }
-
-  if (Global::Verbose > 1) {
-    fprintf(Global::Statusfp, "get_visitors_to_infectious_places finished\n");
-    fflush(Global::Statusfp);
-  }
-
-}
-
-void Population::transmit_infection(int day) {
-
-  // apply transmission model in all infectious places
-  for (int s = 0; s < diseases; s++) {
-    if (Global::Verbose > 1) {
-      fprintf(Global::Statusfp, "disease = %d day = %d\n",s,day);
-      fflush(Global::Statusfp);
-      disease[s].print();
-    }
-    disease[s].update(day);
-  }
-
-  if (Global::Verbose > 1) {
-    fprintf(Global::Statusfp, "find_infectious_places finished\n");
-    fflush(Global::Statusfp);
-  }
-
-}
-
-void Population::end_day(int day) {
+void Population::report(int day) {
 
   // give out anti-virals (after today's infections)
   av_manager->disseminate(day);
@@ -495,14 +440,7 @@ void Population::end_day(int day) {
     }
   }
 
-  if(Global::Verbose > 1) {
-    fprintf(Global::Statusfp, "population update finished\n");
-    fflush(Global::Statusfp);
-  }
-}
-
-void Population::report(int day) {
-  for (int s = 0; s < diseases; s++) {
+  for (int s = 0; s < Global::Diseases; s++) {
     disease[s].update_stats(day);
     disease[s].print_stats(day);
   }
@@ -514,7 +452,7 @@ void Population::print(int incremental, int day) {
   if (!incremental){
     if (Global::Trace_Headers) fprintf(Global::Tracefp, "# All agents, by ID\n");
     for (int p = 0; p < pop_size; p++)
-      for (int i=0; i<diseases; i++)
+      for (int i=0; i<Global::Diseases; i++)
 	pop[p]->print(Global::Tracefp, i);
   } else if (1==incremental) {
     ChangeMap::const_iterator iter;
@@ -574,8 +512,6 @@ void Population::end_of_run() {
   }
 }
 
-
-
 Disease *Population::get_disease(int s) {
   return &disease[s];
 }
@@ -614,7 +550,7 @@ void Population::quality_control() {
     fprintf(Global::Statusfp, "\n");
     
     // Print out At Risk distribution
-    for(int is = 0; is < diseases; is++){
+    for(int is = 0; is < Global::Diseases; is++){
       if(disease[is].get_at_risk()->get_num_ages() > 0){
         Disease* s = &disease[is];
         int rcount[20];

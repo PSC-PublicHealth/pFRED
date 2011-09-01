@@ -39,7 +39,7 @@ bool School::school_parameters_set = false;
 School::School(int loc, const char *lab, double lon, double lat, Place* container, Population *pop) {
   type = SCHOOL;
   setup(loc, lab, lon, lat, container, pop);
-  get_parameters(population->get_diseases());
+  get_parameters(Global::Diseases);
   for (int i = 0; i < 20; i++) {
     students_with_age[i] = 0;
     classrooms[i].clear();
@@ -48,7 +48,7 @@ School::School(int loc, const char *lab, double lon, double lat, Place* containe
 }
 
 void School::prepare() {
-  int diseases = population->get_diseases();
+  int diseases = Global::Diseases;
   for (int s = 0; s < diseases; s++) {
     susceptibles[s].clear();
     infectious[s].clear();

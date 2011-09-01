@@ -29,7 +29,7 @@ bool Workplace::Workplace_parameters_set = false;
 Workplace::Workplace(int loc, const char *lab, double lon, double lat, Place *container, Population *pop) {
   type = WORKPLACE;
   setup(loc, lab, lon, lat, container, pop);
-  get_parameters(population->get_diseases());
+  get_parameters(Global::Diseases);
   offices.clear();
   next_office = 0;
 }
@@ -67,7 +67,7 @@ void Workplace::get_parameters(int diseases) {
 }
 
 void Workplace::prepare() {
-  for (int s = 0; s < diseases; s++) {
+  for (int s = 0; s < Global::Diseases; s++) {
     susceptibles[s].reserve(N);
     infectious[s].reserve(N);
     total_cases[s] = total_deaths[s] = 0;
