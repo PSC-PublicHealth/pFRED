@@ -11,8 +11,9 @@ if [ ! -x $FRED ]; then
     exit 1
 fi
 
-rm -rf OUT.TEST OUT.RT
-mkdir OUT.TEST OUT.RT
+rm -rf OUT.TEST
+mkdir OUT.TEST
+rm -f OUT.RT/*
 $FRED params.test 1 > OUT.TEST/LOG1
 $FRED params.test 2 > OUT.TEST/LOG2
 cp OUT.TEST/* OUT.RT
