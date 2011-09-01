@@ -158,17 +158,11 @@ public:
     epidemic->add_infectious_place(p, type);
   }
 
- /**
-   * @param day the simulation day
-   * @see Epidemic::update_stats(int day);
-   */
-  void update_stats(int day);
-
   /**
    * @param day the simulation day
    * @see Epidemic::print_stats(day);
    */
-  void print_stats(int day);
+  void print_stats(int day) { epidemic->print_stats(day); }
 
   /**
    * @return the population with which this Disease is associated

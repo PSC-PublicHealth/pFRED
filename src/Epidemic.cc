@@ -59,7 +59,8 @@ Epidemic::Epidemic(Disease *str, Timestep_Map* _primary_cases_map) {
   attack_rate = 0.0;
   total_incidents = 0;
   total_clinical_incidents = 0;
-  r_index = V_count = C_count = c_count = 0;
+  rr_index = 0;
+  V_count = C_count = c_count = 0;
   E_count = I_count = i_count = R_count = r_count = M_count = 0;
 }
 
@@ -78,7 +79,8 @@ void Epidemic::become_unsusceptible(Person *person) {
 void Epidemic::become_exposed(Person *person) {
   E_count++;
   C_count++;
-  // exposed_list.push_back(person);
+  if (Global::RR_delay)
+    exposed_list.push_back(person);
 }
 
 void Epidemic::become_infectious(Person *person, char status) {
@@ -173,7 +175,7 @@ void Epidemic::become_immune(Person *person, char status) {
 }
 
 
-void Epidemic::update_stats(int day) {
+void Epidemic::print_stats(int day) {
   if (Global::Verbose>1) {
     fprintf(Global::Statusfp, "epidemic update stats\n");
     fflush(Global::Statusfp);
@@ -193,36 +195,24 @@ void Epidemic::update_stats(int day) {
   attack_rate = (100.0*total_incidents)/N_init;
   clinical_attack_rate = (100.0*total_clinical_incidents)/N_init;
 
-  // get reproductive rate for those infected max_days ago;
-  RR = 0.0;
-  NR = 0;
-
-  // BROKEN: get_max_days() always returns 0
-  /*
-  int rday = day - disease->get_max_days();
-  printf("day = %d max_days %d rday = %d\n",day, disease->get_max_days(), rday);
-  int rcount = 0;
-  if (rday >= 0) {
-    NR = new_cases[rday];
-    printf("rday = %d NR = %d\n",rday, NR);
-    for (int i = r_index; i < r_index + NR; i++) {
-      rcount += exposed_list[i]->get_infectees(id);
-      printf("  i = %d per_id = %d inf = %d  rcount = %d\n",i,exposed_list[i]->get_id(),exposed_list[i]->get_infectees(id),rcount); fflush(stdout);
+  // get reproductive rate for the cohort exposed RR_delay days ago
+  // unless RR_delay == 0
+  NR = 0; // size of the cohort exposed on a single day (namely, rr_day)
+  RR = 0.0;	    // reproductive rate for a fixed cohort of infectors
+  if (0 < Global::RR_delay && Global::RR_delay <= day) {
+    int rr_day = day - Global::RR_delay;      // exposure day for cohort
+    NR = new_cases[rr_day];			// size of cohort
+    if (NR > 0) {	    // compute reproductive rate for this cohort
+      int rr_count = 0;		 // number of infectees from this cohort
+      // count the total infectees from this cohort
+      for (int i = rr_index; i < rr_index + NR; i++) {
+	rr_count += exposed_list[i]->get_infectees(id);
+      }
+      RR = (double)rr_count / (double)NR;	// reproductive rate
     }
-    r_index += NR;
-    if (NR)
-      RR = (double)rcount / (double)NR;
-  }
-  */
-
-  if (Global::Verbose>1) {
-    fprintf(Global::Statusfp, "epidemic update stats finished\n");
-    fflush(Global::Statusfp);
+    rr_index += NR;			   // advance to the next cohort
   }
 
-}
-
-void Epidemic::print_stats(int day) {
   int S_count = susceptible_list.size();
   int Icount = infectious_list.size();
   fprintf(Global::Outfp,
@@ -256,6 +246,7 @@ void Epidemic::print_stats(int day) {
       Global::Sim_Date->get_epi_week(day));
     fflush(Global::Statusfp);
   }
+  // prepare for next day
   C_count = c_count = 0;
 }
 

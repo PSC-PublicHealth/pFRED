@@ -431,19 +431,20 @@ void Population::report(int day) {
     clear_static_arrays();
   }
 
-  //Write the population to the output file if the parameter is set
-  //  * Will write only on the first day of the simulation, days matching the date pattern in the parameter file,
-  //    and the last day of the simulation *
+  for (int s = 0; s < Global::Diseases; s++) {
+    disease[s].print_stats(day);
+  }
+
+  // Write out the population if the output_population parameter is set.
+  // Will write only on the first day of the simulation, on days
+  // matching the date pattern in the parameter file, and the on
+  // the last day of the simulation
   if(Population::output_population > 0) {
     if((day == 0) || (Date::match_pattern(day, Population::output_population_date_match))) {
       this->write_population_output_file(day);
     }
   }
 
-  for (int s = 0; s < Global::Diseases; s++) {
-    disease[s].update_stats(day);
-    disease[s].print_stats(day);
-  }
 }
 
 void Population::print(int incremental, int day) {

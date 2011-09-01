@@ -21,6 +21,7 @@ int Global::Trace_Headers = 0;
 int Global::Random_start_day = 0;
 char Global::Behavior_model_type[256];
 int Global::Quality_control = 0;
+int Global::RR_delay = 0;
 int Global::Diseases = 0;
 double Global::Prob_accept_vaccine = 0.0;
 double Global::Prob_accept_vaccine_dose = 0.0;
@@ -75,6 +76,7 @@ void Global::get_global_parameters() {
   Params::get_param((char *) "debug", &Global::Debug);
   Params::get_param((char *) "test", &Global::Test);
   Params::get_param((char *) "quality_control", &Global::Quality_control);
+  Params::get_param((char *) "rr_delay", &Global::RR_delay);
   Params::get_param((char *) "days", &Global::Days);
   Params::get_param((char *) "seed", &Global::Seed);
   Params::get_param((char *) "epidemic_offset", &Global::Epidemic_offset);

@@ -180,14 +180,6 @@ double Disease::get_attack_rate() {
   return epidemic->get_attack_rate();
 }
 
-void Disease::update_stats(int day) {
-  epidemic->update_stats(day);
-}
-
-void Disease::print_stats(int day) {
-  epidemic->print_stats(day);
-}
-
 // static
 void Disease::get_disease_parameters() {
 }

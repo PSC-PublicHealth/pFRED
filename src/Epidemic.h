@@ -31,12 +31,6 @@ public:
   ~Epidemic();
   
   /**
-   * Update the daily stats for the Epidemic
-   * @param day the simulation day
-   */
-  void update_stats(int day);
-
-  /**
    * Output daily Epidemic statistics to the files
    * @param day the simulation day
    */
@@ -117,7 +111,7 @@ private:
   int total_incidents;
   int vaccine_acceptance;
   int * new_cases;
-  int r_index;
+  int rr_index;
   double RR;
   int NR;
   int E_count;

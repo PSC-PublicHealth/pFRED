@@ -176,6 +176,10 @@ void Household::record_profile() {
 void Household::spread_infection(int day, int s) {
   vector<Person *>::iterator itr;
   double contact_prob = get_contacts_per_day(s);
+
+  // randomize the order of the infectious list
+  FYShuffle<Person *>(infectious[s]);
+
   for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
     Person * infector = *itr;			// infectious indiv
     assert(infector->get_disease_status(s)=='I'||infector->get_disease_status(s)=='i');
