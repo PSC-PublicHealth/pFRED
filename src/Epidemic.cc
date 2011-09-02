@@ -69,11 +69,11 @@ Epidemic::~Epidemic() {
 }
 
 void Epidemic::become_susceptible(Person *person) {
-  susceptible_list.insert(person);
+  susceptible_list.insert(make_pair(person,person->get_id()));
 }
 
 void Epidemic::become_unsusceptible(Person *person) {
-  susceptible_list.erase(person);
+  susceptible_list.erase(make_pair(person,person->get_id()));
 }
 
 void Epidemic::become_exposed(Person *person) {
@@ -85,7 +85,7 @@ void Epidemic::become_exposed(Person *person) {
 
 void Epidemic::become_infectious(Person *person, char status) {
   E_count--;
-  infectious_list.insert(person);
+  infectious_list.insert(make_pair(person,person->get_id()));
   if (status == 'I') {
     I_count++;
     c_count++;
@@ -95,7 +95,7 @@ void Epidemic::become_infectious(Person *person, char status) {
 }
 
 void Epidemic::become_uninfectious(Person *person) {
-  infectious_list.erase(person);
+  infectious_list.erase(make_pair(person,person->get_id()));
 }
 
 void Epidemic::become_symptomatic(Person *person, char status) {
@@ -128,18 +128,18 @@ void Epidemic::become_symptomatic(Person *person, char status) {
 void Epidemic::become_removed(Person *person, char status) {
   switch (status) {
   case 'S':
-    susceptible_list.erase(person);
+    susceptible_list.erase(make_pair(person,person->get_id()));
     break;
   case 'E':
     E_count--;
     break;
   case 'i':
     i_count--;
-    infectious_list.erase(person);
+    infectious_list.erase(make_pair(person,person->get_id()));
     break;
   case 'I':
     I_count--;
-    infectious_list.erase(person);
+    infectious_list.erase(make_pair(person,person->get_id()));
     break;
   case 'R':
     return;
@@ -153,18 +153,18 @@ void Epidemic::become_removed(Person *person, char status) {
 void Epidemic::become_immune(Person *person, char status) {
   switch (status) {
   case 'S':
-    susceptible_list.erase(person);
+    susceptible_list.erase(make_pair(person,person->get_id()));
     break;
   case 'E':
     E_count--;
     break;
   case 'i':
     i_count--;
-    infectious_list.erase(person);
+    infectious_list.erase(make_pair(person,person->get_id()));
     break;
   case 'I':
     I_count--;
-    infectious_list.erase(person);
+    infectious_list.erase(make_pair(person,person->get_id()));
     break;
   case 'R':
     break;
@@ -483,9 +483,9 @@ void Epidemic::find_infectious_places(int day, int dis) {
     fflush(Global::Statusfp);
   }
 
-  set <Person *>::iterator it;
+  set <person_pair>::iterator it;
   for (it = infectious_list.begin(); it != infectious_list.end(); it++) {
-    Person * person = *it;
+    Person * person = it->first;;
     person->get_activities()->update_infectious_activities(day, dis);
   }
 
@@ -501,9 +501,9 @@ void Epidemic::add_susceptibles_to_infectious_places(int day, int dis) {
     fflush(Global::Statusfp);
   }
 
-  set <Person *>::iterator it;
+  set <person_pair>::iterator it;
   for (it = susceptible_list.begin(); it != susceptible_list.end(); it++) {
-    Person * person = *it;
+    Person * person = it->first;;
     person->get_activities()->update_susceptible_activities(day, dis);
   }
 

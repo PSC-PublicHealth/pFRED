@@ -93,8 +93,15 @@ private:
   int id;
   int N;				      // current population size
   int N_init;				      // initial population size
-  set <Person *> susceptible_list;
-  set <Person *> infectious_list;
+  typedef pair<Person *,int> person_pair;
+  struct person_pair_comparator {
+    bool operator()(const person_pair A, const person_pair B) const  {
+      return A.second < B.second;
+    }
+  };
+
+  set <person_pair, person_pair_comparator> susceptible_list;
+  set <person_pair, person_pair_comparator> infectious_list;
   vector <Person *> exposed_list;
   vector <Place *> inf_households;
   vector <Place *> inf_neighborhoods;
