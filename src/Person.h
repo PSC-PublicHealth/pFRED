@@ -45,29 +45,16 @@ public:
    * @param sex (M or F)
    * @param marital 1 if married, 0 if not
    * @param occ the code for the Person's occupation
-   * @param house the label for this Person's Household
-   * @param school the label for this Person's School
-   * @param work the label for this Person's Workplace
+   * @param house pointer to this Person's Household
+   * @param school pointer to this Person's School
+   * @param work pointer to this Person's Workplace
    * @param day the simulation day
+   * @param today_is_birthday true if this is a newborn
    */
-  Person(int index, int age, char sex, int marital, int occ, char *house,
-	 char *school, char *work, int day);
+  Person(int index, int age, char sex, int marital, int occ, Place *house,
+	 Place *school, Place *work, int day, bool today_is_birthday);
 
   ~Person();
-
-  /**
-   * Setup values for a newborn.  The newborn will have the same Household and Neighborhood as its mother.
-   *
-   * @param index the person id
-   * @param age
-   * @param sex (M or F)
-   * @param marital 1 if married, 0 if not
-   * @param occ the code for the Person's occupation
-   * @param favorite_places an array of the locations this agent visits (i.e. Household, Neighborhood, etc)
-   * @param day the simulation day
-   */
-  void newborn_setup(int index, int age, char sex, int marital, int profession,
-				       Place **favorite_places, int day);
 
   /**
    * Make this agent unsusceptible to the given disease

@@ -372,20 +372,24 @@ void Grid::select_immigrants(int day) {
 
       int next_id = Global::Pop.get_next_id();
       int age, married, occ;
-      char label[32], house[32], school[32], work[32];
+      char label[32], house_label[32], school_label[32], work_label[32];
       char sex;
       sscanf(pstring, "%s %d %c %d %d %s %s %s",
-	     label, &age, &sex, &married, &occ, house, school, work);
+	     label, &age, &sex, &married, &occ, house_label, school_label, work_label);
 
       // make younger to reflect age based on next decennial
       int year_diff = 2010-current_year;
       if (age >= year_diff) age = age - year_diff;
 
       // redirect to the vacant house
-      strcpy(house, vacant->get_label());
+      strcpy(house_label, vacant->get_label());
 
       // create clone
-      Person * clone = new Person(next_id, age, sex, married, occ, house, school, work, day);
+      Place * house = Global::Places.get_place_from_label(house_label);
+      Place * work = Global::Places.get_place_from_label(work_label);
+      Place * school = Global::Places.get_place_from_label(school_label);
+      bool today_is_birthday = false;
+      Person * clone = new Person(next_id, age, sex, married, occ, house, school, work, day, today_is_birthday);
 
       // add to the popualtion
       Global::Pop.add_person(clone);

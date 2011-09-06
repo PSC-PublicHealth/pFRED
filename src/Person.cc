@@ -44,31 +44,12 @@ Person::~Person() {
   if (behavior != NULL) delete behavior;
 }
 
-void Person::newborn_setup(int index, int age, char sex, int marital, int occ,
-			   Place **favorite_places, int day) {
-  idx = index;
-
-  demographics = new Demographics(this, age, sex, marital, occ, day, true);
-  health = new Health(this);
-  activities = new Activities(this, favorite_places);
-  behavior = new Behavior(this);
-	
-  for (int disease = 0; disease < Global::Diseases; disease++) {
-    Disease* s = Global::Pop.get_disease(disease);
-    if (!s->get_residual_immunity()->is_empty()) {
-      double residual_immunity_prob =
-	      s->get_residual_immunity()->find_value(get_age());
-      if (RANDOM() < residual_immunity_prob)
-	      become_immune(s);
-    }
-  }
-}
-
 Person::Person(int index, int age, char sex, int marital, int occ,
-	       char *house, char *school, char *work, int day) {
+	       Place *house, Place *school, Place *work, int day,
+	       bool today_is_birthday) {
   idx = index;
   demographics =
-    new Demographics(this, age, sex, marital, occ, day, false);
+    new Demographics(this, age, sex, marital, occ, day, today_is_birthday);
   health = new Health(this);
   activities = new Activities(this, house, school, work);
   behavior = new Behavior(this);
@@ -186,13 +167,15 @@ void Person::getInfected(Disease *disease, Transmission *transmission) {
 }
 
 Person * Person::give_birth(int day) {
-  int id = Global::Pop.get_next_id(), age = 0, married = 0, prof = 2;
+  int id = Global::Pop.get_next_id();
+  int age = 0, married = 0, prof = 2;
   char sex = (URAND(0.0, 1.0) < 0.5 ? 'M' : 'F');
-  Place *favorite_place[] = {
-    get_household(), get_neighborhood(),
-    NULL, NULL, NULL, NULL };
-  Person * baby = new Person();
-  baby->newborn_setup(id, age, sex, married, prof, favorite_place, day);
+  Place * house = get_household();
+  Place * school = NULL;
+  Place * work = NULL;
+  bool today_is_birthday = true;
+  Person * baby = new Person(id, age, sex, married, prof,
+			     house, school, work, day, today_is_birthday);
   return baby;
 }
 

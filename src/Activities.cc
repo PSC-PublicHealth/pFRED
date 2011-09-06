@@ -40,37 +40,22 @@ double Activities::Community_distance = 20;
 double Activities::Community_prob = 0.1;
 double Activities::Home_neighborhood_prob = 0.5;
 
-Activities::Activities (Person *person, Place **fav_place) {
-  start_constructor(person);
-  for (int i = 0; i < FAVORITE_PLACES; i++) {
-    favorite_place[i] = fav_place[i];
-  }
-  assert(get_household() != NULL);
-  finish_constructor();
-}
-
-Activities::Activities (Person *person, char *house, char *school, char *work) {
-  start_constructor(person);
-  for (int i = 0; i < FAVORITE_PLACES; i++) {
-    favorite_place[i] = NULL;
-  }
-  favorite_place[HOUSEHOLD_INDEX] = Global::Places.get_place_from_label(house);
-  favorite_place[SCHOOL_INDEX] = Global::Places.get_place_from_label(school);
-  favorite_place[WORKPLACE_INDEX] = Global::Places.get_place_from_label(work);
-  assert(get_household() != NULL);
-  finish_constructor();
-}
-
-void Activities::start_constructor (Person *person) {
+Activities::Activities (Person *person, Place *house, Place *school, Place *work) {
   //Create the static arrays one time
   if (!Activities::is_initialized) {
     read_init_files();
     Activities::is_initialized = true;
   }
   self = person;
-}
 
-void Activities::finish_constructor () {
+  for (int i = 0; i < FAVORITE_PLACES; i++) {
+    favorite_place[i] = NULL;
+  }
+  favorite_place[HOUSEHOLD_INDEX] = house;
+  favorite_place[SCHOOL_INDEX] = school;
+  favorite_place[WORKPLACE_INDEX] = work;
+  assert(get_household() != NULL);
+
   // get the neighbhood from the household
   favorite_place[NEIGHBORHOOD_INDEX] =
     favorite_place[HOUSEHOLD_INDEX]->get_grid_cell()->get_neighborhood();
