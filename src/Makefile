@@ -10,7 +10,7 @@ CPPFLAGS = -g -pg -O3 -Wall # -fast #-Wall
 # CPPFLAGS = -g -m64 -O3 # -DNDEBUG
 
 # Use this for production:
-# CPPFLAGS = -m64 -O3 -DNDEBUG -fast #-Wall
+# CPPFLAGS = -g -m64 -O3 -DNDEBUG -fast #-Wall
 
 # Use this for unit testing:
 # CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall
@@ -48,7 +48,7 @@ OBJ =   Fred.o Global.o Utils.o Decision.o Policy.o Manager.o \
 	Antiviral.o Antivirals.o Health_Belief_Model.o Random_Behavior_Model.o \
 	Activities.o Classroom.o Behavior.o Demographics.o Epidemic.o Health.o \
         Hospital.o Household.o Infection.o Neighborhood.o Office.o \
-	Params.o Perceptions.o Person.o Place.o Place_List.o Population.o Profile.o Random.o \
+	Params.o Perceptions.o Person.o Place.o Place_List.o Population.o Random.o \
 	School.o Disease.o Workplace.o \
 	Geo_Utils.o Cell.o Grid.o Large_Grid.o Large_Cell.o Small_Grid.o Small_Cell.o Travel.o \
 	Date.o Trajectory.o StrainTable.o \

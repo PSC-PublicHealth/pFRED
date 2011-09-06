@@ -12,7 +12,6 @@
 #include "Activities.h"
 #include "Global.h"
 #include "Person.h"
-#include "Profile.h"
 #include "Place.h"
 #include "Random.h"
 #include "Disease.h"
@@ -30,6 +29,14 @@
 #include "Place_List.h"
 #include "Utils.h"
 #include "Travel.h"
+
+#define PRESCHOOL_PROFILE 0
+#define STUDENT_PROFILE 1
+#define TEACHER_PROFILE 2
+#define WORKER_PROFILE 3
+#define WEEKEND_WORKER_PROFILE 4
+#define UNEMPLOYED_PROFILE 5
+#define RETIRED_PROFILE 6
 
 bool Activities::is_initialized = false;
 double Activities::age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];

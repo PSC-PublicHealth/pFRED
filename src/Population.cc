@@ -15,7 +15,6 @@
 #include <sstream>
 #include "Population.h"
 #include "Params.h"
-#include "Profile.h"
 #include "Global.h"
 #include "Place_List.h"
 #include "Disease.h"
@@ -43,7 +42,6 @@ int death_count_male[Demographics::MAX_AGE + 1];
 int death_count_female[Demographics::MAX_AGE + 1];
 
 char Population::popfile[256];
-char Population::profilefile[256];
 char Population::pop_outfile[256];
 char Population::output_population_date_match[256];
 int Population::output_population = 0;
@@ -76,7 +74,6 @@ Population::~Population() {
 
 void Population::get_parameters() {
   Params::get_param((char *) "popfile", Population::popfile);
-  Params::get_param((char *) "profiles", Population::profilefile);
   
   int num_mutation_params =
       Params::get_param_matrix((char *) "mutation_prob", &mutation_prob);
@@ -171,7 +168,6 @@ void Population::setup() {
     disease[dis].setup(dis, this, mutation_prob[dis]);
   }
   
-  Profile::read_profiles(Population::profilefile);
   vacc_manager = new Vaccine_Manager(this);
   av_manager   = new AV_Manager(this);
   if (Global::Verbose > 1) av_manager->print();

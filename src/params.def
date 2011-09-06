@@ -15,7 +15,6 @@ start_date = 2011-01-01
 reseed_day = -1
 popfile = pop_Alleg.txt
 locfile = loc_Alleg.txt
-profiles = profiles.txt
 popdir = ../region
 outdir = OUT
 tracefile = none
