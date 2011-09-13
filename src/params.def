@@ -202,7 +202,7 @@ HBM_memory_decay_upper = 1.0
 HBM_accept_vaccine = 5       0.6 0 0 0 0
 
 #### Geographical Grids
-enable_large_grid = 1
+enable_large_grid = 0
 enable_small_grid = 0
 # size of large-scale grid cells in km
 grid_large_cell_size = 20.0
