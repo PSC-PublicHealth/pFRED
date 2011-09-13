@@ -199,7 +199,7 @@ int main(int argc, char* argv[]) {
   Utils::fred_print_lap_time("place prep");
 
   if (Global::Enable_Large_Grid && Global::Enable_Travel) {
-    Travel::setup();
+    Travel::setup(directory);
     Utils::fred_print_lap_time("Travel setup");
   }
 

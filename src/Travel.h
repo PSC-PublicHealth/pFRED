@@ -22,7 +22,7 @@ class Travel {
    * Initialize travel mode: read runtime parameters and compute 
    * travel probabilities between each large cell using gravity model.
    */
-  static void setup();
+  static void setup(char * directory);
 
   /**
    * Perform a daily travel updates.  Select a number of new trips to instantiate.

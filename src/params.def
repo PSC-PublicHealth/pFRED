@@ -47,6 +47,8 @@ min_travel_distance = 100.0
 outside_travel_rate = 0.0
 # if set, print statistics from a sample of trips and exit
 test_gravity_model = 0
+max_trips_per_day = 1000000
+tripfile = trips.txt
 
 # Parameters to allow for output of Population at scheduled times
 # Only done if output_population != 0
@@ -200,7 +202,7 @@ HBM_memory_decay_upper = 1.0
 HBM_accept_vaccine = 5       0.6 0 0 0 0
 
 #### Geographical Grids
-enable_large_grid = 0
+enable_large_grid = 1
 enable_small_grid = 0
 # size of large-scale grid cells in km
 grid_large_cell_size = 20.0

@@ -23,6 +23,7 @@ public:
   void get_parameters();
   Large_Cell ** get_neighbors(int row, int col);
   Large_Cell * get_grid_cell(int row, int col);
+  Large_Cell * get_grid_cell_with_global_coords(int row, int col);
   Large_Cell * select_random_grid_cell();
   Large_Cell * get_grid_cell_from_cartesian(double x, double y);
   Large_Cell * get_grid_cell_from_lat_lon(double lat, double lon);
@@ -30,12 +31,18 @@ public:
   void quality_control(char * directory);
   int get_rows() { return rows; }
   int get_cols() { return cols; }
+  int get_global_row_min() { return global_row_min; }
+  int get_global_row_max() { return global_row_max; }
+  int get_global_col_min() { return global_col_min; }
+  int get_global_col_max() { return global_col_max; }
   double get_min_lat() { return min_lat; }
   double get_min_lon() { return min_lon; }
   double get_max_lat() { return max_lat; }
   double get_max_lon() { return max_lon; }
   double get_min_x() { return min_x; }
   double get_min_y() { return min_y; }
+  double get_max_x() { return max_x; }
+  double get_max_y() { return max_y; }
 
   /**
    * Translate a given (x,y) coordinate to a latitude and longitude.

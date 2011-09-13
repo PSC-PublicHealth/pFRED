@@ -32,11 +32,13 @@ Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxla
   min_lat  = minlat;
   max_lon  = maxlon;
   max_lat  = maxlat;
-  printf("Large_Grid min_lon = %f\n", min_lon);
-  printf("Large_Grid min_lat = %f\n", min_lat);
-  printf("Large_Grid max_lon = %f\n", max_lon);
-  printf("Large_Grid max_lat = %f\n", max_lat);
-  fflush(stdout);
+  if (Global::Verbose > 0) {
+    fprintf(Global::Statusfp, "Large_Grid min_lon = %f\n", min_lon);
+    fprintf(Global::Statusfp, "Large_Grid min_lat = %f\n", min_lat);
+    fprintf(Global::Statusfp, "Large_Grid max_lon = %f\n", max_lon);
+    fprintf(Global::Statusfp, "Large_Grid max_lat = %f\n", max_lat);
+    fflush(Global::Statusfp);
+  }
 
   get_parameters();
   min_x = 0.0;
@@ -44,7 +46,7 @@ Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxla
 
   // find the global x,y coordinates of SW corner of grid
   min_x = (min_lon + 180.0)*Geo_Utils::km_per_deg_longitude;
-  min_y = (min_lat + 180.0)*Geo_Utils::km_per_deg_latitude;
+  min_y = (min_lat + 90.0)*Geo_Utils::km_per_deg_latitude;
   
   // find the global row and col in which SW corner occurs
   global_row_min = (int) (min_y / grid_cell_size);
@@ -56,7 +58,7 @@ Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxla
 
   // find the global x,y coordinates of NE corner of grid
   max_x = (max_lon + 180.0)*Geo_Utils::km_per_deg_longitude;
-  max_y = (max_lat + 180.0)*Geo_Utils::km_per_deg_latitude;
+  max_y = (max_lat + 90.0)*Geo_Utils::km_per_deg_latitude;
   
   // find the global row and col in which NE corner occurs
   global_row_max = (int) (max_y / grid_cell_size);
@@ -70,19 +72,25 @@ Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxla
   cols = global_col_max - global_col_min + 1;
 
   // compute lat,lon of aligned grid
-  min_lat = min_y / Geo_Utils::km_per_deg_latitude - 180.0;
+  min_lat = min_y / Geo_Utils::km_per_deg_latitude - 90.0;
   min_lon = min_x / Geo_Utils::km_per_deg_longitude - 180.0;
-  max_lat = max_y / Geo_Utils::km_per_deg_latitude - 180.0;
+  max_lat = max_y / Geo_Utils::km_per_deg_latitude - 90.0;
   max_lon = max_x / Geo_Utils::km_per_deg_longitude - 180.0;
 
-  printf("Large_Grid new min_lon = %f\n", min_lon);
-  printf("Large_Grid new min_lat = %f\n", min_lat);
-  printf("Large_Grid new max_lon = %f\n", max_lon);
-  printf("Large_Grid new max_lat = %f\n", max_lat);
-  printf("Large_Grid rows = %d  cols = %d\n",rows,cols);
-  printf("Large_Grid min_x = %f  min_y = %f\n",min_x,min_y);
-  printf("Large_Grid max_x = %f  max_y = %f\n",max_x,max_y);
-  fflush(stdout);
+  if (Global::Verbose > 0) {
+    fprintf(Global::Statusfp, "Large_Grid new min_lon = %f\n", min_lon);
+    fprintf(Global::Statusfp, "Large_Grid new min_lat = %f\n", min_lat);
+    fprintf(Global::Statusfp, "Large_Grid new max_lon = %f\n", max_lon);
+    fprintf(Global::Statusfp, "Large_Grid new max_lat = %f\n", max_lat);
+    fprintf(Global::Statusfp, "Large_Grid global_col_min = %d  global_row_min = %d\n",
+	    global_col_min, global_row_min);
+    fprintf(Global::Statusfp, "Large_Grid global_col_max = %d  global_row_max = %d\n",
+	    global_col_max, global_row_max);
+    fprintf(Global::Statusfp, "Large_Grid rows = %d  cols = %d\n",rows,cols);
+    fprintf(Global::Statusfp, "Large_Grid min_x = %f  min_y = %f\n",min_x,min_y);
+    fprintf(Global::Statusfp, "Large_Grid max_x = %f  max_y = %f\n",max_x,max_y);
+    fflush(Global::Statusfp);
+  }
 
   grid = new Large_Cell * [rows];
   for (int i = 0; i < rows; i++) {
@@ -90,7 +98,6 @@ Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxla
     for (int j = 0; j < cols; j++) {
       grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
 		       i*grid_cell_size,(i+1)*grid_cell_size);
-      // upper-left first: (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
       if (Global::Verbose > 2) {
 	printf("print grid[%d][%d]:\n",i,j);
 	grid[i][j].print();
@@ -121,6 +128,11 @@ Large_Cell * Large_Grid::get_grid_cell(int row, int col) {
     return &grid[row][col];
   else
     return NULL;
+}
+
+
+Large_Cell * Large_Grid::get_grid_cell_with_global_coords(int row, int col) {
+  return get_grid_cell(row-global_row_min, col-global_col_min);
 }
 
 
