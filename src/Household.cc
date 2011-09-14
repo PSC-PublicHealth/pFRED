@@ -177,6 +177,9 @@ void Household::spread_infection(int day, int s) {
   vector<Person *>::iterator itr;
   double contact_prob = get_contacts_per_day(s);
 
+  Disease * disease = population->get_disease(s);
+  double transmissibility = disease->get_transmissibility();
+
   // randomize the order of the infectious list
   FYShuffle<Person *>(infectious[s]);
 
@@ -207,6 +210,8 @@ void Household::spread_infection(int day, int s) {
 	}
 
 	double infection_prob = contact_prob * transmission_prob * infectivity * susceptibility;
+	infection_prob *= transmissibility;
+
 	// attempt transmission
 	double r = RANDOM();
 	if (r < infection_prob) {
