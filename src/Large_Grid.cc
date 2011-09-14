@@ -240,3 +240,22 @@ void Large_Grid::translate_to_lat_lon(double x, double y, double *lat, double *l
 void Large_Grid::translate_to_cartesian(double lat, double lon, double *x, double *y) {
   Geo_Utils::translate_to_cartesian(lat,lon,x,y,min_lat,min_lon);
 }
+
+void Large_Grid::read_max_popsize() {
+  int r,c, n;
+  char filename[256];
+  Params::get_param((char *) "cell_popfile", filename);
+  FILE *fp = fopen(filename, "r");
+  if (fp == NULL) {
+    Utils::fred_abort("Help! Can't open cell_pop_file %s\n", filename);
+  }
+  printf("reading %s\n", filename);
+  while (fscanf(fp, "%d %d %d ", &c,&r,&n) == 3) {
+    Large_Cell * cell = get_grid_cell_with_global_coords(r,c);
+    if (cell != NULL) {
+      cell->set_max_popsize(n);
+    }
+  }
+  fclose(fp);
+  printf("finished reading %s\n", filename);
+}

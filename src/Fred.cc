@@ -199,6 +199,7 @@ int main(int argc, char* argv[]) {
   Utils::fred_print_lap_time("place prep");
 
   if (Global::Enable_Large_Grid && Global::Enable_Travel) {
+    Global::Large_Cells->set_population_size();
     Travel::setup(directory);
     Utils::fred_print_lap_time("Travel setup");
   }

@@ -36,19 +36,18 @@ community_prob = 0.1
 home_neighborhood_prob = 0.5
 
 # LONG-DISTANCE OVERNIGHT TRAVEL: 
+# enable overnight travel (optional)
 enable_travel = 0
-# the approximate fraction of population in travel model on any day
-travel_rate = 0.01
 # cdf of trip duration in days
 travel_duration = 6 0 0.2 0.4 0.6 0.8 1.0
 # distance threshold for overnight trips (in km)
 min_travel_distance = 100.0
-# fraction of trips with destinations outside the modeled region
-outside_travel_rate = 0.0
-# if set, print statistics from a sample of trips and exit
-test_gravity_model = 0
+# trips per day assuming entire US population
 max_trips_per_day = 1000000
+# file containing list of sample trips
 tripfile = trips.txt
+# file with population estimate for each large cell
+cell_popfile = cell_pop.txt
 
 # Parameters to allow for output of Population at scheduled times
 # Only done if output_population != 0

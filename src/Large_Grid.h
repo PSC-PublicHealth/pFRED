@@ -66,6 +66,8 @@ public:
    */
   void translate_to_cartesian(double lat, double lon, double *x, double *y);
 
+  void read_max_popsize();
+
 protected:
   Large_Cell ** grid;			      // Rectangular array of grid_cells
   int rows;					// number of rows

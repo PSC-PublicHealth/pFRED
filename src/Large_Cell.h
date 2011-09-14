@@ -37,6 +37,9 @@ public:
   void add_person(Person *p) { person.push_back(p); popsize++; }
   int get_popsize() { return popsize; }
   Person * select_random_person();
+  void set_max_popsize(int n);
+  int get_max_popsize() { return max_popsize; }
+  double get_pop_density() { return pop_density; }
 
 protected:
   Large_Grid * grid;
@@ -51,6 +54,8 @@ protected:
   double center_y;
   int popsize;
   vector <Person *> person;
+  int max_popsize;
+  double pop_density;
 };
 
 #endif // _FRED_LARGE_CELL_H

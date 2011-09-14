@@ -26,6 +26,8 @@ void Large_Cell::setup(Large_Grid * grd, int i, int j, double xmin, double xmax,
   center_x = (min_x+max_x)/2.0;
   neighbors = (Large_Cell **) grid->get_neighbors(i,j);
   popsize = 0;
+  max_popsize = 0;
+  pop_density = 0;
   person.clear();
 }
 
@@ -62,3 +64,16 @@ Person *Large_Cell::select_random_person() {
 }
 
 
+void Large_Cell::set_max_popsize(int n) {
+  max_popsize = n; 
+  pop_density = (double) popsize/ (double) n;
+  
+  // the following reflects noise in the estimated population in the preprocessing routine
+  if (pop_density > 0.8) pop_density = 1.0;
+
+  /*
+    if (pop_density < 1.0) { printf("WARNING: cell %d %d pop %d max_pop %d frac %f\n",
+    col,row,popsize,max_popsize,pop_density);
+    fflush(stdout);
+  */
+}
