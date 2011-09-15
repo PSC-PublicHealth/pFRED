@@ -242,7 +242,7 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
       Utils::fred_verbose(1,"infection day %i of disease %i from %d to %d\n",
           day, disease_id, infector->get_id(),infectee->get_id());
 
-    if (infection_prob > 1) Utils::fred_warning("infection_prob exceeded unity!\n");
+    if (infection_prob > 1) Utils::fred_verbose(3,"infection_prob exceeded unity!\n");
   }
   else {
     Utils::fred_verbose(1,"transmission failed: r = %f  prob = %f\n",
@@ -280,7 +280,7 @@ void Place::spread_infection(int day, int disease_id) {
     int contact_count = get_contact_count(infector,disease_id,day,contact_rate);
     
     // check for saturation in this place
-    if (contact_count > number_targets) Utils::fred_warning("frustration! \
+    if (contact_count > number_targets) Utils::fred_verbose(3,"frustration! \
         making %d attempts to infect %d targets\n",contact_count,number_targets);
 
     // get a susceptible target for each contact resulting in infection
