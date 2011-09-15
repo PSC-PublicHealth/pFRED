@@ -266,8 +266,24 @@ void Population::read_population() {
       Utils::fred_abort("Help! Read failure for new person %d\n", p); 
     }
     Place * house = Global::Places.get_place_from_label(house_label);
+    if (house == NULL) {
+      printf("WARNING: skipping person %d in %s --  no household found for label = %s\n",
+	     p, population_file, house_label);
+      fflush(stdout);
+      continue;
+    }
     Place * work = Global::Places.get_place_from_label(work_label);
+    if (strcmp(work_label,"-1")!=0 && work == NULL) {
+      printf("WARNING: person %d in %s -- no workplace found for label = %s\n",
+	     p, population_file, work_label);
+      fflush(stdout);
+    }
     Place * school = Global::Places.get_place_from_label(school_label);
+    if (strcmp(school_label,"-1")!=0 && school == NULL) {
+      printf("WARNING: person %d in %s -- no school found for label = %s\n",
+	     p, population_file, school_label);
+      fflush(stdout);
+    }
     bool today_is_birthday = false;
     int day = 0;
     Person * person = new Person(next_id, age, sex, married, occ,
@@ -276,7 +292,11 @@ void Population::read_population() {
     Population::next_id++;
   }
   fclose(fp);
-  assert(pop_size == psize);
+  if (pop_size != psize) {
+    printf("WARNING: expected popsize = %d but actual popsize = %d\n",psize,pop_size);
+    printf("WARNING: %d agents lost\n",psize-pop_size);
+    fflush(stdout);
+  }
   if (use_gzip) {
     // remove the gunzipped file
     unlink(population_file);

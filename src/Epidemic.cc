@@ -363,7 +363,7 @@ void Epidemic::get_primary_infections(int day){
         }
 
         if (person == NULL) { // nobody home
-          Utils::fred_warning("Person selected for seeding in Epidemic update is NULL.");
+          Utils::fred_warning("Person selected for seeding in Epidemic update is NULL.\n");
           continue;
         }
 
