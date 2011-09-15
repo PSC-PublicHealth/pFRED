@@ -2,7 +2,6 @@
 #ifndef _ABSTRACT_GRID_H
 #define _ABSTRACT_GRID_H
 
-#include "Climate.h"
 
 class Abstract_Grid {
 
