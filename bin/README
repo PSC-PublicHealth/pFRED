@@ -1,6 +1,16 @@
 File: README
 Date: 6 Apr 2010
 
+% rt [-p]
+
+Run from within the src directory, rt runs FRED twice using params.test.
+The output from these runs (stored in OUT.TEST) is compared using "cmp"
+to reference results found in OUT.RT.
+
+Supplying "-p" executes the two runs in parallel.
+
+=====================================================================
+
 To use the following scripts, set the environmental variable $FRED_HOME
 to the location of your FRED source directory.  Then add $FRED_HOME/bin
 to your path.
