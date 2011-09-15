@@ -120,3 +120,12 @@ void Utils::fred_print_lap_time(const char* format, ...) {
   start_timer = stop_timer;
 }
 
+void Utils::fred_verbose(int verbosity, const char* format, ...){
+  if (Global::Verbose > verbosity) {
+    va_list ap;
+    va_start(ap,format);
+    vprintf(format,ap);
+    va_end(ap);
+    fflush(stdout);
+  }
+}

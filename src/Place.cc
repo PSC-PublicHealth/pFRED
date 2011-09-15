@@ -20,6 +20,8 @@
 #include "Date.h"
 #include "Neighborhood.h"
 #include "Cell.h"
+//#include "Climate.h"
+#include "Utils.h"
 
 void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop) {
   population = pop;
@@ -175,120 +177,133 @@ bool Place::is_open(int day) {
   }
 }
 
-void Place::spread_infection(int day, int s) {
+double Place::get_contact_rate(int day, int disease_id) {
+  
+  Disease * disease = population->get_disease(disease_id);
+  // expected number of susceptible contacts for each infectious person
+  // OLD: double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
+  double contacts = get_contacts_per_day(disease_id) * disease->get_transmissibility();
+  //if (Global::Enable_Climate) {
+  //  contacts = contacts * Global::Clim->get_climate_transmissibility_multiplier_by_lat_lon(
+  //      latitude,longitude,disease_id);
+  //}
+  // increase neighborhood contacts on weekends
+  if (type == NEIGHBORHOOD) {
+    int day_of_week = Date::get_current_day_of_week(day);
+    if (day_of_week == 0 || day_of_week == 6) {
+      contacts = Neighborhood::get_weekend_contact_rate(disease_id) * contacts;
+    }
+  }
+  Utils::fred_verbose(1,"Disease %d, expected contacts = %f\n", disease_id, contacts);
+  return contacts;
+}
+
+int Place::get_contact_count(Person * infector, int disease_id, int day, double contact_rate) {
+  // reduce number of infective contacts by infector's infectivity
+  double infector_contacts = contact_rate * infector->get_infectivity(disease_id, day);
+
+  Utils::fred_verbose(1,"infectivity = %f, so ", infector->get_infectivity(disease_id, day));
+  Utils::fred_verbose(1,"infector's effective contacts = %f\n", infector_contacts);
+
+  // randomly round off the expected value of the contact counts
+  int contact_count = (int) infector_contacts;
+  double r = RANDOM();
+  if (r < infector_contacts - contact_count) contact_count++;
+
+  Utils::fred_verbose(1,"infector contact_count = %d  r = %f\n", contact_count, r);
+
+  return contact_count;
+}
+
+void Place::attempt_transmission(double transmission_prob, Person * infector, 
+                                        Person * infectee, int disease_id, int day) {
+
+  double susceptibility = infectee->get_susceptibility(disease_id);
+  Utils::fred_verbose(1,"susceptibility = %f\n", susceptibility);
+
+  double r = RANDOM();
+  double infection_prob = transmission_prob * susceptibility;
+
+  if (r < infection_prob) {
+    // successful transmission; create a new infection in infectee
+    // Infection * infection = new Infection(disease, infector, infectee, this, day);
+    // infectee->become_exposed(infection);
+    // infector->add_infectee(s);
+    Transmission *transmission = new Transmission(infector, this, day);
+    infector->infect(infectee, disease_id, transmission);
+
+    Utils::fred_verbose(1,"transmission succeeded: r = %f  prob = %f\n",
+        r, infection_prob);
+
+    if (infector->get_exposure_date(disease_id) == 0)
+      Utils::fred_verbose(1,"SEED infection day %i from %d to %d\n",
+          day, infector->get_id(),infectee->get_id());
+    else
+      Utils::fred_verbose(1,"infection day %i of disease %i from %d to %d\n",
+          day, disease_id, infector->get_id(),infectee->get_id());
+
+    if (infection_prob > 1) Utils::fred_warning("infection_prob exceeded unity!\n");
+  }
+  else {
+    Utils::fred_verbose(1,"transmission failed: r = %f  prob = %f\n",
+        r, infection_prob); 
+  }
+}
+
+void Place::spread_infection(int day, int disease_id) {
+  // Place::spread_infection is used for all derived places except for Households
 
   // the number of possible infectees per infector is max of (N-1) and S[s]
   // where N is the capacity of this place and S[s] is the number of current susceptibles
   // visiting this place.  S[s] might exceed N if we have some ad hoc visitors,
   // since N is estimated only at startup.
-  int number_targets = (N-1 > S[s]? N-1 : S[s]);
+  int number_targets = (N-1 > S[disease_id]? N-1 : S[disease_id]);
 
-  if (Global::Verbose > 1) { print(s); }
+  Utils::fred_verbose(1,"Disease ID: %d\n",disease_id);
+
   if (number_targets == 0) return;
   if (is_open(day) == false) return;
-  if (should_be_open(day, s) == false) return;
-	
-  vector<Person *>::iterator itr;
-  Disease * disease = population->get_disease(s);
+  if (should_be_open(day, disease_id) == false) return;
 
-  // expected number of susceptible contacts for each infectious person
-  // OLD: double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
-  double contacts = get_contacts_per_day(s) * disease->get_transmissibility();
-  
-  // increase neighborhood contacts on weekends
-  if (type == NEIGHBORHOOD) {
-    int day_of_week = Date::get_current_day_of_week(day);
-    if (day_of_week == 0 || day_of_week == 6) {
-      contacts = Neighborhood::get_weekend_contact_rate(s) * contacts;
-    }
-  }
-  if (Global::Verbose > 1) {
-    printf("Disease %d, expected contacts = %f\n", s, contacts);
-    fflush(stdout);
-  }
+  vector<Person *>::iterator itr;
+  // contact_rate is contacts_per_day with weeked and climate modulation (if applicable)
+  double contact_rate = get_contact_rate(day,disease_id);
 
   // randomize the order of the infectious list
-  FYShuffle<Person *>(infectious[s]);
+  FYShuffle<Person *>(infectious[disease_id]);
 
-  for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
+  for (itr = infectious[disease_id].begin(); itr != infectious[disease_id].end(); itr++) {
     Person * infector = *itr;			// infectious indiv
-    assert(infector->get_disease_status(s)=='I'||infector->get_disease_status(s)=='i');
-		
-    // reduce number of infective contacts by infector's infectivity
-    double infector_contacts = contacts * infector->get_infectivity(s, day);
-    if (Global::Verbose > 1) {
-      printf("infectivity = %f so ", infector->get_infectivity(s, day));
-      printf("infector's effective contacts = %f\n", infector_contacts);
-      fflush(stdout);
-    }
-		
-    // randomly round off the expected value of the contact counts
-    int contact_count = (int) infector_contacts;
-    double r = RANDOM();
-    if (r < infector_contacts - contact_count) contact_count++;
-    if (Global::Verbose > 1) {
-      printf("infector contact_count = %d  r = %f\n", contact_count, r);
-      fflush(stdout);
-    }
-		
+    assert(infector->get_disease_status(disease_id)=='I'||infector->get_disease_status(disease_id)=='i');
+    
+    // get the actual number of contacts to attempt to infect
+    int contact_count = get_contact_count(infector,disease_id,day,contact_rate);
+    
+    // check for saturation in this place
+    if (contact_count > number_targets) Utils::fred_warning("frustration! \
+        making %d attempts to infect %d targets\n",contact_count,number_targets);
+
     // get a susceptible target for each contact resulting in infection
     for (int c = 0; c < contact_count; c++) {
-
       // select a target infectee with replacement, including all possible visitors
       int pos = IRAND(0,number_targets-1);
-      if (pos > S[s]-1) continue; // target is not one of the susceptibles present
-
+      if (pos > S[disease_id]-1) continue; // target is not one of the susceptibles present
       // at this point we have a susceptible target:
-      Person * infectee = susceptibles[s][pos];
-      if (Global::Verbose > 1) {
-	printf("possible infectee = %d  pos = %d  S[%d] = %d\n",
-               infectee->get_id(), pos, s, S[s]);
-	fflush(stdout);
-      }
+      Person * infectee = susceptibles[disease_id][pos];
+
+      Utils::fred_verbose(1,"possible infectee = %d  pos = %d  S[%d] = %d\n",
+          infectee->get_id(), pos, disease_id, S[disease_id]);
 
       // is the target still susceptible?
-      if (infectee->is_susceptible(s)) {
-	if (Global::Verbose > 1) { printf("Victim is susceptible\n"); }
-    
-	// get the transmission probs for this infector/infectee pair
-	double transmission_prob = get_transmission_prob(s, infector, infectee);
-	double susceptibility = infectee->get_susceptibility(s);
-	if (Global::Verbose > 1) {
-	  printf("trans_prob = %f  susceptibility = %f\n",
-		 transmission_prob, susceptibility);
-	  fflush(stdout);
-	}
-    
-	// attempt transmission
-	double r = RANDOM();
-	if (r < transmission_prob*susceptibility) {
-	  if (Global::Verbose > 1) {
-	    printf("transmission succeeded: r = %f  prob = %f\n",
-		   r, transmission_prob*susceptibility);
-	    fflush(stdout);
-	  }
+      if (infectee->is_susceptible(disease_id)) {
 
-	  // successful transmission; create a new infection in infectee
-          Transmission *transmission = new Transmission(infector, this, day);
-          infector->infect(infectee, s, transmission);
+        Utils::fred_verbose(1,"Victim is susceptible\n"); 
+        // get the transmission probs for this infector/infectee pair
+        double transmission_prob = get_transmission_prob(disease_id, infector, infectee);
+        Utils::fred_verbose(1,"trans_prob = %f  ", transmission_prob);
 
-	  if (Global::Verbose > 1) {
-	    if (infector->get_exposure_date(s) == 0) {
-	      printf("SEED infection day %i from %d to %d\n",
-		     day, infector->get_id(),infectee->get_id());
-	    } else {
-	      printf("infection day %i of disease %i from %d to %d\n",
-		     day, s, infector->get_id(),infectee->get_id());
-	    }
-	    fflush(stdout);
-	  }
-	}	else {
-	  if (Global::Verbose > 1) {
-	    printf("transmission failed: r = %f  prob = %f\n",
-		   r, transmission_prob*susceptibility);
-	    fflush(stdout);
-	  }
-        }
+        attempt_transmission(transmission_prob, infector, infectee, disease_id, day);
+
       } // end of susceptible infectee
     } // end contact loop
   } // end infectious list loop

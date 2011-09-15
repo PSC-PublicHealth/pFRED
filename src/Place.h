@@ -442,6 +442,10 @@ protected:
   vector< map<int, int> > incidence;
   vector< map<int, int> > prevalence;
 
+  double get_contact_rate(int day, int disease_id);
+  int get_contact_count(Person * infector, int disease_id, int day, double contact_rate);
+  void attempt_transmission(double transmission_prob, Person * infector, Person * infectee, int disease_id, int day);
+
   // disease parameters
   double *beta;	       // place-independent transmissibility per contact
 };

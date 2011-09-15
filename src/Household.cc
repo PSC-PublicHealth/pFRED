@@ -173,75 +173,41 @@ void Household::record_profile() {
     ids.push_back(housemate[i]->get_id()); 
 }
 
-void Household::spread_infection(int day, int s) {
-  vector<Person *>::iterator itr;
-  double contact_prob = get_contacts_per_day(s);
 
-  Disease * disease = population->get_disease(s);
-  double transmissibility = disease->get_transmissibility();
+void Household::spread_infection(int day, int disease_id) {
+
+  vector<Person *>::iterator itr;
+
+  double contact_prob = get_contact_rate(day,disease_id);
 
   // randomize the order of the infectious list
-  FYShuffle<Person *>(infectious[s]);
+  FYShuffle<Person *>(infectious[disease_id]);
 
-  for (itr = infectious[s].begin(); itr != infectious[s].end(); itr++) {
+  for (itr = infectious[disease_id].begin(); itr != infectious[disease_id].end(); itr++) {
+    
     Person * infector = *itr;			// infectious indiv
-    assert(infector->get_disease_status(s)=='I'||infector->get_disease_status(s)=='i');
-		
-    for (int pos = 0; pos < S[s]; pos++) {
-      Person * infectee = susceptibles[s][pos];
-      if (Global::Verbose > 1) {
-	printf("possible infectee = %d  pos = %d  S[%d] = %d\n",
-               infectee->get_id(), pos, s, S[s]);
-	fflush(stdout);
-      }
+    assert(infector->get_disease_status(disease_id)=='I'||infector->get_disease_status(disease_id)=='i');
+
+    for (int pos = 0; pos < S[disease_id]; pos++) {
+      Person * infectee = susceptibles[disease_id][pos];
+
+      Utils::fred_verbose(1,"possible infectee = %d  pos = %d  S[%d] = %d\n",
+            infectee->get_id(), pos, disease_id, S[disease_id]);
 
       // is the target still susceptible?
-      if (infectee->is_susceptible(s)) {
-	if (Global::Verbose > 1) { printf("Victim is susceptible\n"); }
-    
-	// get the transmission probs for this infector/infectee pair
-	double transmission_prob = get_transmission_prob(s, infector, infectee);
-	double infectivity = infector->get_infectivity(s, day);
-	double susceptibility = infectee->get_susceptibility(s);
-	if (Global::Verbose > 1) {
-	  printf("trans_prob = %f  susceptibility = %f\n",
-		 transmission_prob, susceptibility);
-	  fflush(stdout);
-	}
+      if (infectee->is_susceptible(disease_id)) {
 
-	double infection_prob = contact_prob * transmission_prob * infectivity * susceptibility;
-	infection_prob *= transmissibility;
+        Utils::fred_verbose(1,"Victim is susceptible\n");
+        // get the transmission probs for this infector/infectee pair
+        double transmission_prob = get_transmission_prob(disease_id, infector, infectee);
+        Utils::fred_verbose(1,"trans_prob = %f  ", transmission_prob);
 
-	// attempt transmission
-	double r = RANDOM();
-	if (r < infection_prob) {
-	  if (Global::Verbose > 1) {
-	    printf("household transmission succeeded: r = %f  prob = %f\n",
-		   r, infection_prob);
-	    fflush(stdout);
-	  }
+        double infectivity = infector->get_infectivity(disease_id,day);
+        // scale transmission prob by infectivity and contact prob
+        transmission_prob *= infectivity * contact_prob;     
 
-	  // successful transmission; create a new infection in infectee
-          Transmission *transmission = new Transmission(infector, this, day);
-          infector->infect(infectee, s, transmission);
+        attempt_transmission(transmission_prob, infector, infectee, disease_id, day);
 
-	  if (Global::Verbose > 1) {
-	    if (infector->get_exposure_date(s) == 0) {
-	      printf("SEED infection day %i from %d to %d\n",
-		     day, infector->get_id(),infectee->get_id());
-	    } else {
-	      printf("infection day %i of disease %i from %d to %d\n",
-		     day, s, infector->get_id(),infectee->get_id());
-	    }
-	    fflush(stdout);
-	  }
-	}	else {
-	  if (Global::Verbose > 1) {
-	    printf("household transmission failed: r = %f  prob = %f\n",
-		   r, infection_prob);
-	    fflush(stdout);
-	  }
-        }
       } // end of susceptible infectee
     } // end contact loop
   } // end infectious list loop
