@@ -14,9 +14,11 @@
 
 #include <string.h>
 #include "Place.h"
+#include "Abstract_Grid.h"
+
 class Small_Cell;
 
-class Small_Grid {
+class Small_Grid : public Abstract_Grid {
 public:
   Small_Grid(double minlon, double minlat, double maxlon, double maxlat);
   ~Small_Grid() {}
@@ -32,17 +34,6 @@ public:
 
 protected:
   Small_Cell ** grid;			      // Rectangular array of grid_cells
-  int rows;					// number of rows
-  int cols;					// number of columns
-  double grid_cell_size;			// km per side
-  double min_lat;
-  double min_lon;
-  double max_lat;
-  double max_lon;
-  double min_x;
-  double max_x;
-  double min_y;
-  double max_y;
 
   // Specific to Small_Cell grid:
 };

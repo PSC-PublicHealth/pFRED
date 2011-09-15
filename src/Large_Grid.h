@@ -14,9 +14,11 @@
 
 #include <string.h>
 #include "Place.h"
+#include "Abstract_Grid.h"
+
 class Large_Cell;
 
-class Large_Grid {
+class Large_Grid : public Abstract_Grid {
 public:
   Large_Grid(double minlon, double minlat, double maxlon, double maxlat);
   ~Large_Grid() {}
@@ -29,20 +31,6 @@ public:
   Large_Cell * get_grid_cell_from_lat_lon(double lat, double lon);
   void set_population_size();
   void quality_control(char * directory);
-  int get_rows() { return rows; }
-  int get_cols() { return cols; }
-  int get_global_row_min() { return global_row_min; }
-  int get_global_row_max() { return global_row_max; }
-  int get_global_col_min() { return global_col_min; }
-  int get_global_col_max() { return global_col_max; }
-  double get_min_lat() { return min_lat; }
-  double get_min_lon() { return min_lon; }
-  double get_max_lat() { return max_lat; }
-  double get_max_lon() { return max_lon; }
-  double get_min_x() { return min_x; }
-  double get_min_y() { return min_y; }
-  double get_max_x() { return max_x; }
-  double get_max_y() { return max_y; }
 
   /**
    * Translate a given (x,y) coordinate to a latitude and longitude.
@@ -70,17 +58,6 @@ public:
 
 protected:
   Large_Cell ** grid;			      // Rectangular array of grid_cells
-  int rows;					// number of rows
-  int cols;					// number of columns
-  double grid_cell_size;			// km per side
-  double min_lat;
-  double min_lon;
-  double max_lat;
-  double max_lon;
-  double min_x;
-  double max_x;
-  double min_y;
-  double max_y;
   int global_row_min;
   int global_col_min;
   int global_row_max;

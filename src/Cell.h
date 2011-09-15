@@ -14,12 +14,12 @@
 
 #include <vector>
 #include <string.h>
-
+#include "Abstract_Cell.h"
 #include "Place.h"
 class Person;
 class Grid;
 
-class Cell {
+class Cell : public Abstract_Cell {
 public:
 
   /**
@@ -59,36 +59,6 @@ public:
   void quality_control();
 
   /**
-   * @return the min_y
-   */
-  double get_min_y() { return min_y;}
-
-  /**
-   * @return the min_x
-   */
-  double get_min_x() { return min_x;}
-
-  /**
-   * @return the max_y
-   */
-  double get_max_y() { return max_y;}
-
-  /**
-   * @return the max_x
-   */
-  double get_max_x() { return max_x;}
-
-  /**
-   * @return the center_y
-   */
-  double get_center_y() { return center_y;}
-
-  /**
-   * @return the center_x
-   */
-  double get_center_x() { return center_x;}
-
-  /**
    * Determines distance from this Cell to another.  Note, that it is distance from the
    * <strong>center</strong> of this Cell to the <strong>center</strong> of the Cell in question.
    *
@@ -96,16 +66,6 @@ public:
    * @return the distance from this grid Cell to the one in question
    */
   double distance_to_grid_cell(Cell *grid_cell2);
-
-  /**
-   * @return the row
-   */
-  int get_row() { return row; }
-
-  /**
-   * @return the col
-   */
-  int get_col() { return col; }
 
   // specific to Cell grid:
   /**
@@ -197,15 +157,6 @@ public:
   int get_target_popsize() { return target_popsize; }
 
 protected:
-
-  int row;
-  int col;
-  double min_x;
-  double max_x;
-  double min_y;
-  double max_y;
-  double center_x;
-  double center_y;
   Cell ** neighbor_cells;
   Grid * grid;
 

@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+   Copyright 2009 by the University of Pittsburgh
+   Licensed under the Academic Free License version 3.0
+   See the file "LICENSE" for more information
+   */
 
 //
 //
@@ -57,16 +57,16 @@ Grid::Grid(double minlon, double minlat, double maxlon, double maxlat) {
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
-		       //       i*grid_cell_size,(i+1)*grid_cell_size);
-		       (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
+          //       i*grid_cell_size,(i+1)*grid_cell_size);
+        (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
     }
   }
 
   if (Global::Verbose > 1) {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
-	printf("print grid[%d][%d]:\n",i,j);
-	grid[i][j].print();
+        printf("print grid[%d][%d]:\n",i,j);
+        grid[i][j].print();
       }
     }
   }
@@ -141,36 +141,36 @@ void Grid::quality_control(char * directory) {
     fprintf(Global::Statusfp, "grid quality control check\n");
     fflush(Global::Statusfp);
   }
-  
+
   for (int row = 0; row < rows; row++) {
     for (int col = 0; col < cols; col++) {
       grid[row][col].quality_control();
     }
   }
-  
+
   if (Global::Verbose>1) {
     char filename [256];
     sprintf(filename, "%s/grid.dat", directory);
     FILE *fp = fopen(filename, "w");
     for (int row = 0; row < rows; row++) {
       if (row%2) {
-	for (int col = cols-1; col >= 0; col--) {
-	  double x = grid[row][col].get_center_x();
-	  double y = grid[row][col].get_center_y();
-	  fprintf(fp, "%f %f\n",x,y);
-	}
+        for (int col = cols-1; col >= 0; col--) {
+          double x = grid[row][col].get_center_x();
+          double y = grid[row][col].get_center_y();
+          fprintf(fp, "%f %f\n",x,y);
+        }
       }
       else {
-	for (int col = 0; col < cols; col++) {
-	  double x = grid[row][col].get_center_x();
-	  double y = grid[row][col].get_center_y();
-	  fprintf(fp, "%f %f\n",x,y);
-	}
+        for (int col = 0; col < cols; col++) {
+          double x = grid[row][col].get_center_x();
+          double y = grid[row][col].get_center_y();
+          fprintf(fp, "%f %f\n",x,y);
+        }
       }
     }
     fclose(fp);
   }
-  
+
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "grid quality control finished\n");
     fflush(Global::Statusfp);
@@ -182,36 +182,36 @@ void Grid::quality_control(char * directory, double min_x, double min_y) {
     fprintf(Global::Statusfp, "grid quality control check\n");
     fflush(Global::Statusfp);
   }
-  
+
   for (int row = 0; row < rows; row++) {
     for (int col = 0; col < cols; col++) {
       grid[row][col].quality_control();
     }
   }
-  
+
   if (Global::Verbose>1) {
     char filename [256];
     sprintf(filename, "%s/grid.dat", directory);
     FILE *fp = fopen(filename, "w");
     for (int row = 0; row < rows; row++) {
       if (row%2) {
-	for (int col = cols-1; col >= 0; col--) {
-	  double x = min_x + grid[row][col].get_center_x();
-	  double y = min_y + grid[row][col].get_center_y();
-	  fprintf(fp, "%f %f\n",x,y);
-	}
+        for (int col = cols-1; col >= 0; col--) {
+          double x = min_x + grid[row][col].get_center_x();
+          double y = min_y + grid[row][col].get_center_y();
+          fprintf(fp, "%f %f\n",x,y);
+        }
       }
       else {
-	for (int col = 0; col < cols; col++) {
-	  double x = min_x + grid[row][col].get_center_x();
-	  double y = min_y + grid[row][col].get_center_y();
-	  fprintf(fp, "%f %f\n",x,y);
-	}
+        for (int col = 0; col < cols; col++) {
+          double x = min_x + grid[row][col].get_center_x();
+          double y = min_y + grid[row][col].get_center_y();
+          fprintf(fp, "%f %f\n",x,y);
+        }
       }
     }
     fclose(fp);
   }
-  
+
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "grid quality control finished\n");
     fflush(Global::Statusfp);
@@ -258,7 +258,7 @@ vector < Place * >  Grid::get_households_by_distance(double lat, double lon, dou
         double hlon = (*hi)->get_longitude();
         //printf("DEBUG: household_latitude %f, household_longitude %f\n",hlat,hlon);
         double hx, hy;
-	Geo_Utils::translate_to_cartesian(hlat, hlon, &hx, &hy, min_lat, min_lon);
+        Geo_Utils::translate_to_cartesian(hlat, hlon, &hx, &hy, min_lat, min_lon);
         if (sqrt((px-hx)*(px-hx)+(py-hy)*(py-hy)) <= radius_in_km) {
           households.push_back((*hi));
         }
@@ -312,8 +312,8 @@ void Grid::select_emigrants(int day) {
       // pick a random person between 50 and 60
       int age = per->get_age();
       while (age < 50 || age > 60) {
-	per = Global::Pop.select_random_person();
-	age = per->get_age();
+        per = Global::Pop.select_random_person();
+        age = per->get_age();
       }
     }
     Household * house_to_vacate = (Household *) per->get_household();
@@ -339,7 +339,7 @@ void Grid::select_emigrants(int day) {
   }
   if (Global::Verbose) {
     printf("newpopsize = %d  people_removed = %d houses_vacated = %d\n",
-	   Global::Pop.get_pop_size(), people_removed, houses_vacated);
+        Global::Pop.get_pop_size(), people_removed, houses_vacated);
     fflush(stdout);
   }
 }
@@ -401,7 +401,7 @@ void Grid::select_immigrants(int day) {
   }
   if (houses_filled > 0) {
     printf("IMM: %d house filled, %d people added, new popsize = %d = %d\n",
-	   houses_filled, n, current_popsize, Global::Pop.get_pop_size());
+        houses_filled, n, current_popsize, Global::Pop.get_pop_size());
     fflush(stdout);
   }
 }
