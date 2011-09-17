@@ -212,6 +212,7 @@ void Population::read_population() {
   
   // read in population
   char population_file[256];
+  char line[256];
   bool use_gzip = false;
   sprintf(population_file, "%s/%s", Global::Population_directory, Population::popfile);
   FILE *fp = fopen(population_file, "r");
@@ -232,77 +233,70 @@ void Population::read_population() {
     }
   }
     
-  int psize;
-  if (1 != fscanf(fp, "Population = %d", &psize)){
-    fprintf(Global::Statusfp, "failed to parse pop_size\n");
-    exit(1);
-  }
-  if (Global::Verbose > 0) {
-    fprintf(Global::Statusfp, "Population = %d\n", psize);
-    fflush(Global::Statusfp);
-  }
-  
   // create strings for original individuals
   // pstring = new char* [psize];
   // for (int i = 0; i < psize; i++) pstring[i] = new char[256];
 
-  // reserve population vector
-  pop.reserve(psize);
-	
-  // skip header line
-  int skip = fscanf(fp, "%*s %*s %*s %*s %*s %*s %*s %*s");
-  if (Global::Verbose > 99) {
-    fprintf(Global::Statusfp, "skip = %d\n", skip);
-  }
-
   Population::next_id = 0;
-  for (int p = 0; p < psize; p++) {
+  while (fgets(line, 255, fp) != NULL) {
+    char first_word[256];
     int age, married, occ;
     char label[32], house_label[32], school_label[32], work_label[32];
     char sex;
-    if (fscanf(fp, "%s %d %c %d %d %s %s %s",
+	
+    // skip lines like "Population = ..."
+    sscanf(line, "%s", first_word);
+    if (strcmp(first_word, "Population") == 0) continue;
+
+    // skip header lines
+    if (strcmp(first_word, "ID") == 0) continue;
+
+    // skip white-space-only lines
+    int i = 0;
+    while (i < 255 && line[i] != '\0' && isspace(line[i])) i++;
+    if (line[i] == '\0') continue;
+
+    // skip comment lines
+    if (first_word[0] == '#') continue;
+
+    if (sscanf(line, "%s %d %c %d %d %s %s %s",
                label, &age, &sex, &married, &occ,
 	       house_label, school_label, work_label) != 8) {
-      Utils::fred_abort("Help! Read failure for new person %d\n", p); 
+      Utils::fred_abort("Help! Bad format in input line when next_id = %d: %s\n", Population::next_id, line);
     }
     Place * house = Global::Places.get_place_from_label(house_label);
     if (house == NULL) {
-      printf("WARNING: skipping person %d in %s --  no household found for label = %s\n",
-	     p, population_file, house_label);
+      printf("WARNING: skipping person %s in %s --  no household found for label = %s\n",
+	     label, population_file, house_label);
       fflush(stdout);
       continue;
     }
     Place * work = Global::Places.get_place_from_label(work_label);
     if (strcmp(work_label,"-1")!=0 && work == NULL) {
-      printf("WARNING: person %d in %s -- no workplace found for label = %s\n",
-	     p, population_file, work_label);
+      printf("WARNING: person %s in %s -- no workplace found for label = %s\n",
+	     label, population_file, work_label);
       fflush(stdout);
     }
     Place * school = Global::Places.get_place_from_label(school_label);
     if (strcmp(school_label,"-1")!=0 && school == NULL) {
-      printf("WARNING: person %d in %s -- no school found for label = %s\n",
-	     p, population_file, school_label);
+      printf("WARNING: person %s in %s -- no school found for label = %s\n",
+	     label, population_file, school_label);
       fflush(stdout);
     }
     bool today_is_birthday = false;
     int day = 0;
-    Person * person = new Person(next_id, age, sex, married, occ,
+    Person * person = new Person(Population::next_id, age, sex, married, occ,
 				 house, school, work, day, today_is_birthday);
     add_person(person);
     Population::next_id++;
   }
   fclose(fp);
-  if (pop_size != psize) {
-    printf("WARNING: expected popsize = %d but actual popsize = %d\n",psize,pop_size);
-    printf("WARNING: %d agents lost\n",psize-pop_size);
-    fflush(stdout);
-  }
   if (use_gzip) {
-    // remove the gunzipped file
+    // remove the uncompressed file
     unlink(population_file);
   }
   if (Global::Verbose > 0) {
-    fprintf(Global::Statusfp, "finished reading population = %d\n", pop_size);
+    fprintf(Global::Statusfp, "finished reading population, pop_size = %d\n", pop_size);
     fflush(Global::Statusfp);
   }
 }

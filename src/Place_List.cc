@@ -69,62 +69,76 @@ void Place_List::read_places() {
       Utils::fred_abort("location_file %s not found\n", location_file);
     }
   }
-  if (1!=fscanf(fp, "Locations = %d", &locations)){
-    Utils::fred_abort("failed to parse location\n");
-  }
-  if (Global::Verbose) {
-    fprintf(Global::Statusfp, "Locations = %d\n", locations);
-    fflush(Global::Statusfp);
-  }
 
-  char s[80];
-  char place_type;
-  double lon, lat;
-  Place *place = NULL;
-  Place *container = NULL;
+  char line[256];
+  int loc_id = 0;
+  while (fgets(line, 255, fp) != NULL) {
+    char first_word[256];
+    char s[80];
+    char place_type;
+    double lon, lat;
+    Place *place = NULL;
+    Place *container = NULL;
 
-  // skip header line
-  int skip = fscanf(fp, "%*s %*s %*s %*s");
-  if (Global::Verbose > 99) {
-    fprintf(Global::Statusfp, "skip = %d\n", skip);
-  }
+    // skip lines like "Locataions = ..."
+    sscanf(line, "%s", first_word);
+    if (strcmp(first_word, "Locations") == 0) continue;
 
-  int id = (int) places.size();;
-  while (fscanf(fp, "%s %c %lf %lf", s, &place_type, &lat, &lon) == 4) {
-    if (place_type == 'H' && lat != 0.0) {
-      if (lat < min_lat) min_lat = lat;
-      if (max_lat < lat) max_lat = lat;
-    }
-    if (place_type == 'H' && lon != 0.0) {
-      if (lon < min_lon) min_lon = lon;
-      if (max_lon < lon) max_lon = lon;
-    }
-    if (place_type == HOUSEHOLD) {
-      place = new (nothrow) Household(id, s, lon, lat, container, &Global::Pop);
-    }
-    else if (place_type == SCHOOL) {
-      place = new (nothrow) School(id, s, lon, lat, container, &Global::Pop);
-    }
-    else if (place_type == WORKPLACE) {
-      place = new (nothrow) Workplace(id, s, lon, lat, container, &Global::Pop);
-    }
-    else if (place_type == HOSPITAL) {
-      place = new (nothrow) Hospital(id, s, lon, lat, container, &Global::Pop);
+    // skip header lines
+    if (strcmp(first_word, "ID") == 0) continue;
+
+    // skip white-space-only lines
+    int i = 0;
+    while (i < 255 && line[i] != '\0' && isspace(line[i])) i++;
+    if (line[i] == '\0') continue;
+
+    // skip comment lines
+    if (first_word[0] == '#') continue;
+
+    if (sscanf(line, "%s %c %lf %lf", s, &place_type, &lat, &lon) == 4) {
+      if (place_type == 'H' && lat != 0.0) {
+	if (lat < min_lat) min_lat = lat;
+	if (max_lat < lat) max_lat = lat;
+      }
+      if (place_type == 'H' && lon != 0.0) {
+	if (lon < min_lon) min_lon = lon;
+	if (max_lon < lon) max_lon = lon;
+      }
+      if (place_type == HOUSEHOLD) {
+	place = new (nothrow) Household(loc_id, s, lon, lat, container, &Global::Pop);
+      }
+      else if (place_type == SCHOOL) {
+	place = new (nothrow) School(loc_id, s, lon, lat, container, &Global::Pop);
+      }
+      else if (place_type == WORKPLACE) {
+	place = new (nothrow) Workplace(loc_id, s, lon, lat, container, &Global::Pop);
+      }
+      else if (place_type == HOSPITAL) {
+	place = new (nothrow) Hospital(loc_id, s, lon, lat, container, &Global::Pop);
+      }
+      else {
+	Utils::fred_abort("Help! bad place_type %c\n", place_type); 
+      }
+      if (place == NULL) {
+	Utils::fred_abort("Help! allocation failure for place_id %d\n", loc_id); 
+      }
+      add_place(place);
+      loc_id++;
+      place = NULL;
     }
     else {
-      Utils::fred_abort("Help! bad place_type %c\n", place_type); 
+      Utils::fred_abort("Help! Bad location format for location %d: %s\n",
+			loc_id, line);
     }
-    if (place == NULL) {
-      Utils::fred_abort("Help! allocation failure for place_id %d\n", id); 
-    }
-    add_place(place);
-    place = NULL;
-    id++;
   }
   fclose(fp);
   if (use_gzip) {
-    // remove the gunzipped file
+    // remove the uncompressed file
     unlink(location_file);
+  }
+  if (Global::Verbose > 0) {
+    fprintf(Global::Statusfp, "finished reading locations, loc size = %d\n", loc_id);
+    fflush(Global::Statusfp);
   }
 
   // NOTE: Use code below to make projection based on the location file.
