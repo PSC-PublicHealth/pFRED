@@ -7,8 +7,8 @@ class Grid:
         self.increment = increment
         self.bounding_box = bounding_box
 
-        self.number_lon = int((self.bounding_box[1]-self.bounding_box[3])/self.increment) + 1
-        self.number_lat = int(((self.bounding_box[0]-self.bounding_box[2])/self.increment) + 1)
+        self.number_lon = int((self.bounding_box[3]-self.bounding_box[1])/self.increment) + 1
+        self.number_lat = int(((self.bounding_box[2]-self.bounding_box[0])/self.increment) + 1)
 
         self.data = [None]*(self.number_lon)
         for i in range(0,(self.number_lon)):
@@ -29,6 +29,7 @@ if __name__ == '__main__':
                   ave = produce an average result
                   all = produce an input for all runs
     -t or --type  Type of GAIA visualization
+		  hous_den   = Household Density Plot
                   inc_anim   = incidence animation
                   inc_static = incidence map
     -p or --pop   FRED Population file to use (if blank will try to use the one from input)
@@ -50,7 +51,8 @@ if __name__ == '__main__':
                       help="The FRED Location File to use")
 
     parser.add_option("-g","--grid",type="float",
-                      help="The size of grid points")
+                      help="The size of grid points",
+			default=0.002)
     
 
     opts,args=parser.parse_args()
@@ -67,7 +69,8 @@ if __name__ == '__main__':
             print "Invalid parameter for run, needs to be an integer, all or ave"
             sys.exit(1)
 
-    if opts.type != "inc_static" and opts.type != "inc_anim":
+	valid_types = ["inc_static","inc_anim","hous_den"]
+    if opts.type not in valid_types:
         print "Invalid or unsupported type parameter, needs to be inc_static or inc_anim"
         sys.exit(1)
     type = opts.type
@@ -97,13 +100,14 @@ if __name__ == '__main__':
     fred_locations_households = FRED_Locations_Set(loc_file,'H')
     fred_population = FRED_People_Set(pop_file)
 
-    fred_run.load_infection_files()
 
 ## CREATE the GAIA Input
     gaia_bounding_box = fred_locations_households.bounding_box()
-    
+    print str(gaia_bounding_box) 
+    sys.stdout.flush()
     if opts.type == "inc_static":
         count = 0
+        fred_run.load_infection_files()
         for infections_file in fred_run.infections_files:
             gaia_grid = Grid(gaia_bounding_box,opts.grid)
             gaia_input_file = "fred_gaia_" + str(fred_run.key) + "." + str(count) + ".txt"
@@ -126,3 +130,61 @@ if __name__ == '__main__':
                         latpoint = gaia_grid.bounding_box[0] + float(j)*gaia_grid.increment + gaia_grid.increment/2.0
                         if(gaia_grid.data[i][j] != 0):
                             f.write("lonlat %10.10f %10.10f %10d\n"%(latpoint,lonpoint,gaia_grid.data[i][j]))
+
+    if opts.type == "hous_den":
+	gaia_grid = Grid(gaia_bounding_box,opts.grid)
+	gaia_input_file = "fred_gaia_house_den_"+str(fred_run.key) + ".txt"
+	for location in fred_locations_households.locations.keys():
+		place = fred_locations_households.locations[location]
+		lon = place.lon
+		lat = place.lat
+		grid_coords = gaia_grid.indexes(lat,lon)
+		gaia_grid.data[grid_coords[1]][grid_coords[0]] = gaia_grid.data[grid_coords[1]][grid_coords[0]] + 1
+		print str(location) + ": " + str(lon) + "," + str(lat)
+		with open(gaia_input_file,"w") as f:
+    	            for i in range(0,gaia_grid.number_lon):
+        	            for j in range(0,gaia_grid.number_lat):
+                	        lonpoint = gaia_grid.bounding_box[1] + float(i)*gaia_grid.increment + gaia_grid.increment/2.0
+                        	latpoint = gaia_grid.bounding_box[0] + float(j)*gaia_grid.increment + gaia_grid.increment/2.0
+                      		if(gaia_grid.data[i][j] != 0):
+                            		f.write("lonlat %10.10f %10.10f %10d\n"%(latpoint,lonpoint,gaia_grid.data[i][j]))
+
+    if opts.type == "inc_anim":
+        print "Opts Type == inc_anim"
+        count = 0
+	fred_run.load_infection_files()
+        for infections_file in fred_run.infections_files:
+			## First find out how many days one needs to show
+            max_day = -99999
+            for inf_rec in infections_file:
+                day = inf_rec.day
+                max_day = max(day,max_day)
+                gaia_grids = []
+            for i in range(0,max_day+1):
+                gaia_grids.append(Grid(gaia_bounding_box,opts.grid))
+
+                gaia_input_file = "fred_gaia_ts_" + str(fred_run.key) + "." + str(count) + ".txt"
+            for inf_rec in infections_file:
+                inf_id = int(inf_rec.infected_id)
+                household = fred_population.people[inf_id].household
+                place = fred_locations_households.locations[household]
+                lon = place.lon
+                lat = place.lat
+                day = int(inf_rec.day)
+                print "day = " + str(day) + ": " + str(max_day)
+                sys.stdout.flush()
+                grid_coords = gaia_grids[day].indexes(lat,lon)
+                gaia_grids[day].data[grid_coords[1]][grid_coords[0]] = gaia_grids[day].data[grid_coords[1]][grid_coords[0]] + 1
+
+            with open(gaia_input_file,"w") as f:
+                for k in range(0,max_day+1):
+                    gaia_grid = gaia_grids[k]
+               # for gaia_grid in gaia_grids:
+                    for i in range(0,gaia_grid.number_lon):
+                        for j in range(0,gaia_grid.number_lat):
+                            lonpoint = gaia_grid.bounding_box[1] + float(i)*gaia_grid.increment + gaia_grid.increment/2.0
+                            latpoint = gaia_grid.bounding_box[0] + float(j)*gaia_grid.increment + gaia_grid.increment/2.0
+                            if(gaia_grid.data[i][j] != 0):
+                                print str(latpoint) + "|" + str(lonpoint) +"|" + str(gaia_grid.data[i][j]) + "|"+ str(k)
+                                sys.stdout.flush()
+                                f.write("lonlat %10.5f %10.5f %10d %10d\n"%(latpoint,lonpoint,int(gaia_grid.data[i][j]),k))	

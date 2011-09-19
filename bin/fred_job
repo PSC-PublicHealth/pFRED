@@ -265,7 +265,7 @@ my $params = "$work/$params_base";
 
 # copy the params file to RESULTS for reference
 `cp $paramsfile $meta/PARAMS`;
-
+`cp params.def $meta/DEFAULT`;
 # redirect the path to the population file
 `$FRED/bin/ch popdir $popdir $params >> $logfile`;
 

@@ -108,7 +108,7 @@ class FRED_RUN:
         self.run_data_out_dir = fred.assign_directory(self.run_data_dir + "/OUT")
         self.run_data_reports_dir = fred.assign_directory(self.run_data_dir + "/REPORTS")
 
-        self.command = open(self.run_data_out_dir + "/COMMAND_LINE","r").readline().strip()
+        #self.command = open(self.run_data_out_dir + "/COMMAND_LINE","r").readline().strip()
 
 #
         self.infections_files = []
@@ -379,4 +379,4 @@ class FRED_Locations_Set:
             minlat = min(minlat,lat)
             minlon = min(minlon,lon)
 
-        return (maxlat,maxlon,minlat,minlon)
+        return (minlat,minlon,maxlat,maxlon)
