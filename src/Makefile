@@ -54,7 +54,10 @@ OBJ =   Fred.o Global.o Utils.o Decision.o Policy.o Manager.o \
 	Date.o Trajectory.o StrainTable.o \
 	EvolutionFactory.o Evolution.o Strain.o \
 	Multistrain_Timestep_Map.o \
-	IntraHost.o DefaultIntraHost.o FixedIntraHost.o  # ODEIntraHost.o ODE.o
+	IntraHost.o DefaultIntraHost.o FixedIntraHost.o \
+	Abstract_Grid.o Abstract_Cell.o \
+	Seasonality_Timestep_Map.o Seasonality.o
+	# ODEIntraHost.o ODE.o
 
 SRC = $(OBJ:.o=.cc)
 

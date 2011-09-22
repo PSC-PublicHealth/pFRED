@@ -211,6 +211,13 @@ grid_cell_size = 1.0
 grid_small_cell_size = 0.01
 
 
+#### Seasonality (Seasonal Forcing)
+#### Note that (currently) enable_seasonality REQUIRES enable_large_grid
+enable_seasonality = 0
+enable_climate = 1
+seasonality_timestep_file = seasonality_timestep
+
+
 ############ PARAMETERS FOR IntraHost/EVOLUTION BELOW ##################################
 
 all_diseases_antigenically_identical = 0

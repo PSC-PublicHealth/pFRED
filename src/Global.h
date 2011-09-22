@@ -30,6 +30,7 @@ class Large_Grid;
 class Small_Grid;
 class Date;
 class Evolution;
+class Seasonality;
 
 /**
  * This class contains the static variables used by the FRED program.  The variables all have public access,
@@ -86,6 +87,9 @@ class Global {
     static int Epidemic_offset;
     static int Vaccine_offset;
     static char Start_date[];
+    static int Enable_Seasonality;
+    static int Enable_Climate;
+    static char Seasonality_Timestep[];
 
     // global singleton objects
     static Population Pop;
@@ -95,6 +99,7 @@ class Global {
     static Small_Grid *Small_Cells;
     static Date *Sim_Date;
     static Evolution *Evol;
+    static Seasonality *Clim;
 
     // global file pointers
     static FILE *Statusfp;

@@ -99,6 +99,12 @@ public:
   double get_transmissibility(int strain);
 
   /**
+   * @param seasonality_value meterological condition (eg specific humidity in kg/kg)
+   * @return the multiplier calculated from the seasonality condition; attenuates transmissibility
+   */
+  double calculate_climate_multiplier(double seasonality_value);
+
+  /**
    * @return the Epidemic's attack rate
    * @see Epidemic::get_attack_rate()
    */

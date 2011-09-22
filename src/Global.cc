@@ -10,6 +10,7 @@
 #include "Grid.h"
 #include "Large_Grid.h"
 #include "Small_Grid.h"
+#include "Seasonality.h"
 
 // global runtime parameters
 char Global::Population_directory[256];
@@ -49,6 +50,9 @@ unsigned long Global::Seed = 0;
 int Global::Epidemic_offset = 0;
 int Global::Vaccine_offset = 0;
 char Global::Start_date[256];
+int Global::Enable_Seasonality = 0;
+int Global::Enable_Climate = 0;
+char Global::Seasonality_Timestep[256];
 
 // global singleton objects
 Population Global::Pop;
@@ -58,6 +62,7 @@ Large_Grid *Global::Large_Cells;
 Small_Grid *Global::Small_Cells;
 Date *Global::Sim_Date = NULL;
 Evolution *Global::Evol = NULL;
+Seasonality * Global::Clim = NULL;
 
 // global file pointers
 FILE *Global::Statusfp = NULL;
@@ -106,5 +111,8 @@ void Global::get_global_parameters() {
   Params::get_param((char *) "enable_travel",&Global::Enable_Travel);
   Params::get_param((char *) "prevalencefile", Global::Prevfilebase);
   Params::get_param((char *) "incidencefile", Global::Incfilebase);
+  Params::get_param((char *) "enable_seasonality", &Global::Enable_Seasonality);
+  Params::get_param((char *) "enable_climate", &Global::Enable_Climate);
+  Params::get_param((char *) "seasonality_timestep_file", Global::Seasonality_Timestep);
 }
 

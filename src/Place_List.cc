@@ -32,7 +32,7 @@
 #include "Utils.h"
 #include "Geo_Utils.h"
 #include "Travel.h"
-
+#include "Seasonality.h"
 
 void Place_List::get_parameters() {
 }
@@ -154,6 +154,10 @@ void Place_List::read_places() {
     min_lat = Global::Large_Cells->get_min_lat();
     max_lon = Global::Large_Cells->get_max_lon();
     max_lat = Global::Large_Cells->get_max_lat();
+    // Initialize global seasonality object
+    if (Global::Enable_Seasonality) {
+      Global::Clim = new Seasonality(Global::Large_Cells);
+    }
   }
   Global::Cells = new Grid(min_lon, min_lat, max_lon, max_lat);
   if (Global::Enable_Small_Grid)
@@ -201,6 +205,9 @@ void Place_List::update(int day) {
   if (Global::Verbose>1) {
     fprintf(Global::Statusfp, "update places entered\n");
     fflush(Global::Statusfp);
+  }
+  if (Global::Enable_Seasonality) {
+    Global::Clim->update(day);
   }
   int number_places = places.size();
   for (int p = 0; p < number_places; p++) {

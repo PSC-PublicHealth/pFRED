@@ -31,6 +31,7 @@ using namespace std;
 #include "EvolutionFactory.h"
 
 #include "Multistrain_Timestep_Map.h"
+#include "Seasonality.h"
 
 Disease::Disease() {
   // note that the code that establishes the latent/asymptomatic/symptomatic
@@ -203,3 +204,45 @@ map<int, double> * Disease :: getPrimaryLoads(int day, int strain) {
 int Disease :: get_max_days() {
   return ihm->get_max_days();
 }
+
+double Disease::calculate_climate_multiplier(double seasonality_value) {
+  // hardcoded assumptions taken from Shaman - need to parameterize
+  double R0_max = 3.52;
+  double R0_min = 1.12;
+  double R0_avg = 1.88;
+  double max = R0_max * transmissibility;
+  double min = R0_min * transmissibility;
+  double K_a = -180; 
+  double K_b = log(max - min);
+  double adj = exp( ( ( K_a * seasonality_value ) + K_b ) ) + min;
+
+  return adj / R0_avg;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

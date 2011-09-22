@@ -20,7 +20,7 @@
 #include "Date.h"
 #include "Neighborhood.h"
 #include "Cell.h"
-//#include "Climate.h"
+#include "Seasonality.h"
 #include "Utils.h"
 
 void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop) {
@@ -183,10 +183,10 @@ double Place::get_contact_rate(int day, int disease_id) {
   // expected number of susceptible contacts for each infectious person
   // OLD: double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
   double contacts = get_contacts_per_day(disease_id) * disease->get_transmissibility();
-  //if (Global::Enable_Climate) {
-  //  contacts = contacts * Global::Clim->get_climate_transmissibility_multiplier_by_lat_lon(
-  //      latitude,longitude,disease_id);
-  //}
+  if (Global::Enable_Seasonality) {
+    contacts = contacts * Global::Clim->get_seasonality_multiplier_by_lat_lon(
+        latitude,longitude,disease_id);
+  }
   // increase neighborhood contacts on weekends
   if (type == NEIGHBORHOOD) {
     int day_of_week = Date::get_current_day_of_week(day);
@@ -266,7 +266,7 @@ void Place::spread_infection(int day, int disease_id) {
   if (should_be_open(day, disease_id) == false) return;
 
   vector<Person *>::iterator itr;
-  // contact_rate is contacts_per_day with weeked and climate modulation (if applicable)
+  // contact_rate is contacts_per_day with weeked and seasonality modulation (if applicable)
   double contact_rate = get_contact_rate(day,disease_id);
 
   // randomize the order of the infectious list
