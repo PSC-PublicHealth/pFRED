@@ -6,7 +6,7 @@
 #include "Disease.h"
 #include <vector>
 #include <iterator>
-
+#include <stdlib.h>
 
 Seasonality::Seasonality(Abstract_Grid * abstract_grid) {
   grid = abstract_grid;
