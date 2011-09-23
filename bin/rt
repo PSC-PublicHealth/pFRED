@@ -28,12 +28,13 @@ if [ "$1" = "-p" ]; then
 else
   echo -n ...
   $FRED params.test 1 > OUT.TEST/LOG1
-  R1=$?
 fi
 
 echo -n run 2 ...
 $FRED params.test 2 > OUT.TEST/LOG2
-wait $R1
+if [ "$1" = "-p" ]; then
+  wait $R1
+fi
 echo
 echo comparing results ...
 
