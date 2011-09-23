@@ -343,6 +343,13 @@ public:
    */
   int get_degree() { return activities->get_degree(); }
 
+  int get_household_size(){ return activities->get_group_size(HOUSEHOLD_INDEX); }
+  int get_neighborhood_size(){ return activities->get_group_size(NEIGHBORHOOD_INDEX); }
+  int get_school_size(){ return activities->get_group_size(SCHOOL_INDEX); }
+  int get_classroom_size(){ return activities->get_group_size(CLASSROOM_INDEX); }
+  int get_workplace_size(){ return activities->get_group_size(WORKPLACE_INDEX); }
+  int get_office_size(){ return activities->get_group_size(OFFICE_INDEX); }
+
   /**
    * Will print out a person in a format similar to that read from population file
    * (with additional run-time values inserted (denoted by *)):<br />

@@ -654,13 +654,20 @@ void Population::get_network_stats(char *directory) {
     fflush(Global::Statusfp);
   }
   char filename[256];
-  sprintf(filename, "%s/degree.txt", directory);
+  sprintf(filename, "%s/degree.csv", directory);
   FILE *fp = fopen(filename, "w");
+  fprintf(fp, "id,age,deg,h,n,s,c,w,o\n");
   for (int p = 0; p < pop_size; p++){
-    fprintf(fp, "%d %d %d\n",
-      pop[p]->get_id(),
-      pop[p]->get_age(),
-      pop[p]->get_degree());
+    fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+	    pop[p]->get_id(),
+	    pop[p]->get_age(),
+	    pop[p]->get_degree(),
+	    pop[p]->get_household_size(),
+	    pop[p]->get_neighborhood_size(),
+	    pop[p]->get_school_size(),
+	    pop[p]->get_classroom_size(),
+	    pop[p]->get_workplace_size(),
+	    pop[p]->get_office_size());
   }
   fclose(fp);
   if (Global::Verbose > 0) {

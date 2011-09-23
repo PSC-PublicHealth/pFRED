@@ -168,6 +168,9 @@ public:
    */
   int get_degree();
 
+  int get_household_size();
+  int get_group_size(int index);
+
 private:
   Person * self;	 // pointer to person using having this activities
   int profile;				 // index of usual visit pattern

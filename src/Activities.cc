@@ -308,15 +308,23 @@ void Activities::assign_office() {
   }
 }
 
+int Activities::get_group_size(int index) {
+  int size = 0;
+  if (favorite_place[index] != NULL)
+    size = favorite_place[index]->get_size();
+  return size;
+}
+
 int Activities::get_degree() {
   int degree;
+  int n;
   degree = 0;
-  if (favorite_place[NEIGHBORHOOD_INDEX] != NULL)
-    degree += favorite_place[NEIGHBORHOOD_INDEX]->get_size() - 1;
-  if (favorite_place[SCHOOL_INDEX] != NULL)
-    degree += favorite_place[SCHOOL_INDEX]->get_size() - 1;
-  if (favorite_place[WORKPLACE_INDEX] != NULL)
-    degree += favorite_place[WORKPLACE_INDEX]->get_size() - 1;
+  n = get_group_size(NEIGHBORHOOD_INDEX);
+  if (n > 0) degree += (n-1);
+  n = get_group_size(SCHOOL_INDEX);
+  if (n > 0) degree += (n-1);
+  n = get_group_size(WORKPLACE_INDEX);
+  if (n > 0) degree += (n-1);
   return degree;
 }
 
