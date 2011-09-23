@@ -123,7 +123,7 @@ void Place_List::read_places() {
 	Utils::fred_abort("Help! allocation failure for place_id %d\n", loc_id); 
       }
       add_place(place);
-      loc_id++;
+      loc_id = places.size();
       place = NULL;
     }
     else {
@@ -233,16 +233,28 @@ Place * Place_List::get_place_from_label(char *s) {
 
 void Place_List::add_place(Place * p) {
   // p->print(0);
-  assert(place_map.find(p->get_id()) == place_map.end());
-  string str;
-  str.assign(p->get_label());
-  assert(place_label_map.find(str) == place_label_map.end());
-  places.push_back(p);
-  place_map[p->get_id()] = places.size()-1;
-  place_label_map[str] = places.size()-1;
-  if (p->get_id() > max_id) max_id = p->get_id();
-  // printf("places now = %d\n", (int)(places.size())); fflush(stdout);
+  // assert(place_map.find(p->get_id()) == place_map.end());
+  if (place_map.find(p->get_id()) == place_map.end()) {
+    string str;
+    str.assign(p->get_label());
+    if (place_label_map.find(str) == place_label_map.end()) {
+      places.push_back(p);
+      place_map[p->get_id()] = places.size()-1;
+      place_label_map[str] = places.size()-1;
+      if (p->get_id() > max_id) max_id = p->get_id();
+      // printf("places now = %d\n", (int)(places.size())); fflush(stdout);
+    }
+    else {
+      printf("Warning: duplicate place found: ");
+      p->print(0);
+    }
+  }
+  else {
+    printf("Warning: duplicate place found: ");
+    p->print(0);
+  }
 }
+
 
 void Place_List::quality_control(char *directory) {
   int number_places = places.size();
