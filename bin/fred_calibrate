@@ -28,6 +28,7 @@ my @orig = <FH>;
 close FH;
 
 my $paramsfile = "$oldparams-cal";
+my $dir = "OUT.$paramsfile";
 
 # get settings for calibration parameters from input file
 my $x = `grep household_contact $oldparams`;
@@ -68,13 +69,13 @@ while ($error > $threshold) {
   print "classroom_contacts[0] = -1\n";
   print "office_contacts[0] = -1\n";
   print "days = $days\n\n";
-  system "rm -rf OUT.CAL";
-  system "run_fred -p $paramsfile -d OUT.CAL";
-  system "get_distr OUT.CAL";
+  system "rm -rf $dir";
+  system "run_fred -p $paramsfile -d $dir";
+  system "get_distr $dir";
   system "cat get_distr.dat";
   $x = `cat get_distr.dat`;
   my ($H, $N, $S, $W) = split " ", $x;
-  $x = `tail -1 OUT.CAL/out1.txt`;
+  $x = `tail -1 $dir/out1.txt`;
   @tmp = split " ", $x;
   my $AR = $tmp[31];
 
