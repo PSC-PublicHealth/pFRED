@@ -90,6 +90,8 @@ my $primary_cases = get_param_value("primary_cases_file[0]",$paramsfile);
 my $vaccination_capacity_file =  get_param_value("vaccination_capacity_file",$paramsfile);
 my $mortality_rate_file =  get_param_value("yearly_mortality_rate_file",$paramsfile);
 my $birth_rate_file =  get_param_value("yearly_birth_rate_file",$paramsfile);
+my $cell_popfile = get_param_value("cell_popfile",$paramsfile);
+my $tripfile = get_param_value("tripfile",$paramsfile);
 
 my $primary_cases_base = $primary_cases;
 $primary_cases_base =~ s/.*\/// if $primary_cases_base =~ /\//;
@@ -262,6 +264,8 @@ my $params = "$work/$params_base";
 `cp $vaccination_capacity_file "$work/$vaccination_capacity_file_base"` if $vaccination_capacity_file ne "none";
 `cp $mortality_rate_file "$work/$mortality_rate_file_base"`;
 `cp $birth_rate_file "$work/$birth_rate_file_base"`;
+`cp $cell_popfile "$work/$cell_popfile"`;
+`cp $tripfile "$work/$tripfile"`;
 
 # copy the params file to RESULTS for reference
 `cp $paramsfile $meta/PARAMS`;
@@ -275,6 +279,8 @@ my $params = "$work/$params_base";
 `$FRED/bin/ch vaccination_capacity_file $vaccination_capacity_file_base $params >> $logfile`;
 `$FRED/bin/ch yearly_mortality_rate_file $mortality_rate_file_base $params >> $logfile`;
 `$FRED/bin/ch yearly_birth_rate_file $birth_rate_file_base $params >> $logfile`;
+`$FRED/bin/ch cell_popfile $cell_popfile $params >> $logfile`;
+`$FRED/bin/ch tripfile $tripfile $params >> $logfile`;
 
 # update run status
 `echo RUNNING > $meta/STATUS`;
