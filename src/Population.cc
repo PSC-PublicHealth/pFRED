@@ -239,25 +239,17 @@ void Population::read_population() {
 
   Population::next_id = 0;
   while (fgets(line, 255, fp) != NULL) {
-    char first_word[256];
     int age, married, occ;
     char label[32], house_label[32], school_label[32], work_label[32];
     char sex;
 	
-    // skip lines like "Population = ..."
-    sscanf(line, "%s", first_word);
-    if (strcmp(first_word, "Population") == 0) continue;
-
-    // skip header lines
-    if (strcmp(first_word, "ID") == 0) continue;
-
     // skip white-space-only lines
     int i = 0;
     while (i < 255 && line[i] != '\0' && isspace(line[i])) i++;
     if (line[i] == '\0') continue;
 
     // skip comment lines
-    if (first_word[0] == '#') continue;
+    if (line[0] == '#') continue;
 
     if (sscanf(line, "%s %d %c %d %d %s %s %s",
                label, &age, &sex, &married, &occ,

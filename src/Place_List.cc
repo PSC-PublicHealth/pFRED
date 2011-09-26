@@ -73,19 +73,11 @@ void Place_List::read_places() {
   char line[256];
   int loc_id = 0;
   while (fgets(line, 255, fp) != NULL) {
-    char first_word[256];
     char s[80];
     char place_type;
     double lon, lat;
     Place *place = NULL;
     Place *container = NULL;
-
-    // skip lines like "Locataions = ..."
-    sscanf(line, "%s", first_word);
-    if (strcmp(first_word, "Locations") == 0) continue;
-
-    // skip header lines
-    if (strcmp(first_word, "ID") == 0) continue;
 
     // skip white-space-only lines
     int i = 0;
@@ -93,7 +85,7 @@ void Place_List::read_places() {
     if (line[i] == '\0') continue;
 
     // skip comment lines
-    if (first_word[0] == '#') continue;
+    if (line[0] == '#') continue;
 
     if (sscanf(line, "%s %c %lf %lf", s, &place_type, &lat, &lon) == 4) {
       if (place_type == 'H' && lat != 0.0) {
