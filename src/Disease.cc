@@ -67,6 +67,13 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   Params::get_indexed_param("mortality_rate",id,&mortality_rate);
   Params::get_indexed_param("immunity_loss_rate",id,&immunity_loss_rate);
 
+  if (Global::Enable_Climate) {
+    Params::get_indexed_param("seasonality_multiplier_min",id,&seasonality_min);
+    Params::get_indexed_param("seasonality_multiplier_max",id,&seasonality_max);
+    Params::get_indexed_param("seasonality_multiplier_Ka",id,&seasonality_Ka); // Ka = -180 by default
+    seasonality_Kb = log(seasonality_max - seasonality_min);
+  }
+
   mutation_prob = mut_prob;
   population = pop;
 
@@ -206,17 +213,7 @@ int Disease :: get_max_days() {
 }
 
 double Disease::calculate_climate_multiplier(double seasonality_value) {
-  // hardcoded assumptions taken from Shaman - need to parameterize
-  double R0_max = 3.52;
-  double R0_min = 1.12;
-  double R0_avg = 1.88;
-  double max = R0_max * transmissibility;
-  double min = R0_min * transmissibility;
-  double K_a = -180; 
-  double K_b = log(max - min);
-  double adj = exp( ( ( K_a * seasonality_value ) + K_b ) ) + min;
-
-  return adj / R0_avg;
+  return exp( ( ( seasonality_Ka * seasonality_value ) + seasonality_Kb ) ) + seasonality_min;
 }
 
 

@@ -205,6 +205,8 @@ public:
 private:
   int id;
   double transmissibility;
+  double seasonality_max, seasonality_min;
+  double seasonality_Ka, seasonality_Kb;
 
   double immunity_loss_rate;
   double *mutation_prob;

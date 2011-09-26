@@ -216,7 +216,9 @@ grid_small_cell_size = 0.01
 enable_seasonality = 0
 enable_climate = 1
 seasonality_timestep_file = seasonality_timestep
-
+seasonality_multiplier_max[0] = 1
+seasonality_multiplier_min[0] = 1
+seasonality_multiplier_Ka[0] = -180
 
 ############ PARAMETERS FOR IntraHost/EVOLUTION BELOW ##################################
 
