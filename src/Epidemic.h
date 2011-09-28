@@ -74,7 +74,7 @@ public:
   void become_susceptible(Person *person);
   void become_unsusceptible(Person *person);
   void become_exposed(Person *person);
-  void become_infectious(Person *person, bool symptomatic);
+  void become_infectious(Person *person);
   void become_uninfectious(Person *person);
   void become_symptomatic(Person *person);
   void become_removed(Person *person, bool susceptible, bool infectious, bool symptomatic);

@@ -77,10 +77,10 @@ public:
   void report(int day);
 
   /**
-   * @param s the index of the Disease
+   * @param disease_id the index of the Disease
    * @return a pointer to the Disease indexed by s
    */
-  Disease * get_disease(int s);
+  Disease * get_disease(int disease_id);
 
   /**
    * @return the pop_size

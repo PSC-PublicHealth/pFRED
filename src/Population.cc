@@ -164,8 +164,8 @@ void Population::setup() {
     fflush(Global::Statusfp);
   }
   disease = new Disease [Global::Diseases];
-  for (int dis = 0; dis < Global::Diseases; dis++) {
-    disease[dis].setup(dis, this, mutation_prob[dis]);
+  for (int d = 0; d < Global::Diseases; d++) {
+    disease[d].setup(d, this, mutation_prob[d]);
   }
   
   vacc_manager = new Vaccine_Manager(this);
@@ -189,8 +189,8 @@ void Population::setup() {
   if(Global::Verbose > 0){
     int count = 0;
     for(int p = 0; p < pop_size; p++){
-      Disease* s = &disease[0];
-      if(pop[p]->get_health()->is_immune(s)) count++;
+      Disease* d = &disease[0];
+      if(pop[p]->get_health()->is_immune(d)) count++;
     }
     fprintf(Global::Statusfp, "number of residually immune people = %d\n", count);
     fflush(Global::Statusfp);
@@ -439,8 +439,8 @@ void Population::report(int day) {
     clear_static_arrays();
   }
 
-  for (int s = 0; s < Global::Diseases; s++) {
-    disease[s].print_stats(day);
+  for (int d = 0; d < Global::Diseases; d++) {
+    disease[d].print_stats(day);
   }
 
   // Write out the population if the output_population parameter is set.
@@ -521,8 +521,8 @@ void Population::end_of_run() {
   }
 }
 
-Disease *Population::get_disease(int s) {
-  return &disease[s];
+Disease *Population::get_disease(int disease_id) {
+  return &disease[disease_id];
 }
 
 void Population::quality_control() {
@@ -559,20 +559,20 @@ void Population::quality_control() {
     fprintf(Global::Statusfp, "\n");
     
     // Print out At Risk distribution
-    for(int is = 0; is < Global::Diseases; is++){
-      if(disease[is].get_at_risk()->get_num_ages() > 0){
-        Disease* s = &disease[is];
+    for(int d = 0; d < Global::Diseases; d++){
+      if(disease[d].get_at_risk()->get_num_ages() > 0){
+        Disease* dis = &disease[d];
         int rcount[20];
         for (int c = 0; c < 20; c++) { rcount[c] = 0; }
         for (int p = 0; p < pop_size; p++) {
           int a = pop[p]->get_age();
           int n = a / 10;
-          if(pop[p]->get_health()->is_at_risk(s)==true) {
+          if(pop[p]->get_health()->is_at_risk(dis)==true) {
             if( n < 20 ) { rcount[n]++; }
             else { rcount[19]++; }
           }
         }
-        fprintf(Global::Statusfp, "\n Age Distribution of At Risk for Disease %d: %d people\n",is,total);
+        fprintf(Global::Statusfp, "\n Age Distribution of At Risk for Disease %d: %d people\n",d,total);
         for(int c = 0; c < 10; c++ ) {
           fprintf(Global::Statusfp, "age %2d to %2d: %6d (%.2f%%)\n",
                   10*c, 10*(c+1)-1, rcount[c], (100.0*rcount[c])/total);

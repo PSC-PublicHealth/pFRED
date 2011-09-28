@@ -64,7 +64,7 @@ public:
    *
    * @param disease an integer representation of the disease
    */
-  virtual void print(int disease);
+  virtual void print(int disease_id);
 
   /**
    * Add a person to the place. This method increments the number of people in
@@ -86,41 +86,41 @@ public:
    * Add a susceptible person to the place. This method adds the person to the susceptibles vector and
    * increments the number of susceptibles in the place (S).
    *
-   * @param disease an integer representation of the disease
-   * @param per a pointer to a Person object that will be added to the place for a given disease
+   * @param disease_id an integer representation of the disease
+   * @param per a pointer to a Person object that will be added to the place for a given diease
    */
-  virtual void add_susceptible(int disease, Person * per);
+  virtual void add_susceptible(int disease_id, Person * per);
 
   /**
    * Add a infectious person to the place. This method adds the person to the infectious vector and
    * increments the number of infectious in the place (I).
    *
-   * @param disease an integer representation of the disease
-   * @param per a pointer to a Person object that will be added to the place for a given disease
+   * @param disease_id an integer representation of the disease
+   * @param per a pointer to a Person object that will be added to the place for a given diease
    */
-  virtual void add_infectious(int disease, Person * per);
+  virtual void add_infectious(int disease_id, Person * per);
 
   /**
-   * Prints the id of every person in the susceptible vector for a given disease.
+   * Prints the id of every person in the susceptible vector for a given diease.
    *
-   * @param disease an integer representation of the disease
+   * @param disease_id an integer representation of the disease
    */
-  void print_susceptibles(int disease);
+  void print_susceptibles(int disease_id);
 
   /**
-   * Prints the id of every person in the infectious vector for a given disease.
+   * Prints the id of every person in the infectious vector for a given diease.
    *
-   * @param disease an integer representation of the disease
+   * @param disease_id an integer representation of the disease
    */
-  void print_infectious(int disease);
+  void print_infectious(int disease_id);
 
   /**
-   * Attempt to spread the infection for a given disease on a given day.
+   * Attempt to spread the infection for a given diease on a given day.
    *
    * @param day the simulation day
-   * @param disease an integer representation of the disease
+   * @param disease_id an integer representation of the disease
    */
-  virtual void spread_infection(int day, int disease);
+  virtual void spread_infection(int day, int disease_id);
 
   /**
    * Is the place open on a given day?
@@ -135,73 +135,73 @@ public:
    *
    * @return <code>true</code> if any infectious people are here; <code>false</code> if not
    */
-  bool is_infectious(int disease) { return I[disease] > 0; }
+  bool is_infectious(int disease_id) { return I[disease_id] > 0; }
 
   /**
    * Allow update of incidence vector.
    *
-   * @param disease an integer representation of the disease
+   * @param disease_id an integer representation of the disease
    * @@param strain a vector of integers representing strains
    * @param incr is unused at this time
    */
-  void modifyIncidenceCount(int dis, vector<int> strain, int incr);
+  void modifyIncidenceCount(int disease_id, vector<int> strain, int incr);
 
   /**
    * Allow update of prevalence vector.
    *
-   * @param disease an integer representation of the disease
+   * @param disease_id an integer representation of the disease
    * @@param strain a vector of integers representing strains
    * @param incr is unused at this time
    */
-  void modifyPrevalenceCount(int dis, vector<int> strain, int incr);
+  void modifyPrevalenceCount(int disease_id, vector<int> strain, int incr);
 
   /**
    * <bold>Deprecated.</bold>
    */
-  void print_stats(int day, int disease);
+  void print_stats(int day, int disease_id);
   
   /**
-   * Sets the static variables for the class from the parameter file for a given number of diseases.
+   * Sets the static variables for the class from the parameter file for a given number of disease_ids.
    *
-   * @param disease an integer representation of the disease
+   * @param disease_id an integer representation of the disease
    */
-  virtual void get_parameters(int disease) = 0;
+  virtual void get_parameters(int disease_id) = 0;
 
   /**
-   * Get the age group for a person given a particular disease.
+   * Get the age group for a person given a particular disease_id.
    *
-   * @param disease an integer representation of the disease
+   * @param disease_id an integer representation of the disease
    * @param per a pointer to a Person object
-   * @return the age group for the given person for the given disease
+   * @return the age group for the given person for the given diease
    */
-  virtual int get_group(int disease, Person * per) = 0;
+  virtual int get_group(int disease_id, Person * per) = 0;
 
   /**
-   * Get the transmission probability for a given disease between two Person objects.
+   * Get the transmission probability for a given diease between two Person objects.
    *
-   * @param disease an integer representation of the disease
+   * @param disease_id an integer representation of the disease
    * @param i a pointer to a Person object
    * @param s a pointer to a Person object
-   * @return the probability that there will be a transmission of disease from i to s
+   * @return the probability that there will be a transmission of disease_id from i to s
    */
-  virtual double get_transmission_prob(int disease, Person * i, Person * s) = 0;
+  virtual double get_transmission_prob(int disease_id, Person * i, Person * s) = 0;
 
   /**
-   * Get the contacts for a given disease.
+   * Get the contacts for a given diease.
    *
-   * @param disease an integer representation of the disease
-   * @return the contacts per day for the given disease
+   * @param disease_id an integer representation of the disease
+   * @return the contacts per day for the given diease
    */
-  virtual double get_contacts_per_day(int disease) = 0; // access functions
+  virtual double get_contacts_per_day(int disease_id) = 0; // access functions
 
   /**
-   * Determine if the place should be open. It is dependent on the disease and simulation day.
+   * Determine if the place should be open. It is dependent on the disease_id and simulation day.
    *
    * @param day the simulation day
-   * @param disease an integer representation of the disease
+   * @param disease_id an integer representation of the disease
    * @return <code>true</code> if the place should be open; <code>false</code> if not
    */
-  virtual bool should_be_open(int day, int disease) = 0;
+  virtual bool should_be_open(int day, int disease_id) = 0;
 
   /**
    * Get the id.
@@ -238,28 +238,28 @@ public:
   double get_longitude() { return longitude; }
 
   /**
-   * Get the count of (S)usceptibles for a given disease in this place.
+   * Get the count of (S)usceptibles for a given diease in this place.
    *
-   * @param disease an integer representation of the disease
-   * @return the suceptible count for the given disease
+   * @param disease_id an integer representation of the disease
+   * @return the suceptible count for the given diease
    */
-  int get_S(int disease) { return S[disease]; }
+  int get_S(int disease_id) { return S[disease_id]; }
 
   /**
-   * Get the count of (I)nfectious for a given disease in this place.
+   * Get the count of (I)nfectious for a given diease in this place.
    *
-   * @param disease an integer representation of the disease
-   * @return the infectious count for the given disease
+   * @param disease_id an integer representation of the disease
+   * @return the infectious count for the given diease
    */
-  int get_I(int disease) { return (int) (infectious[disease].size()); }
+  int get_I(int disease_id) { return (int) (infectious[disease_id].size()); }
 
   /**
-   * Get the count of (S)ymptomatics for a given disease in this place.
+   * Get the count of (S)ymptomatics for a given diease in this place.
    *
-   * @param disease an integer representation of the disease
-   * @return the symptomatic count for the given disease
+   * @param disease_id an integer representation of the disease
+   * @return the symptomatic count for the given diease
    */
-  int get_symptomatic(int disease) { return Sympt[disease]; }
+  int get_symptomatic(int disease_id) { return Sympt[disease_id]; }
 
   /**
    * Get the count of agents in this place.
@@ -290,49 +290,49 @@ public:
   Population *get_population() { return population; }
 
   /**
-   * Get the number of cases of a given disease for day.
+   * Get the number of cases of a given diease for day.
    * The member variable cases gets reset when <code>update()</code> is called, which for now is on a daily basis.
    *
-   * @param disease an integer representation of the disease
-   * @return the count of cases for a given disease
+   * @param disease_id an integer representation of the disease
+   * @return the count of cases for a given diease
    */
-  int get_daily_cases(int disease) { return cases[disease]; }
+  int get_daily_cases(int disease_id) { return cases[disease_id]; }
 
   /**
-   * Get the number of deaths from a given disease for a day.
+   * Get the number of deaths from a given diease for a day.
    * The member variable deaths gets reset when <code>update()</code> is called, which for now is on a daily basis.
    *
-   * @param disease an integer representation of the disease
-   * @return the count of deaths for a given disease
+   * @param disease_id an integer representation of the disease
+   * @return the count of deaths for a given diease
    */
-  int get_daily_deaths(int disease) { return deaths[disease]; }
+  int get_daily_deaths(int disease_id) { return deaths[disease_id]; }
 
   /**
-   * Get the number of cases of a given disease for the simulation thus far.
+   * Get the number of cases of a given diease for the simulation thus far.
    * This value is not reset when <code>update()</code> is called.
    *
-   * @param disease an integer representation of the disease
-   * @return the count of cases for a given disease
+   * @param disease_id an integer representation of the disease
+   * @return the count of cases for a given diease
    */
-  int get_total_cases(int disease) { return total_cases[disease]; }
+  int get_total_cases(int disease_id) { return total_cases[disease_id]; }
 
   /**
-   * Get the number of deaths from a given disease for the simulation thus far.
+   * Get the number of deaths from a given diease for the simulation thus far.
    * This value is not reset when <code>update()</code> is called.
    *
-   * @param disease an integer representation of the disease
-   * @return the count of deaths for a given disease
+   * @param disease_id an integer representation of the disease
+   * @return the count of deaths for a given diease
    */
-  int get_total_deaths(int disease) { return total_deaths[disease]; }
+  int get_total_deaths(int disease_id) { return total_deaths[disease_id]; }
 
   /**
-   * Get the number of cases of a given disease for the simulation thus far divided by the
+   * Get the number of cases of a given diease for the simulation thus far divided by the
    * number of agents in this place.
    *
-   * @param disease an integer representation of the disease
-   * @return the count of rate of cases per people for a given disease
+   * @param disease_id an integer representation of the disease
+   * @return the count of rate of cases per people for a given diease
    */
-  double get_incidence_rate(int disease) { return (double) total_cases[disease] / (double) N; }
+  double get_incidence_rate(int disease_id) { return (double) total_cases[disease_id] / (double) N; }
   
   /**
    * Set the id.

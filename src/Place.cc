@@ -55,7 +55,7 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   N = 0;
 }
 
-void Place::print_stats(int day, int disease) {
+void Place::print_stats(int day, int disease_id) {
   /*
    * The output format for this needs to be changed and 
    * it produces an insane amount of output in the current format
@@ -65,23 +65,23 @@ void Place::print_stats(int day, int disease) {
    map<int, int> :: iterator it;
    fprintf(Incfp, "%d %s ", day, label);
    int tot = 0;
-   for(it = incidence[disease].begin(); it != incidence[disease].end(); it++){
+   for(it = incidence[disease_id].begin(); it != incidence[disease_id].end(); it++){
    tot += it->second;
    }
    fprintf(Incfp, "%d ", tot);
 
-   for(it = incidence[disease].begin(); it != incidence[disease].end(); it++){
+   for(it = incidence[disease_id].begin(); it != incidence[disease_id].end(); it++){
    fprintf(Incfp, " %d %d ", it->first, it->second);
    }
    fprintf(Incfp, "\n");
 
    fprintf(Prevfp, "%d %s ", day, label);
-   for(it = incidence[disease].begin(); it != incidence[disease].end(); it++){
+   for(it = incidence[disease_id].begin(); it != incidence[disease_id].end(); it++){
    tot += it->second;
    }
    fprintf(Prevfp, "%d ", tot);
 
-   for(it = prevalence[disease].begin(); it != prevalence[disease].end(); it++){
+   for(it = prevalence[disease_id].begin(); it != prevalence[disease_id].end(); it++){
    fprintf(Prevfp, "%d %d ", it->first, it->second);
    }
    fprintf(Prevfp, "\n");
@@ -90,10 +90,10 @@ void Place::print_stats(int day, int disease) {
 
 
 void Place::prepare() {
-  for (int s = 0; s < Global::Diseases; s++) {
-    susceptibles[s].reserve(N);
-    infectious[s].reserve(N);
-    total_cases[s] = total_deaths[s] = 0;
+  for (int d = 0; d < Global::Diseases; d++) {
+    susceptibles[d].reserve(N);
+    infectious[d].reserve(N);
+    total_cases[d] = total_deaths[d] = 0;
   }
   update(0);
   open_date = 0;
@@ -106,19 +106,19 @@ void Place::prepare() {
 }
 
 void Place::update(int day) {
-  for (int s = 0; s < Global::Diseases; s++) {
-    // if(day > 0) print_stats(day, s);
-    cases[s] = deaths[s] = 0;
-    susceptibles[s].clear();
-    infectious[s].clear();
-    Sympt[s] = S[s] = I[s] = 0;
-    incidence[s].clear();
+  for (int d = 0; d < Global::Diseases; d++) {
+    // if(day > 0) print_stats(day, d);
+    cases[d] = deaths[d] = 0;
+    susceptibles[d].clear();
+    infectious[d].clear();
+    Sympt[d] = S[d] = I[d] = 0;
+    incidence[d].clear();
   }
 }
 
-void Place::print(int disease) {
+void Place::print(int disease_id) {
   printf("Place %d label %s type %c ", id, label, type);
-  printf("S %d I %d N %d\n", S[disease], I[disease], N);
+  printf("S %d I %d N %d\n", S[disease_id], I[disease_id], N);
   fflush(stdout);
 }
 
@@ -130,40 +130,40 @@ void Place::unenroll(Person * per) {
   N--;
 }
 
-void Place::add_susceptible(int disease, Person * per) {
-  susceptibles[disease].push_back(per);
-  S[disease]++;
-  assert (S[disease] == static_cast <int> (susceptibles[disease].size()));
+void Place::add_susceptible(int disease_id, Person * per) {
+  susceptibles[disease_id].push_back(per);
+  S[disease_id]++;
+  assert (S[disease_id] == static_cast <int> (susceptibles[disease_id].size()));
 }
 
-void Place::add_infectious(int disease, Person * per) {
-  infectious[disease].push_back(per);
-  I[disease]++;
-  assert(I[disease] == static_cast <int> (infectious[disease].size()));
+void Place::add_infectious(int disease_id, Person * per) {
+  infectious[disease_id].push_back(per);
+  I[disease_id]++;
+  assert(I[disease_id] == static_cast <int> (infectious[disease_id].size()));
   if (per->get_health()->is_symptomatic()) {
-    Sympt[disease]++;
-    cases[disease]++;
-    total_cases[disease]++;
+    Sympt[disease_id]++;
+    cases[disease_id]++;
+    total_cases[disease_id]++;
   }
-  if (I[disease]==1) {
-    Disease * dis = population->get_disease(disease);
+  if (I[disease_id]==1) {
+    Disease * dis = population->get_disease(disease_id);
     dis->add_infectious_place(this, type);
   }
 }
 
-void Place::print_susceptibles(int disease) {
+void Place::print_susceptibles(int disease_id) {
   vector<Person *>::iterator itr;
-  for (itr = susceptibles[disease].begin();
-       itr != susceptibles[disease].end(); itr++) {
+  for (itr = susceptibles[disease_id].begin();
+       itr != susceptibles[disease_id].end(); itr++) {
     printf(" %d", (*itr)->get_id());
   }
   printf("\n");
 }
 
-void Place::print_infectious(int disease) {
+void Place::print_infectious(int disease_id) {
   vector<Person *>::iterator itr;
-  for (itr = infectious[disease].begin();
-       itr != infectious[disease].end(); itr++) {
+  for (itr = infectious[disease_id].begin();
+       itr != infectious[disease_id].end(); itr++) {
     printf(" %d", (*itr)->get_id());
   }
   printf("\n");
@@ -306,16 +306,16 @@ void Place::spread_infection(int day, int disease_id) {
   } // end infectious list loop
 }
 
-void Place::modifyIncidenceCount(int disease, vector<int> strains, int incr) {
-  map<int, int>& inc = incidence[disease];
+void Place::modifyIncidenceCount(int disease_id, vector<int> strains, int incr) {
+  map<int, int>& inc = incidence[disease_id];
   for(int s=0; s < (int) strains.size(); s++) {
     if(inc.find(strains[s]) == inc.end()) inc[strains[s]] = 0;
     inc[strains[s]] = inc[strains[s]] + 1;
   }
 }
 
-void Place::modifyPrevalenceCount(int disease, vector<int> strains, int incr) {
-  map<int, int>& prev = prevalence[disease];
+void Place::modifyPrevalenceCount(int disease_id, vector<int> strains, int incr) {
+  map<int, int>& prev = prevalence[disease_id];
   for(int s=0; s < (int) strains.size(); s++) {
     prev[strains[s]] += 1;
   }

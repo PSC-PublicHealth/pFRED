@@ -69,14 +69,14 @@ Health::Health (Person * person) {
 
   // Determine if the agent is at risk
   at_risk.assign(Global::Diseases,false);
-  for(int disease = 0; disease < Global::Diseases; disease++) {
-    Disease* s = Global::Pop.get_disease(disease);
+  for(int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
+    Disease* disease = Global::Pop.get_disease(disease_id);
 
-    if(!s->get_at_risk()->is_empty()) {
-      double at_risk_prob = s->get_at_risk()->find_value(self->get_age());
+    if(!disease->get_at_risk()->is_empty()) {
+      double at_risk_prob = disease->get_at_risk()->find_value(self->get_age());
 
       if(RANDOM() < at_risk_prob) { // Now a probability <=1.0
-        declare_at_risk(s);
+        declare_at_risk(disease);
       }
     }
   }
@@ -151,8 +151,8 @@ void Health::update(int day) {
 
   // if deceased, clear health status
   if (self->is_deceased()) {
-    for (int d = 0; d < Global::Diseases; d++) {
-      become_removed(d);
+    for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
+      become_removed(disease_id);
     }
     return;
   }
@@ -166,10 +166,10 @@ void Health::update(int day) {
 
   // update each infection
   has_symptoms = false;
-  for (int s = 0; s < Global::Diseases; s++) {
-    if (infection[s] != NULL)
-      infection[s]->update(day);
-    if (symptomatic[s]) has_symptoms = true;
+  for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
+    if (infection[disease_id] != NULL)
+      infection[disease_id]->update(day);
+    if (symptomatic[disease_id]) has_symptoms = true;
   }
 
   // update antiviral status
@@ -184,7 +184,7 @@ void Health::become_infectious(Disease * disease) {
   int disease_id = disease->get_id();
   assert(infection[disease_id] != NULL);
   infectious[disease_id] = true;
-  disease->become_infectious(self, symptomatic[disease_id]);
+  disease->become_infectious(self);
   if (Global::Verbose > 1) {
     fprintf(Global::Statusfp, "person %d is now INFECTIOUS for disease %d\n",
             self->get_id(), disease_id);
@@ -213,145 +213,145 @@ void Health::declare_at_risk(Disease* disease) {
   at_risk[disease_id] = true;
 }
 
-int Health::get_exposure_date(int disease) const {
-  if (infection[disease] == NULL)
+int Health::get_exposure_date(int disease_id) const {
+  if (infection[disease_id] == NULL)
     return -1;
   else
-    return infection[disease]->get_exposure_date();
+    return infection[disease_id]->get_exposure_date();
 }
 
-int Health::get_infectious_date(int disease) const {
-  if (infection[disease] == NULL)
+int Health::get_infectious_date(int disease_id) const {
+  if (infection[disease_id] == NULL)
     return -1;
   else
-    return infection[disease]->get_infectious_date();
+    return infection[disease_id]->get_infectious_date();
 }
 
-int Health::get_recovered_date(int disease) const {
-  if (infection[disease] == NULL)
+int Health::get_recovered_date(int disease_id) const {
+  if (infection[disease_id] == NULL)
     return -1;
   else
-    return infection[disease]->get_recovery_date();
+    return infection[disease_id]->get_recovery_date();
 }
 
-int Health:: get_symptomatic_date(int disease) const {
-  if (infection[disease] == NULL)
+int Health:: get_symptomatic_date(int disease_id) const {
+  if (infection[disease_id] == NULL)
     return -1;
   else
-    return infection[disease]->get_symptomatic_date();
+    return infection[disease_id]->get_symptomatic_date();
 }
 
-int Health::get_infector(int disease) const {
-  if (infection[disease] == NULL)
+int Health::get_infector(int disease_id) const {
+  if (infection[disease_id] == NULL)
     return -1;
-  else if (infection[disease]->get_infector() == NULL)
+  else if (infection[disease_id]->get_infector() == NULL)
     return -1;
   else
-    return infection[disease]->get_infector()->get_id();
+    return infection[disease_id]->get_infector()->get_id();
 }
 
-int Health::get_infected_place(int disease) const {
-  if (infection[disease] == NULL)
+int Health::get_infected_place(int disease_id) const {
+  if (infection[disease_id] == NULL)
     return -1;
-  else if (infection[disease]->get_infected_place() == NULL)
+  else if (infection[disease_id]->get_infected_place() == NULL)
     return -1;
   else
-    return infection[disease]->get_infected_place()->get_id();
+    return infection[disease_id]->get_infected_place()->get_id();
 }
 
-char Health::get_infected_place_type(int disease) const {
-  if (infection[disease] == NULL)
+char Health::get_infected_place_type(int disease_id) const {
+  if (infection[disease_id] == NULL)
     return 'X';
-  else if (infection[disease]->get_infected_place() == NULL)
+  else if (infection[disease_id]->get_infected_place() == NULL)
     return 'X';
   else
-    return infection[disease]->get_infected_place()->get_type();
+    return infection[disease_id]->get_infected_place()->get_type();
 }
 
-char * Health::get_infected_place_label(int disease) const {
-  if (infection[disease] == NULL) {
+char * Health::get_infected_place_label(int disease_id) const {
+  if (infection[disease_id] == NULL) {
     strcpy(dummy_label, "-");
     return dummy_label;
-  } else if (infection[disease]->get_infected_place() == NULL) {
+  } else if (infection[disease_id]->get_infected_place() == NULL) {
     strcpy(dummy_label, "X");
     return dummy_label;
   } else
-    return infection[disease]->get_infected_place()->get_label();
+    return infection[disease_id]->get_infected_place()->get_label();
 }
 
-int Health::get_infectees(int disease) const {
-  return infectee_count[disease];
+int Health::get_infectees(int disease_id) const {
+  return infectee_count[disease_id];
 }
 
-double Health::get_susceptibility(int disease) const {
-  double suscep_multp = susceptibility_multp[disease];
+double Health::get_susceptibility(int disease_id) const {
+  double suscep_multp = susceptibility_multp[disease_id];
 
-  if (infection[disease] == NULL)
+  if (infection[disease_id] == NULL)
     return suscep_multp;
   else
-    return infection[disease]->get_susceptibility() * suscep_multp;
+    return infection[disease_id]->get_susceptibility() * suscep_multp;
 }
 
-double Health::get_infectivity(int disease, int day) const {
-  if (infection[disease] == NULL)
+double Health::get_infectivity(int disease_id, int day) const {
+  if (infection[disease_id] == NULL)
     return 0.0;
   else
-    return infection[disease]->get_infectivity(day);
+    return infection[disease_id]->get_infectivity(day);
 }
 
 //Modify Operators
-void Health::modify_susceptibility(int disease, double multp) {
+void Health::modify_susceptibility(int disease_id, double multp) {
   if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " susceptibility for disease "
-                               << disease << " by " << multp << "\n";
+                               << disease_id << " by " << multp << "\n";
 
-  susceptibility_multp[disease] *= multp;
+  susceptibility_multp[disease_id] *= multp;
 }
 
-void Health::modify_infectivity(int disease, double multp) {
-  if (infection[disease] != NULL) {
-    if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " infectivity for disease " << disease
+void Health::modify_infectivity(int disease_id, double multp) {
+  if (infection[disease_id] != NULL) {
+    if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " infectivity for disease " << disease_id
                                  << " by " << multp << "\n";
 
-    infection[disease]->modify_infectivity(multp);
+    infection[disease_id]->modify_infectivity(multp);
   }
 }
 
-void Health::modify_infectious_period(int disease, double multp, int cur_day) {
-  if (infection[disease] != NULL) {
-    if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " infectivity for disease " << disease
+void Health::modify_infectious_period(int disease_id, double multp, int cur_day) {
+  if (infection[disease_id] != NULL) {
+    if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " infectivity for disease " << disease_id
                                  << " by " << multp << "\n";
 
-    infection[disease]->modify_infectious_period(multp, cur_day);
+    infection[disease_id]->modify_infectious_period(multp, cur_day);
   }
 }
 
-void Health::modify_asymptomatic_period(int disease, double multp, int cur_day) {
-  if (infection[disease] != NULL) {
-    if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " asymptomatic period  for disease " << disease
+void Health::modify_asymptomatic_period(int disease_id, double multp, int cur_day) {
+  if (infection[disease_id] != NULL) {
+    if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " asymptomatic period  for disease " << disease_id
                                  << " by " << multp << "\n";
 
-    infection[disease]->modify_asymptomatic_period(multp, cur_day);
+    infection[disease_id]->modify_asymptomatic_period(multp, cur_day);
   }
 }
 
-void Health::modify_symptomatic_period(int disease, double multp, int cur_day) {
-  if (infection[disease] != NULL) {
-    if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomatic period  for disease " << disease
+void Health::modify_symptomatic_period(int disease_id, double multp, int cur_day) {
+  if (infection[disease_id] != NULL) {
+    if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomatic period  for disease " << disease_id
                                  << " by " << multp << "\n";
 
-    infection[disease]->modify_symptomatic_period(multp, cur_day);
+    infection[disease_id]->modify_symptomatic_period(multp, cur_day);
   }
 }
 
-void Health::modify_develops_symptoms(int disease, bool symptoms, int cur_day) {
-  if (infection[disease] != NULL &&
-      (infection[disease]->is_infectious() && !infection[disease]->is_symptomatic()) ||
-      (!infection[disease]->is_infectious())) {
-    if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomaticity  for disease " << disease
+void Health::modify_develops_symptoms(int disease_id, bool symptoms, int cur_day) {
+  if (infection[disease_id] != NULL &&
+      (infection[disease_id]->is_infectious() && !infection[disease_id]->is_symptomatic()) ||
+      (!infection[disease_id]->is_infectious())) {
+    if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomaticity  for disease " << disease_id
                                  << " to " << symptoms << "\n";
 
-    infection[disease]->modify_develops_symptoms(symptoms, cur_day);
-    symptomatic[disease] = true;
+    infection[disease_id]->modify_develops_symptoms(symptoms, cur_day);
+    symptomatic[disease_id] = true;
   }
 }
 
@@ -391,21 +391,20 @@ void Health::take(Antiviral* av, int day) {
   return;
 }
 
-bool Health::is_on_av_for_disease(int day, int s) const {
+bool Health::is_on_av_for_disease(int day, int d) const {
   for (unsigned int iav = 0; iav < av_health.size(); iav++)
-    if (av_health[iav]->get_disease() == s && av_health[iav]->is_on_av(day))
+    if (av_health[iav]->get_disease() == d && av_health[iav]->is_on_av(day))
       return true;
-
   return false;
 }
 
 
-void Health::infect(Person *infectee, int disease, Transmission *transmisison) {
-  infection[disease]->transmit(infectee, transmisison);
-  infectee_count[disease]++;
+void Health::infect(Person *infectee, int disease_id, Transmission *transmisison) {
+  infection[disease_id]->transmit(infectee, transmisison);
+  infectee_count[disease_id]++;
   if (Global::Verbose > 1) {
     fprintf(Global::Statusfp, "person %d infected person %d infectees = %d\n",
-	    self->get_id(), infectee->get_id(), infectee_count[disease]);
+	    self->get_id(), infectee->get_id(), infectee_count[disease_id]);
     fflush(Global::Statusfp);
   }
 }

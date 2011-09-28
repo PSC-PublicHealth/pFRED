@@ -33,8 +33,8 @@ using namespace std;
 
 extern int V_count;
 
-Epidemic::Epidemic(Disease *str, Timestep_Map* _primary_cases_map) {
-  disease = str;
+Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
+  disease = dis;
   id = disease->get_id();
   primary_cases_map = _primary_cases_map;
   primary_cases_map->print(); 
@@ -87,7 +87,7 @@ void Epidemic::become_exposed(Person *person) {
     exposed_list.push_back(person);
 }
 
-void Epidemic::become_infectious(Person *person, bool symptomatic) {
+void Epidemic::become_infectious(Person *person) {
   E_count--;
   infectious_list.insert(make_pair(person,person->get_id()));
 }
