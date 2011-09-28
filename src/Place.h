@@ -97,9 +97,8 @@ public:
    *
    * @param disease an integer representation of the disease
    * @param per a pointer to a Person object that will be added to the place for a given disease
-   * @param status a character representation of the status
    */
-  virtual void add_infectious(int disease, Person * per, char status);
+  virtual void add_infectious(int disease, Person * per);
 
   /**
    * Prints the id of every person in the susceptible vector for a given disease.

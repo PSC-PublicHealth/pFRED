@@ -127,11 +127,6 @@ void Infection::update(int today) {
   symptoms = trajectory_point.symptomaticity;
 
   if (today == get_infectious_date()) {
-    if (is_symptomatic()) {
-      status = 'I';
-    } else {
-      status = 'i';
-    }
     host->become_infectious(disease);
   }
 
@@ -235,14 +230,13 @@ void Infection::modify_develops_symptoms(bool symptoms, int today) {
 }
 
 void Infection::print() const {
-  printf("Infection of disease type: %i in person %i current status: %c\n"
+  printf("Infection of disease type: %i in person %i\n"
          "periods:  latent %i, asymp: %i, symp: %i recovery: %i \n"
          "dates: exposed: %i, infectious: %i, symptomatic: %i, recovered: %i susceptible: %i\n"
          "will have symp? %i, suscept: %.3f infectivity: %.3f "
          "infectivity_multp: %.3f symptms: %.3f\n",
          disease->get_id(),
          host->get_id(),
-         status,
          latent_period,
          asymptomatic_period,
          symptomatic_period,
@@ -271,7 +265,7 @@ void Infection::transmit(Person *infectee, Transmission *transmission) {
   int day = transmission->get_exposure_date() - exposure_date + offset;
   map<int, double> *loads = trajectory->getInoculum(day);
   transmission->setInitialLoads(loads);
-  infectee->getInfected(this->disease, transmission);
+  infectee->become_exposed(this->disease, transmission);
 }
 
 void Infection::addTransmission(Transmission *transmission) {
@@ -308,8 +302,6 @@ void Infection::addTransmission(Transmission *transmission) {
       trajectory->print();
       printf("Dates: %d, %d, %d, %d, %d \n", exposure_date, infectious_date,  symptomatic_date, asymptomatic_date, recovery_date);
     }
-
-    status = 'E';
 
     vector<int> strains;
     trajectory->getAllStrains(strains);

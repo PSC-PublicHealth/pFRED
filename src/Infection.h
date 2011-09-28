@@ -39,23 +39,11 @@ public:
   ~Infection() { }
 
   /**
-   * @return the infection state
-   */
-  char get_disease_status() const {
-    return status;
-  }
-
-  /**
     * Perform the daily update for this object
     *
     * @param day the simulation day
     */
   void update(int today);
-
-  /**
-   * @return <code>true</code if the status infectious, <code>false</code> otherwise
-   */
-  bool is_infectious() const { return (status == 'I' || status == 'i'); }
 
   // general
   /**
@@ -245,9 +233,6 @@ private:
   // associated disease
   Disease *disease;
   int id;
-
-  // infection status (E/I/i/R)
-  char status;
   bool isSusceptible;
 
   // chrono data

@@ -67,8 +67,8 @@ Person::Person(int index, int age, char sex, int marital, int occ,
 
 void Person::print(FILE *fp, int disease) const {
   if (fp == NULL) return;
-  fprintf(fp, "%i %c id %7d  a %3d  s %c %d ",
-          disease, health->get_disease_status(disease), idx,
+  fprintf(fp, "%d id %7d  a %3d  s %c %d ",
+          disease, idx,
           demographics->get_age(),
           demographics->get_sex(),
           demographics->get_profession());
@@ -93,8 +93,7 @@ void Person::print(FILE *fp, int disease) const {
 
 void Person::become_immune(Disease* disease) {
   int disease_id = disease->get_id();
-  char status = health->get_disease_status(disease_id);
-  if(status == 'S'){
+  if(health->is_susceptible(disease_id)){
     health->become_immune(disease);
   }
 }
@@ -159,11 +158,6 @@ void Person::set_changed(){
 
 void Person::infect(Person *infectee, int disease, Transmission *transmission) {
   this->health->infect(infectee, disease, transmission);
-}
-
-void Person::getInfected(Disease *disease, Transmission *transmission) {
-  health->getInfected(disease, transmission);
-  behavior->getInfected(disease, transmission);
 }
 
 Person * Person::give_birth(int day) {

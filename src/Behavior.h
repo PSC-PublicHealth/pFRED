@@ -87,13 +87,6 @@ public:
     return will_accept_another_vaccine_dose(0);
   }
 
-  /**
-   * Does nothing right now
-   * @param disease pointer to a Disease object
-   * @param transmission pointer to a Transmission object
-   */
-  void getInfected(Disease *disease, Transmission *transmission) {};
-
   bool is_staying_home(int day) { return model->is_staying_home(day); }
 
 private:

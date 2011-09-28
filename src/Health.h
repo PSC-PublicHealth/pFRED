@@ -54,7 +54,7 @@ public:
    *
    * @param disease which disease
    */
-  void become_susceptible(int disease);
+  void become_susceptible(int disease_id);
   void become_susceptible(Disease * disease);
 
   /**
@@ -90,7 +90,7 @@ public:
    *
    * @param disease which disease
    */
-  void become_removed(int disease);
+  void become_removed(int disease_id);
 
   /**
    * Agent is 'At Risk' to a given Disease
@@ -112,9 +112,7 @@ public:
    * @param disease which disease
    * @return <code>true</code> if the agent is susceptible, <code>false</code> otherwise
    */
-  bool is_susceptible (int disease) const {
-    return susceptible[disease];
-  }
+  bool is_susceptible (int disease_id) const {return susceptible[disease_id];}
 
   /**
    * Is the agent infectious for a given disease
@@ -122,16 +120,15 @@ public:
    * @param disease which disease
    * @return <code>true</code> if the agent is infectious, <code>false</code> otherwise
    */
-  bool is_infectious(int disease) const {
-    return (status[disease] == 'I' || status[disease] == 'i');
-  }
+  bool is_infectious(int disease_id) const { return (infectious[disease_id]); }
 
   /**
    * Is the agent symptomatic - note that this is independent of disease
    *
    * @return <code>true</code> if the agent is symptomatic, <code>false</code> otherwise
    */
-  bool is_symptomatic() const;
+  bool is_symptomatic() const { return has_symptoms; }
+  bool is_symptomatic(int disease_id) { return symptomatic[disease_id]; }
 
   /**
    * Is the agent immune to a given disease
@@ -159,18 +156,8 @@ public:
    * @param disease which disease
    * @return <code>true</code> if the agent is at risk, <code>false</code> otherwise
    */
-  bool is_at_risk(int disease) const {
-    return at_risk[disease];
-  }
-
-  /**
-   * Get the agent's status for a given disease
-   *
-   * @param disease which disease
-   * @return the agent's status
-   */
-  char get_disease_status (int disease) const {
-    return status[disease];
+  bool is_at_risk(int disease_id) const {
+    return at_risk[disease_id];
   }
 
   /**
@@ -186,75 +173,75 @@ public:
    * @param disease
    * @return the simulation day that this agent became exposed to the disease
    */
-  int get_exposure_date(int disease) const;
+  int get_exposure_date(int disease_id) const;
 
   /**
    * @param disease
    * @return the simulation day that this agent became infectious with the disease
    */
-  int get_infectious_date(int disease) const;
+  int get_infectious_date(int disease_id) const;
 
   /**
    * @param disease
    * @return the simulation day that this agent recovered from the disease
    */
-  int get_recovered_date(int disease) const;
+  int get_recovered_date(int disease_id) const;
 
   /**
    * @param disease the disease to check
    * @return the simulation day that this agent became symptomatic to the disease
    */
-  int get_symptomatic_date(int disease) const;
+  int get_symptomatic_date(int disease_id) const;
 
   /**
    * @param disease the disease to check
    * @return
    */
-  int get_infector(int disease) const;
+  int get_infector(int disease_id) const;
 
   /**
    * @param disease the disease to check
    * @return
    */
-  int get_infected_place(int disease) const;
+  int get_infected_place(int disease_id) const;
 
   /**
    * @param disease the disease to check
    * @return the label of the infected place
    */
-  char * get_infected_place_label(int disease) const;
+  char * get_infected_place_label(int disease_id) const;
 
   /**
    * @param disease the disease to check
    * @return the type of place
    */
-  char get_infected_place_type(int disease) const;
+  char get_infected_place_type(int disease_id) const;
 
   /**
    * @param disease the disease to check
    * @return
    */
-  int get_infectees(int disease) const;
+  int get_infectees(int disease_id) const;
 
   /**
    * @param disease the disease to check
    * @return
    */
-  double get_susceptibility(int disease) const;
+  double get_susceptibility(int disease_id) const;
 
   /**
    * @param disease the disease to check
    * @param day the simulation day
    * @return
    */
-  double get_infectivity(int disease, int day) const;
+  double get_infectivity(int disease_id, int day) const;
 
   /**
    * @param disease the disease to check
    * @return a pointer to the Infection object
    */
-  Infection* get_infection(int disease) const {
-    return infection[disease];
+  Infection* get_infection(int disease_id) const {
+    return infection[disease_id];
   }
 
   /**
@@ -264,7 +251,7 @@ public:
    * @param disease the disease to check
    * @return <code>true</code> if the agent is on Anti-Virals, <code>false</code> otherwise
    */
-  bool is_on_av_for_disease(int day, int disease) const;
+  bool is_on_av_for_disease(int day, int disease_id) const;
 
   /**
    * Infect an agent with a disease
@@ -273,13 +260,13 @@ public:
    * @param disease the disease with which to infect the Person
    * @param transmission a pointer to a Transmission object
    */
-  void infect(Person *infectee, int disease, Transmission *transmission);
+  void infect(Person *infectee, int disease_id, Transmission *transmission);
 
   /**
    * @param disease pointer to a Disease object
    * @param transmission pointer to a Transmission object
    */
-  void getInfected(Disease *disease, Transmission *transmission);
+  void become_exposed(Disease *disease, Transmission *transmission);
 
   //Medication operators
   /**
@@ -356,14 +343,14 @@ public:
    * @param disease the disease to which the agent is suceptible
    * @param multp the multiplier to apply
    */
-  void modify_susceptibility(int disease, double multp);
+  void modify_susceptibility(int disease_id, double multp);
 
   /**
    * Alter the infectivity of the agent to the given disease by a multiplier
    * @param disease the disease with which the agent is infectious
    * @param multp the multiplier to apply
    */
-  void modify_infectivity(int disease, double multp);
+  void modify_infectivity(int disease_id, double multp);
 
   /**
    * Alter the infectious period of the agent for the given disease by a multiplier.
@@ -375,7 +362,7 @@ public:
    * @param multp the multiplier to apply
    * @param cur_day the simulation day
    */
-  void modify_infectious_period(int disease, double multp, int cur_day);
+  void modify_infectious_period(int disease_id, double multp, int cur_day);
 
   /**
    * Alter the symptomatic period of the agent for the given disease by a multiplier.
@@ -386,7 +373,7 @@ public:
    * @param multp the multiplier to apply
    * @param cur_day the simulation day
    */
-  void modify_symptomatic_period(int disease, double multp, int cur_day);
+  void modify_symptomatic_period(int disease_id, double multp, int cur_day);
 
   /**
    * Alter the asymptomatic period of the agent for the given disease by a multiplier.
@@ -397,7 +384,7 @@ public:
    * @param multp the multiplier to apply
    * @param cur_day the simulation day
    */
-  void modify_asymptomatic_period(int disease, double multp, int cur_day);
+  void modify_asymptomatic_period(int disease_id, double multp, int cur_day);
 
   /**
    * Alter the whether or not the agent will develop symptoms.
@@ -409,7 +396,7 @@ public:
    * @param symptoms whether or not the agent is showing symptoms
    * @param cur_day the simulation day
    */
-  void modify_develops_symptoms(int disease, bool symptoms, int cur_day);
+  void modify_develops_symptoms(int disease_id, bool symptoms, int cur_day);
 
 private:
   Person * self;
@@ -420,9 +407,10 @@ private:
   vector < bool > checked_for_av;
   vector < AV_Health * > av_health;
   vector < Vaccine_Health * > vaccine_health;
-  char * status;
   bool * susceptible;
-  bool symptomatic_status;
+  bool * infectious;
+  bool * symptomatic;
+  bool has_symptoms;
   int * infectee_count;
 protected:
   Health() { }

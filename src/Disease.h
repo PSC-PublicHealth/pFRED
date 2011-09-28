@@ -196,11 +196,15 @@ public:
   void become_susceptible(Person *person) { epidemic->become_susceptible(person); }
   void become_unsusceptible(Person *person) { epidemic->become_unsusceptible(person); }
   void become_exposed(Person *person) { epidemic->become_exposed(person); }
-  void become_infectious(Person *person, char status) { epidemic->become_infectious(person, status); }
+  void become_infectious(Person *person, bool symptomatic) { epidemic->become_infectious(person,symptomatic); }
   void become_uninfectious(Person *person) { epidemic->become_uninfectious(person); }
-  void become_symptomatic(Person *person, char status) { epidemic->become_symptomatic(person, status); }
-  void become_removed(Person *person, char status) { epidemic->become_removed(person, status); }
-  void become_immune(Person *person, char status) { epidemic->become_immune(person, status); }
+  void become_symptomatic(Person *person) {epidemic->become_symptomatic(person);}
+  void become_removed(Person *person, bool susceptible, bool infectious, bool symptomatic) {
+    epidemic->become_removed(person,susceptible,infectious,symptomatic);
+  }
+  void become_immune(Person *person, bool susceptible, bool infectious, bool symptomatic) {
+    epidemic->become_immune(person,susceptible,infectious,symptomatic);
+  }
 
 private:
   int id;

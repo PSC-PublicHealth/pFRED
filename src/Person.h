@@ -60,8 +60,15 @@ public:
    * Make this agent unsusceptible to the given disease
    * @param disease the disease to reference
    */
-  void become_unsusceptible(Disease *disease) {
-    health->become_unsusceptible(disease);
+  void become_unsusceptible(Disease *disease){health->become_unsusceptible(disease);}
+
+  /**
+   * Make this agent infected by the given disease
+   * @param disease the disease to reference
+   * @param transmission the transmission event
+   */
+  void become_exposed(Disease *disease, Transmission *transmission) {
+    health->become_exposed(disease, transmission);
   }
 
   /**
@@ -155,13 +162,6 @@ public:
 
   /**
    * @param disease the disease to check
-   * @return the specific Disease's status for this Person
-   * @see Health::get_disease_status(int disease)
-   */
-  char get_disease_status(int disease) const { return health->get_disease_status(disease); }
-
-  /**
-   * @param disease the disease to check
    * @return the specific Disease's susceptibility for this Person
    * @see Health::get_susceptibility(int disease)
    */
@@ -241,7 +241,6 @@ public:
   int addInfected(int disease, vector<int> strains);
   
   void infect(Person *infectee, int disease, Transmission *transmission);
-  void getInfected(Disease *disease, Transmission *transmission);
   void addIncidence(int disease, vector<int> strains);
   void addPrevalence(int disease, vector<int> strains);
   

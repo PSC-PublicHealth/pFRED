@@ -74,11 +74,11 @@ public:
   void become_susceptible(Person *person);
   void become_unsusceptible(Person *person);
   void become_exposed(Person *person);
-  void become_infectious(Person *person, char status);
+  void become_infectious(Person *person, bool symptomatic);
   void become_uninfectious(Person *person);
-  void become_symptomatic(Person *person, char old_status);
-  void become_removed(Person *person, char status);
-  void become_immune(Person *person, char status);
+  void become_symptomatic(Person *person);
+  void become_removed(Person *person, bool susceptible, bool infectious, bool symptomatic);
+  void become_immune(Person *person, bool susceptible, bool infectious, bool symptomatic);
 
   void find_infectious_places(int day, int dis);
   void add_susceptibles_to_infectious_places(int day, int dis);
@@ -122,11 +122,8 @@ private:
   double RR;
   int NR;
   int E_count;
-  int I_count;
-  int i_count;
-  int S_count;
+  int Symp_count;
   int R_count;
-  int r_count;
   int C_count;
   int c_count;
   int M_count;

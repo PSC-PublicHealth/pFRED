@@ -120,10 +120,9 @@ void Activities::update_infectious_activities(int day, int dis) {
   // get list of places to visit today
   update_schedule(day);
 
-  char status = self->get_disease_status(dis);
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     if (favorite_place[i] != NULL && on_schedule[i]) {
-      favorite_place[i]->add_infectious(dis, self, status);
+      favorite_place[i]->add_infectious(dis, self);
     }
   }
 }

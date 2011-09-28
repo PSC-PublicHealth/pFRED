@@ -136,11 +136,11 @@ void Place::add_susceptible(int disease, Person * per) {
   assert (S[disease] == static_cast <int> (susceptibles[disease].size()));
 }
 
-void Place::add_infectious(int disease, Person * per, char status) {
+void Place::add_infectious(int disease, Person * per) {
   infectious[disease].push_back(per);
   I[disease]++;
   assert(I[disease] == static_cast <int> (infectious[disease].size()));
-  if (status == 'I') {
+  if (per->get_health()->is_symptomatic()) {
     Sympt[disease]++;
     cases[disease]++;
     total_cases[disease]++;
@@ -226,9 +226,6 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
 
   if (r < infection_prob) {
     // successful transmission; create a new infection in infectee
-    // Infection * infection = new Infection(disease, infector, infectee, this, day);
-    // infectee->become_exposed(infection);
-    // infector->add_infectee(s);
     Transmission *transmission = new Transmission(infector, this, day);
     infector->infect(infectee, disease_id, transmission);
 
@@ -274,7 +271,7 @@ void Place::spread_infection(int day, int disease_id) {
 
   for (itr = infectious[disease_id].begin(); itr != infectious[disease_id].end(); itr++) {
     Person * infector = *itr;			// infectious indiv
-    assert(infector->get_disease_status(disease_id)=='I'||infector->get_disease_status(disease_id)=='i');
+    assert(infector->get_health()->is_infectious(disease_id));
     
     // get the actual number of contacts to attempt to infect
     int contact_count = get_contact_count(infector,disease_id,day,contact_rate);

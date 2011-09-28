@@ -49,7 +49,7 @@ int AV_Decision_Give_to_Sympt::evaluate(Person* person, int disease, int current
   AV_Manager *avm = dynamic_cast < AV_Manager* > ( policy->get_manager() );
   Antiviral* av = avm->get_current_av();
   double percentage = av->get_percent_symptomatics();
-  if(person->get_health()->get_disease_status(disease) == 'I'){
+  if(person->get_health()->is_symptomatic(disease)){
     person->get_health()->flip_checked_for_av(disease);
     double r = RANDOM(); // This is now a probability <=1.0;
     if( r < percentage ) return 0;

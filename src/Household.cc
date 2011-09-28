@@ -186,7 +186,7 @@ void Household::spread_infection(int day, int disease_id) {
   for (itr = infectious[disease_id].begin(); itr != infectious[disease_id].end(); itr++) {
     
     Person * infector = *itr;			// infectious indiv
-    assert(infector->get_disease_status(disease_id)=='I'||infector->get_disease_status(disease_id)=='i');
+    assert(infector->get_health()->is_infectious(disease_id));
 
     for (int pos = 0; pos < S[disease_id]; pos++) {
       Person * infectee = susceptibles[disease_id][pos];

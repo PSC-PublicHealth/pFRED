@@ -61,7 +61,7 @@ Epidemic::Epidemic(Disease *str, Timestep_Map* _primary_cases_map) {
   total_clinical_incidents = 0;
   rr_index = 0;
   V_count = C_count = c_count = 0;
-  E_count = I_count = i_count = R_count = r_count = M_count = 0;
+  E_count = Symp_count = R_count = M_count = 0;
 }
 
 Epidemic::~Epidemic() {
@@ -73,7 +73,11 @@ void Epidemic::become_susceptible(Person *person) {
 }
 
 void Epidemic::become_unsusceptible(Person *person) {
-  susceptible_list.erase(make_pair(person,person->get_id()));
+  int n = susceptible_list.erase(make_pair(person,person->get_id()));
+  if (n == 0) {
+    printf("WARNING: become_unsusc: persion %d not removed from susceptible_list\n",person->get_id());
+    fflush(stdout);
+  }
 }
 
 void Epidemic::become_exposed(Person *person) {
@@ -83,97 +87,61 @@ void Epidemic::become_exposed(Person *person) {
     exposed_list.push_back(person);
 }
 
-void Epidemic::become_infectious(Person *person, char status) {
+void Epidemic::become_infectious(Person *person, bool symptomatic) {
   E_count--;
   infectious_list.insert(make_pair(person,person->get_id()));
-  if (status == 'I') {
-    I_count++;
-    c_count++;
-  } else {
-    i_count++;
-  }
 }
 
 void Epidemic::become_uninfectious(Person *person) {
-  infectious_list.erase(make_pair(person,person->get_id()));
-}
-
-void Epidemic::become_symptomatic(Person *person, char status) {
-  return;
-  switch (status) {
-  case 'S':
-    Utils::fred_abort("Help! Can't go from Susceptible to Symptomatic! person: %d\n",
-	       person->get_id());
-  case 'E':
-    E_count--;
-    break;
-  case 'i':
-    i_count--;
-    I_count++;
-    break;
-  case 'I':
-    I_count++;
-    break;
-  case 'R':
-    Utils::fred_abort("Help! Can't go from Removed to Symptomatic! person: %d\n",
-	       person->get_id());
-    break;
-  case 'M':
-    Utils::fred_abort("Help! Can't go from Immune to Symptomatic! person: %d\n",
-	       person->get_id());
-    break;
+  int n = infectious_list.erase(make_pair(person,person->get_id()));
+  if (n == 0) {
+    printf("WARNING: become_uninf: persion %d not removed from infectious_list\n",person->get_id());
+    fflush(stdout);
   }
 }
 
-void Epidemic::become_removed(Person *person, char status) {
-  switch (status) {
-  case 'S':
-    susceptible_list.erase(make_pair(person,person->get_id()));
-    break;
-  case 'E':
-    E_count--;
-    break;
-  case 'i':
-    i_count--;
-    infectious_list.erase(make_pair(person,person->get_id()));
-    break;
-  case 'I':
-    I_count--;
-    infectious_list.erase(make_pair(person,person->get_id()));
-    break;
-  case 'R':
-    return;
-    break;
-  case 'M':
-    break;
+void Epidemic::become_symptomatic(Person *person) {
+  Symp_count++;
+  c_count++;
+}
+
+void Epidemic::become_removed(Person *person, bool susceptible, bool infectious, bool symptomatic) {
+  if (susceptible) {
+    int n = susceptible_list.erase(make_pair(person,person->get_id()));
+    if (n == 0) {
+      printf("WARNING: become_removed: persion %d not removed from susceptible_list\n",person->get_id());
+      fflush(stdout);
+    }
+    // else {
+    // printf("OK: become_removed: persion %d removed from susceptible_list\n",person->get_id());
+    // fflush(stdout);
+    // }
   }
+  if (infectious) {
+    int n = infectious_list.erase(make_pair(person,person->get_id()));
+    if (n == 0) {
+      printf("WARNING: become_removed: persion %d not removed from infectious_list\n",person->get_id());
+      fflush(stdout);
+    }
+    // else {
+    // printf("OK: become_removed: persion %d removed from infectious_list\n",person->get_id());
+    // fflush(stdout);
+    // }
+  }
+  if (symptomatic)
+    Symp_count--;
   R_count++;
 }
 
-void Epidemic::become_immune(Person *person, char status) {
-  switch (status) {
-  case 'S':
+void Epidemic::become_immune(Person *person, bool susceptible, bool infectious, bool symptomatic) {
+  if (susceptible)
     susceptible_list.erase(make_pair(person,person->get_id()));
-    break;
-  case 'E':
-    E_count--;
-    break;
-  case 'i':
-    i_count--;
+  if (infectious)
     infectious_list.erase(make_pair(person,person->get_id()));
-    break;
-  case 'I':
-    I_count--;
-    infectious_list.erase(make_pair(person,person->get_id()));
-    break;
-  case 'R':
-    break;
-  case 'M':
-    break;
-  }
+  if (symptomatic)
+    Symp_count--;
   M_count++;
 }
-
 
 void Epidemic::print_stats(int day) {
   if (Global::Verbose>1) {
@@ -214,11 +182,11 @@ void Epidemic::print_stats(int day) {
   }
 
   int S_count = susceptible_list.size();
-  int Icount = infectious_list.size();
+  int I_count = infectious_list.size();
   fprintf(Global::Outfp,
 	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
-	  day, id, S_count, E_count, Icount,
-	  I_count, R_count+r_count, M_count);
+	  day, id, S_count, E_count, I_count,
+	  Symp_count, R_count, M_count);
   fprintf(Global::Outfp,
 	  "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
 	  C_count, N, attack_rate, clinical_incidents,
@@ -233,8 +201,8 @@ void Epidemic::print_stats(int day) {
   if (Global::Verbose) {
     fprintf(Global::Statusfp,
 	    "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
-	    day, id, S_count, E_count, Icount,
-	    I_count, R_count+r_count, M_count);
+	    day, id, S_count, E_count, I_count,
+	    Symp_count, R_count, M_count);
     fprintf(Global::Statusfp,
 	    "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
 	    C_count, N, attack_rate, clinical_incidents,
@@ -367,10 +335,10 @@ void Epidemic::get_primary_infections(int day){
           continue;
         }
 
-        if (person->get_disease_status(id) == 'S') {
+        if (person->get_health()->is_susceptible(id)) {
           Transmission *transmission = new Transmission(NULL, NULL, day);
           transmission->setInitialLoads(disease->getPrimaryLoads(day));
-          person->getInfected(this->disease, transmission);
+          person->become_exposed(this->disease, transmission);
           successes++;
         }
 
