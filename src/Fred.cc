@@ -217,7 +217,8 @@ int main(int argc, char* argv[]) {
     else {
       Global::Cells->quality_control(directory);
     }
-    Global::Pop.get_network_stats(directory);
+    if (Global::Track_network_stats) 
+      Global::Pop.get_network_stats(directory);
     Utils::fred_print_lap_time("quality control");
   }
 

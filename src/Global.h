@@ -78,6 +78,7 @@ class Global {
     static int Track_infection_events;
     static int Track_age_distribution;
     static int Track_household_distribution;
+    static int Track_network_stats;
     static int Verbose;
     static int Debug;
     static int Test;

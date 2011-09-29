@@ -41,6 +41,7 @@ int Global::Enable_Travel = 0;
 int Global::Track_infection_events = 0;
 int Global::Track_age_distribution = 0;
 int Global::Track_household_distribution = 0;
+int Global::Track_network_stats = 0;
 int Global::Verbose = 0;
 int Global::Debug = 0;
 int Global::Test = 0;
@@ -93,6 +94,7 @@ void Global::get_global_parameters() {
   Params::get_param((char *) "tracefile", Global::Tracefilebase);
   Params::get_param((char *) "track_infection_events", &Global::Track_infection_events);
   Params::get_param((char *) "track_age_distribution", &Global::Track_age_distribution);
+  Params::get_param((char *) "track_network_stats", &Global::Track_network_stats);
   Params::get_param((char *) "track_household_distribution", &Global::Track_household_distribution);
   Params::get_param((char *) "vaccine_tracefile", Global::VaccineTracefilebase);
   Params::get_param((char *) "incremental_trace", &Global::Incremental_Trace);
