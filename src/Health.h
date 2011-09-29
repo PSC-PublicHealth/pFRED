@@ -407,11 +407,13 @@ private:
   vector < bool > checked_for_av;
   vector < AV_Health * > av_health;
   vector < Vaccine_Health * > vaccine_health;
+  int * infectee_count;
+  int * susceptible_date;
   bool * susceptible;
   bool * infectious;
   bool * symptomatic;
   bool has_symptoms;
-  int * infectee_count;
+  bool alive;
 protected:
   Health() { }
 };

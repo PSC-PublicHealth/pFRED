@@ -33,7 +33,7 @@
 
 int nantivirals = -1; // This global variable needs to be removed
 char dummy_label[8];
-
+bool recovered_today = false;
 
 Health::Health (Person * person) {
   self = person;
@@ -43,7 +43,9 @@ Health::Health (Person * person) {
   infectious = new bool [Global::Diseases];
   symptomatic = new bool [Global::Diseases];
   infectee_count = new int [Global::Diseases];
+  susceptible_date = new int [Global::Diseases];
   has_symptoms = false;
+  alive = true;
 
   for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
     infection[disease_id] = NULL;
@@ -51,6 +53,7 @@ Health::Health (Person * person) {
     infectious[disease_id] = false;
     symptomatic[disease_id] = false;
     infectee_count[disease_id] = 0;
+    susceptible_date[disease_id] = -1;
     become_susceptible(disease_id);
   }
 
@@ -102,16 +105,45 @@ Health::~Health() {
 }
 
 void Health::become_susceptible(int disease_id) {
-  if (is_susceptible(disease_id))
+  if (susceptible[disease_id])
       return;
+  assert(infection[disease_id] == NULL);
   susceptibility_multp[disease_id] = 1.0;
   susceptible[disease_id] = true;
   Disease * disease = Global::Pop.get_disease(disease_id);
   disease->become_susceptible(self);
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "person %d is now SUSCEPTIBLE for disease %d\n",
+            self->get_id(), disease_id);
+    fflush(Global::Statusfp);
+  }
 }
 
 void Health::become_susceptible(Disease * disease) {
   become_susceptible(disease->get_id());
+}
+
+void Health::become_exposed(Disease *disease, Transmission *transmission) {
+  if (Global::Verbose > 1) {
+    if (!transmission->getInfectedPlace())
+      fprintf(Global::Statusfp, "EXPOSED_DUMMY person %d to disease %d\n",
+	      self->get_id(), disease->get_id());
+    else
+      fprintf(Global::Statusfp, "EXPOSED person %d to disease %d\n",
+	      self->get_id(), disease->get_id());
+  }
+  int disease_id = disease->get_id();
+  infectious[disease_id] = false;
+  symptomatic[disease_id] = false;
+
+  if(infection[disease_id] == NULL) {
+    infection[disease_id] = new Infection(disease, transmission->getInfector(), this->get_self(),
+					 transmission->getInfectedPlace(), transmission->get_exposure_date());
+  }
+
+  Infection *infection_ptr = infection[disease_id];
+  infection_ptr->addTransmission(transmission);
+  disease->become_exposed(self);
 }
 
 void Health::become_unsusceptible(Disease * disease) {
@@ -120,69 +152,16 @@ void Health::become_unsusceptible(Disease * disease) {
       return;
   susceptible[disease_id] = false;
   disease->become_unsusceptible(self);
-}
-
-void Health::recover(Disease * disease) {
-  int disease_id = disease->get_id();
-  become_removed(disease_id);
-}
-
-void Health::become_removed(int disease_id) {
-  Disease * disease = Global::Pop.get_disease(disease_id);
-  disease->become_removed(self,susceptible[disease_id],
-			  infectious[disease_id],
-			  symptomatic[disease_id]);
-  susceptible[disease_id] = false;
-  infectious[disease_id] = false;
-  symptomatic[disease_id] = false;
-}
-
-void Health::become_immune(Disease *disease) {
-  int disease_id = disease->get_id();
-  disease->become_immune(self,susceptible[disease_id],
-			  infectious[disease_id],
-			  symptomatic[disease_id]);
-  susceptible[disease_id] = false;
-  infectious[disease_id] = false;
-  symptomatic[disease_id] = false;
-}
-
-void Health::update(int day) {
-
-  // if deceased, clear health status
-  if (self->is_deceased()) {
-    for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
-      become_removed(disease_id);
-    }
-    return;
-  }
-
-  // update vaccine status
-  if (takes_vaccine) {
-    int size = (int) vaccine_health.size();
-    for (int i = 0; i < size; i++)
-      vaccine_health[i]->update(day, self->get_age());
-  }
-
-  // update each infection
-  has_symptoms = false;
-  for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
-    if (infection[disease_id] != NULL)
-      infection[disease_id]->update(day);
-    if (symptomatic[disease_id]) has_symptoms = true;
-  }
-
-  // update antiviral status
-  if (takes_av) {
-    int size = av_health.size();
-    for(int i = 0; i < size; i++)
-      av_health[i]->update(day);
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "person %d is now UNSUSCEPTIBLE for disease %d\n",
+            self->get_id(), disease_id);
+    fflush(Global::Statusfp);
   }
 }
 
 void Health::become_infectious(Disease * disease) {
-  int disease_id = disease->get_id();
   assert(infection[disease_id] != NULL);
+  int disease_id = disease->get_id();
   infectious[disease_id] = true;
   disease->become_infectious(self);
   if (Global::Verbose > 1) {
@@ -193,8 +172,8 @@ void Health::become_infectious(Disease * disease) {
 }
 
 void Health::become_symptomatic(Disease *disease) {
-  int disease_id = disease->get_id();
   assert(infection[disease_id] != NULL);
+  int disease_id = disease->get_id();
   if (symptomatic[disease_id])
     return;
   symptomatic[disease_id] = true;
@@ -207,6 +186,104 @@ void Health::become_symptomatic(Disease *disease) {
   }
 }
 
+
+void Health::recover(Disease * disease) {
+  assert(infection[disease_id] != NULL);
+  int disease_id = disease->get_id();
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "person %d is now RECOVERED for disease %d\n",
+            self->get_id(), disease_id);
+    fflush(Global::Statusfp);
+  }
+  become_removed(disease_id);
+  recovered_today = true;
+}
+
+void Health::become_removed(int disease_id) {
+  Disease * disease = Global::Pop.get_disease(disease_id);
+  disease->become_removed(self,susceptible[disease_id],
+			  infectious[disease_id],
+			  symptomatic[disease_id]);
+  susceptible[disease_id] = false;
+  infectious[disease_id] = false;
+  symptomatic[disease_id] = false;
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "person %d is now REMOVED for disease %d\n",
+            self->get_id(), disease_id);
+    fflush(Global::Statusfp);
+  }
+}
+
+void Health::become_immune(Disease *disease) {
+  int disease_id = disease->get_id();
+  disease->become_immune(self,susceptible[disease_id],
+			  infectious[disease_id],
+			  symptomatic[disease_id]);
+  susceptible[disease_id] = false;
+  infectious[disease_id] = false;
+  symptomatic[disease_id] = false;
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "person %d is now IMMUNE for disease %d\n",
+            self->get_id(), disease_id);
+    fflush(Global::Statusfp);
+  }
+}
+
+void Health::update(int day) {
+  if (alive == false) return;
+
+  // if deceased, clear health status
+  if (self->is_deceased()) {
+    for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
+      become_removed(disease_id);
+    }
+    alive = false;
+    return;
+  }
+
+  // update vaccine status
+  if (takes_vaccine) {
+    int size = (int) vaccine_health.size();
+    for (int i = 0; i < size; i++)
+      vaccine_health[i]->update(day, self->get_age());
+  }
+
+  // check if agent has symptons due to any disease
+  has_symptoms = false;
+
+  // update each infection
+  for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
+
+    // set a flag to detect call to recover()
+    recovered_today = false;
+
+    // update the infection (if it exists)
+    if (infection[disease_id] != NULL)
+      infection[disease_id]->update(day);
+
+    // if the infection_update called recover(), it is now safe to
+    // collect the susceptible date and delete the Infection object
+    if (recovered_today) {
+      susceptible_date[disease_id] = infection[disease_id]->get_susceptible_date();
+      delete infection[disease_id];
+      infection[disease_id] = NULL;
+    }
+
+    // check for susceptibility due to loss of immunity
+    if (day == susceptible_date[disease_id])
+      become_susceptible(disease_id);
+
+    // check if agent has symptons due to any disease
+    if (symptomatic[disease_id]) has_symptoms = true;
+  }
+
+  // update antiviral status
+  if (takes_av) {
+    int size = av_health.size();
+    for(int i = 0; i < size; i++)
+      av_health[i]->update(day);
+  }
+}
 
 void Health::declare_at_risk(Disease* disease) {
   int disease_id = disease->get_id();
@@ -407,28 +484,5 @@ void Health::infect(Person *infectee, int disease_id, Transmission *transmisison
 	    self->get_id(), infectee->get_id(), infectee_count[disease_id]);
     fflush(Global::Statusfp);
   }
-}
-
-void Health::become_exposed(Disease *disease, Transmission *transmission) {
-  if (Global::Verbose > 1) {
-    if (!transmission->getInfectedPlace())
-      fprintf(Global::Statusfp, "EXPOSED_DUMMY person %d to disease %d\n",
-	      self->get_id(), disease->get_id());
-    else
-      fprintf(Global::Statusfp, "EXPOSED person %d to disease %d\n",
-	      self->get_id(), disease->get_id());
-  }
-  int disease_id = disease->get_id();
-  infectious[disease_id] = false;
-  symptomatic[disease_id] = false;
-
-  if(infection[disease_id] == NULL) {
-    infection[disease_id] = new Infection(disease, transmission->getInfector(), this->get_self(),
-					 transmission->getInfectedPlace(), transmission->get_exposure_date());
-  }
-
-  Infection *infection_ptr = infection[disease_id];
-  infection_ptr->addTransmission(transmission);
-  disease->become_exposed(self);
 }
 
