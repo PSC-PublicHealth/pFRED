@@ -160,8 +160,8 @@ void Health::become_unsusceptible(Disease * disease) {
 }
 
 void Health::become_infectious(Disease * disease) {
-  assert(infection[disease_id] != NULL);
   int disease_id = disease->get_id();
+  assert(infection[disease_id] != NULL);
   infectious[disease_id] = true;
   disease->become_infectious(self);
   if (Global::Verbose > 1) {
@@ -172,8 +172,8 @@ void Health::become_infectious(Disease * disease) {
 }
 
 void Health::become_symptomatic(Disease *disease) {
-  assert(infection[disease_id] != NULL);
   int disease_id = disease->get_id();
+  assert(infection[disease_id] != NULL);
   if (symptomatic[disease_id])
     return;
   symptomatic[disease_id] = true;
@@ -188,8 +188,8 @@ void Health::become_symptomatic(Disease *disease) {
 
 
 void Health::recover(Disease * disease) {
-  assert(infection[disease_id] != NULL);
   int disease_id = disease->get_id();
+  assert(infection[disease_id] != NULL);
   if (Global::Verbose > 1) {
     fprintf(Global::Statusfp, "person %d is now RECOVERED for disease %d\n",
             self->get_id(), disease_id);
