@@ -275,11 +275,6 @@ public:
   void update_activity_profile() { activities->update_profile(); }
 
   /**
-   * @see Activities::withdraw()
-   */
-  void withdraw_from_activities() { activities->withdraw(); }
-
-  /**
    * @see Activities::update_household_mobility()
    */
   void update_household_mobility() { activities->update_household_mobility(); }
@@ -438,6 +433,8 @@ public:
    * @see Activities::get_travel_status()
    */
   bool get_travel_status(){ return activities->get_travel_status(); }
+
+  void terminate();
 
 private:
   int idx;              // person id

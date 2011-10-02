@@ -398,6 +398,8 @@ public:
    */
   void modify_develops_symptoms(int disease_id, bool symptoms, int cur_day);
 
+  void terminate();
+
 private:
   Person * self;
   Infection **infection;

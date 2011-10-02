@@ -105,6 +105,8 @@ public:
    */
   int get_init_profession()     { return init_profession; }
 	
+  void terminate(){}
+
 private:
   Person *self;                // Pointer to the person class belongs
   int init_age;                // Initial age of the agent

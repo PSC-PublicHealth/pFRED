@@ -115,10 +115,10 @@ void Population::add_person(Person * person) {
 
 void Population::delete_person(Person * person) {
   map<Person *,int>::iterator it;
-  // printf("POP_MAP DELETE: %d\n", person->get_id());
+  Utils::fred_verbose(1,"DELETE PERSON: %d\n", person->get_id());
   it = pop_map.find(person);
   if (it == pop_map.end()) {
-    printf("Help! person %d deleted, but not in the pop_map\n", person->get_id());
+    Utils::fred_verbose(0,"Help! person %d deleted, but not in the pop_map\n", person->get_id());
   }
   assert(it != pop_map.end());
   int n = (*it).second;
@@ -129,11 +129,12 @@ void Population::delete_person(Person * person) {
   pop_map.erase(it);
   pop_map[last] = n;
   if ((unsigned) pop_size != pop.size()) {
-    printf("pop_size = %d  pop.size() = %d\n",
+    Utils::fred_verbose(0,"pop_size = %d  pop.size() = %d\n",
 	   pop_size, (int) pop.size());
   }
   assert((unsigned) pop_size == pop.size());
-  person->withdraw_from_activities();
+  person->terminate();
+  Utils::fred_verbose(1,"DELETED PERSON: %d\n", person->get_id());
   delete person;
   // graveyard.push_back(person);
 }
@@ -299,33 +300,11 @@ void Population::update(int day) {
   if (Global::Enable_Deaths) death_list.clear();
   if (Global::Enable_Births) maternity_list.clear();
 
-  if (Global::Enable_Mobility) {
-    // update household mobility activity on July 1
-    if (Date::match_pattern(day, "07-01-*")) {
-      for (int p = 0; p < pop_size; p++) {
-	pop[p]->update_household_mobility();
-      }
-    }
-  }
-
-  // update activity profiles on July 1
-    if (Global::Enable_Aging && Date::match_pattern(day, "07-01-*")) {
-    for (int p = 0; p < pop_size; p++) {
-      pop[p]->update_activity_profile();
-    }
-  }
-
   // update everyone's demographics
   for (int p = 0; p < pop_size; p++) {
     pop[p]->update_demographics(day);
   }
   // Utils::fred_print_wall_time("day %d update_demographics", day);
-
-  // update everyone's health status
-  for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_health(day);
-  }
-  // Utils::fred_print_wall_time("day %d update_health", day);
 
   if (Global::Enable_Births) {
     // add the births to the population
@@ -344,7 +323,7 @@ void Population::update(int day) {
     }
   }
 
-  if (Global::Enable_Births) {
+  if (Global::Enable_Deaths) {
     // remove the dead from the population
     size_t deaths = death_list.size();
     for (size_t i = 0; i < deaths; i++) {
@@ -361,6 +340,28 @@ void Population::update(int day) {
     if (Global::Verbose > 0) {
       fprintf(Global::Statusfp, "deaths = %d\n", (int)deaths);
       fflush(Global::Statusfp);
+    }
+  }
+
+  // update everyone's health status
+  for (int p = 0; p < pop_size; p++) {
+    pop[p]->update_health(day);
+  }
+  // Utils::fred_print_wall_time("day %d update_health", day);
+
+  if (Global::Enable_Mobility) {
+    // update household mobility activity on July 1
+    if (Date::match_pattern(day, "07-01-*")) {
+      for (int p = 0; p < pop_size; p++) {
+	pop[p]->update_household_mobility();
+      }
+    }
+  }
+
+  // update activity profiles on July 1
+    if (Global::Enable_Aging && Date::match_pattern(day, "07-01-*")) {
+    for (int p = 0; p < pop_size; p++) {
+      pop[p]->update_activity_profile();
     }
   }
 

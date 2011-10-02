@@ -39,6 +39,10 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   primary_cases_map = _primary_cases_map;
   primary_cases_map->print(); 
   new_cases = new int [Global::Days];
+  infectees = new int [Global::Days];
+  for (int i = 0; i < Global::Days; i++) {
+    new_cases[i] = infectees[i] = 0;
+  }
 
   int places = Global::Places.get_number_of_places();
   inf_households.reserve(places);
@@ -47,7 +51,6 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   inf_schools.reserve(places);
   inf_workplaces.reserve(places);
   inf_offices.reserve(places);
-  exposed_list.clear();
   susceptible_list.clear();
   infectious_list.clear();
   inf_households.clear();
@@ -58,10 +61,12 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   inf_offices.clear();
   attack_rate = 0.0;
   total_incidents = 0;
+  clinical_incidents = 0;
   total_clinical_incidents = 0;
-  rr_index = 0;
-  V_count = C_count = c_count = 0;
-  E_count = Symp_count = R_count = M_count = 0;
+  incident_infections = 0;
+  V_count = 0;
+  symptomatic_count = 0;
+  exposed_count = removed_count = immune_count = 0;
 }
 
 Epidemic::~Epidemic() {
@@ -75,62 +80,54 @@ void Epidemic::become_susceptible(Person *person) {
 void Epidemic::become_unsusceptible(Person *person) {
   int n = susceptible_list.erase(make_pair(person,person->get_id()));
   if (n == 0) {
-    printf("WARNING: become_unsusc: persion %d not removed from susceptible_list\n",person->get_id());
-    fflush(stdout);
+    Utils::fred_verbose(0,"WARNING: become_unsusc: person %d not removed from susceptible_list\n",person->get_id());
   }
 }
 
 void Epidemic::become_exposed(Person *person) {
-  E_count++;
-  C_count++;
-  if (Global::RR_delay)
-    exposed_list.push_back(person);
+  exposed_count++;
+  incident_infections++;
 }
 
 void Epidemic::become_infectious(Person *person) {
-  E_count--;
+  exposed_count--;
   infectious_list.insert(make_pair(person,person->get_id()));
 }
 
 void Epidemic::become_uninfectious(Person *person) {
   int n = infectious_list.erase(make_pair(person,person->get_id()));
   if (n == 0) {
-    printf("WARNING: become_uninf: persion %d not removed from infectious_list\n",person->get_id());
-    fflush(stdout);
+    Utils::fred_verbose(0,"WARNING: become_uninf: person %d not removed from infectious_list\n",person->get_id());
   }
 }
 
 void Epidemic::become_symptomatic(Person *person) {
-  Symp_count++;
-  c_count++;
+  symptomatic_count++;
+  clinical_incidents++;
 }
 
 void Epidemic::become_removed(Person *person, bool susceptible, bool infectious, bool symptomatic) {
   if (susceptible) {
     int n = susceptible_list.erase(make_pair(person,person->get_id()));
     if (n == 0) {
-      printf("WARNING: become_removed: persion %d not removed from susceptible_list\n",person->get_id());
-      fflush(stdout);
+      Utils::fred_verbose(0,"WARNING: become_removed: person %d not removed from susceptible_list\n",person->get_id());
     }
-    // else {
-    // printf("OK: become_removed: persion %d removed from susceptible_list\n",person->get_id());
-    // fflush(stdout);
-    // }
+    else {
+      Utils::fred_verbose(1,"OK: become_removed: person %d removed from susceptible_list\n",person->get_id());
+    }
   }
   if (infectious) {
     int n = infectious_list.erase(make_pair(person,person->get_id()));
     if (n == 0) {
-      printf("WARNING: become_removed: persion %d not removed from infectious_list\n",person->get_id());
-      fflush(stdout);
+      Utils::fred_verbose(0,"WARNING: become_removed: person %d not removed from infectious_list\n",person->get_id());
     }
-    // else {
-    // printf("OK: become_removed: persion %d removed from infectious_list\n",person->get_id());
-    // fflush(stdout);
-    // }
+    else {
+      Utils::fred_verbose(1,"OK: become_removed: person %d removed from infectious_list\n",person->get_id());
+    }
   }
   if (symptomatic)
-    Symp_count--;
-  R_count++;
+    symptomatic_count--;
+  removed_count++;
 }
 
 void Epidemic::become_immune(Person *person, bool susceptible, bool infectious, bool symptomatic) {
@@ -139,24 +136,18 @@ void Epidemic::become_immune(Person *person, bool susceptible, bool infectious, 
   if (infectious)
     infectious_list.erase(make_pair(person,person->get_id()));
   if (symptomatic)
-    Symp_count--;
-  M_count++;
+    symptomatic_count--;
+  immune_count++;
 }
 
 void Epidemic::print_stats(int day) {
-  if (Global::Verbose>1) {
-    fprintf(Global::Statusfp, "epidemic update stats\n");
-    fflush(Global::Statusfp);
-  }
+  Utils::fred_verbose(1, "epidemic update stats\n");
 
   if (day == 0) {
     N_init = N = disease->get_population()->get_pop_size();
   }
 
-  clinical_incidents = c_count;
-  incident_infections = C_count;
   vaccine_acceptance = V_count;
-  V_count = 0;
   new_cases[day] = incident_infections;
   total_incidents += incident_infections;
   total_clinical_incidents += clinical_incidents;
@@ -165,32 +156,26 @@ void Epidemic::print_stats(int day) {
 
   // get reproductive rate for the cohort exposed RR_delay days ago
   // unless RR_delay == 0
-  NR = 0; // size of the cohort exposed on a single day (namely, rr_day)
   RR = 0.0;	    // reproductive rate for a fixed cohort of infectors
+  cohort_size = 0; // size of the cohort exposed on cohort_day
   if (0 < Global::RR_delay && Global::RR_delay <= day) {
-    int rr_day = day - Global::RR_delay;      // exposure day for cohort
-    NR = new_cases[rr_day];			// size of cohort
-    if (NR > 0) {	    // compute reproductive rate for this cohort
-      int rr_count = 0;		 // number of infectees from this cohort
-      // count the total infectees from this cohort
-      for (int i = rr_index; i < rr_index + NR; i++) {
-	rr_count += exposed_list[i]->get_infectees(id);
-      }
-      RR = (double)rr_count / (double)NR;	// reproductive rate
+    int cohort_day = day - Global::RR_delay;  // exposure day for cohort
+    cohort_size = new_cases[cohort_day];	// size of cohort
+    if (cohort_size > 0) {  // compute reproductive rate for this cohort
+      RR = (double)infectees[cohort_day] /(double)cohort_size;
     }
-    rr_index += NR;			   // advance to the next cohort
   }
 
-  int S_count = susceptible_list.size();
-  int I_count = infectious_list.size();
+  int susceptible_count = susceptible_list.size();
+  int infectious_count = infectious_list.size();
   fprintf(Global::Outfp,
 	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
-	  day, id, S_count, E_count, I_count,
-	  Symp_count, R_count, M_count);
+	  day, id, susceptible_count, exposed_count, infectious_count,
+	  symptomatic_count, removed_count, immune_count);
   fprintf(Global::Outfp,
 	  "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
-	  C_count, N, attack_rate, clinical_incidents,
-	  vaccine_acceptance, RR,NR, clinical_attack_rate);
+	  incident_infections, N, attack_rate, clinical_incidents,
+	  vaccine_acceptance, RR,cohort_size, clinical_attack_rate);
   fprintf(Global::Outfp, "%s %s Year %d Week %d\n",
       Global::Sim_Date->get_day_of_week_string(day).c_str(),
       Global::Sim_Date->get_YYYYMMDD(day).c_str(),
@@ -201,12 +186,12 @@ void Epidemic::print_stats(int day) {
   if (Global::Verbose) {
     fprintf(Global::Statusfp,
 	    "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
-	    day, id, S_count, E_count, I_count,
-	    Symp_count, R_count, M_count);
+	    day, id, susceptible_count, exposed_count, infectious_count,
+	    symptomatic_count, removed_count, immune_count);
     fprintf(Global::Statusfp,
 	    "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
-	    C_count, N, attack_rate, clinical_incidents,
-	    vaccine_acceptance, RR,NR, clinical_attack_rate);
+	    incident_infections, N, attack_rate, clinical_incidents,
+	    vaccine_acceptance, RR,cohort_size, clinical_attack_rate);
     fprintf(Global::Statusfp, "%s %s Year %d Week %d\n",
       Global::Sim_Date->get_day_of_week_string(day).c_str(),
       Global:: Sim_Date->get_YYYYMMDD(day).c_str(),
@@ -215,9 +200,9 @@ void Epidemic::print_stats(int day) {
     fflush(Global::Statusfp);
   }
   // prepare for next day
-  C_count = c_count = 0;
+  incident_infections = clinical_incidents = 0;
+  V_count = 0;
 }
-
 
 
 void Epidemic::add_infectious_place(Place *place, char type) {
@@ -436,12 +421,12 @@ void Epidemic::transmit(int day){
 }
 
 void Epidemic::update(int day) {
-  for (int dis = 0; dis < Global::Diseases; dis++) {
-    Disease * disease = Global::Pop.get_disease(dis);
+  for (int d = 0; d < Global::Diseases; d++) {
+    Disease * disease = Global::Pop.get_disease(d);
     Epidemic * epidemic = disease->get_epidemic();
-    epidemic->find_infectious_places(day, dis);
-    epidemic->add_susceptibles_to_infectious_places(day, dis);
-    disease->transmit(day);
+    epidemic->find_infectious_places(day, d);
+    epidemic->add_susceptibles_to_infectious_places(day, d);
+    epidemic->transmit(day);
   }
 }
 
@@ -480,3 +465,4 @@ void Epidemic::add_susceptibles_to_infectious_places(int day, int dis) {
     fflush(Global::Statusfp);
   }
 }
+

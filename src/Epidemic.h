@@ -82,6 +82,7 @@ public:
 
   void find_infectious_places(int day, int dis);
   void add_susceptibles_to_infectious_places(int day, int dis);
+  void increment_infectee_count(int day) { infectees[day]++; }
 
   // static methods
   static void update(int day);
@@ -100,9 +101,9 @@ private:
     }
   };
 
+  Timestep_Map* primary_cases_map;
   set <person_pair, person_pair_comparator> susceptible_list;
   set <person_pair, person_pair_comparator> infectious_list;
-  vector <Person *> exposed_list;
   vector <Place *> inf_households;
   vector <Place *> inf_neighborhoods;
   vector <Place *> inf_classrooms;
@@ -111,22 +112,19 @@ private:
   vector <Place *> inf_offices;
   double attack_rate;
   double clinical_attack_rate;
-  Timestep_Map* primary_cases_map;
   int clinical_incidents;
   int total_clinical_incidents;
   int incident_infections;
   int total_incidents;
   int vaccine_acceptance;
   int * new_cases;
-  int rr_index;
-  double RR;
-  int NR;
-  int E_count;
-  int Symp_count;
-  int R_count;
-  int C_count;
-  int c_count;
-  int M_count;
+  int * infectees;
+  double RR;					// reproductive rate
+  int cohort_size;
+  int exposed_count;
+  int symptomatic_count;
+  int removed_count;
+  int immune_count;
   map<int, int> incidence;
   map<int, int> prevalence;
 };

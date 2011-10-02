@@ -12,7 +12,7 @@
 #include "Fred.h"
 #include "Utils.h"
 #include "Global.h"
-#include "Disease.h"
+// #include "Disease.h"
 #include "Population.h"
 #include "Place_List.h"
 #include "Grid.h"
@@ -250,7 +250,7 @@ int main(int argc, char* argv[]) {
     Utils::fred_print_lap_time("day %d update population", day);
 
     Epidemic::update(day);
-    Utils::fred_print_lap_time("day %d update epidemic", day);
+    Utils::fred_print_lap_time("day %d update epidemics", day);
 
     Global::Pop.report(day);
     Utils::fred_print_lap_time("day %d report population", day);

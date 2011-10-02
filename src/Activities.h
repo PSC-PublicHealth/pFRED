@@ -130,7 +130,7 @@ public:
   /**
    * Unenroll from all the favorite places
    */
-  void withdraw();
+  void terminate();
 
   /**
    * Increments the incidence count for a given disease and its strains for all of the agent's favorite places

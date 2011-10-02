@@ -219,3 +219,10 @@ string Person::to_string() {
 
   return tmp_string_stream.str();
 }
+
+void Person::terminate() {
+  behavior->terminate();
+  activities->terminate();
+  health->terminate();
+  demographics->terminate();
+}

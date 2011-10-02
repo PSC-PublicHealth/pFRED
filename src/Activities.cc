@@ -545,7 +545,7 @@ void Activities::read_init_files() {
 }
 
 
-void Activities::withdraw() {
+void Activities::terminate() {
   // unenroll from all the favorite places
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     if (favorite_place[i] != NULL) {

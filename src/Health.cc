@@ -477,8 +477,10 @@ bool Health::is_on_av_for_disease(int day, int d) const {
 
 
 void Health::infect(Person *infectee, int disease_id, Transmission *transmisison) {
+  Disease * disease = Global::Pop.get_disease(disease_id);
   infection[disease_id]->transmit(infectee, transmisison);
   infectee_count[disease_id]++;
+   disease->increment_infectee_count(infection[disease_id]->get_exposure_date());
   if (Global::Verbose > 1) {
     fprintf(Global::Statusfp, "person %d infected person %d infectees = %d\n",
 	    self->get_id(), infectee->get_id(), infectee_count[disease_id]);
@@ -486,3 +488,8 @@ void Health::infect(Person *infectee, int disease_id, Transmission *transmisison
   }
 }
 
+void Health::terminate() {
+  for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
+    become_removed(disease_id);
+  }
+}

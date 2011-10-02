@@ -49,14 +49,6 @@ public:
    */
   void print();
 
-  /**
-   * Perform the daily update for this object
-   *
-   * @param day the simulation day
-   */
-  void update(int day){ epidemic->update(day); }
-  void transmit(int day) { epidemic->transmit(day); }
-
   // The methods draw from the underlying distributions to randomly determine some aspect of the infection
   // have been moved to the DefaultIntraHost class
 
@@ -205,6 +197,8 @@ public:
   void become_immune(Person *person, bool susceptible, bool infectious, bool symptomatic) {
     epidemic->become_immune(person,susceptible,infectious,symptomatic);
   }
+
+  void increment_infectee_count(int day) { epidemic->increment_infectee_count(day); }
 
 private:
   int id;

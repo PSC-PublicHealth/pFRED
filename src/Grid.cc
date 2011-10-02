@@ -330,7 +330,7 @@ void Grid::select_emigrants(int day) {
       // unenroll for all favorite places, including the house
       printf("person_to_emigrate = %d  age = %d\n", emigrant->get_id(), emigrant->get_age()); fflush(stdout);
       printf("deleting from population\n"); fflush(stdout);
-      // remove from population after withdrawing from activities
+      // remove from population
       Global::Pop.delete_person(emigrant);
       printf("deleted from population\n"); fflush(stdout);
       people_removed++;
