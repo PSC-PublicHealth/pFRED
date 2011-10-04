@@ -113,6 +113,7 @@ void Place::update(int day) {
     infectious[d].clear();
     Sympt[d] = S[d] = I[d] = 0;
     incidence[d].clear();
+    prevalence[d].clear();
   }
 }
 
@@ -317,6 +318,7 @@ void Place::modifyIncidenceCount(int disease_id, vector<int> strains, int incr) 
 void Place::modifyPrevalenceCount(int disease_id, vector<int> strains, int incr) {
   map<int, int>& prev = prevalence[disease_id];
   for(int s=0; s < (int) strains.size(); s++) {
+    if(prev.find(strains[s]) == prev.end()) prev[strains[s]] = 0; 
     prev[strains[s]] += 1;
   }
 }
