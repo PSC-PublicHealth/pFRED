@@ -312,6 +312,11 @@ void Population::update(int day) {
     for (size_t i = 0; i < births; i++) {
       Person * baby = maternity_list[i]->give_birth(day);
       add_person(baby);
+      if(vacc_manager->do_vaccination()){
+	if(Global::Debug > 1)
+	  fprintf(Global::Statusfp,"Adding %d to Vaccine Queue\n",baby->get_id());
+	vacc_manager->add_to_queue(baby);
+      }
       int age_lookup = maternity_list[i]->get_age();
       if (age_lookup > Demographics::MAX_AGE)
 	age_lookup = Demographics::MAX_AGE;
@@ -336,6 +341,11 @@ void Population::update(int day) {
       else
 	death_count_male[age_lookup]++;
       delete_person(death_list[i]);
+      if(vacc_manager->do_vaccination()){
+	if(Global::Debug > 1)
+	  fprintf(Global::Statusfp,"Removing %d from Vaccine Queue\n", death_list[i]->get_id());
+	vacc_manager->remove_from_queue(death_list[i]);
+      }
     }
     if (Global::Verbose > 0) {
       fprintf(Global::Statusfp, "deaths = %d\n", (int)deaths);

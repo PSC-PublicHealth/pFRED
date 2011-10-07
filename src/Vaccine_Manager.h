@@ -55,10 +55,12 @@ public:
   // Vaccination Specific Procedures
   void fill_queues();
   void vaccinate(int day);
-  void add_to_priority_queue_random(Person* person);
-  void add_to_regular_queue_random(Person* person);
-  void add_to_priority_queue_begin(Person* person);
-  void add_to_priority_queue_end(Person* person);
+  void add_to_queue(Person* person);                 //Adds person to queue based on current policies
+  void remove_from_queue(Person* person);            //Remove person from the vaccine queue
+  void add_to_priority_queue_random(Person* person); //Adds person to the priority queue in a random spot
+  void add_to_regular_queue_random(Person* person);  //Adds person to the regular queue in a random spot
+  void add_to_priority_queue_begin(Person* person);  //Adds person to the beginning of the priority queue
+  void add_to_priority_queue_end(Person* person);    //Adds person to the end of the priority queue
 
   //Paramters Access Members
   int get_vaccine_priority_age_low()  const {return vaccine_priority_age_low;}
@@ -78,7 +80,6 @@ private:
   
   //Parameters from Input 
   bool   do_vacc;                         //Is Vaccination being performed
-  int    vaccine_priority_scheme;         //Priority policy to use (see defines above)
   bool   vaccine_priority_only;           //True - Vaccinate only the priority
   
   int vaccine_priority_age_low;           //Age specific priority
