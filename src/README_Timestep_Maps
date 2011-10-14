@@ -20,7 +20,7 @@ Multistrain Timestep Map input format:
 
 "#line_format"
 
-The first line of the timestep map file specifies the format to be used.  Currently "#line_format" is the only supported format.  Future work may allow for some type of structered (xml, json) format to permit more detailed specification of seeding behavior.  
+The first line of the timestep map file specifies the format to be used.  Currently "#line_format" is the only supported format.  Future work may allow for some type of structered (key = value) format to permit more detailed specification of seeding behavior.  
 
 Any line beginning with "#" is interpreted as a comment and ignored.  Every other line is interpreted as a seeding instruction and expected to follow the format:
 
@@ -39,13 +39,13 @@ The "attempts" field determines the number of seeding attempts for the given ran
 Optional Fields:
 ---------------
 
-The "strain" field gives the numeric id of the strain to be seeded for this timestep.  If the strain field is not given, all seeds will strain "0".
+The "strain" field gives the numeric id of the strain to be seeded for this timestep.  If the strain field is not given, all seeds be will strain "0".
 
 The "prob" field can be used to introduce some randmoness into the number of seeding events attempted at the time step.  With probability 1-"prob" each of the attempts specified by "attempt" will be skipped.
 
 The "min" field can be used to ensure that a minimum number of attempts actually result in transmission.  If specified, individuals will continue (1000 additional times) to be selected from the population until "min" number of successful transmissions have been created.  If 1000 additional selections from the population are insufficient to create the specified minimum number of transmissions, a warning is given and execution of the program continues.
 
-The geographic area from which individuals are selected can be specified by giving a the coordinates of a point ("lat", "lon") and a "radius" specified in kilometers.  When enabled, random sampling is restricted t0 only those individuals whose households are located within the specified area. 
+The geographic area from which individuals are selected can be specified by giving the coordinates of a point ("lat", "lon") and a "radius" specified in kilometers.  When enabled, random sampling is restricted t0 only those individuals whose households are located within the specified area. 
 
 Additional Notes:
 ----------------
