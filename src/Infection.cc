@@ -138,10 +138,6 @@ void Infection::update(int today) {
     host->recover(disease);
   }
 
-  if (today == get_susceptible_date()) {
-    host->become_susceptible(disease);
-  }
-
   if (today == get_unsusceptible_date()) {
     host->become_unsusceptible(disease);
     isSusceptible = false;
