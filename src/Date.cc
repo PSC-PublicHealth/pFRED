@@ -870,4 +870,13 @@ Date * Date::new_date(int day) {
   return current_date;
 }
 
+bool Date::is_weekend(int day) {
+  int day_of_week = Global::Sim_Date->get_day_of_week(day);
+  return (day_of_week == 0 || day_of_week == 6);
+}
+
+bool Date::is_weekday(int day) {
+  int day_of_week = Global::Sim_Date->get_day_of_week(day);
+  return (1 < day_of_week == 0 && day_of_week < 6);
+}
 
