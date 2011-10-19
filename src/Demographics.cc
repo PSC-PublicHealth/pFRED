@@ -192,38 +192,40 @@ void Demographics::update(int day) {
     }
   }
 
-  //The age to look up should be an integer between 0 and the MAX_PREGNANCY_AGE
-  age_lookup = (age <= Demographics::MAX_PREGNANCY_AGE ? age : Demographics::MAX_PREGNANCY_AGE);
+  if (Global::Enable_Births) {
 
-  //Is this your day to conceive?
-  if (this->sex == 'F' && age <= MAX_PREGNANCY_AGE &&
-      !this->pregnant &&
-      this->conception_date == NULL &&
-      this->due_date == NULL &&
-      URAND(0.0, 1.0) <= Demographics::age_daily_birth_rate[age]) {
-    this->conception_date = new Date(cur_year, cur_month, cur_day_of_month);
-    this->due_date = new Date(cur_year, cur_month, cur_day_of_month);
-    double random_due_date = draw_normal(Demographics::MEAN_PREG_DAYS, Demographics::STDDEV_PREG_DAYS);
-    this->due_date->advance((int)(random_due_date + 0.5)); //round the random_due_date
-    this->pregnant = true;
-  }
+    //The age to look up should be an integer between 0 and the MAX_PREGNANCY_AGE
+    age_lookup = (age <= Demographics::MAX_PREGNANCY_AGE ? age : Demographics::MAX_PREGNANCY_AGE);
 
-  //Is this your day to give birth
-  if(Global::Enable_Births &&
-     this->sex == 'F' &&
-     this->pregnant &&
-     this->due_date != NULL &&
-     this->due_date->get_year() == cur_year &&
-     this->due_date->get_month() == cur_month &&
-     this->due_date->get_day_of_month() == cur_day_of_month) {
-    if (this->conception_date != NULL) {
-      delete this->conception_date;
-      this->conception_date = NULL;
+    //Is this your day to conceive?
+    if (this->sex == 'F' && age <= MAX_PREGNANCY_AGE &&
+	!this->pregnant &&
+	this->conception_date == NULL &&
+	this->due_date == NULL &&
+	URAND(0.0, 1.0) <= Demographics::age_daily_birth_rate[age]) {
+      this->conception_date = new Date(cur_year, cur_month, cur_day_of_month);
+      this->due_date = new Date(cur_year, cur_month, cur_day_of_month);
+      double random_due_date = draw_normal(Demographics::MEAN_PREG_DAYS, Demographics::STDDEV_PREG_DAYS);
+      this->due_date->advance((int)(random_due_date + 0.5)); //round the random_due_date
+      this->pregnant = true;
     }
-    delete this->due_date;
-    this->due_date = NULL;
-    this->pregnant = false;
-    Global::Pop.prepare_to_give_birth(day, self);
+    
+    //Is this your day to give birth
+    if(this->sex == 'F' &&
+       this->pregnant &&
+       this->due_date != NULL &&
+       this->due_date->get_year() == cur_year &&
+       this->due_date->get_month() == cur_month &&
+       this->due_date->get_day_of_month() == cur_day_of_month) {
+      if (this->conception_date != NULL) {
+	delete this->conception_date;
+	this->conception_date = NULL;
+      }
+      delete this->due_date;
+      this->due_date = NULL;
+      this->pregnant = false;
+      Global::Pop.prepare_to_give_birth(day, self);
+    }
   }
 
   //Is this your day to die?

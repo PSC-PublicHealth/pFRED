@@ -301,8 +301,10 @@ void Population::update(int day) {
   if (Global::Enable_Births) maternity_list.clear();
 
   // update everyone's demographics
-  for (int p = 0; p < pop_size; p++) {
-    pop[p]->update_demographics(day);
+  if (Global::Enable_Births || Global::Enable_Deaths || Global::Enable_Aging) {
+    for (int p = 0; p < pop_size; p++) {
+      pop[p]->update_demographics(day);
+    }
   }
   // Utils::fred_print_wall_time("day %d update_demographics", day);
 
