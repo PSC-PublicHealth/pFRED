@@ -113,7 +113,7 @@ void Epidemic::become_removed(Person *person, bool susceptible, bool infectious,
       Utils::fred_verbose(0,"WARNING: become_removed: person %d not removed from susceptible_list\n",person->get_id());
     }
     else {
-      Utils::fred_verbose(1,"OK: become_removed: person %d removed from susceptible_list\n",person->get_id());
+      if (Global::Verbose > 1) printf("OK: become_removed: person %d removed from susceptible_list\n",person->get_id());
     }
   }
   if (infectious) {
@@ -122,7 +122,7 @@ void Epidemic::become_removed(Person *person, bool susceptible, bool infectious,
       Utils::fred_verbose(0,"WARNING: become_removed: person %d not removed from infectious_list\n",person->get_id());
     }
     else {
-      Utils::fred_verbose(1,"OK: become_removed: person %d removed from infectious_list\n",person->get_id());
+      if (Global::Verbose > 1) printf("OK: become_removed: person %d removed from infectious_list\n",person->get_id());
     }
   }
   if (symptomatic)
@@ -194,7 +194,7 @@ void Epidemic::print_stats(int day) {
 	    vaccine_acceptance, RR,cohort_size, clinical_attack_rate);
     fprintf(Global::Statusfp, "%s %s Year %d Week %d\n",
       Global::Sim_Date->get_day_of_week_string(day).c_str(),
-      Global:: Sim_Date->get_YYYYMMDD(day).c_str(),
+      Global::Sim_Date->get_YYYYMMDD(day).c_str(),
       Global::Sim_Date->get_epi_week_year(day),
       Global::Sim_Date->get_epi_week(day));
     fflush(Global::Statusfp);
