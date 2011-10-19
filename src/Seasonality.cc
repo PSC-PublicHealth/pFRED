@@ -43,10 +43,9 @@ void Seasonality::update(int day) {
     it++;
   }
   nearest_neighbor_interpolation(points, &seasonality_values);
-  // store the cliamte modulated transmissibilities for all diseses
+  // store the climate modulated transmissibilities for all diseses
   // so that we don't have to re-calculate this for every place that we visit
   update_seasonality_multiplier();
-  if (Global::Verbose > 1) { print(); }
 }
 
 void Seasonality::update_seasonality_multiplier() {
@@ -128,3 +127,44 @@ void Seasonality::print_field(double *** field) {
     cout << endl;
   }
 }
+
+double Seasonality::get_average_seasonality_multiplier(int disease_id) {
+  double total = 0;
+  for (int row = 0; row < grid->get_rows(); row++) {
+    for (int col = 0; col < grid->get_cols(); col++) {
+      total += get_seasonality_multiplier(row, col, disease_id);
+    }
+  }
+  return total / (grid->get_rows() * grid->get_cols());
+}
+
+void Seasonality::print_summary() {
+  for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) { 
+    double min = 9999999;
+    double max = 0;
+    double total = 0;
+    double daily_avg = 0;
+    printf("\nSeasonality Summary for disease %d:\n\n",disease_id);
+    for (int day = 0; day < Global::Days; day++) {
+      update(day);
+      daily_avg = get_average_seasonality_multiplier(disease_id);
+      if (min > daily_avg) { min = daily_avg; }
+      if (max < daily_avg) { max = daily_avg; }
+      total += daily_avg;
+      printf(" %4.4f", daily_avg);
+    }
+    cout << endl;
+    printf(" minimum: %4.4f\n",min);
+    printf(" maximum: %4.4f\n",max);
+    printf(" average: %4.4f\n\n",total/Global::Days);
+  }
+  update(0);
+}
+
+
+
+
+
+
+
+

@@ -24,6 +24,7 @@
 #include "Evolution.h"
 #include "Travel.h"
 #include "Epidemic.h"
+#include "Seasonality.h"
 
 int main(int argc, char* argv[]) {
   int run;          // number of current run
@@ -230,6 +231,10 @@ int main(int argc, char* argv[]) {
 
   if (Global::Track_age_distribution) {
     Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Date->get_YYYYMMDD(0).c_str(), run);
+  }
+
+  if (Global::Enable_Seasonality) {
+    Global::Clim->print_summary();
   }
 
   Utils::fred_print_lap_time("FRED initialization");

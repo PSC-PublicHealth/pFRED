@@ -22,6 +22,7 @@ public:
   double get_seasonality_multiplier(int row, int col, int disease_id);
 
   void print();
+  void print_summary();
 
 private:
   void update_seasonality_multiplier();
@@ -40,6 +41,7 @@ private:
 
   void nearest_neighbor_interpolation(vector <point> points, double *** field);
   void print_field(double *** field);
+  double get_average_seasonality_multiplier(int disease_id);
 };
 
 #endif // _FRED_SEASONALITY_H
