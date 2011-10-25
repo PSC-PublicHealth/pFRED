@@ -20,9 +20,9 @@ $ymin = $options{y} if exists $options{y};
 $ymax = $options{Y} if exists $options{Y};
 my $errorbars = exists $options{e};
 $key = $options{k} if exists $options{k};
-die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r] [-e]\n" if not $key;
+die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r|m] [-e]\n" if not $key;
 $varlist = $options{v} if exists $options{v};
-die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r] [-e]\n" if not $varlist;
+die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r|m] [-e]\n" if not $varlist;
 my @args = check_varlist($varlist);
 
 my $FRED = $ENV{FRED_HOME};
@@ -98,6 +98,7 @@ for my $x (@args) {
   $title = "Clinical Attack Rate" if $x eq "CAR";
   $title = "Clinical Cases" if $x eq "CI";
   $title = "Reproductive Rate" if $x eq "RR";
+  $title = "Seasonality Multiplier" if $x eq "SM";
   print FH ($n == 0)? "plot " : ",\\\n";
   $n++;
   if ($year) {
@@ -119,7 +120,7 @@ exit;
 sub check_varlist {
   my $v = shift;
   my @args = ();
-  my %mapping = (C=>'C', S=>'S', E=>'E', I=>'I', R=>'R', s=>'I_s', M=>'M', A=>'AR', a=>'CAR', c=>'CI', r=>'RR');
+  my %mapping = (C=>'C', S=>'S', E=>'E', I=>'I', R=>'R', s=>'I_s', M=>'M', A=>'AR', a=>'CAR', c=>'CI', r=>'RR', m=>'SM');
   my @vars = split "", $v;
   for my $x (@vars) {
     if (exists $mapping{$x}) {
@@ -127,7 +128,7 @@ sub check_varlist {
     }
     else {
       print "bad arg: |$x|\n";
-      die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r]\n";
+      die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r|m]\n";
     }
   }
   return @args;
