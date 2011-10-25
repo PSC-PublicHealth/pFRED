@@ -168,6 +168,8 @@ void Epidemic::print_stats(int day) {
 
   int susceptible_count = susceptible_list.size();
   int infectious_count = infectious_list.size();
+  double average_seasonality_multiplier = 1;
+
   fprintf(Global::Outfp,
 	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
 	  day, id, susceptible_count, exposed_count, infectious_count,
@@ -176,11 +178,16 @@ void Epidemic::print_stats(int day) {
 	  "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
 	  incident_infections, N, attack_rate, clinical_incidents,
 	  vaccine_acceptance, RR,cohort_size, clinical_attack_rate);
-  fprintf(Global::Outfp, "%s %s Year %d Week %d\n",
+  fprintf(Global::Outfp, "%s %s Year %d Week %d",
       Global::Sim_Date->get_day_of_week_string(day).c_str(),
       Global::Sim_Date->get_YYYYMMDD(day).c_str(),
       Global::Sim_Date->get_epi_week_year(day),
 	    Global::Sim_Date->get_epi_week(day));
+  if (Global::Enable_Seasonality) {
+    fprintf(Global::Outfp, " SM %2.4f\n", average_seasonality_multiplier);
+  } else {
+    fprintf(Global::Outfp, "\n");
+  }
   fflush(Global::Outfp);
   
   if (Global::Verbose) {
@@ -192,11 +199,16 @@ void Epidemic::print_stats(int day) {
 	    "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
 	    incident_infections, N, attack_rate, clinical_incidents,
 	    vaccine_acceptance, RR,cohort_size, clinical_attack_rate);
-    fprintf(Global::Statusfp, "%s %s Year %d Week %d\n",
+    fprintf(Global::Statusfp, "%s %s Year %d Week %d",
       Global::Sim_Date->get_day_of_week_string(day).c_str(),
       Global::Sim_Date->get_YYYYMMDD(day).c_str(),
       Global::Sim_Date->get_epi_week_year(day),
       Global::Sim_Date->get_epi_week(day));
+    if (Global::Enable_Seasonality) {
+      fprintf(Global::Statusfp, " SM %2.4f\n", average_seasonality_multiplier);
+    } else {
+      fprintf(Global::Statusfp, "\n");
+    }
     fflush(Global::Statusfp);
   }
   // prepare for next day
