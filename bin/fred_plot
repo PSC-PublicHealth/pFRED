@@ -64,8 +64,8 @@ set output \'$pngfile\'
 set grid
 set xrange [$xmin:$xmax]
 set yrange [$ymin:$ymax]
-set xlabel \'Days\' 0,0.5
-set ylabel \'Individuals\' 1.2,0
+set xlabel \'Days\' offset 0,0.5
+set ylabel \'Individuals\' offset 1.2,0
 set xtics out
 EOF
 if ($year) {

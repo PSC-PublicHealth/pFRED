@@ -57,8 +57,8 @@ set output \"$pngfile\"
 set grid
 set yrange [0:*]
 set xrange [0:*]
-set xlabel \"Days\" 0,0.5
-set ylabel \"Individuals\" 1.2,0
+set xlabel \"Days\" offset 0,0.5
+set ylabel \"Individuals\" offset 1.2,0
 EOF
 if ($v eq "A") {
   print FH "set key left Left reverse\n";
