@@ -20,6 +20,7 @@ public:
   double get_seasonality_multiplier_by_lat_lon(double lat, double lon, int disease_id);
   double get_seasonality_multiplier_by_cartesian(double x, double y, int disease_id);
   double get_seasonality_multiplier(int row, int col, int disease_id);
+  double get_average_seasonality_multiplier(int disease_id);
 
   void print();
   void print_summary();
@@ -41,7 +42,6 @@ private:
 
   void nearest_neighbor_interpolation(vector <point> points, double *** field);
   void print_field(double *** field);
-  double get_average_seasonality_multiplier(int disease_id);
 };
 
 #endif // _FRED_SEASONALITY_H

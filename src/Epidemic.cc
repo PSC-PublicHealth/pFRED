@@ -30,6 +30,7 @@ using namespace std;
 #include "Grid.h"
 #include "Household.h"
 #include "Utils.h"
+#include "Seasonality.h"
 
 extern int V_count;
 
@@ -168,7 +169,10 @@ void Epidemic::print_stats(int day) {
 
   int susceptible_count = susceptible_list.size();
   int infectious_count = infectious_list.size();
-  double average_seasonality_multiplier = 1;
+  double average_seasonality_multiplier = 1.0;
+  if (Global::Enable_Seasonality) {
+    Global::Clim->get_average_seasonality_multiplier(disease->get_id());
+  }
 
   fprintf(Global::Outfp,
 	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
