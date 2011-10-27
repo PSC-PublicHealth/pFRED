@@ -34,6 +34,7 @@ Household::Household(int loc, const  char *lab, double lon,
   housemate.clear();
   adults = children = 0;
   N = 0; 
+  HoH = NULL;
 }
 
 void Household::get_parameters(int diseases) {
@@ -100,6 +101,18 @@ void Household::enroll(Person * per) {
   }
 }
 
+void Household::pick_new_HoH() {
+  int max_age = -1;
+  // pick the oldest housemate
+  for (int i = 0; i < N; i++) {
+    int years = housemate[i]->get_age();
+    if (years > max_age) {
+      HoH = housemate[i];
+      max_age = years;
+    }
+  } 
+}
+
 void Household::unenroll(Person * per) {
   int age = per->get_age();
   if (Global::Verbose>1) {
@@ -130,17 +143,7 @@ void Household::unenroll(Person * per) {
     }
     else {
       if (HoH == per) {
-	// pick a new head of household
-	// record the ages in sorted order
-	vector <int> xages;
-	for (int i = 0; i < N; i++)
-	  xages.push_back(housemate[i]->get_age()); 
-	sort(xages.begin(), xages.end());
-	for (int i = 0; i < N; i++) {
-	  if (housemate[i]->get_age() == xages.back()) {
-	    HoH = housemate[i];
-	  }
-	} 
+	pick_new_HoH();
       }
     }
   }
@@ -161,11 +164,6 @@ void Household::record_profile() {
   for (int i = 0; i < N; i++)
     ages.push_back(housemate[i]->get_age()); 
   sort(ages.begin(), ages.end());
-  for (int i = 0; i < N; i++) {
-    if (housemate[i]->get_age() == ages.back()) {
-      HoH = housemate[i];
-    }
-  } 
 
   // record the id's of the original members of the household
   ids.clear();

@@ -57,12 +57,9 @@ class Global {
     static int Incremental_Trace;
     static int Trace_Headers;
     static int Random_start_day;
-    static char Behavior_model_type[];
     static int Quality_control;
     static int RR_delay;
     static int Diseases;
-    static double Prob_accept_vaccine;
-    static double Prob_accept_vaccine_dose;
     static int StrainEvolution;
     static char Prevfilebase[];
     static char Incfilebase[];

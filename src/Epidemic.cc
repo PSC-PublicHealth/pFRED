@@ -454,7 +454,7 @@ void Epidemic::find_infectious_places(int day, int dis) {
 
   set <person_pair>::iterator it;
   for (it = infectious_list.begin(); it != infectious_list.end(); it++) {
-    Person * person = it->first;;
+    Person * person = it->first;
     person->get_activities()->update_infectious_activities(day, dis);
   }
 

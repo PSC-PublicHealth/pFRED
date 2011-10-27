@@ -28,6 +28,7 @@
 #include <cstdio>
 #include <vector>
 #include <sstream>
+class Household;
 
 Person::Person() {
   idx = -1;
@@ -96,60 +97,6 @@ void Person::become_immune(Disease* disease) {
   if(health->is_susceptible(disease_id)){
     health->become_immune(disease);
   }
-}
-
-Place * Person::get_household() const {
-  return activities->get_household();
-}
-
-Place * Person::get_neighborhood() const {
-  return activities->get_neighborhood();
-}
-
-char Person::get_sex() const { return demographics->get_sex(); }
-
-int Person::get_marital_status() const {
-  return demographics->get_marital_status();
-}
-
-int Person::get_profession() const {
-  return demographics->get_profession();
-}
-
-int Person::get_exposure_date(int disease) const {
-  return health->get_exposure_date(disease);
-}
-
-int Person::get_infectious_date(int disease) const {
-  return health->get_infectious_date(disease);
-}
-
-int Person::get_recovered_date(int disease) const {
-  return health->get_recovered_date(disease);
-}
-
-int Person::get_infector(int disease) const {
-  return health->get_infector(disease);
-}
-
-int Person::get_infected_place(int disease) const {
-  return health->get_infected_place(disease);
-}
-
-char * Person::get_infected_place_label(int disease) const {
-  return health->get_infected_place_label(disease);
-}
-
-char Person::get_infected_place_type(int disease) const {
-  return health->get_infected_place_type(disease);
-}
-
-int Person::get_infectees(int disease) const {
-  return health->get_infectees(disease);
-}
-
-int Person::is_new_case(int day, int disease) const {
-  return (health->get_exposure_date(disease) == day);
 }
 
 void Person::set_changed(){

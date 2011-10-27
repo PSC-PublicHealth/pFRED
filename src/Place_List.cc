@@ -365,27 +365,58 @@ void Place_List::quality_control(char *directory) {
   }
   
   if (Global::Verbose) {
-    int count[20];
+    int count[100];
+    int total = 0;
+    // age distribution of heads of households
+    for (int c = 0; c < 100; c++) { count[c] = 0; }
+    for (int p = 0; p < number_places; p++) {
+      Person * per;
+      if (places[p]->get_type() == HOUSEHOLD) {
+	Household *h = (Household *) places[p];
+        per = h->get_HoH();
+	if (per == NULL) {
+	  Utils::fred_abort("Help! No head of household found for household id %d label %s\n",
+			    h->get_id(), h->get_label());
+	}
+        int a = per->get_age();
+        if (a < 100) { count[a]++; }
+        else { count[99]++; }
+        total++;
+      }
+    }
+    fprintf(Global::Statusfp, "\nAge distribution of heads of households: %d households\n", total);
+    for (int c = 0; c < 100; c++) {
+      fprintf(Global::Statusfp, "age %2d: %6d (%.2f%%)\n",
+              c, count[c], (100.0*count[c])/total);
+    }
+    fprintf(Global::Statusfp, "\n");
+  }
+
+  if (Global::Verbose) {
+    int count[100];
     int total = 0;
     // age distribution of heads of households with children
-    for (int c = 0; c < 20; c++) { count[c] = 0; }
+    for (int c = 0; c < 100; c++) { count[c] = 0; }
     for (int p = 0; p < number_places; p++) {
       Person * per;
       if (places[p]->get_type() == HOUSEHOLD) {
 	Household *h = (Household *) places[p];
         if (h->get_children() == 0) continue;
-        if ((per = h->get_HoH()) == NULL) continue;
+        per = h->get_HoH();
+	if (per == NULL) {
+	  Utils::fred_abort("Help! No head of household found for household id %d label %s\n",
+			    h->get_id(), h->get_label());
+	}
         int a = per->get_age();
-        int n = a / 10;
-        if (n < 20) { count[n]++; }
-        else { count[19]++; }
+        if (a < 100) { count[a]++; }
+        else { count[99]++; }
         total++;
       }
     }
     fprintf(Global::Statusfp, "\nAge distribution of heads of households with children: %d households\n", total);
-    for (int c = 0; c < 10; c++) {
-      fprintf(Global::Statusfp, "age %2d to %d: %6d (%.2f%%)\n",
-              10*c, 10*(c+1)-1, count[c], (100.0*count[c])/total);
+    for (int c = 0; c < 100; c++) {
+      fprintf(Global::Statusfp, "age %2d: %6d (%.2f%%)\n",
+              c, count[c], (100.0*count[c])/total);
     }
     fprintf(Global::Statusfp, "\n");
   }
@@ -540,3 +571,14 @@ void Place_List::setup_offices() {
 }
 
 
+void Place_List::check_HoH() {
+  int number_places = places.size();
+  for (int p = 0; p < number_places; p++) {
+    if (places[p]->get_type() == HOUSEHOLD) {
+      Household * h = (Household *) places[p];
+      if (h->get_HoH()->get_age() < 18) {
+	h->pick_new_HoH();
+      }
+    }
+  }
+}

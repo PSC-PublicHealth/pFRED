@@ -303,7 +303,8 @@ void Vaccine_Manager::vaccinate(int day) {
       }
       else {
 	// skip non-compliant person under HBM
-	if(strcmp(Global::Behavior_model_type,"HBM") == 0) ++ip;
+	// if(strcmp(Global::Behavior_model_type,"HBM") == 0) ++ip;
+	if(0) ++ip;
 	// remove non-compliant person if not HBM
 	else ip = priority_queue.erase(ip);
       }
@@ -369,7 +370,8 @@ void Vaccine_Manager::vaccinate(int day) {
       }
       else {
 	// skip non-compliant person under HBM
-	if(strcmp(Global::Behavior_model_type,"HBM") == 0) ip++;
+	// if(strcmp(Global::Behavior_model_type,"HBM") == 0) ip++;
+	if(0) ip++;
 	// remove non-compliant person if not HBM
 	else ip = queue.erase(ip);
       }

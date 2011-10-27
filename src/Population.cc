@@ -17,6 +17,7 @@
 #include "Params.h"
 #include "Global.h"
 #include "Place_List.h"
+#include "Household.h"
 #include "Disease.h"
 #include "Person.h"
 #include "Demographics.h"
@@ -280,6 +281,14 @@ void Population::read_population() {
     int day = 0;
     Person * person = new Person(Population::next_id, age, sex, married, occ,
 				 house, school, work, day, today_is_birthday);
+
+    // is this person the Head of Household?
+    char hlabel[32];
+    sprintf(hlabel, "%s_1", house_label);
+    if (strcmp(hlabel, label) == 0) {
+      ((Household *) house)->set_HoH(person);
+    }
+
     add_person(person);
     Population::next_id++;
   }
@@ -288,6 +297,10 @@ void Population::read_population() {
     // remove the uncompressed file
     unlink(population_file);
   }
+
+  // check households for valid HoH
+  Global::Places.check_HoH();
+  
   if (Global::Verbose > 0) {
     fprintf(Global::Statusfp, "finished reading population, pop_size = %d\n", pop_size);
     fflush(Global::Statusfp);
@@ -381,21 +394,11 @@ void Population::update(int day) {
   Travel::update_travel(day);
   // Utils::fred_print_wall_time("day %d update_travel", day);
 
-  // update adult decisions
+  // update decisions about behaviors
   for (int p = 0; p < pop_size; p++) {
-    if (Global::ADULT_AGE <= pop[p]->get_age()) {
-      pop[p]->update_behavior(day);
-    }
+    pop[p]->update_behavior(day);
   }
   // Utils::fred_print_wall_time("day %d update_behavior", day);
-
-  // update child decisions
-  for (int p = 0; p < pop_size; p++) {
-    if (pop[p]->get_age() < Global::ADULT_AGE) {
-      pop[p]->update_behavior(day);
-    }
-  }
-  // Utils::fred_print_wall_time("day %d update_behavior for children", day);
 
   // distribute vaccines
   vacc_manager->update(day);

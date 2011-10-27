@@ -14,6 +14,7 @@
 
 #include <vector>
 #include "Global.h"
+
 class Person;
 class Place;
 
@@ -70,6 +71,8 @@ public:
    * @return a pointer to this agent's Household
    */
   Place * get_household() { return favorite_place[HOUSEHOLD_INDEX]; }
+  Person * get_HoH();
+  void set_HoH (Person * person);
 
   /**
    * @return a pointer to this agent's Neighborhood

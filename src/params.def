@@ -24,6 +24,7 @@ track_household_distribution = 0
 track_network_stats = 0
 quality_control = 1
 rr_delay = 20
+mutation_prob = 1 0.0
 
 # set 0 for end-of-run trace printout only, non-zero to print every n-th day
 incremental_trace = 0
@@ -89,9 +90,6 @@ yearly_mortality_rate_file = mortality_rate.txt
 yearly_mobility_rate_file = mobility_rate.txt
 yearly_birth_rate_file = birth_rate.txt
 birth_rate_multiplier = 1
-
-prob_stay_home = 0.5
-mutation_prob = 1 0.0
 
 # the folowing contacts are calibrated for Allegheny County
 # for a 33% clinical attack rate
@@ -182,24 +180,36 @@ vaccine_dose_efficacy_values[0][0] = 1 0.70
 vaccine_dose_efficacy_delay_ages[0][0] = 2 0 100
 vaccine_dose_efficacy_delay_values[0][0] = 1 14
 
-##### COGNITION PARAMETERS
-behavior_model = random
-# behavior_model = HBM
+#### BEHAVIOR MARKET SEGMENTS
+adult_stays_home_enabled = 1
+child_stays_home_enabled = 1
+accepts_vaccine_enabled = 0
+accepts_vaccine_dose_enabled = 0
 
-# Random behavior model params
-prob_accept_vaccine = 0.6
-prob_accept_another_vaccine_dose = 1.0
+# type 0 = always refuse
+# type 1 = accept
+# type 2 = use fixed probability from uniform distribution
+adult_stays_home_segment_cdf = 3 0.5 1.0 0.0
+child_stays_home_segment_cdf = 3 0.5 1.0 0.0
+accepts_vaccine_segment_cdf = 3 0.0 0.0 1.0
+accepts_vaccine_dose_segment_cdf = 3 0.0 0.0 1.0
 
-# Health Belief Model params
-HBM_susceptibility_discount    = 2  0.99  0.01
-HBM_susceptibility_threshold   = 2  220  60
-HBM_severity_threshold  = 2  0.01  0.01
-HBM_benefits_threshold  = 2  0 0 
-HBM_barriers_threshold  = 2  0 0
-HBM_memory_decay_lower = 0.0
-HBM_memory_decay_upper = 1.0
+##### PROBABILISTIC BEHAVIOR DISTRIBUTIONS AND DECISION FREQUENCY
+adult_stays_home_min_prob = 0.5
+adult_stays_home_max_prob = 0.5
+adult_stays_home_frequency = 0
 
-HBM_accept_vaccine = 5       0.6 0 0 0 0
+child_stays_home_min_prob = 0.5
+child_stays_home_max_prob = 0.5
+child_stays_home_frequency = 0
+  
+accepts_vaccine_max_prob = 0.6
+accepts_vaccine_min_prob = 0.6
+accepts_vaccine_frequency = 0
+  
+accepts_vaccine_dose_max_prob = 1.0
+accepts_vaccine_dose_min_prob = 1.0
+accepts_vaccine_dose_frequency = 0
 
 #### Geographical Grids
 enable_large_grid = 0

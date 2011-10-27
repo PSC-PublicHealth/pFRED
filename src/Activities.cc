@@ -172,17 +172,18 @@ void Activities::update_schedule(int day) {
   on_schedule[HOUSEHOLD_INDEX] = true;
   
   // decide whether to stay at home if symptomatic
-  if (self->is_symptomatic() && self->is_staying_home(day))
-    return;
-
-  // decide whether to stay home from school -- not finished
-  /**
-  if (Activities::is_weekday && self->get_age() < Global::ADULT_AGE) {
-    if (self->get_behavior()->will_keep_kids_home()) {
-      return;
+  if (self->is_symptomatic()) {
+    if (self->is_adult()) {
+      if (self->get_behavior()->adult_is_staying_home(day)) {
+	return;
+      }
+    }
+    else {
+      if (self->get_behavior()->child_is_staying_home(day)) {
+	return;
+      }
     }
   }
-  **/
 
   // if not staying home, adopt usual schedule according to these rules:
   on_schedule[NEIGHBORHOOD_INDEX] = true;
@@ -329,7 +330,6 @@ int Activities::get_degree() {
 
 void Activities::update_profile() {
   int age = self->get_age();
-  // int old_profile = profile;
 
   if (profile == PRESCHOOL_PROFILE && Global::SCHOOL_AGE <= age && age < Global::ADULT_AGE) {
     // start school
@@ -415,6 +415,8 @@ void Activities::update_profile() {
     // get a job
     profile = WORKER_PROFILE;
     assign_workplace();
+    // take on adult behaviors
+    self->become_an_adult();
     if (Global::Verbose>1) {
       fprintf(Global::Statusfp,
 	      "changed behavior profile to WORKER: id %d age %d sex %c\n",
@@ -446,6 +448,10 @@ void Activities::update_profile() {
 static int mobility_count[MAX_MOBILITY_AGE + 1];
 static int mobility_moved[MAX_MOBILITY_AGE + 1];
 static int mcount = 0;
+
+void Activities::set_HoH (Person * person) { ((Household *) favorite_place[HOUSEHOLD_INDEX])->set_HoH(person); }
+Person * Activities::get_HoH() { return ((Household *) favorite_place[HOUSEHOLD_INDEX])->get_HoH(); }
+
 
 void Activities::update_household_mobility() {
   if (!Global::Enable_Mobility) return;
