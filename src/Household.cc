@@ -101,17 +101,40 @@ void Household::enroll(Person * per) {
   }
 }
 
-void Household::pick_new_HoH() {
-  int max_age = -1;
-  // pick the oldest housemate
-  for (int i = 0; i < N; i++) {
-    int years = housemate[i]->get_age();
-    if (years > max_age) {
+void Household::set_new_HoH() {
+  HoH = NULL;
+  for (int i = 0; i < N && HoH == NULL; i++) {
+    if (housemate[i]->get_relationship() == 1 && Global::ADULT_AGE <= housemate[i]->get_age()) {
       HoH = housemate[i];
-      max_age = years;
+      return;
     }
-  } 
-}
+  }
+  if (HoH == NULL) {
+    Utils::fred_warning("Warning! set_new_HoH: no adult Householder found for household %d %s\n", id, label);
+    for (int i = 0; i < N && HoH == NULL; i++) {
+      if (housemate[i]->get_relationship() == 2 && Global::ADULT_AGE <= housemate[i]->get_age()) {
+	HoH = housemate[i];
+	Utils::fred_warning("set_new_HoH to spouse age %d for household %d %s\n", HoH->get_age(), id, label);
+	return;
+      }
+    }
+  }
+  if (HoH == NULL) {
+    Utils::fred_warning("Warning! set_new_HoH: no Householder spouse found for household %d %s\n"
+			, id, label);
+    for (int i = 0; i < N && HoH == NULL; i++) {
+      if (Global::ADULT_AGE <= housemate[i]->get_age()) {
+	HoH = housemate[i];
+	Utils::fred_warning("set_new_HoH to adult age %d rel %d for household %d %s\n",
+			    HoH->get_age(), HoH->get_relationship(), id, label);
+	return;
+      }
+    }
+  }
+  if (HoH == NULL) {
+    Utils::fred_abort("Warning! set_new_HoH: no adult found for household %d %s\n", id, label);
+  }
+}  
 
 void Household::unenroll(Person * per) {
   int age = per->get_age();
@@ -143,7 +166,7 @@ void Household::unenroll(Person * per) {
     }
     else {
       if (HoH == per) {
-	pick_new_HoH();
+	set_new_HoH();
       }
     }
   }
@@ -200,7 +223,7 @@ void Household::spread_infection(int day, int disease_id) {
         double transmission_prob = get_transmission_prob(disease_id, infector, infectee);
         Utils::fred_verbose(1,"trans_prob = %f  ", transmission_prob);
 
-        double infectivity = infector->get_infectivity(disease_id,day);
+       double infectivity = infector->get_infectivity(disease_id,day);
         // scale transmission prob by infectivity and contact prob
         transmission_prob *= infectivity * contact_prob;     
 

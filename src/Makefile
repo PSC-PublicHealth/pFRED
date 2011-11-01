@@ -4,13 +4,13 @@
 CPP = g++ 
 
 # use this for development:
-CPPFLAGS = -g -pg -O3 -Wall # -fast #-Wall
+# CPPFLAGS = -g -m64 -pg -O3 -Wall
 
 # use this for profiling
 # CPPFLAGS = -g -m64 -O3 # -DNDEBUG
 
 # Use this for production:
-# CPPFLAGS = -g -m64 -O3 -DNDEBUG -fast #-Wall
+CPPFLAGS = -g -m64 -O3 -DNDEBUG -fast #-Wall
 
 # Use this for unit testing:
 # CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall
@@ -45,9 +45,9 @@ OBJ =   Fred.o Global.o Utils.o Decision.o Policy.o Manager.o \
         AV_Decisions.o AV_Policies.o AV_Manager.o AV_Health.o \
         Age_Map.o Timestep_Map.o Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
         Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \
-	Antiviral.o Antivirals.o Health_Belief_Model.o Random_Behavior_Model.o \
+	Antiviral.o Antivirals.o \
 	Activities.o Classroom.o Behavior.o Demographics.o Epidemic.o Health.o \
-        Hospital.o Household.o Infection.o Neighborhood.o Office.o \
+        Intention.o Hospital.o Household.o Infection.o Neighborhood.o Office.o \
 	Params.o Perceptions.o Person.o Place.o Place_List.o Population.o Random.o \
 	School.o Disease.o Workplace.o \
 	Geo_Utils.o Cell.o Grid.o Large_Grid.o Large_Cell.o Small_Grid.o Small_Cell.o Travel.o \

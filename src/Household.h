@@ -91,15 +91,22 @@ public:
    */
   void unenroll(Person * per);
 
-  void pick_new_HoH();
+  /**
+   * Set the head of the household.  It will be an adult who will make decisions for the household.
+   */
+  void set_HoH(Person *person) { HoH = person; }
 
   /**
    * Get the head of the household.  It will be an adult who will make decisions for the household.
    *
    * @return a pointer to the person who is the head of the household
    */
-  Person * get_HoH() { assert (HoH != NULL); return HoH; }
-  void set_HoH (Person * person) { assert(HoH == NULL); HoH = person; }
+  Person * get_HoH() { return HoH; }
+
+  /**
+   * Set a valid head of the household.  It will be an adult who will make decisions for the household.
+   */
+  void set_new_HoH();
 
   /**
    * Get a person from the household.

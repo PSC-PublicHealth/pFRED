@@ -52,7 +52,7 @@ public:
    * @param day the simulation day
    * @param today_is_birthday true if this is a newborn
    */
-  Person(int index, int age, char sex, int marital, int occ, Place *house,
+  Person(int index, int age, char sex, int marital, int rel, int occ, Place *house,
 	 Place *school, Place *work, int day, bool today_is_birthday);
 
   ~Person();
@@ -242,6 +242,11 @@ public:
    * @return the Person's marital status
    */
   int get_marital_status() const { return demographics->get_marital_status(); }
+
+  int get_relationship() { return demographics->get_relationship(); }
+
+  void set_relationship(int rel) { demographics->set_relationship(rel); }
+
   /**
    * @return the Person's profession
    */

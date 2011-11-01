@@ -241,7 +241,7 @@ void Population::read_population() {
 
   Population::next_id = 0;
   while (fgets(line, 255, fp) != NULL) {
-    int age, married, occ;
+    int age, married, occ, rel;
     char label[32], house_label[32], school_label[32], work_label[32];
     char sex;
 	
@@ -253,10 +253,15 @@ void Population::read_population() {
     // skip comment lines
     if (line[0] == '#') continue;
 
-    if (sscanf(line, "%s %d %c %d %d %s %s %s",
+    if (sscanf(line, "%s %d %c %d %d %s %s %s %d",
                label, &age, &sex, &married, &occ,
-	       house_label, school_label, work_label) != 8) {
-      Utils::fred_abort("Help! Bad format in input line when next_id = %d: %s\n", Population::next_id, line);
+	       house_label, school_label, work_label, &rel) != 9) {
+      rel = 1;
+      if (sscanf(line, "%s %d %c %d %d %s %s %s",
+		 label, &age, &sex, &married, &occ,
+		 house_label, school_label, work_label) != 8) {
+	Utils::fred_abort("Help! Bad format in input line when next_id = %d: %s\n", Population::next_id, line);
+      }
     }
     Place * house = Global::Places.get_place_from_label(house_label);
     if (house == NULL) {
@@ -279,13 +284,11 @@ void Population::read_population() {
     }
     bool today_is_birthday = false;
     int day = 0;
-    Person * person = new Person(Population::next_id, age, sex, married, occ,
+    Person * person = new Person(Population::next_id, age, sex, married, rel, occ,
 				 house, school, work, day, today_is_birthday);
 
     // is this person the Head of Household?
-    char hlabel[32];
-    sprintf(hlabel, "%s_1", house_label);
-    if (strcmp(hlabel, label) == 0) {
+    if (rel == 1) {
       ((Household *) house)->set_HoH(person);
     }
 

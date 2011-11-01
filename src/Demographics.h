@@ -38,7 +38,7 @@ public:
    * @param day the simulation day
    * @param is_newborn needed to know how to set the date of birth
    */
-  Demographics(Person* _self, int _age, char _sex, int _marital_status,
+  Demographics(Person* _self, int _age, char _sex, int _marital_status, int rel,
 	       int _profession, int day, bool is_newborn = false);
 
   ~Demographics();
@@ -105,6 +105,9 @@ public:
    */
   int get_init_profession()     { return init_profession; }
 	
+  void set_relationship(int rel) { relationship = rel; }
+  int get_relationship() { return relationship; }
+
   void terminate(){}
 
 private:
@@ -122,6 +125,7 @@ private:
   int profession;              // Current profession (from census)
   bool pregnant;               // Is the agent pregnant
   bool deceased;               // Is the agent deceased
+  int relationship;
 
   static double age_yearly_mortality_rate_male[MAX_AGE + 1];
   static double age_yearly_mortality_rate_female[MAX_AGE + 1];

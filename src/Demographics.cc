@@ -49,7 +49,7 @@ Demographics::Demographics() {
 }
 
 Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_status,
-               int _profession, int day, bool is_newborn) {
+			   int rel, int _profession, int day, bool is_newborn) {
 
   //Create the static arrays one time
   if (!Demographics::is_initialized) {
@@ -70,6 +70,7 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
   sex                 = _sex;
   init_marital_status = _marital_status;
   marital_status     = init_marital_status;
+  relationship = rel;
   init_profession     = _profession;
   profession         = init_profession;
   birthdate           = NULL;

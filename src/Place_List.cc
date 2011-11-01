@@ -364,6 +364,32 @@ void Place_List::quality_control(char *directory) {
     fprintf(Global::Statusfp, "\n");
   }
   
+  // relationship between children and head of household
+  if (Global::Verbose) {
+    // find parents for each child
+    for (int p = 0; p < number_places; p++) {
+      if (places[p]->get_type() == HOUSEHOLD) {
+	Household *h = (Household *) places[p];
+        if (h->get_children() == 0) continue;
+	int size = h->get_size();
+	Person * parent = NULL;
+	for (int i = 0; i < size; i++) {
+	  Person * child = h->get_housemate(i);
+	  int ch_age = child->get_age();
+	  if (ch_age < 18) {
+	    int ch_rel = child->get_relationship();
+	    int hoh_age = child->get_HoH()->get_age();
+	    int hoh_rel = child->get_HoH()->get_relationship();
+	    if (hoh_rel != 1 || ch_rel != 3) {
+	      printf("HOH: household %d %s  HoH: %d %d child: %d %d\n",
+		     h->get_id(), h->get_label(), hoh_age, hoh_rel, ch_age, ch_rel);
+	    }
+	  }
+	}
+      }
+    }
+  }
+  
   if (Global::Verbose) {
     int count[100];
     int total = 0;
@@ -395,6 +421,7 @@ void Place_List::quality_control(char *directory) {
   if (Global::Verbose) {
     int count[100];
     int total = 0;
+    int children = 0;
     // age distribution of heads of households with children
     for (int c = 0; c < 100; c++) { count[c] = 0; }
     for (int p = 0; p < number_places; p++) {
@@ -402,6 +429,7 @@ void Place_List::quality_control(char *directory) {
       if (places[p]->get_type() == HOUSEHOLD) {
 	Household *h = (Household *) places[p];
         if (h->get_children() == 0) continue;
+	children += h->get_children();
         per = h->get_HoH();
 	if (per == NULL) {
 	  Utils::fred_abort("Help! No head of household found for household id %d label %s\n",
@@ -418,6 +446,7 @@ void Place_List::quality_control(char *directory) {
       fprintf(Global::Statusfp, "age %2d: %6d (%.2f%%)\n",
               c, count[c], (100.0*count[c])/total);
     }
+    fprintf(Global::Statusfp, "children = %d\n", children);
     fprintf(Global::Statusfp, "\n");
   }
 
@@ -576,8 +605,16 @@ void Place_List::check_HoH() {
   for (int p = 0; p < number_places; p++) {
     if (places[p]->get_type() == HOUSEHOLD) {
       Household * h = (Household *) places[p];
-      if (h->get_HoH()->get_age() < 18) {
-	h->pick_new_HoH();
+      Person * hoh = h->get_HoH();
+      if (hoh == NULL) {
+	Utils::fred_abort("No Householder for household %d label %s\n",
+			  h->get_id(), h->get_label());
+      }
+      int age = hoh->get_age();
+      if (age < 18) {
+	printf("Householder is minor age %d for household %d label %s\n",
+	       age, h->get_id(), h->get_label());
+	h->set_new_HoH();
       }
     }
   }
