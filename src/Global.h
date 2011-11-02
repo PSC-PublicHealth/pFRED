@@ -49,6 +49,29 @@ class Global {
     static const int SCHOOL_AGE = 5;
     static const int RETIREMENT_AGE = 67;
 
+    // household relationship codes
+    static const int HOUSEHOLDER = 1;
+    static const int SPOUSE = 2;
+    static const int NATURAL_CHILD = 3;
+    static const int ADOPTED_CHILD = 4;
+    static const int STEP_CHILD = 5;
+    static const int SIBLING = 6;
+    static const int PARENT = 7;
+    static const int GRANDCHILD = 8;
+    static const int PARENT_IN_LAW = 9;
+    static const int SON_DAUGHTER_IN_LAW = 10;
+    static const int OTHER_RELATIVE = 11;
+    static const int BROTHER_SISTER_IN_LAW = 12;
+    static const int NEPHEW_NIECE = 13;
+    static const int GRANDPARENT = 14;
+    static const int UNCLE_AUNT = 15;
+    static const int COUSIN = 16;
+    static const int BOARDER = 17;
+    static const int HOUSEHMATE = 18;
+    static const int PARTNER = 19;
+    static const int FOSTER_CHILD = 20;
+    static const int NON_RELATIVE = 21;
+
     // global runtime parameters
     static char Population_directory[];
     static char Output_directory[];

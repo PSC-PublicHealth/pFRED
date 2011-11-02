@@ -241,7 +241,7 @@ void Population::read_population() {
 
   Population::next_id = 0;
   while (fgets(line, 255, fp) != NULL) {
-    int age, married, occ, rel;
+    int age, married, occ, relationship;
     char label[32], house_label[32], school_label[32], work_label[32];
     char sex;
 	
@@ -255,8 +255,8 @@ void Population::read_population() {
 
     if (sscanf(line, "%s %d %c %d %d %s %s %s %d",
                label, &age, &sex, &married, &occ,
-	       house_label, school_label, work_label, &rel) != 9) {
-      rel = 1;
+	       house_label, school_label, work_label, &relationship) != 9) {
+      relationship = Global::HOUSEHOLDER;
       if (sscanf(line, "%s %d %c %d %d %s %s %s",
 		 label, &age, &sex, &married, &occ,
 		 house_label, school_label, work_label) != 8) {
@@ -284,11 +284,11 @@ void Population::read_population() {
     }
     bool today_is_birthday = false;
     int day = 0;
-    Person * person = new Person(Population::next_id, age, sex, married, rel, occ,
+    Person * person = new Person(Population::next_id, age, sex, married, relationship, occ,
 				 house, school, work, day, today_is_birthday);
 
     // is this person the Head of Household?
-    if (rel == 1) {
+    if (relationship == Global::HOUSEHOLDER) {
       ((Household *) house)->set_HoH(person);
     }
 
@@ -301,8 +301,10 @@ void Population::read_population() {
     unlink(population_file);
   }
 
-  // check households for valid HoH
-  Global::Places.check_HoH();
+  // figure which adults make decision for children
+  for (int p = 0; p < pop_size; p++) {
+    pop[p]->set_parental_decision_maker();
+  }
   
   if (Global::Verbose > 0) {
     fprintf(Global::Statusfp, "finished reading population, pop_size = %d\n", pop_size);

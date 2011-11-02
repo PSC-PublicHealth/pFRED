@@ -471,7 +471,7 @@ void Activities::update_household_mobility() {
   mcount++;
 
   Household * household = (Household *) self->get_household();
-  if (household->get_HoH() == self) {
+  if (self->is_HoH()) {
     if (RANDOM() < Activities::age_yearly_mobility_rate[age]) {
       int size = household->get_size();
       for (int i = 0; i < size; i++) {

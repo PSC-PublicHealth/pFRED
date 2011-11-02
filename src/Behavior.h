@@ -54,10 +54,12 @@ public:
   bool acceptance_of_vaccine();
   bool acceptance_of_another_vaccine_dose();
   void terminate(){}
+  void set_parental_decision_maker(Person * person) { parental_decision_maker = person; }
+  Person * get_parental_decision_maker() { return parental_decision_maker; }
 
 private:
   Person * self;
-  bool is_child;
+  Person * parental_decision_maker;
   void get_parameters();
   void get_parameters_for_behavior(char * behavior_name, Behavior_params * par);
   Intention * setup(Person * self, Behavior_params params);

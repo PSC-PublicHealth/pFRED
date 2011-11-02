@@ -34,7 +34,6 @@ public:
   int get_max_id() { return max_id; }
   void setup_classrooms();
   void setup_offices();
-  void check_HoH();
 
 private:
   char locfile[80];

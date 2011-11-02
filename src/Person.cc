@@ -17,6 +17,7 @@
 #include "Health.h"
 #include "Behavior.h"
 #include "Place.h"
+#include "Household.h"
 #include "Disease.h"
 #include "Population.h"
 #include "AV_Health.h"
@@ -24,6 +25,7 @@
 #include "Date.h"
 #include "Place_List.h"
 #include "Transmission.h"
+#include "Utils.h"
 
 #include <cstdio>
 #include <vector>
@@ -31,7 +33,7 @@
 class Household;
 
 Person::Person() {
-  idx = -1;
+  id = -1;
   demographics = NULL;
   health = NULL;
   activities = NULL;
@@ -48,7 +50,7 @@ Person::~Person() {
 Person::Person(int index, int age, char sex, int marital, int rel, int occ,
 	       Place *house, Place *school, Place *work,
 	       int day, bool today_is_birthday) {
-  idx = index;
+  id = index;
   demographics =
     new Demographics(this, age, sex, marital, rel, occ, day, today_is_birthday);
   health = new Health(this);
@@ -69,7 +71,7 @@ Person::Person(int index, int age, char sex, int marital, int rel, int occ,
 void Person::print(FILE *fp, int disease) const {
   if (fp == NULL) return;
   fprintf(fp, "%d id %7d  a %3d  s %c %d ",
-          disease, idx,
+          disease, id,
           demographics->get_age(),
           demographics->get_sex(),
           demographics->get_profession());
@@ -133,7 +135,7 @@ string Person::to_string() {
 
   stringstream tmp_string_stream;
   // (i.e *ID* Age Sex Married Occupation Household School *Classroom* Workplace *Office*)
-  tmp_string_stream << this->idx << " " << this->get_age() << " " <<  this->get_sex() << " " ;
+  tmp_string_stream << this->id << " " << this->get_age() << " " <<  this->get_sex() << " " ;
   tmp_string_stream << this->get_marital_status() << " " << this->get_profession() << " ";
   Place *tmp_place = this->get_household();
   if(tmp_place == NULL)
@@ -173,4 +175,22 @@ void Person::terminate() {
   activities->terminate();
   health->terminate();
   demographics->terminate();
+}
+
+void Person::set_parental_decision_maker() {
+  if (Global::ADULT_AGE <= get_age()) {
+    behavior->set_parental_decision_maker(this);
+  }
+  else {
+    int relationship = get_relationship();
+    Household * h = (Household *) get_household();
+    Person *dm = h->get_parental_decision_maker(relationship);
+    if (dm == NULL) {
+      Utils::fred_abort("set_parental_decision_maker: Can't find suitable adult for child %d\n",
+			get_id());
+    }
+    else {
+      behavior->set_parental_decision_maker(dm);
+    }
+  }
 }

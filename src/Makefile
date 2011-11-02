@@ -4,13 +4,13 @@
 CPP = g++ 
 
 # use this for development:
-# CPPFLAGS = -g -m64 -pg -O3 -Wall
+CPPFLAGS = -g -m64 -pg -O3 -Wall
 
 # use this for profiling
 # CPPFLAGS = -g -m64 -O3 # -DNDEBUG
 
 # Use this for production:
-CPPFLAGS = -g -m64 -O3 -DNDEBUG -fast #-Wall
+# CPPFLAGS = -g -m64 -O3 -DNDEBUG -fast #-Wall
 
 # Use this for unit testing:
 # CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall

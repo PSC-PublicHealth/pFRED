@@ -107,6 +107,7 @@ public:
    * Set a valid head of the household.  It will be an adult who will make decisions for the household.
    */
   void set_new_HoH();
+  Person * get_parental_decision_maker(int relationship);
 
   /**
    * Get a person from the household.

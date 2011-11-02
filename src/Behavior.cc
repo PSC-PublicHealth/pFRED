@@ -34,15 +34,14 @@ Behavior::Behavior(Person * person) {
   child_stays_home = NULL;
   accepts_vaccine = NULL;
   accepts_vaccine_dose = NULL;
-  is_child = true;
-
+  parental_decision_maker = NULL;
 
   // get parameters (just once)
   if (Behavior::parameters_are_set == false) {
     get_parameters();
   }
 
-  // current behaviors are all decided by the head of household (HoH)
+  // adults make their own decisions
   if (self->is_adult()) {
     initialize_adult_behavior(person);
   }
@@ -75,7 +74,8 @@ void Behavior::initialize_adult_behavior(Person * person) {
     }
   }
 
-  is_child = false;
+  // adult make their own decisions
+  parental_decision_maker = self;
 }
 
 
@@ -143,7 +143,7 @@ void Behavior::get_parameters_for_behavior(char * behavior_name, Behavior_params
 }
 
 void Behavior::update(int day) {
-  if (is_child) return;
+  if (self != parental_decision_maker) return;
 
   if (adult_stays_home_params.enabled && adult_stays_home->get_frequency() > 0)
     adult_stays_home->update(day);
@@ -164,10 +164,8 @@ bool Behavior::adult_is_staying_home(int day) {
 }
 
 bool Behavior::child_is_staying_home(int day) {
-  if (is_child) {
-    // ask head of household
-    Person * HoH = self->get_HoH();
-    return HoH->get_behavior()->child_is_staying_home(day);
+  if (self != parental_decision_maker) {
+    return parental_decision_maker->get_behavior()->child_is_staying_home(day);
   }
 
   // adult deciding
@@ -177,10 +175,8 @@ bool Behavior::child_is_staying_home(int day) {
 
 bool Behavior::acceptance_of_vaccine() {
 
-  if (is_child) {
-    // ask head of household
-    Person * HoH = self->get_HoH();
-    return HoH->get_behavior()->acceptance_of_vaccine();
+  if (self != parental_decision_maker) {
+    return parental_decision_maker->get_behavior()->acceptance_of_vaccine();
   }
 
   // adult deciding
@@ -190,10 +186,8 @@ bool Behavior::acceptance_of_vaccine() {
 
 bool Behavior::acceptance_of_another_vaccine_dose() {
 
-  if (is_child) {
-    // ask head of household
-    Person * HoH = self->get_HoH();
-    return HoH->get_behavior()->acceptance_of_another_vaccine_dose();
+  if (self != parental_decision_maker) {
+    return parental_decision_maker->get_behavior()->acceptance_of_another_vaccine_dose();
   }
 
   // adult deciding

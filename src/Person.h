@@ -196,7 +196,7 @@ public:
    * The id is generated at runtime
    * @return the id of this Person
    */
-  int get_id() const { return idx; }
+  int get_id() const { return id; }
 
   /**
    * @return a pointer to this Person's Demographics
@@ -436,6 +436,9 @@ public:
    */
   Behavior * get_behavior() const { return behavior; }
 
+  void set_parental_decision_maker();
+  Person * get_parental_decision_maker() { return behavior->get_parental_decision_maker(); }
+
   bool adult_is_staying_home(int day) { return behavior->adult_is_staying_home(day); }
   bool child_is_staying_home(int day) { return behavior->child_is_staying_home(day); }
   bool acceptance_of_vaccine() { return behavior->acceptance_of_vaccine(); }
@@ -445,7 +448,7 @@ public:
   void terminate();
 
 private:
-  int idx;              // person id
+  int id;              // person id
   Demographics *demographics;
   Health *health;
   Activities *activities;
