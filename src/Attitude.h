@@ -84,7 +84,7 @@ void Attitude::update(int day) {
   if (params->imitation_enabled) {
     update_survey();
   }
-  // printf("INTENT day %d behavior %s person %d strategy %d willing %d\n", day, params->name, self->get_id(), strategy, willing?1:0); 
+  // printf("ATTITUDE day %d behavior %s person %d strategy %d willing %d\n", day, params->name, self->get_id(), strategy, willing?1:0); 
 }
 
 #endif // _FRED_ATTITUDE_H
