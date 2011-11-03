@@ -15,13 +15,19 @@
 #include "Intention.h"
 #include "Random.h"
 #include "Params.h"
+#include "Place_List.h"
 
 //Private static variables that will be set by parameter lookups
 int Behavior::number_of_vaccines = 0;
-Behavior_params Behavior::adult_stays_home_params = {0,0,0,0,0,{0.0}};
-Behavior_params Behavior::child_stays_home_params = {0,0,0,0,0,{0.0}};
-Behavior_params Behavior::accepts_vaccine_params = {0,0,0,0,0,{0.0}};
-Behavior_params Behavior::accepts_vaccine_dose_params = {0,0,0,0,0,{0.0}};
+Behavior_params Behavior::adult_stays_home_params = {};
+Behavior_params Behavior::child_stays_home_params = {};
+Behavior_params Behavior::accepts_vaccine_params = {};
+Behavior_params Behavior::accepts_vaccine_dose_params = {};
+
+Behavior_survey Behavior::adult_stays_home_survey = {NULL, NULL, 0,0,NULL, NULL, 0,0,-1};
+Behavior_survey Behavior::child_stays_home_survey = {NULL, NULL, 0,0,NULL, NULL, 0,0,-1};
+Behavior_survey Behavior::accepts_vaccine_survey = {NULL, NULL, 0,0,NULL, NULL, 0,0,-1};
+Behavior_survey Behavior::accepts_vaccine_dose_survey = {NULL, NULL, 0,0,NULL, NULL, 0,0,-1};
 
 //Private static variable to assure we only lookup parameters once
 bool Behavior::parameters_are_set = false;
@@ -58,19 +64,19 @@ Behavior::~Behavior() {
 
 void Behavior::initialize_adult_behavior(Person * person) {
   if (adult_stays_home_params.enabled) {
-    adult_stays_home = setup(self, adult_stays_home_params);
+    adult_stays_home = setup(self, &adult_stays_home_params, &adult_stays_home_survey);
   }
   
   if (child_stays_home_params.enabled) {
-    child_stays_home = setup(self, child_stays_home_params);
+    child_stays_home = setup(self, &child_stays_home_params, &child_stays_home_survey);
   }
   
   if (Behavior::number_of_vaccines > 0) {
     if (accepts_vaccine_params.enabled) {
-      accepts_vaccine = setup(self, accepts_vaccine_params);
+      accepts_vaccine = setup(self, &accepts_vaccine_params, &accepts_vaccine_survey);
     }
     if (accepts_vaccine_dose_params.enabled) {
-      accepts_vaccine_dose = setup(self, accepts_vaccine_dose_params);
+      accepts_vaccine_dose = setup(self, &accepts_vaccine_dose_params, &accepts_vaccine_dose_survey);
     }
   }
 
@@ -80,33 +86,58 @@ void Behavior::initialize_adult_behavior(Person * person) {
 
 
 
-Intention * Behavior::setup(Person * self, Behavior_params params) {
+Intention * Behavior::setup(Person * self, Behavior_params * params, Behavior_survey * survey) {
   double prob;
+  int frequency;
   Intention * behavior = new Intention(self);
-  int itype = draw_from_distribution(params.cdf_size, params.cdf);
+  int itype = draw_from_distribution(params->cdf_size, params->cdf);
+  params->final_dist[itype]++;
   Behavior_type type = (Behavior_type) itype;
   behavior->set_type(type);
+  // printf("behavior %s setup type = %d\n", params->name, type);
 
   switch (type) {
   case REFUSE:
+    behavior->set_type(REFUSE);
     behavior->set_willing(false);
-    // printf("set willing = false\n");
     behavior->set_frequency(0);
+    behavior->set_params(params);
     break;
   case ACCEPT:
+    behavior->set_type(ACCEPT);
     behavior->set_willing(true);
-    // printf("set willing = true\n");
     behavior->set_frequency(0);
+    behavior->set_params(params);
     break;
   case COIN_TOSS:
-    prob = URAND(params.min_prob, params.max_prob); 
+    behavior->set_type(COIN_TOSS);
+    prob = URAND(params->min_prob, params->max_prob); 
     behavior->set_willing(RANDOM() < prob);
     behavior->set_probability(prob);
-    behavior->set_frequency(params.frequency);
+    if (params->frequency > 0) 
+      frequency = IRAND(1, params->frequency);
+    else
+      frequency = IRAND(1, params->frequency);
+    behavior->set_frequency(frequency);
+    behavior->set_params(params);
     break;
-  case NETWORK:
+  case IMITATION:
+    params->imitation_enabled = 1;
+    behavior->set_type(IMITATION);
+    prob = URAND(params->min_prob, params->max_prob); 
+    // printf("min_prob %f  max_prob %f  prob %f\n", params->min_prob, params->max_prob, prob);
+    behavior->set_willing(RANDOM() < prob);
+    behavior->set_probability(prob);
+    if (params->frequency > 0) 
+      frequency = IRAND(1, params->frequency);
+    else
+      frequency = IRAND(1, params->frequency);
+    behavior->set_frequency(frequency);
+    behavior->set_params(params);
+    behavior->set_survey(survey);
     break;
   case HBM:
+    behavior->set_type(HBM);
     break;
   }
   return behavior;
@@ -140,30 +171,67 @@ void Behavior::get_parameters_for_behavior(char * behavior_name, Behavior_params
 
   sprintf(param_str, "%s_segment_cdf", behavior_name);
   params->cdf_size = Params::get_param_vector(param_str , params->cdf);
+
+  sprintf(param_str, "%s_imitation_weights", behavior_name);
+  Params::get_param_vector(param_str , params->w);
+
+  params->total_weight = 0.0;
+  for (int i = 0; i < NUMBER_WEIGHTS; i++)
+    params->total_weight += params->w[i];
+
+  sprintf(param_str, "%s_update_rate", behavior_name);
+  Params::get_param(param_str, &(params->update_rate));
+
+  sprintf(param_str, "%s_imitation_threshold", behavior_name);
+  Params::get_param(param_str, &(params->imitation_threshold));
+
+  sprintf(param_str, "%s_imitation_mode", behavior_name);
+  Params::get_param(param_str, &(params->imitation_mode));
+
+  params->imitation_enabled = 0;
+  strcpy(params->name, behavior_name);
+  for (int i = 0; i < BEHAVIOR_TYPES; i++)
+    params->final_dist[i] = 0;
+  params->first = 1;
 }
 
 void Behavior::update(int day) {
+
   if (self != parental_decision_maker) return;
 
-  if (adult_stays_home_params.enabled && adult_stays_home->get_frequency() > 0)
+  if (adult_stays_home_params.enabled) {
+    report_distribution(&adult_stays_home_params);
     adult_stays_home->update(day);
+  }
 
-  if (child_stays_home_params.enabled && child_stays_home->get_frequency() > 0)
+  if (child_stays_home_params.enabled) {
+    report_distribution(&child_stays_home_params);
     child_stays_home->update(day);
+  }
 
-  if (accepts_vaccine_params.enabled && accepts_vaccine->get_frequency() > 0)
+  if (accepts_vaccine_params.enabled) {
+    report_distribution(&accepts_vaccine_params);
     accepts_vaccine->update(day);
+  }
 
-  if (accepts_vaccine_dose_params.enabled && accepts_vaccine_dose->get_frequency() > 0)
+  if (accepts_vaccine_dose_params.enabled) {
+    report_distribution(&accepts_vaccine_dose_params);
     accepts_vaccine_dose->update(day);
+  }
 }
 
 bool Behavior::adult_is_staying_home(int day) {
+  if (adult_stays_home_params.enabled == false)
+    return false;
+
   assert(adult_stays_home != NULL);
   return adult_stays_home->is_willing();
 }
 
 bool Behavior::child_is_staying_home(int day) {
+  if (child_stays_home_params.enabled == false)
+    return false;
+
   if (self != parental_decision_maker) {
     return parental_decision_maker->get_behavior()->child_is_staying_home(day);
   }
@@ -174,6 +242,8 @@ bool Behavior::child_is_staying_home(int day) {
 }
 
 bool Behavior::acceptance_of_vaccine() {
+  if (accepts_vaccine_params.enabled == false)
+    return true;
 
   if (self != parental_decision_maker) {
     return parental_decision_maker->get_behavior()->acceptance_of_vaccine();
@@ -185,6 +255,8 @@ bool Behavior::acceptance_of_vaccine() {
 }
 
 bool Behavior::acceptance_of_another_vaccine_dose() {
+  if (accepts_vaccine_dose_params.enabled == false)
+    return true;
 
   if (self != parental_decision_maker) {
     return parental_decision_maker->get_behavior()->acceptance_of_another_vaccine_dose();

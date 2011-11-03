@@ -186,30 +186,61 @@ child_stays_home_enabled = 1
 accepts_vaccine_enabled = 0
 accepts_vaccine_dose_enabled = 0
 
-# type 0 = always refuse
-# type 1 = accept
-# type 2 = use fixed probability from uniform distribution
-adult_stays_home_segment_cdf = 3 0.5 1.0 0.0
-child_stays_home_segment_cdf = 3 0.5 1.0 0.0
-accepts_vaccine_segment_cdf = 3 0.0 0.0 1.0
-accepts_vaccine_dose_segment_cdf = 3 0.0 0.0 1.0
+# BEHAVIOR TYPE 0 = ALWAYS REFUSE
+# BEHAVIOR TYPE 1 = ALWAYS ACCEPT
+# BEHAVIOR TYPE 2 = USE WEIGHTED COIN TO TOSS FOR EACH DECISION
+# BEHAVIOR TYPE 3 = IMITATION
+# BEHAVIOR TYPE 4 = HEALTH BELIEF MODEL
+adult_stays_home_segment_cdf = 5 0.5 1.0 0.0 0.0 0.0
+child_stays_home_segment_cdf = 5 0.5 1.0 0.0 0.0 0.0
+accepts_vaccine_segment_cdf = 5 0.4 1.0 0.0 0.0 0.0
+accepts_vaccine_dose_segment_cdf = 5 0.4 1.0 0.0 0.0 0.0
 
-##### PROBABILISTIC BEHAVIOR DISTRIBUTIONS AND DECISION FREQUENCY
-adult_stays_home_min_prob = 0.5
-adult_stays_home_max_prob = 0.5
-adult_stays_home_frequency = 0
+##### COIN_TOSS/IMITATION INITIAL PROBS AND DECISION FREQUENCY
+adult_stays_home_min_prob = 0.0
+adult_stays_home_max_prob = 1.0
+adult_stays_home_frequency = 1
 
-child_stays_home_min_prob = 0.5
-child_stays_home_max_prob = 0.5
-child_stays_home_frequency = 0
+child_stays_home_min_prob = 0.0
+child_stays_home_max_prob = 1.0
+child_stays_home_frequency = 1
   
-accepts_vaccine_max_prob = 0.6
-accepts_vaccine_min_prob = 0.6
-accepts_vaccine_frequency = 0
+accepts_vaccine_max_prob = 0.0
+accepts_vaccine_min_prob = 1.0
+accepts_vaccine_frequency = 1
   
-accepts_vaccine_dose_max_prob = 1.0
+accepts_vaccine_dose_max_prob = 0.0
 accepts_vaccine_dose_min_prob = 1.0
-accepts_vaccine_dose_frequency = 0
+accepts_vaccine_dose_frequency = 1
+
+##### WEIGHTS FOR IMITATION BEHAVIORS
+adult_stays_home_imitation_weights = 5 0 0 0 0 1
+child_stays_home_imitation_weights = 5 0 0 0 0 1
+accepts_vaccine_imitation_weights = 5 0 0 0 0 1
+accepts_vaccine_dose_imitation_weights = 5 0 0 0 0 1
+
+##### IMITATION MODES
+## MODE 0 = change probability toward prevalence
+## MODE 1 = increase prob if prevalance exceeds threshold
+## MODE 2 = increase prob if survey exceeds threshold interpreted as counts
+## MODE 3 = like mode 1 but also decrease prob if threshold not reached
+## MODE 4 = like mode 2 but also decrease prob if threshold not reached
+adult_stays_home_imitation_mode = 0
+child_stays_home_imitation_mode = 0
+accepts_vaccine_imitation_mode = 0
+accepts_vaccine_dose_imitation_mode = 0
+
+##### IMITATION THRESHOLD
+adult_stays_home_imitation_threshold = 0.5
+child_stays_home_imitation_threshold = 0.5
+accepts_vaccine_imitation_threshold = 0.5
+accepts_vaccine_dose_imitation_threshold = 0.5
+
+#### IMITATION RATE
+adult_stays_home_update_rate = 0.1
+child_stays_home_update_rate = 0.1
+accepts_vaccine_update_rate = 0.1
+accepts_vaccine_dose_update_rate = 0.1
 
 #### Geographical Grids
 enable_large_grid = 0

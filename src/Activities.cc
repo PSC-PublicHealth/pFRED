@@ -172,16 +172,14 @@ void Activities::update_schedule(int day) {
   on_schedule[HOUSEHOLD_INDEX] = true;
   
   // decide whether to stay at home if symptomatic
-  if (self->is_symptomatic()) {
-    if (self->is_adult()) {
-      if (self->get_behavior()->adult_is_staying_home(day)) {
-	return;
-      }
+  if (self->is_adult()) {
+    if (self->get_behavior()->adult_is_staying_home(day) && self->is_symptomatic()) {
+      return;
     }
-    else {
-      if (self->get_behavior()->child_is_staying_home(day)) {
-	return;
-      }
+  }
+  else {
+    if (self->get_behavior()->child_is_staying_home(day) && self->is_symptomatic()) {
+      return;
     }
   }
 
