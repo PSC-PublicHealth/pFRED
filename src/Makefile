@@ -4,13 +4,13 @@
 CPP = g++ 
 
 # use this for development:
-CPPFLAGS = -g -m64 -pg -O3 -Wall
+# CPPFLAGS = -g -m64 -pg -O3 -Wall
 
 # use this for profiling
 # CPPFLAGS = -g -m64 -O3 # -DNDEBUG
 
 # Use this for production:
-# CPPFLAGS = -g -m64 -O3 -DNDEBUG -fast #-Wall
+CPPFLAGS = -g -m64 -O3 -DNDEBUG -fast #-Wall
 
 # Use this for unit testing:
 # CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall
@@ -41,18 +41,17 @@ endif
 %.o:%.c %.h
 	$(CPP) $(CPPFLAGS) -c $< $(INCLUDES)
 
-OBJ =   Fred.o Global.o Utils.o Decision.o Policy.o Manager.o \
-        AV_Decisions.o AV_Policies.o AV_Manager.o AV_Health.o \
-        Age_Map.o Timestep_Map.o Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
-        Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \
-	Antiviral.o Antivirals.o \
-	Activities.o Classroom.o Behavior.o Demographics.o Epidemic.o Health.o \
-        Intention.o Hospital.o Household.o Infection.o Neighborhood.o Office.o \
-	Params.o Perceptions.o Person.o Place.o Place_List.o Population.o Random.o \
-	School.o Disease.o Workplace.o \
+OBJ =   Fred.o Global.o Age_Map.o Timestep_Map.o Utils.o Params.o Date.o Random.o \
 	Geo_Utils.o Cell.o Grid.o Large_Grid.o Large_Cell.o Small_Grid.o Small_Cell.o Travel.o \
-	Date.o Trajectory.o StrainTable.o \
-	EvolutionFactory.o Evolution.o Strain.o \
+	Decision.o Policy.o Manager.o \
+	Antiviral.o Antivirals.o AV_Decisions.o AV_Policies.o AV_Manager.o AV_Health.o \
+        Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
+        Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \
+	Person.o Place.o Place_List.o Population.o \
+	Activities.o Attitude.o Behavior.o Demographics.o Health.o Perceptions.o \
+        Classroom.o Hospital.o Household.o Neighborhood.o Office.o School.o Workplace.o \
+	Disease.o Infection.o Epidemic.o \
+	EvolutionFactory.o Evolution.o Strain.o Trajectory.o StrainTable.o \
 	Multistrain_Timestep_Map.o \
 	IntraHost.o DefaultIntraHost.o FixedIntraHost.o \
 	Abstract_Grid.o Abstract_Cell.o \

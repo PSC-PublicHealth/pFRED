@@ -12,7 +12,7 @@
 #include "Behavior.h"
 #include "Person.h"
 #include "Global.h"
-#include "Intention.h"
+#include "Attitude.h"
 #include "Random.h"
 #include "Params.h"
 #include "Place_List.h"
@@ -86,58 +86,67 @@ void Behavior::initialize_adult_behavior(Person * person) {
 
 
 
-Intention * Behavior::setup(Person * self, Behavior_params * params, Behavior_survey * survey) {
+Attitude * Behavior::setup(Person * self, Behavior_params * params, Behavior_survey * survey) {
   double prob;
   int frequency;
-  Intention * behavior = new Intention(self);
-  int itype = draw_from_distribution(params->cdf_size, params->cdf);
-  params->final_dist[itype]++;
-  Behavior_type type = (Behavior_type) itype;
-  behavior->set_type(type);
-  // printf("behavior %s setup type = %d\n", params->name, type);
+  Attitude * behavior = new Attitude(self);
+  int strategy_index = draw_from_distribution(params->strategy_cdf_size, params->strategy_cdf);
+  params->strategy_dist[strategy_index]++;
+  Behavior_strategy strategy = (Behavior_strategy) strategy_index;
+  behavior->set_strategy(strategy);
+  // printf("behavior %s setup strategy = %d\n", params->name, strategy);
 
-  switch (type) {
+  switch (strategy) {
   case REFUSE:
-    behavior->set_type(REFUSE);
+    behavior->set_strategy(REFUSE);
     behavior->set_willing(false);
     behavior->set_frequency(0);
     behavior->set_params(params);
     break;
   case ACCEPT:
-    behavior->set_type(ACCEPT);
+    behavior->set_strategy(ACCEPT);
     behavior->set_willing(true);
     behavior->set_frequency(0);
     behavior->set_params(params);
     break;
-  case COIN_TOSS:
-    behavior->set_type(COIN_TOSS);
+  case FLIP:
+    behavior->set_strategy(FLIP);
     prob = URAND(params->min_prob, params->max_prob); 
-    behavior->set_willing(RANDOM() < prob);
     behavior->set_probability(prob);
     if (params->frequency > 0) 
       frequency = IRAND(1, params->frequency);
     else
       frequency = IRAND(1, params->frequency);
+    behavior->set_willing(RANDOM() < prob);
     behavior->set_frequency(frequency);
     behavior->set_params(params);
     break;
-  case IMITATION:
+  case IMITATE:
     params->imitation_enabled = 1;
-    behavior->set_type(IMITATION);
+    behavior->set_strategy(IMITATE);
+    behavior->set_survey(survey);
     prob = URAND(params->min_prob, params->max_prob); 
     // printf("min_prob %f  max_prob %f  prob %f\n", params->min_prob, params->max_prob, prob);
-    behavior->set_willing(RANDOM() < prob);
     behavior->set_probability(prob);
     if (params->frequency > 0) 
       frequency = IRAND(1, params->frequency);
     else
       frequency = IRAND(1, params->frequency);
+    behavior->set_willing(RANDOM() < prob);
     behavior->set_frequency(frequency);
     behavior->set_params(params);
-    behavior->set_survey(survey);
     break;
   case HBM:
-    behavior->set_type(HBM);
+    behavior->set_strategy(HBM);
+    prob = URAND(params->min_prob, params->max_prob); 
+    behavior->set_probability(prob);
+    if (params->frequency > 0) 
+      frequency = IRAND(1, params->frequency);
+    else
+      frequency = IRAND(1, params->frequency);
+    behavior->set_willing(RANDOM() < prob);
+    behavior->set_frequency(frequency);
+    behavior->set_params(params);
     break;
   }
   return behavior;
@@ -169,15 +178,15 @@ void Behavior::get_parameters_for_behavior(char * behavior_name, Behavior_params
   sprintf(param_str, "%s_frequency", behavior_name);
   Params::get_param(param_str, &(params->frequency));
 
-  sprintf(param_str, "%s_segment_cdf", behavior_name);
-  params->cdf_size = Params::get_param_vector(param_str , params->cdf);
+  sprintf(param_str, "%s_strategy_cdf", behavior_name);
+  params->strategy_cdf_size = Params::get_param_vector(param_str , params->strategy_cdf);
 
   sprintf(param_str, "%s_imitation_weights", behavior_name);
-  Params::get_param_vector(param_str , params->w);
+  Params::get_param_vector(param_str , params->weight);
 
   params->total_weight = 0.0;
   for (int i = 0; i < NUMBER_WEIGHTS; i++)
-    params->total_weight += params->w[i];
+    params->total_weight += params->weight[i];
 
   sprintf(param_str, "%s_update_rate", behavior_name);
   Params::get_param(param_str, &(params->update_rate));
@@ -190,8 +199,8 @@ void Behavior::get_parameters_for_behavior(char * behavior_name, Behavior_params
 
   params->imitation_enabled = 0;
   strcpy(params->name, behavior_name);
-  for (int i = 0; i < BEHAVIOR_TYPES; i++)
-    params->final_dist[i] = 0;
+  for (int i = 0; i < BEHAVIOR_STRATEGIES; i++)
+    params->strategy_dist[i] = 0;
   params->first = 1;
 }
 

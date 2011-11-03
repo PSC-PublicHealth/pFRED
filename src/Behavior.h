@@ -16,10 +16,10 @@
 #include <vector>
 
 class Person;
-class Intention;
+class Attitude;
 
-enum Behavior_type {REFUSE, ACCEPT, COIN_TOSS, IMITATION, HBM};
-#define BEHAVIOR_TYPES 5
+enum Behavior_strategy {REFUSE, ACCEPT, FLIP, IMITATE, HBM};
+#define BEHAVIOR_STRATEGIES 5
 #define NUMBER_WEIGHTS 5
 
 typedef struct {
@@ -27,10 +27,10 @@ typedef struct {
   double min_prob;
   double max_prob;
   int frequency;
-  int cdf_size;
-  double cdf[BEHAVIOR_TYPES];
-  int final_dist[BEHAVIOR_TYPES];
-  double w[NUMBER_WEIGHTS];
+  int strategy_cdf_size;
+  double strategy_cdf[BEHAVIOR_STRATEGIES];
+  int strategy_dist[BEHAVIOR_STRATEGIES];
+  double weight[NUMBER_WEIGHTS];
   double total_weight;
   double update_rate;
   int imitation_mode;
@@ -86,13 +86,13 @@ private:
   Person * parental_decision_maker;
   void get_parameters();
   void get_parameters_for_behavior(char * behavior_name, Behavior_params * par);
-  Intention * setup(Person * self, Behavior_params * params, Behavior_survey * survey);
+  Attitude * setup(Person * self, Behavior_params * params, Behavior_survey * survey);
   void report_distribution(Behavior_params * params);
   
-  Intention * adult_stays_home;
-  Intention * child_stays_home;
-  Intention * accepts_vaccine;
-  Intention * accepts_vaccine_dose;
+  Attitude * adult_stays_home;
+  Attitude * child_stays_home;
+  Attitude * accepts_vaccine;
+  Attitude * accepts_vaccine_dose;
 
   static bool parameters_are_set;
   static int number_of_vaccines;
@@ -114,8 +114,8 @@ inline
 void Behavior::report_distribution(Behavior_params * params) {
   if (params->first) {
     printf("BEHAVIOR %s dist: ", params->name);
-    for (int i = 0; i < BEHAVIOR_TYPES; i++) {
-      printf("%d ", params->final_dist[i]);
+    for (int i = 0; i < BEHAVIOR_STRATEGIES; i++) {
+      printf("%d ", params->strategy_dist[i]);
     }
     printf("\n"); fflush(stdout);
     params->first = 0;
