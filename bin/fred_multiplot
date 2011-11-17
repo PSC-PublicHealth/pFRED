@@ -46,7 +46,7 @@ $title = "Immune" if $v eq "M";
 $title = "Attack Rate" if $v eq "A";
 $title = "Clinical Cases" if $v eq "c";
 $title = "Reproductive Rate" if $v eq "r";
-$title = "Seasonality Multiplier" if $x eq "SM";
+$title = "Seasonality Multiplier" if $v eq "SM";
 
 open FH, ">$pltfile";
 print FH <<"EOF";
