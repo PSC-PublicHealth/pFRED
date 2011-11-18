@@ -171,26 +171,10 @@ string Person::to_string() {
 }
 
 void Person::terminate() {
+  Utils::fred_verbose(1, "terminating person %d\n", id);
   behavior->terminate();
   activities->terminate();
   health->terminate();
   demographics->terminate();
 }
 
-void Person::set_parental_decision_maker() {
-  if (Global::ADULT_AGE <= get_age()) {
-    behavior->set_parental_decision_maker(this);
-  }
-  else {
-    int relationship = get_relationship();
-    Household * h = (Household *) get_household();
-    Person *dm = h->get_parental_decision_maker(relationship);
-    if (dm == NULL) {
-      Utils::fred_abort("set_parental_decision_maker: Can't find suitable adult for child %d\n",
-			get_id());
-    }
-    else {
-      behavior->set_parental_decision_maker(dm);
-    }
-  }
-}

@@ -15,10 +15,11 @@
 #include "Random.h"
 #include "Behavior.h"
 
-// class Person;
-#include "Person.h"
-
+class Person;
+class Perceptions;
 class Place;
+
+enum IMITATION_WEIGHTS {HOUSEHOLD_WT, NEIGHBORHOOD_WT, SCHOOL_WT, WORK_WT, ALL_WT};
 
 class Attitude {
  public:
@@ -36,11 +37,38 @@ class Attitude {
   void update(int day);
 
   // access functions
-  void set_strategy(Behavior_strategy t) { strategy = t; }
+  void set_params(Behavior_params * _params) { params = _params; }
+  void set_strategy(Behavior_strategy t) {
+    strategy = t;
+    switch (strategy) {
+    case IMITATE_PREVALENCE:
+      weight = params->imitate_prevalence_weight;
+      threshold = -1.0;
+      total_weight = params->imitate_prevalence_total_weight;
+      update_rate = params->imitate_prevalence_update_rate;
+      break;
+    case IMITATE_CONSENSUS:
+      weight = params->imitate_consensus_weight;
+      threshold = params->imitate_consensus_threshold;
+      total_weight = params->imitate_consensus_total_weight;
+      update_rate = params->imitate_consensus_update_rate;
+      break;
+    case IMITATE_COUNT:
+      weight = params->imitate_count_weight;
+      threshold = params->imitate_count_threshold;
+      total_weight = params->imitate_count_total_weight;
+      update_rate = params->imitate_count_update_rate;
+      break;
+    case HBM:
+      setup_hbm();
+      break;
+    default:
+      break;
+    }
+  }
   void set_probability(double p) { probability = p; }
   void set_frequency(int _frequency) { frequency = _frequency; }
   void set_willing(bool decision) { willing = decision; }
-  void set_params(Behavior_params * _params) { params = _params; }
   void set_survey(Behavior_survey * _survey) { survey = _survey; }
   int get_strategy() { return strategy; }
   double get_probability () { return probability; }
@@ -48,44 +76,57 @@ class Attitude {
   bool is_willing() { return willing; }
 
  private:
-  Person * self;
-  Behavior_strategy strategy;
-  Behavior_params * params;
-  Behavior_survey * survey;
-  double probability;
-  int frequency;
-  int expiration;
-  bool willing;
-  
   // private methods
   void reset_survey(int day);
   void update_survey();
   void record_survey_response(Place * place);
   void imitate();
+  void setup_hbm();
+  void update_hbm(int day);
+  bool compare_to_odds_ratio(int disease_id);
+  void update_perceived_severity(int day, int disease_id);
+  void update_perceived_susceptibility(int day, int disease_id);
+  void update_perceived_benefits(int day, int disease_id);
+  void update_perceived_barriers(int day, int disease_id);
+
+  // private data
+  Person * self;
+  Behavior_strategy strategy;
+  Behavior_params * params;
+  double probability;
+  int frequency;
+  int expiration;
+  bool willing;
+
+  // Imitation data 
+  Behavior_survey * survey;
+  double * weight;
+  double threshold;
+  double total_weight;
+  double update_rate;
+  
+  // Health Belief Model
+
+  // Memory
+  double * cumm_susceptibility;				// per disease
+  double * cumm_severity;				// per disease
+  double memory_decay;
+  
+  // Perceptions
+  int total_deaths;
+  Perceptions * perceptions;
+  double * perceived_susceptibility;		// per disease
+  double * perceived_severity;			// per disease
+  double * perceived_benefits;			// per disease
+  double * perceived_barriers;			// per disease
+
+  // Thresholds for dichotomous variables
+  double susceptibility_threshold;
+  double severity_threshold;
+  double benefits_threshold;
+  double barriers_threshold;
+
 };
-
-inline
-void Attitude::update(int day) {
-
-  // reset the survey if needed (once per day)
-  if (params->imitation_enabled && survey->last_update < day) {
-    reset_survey(day);
-  }
-
-  if (frequency > 0 && expiration <= day) {
-    if (strategy == IMITATE && day > 0)
-      imitate();
-    double r = RANDOM();
-    willing = (r < probability);
-    expiration = day + frequency;
-  }
-
-  // respond to survey if any agent is using imitation
-  if (params->imitation_enabled) {
-    update_survey();
-  }
-  // printf("ATTITUDE day %d behavior %s person %d strategy %d willing %d\n", day, params->name, self->get_id(), strategy, willing?1:0); 
-}
 
 #endif // _FRED_ATTITUDE_H
 

@@ -34,7 +34,6 @@ Household::Household(int loc, const  char *lab, double lon,
   housemate.clear();
   adults = children = 0;
   N = 0; 
-  HoH = NULL;
 }
 
 void Household::get_parameters(int diseases) {
@@ -101,41 +100,6 @@ void Household::enroll(Person * per) {
   }
 }
 
-void Household::set_new_HoH() {
-  HoH = NULL;
-  for (int i = 0; i < N && HoH == NULL; i++) {
-    if (housemate[i]->get_relationship() == 1 && Global::ADULT_AGE <= housemate[i]->get_age()) {
-      HoH = housemate[i];
-      return;
-    }
-  }
-  if (HoH == NULL) {
-    Utils::fred_warning("Warning! set_new_HoH: no adult Householder found for household %d %s\n", id, label);
-    for (int i = 0; i < N && HoH == NULL; i++) {
-      if (housemate[i]->get_relationship() == 2 && Global::ADULT_AGE <= housemate[i]->get_age()) {
-	HoH = housemate[i];
-	Utils::fred_warning("set_new_HoH to spouse age %d for household %d %s\n", HoH->get_age(), id, label);
-	return;
-      }
-    }
-  }
-  if (HoH == NULL) {
-    Utils::fred_warning("Warning! set_new_HoH: no Householder spouse found for household %d %s\n"
-			, id, label);
-    for (int i = 0; i < N && HoH == NULL; i++) {
-      if (Global::ADULT_AGE <= housemate[i]->get_age()) {
-	HoH = housemate[i];
-	Utils::fred_warning("set_new_HoH to adult age %d rel %d for household %d %s\n",
-			    HoH->get_age(), HoH->get_relationship(), id, label);
-	return;
-      }
-    }
-  }
-  if (HoH == NULL) {
-    Utils::fred_abort("Warning! set_new_HoH: no adult found for household %d %s\n", id, label);
-  }
-}  
-
 void Household::unenroll(Person * per) {
   int age = per->get_age();
   if (Global::Verbose>1) {
@@ -161,13 +125,7 @@ void Household::unenroll(Person * per) {
     }
     if (N == 0) { 
       Global::Cells->add_vacant_house(this);
-      HoH = NULL;
       grid_cell->subtract_occupied_house();
-    }
-    else {
-      if (HoH == per) {
-	set_new_HoH();
-      }
     }
   }
   else {
@@ -233,60 +191,4 @@ void Household::spread_infection(int day, int disease_id) {
     } // end contact loop
   } // end infectious list loop
 }
-
-Person * Household::get_parental_decision_maker(int relationship) {
-  Person * dm = NULL;
-  if (relationship == Global::GRANDCHILD) {
-
-    // select first adult natural child or spouse thereof of householder parent, if any
-    for (int i = 0; i < N; i++) {
-      int r = housemate[i]->get_relationship();
-      if ((r == Global::NATURAL_CHILD || r == Global::SON_DAUGHTER_IN_LAW)
-	  && Global::ADULT_AGE <= housemate[i]->get_age()) {
-	dm = housemate[i];
-	return dm;
-      }
-    }
-
-    // consider other children of householder, if any
-    for (int i = 0; i < N; i++) {
-      int r = housemate[i]->get_relationship();
-      if ((r == Global::ADOPTED_CHILD || r == Global::STEP_CHILD ||
-	   r == Global::NEPHEW_NIECE) && Global::ADULT_AGE <= housemate[i]->get_age()) {
-	dm = housemate[i];
-	return dm;
-      }
-    }
-  }
-
-  // select householder if an adult
-  for (int i = 0; i < N; i++) {
-    if (housemate[i]->get_relationship() == Global::HOUSEHOLDER &&
-	Global::ADULT_AGE <= housemate[i]->get_age()) {
-      dm = housemate[i];
-      return dm;
-    }
-  }
-
-  // select householder's spouse if an adult
-  for (int i = 0; i < N; i++) {
-    if (housemate[i]->get_relationship() == Global::SPOUSE &&
-	Global::ADULT_AGE <= housemate[i]->get_age()) {
-      dm = housemate[i];
-      return dm;
-    }
-  }
-
-  // select any adult
-  for (int i = 0; i < N; i++) {
-    if (Global::ADULT_AGE <= housemate[i]->get_age()) {
-      dm = housemate[i];
-      return dm;
-    }
-  }
-
-  Utils::fred_abort("get_parental_decision_maker: no adult found for household %d %s\n", id, label);
-  return NULL;
-}
-
 

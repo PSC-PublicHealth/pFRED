@@ -17,28 +17,55 @@
 
 class Person;
 class Attitude;
+class Household;
 
-enum Behavior_strategy {REFUSE, ACCEPT, FLIP, IMITATE, HBM};
-#define BEHAVIOR_STRATEGIES 5
-#define NUMBER_WEIGHTS 5
+enum Behavior_strategy {REFUSE, ACCEPT, FLIP, IMITATE_PREVALENCE, IMITATE_CONSENSUS, IMITATE_COUNT, HBM};
+#define BEHAVIOR_STRATEGIES 7
+#define NUMBER_WEIGHTS 7
 
 typedef struct {
+  // COMMON
+  char name[32];
+  int first;
   int enabled;
-  double min_prob;
-  double max_prob;
   int frequency;
   int strategy_cdf_size;
   double strategy_cdf[BEHAVIOR_STRATEGIES];
   int strategy_dist[BEHAVIOR_STRATEGIES];
-  double weight[NUMBER_WEIGHTS];
-  double total_weight;
-  double update_rate;
-  int imitation_mode;
-  double imitation_threshold;
-  int imitation_count;
+  // FLIP
+  double min_prob;
+  double max_prob;
+  // IMITATE params
   int imitation_enabled;
-  char name[32];
-  int first;
+  // IMITATE PREVALENCE
+  double imitate_prevalence_weight[NUMBER_WEIGHTS];
+  double imitate_prevalence_total_weight;
+  double imitate_prevalence_update_rate;
+  double imitate_prevalence_threshold;
+  int imitate_prevalence_count;
+  // IMITATE CONSENSUS
+  double imitate_consensus_weight[NUMBER_WEIGHTS];
+  double imitate_consensus_total_weight;
+  double imitate_consensus_update_rate;
+  double imitate_consensus_threshold;
+  int imitate_consensus_count;
+  // IMITATE COUNT
+  double imitate_count_weight[NUMBER_WEIGHTS];
+  double imitate_count_total_weight;
+  double imitate_count_update_rate;
+  double imitate_count_threshold;
+  int imitate_count_count;
+  // HBM
+  double susceptibility_threshold_distr[2];
+  double severity_threshold_distr[2];
+  double benefits_threshold_distr[2];
+  double barriers_threshold_distr[2];
+  double memory_decay_distr[2];
+  double base_odds_ratio;
+  double susceptibility_odds_ratio;
+  double severity_odds_ratio;
+  double benefits_odds_ratio;
+  double barriers_odds_ratio;
 } Behavior_params;
 
 typedef struct {
@@ -77,36 +104,46 @@ public:
   bool child_is_staying_home(int day);
   bool acceptance_of_vaccine();
   bool acceptance_of_another_vaccine_dose();
-  void terminate(){}
-  void set_parental_decision_maker(Person * person) { parental_decision_maker = person; }
-  Person * get_parental_decision_maker() { return parental_decision_maker; }
+  bool child_acceptance_of_vaccine();
+  bool child_acceptance_of_another_vaccine_dose();
+  void set_adult_decision_maker(Person * person) { adult_decision_maker = person; }
+  Person * get_adult_decision_maker() { return adult_decision_maker; }
+  void select_adult_decision_maker(Person *unavailable_person);
+  void terminate();
 
 private:
   Person * self;
-  Person * parental_decision_maker;
+  Person * adult_decision_maker;
   void get_parameters();
   void get_parameters_for_behavior(char * behavior_name, Behavior_params * par);
   Attitude * setup(Person * self, Behavior_params * params, Behavior_survey * survey);
   void report_distribution(Behavior_params * params);
+  Person * select_adult(Household *h, int relationship, Person * unavailable_person);
   
-  Attitude * adult_stays_home;
-  Attitude * child_stays_home;
-  Attitude * accepts_vaccine;
-  Attitude * accepts_vaccine_dose;
+  Attitude * stay_home_when_sick;
+  Attitude * keep_child_home_when_sick;
+  Attitude * accept_vaccine;
+  Attitude * accept_vaccine_dose;
+  Attitude * accept_vaccine_for_child;
+  Attitude * accept_vaccine_dose_for_child;
 
   static bool parameters_are_set;
   static int number_of_vaccines;
 
   // run-time parameters for behaviors
-  static Behavior_params adult_stays_home_params;
-  static Behavior_params child_stays_home_params;
-  static Behavior_params accepts_vaccine_params;
-  static Behavior_params accepts_vaccine_dose_params;
+  static Behavior_params stay_home_when_sick_params;
+  static Behavior_params keep_child_home_when_sick_params;
+  static Behavior_params accept_vaccine_params;
+  static Behavior_params accept_vaccine_dose_params;
+  static Behavior_params accept_vaccine_for_child_params;
+  static Behavior_params accept_vaccine_dose_for_child_params;
   
-  static Behavior_survey adult_stays_home_survey;
-  static Behavior_survey child_stays_home_survey;
-  static Behavior_survey accepts_vaccine_survey;
-  static Behavior_survey accepts_vaccine_dose_survey;
+  static Behavior_survey stay_home_when_sick_survey;
+  static Behavior_survey keep_child_home_when_sick_survey;
+  static Behavior_survey accept_vaccine_survey;
+  static Behavior_survey accept_vaccine_dose_survey;
+  static Behavior_survey accept_vaccine_for_child_survey;
+  static Behavior_survey accept_vaccine_dose_for_child_survey;
   
 };
 

@@ -92,24 +92,6 @@ public:
   void unenroll(Person * per);
 
   /**
-   * Set the head of the household.  It will be an adult who will make decisions for the household.
-   */
-  void set_HoH(Person *person) { HoH = person; }
-
-  /**
-   * Get the head of the household.  It will be an adult who will make decisions for the household.
-   *
-   * @return a pointer to the person who is the head of the household
-   */
-  Person * get_HoH() { return HoH; }
-
-  /**
-   * Set a valid head of the household.  It will be an adult who will make decisions for the household.
-   */
-  void set_new_HoH();
-  Person * get_parental_decision_maker(int relationship);
-
-  /**
    * Get a person from the household.
    *
    * @param i the index of the person in the household
@@ -181,7 +163,6 @@ private:
   static double *** Household_contact_prob;
   static bool Household_parameters_set;
 
-  Person * HoH;
   vector <Person *> housemate;
   int children;
   int adults;

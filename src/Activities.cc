@@ -413,8 +413,6 @@ void Activities::update_profile() {
     // get a job
     profile = WORKER_PROFILE;
     assign_workplace();
-    // take on adult behaviors
-    self->become_an_adult();
     if (Global::Verbose>1) {
       fprintf(Global::Statusfp,
 	      "changed behavior profile to WORKER: id %d age %d sex %c\n",
@@ -447,10 +445,6 @@ static int mobility_count[MAX_MOBILITY_AGE + 1];
 static int mobility_moved[MAX_MOBILITY_AGE + 1];
 static int mcount = 0;
 
-void Activities::set_HoH (Person * person) { ((Household *) favorite_place[HOUSEHOLD_INDEX])->set_HoH(person); }
-Person * Activities::get_HoH() { return ((Household *) favorite_place[HOUSEHOLD_INDEX])->get_HoH(); }
-
-
 void Activities::update_household_mobility() {
   if (!Global::Enable_Mobility) return;
   if (Global::Verbose>1) {
@@ -469,7 +463,7 @@ void Activities::update_household_mobility() {
   mcount++;
 
   Household * household = (Household *) self->get_household();
-  if (self->is_HoH()) {
+  if (self->is_householder()) {
     if (RANDOM() < Activities::age_yearly_mobility_rate[age]) {
       int size = household->get_size();
       for (int i = 0; i < size; i++) {

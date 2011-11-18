@@ -365,7 +365,7 @@ void Place_List::quality_control(char *directory) {
   
   // relationship between children and decision maker
   if (Global::Verbose) {
-    // find parental decision maker for each child
+    // find adult decision maker for each child
     for (int p = 0; p < number_places; p++) {
       if (places[p]->get_type() == HOUSEHOLD) {
 	Household *h = (Household *) places[p];
@@ -376,10 +376,10 @@ void Place_List::quality_control(char *directory) {
 	  int ch_age = child->get_age();
 	  if (ch_age < 18) {
 	    int ch_rel = child->get_relationship();
-	    int dm_age = child->get_parental_decision_maker()->get_age();
-	    int dm_rel = child->get_parental_decision_maker()->get_relationship();
+	    int dm_age = child->get_adult_decision_maker()->get_age();
+	    int dm_rel = child->get_adult_decision_maker()->get_relationship();
 	    if (dm_rel != 1 || ch_rel != 3) {
-	      printf("DM: household %d %s  dm: %d %d child: %d %d\n",
+	      printf("DECISION_MAKER: household %d %s  decision_maker: %d %d child: %d %d\n",
 		     h->get_id(), h->get_label(), dm_age, dm_rel, ch_age, ch_rel);
 	    }
 	  }
@@ -394,10 +394,13 @@ void Place_List::quality_control(char *directory) {
     // age distribution of heads of households
     for (int c = 0; c < 100; c++) { count[c] = 0; }
     for (int p = 0; p < number_places; p++) {
-      Person * per;
+      Person * per = NULL;
       if (places[p]->get_type() == HOUSEHOLD) {
 	Household *h = (Household *) places[p];
-        per = h->get_HoH();
+	for (int i = 0; i < h->get_size(); i++) {
+	  if (h->get_housemate(i)->is_householder())
+	    per = h->get_housemate(i);
+	}
 	if (per == NULL) {
 	  Utils::fred_abort("Help! No head of household found for household id %d label %s\n",
 			    h->get_id(), h->get_label());
@@ -423,12 +426,15 @@ void Place_List::quality_control(char *directory) {
     // age distribution of heads of households with children
     for (int c = 0; c < 100; c++) { count[c] = 0; }
     for (int p = 0; p < number_places; p++) {
-      Person * per;
+      Person * per = NULL;
       if (places[p]->get_type() == HOUSEHOLD) {
 	Household *h = (Household *) places[p];
         if (h->get_children() == 0) continue;
 	children += h->get_children();
-        per = h->get_HoH();
+	for (int i = 0; i < h->get_size(); i++) {
+	  if (h->get_housemate(i)->is_householder())
+	    per = h->get_housemate(i);
+	}
 	if (per == NULL) {
 	  Utils::fred_abort("Help! No head of household found for household id %d label %s\n",
 			    h->get_id(), h->get_label());

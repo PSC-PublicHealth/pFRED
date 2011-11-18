@@ -13,11 +13,10 @@
 #define _FRED_PERCEPTIONS_H
 
 #include "Global.h"
-#include "Place.h"
-#include "Person.h"
+#include "Population.h"
 #include "Disease.h"
 #include "Epidemic.h"
-#include "Household.h"
+class Person;
 
 class Perceptions {
 public:

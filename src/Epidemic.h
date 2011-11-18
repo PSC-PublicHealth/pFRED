@@ -62,6 +62,16 @@ public:
   int get_clinical_incidents() { return clinical_incidents; }
 
   /**
+   * @return the clinical_incidents
+   */
+  int get_total_clinical_incidents() { return total_clinical_incidents; }
+
+  /**
+   * @return the clinical_attack_rate
+   */
+  double get_clinical_attack_rate() { return clinical_attack_rate; }
+
+  /**
    * @return the incident_infections
    */
   int get_incident_infections() { return incident_infections; }

@@ -365,9 +365,7 @@ public:
    * @see Activities::get_household()
    */
   Place * get_household() { return activities->get_household(); }
-  bool is_HoH() { return this == get_HoH(); }
-  Person * get_HoH() { return activities->get_HoH(); }
-  void set_HoH (Person * person) { activities->set_HoH(person); }
+  bool is_householder() { return demographics->is_householder(); }
 
   /**
    * @return a pointer to this Person's Neighborhood
@@ -436,14 +434,13 @@ public:
    */
   Behavior * get_behavior() const { return behavior; }
 
-  void set_parental_decision_maker();
-  Person * get_parental_decision_maker() { return behavior->get_parental_decision_maker(); }
-
+  void select_adult_decision_maker(Person * old_adult){ behavior->select_adult_decision_maker(old_adult); }
+  Person * get_adult_decision_maker() { return behavior->get_adult_decision_maker(); }
   bool adult_is_staying_home(int day) { return behavior->adult_is_staying_home(day); }
   bool child_is_staying_home(int day) { return behavior->child_is_staying_home(day); }
   bool acceptance_of_vaccine() { return behavior->acceptance_of_vaccine(); }
   bool acceptance_of_another_vaccine_dose() { return behavior->acceptance_of_another_vaccine_dose(); }
-  void become_an_adult() { behavior->initialize_adult_behavior(this); }
+  void become_an_adult_decision_maker() { behavior->initialize_adult_behavior(this); }
 
   void terminate();
 

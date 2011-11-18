@@ -107,6 +107,7 @@ public:
 	
   void set_relationship(int rel) { relationship = rel; }
   int get_relationship() { return relationship; }
+  bool is_householder() { return relationship == 1; }
 
   void terminate(){}
 

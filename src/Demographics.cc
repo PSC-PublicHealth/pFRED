@@ -171,6 +171,10 @@ void Demographics::update(int day) {
 
     if (Global::Enable_Aging > 0) {
       age++;
+      if (age == Global::ADULT_AGE and self != self->get_adult_decision_maker()) {
+	// become responsible for adult decisions
+	self->become_an_adult_decision_maker();
+      }
     }
 
     //Will this person die in the next year?

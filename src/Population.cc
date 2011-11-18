@@ -286,12 +286,6 @@ void Population::read_population() {
     int day = 0;
     Person * person = new Person(Population::next_id, age, sex, married, relationship, occ,
 				 house, school, work, day, today_is_birthday);
-
-    // is this person the Head of Household?
-    if (relationship == Global::HOUSEHOLDER) {
-      ((Household *) house)->set_HoH(person);
-    }
-
     add_person(person);
     Population::next_id++;
   }
@@ -301,9 +295,9 @@ void Population::read_population() {
     unlink(population_file);
   }
 
-  // figure which adults make decision for children
+  // select adult to make health decisions
   for (int p = 0; p < pop_size; p++) {
-    pop[p]->set_parental_decision_maker();
+    pop[p]->select_adult_decision_maker(NULL);
   }
   
   if (Global::Verbose > 0) {
@@ -330,14 +324,26 @@ void Population::update(int day) {
     // add the births to the population
     size_t births = maternity_list.size();
     for (size_t i = 0; i < births; i++) {
-      Person * baby = maternity_list[i]->give_birth(day);
+      Person * mother = maternity_list[i];
+      Person * baby = mother->give_birth(day);
       add_person(baby);
+
+      // turn mother into an adult decision maker, if not already
+      if (mother != mother->get_adult_decision_maker()) {
+	Utils::fred_verbose(0, "young mother %d age %d become adult decision maker on day %d\n",
+			    mother->get_id(), mother->get_age(), day);
+	mother->become_an_adult_decision_maker();
+      }
+
+      // let mother decide health behaviors for child
+      baby->get_behavior()->set_adult_decision_maker(mother);
+
       if(vacc_manager->do_vaccination()){
 	if(Global::Debug > 1)
 	  fprintf(Global::Statusfp,"Adding %d to Vaccine Queue\n",baby->get_id());
 	vacc_manager->add_to_queue(baby);
       }
-      int age_lookup = maternity_list[i]->get_age();
+      int age_lookup = mother->get_age();
       if (age_lookup > Demographics::MAX_AGE)
 	age_lookup = Demographics::MAX_AGE;
       birth_count[age_lookup]++;

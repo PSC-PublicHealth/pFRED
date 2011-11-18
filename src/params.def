@@ -180,68 +180,188 @@ vaccine_dose_efficacy_values[0][0] = 1 0.70
 vaccine_dose_efficacy_delay_ages[0][0] = 2 0 100
 vaccine_dose_efficacy_delay_values[0][0] = 1 14
 
-#### BEHAVIOR MARKET SEGMENTS
-adult_stays_home_enabled = 1
-child_stays_home_enabled = 1
-accepts_vaccine_enabled = 0
-accepts_vaccine_dose_enabled = 0
+#### INDIVIDUAL BEHAVIORS
+stay_home_when_sick_enabled = 1
+keep_child_home_when_sick_enabled = 1
+accept_vaccine_enabled = 0
+accept_vaccine_dose_enabled = 0
+accept_vaccine_for_child_enabled = 0
+accept_vaccine_dose_for_child_enabled = 0
 
+#### BEHAVIOR MARKET SEGMENTS
+#
 # BEHAVIOR STRATEGY 0 = ALWAYS REFUSE
 # BEHAVIOR STRATEGY 1 = ALWAYS ACCEPT
 # BEHAVIOR STRATEGY 2 = FLIP WEIGHTED COIN FOR EACH DECISION
-# BEHAVIOR STRATEGY 3 = IMITATE
-# BEHAVIOR STRATEGY 4 = HEALTH BELIEF MODEL
-adult_stays_home_strategy_cdf = 5 0.5 1.0 0.0 0.0 0.0
-child_stays_home_strategy_cdf = 5 0.5 1.0 0.0 0.0 0.0
-accepts_vaccine_strategy_cdf = 5 0.4 1.0 0.0 0.0 0.0
-accepts_vaccine_dose_strategy_cdf = 5 0.4 1.0 0.0 0.0 0.0
+# BEHAVIOR STRATEGY 3 = IMITATE PREVALENCE
+# BEHAVIOR STRATEGY 4 = IMITATE CONSENSUS
+# BEHAVIOR STRATEGY 5 = IMITATE COUNT
+# BEHAVIOR STRATEGY 6 = HEALTH BELIEF MODEL
+#
+# Each distribution should add up to 100
+stay_home_when_sick_strategy_distribution = 7 50 50 0 0 0 0 0
+keep_child_home_when_sick_strategy_distribution = 7 50 50 0 0 0 0 0
+accept_vaccine_strategy_distribution = 7 40 60 0 0 0 0 0
+accept_vaccine_dose_strategy_distribution = 7 40 60 0 0 0 0 0
+accept_vaccine_for_child_strategy_distribution = 7 40 60 0 0 0 0 0
+accept_vaccine_dose_for_child_strategy_distribution = 7 40 60 0 0 0 0 0
 
 ##### FLIP/IMITATE INITIAL PROBS AND DECISION FREQUENCY
-adult_stays_home_min_prob = 0.0
-adult_stays_home_max_prob = 1.0
-adult_stays_home_frequency = 1
+stay_home_when_sick_min_prob = 0
+stay_home_when_sick_max_prob = 1
+stay_home_when_sick_frequency = 1
 
-child_stays_home_min_prob = 0.0
-child_stays_home_max_prob = 1.0
-child_stays_home_frequency = 1
+keep_child_home_when_sick_min_prob = 0
+keep_child_home_when_sick_max_prob = 1
+keep_child_home_when_sick_frequency = 1
+
+accept_vaccine_min_prob = 0
+accept_vaccine_max_prob = 1
+accept_vaccine_frequency = 1
   
-accepts_vaccine_max_prob = 0.0
-accepts_vaccine_min_prob = 1.0
-accepts_vaccine_frequency = 1
+accept_vaccine_dose_min_prob = 0
+accept_vaccine_dose_max_prob = 1
+accept_vaccine_dose_frequency = 1
+
+accept_vaccine_for_child_min_prob = 0
+accept_vaccine_for_child_max_prob = 1
+accept_vaccine_for_child_frequency = 1
   
-accepts_vaccine_dose_max_prob = 0.0
-accepts_vaccine_dose_min_prob = 1.0
-accepts_vaccine_dose_frequency = 1
+accept_vaccine_dose_for_child_min_prob = 0
+accept_vaccine_dose_for_child_max_prob = 1
+accept_vaccine_dose_for_child_frequency = 1
+
+#### IMITATION THRESHOLDS
+
+stay_home_when_sick_imitate_consensus_threshold = 0
+keep_child_home_when_sick_imitate_consensus_threshold = 0
+accept_vaccine_imitate_consensus_threshold = 0
+accept_vaccine_dose_imitate_consensus_threshold = 0
+accept_vaccine_for_child_imitate_consensus_threshold = 0
+accept_vaccine_dose_for_child_imitate_consensus_threshold = 0
+
+stay_home_when_sick_imitate_count_threshold = 0
+keep_child_home_when_sick_imitate_count_threshold = 0
+accept_vaccine_imitate_count_threshold = 0
+accept_vaccine_dose_imitate_count_threshold = 0
+accept_vaccine_for_child_imitate_count_threshold = 0
+accept_vaccine_dose_for_child_imitate_count_threshold = 0
 
 ##### WEIGHTS FOR IMITATION
-## ORDER IS HOUSEHOLD NEIGHBORHOOD SCHOOL WORK EVERYONE
-adult_stays_home_imitation_weights = 5 0 0 0 0 1
-child_stays_home_imitation_weights = 5 0 0 0 0 1
-accepts_vaccine_imitation_weights = 5 0 0 0 0 1
-accepts_vaccine_dose_imitation_weights = 5 0 0 0 0 1
+## ORDER IS HOUSEHOLD NEIGHBORHOOD SCHOOL WORK ALL
+## Weights can be any real number.
+##
+stay_home_when_sick_imitate_prevalence_weights = 5 0 0 0 0 1
+keep_child_home_when_sick_imitate_prevalence_weights = 5 0 0 0 0 1
+accept_vaccine_imitate_prevalence_weights = 5 0 0 0 0 1
+accept_vaccine_dose_imitate_prevalence_weights = 5 0 0 0 0 1
+accept_vaccine_for_child_imitate_prevalence_weights = 5 0 0 0 0 1
+accept_vaccine_dose_for_child_imitate_prevalence_weights = 5 0 0 0 0 1
 
-##### IMITATION MODES
-## MODE 0 = change probability toward prevalence
-## MODE 1 = increase prob if prevalance exceeds threshold
-## MODE 2 = increase prob if survey exceeds threshold interpreted as counts
-## MODE 3 = increase/decrease probability if survey prevalence is above/below threshold
-## MODE 4 = increase/decrease probability if survey count is above/below threshold
-adult_stays_home_imitation_mode = 0
-child_stays_home_imitation_mode = 0
-accepts_vaccine_imitation_mode = 0
-accepts_vaccine_dose_imitation_mode = 0
+stay_home_when_sick_imitate_consensus_weights = 5 0 0 0 0 1
+keep_child_home_when_sick_imitate_consensus_weights = 5 0 0 0 0 1
+accept_vaccine_imitate_consensus_weights = 5 0 0 0 0 1
+accept_vaccine_dose_imitate_consensus_weights = 5 0 0 0 0 1
+accept_vaccine_for_child_imitate_consensus_weights = 5 0 0 0 0 1
+accept_vaccine_dose_for_child_imitate_consensus_weights = 5 0 0 0 0 1
 
-##### IMITATION THRESHOLD
-adult_stays_home_imitation_threshold = 0.5
-child_stays_home_imitation_threshold = 0.5
-accepts_vaccine_imitation_threshold = 0.5
-accepts_vaccine_dose_imitation_threshold = 0.5
+stay_home_when_sick_imitate_count_weights = 5 0 0 0 0 1
+keep_child_home_when_sick_imitate_count_weights = 5 0 0 0 0 1
+accept_vaccine_imitate_count_weights = 5 0 0 0 0 1
+accept_vaccine_dose_imitate_count_weights = 5 0 0 0 0 1
+accept_vaccine_for_child_imitate_count_weights = 5 0 0 0 0 1
+accept_vaccine_dose_for_child_imitate_count_weights = 5 0 0 0 0 1
 
-#### IMITATION UPDATE RATE
-adult_stays_home_update_rate = 0.1
-child_stays_home_update_rate = 0.1
-accepts_vaccine_update_rate = 0.1
-accepts_vaccine_dose_update_rate = 0.1
+#### IMITATE PREVALENCE UPDATE RATE
+stay_home_when_sick_imitate_prevalence_update_rate = 0.1
+keep_child_home_when_sick_imitate_prevalence_update_rate = 0.1
+accept_vaccine_imitate_prevalence_update_rate = 0.1
+accept_vaccine_dose_imitate_prevalence_update_rate = 0.1
+accept_vaccine_for_child_imitate_prevalence_update_rate = 0.1
+accept_vaccine_dose_for_child_imitate_prevalence_update_rate = 0.1
+
+#### IMITATE CONSENSUS UPDATE RATE
+stay_home_when_sick_imitate_consensus_update_rate = 0.1
+keep_child_home_when_sick_imitate_consensus_update_rate = 0.1
+accept_vaccine_imitate_consensus_update_rate = 0.1
+accept_vaccine_dose_imitate_consensus_update_rate = 0.1
+accept_vaccine_for_child_imitate_consensus_update_rate = 0.1
+accept_vaccine_dose_for_child_imitate_consensus_update_rate = 0.1
+
+#### IMITATE COUNT UPDATE RATE
+stay_home_when_sick_imitate_count_update_rate = 0.1
+keep_child_home_when_sick_imitate_count_update_rate = 0.1
+accept_vaccine_imitate_count_update_rate = 0.1
+accept_vaccine_dose_imitate_count_update_rate = 0.1
+accept_vaccine_for_child_imitate_count_update_rate = 0.1
+accept_vaccine_dose_for_child_imitate_count_update_rate = 0.1
+
+##### HBM 
+stay_home_when_sick_susceptibility_threshold = 2 0 0
+stay_home_when_sick_severity_threshold = 2 0 0
+stay_home_when_sick_benefits_threshold = 2 0 0
+stay_home_when_sick_barriers_threshold = 2 0 0 
+stay_home_when_sick_memory_decay = 2 0 0 
+stay_home_when_sick_base_odds_ratio = 1
+stay_home_when_sick_susceptibility_odds_ratio = 1
+stay_home_when_sick_severity_odds_ratio = 1
+stay_home_when_sick_benefits_odds_ratio = 1
+stay_home_when_sick_barriers_odds_ratio = 1
+
+keep_child_home_when_sick_susceptibility_threshold = 2 0 0
+keep_child_home_when_sick_severity_threshold = 2 0 0
+keep_child_home_when_sick_benefits_threshold = 2 0 0
+keep_child_home_when_sick_barriers_threshold = 2 0 0 
+keep_child_home_when_sick_memory_decay = 2 0 0 
+keep_child_home_when_sick_base_odds_ratio = 1
+keep_child_home_when_sick_susceptibility_odds_ratio = 1
+keep_child_home_when_sick_severity_odds_ratio = 1
+keep_child_home_when_sick_benefits_odds_ratio = 1
+keep_child_home_when_sick_barriers_odds_ratio = 1
+
+accept_vaccine_susceptibility_threshold = 2 0 0
+accept_vaccine_severity_threshold = 2 0 0
+accept_vaccine_benefits_threshold = 2 0 0
+accept_vaccine_barriers_threshold = 2 0 0 
+accept_vaccine_memory_decay = 2 0 0 
+accept_vaccine_base_odds_ratio = 0.35
+accept_vaccine_susceptibility_odds_ratio = 3.0
+accept_vaccine_severity_odds_ratio = 1.93
+accept_vaccine_benefits_odds_ratio = 1.0
+accept_vaccine_barriers_odds_ratio = 0.65
+
+accept_vaccine_dose_susceptibility_threshold = 2 0 0
+accept_vaccine_dose_severity_threshold = 2 0 0
+accept_vaccine_dose_benefits_threshold = 2 0 0
+accept_vaccine_dose_barriers_threshold = 2 0 0 
+accept_vaccine_dose_memory_decay = 2 0 0 
+accept_vaccine_dose_base_odds_ratio = 1
+accept_vaccine_dose_susceptibility_odds_ratio = 1
+accept_vaccine_dose_severity_odds_ratio = 1
+accept_vaccine_dose_benefits_odds_ratio = 1
+accept_vaccine_dose_barriers_odds_ratio = 1
+
+accept_vaccine_for_child_susceptibility_threshold = 2 0 0
+accept_vaccine_for_child_severity_threshold = 2 0 0
+accept_vaccine_for_child_benefits_threshold = 2 0 0
+accept_vaccine_for_child_barriers_threshold = 2 0 0 
+accept_vaccine_for_child_memory_decay = 2 0 0 
+accept_vaccine_for_child_base_odds_ratio = 1
+accept_vaccine_for_child_susceptibility_odds_ratio = 1
+accept_vaccine_for_child_severity_odds_ratio = 1
+accept_vaccine_for_child_benefits_odds_ratio = 1
+accept_vaccine_for_child_barriers_odds_ratio = 1
+
+accept_vaccine_dose_for_child_susceptibility_threshold = 2 0 0
+accept_vaccine_dose_for_child_severity_threshold = 2 0 0
+accept_vaccine_dose_for_child_benefits_threshold = 2 0 0
+accept_vaccine_dose_for_child_barriers_threshold = 2 0 0 
+accept_vaccine_dose_for_child_memory_decay = 2 0 0 
+accept_vaccine_dose_for_child_base_odds_ratio = 1
+accept_vaccine_dose_for_child_susceptibility_odds_ratio = 1
+accept_vaccine_dose_for_child_severity_odds_ratio = 1
+accept_vaccine_dose_for_child_benefits_odds_ratio = 1
+accept_vaccine_dose_for_child_barriers_odds_ratio = 1
 
 #### Geographical Grids
 enable_large_grid = 0

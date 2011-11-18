@@ -14,6 +14,7 @@
 #include "Place_List.h"
 #include "Place.h"
 #include "Person.h"
+#include "Utils.h"
 
 Attitude::Attitude(Person * _person) {
   self = _person;
@@ -23,6 +24,33 @@ Attitude::Attitude(Person * _person) {
   expiration = 0;
   willing = false;
 }
+
+void Attitude::update(int day) {
+
+  // reset the survey if needed (once per day)
+  if (params->imitation_enabled && survey->last_update < day) {
+    reset_survey(day);
+  }
+
+  if (frequency > 0 && expiration <= day) {
+    if (params->imitation_enabled && day > 0)
+      imitate();
+    if (strategy == HBM && day > 0)
+      update_hbm(day);
+    double r = RANDOM();
+    willing = (r < probability);
+    expiration = day + frequency;
+  }
+
+  // respond to survey if any agent is using imitation
+  if (params->imitation_enabled) {
+    update_survey();
+  }
+
+  // printf("ATTITUDE day %d behavior %s person %d strategy %d willing %d\n",
+  // day, params->name, self->get_id(), strategy, willing?1:0); 
+}
+
 
 ////// CHANGE ATTITUDE BY IMITATION
 
@@ -72,19 +100,19 @@ void Attitude::reset_survey(int day) {
 }
 
 void Attitude::update_survey() {
-  if (params->weight[0] != 0.0) {
+  if (weight[HOUSEHOLD_WT] != 0.0) {
     record_survey_response(self->get_household());
   }
-  if (params->weight[1] != 0.0) {
+  if (weight[NEIGHBORHOOD_WT] != 0.0) {
     record_survey_response(self->get_neighborhood());
   }
-  if (params->weight[2] != 0.0) {
+  if (weight[SCHOOL_WT] != 0.0) {
     record_survey_response(self->get_school());
   }
-  if (params->weight[3] != 0.0) {
+  if (weight[WORK_WT] != 0.0) {
     record_survey_response(self->get_workplace());
   }
-  if (params->weight[4] != 0.0) {
+  if (weight[ALL_WT] != 0.0) {
     record_survey_response(NULL);
   }
 }
@@ -108,22 +136,18 @@ void Attitude::record_survey_response(Place * place) {
 void Attitude::imitate() {
   Place * place;
   int place_id;
-  double * weight = params->weight;
   int * yes_responses = survey->previous_yes_responses;
   int * total_responses = survey->previous_total_responses;
   double weighted_sum = 0.0;
-  if (params->total_weight == 0.0) return;
-  // printf("total weight = %f\n", params->total_weight);
   
   // process household preferences
-  if (weight[0] != 0.0) {
+  if (weight[HOUSEHOLD_WT] != 0.0) {
     place = self->get_household();
     if (place != NULL) {
       int place_id = place->get_id();
       if (total_responses[place_id] > 0) {
-	double contribution = weight[0] * yes_responses[place_id];
-	int mode = params->imitation_mode;
-	if (mode == 0 || mode == 1 || mode == 3)
+	double contribution = weight[HOUSEHOLD_WT] * yes_responses[place_id];
+	if (strategy != IMITATE_COUNT)
 	  contribution /= total_responses[place_id];
 	weighted_sum += contribution;
       }
@@ -131,14 +155,13 @@ void Attitude::imitate() {
   }
 
   // process neighborhood preferences
-  if (weight[1] != 0.0) {
+  if (weight[NEIGHBORHOOD_WT] != 0.0) {
     place = self->get_neighborhood();
     if (place != NULL) {
       place_id = place->get_id();
       if (total_responses[place_id] > 0) {
-	double contribution = weight[1] * yes_responses[place_id];
-	int mode = params->imitation_mode;
-	if (mode == 0 || mode == 1 || mode == 3)
+	double contribution = weight[NEIGHBORHOOD_WT] * yes_responses[place_id];
+	if (strategy != IMITATE_COUNT)
 	  contribution /= total_responses[place_id];
 	weighted_sum += contribution;
       }
@@ -146,14 +169,13 @@ void Attitude::imitate() {
   }
 
   // process school preferences
-  if (weight[2] != 0.0) {
+  if (weight[SCHOOL_WT] != 0.0) {
     place = self->get_school();
     if (place != NULL) {
       place_id = place->get_id();
       if (total_responses[place_id] > 0) {
-	double contribution = weight[3] * yes_responses[place_id];
-	int mode = params->imitation_mode;
-	if (mode == 0 || mode == 1 || mode == 3)
+	double contribution = weight[SCHOOL_WT] * yes_responses[place_id];
+	if (strategy != IMITATE_COUNT)
 	  contribution /= total_responses[place_id];
 	weighted_sum += contribution;
       }
@@ -161,14 +183,13 @@ void Attitude::imitate() {
   }
 
   // process workplace preferences
-  if (weight[3] != 0.0) {
+  if (weight[WORK_WT] != 0.0) {
     place = self->get_workplace();
     if (place != NULL) {
       place_id = place->get_id();
       if (total_responses[place_id] > 0) {
-	double contribution = weight[2] * yes_responses[place_id];
-	int mode = params->imitation_mode;
-	if (mode == 0 || mode == 1 || mode == 3)
+	double contribution = weight[WORK_WT] * yes_responses[place_id];
+	if (strategy != IMITATE_COUNT)
 	  contribution /= total_responses[place_id];
 	weighted_sum += contribution;
       }
@@ -176,47 +197,170 @@ void Attitude::imitate() {
   }
 
   // process community preferences
-  if (weight[4] != 0.0) {
-    if (params->imitation_mode == 2 || params->imitation_mode == 4)
-      weighted_sum += weight[4] * survey->previous_yes;
+  if (weight[ALL_WT] != 0.0) {
+    if (strategy == IMITATE_COUNT)
+      weighted_sum += weight[ALL_WT] * survey->previous_yes;
     else
-      weighted_sum += weight[4] *
+      weighted_sum += weight[ALL_WT] *
 	(double) survey->previous_yes / (double) survey->previous_total;
   }
 
-  double prevalence = weighted_sum / params->total_weight;
+  double prevalence = weighted_sum / total_weight;
 
   /*
   printf("imitate person %d yes %d  tot %d ws = %f  w: %f %f %f %f %f ",
 	 self->get_id(), survey->yes, survey->total, weighted_sum,
-	 weight[0],weight[1],weight[2],weight[3],weight[4]);
+	 weight[HOUSEHOLD_WT],weight[NEIGHBORHOOD_WT],weight[SCHOOL_WT],
+	 weight[WORK_WT],weight[ALL_WT]);
 
-  printf("mode %d update_rate %f prevalance %f prob before %f ",
-	 params->imitation_mode, params->update_rate, prevalence, probability);
+  printf("strategy %d update_rate %f prevalance %f prob before %f ",
+	 strategy, update_rate, prevalence, probability);
 
   */
 
-  switch (params->imitation_mode) {
-  case 0:
-    probability *= (1.0 - params->update_rate);
-    probability += params->update_rate * prevalence;
-    break;
-  case 1:
-  case 2:
-    if (prevalence > params->imitation_threshold) {
-      probability *= (1.0 - params->update_rate);
-      probability += params->update_rate;
+  probability *= (1.0 - update_rate);
+  if (strategy == IMITATE_PREVALENCE) {
+    probability += update_rate * prevalence;
+  }
+  else {
+    if (prevalence > threshold) {
+      probability += update_rate;
     }
-    break;
-  case 3:
-  case 4:
-    probability *= (1.0 - params->update_rate);
-    if (prevalence > params->imitation_threshold) {
-      probability += params->update_rate;
-    }
-    break;
   }
   // printf(" prob after %f\n", probability);
 }
 
 
+////// HEALTH BELIEF MODEL
+
+#include "Global.h"
+#include "Perceptions.h"
+
+void Attitude::update_hbm(int day) {
+  /*
+  // NOTE: HBM currently applies only to disease 0
+
+  int disease_id = 0;
+
+  // each update is specific to current behavior
+  update_perceived_severity(day, disease_id);
+  update_perceived_susceptibility(day, disease_id);
+  update_perceived_benefits(day, disease_id);
+  update_perceived_barriers(day, disease_id);
+
+    // perceptions of current state of epidemic
+    int current_cases = perceptions->get_global_cases(disease_id);
+    int total_cases = Global::Pop.get_disease(disease_id)->get_epidemic()->get_total_incidents();
+    double current_deaths = Global::Pop.get_disease(disease_id)->get_mortality_rate()*total_cases;
+    double current_incidence = (double) current_cases / (double) Global::Pop.get_pop_size();
+    total_deaths += current_deaths;
+    
+    // update memory
+    if (day > 0) {
+      cumm_susceptibility[disease_id] = day*cumm_susceptibility[disease_id] + current_incidence;
+      cumm_susceptibility[disease_id] /= day;
+    }
+    else {
+      cumm_susceptibility[disease_id] = (1.0 - memory_decay) * cumm_susceptibility[disease_id] +
+	memory_decay * current_incidence;
+    }
+    cumm_severity[disease_id] = (1.0 - memory_decay) * cumm_severity[disease_id] + memory_decay * current_deaths;
+
+    // update HBM constructs
+    
+    // perceived susceptibility
+    if (susceptibility_threshold <= cumm_susceptibility[disease_id])
+      perceived_susceptibility[disease_id] = 1;
+    else
+      perceived_susceptibility[disease_id] = 0;
+    
+    // perceived severity
+    if (total_cases > 0 && severity_threshold <= total_deaths/total_cases)
+      perceived_severity[disease_id] = 1;
+    else
+      perceived_severity[disease_id] = 0;
+    odds_ratio[disease_id] = compare_to_odds_ratio(disease_id);
+
+    perceived_benefits[disease_id] = 1.0;
+    perceived_barriers[disease_id] = 0.0;
+  }
+  */
+}
+
+
+void Attitude::update_perceived_severity(int day, int disease_id) {
+}
+
+void Attitude::update_perceived_susceptibility(int day, int disease_id) {
+}
+
+void Attitude::update_perceived_benefits(int day, int disease_id) {
+}
+
+void Attitude::update_perceived_barriers(int day, int disease_id) {
+}
+
+
+void Attitude::setup_hbm() {
+
+  perceptions = new Perceptions(self);
+
+  perceived_susceptibility = new (nothrow) double [Global::Diseases];
+  if (perceived_susceptibility == NULL) {
+    Utils::fred_abort("Help! sus allocation failure\n");
+  }
+  
+  perceived_severity = new (nothrow) double [Global::Diseases];
+  if (perceived_severity == NULL) {
+    Utils::fred_abort("Help! sev allocation failure\n"); 
+  }
+  
+  perceived_benefits = new (nothrow) double [Global::Diseases];
+  if (perceived_benefits == NULL) {
+    Utils::fred_abort("Help! benefits allocation failure\n"); 
+  }
+  
+  perceived_barriers = new (nothrow) double [Global::Diseases];
+  if (perceived_barriers == NULL) {
+    Utils::fred_abort("Help! barrier allocation failure\n"); 
+  }
+
+  cumm_susceptibility = new (nothrow) double [Global::Diseases];
+  if (cumm_susceptibility == NULL) {
+    Utils::fred_abort("Help! cumm_susceptibility allocation failure\n"); 
+  }
+
+  cumm_severity = new (nothrow) double [Global::Diseases];
+  if (cumm_severity == NULL) {
+    Utils::fred_abort("Help! cumm_severity allocation failure\n"); 
+  }
+
+  // individual differences:
+  memory_decay = draw_normal(params->memory_decay_distr[0],params->memory_decay_distr[1]);
+  if (memory_decay < 0.001) memory_decay = 0.0001;
+
+  susceptibility_threshold = draw_normal(params->susceptibility_threshold_distr[0],params->susceptibility_threshold_distr[1]);
+  severity_threshold = draw_normal(params->severity_threshold_distr[0],params->severity_threshold_distr[1]);
+  benefits_threshold = draw_normal(params->benefits_threshold_distr[0],params->benefits_threshold_distr[1]);
+  barriers_threshold = draw_normal(params->barriers_threshold_distr[0],params->barriers_threshold_distr[1]);
+
+  for (int d = 0; d < Global::Diseases; d++) {
+    cumm_susceptibility[d] = 0.0;
+    cumm_severity[d] = 0.0;
+  }
+  total_deaths = 0;
+}
+
+bool Attitude::compare_to_odds_ratio(int disease_id) {
+  double Odds;
+  Odds = params->base_odds_ratio;
+  if (perceived_susceptibility[disease_id] == 1)
+    Odds *= params->susceptibility_odds_ratio;
+  if (perceived_severity[disease_id] == 1)
+    Odds *= params->severity_odds_ratio;
+  if (perceived_benefits[disease_id] == 1)
+    Odds *= params->benefits_odds_ratio;
+  if (perceived_barriers[disease_id] == 1)
+    Odds *= params->barriers_odds_ratio;
+  return (Odds > 1.0);
+}
