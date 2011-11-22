@@ -266,8 +266,6 @@ int main(int argc, char* argv[]) {
     
     if (Global::Enable_Aging && Global::Verbose && Date::match_pattern(day, "12-31-*")) {
       Global::Pop.quality_control();
-      Global::Places.quality_control(directory);
-      Global::Cells->quality_control(directory);
     }
 
     if (Date::match_pattern(day,"01-01-*")) {

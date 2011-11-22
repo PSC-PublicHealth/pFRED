@@ -184,9 +184,11 @@ void Population::setup() {
   // empty out the incremental list of Person's who have changed
   incremental_changes.clear();
   never_changed.clear();
+  /*
   for (int p = 0; p < pop_size; p++){
     never_changed[pop[p]]=true; // add all agents to this list at start
   }
+  */
 
   if(Global::Verbose > 0){
     int count = 0;

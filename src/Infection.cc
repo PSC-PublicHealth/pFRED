@@ -64,7 +64,7 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
   }
 
   report_infection(day);
-  host->set_changed();
+  // host->set_changed();
 }
 
 void Infection::determine_transition_dates() {
@@ -175,7 +175,7 @@ void Infection::modify_symptomatic_period(double multp, int today) {
     determine_transition_dates();
   }
 
-  host->set_changed();
+  // host->set_changed();
 }
 
 void Infection::modify_asymptomatic_period(double multp, int today) {
@@ -203,7 +203,7 @@ void Infection::modify_asymptomatic_period(double multp, int today) {
     determine_transition_dates();
   }
 
-  host->set_changed();
+  // host->set_changed();
 }
 
 void Infection::modify_infectious_period(double multp, int today) {
@@ -221,7 +221,7 @@ void Infection::modify_develops_symptoms(bool symptoms, int today) {
     symptomatic_period = will_be_symptomatic ? disease->get_days_symp() : 0;
     trajectory->modifyDevelopsSymp(get_symptomatic_date(), symptomatic_period);
     determine_transition_dates();
-    host->set_changed();
+    // host->set_changed();
   }
 }
 

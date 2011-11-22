@@ -324,8 +324,6 @@ void Behavior::update(int day) {
 
   if (self != adult_decision_maker) return;
 
-  if (day == 12) { printf("update behavior for %d\n", self->get_id()); fflush(stdout); }
-
   if (stay_home_when_sick_params.enabled) {
     report_distribution(&stay_home_when_sick_params);
     stay_home_when_sick->update(day);
@@ -355,7 +353,6 @@ void Behavior::update(int day) {
     report_distribution(&accept_vaccine_dose_for_child_params);
     accept_vaccine_dose_for_child->update(day);
   }
-  if (day == 12) { printf("update behavior finished for %d\n", self->get_id()); fflush(stdout); }
 }
 
 bool Behavior::adult_is_staying_home(int day) {
@@ -450,7 +447,7 @@ void Behavior::select_adult_decision_maker(Person *unavailable_person) {
     if (person->is_adult() == false) {
       Utils::fred_verbose(0,"set_adult_decision_maker: No adult is available for child %d age %d ",
 			  self->get_id(), self->get_age());
-      Utils::fred_verbose(0,"so new decision maer is agent %d age %d\n",
+      Utils::fred_verbose(0,"so new decision maker is agent %d age %d\n",
 			  person->get_id(), person->get_age());
       initialize_adult_behavior(person);
     }
