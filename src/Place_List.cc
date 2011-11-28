@@ -402,13 +402,16 @@ void Place_List::quality_control(char *directory) {
 	    per = h->get_housemate(i);
 	}
 	if (per == NULL) {
-	  Utils::fred_abort("Help! No head of household found for household id %d label %s\n",
+	  Utils::fred_warning("Help! No head of household found for household id %d label %s\n",
 			    h->get_id(), h->get_label());
+	  count[0]++;
 	}
-        int a = per->get_age();
-        if (a < 100) { count[a]++; }
-        else { count[99]++; }
-        total++;
+	else {
+	  int a = per->get_age();
+	  if (a < 100) { count[a]++; }
+	  else { count[99]++; }
+	  total++;
+	}
       }
     }
     fprintf(Global::Statusfp, "\nAge distribution of heads of households: %d households\n", total);
@@ -436,13 +439,16 @@ void Place_List::quality_control(char *directory) {
 	    per = h->get_housemate(i);
 	}
 	if (per == NULL) {
-	  Utils::fred_abort("Help! No head of household found for household id %d label %s\n",
+	  Utils::fred_warning("Help! No head of household found for household id %d label %s\n",
 			    h->get_id(), h->get_label());
+	  count[0]++;
 	}
-        int a = per->get_age();
-        if (a < 100) { count[a]++; }
-        else { count[99]++; }
-        total++;
+	else {
+	  int a = per->get_age();
+	  if (a < 100) { count[a]++; }
+	  else { count[99]++; }
+	  total++;
+	}
       }
     }
     fprintf(Global::Statusfp, "\nAge distribution of heads of households with children: %d households\n", total);
