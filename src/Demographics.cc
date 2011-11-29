@@ -246,69 +246,73 @@ void Demographics::update(int day) {
 }
 
 void Demographics::read_init_files() {
-
   char yearly_mortality_rate_file[256];
   char yearly_birth_rate_file[256];
   double birth_rate_multiplier;
+  FILE *fp = NULL;
+
+  if (Global::Enable_Births == 0 && Global::Enable_Deaths == 0)
+    return;
 
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "read demographic init files entered\n"); fflush(Global::Statusfp);
   }
 
-  Params::get_param((char *) "yearly_mortality_rate_file", yearly_mortality_rate_file);
-  Params::get_param((char *) "yearly_birth_rate_file", yearly_birth_rate_file);
-  Params::get_param((char *) "birth_rate_multiplier", &birth_rate_multiplier);
-
-  // read death rate file and load the values unt the death_rate_array
-  FILE *fp = fopen(yearly_mortality_rate_file, "r");
-  if (fp == NULL) {
-    fprintf(Global::Statusfp, "Demographic init_file %s not found\n", yearly_mortality_rate_file);
-    exit(1);
-  }
-
-  for (int i = 0; i <= Demographics::MAX_AGE; i++) {
-    int age;
-    float female_rate;
-    float male_rate;
-
-    if (fscanf(fp, "%d %f %f",
-               &age, &female_rate, &male_rate) != 3) {
-      Utils::fred_abort("Help! Read failure for age %d\n", i); 
+  if (Global::Enable_Births > 0) {
+    Params::get_param((char *) "yearly_birth_rate_file", yearly_birth_rate_file);
+    Params::get_param((char *) "birth_rate_multiplier", &birth_rate_multiplier);
+    // read and load the birth rates
+    fp = fopen(yearly_birth_rate_file, "r");
+    if (fp == NULL) {
+      fprintf(Global::Statusfp, "Demographic init_file %s not found\n", yearly_birth_rate_file);
+      exit(1);
     }
-
-    Demographics::age_yearly_mortality_rate_female[i] = (double)female_rate;
-    Demographics::age_yearly_mortality_rate_male[i] = (double)male_rate;
-  }
-
-  fclose(fp);
-
-  //Now read and load the birth rates
-  fp = fopen(yearly_birth_rate_file, "r");
-
-  if (fp == NULL) {
-    fprintf(Global::Statusfp, "Demographic init_file %s not found\n", yearly_birth_rate_file);
-    exit(1);
-  }
-  for (int i = 0; i <= Demographics::MAX_PREGNANCY_AGE; i++) {
-    int age;
-    float rate;
-
-    if (fscanf(fp, "%d %f",
-               &age, &rate) != 2) {
-      Utils::fred_abort("Help! Read failure for age %d\n", i); 
+    for (int i = 0; i <= Demographics::MAX_PREGNANCY_AGE; i++) {
+      int age;
+      float rate;
+      if (fscanf(fp, "%d %f", &age, &rate) != 2) {
+	Utils::fred_abort("Help! Read failure for age %d\n", i); 
+      }
+      Demographics::age_yearly_birth_rate[i] = birth_rate_multiplier * (double)rate;
     }
-
-    Demographics::age_yearly_birth_rate[i] = birth_rate_multiplier * (double)rate;
+    for (int i = 0; i <= Demographics::MAX_PREGNANCY_AGE; i++) {
+      Demographics::age_daily_birth_rate[i] = Demographics::age_yearly_birth_rate[i] / 365.25;
+    }
+    fclose(fp);
+    if (Global::Verbose) {
+      fprintf(Global::Statusfp, "finished reading Demographic init_file = %s\n", yearly_birth_rate_file);
+      fflush(Global::Statusfp);
+    }
   }
 
-  for (int i = 0; i <= Demographics::MAX_PREGNANCY_AGE; i++) {
-    Demographics::age_daily_birth_rate[i] = Demographics::age_yearly_birth_rate[i] / 365.25;
+  if (Global::Enable_Deaths > 0) {
+    Params::get_param((char *) "yearly_mortality_rate_file", yearly_mortality_rate_file);
+    
+    // read death rate file and load the values unt the death_rate_array
+    FILE *fp = fopen(yearly_mortality_rate_file, "r");
+    if (fp == NULL) {
+      fprintf(Global::Statusfp, "Demographic init_file %s not found\n", yearly_mortality_rate_file);
+      exit(1);
+    }
+    for (int i = 0; i <= Demographics::MAX_AGE; i++) {
+      int age;
+      float female_rate;
+      float male_rate;
+      if (fscanf(fp, "%d %f %f",
+		 &age, &female_rate, &male_rate) != 3) {
+	Utils::fred_abort("Help! Read failure for age %d\n", i); 
+      }
+      Demographics::age_yearly_mortality_rate_female[i] = (double)female_rate;
+      Demographics::age_yearly_mortality_rate_male[i] = (double)male_rate;
+    }
+    fclose(fp);
+    if (Global::Verbose) {
+      fprintf(Global::Statusfp, "finished reading Demographic init_file = %s\n", yearly_mortality_rate_file);
+      fflush(Global::Statusfp);
+    }
   }
-
-  fclose(fp);
   if (Global::Verbose) {
-    fprintf(Global::Statusfp, "finished reading Demographic init_file = %s\n", yearly_mortality_rate_file);
-    fflush(Global::Statusfp);
+    fprintf(Global::Statusfp, "read demographic init files finished\n"); fflush(Global::Statusfp);
   }
 }
 

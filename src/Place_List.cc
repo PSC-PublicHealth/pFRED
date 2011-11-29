@@ -364,7 +364,7 @@ void Place_List::quality_control(char *directory) {
   }
   
   // relationship between children and decision maker
-  if (Global::Verbose) {
+  if (Global::Verbose > 1) {
     // find adult decision maker for each child
     for (int p = 0; p < number_places; p++) {
       if (places[p]->get_type() == HOUSEHOLD) {
