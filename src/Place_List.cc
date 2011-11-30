@@ -33,6 +33,7 @@
 #include "Geo_Utils.h"
 #include "Travel.h"
 #include "Seasonality.h"
+#include "Random.h"
 
 void Place_List::get_parameters() {
 }
@@ -234,6 +235,9 @@ void Place_List::add_place(Place * p) {
       place_label_map[str] = places.size()-1;
       if (p->get_id() > max_id) max_id = p->get_id();
       // printf("places now = %d\n", (int)(places.size())); fflush(stdout);
+      if (Global::Enable_Local_Workplace_Assignment && p->is_workplace()) {
+	workplaces.push_back(p);
+      }
     }
     else {
       printf("Warning: duplicate place found: ");
@@ -609,3 +613,11 @@ void Place_List::setup_offices() {
   }
 }
 
+Place * Place_List::get_random_workplace() {
+  int size = workplaces.size();
+  if (size > 0) {
+    return workplaces[IRAND(0,size-1)];
+  }
+  else
+    return NULL;
+}

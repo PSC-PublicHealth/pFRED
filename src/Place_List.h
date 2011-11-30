@@ -21,7 +21,7 @@ class Place;
 
 class Place_List {
 public:
-  Place_List() { places.clear(); max_id = 0; }
+  Place_List() { places.clear(); workplaces.clear();  max_id = 0; }
   void read_places();
   void prepare();
   void update(int day);
@@ -34,10 +34,12 @@ public:
   int get_max_id() { return max_id; }
   void setup_classrooms();
   void setup_offices();
+  Place * get_random_workplace();
 
 private:
   char locfile[80];
   vector <Place *> places;
+  vector <Place *> workplaces;
   map<int, int> place_map;
   map<string, int> place_label_map;
   int max_id;

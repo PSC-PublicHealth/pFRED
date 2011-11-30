@@ -32,6 +32,10 @@ incremental_trace = 0
 # set non-zero to get headers printed in the trace file
 trace_headers = 0
 
+# if set, then all workers who have a workplace outside the location file
+# are assigned a random workplace in the location file.
+enable_local_workplace_assignment = 0
+
 # neighborhood activities
 community_distance = 20
 community_prob = 0.1
@@ -47,9 +51,11 @@ min_travel_distance = 100.0
 # trips per day assuming entire US population
 max_trips_per_day = 1000000
 # file containing list of sample trips
-tripfile = trips.txt
+tripfile = none
+# tripfile = trips.txt
 # file with population estimate for each large cell
-cell_popfile = cell_pop.txt
+cell_popfile = none
+# cell_popfile = cell_pop.txt
 
 # Parameters to allow for output of Population at scheduled times
 # Only done if output_population != 0
@@ -86,9 +92,12 @@ enable_births = 0
 enable_deaths = 0 
 enable_mobility = 0 
 enable_migration = 0 
-yearly_mortality_rate_file = mortality_rate.txt
-yearly_mobility_rate_file = mobility_rate.txt
-yearly_birth_rate_file = birth_rate.txt
+yearly_mortality_rate_file = none
+# yearly_mortality_rate_file = mortality_rate.txt
+yearly_mobility_rate_file = none
+# yearly_mobility_rate_file = mobility_rate.txt
+yearly_birth_rate_file = none
+# yearly_birth_rate_file = birth_rate.txt
 birth_rate_multiplier = 1
 
 # the folowing contacts are calibrated for Allegheny County
@@ -165,7 +174,8 @@ vaccine_prioritize_by_age = 0
 vaccine_priority_age_low = 0
 vaccine_priority_age_high = 100
 vaccine_dose_priority = 0
-vaccination_capacity_file = vaccination_capacity-0.txt
+vaccination_capacity_file = none
+# vaccination_capacity_file = vaccination_capacity-0.txt
 
 ## Definition of Vaccine #0
 vaccine_number_of_doses[0]    = 1
@@ -377,8 +387,9 @@ grid_small_cell_size = 0.01
 #### Seasonality (Seasonal Forcing)
 #### Note that (currently) enable_seasonality REQUIRES enable_large_grid
 enable_seasonality = 0
-enable_climate = 1
-seasonality_timestep_file = seasonality_timestep
+enable_climate = 0
+seasonality_timestep_file = none
+# seasonality_timestep_file = seasonality_timestep
 seasonality_multiplier_max[0] = 1
 seasonality_multiplier_min[0] = 1
 seasonality_multiplier_Ka[0] = -180

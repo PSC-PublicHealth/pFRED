@@ -95,6 +95,7 @@ class Global {
     static int Enable_Migration;
     static int Enable_Mobility;
     static int Enable_Travel;
+    static int Enable_Local_Workplace_Assignment;
     static int Track_infection_events;
     static int Track_age_distribution;
     static int Track_household_distribution;

@@ -35,6 +35,7 @@ int Global::Enable_Deaths = 0;
 int Global::Enable_Mobility = 0;
 int Global::Enable_Migration = 0;
 int Global::Enable_Travel = 0;
+int Global::Enable_Local_Workplace_Assignment = 0;
 int Global::Track_infection_events = 0;
 int Global::Track_age_distribution = 0;
 int Global::Track_household_distribution = 0;
@@ -105,6 +106,7 @@ void Global::get_global_parameters() {
   Params::get_param((char *) "enable_mobility",&Global::Enable_Mobility);
   Params::get_param((char *) "enable_migration",&Global::Enable_Migration);
   Params::get_param((char *) "enable_travel",&Global::Enable_Travel);
+  Params::get_param((char *) "enable_local_workplace_assignment",&Global::Enable_Local_Workplace_Assignment);
   Params::get_param((char *) "prevalencefile", Global::Prevfilebase);
   Params::get_param((char *) "incidencefile", Global::Incfilebase);
   Params::get_param((char *) "enable_seasonality", &Global::Enable_Seasonality);

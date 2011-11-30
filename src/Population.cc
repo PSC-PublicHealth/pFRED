@@ -276,6 +276,17 @@ void Population::read_population() {
     if (strcmp(work_label,"-1")!=0 && work == NULL) {
       printf("WARNING: person %s in %s -- no workplace found for label = %s\n",
 	     label, population_file, work_label);
+      if (Global::Enable_Local_Workplace_Assignment) {
+	work = Global::Places.get_random_workplace();
+	if (work != NULL) {
+	  printf("WARNING: person %s assigned to workplace %s\n",
+		 label, work->get_label());
+	}
+	else {
+	  printf("WARNING: no workplace available for person %s\n",
+		 label);
+	}
+      }
       fflush(stdout);
     }
     Place * school = Global::Places.get_place_from_label(school_label);

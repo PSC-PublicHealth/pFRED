@@ -223,6 +223,8 @@ public:
    */
   int get_type() { return type; }
 
+  bool is_workplace() { return type == 'W'; }
+
   /**
    * Get the latitude.
    *
