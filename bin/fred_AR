@@ -23,8 +23,10 @@ chomp $status;
 $status =~ s/\s.*//;
 die "fred_AR: bad status: $status\n" if $status ne "FINISHED";
 
-my $reportsdir = "$FRED/RESULTS/JOB/$id/DATA/REPORTS";
-my $outdir = "$FRED/RESULTS/JOB/$id/DATA/OUT";
+my $FREDRESULTS = $ENV{FRED_RESULTS};
+$FREDRESULTS = $ENV{FRED_HOME} if not $FREDRESULTS;
+my $reportsdir = "$FREDRESULTS/RESULTS/JOB/$id/DATA/REPORTS";
+my $outdir = "$FREDRESULTS/RESULTS/JOB/$id/DATA/OUT";
 
 chdir $reportsdir or die "Can't find REPORTS directory: $reportsdir\n";
 

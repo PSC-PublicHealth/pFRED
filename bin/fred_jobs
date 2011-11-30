@@ -7,7 +7,9 @@ use Getopt::Std;
 my $FRED = $ENV{FRED_HOME};
 die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
-my $dir = "$FRED/RESULTS";
+my $FREDRESULTS = $ENV{FRED_RESULTS};
+$FREDRESULTS = $ENV{FRED_HOME} if not $FREDRESULTS;
+my $dir = "$FREDRESULTS/RESULTS";
 die "Can't find directory $dir\n" if not -d $dir;
 
 open FH, "$dir/KEY" or die "Can't find $dir/KEY\n";

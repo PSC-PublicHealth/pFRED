@@ -15,7 +15,8 @@ use Getopt::Std;
 #
 
 # determine if FRED_HOME is defined 
-my $FRED = $ENV{FRED_HOME};
+my $FRED = $ENV{FRED_RESULTS};
+$FRED = $ENV{FRED_HOME} if not $FRED;
 die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
 # get command line arguments

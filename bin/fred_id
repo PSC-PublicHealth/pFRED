@@ -5,11 +5,13 @@ use Env;
 
 my $FRED = $ENV{FRED_HOME};
 die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
+my $FREDRESULTS = $ENV{FRED_RESULTS};
+$FREDRESULTS = $ENV{FRED_HOME} if not $FREDRESULTS;
 
 my ($mykey) = @ARGV;
 die "usage: fred_id: key\n" if not defined $mykey;
 
-my $dir = "$FRED/RESULTS";
+my $dir = "$FREDRESULTS/RESULTS";
 die "fred_id: Can't find directory $dir\n" if not -d $dir;
 
 open FH, "$dir/KEY" or die "fred_id: Can't find $dir/KEY\n";

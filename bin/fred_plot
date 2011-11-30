@@ -41,7 +41,9 @@ if ($status !~ /FINISHED/) {
   exit;
 }
 
-my $reportsdir = "$FRED/RESULTS/JOB/$id/DATA/REPORTS";
+my $FREDRESULTS = $ENV{FRED_RESULTS};
+$FREDRESULTS = $ENV{FRED_HOME} if not $FREDRESULTS;
+my $reportsdir = "$FREDRESULTS/RESULTS/JOB/$id/DATA/REPORTS";
 
 my $gnuplot = $ENV{FRED_GNUPLOT};
 if (not $gnuplot or (not -x $gnuplot)) {
@@ -50,7 +52,7 @@ if (not $gnuplot or (not -x $gnuplot)) {
   exit;
 }
 
-my $outdir = "$FRED/RESULTS/JOB/$id/DATA/OUT";
+my $outdir = "$FREDRESULTS/RESULTS/JOB/$id/DATA/OUT";
 
 chdir $reportsdir or die "Can't find REPORTS directory: $reportsdir\n";
 

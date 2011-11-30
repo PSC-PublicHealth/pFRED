@@ -12,7 +12,8 @@ $mykey = $options{k} if exists $options{k};
 die "usage: fred_status -k key [-s secs]\n" if not $mykey;
 $secs = $options{s} if exists $options{s};
 
-my $FRED = $ENV{FRED_HOME};
+my $FRED = $ENV{FRED_RESULTS};
+$FRED = $ENV{FRED_HOME} if not $FRED;
 die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
 my $dir = "$FRED/RESULTS";

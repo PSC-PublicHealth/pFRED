@@ -20,7 +20,7 @@ if (not $open or (not -x $open)) {
 
 my $results;
 my $args = join " ", @ARGV;
-if ($args =~ /E/) {
+if ($args =~ /@/) {
   $results = `$FRED/bin/fred_event_plot @ARGV`;
 }
 else {

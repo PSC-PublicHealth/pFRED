@@ -50,7 +50,9 @@ if (not $gnuplot or (not -x $gnuplot)) {
   exit;
 }
 
-my $outdir = "$FRED/RESULTS/JOB/$id/DATA/OUT";
+my $FREDRESULTS = $ENV{FRED_RESULTS};
+$FREDRESULTS = $ENV{FRED_HOME} if not $FREDRESULTS;
+my $outdir = "$FREDRESULTS/RESULTS/JOB/$id/DATA/OUT";
 chdir $outdir or die "Can't find OUT directory: $outdir\n";
 my $datafile = make_data($v, $outdir);
 my $pltfile = "sim-$key-$$.plt";
