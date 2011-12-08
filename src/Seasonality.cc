@@ -10,7 +10,7 @@
 
 Seasonality::Seasonality(Abstract_Grid * abstract_grid) {
   grid = abstract_grid;
-  string param_name_str(Global::Seasonality_Timestep);
+  string param_name_str("seasonality_timestep");
   seasonality_timestep_map = new Seasonality_Timestep_Map(param_name_str);
   seasonality_timestep_map->read_map();
   seasonality_timestep_map->print();
