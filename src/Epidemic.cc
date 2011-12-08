@@ -171,7 +171,7 @@ void Epidemic::print_stats(int day) {
   int infectious_count = infectious_list.size();
   double average_seasonality_multiplier = 1.0;
   if (Global::Enable_Seasonality) {
-    Global::Clim->get_average_seasonality_multiplier(disease->get_id());
+    average_seasonality_multiplier = Global::Clim->get_average_seasonality_multiplier(disease->get_id());
   }
 
   fprintf(Global::Outfp,
