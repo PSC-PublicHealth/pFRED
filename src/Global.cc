@@ -27,15 +27,6 @@ int Global::StrainEvolution = 0;
 char Global::Prevfilebase[256];
 char Global::Incfilebase[256];
 char Global::ErrorLogbase[256];
-int Global::Enable_Large_Grid = 0;
-int Global::Enable_Small_Grid = 0;
-int Global::Enable_Aging = 0;
-int Global::Enable_Births = 0;
-int Global::Enable_Deaths = 0;
-int Global::Enable_Mobility = 0;
-int Global::Enable_Migration = 0;
-int Global::Enable_Travel = 0;
-int Global::Enable_Local_Workplace_Assignment = 0;
 int Global::Track_infection_events = 0;
 int Global::Track_age_distribution = 0;
 int Global::Track_household_distribution = 0;
@@ -49,9 +40,18 @@ unsigned long Global::Seed = 0;
 int Global::Epidemic_offset = 0;
 int Global::Vaccine_offset = 0;
 char Global::Start_date[256];
-int Global::Enable_Seasonality = 0;
-int Global::Enable_Climate = 0;
 char Global::Seasonality_Timestep[256];
+bool Global::Enable_Large_Grid = false;
+bool Global::Enable_Small_Grid = false;
+bool Global::Enable_Aging = false;
+bool Global::Enable_Births = false;
+bool Global::Enable_Deaths = false;
+bool Global::Enable_Mobility = false;
+bool Global::Enable_Migration = false;
+bool Global::Enable_Travel = false;
+bool Global::Enable_Local_Workplace_Assignment = false;
+bool Global::Enable_Seasonality = false;
+bool Global::Enable_Climate = false;
 
 // global singleton objects
 Population Global::Pop;
@@ -76,6 +76,7 @@ FILE *Global::Incfp = NULL;
 FILE *Global::ErrorLogfp = NULL;
 
 void Global::get_global_parameters() {
+
   Params::get_param((char *) "verbose", &Global::Verbose);
   Params::get_param((char *) "debug", &Global::Debug);
   Params::get_param((char *) "test", &Global::Test);
@@ -98,19 +99,35 @@ void Global::get_global_parameters() {
   Params::get_param((char *) "incremental_trace", &Global::Incremental_Trace);
   Params::get_param((char *) "trace_headers", &Global::Trace_Headers);
   Params:: get_param((char *) "diseases", &Global::Diseases);
-  Params::get_param((char *) "enable_large_grid", &Global::Enable_Large_Grid);
-  Params::get_param((char *) "enable_small_grid", &Global::Enable_Small_Grid);
-  Params::get_param((char *) "enable_aging", &Global::Enable_Aging);
-  Params::get_param((char *) "enable_births", &Global::Enable_Births);
-  Params::get_param((char *) "enable_deaths", &Global::Enable_Deaths);
-  Params::get_param((char *) "enable_mobility",&Global::Enable_Mobility);
-  Params::get_param((char *) "enable_migration",&Global::Enable_Migration);
-  Params::get_param((char *) "enable_travel",&Global::Enable_Travel);
-  Params::get_param((char *) "enable_local_workplace_assignment",&Global::Enable_Local_Workplace_Assignment);
   Params::get_param((char *) "prevalencefile", Global::Prevfilebase);
   Params::get_param((char *) "incidencefile", Global::Incfilebase);
-  Params::get_param((char *) "enable_seasonality", &Global::Enable_Seasonality);
-  Params::get_param((char *) "enable_climate", &Global::Enable_Climate);
   Params::get_param((char *) "seasonality_timestep_file", Global::Seasonality_Timestep);
+
+
+  //Set all of the boolean flags
+  int temp_int = 0;
+  Params::get_param((char *) "enable_large_grid", &temp_int);
+  Global::Enable_Large_Grid = (temp_int == 1);
+  Params::get_param((char *) "enable_small_grid", &temp_int);
+  Global::Enable_Small_Grid = (temp_int == 1);
+  Params::get_param((char *) "enable_aging", &temp_int);
+  Global::Enable_Aging = (temp_int == 1);
+  Params::get_param((char *) "enable_births", &temp_int);
+  Global::Enable_Births = (temp_int == 1);
+  Params::get_param((char *) "enable_deaths", &temp_int);
+  Global::Enable_Deaths = (temp_int == 1);
+  Params::get_param((char *) "enable_mobility",&temp_int);
+  Global::Enable_Mobility = (temp_int == 1);
+  Params::get_param((char *) "enable_migration",&temp_int);
+  Global::Enable_Migration = (temp_int == 1);
+  Params::get_param((char *) "enable_travel",&temp_int);
+  Global::Enable_Travel = (temp_int == 1);
+  Params::get_param((char *) "enable_local_workplace_assignment",&temp_int);
+  Global::Enable_Local_Workplace_Assignment = (temp_int == 1);
+  Params::get_param((char *) "enable_seasonality", &temp_int);
+  Global::Enable_Seasonality = (temp_int == 1);
+  Params::get_param((char *) "enable_climate", &temp_int);
+  Global::Enable_Climate = (temp_int == 1);
+
 }
 

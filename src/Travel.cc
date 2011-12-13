@@ -178,7 +178,7 @@ void Travel::update_travel(int day) {
   Person * visitor;
   Person * visited;
 
-  if (Global::Enable_Travel == 0)
+  if (!Global::Enable_Travel)
     return;
 
   if (Global::Verbose > 1) {

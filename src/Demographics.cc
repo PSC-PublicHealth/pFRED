@@ -112,7 +112,7 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
   }
 
   //Will this person die in the next year?
-  if (Global::Enable_Deaths > 0) {
+  if (Global::Enable_Deaths) {
     double pct_chance_to_die = 0.0;
     int age_lookup = (age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE);
     if (this->sex == 'F')
@@ -130,7 +130,7 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
   }
 
   //Is this person pregnant?
-  if (Global::Enable_Births > 0 && this->sex == 'F' && age <= Demographics::MAX_PREGNANCY_AGE) {
+  if (Global::Enable_Births && this->sex == 'F' && age <= Demographics::MAX_PREGNANCY_AGE) {
     if (URAND(0.0, 1.0) <= ((0.75) * Demographics::age_yearly_birth_rate[age])) {
       //Yes, so set the due_date (in simulation days)
       this->due_date = new Date(current_date->get_year(),
@@ -169,7 +169,7 @@ void Demographics::update(int day) {
        cur_day_of_month == 28 &&
        !Date::is_leap_year(cur_year))) {
 
-    if (Global::Enable_Aging > 0) {
+    if (Global::Enable_Aging) {
       age++;
       if (age == Global::ADULT_AGE and self != self->get_adult_decision_maker()) {
 	// become responsible for adult decisions
@@ -178,7 +178,7 @@ void Demographics::update(int day) {
     }
 
     //Will this person die in the next year?
-    if (Global::Enable_Deaths > 0) {
+    if (Global::Enable_Deaths) {
       double pct_chance_to_die = 0.0;
 
       if (this->sex == 'F')
@@ -234,7 +234,7 @@ void Demographics::update(int day) {
   }
 
   //Is this your day to die?
-  if(Global::Enable_Deaths > 0 &&
+  if(Global::Enable_Deaths &&
      this->deceased_date != NULL &&
      this->deceased_date->get_year() == cur_year &&
      this->deceased_date->get_month() == cur_month &&
@@ -251,14 +251,14 @@ void Demographics::read_init_files() {
   double birth_rate_multiplier;
   FILE *fp = NULL;
 
-  if (Global::Enable_Births == 0 && Global::Enable_Deaths == 0)
+  if (!Global::Enable_Births && !Global::Enable_Deaths)
     return;
 
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "read demographic init files entered\n"); fflush(Global::Statusfp);
   }
 
-  if (Global::Enable_Births > 0) {
+  if (Global::Enable_Births) {
     Params::get_param((char *) "yearly_birth_rate_file", yearly_birth_rate_file);
     Params::get_param((char *) "birth_rate_multiplier", &birth_rate_multiplier);
     // read and load the birth rates
@@ -285,7 +285,7 @@ void Demographics::read_init_files() {
     }
   }
 
-  if (Global::Enable_Deaths > 0) {
+  if (Global::Enable_Deaths) {
     Params::get_param((char *) "yearly_mortality_rate_file", yearly_mortality_rate_file);
     
     // read death rate file and load the values unt the death_rate_array

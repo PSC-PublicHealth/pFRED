@@ -87,15 +87,6 @@ class Global {
     static char Prevfilebase[];
     static char Incfilebase[];
     static char ErrorLogbase[];
-    static int Enable_Large_Grid;
-    static int Enable_Small_Grid;
-    static int Enable_Aging;
-    static int Enable_Births;
-    static int Enable_Deaths;
-    static int Enable_Migration;
-    static int Enable_Mobility;
-    static int Enable_Travel;
-    static int Enable_Local_Workplace_Assignment;
     static int Track_infection_events;
     static int Track_age_distribution;
     static int Track_household_distribution;
@@ -106,12 +97,23 @@ class Global {
     static int Days;
     static int Reseed_day;
     static unsigned long Seed;
+    static char Start_date[];
     static int Epidemic_offset;
     static int Vaccine_offset;
-    static char Start_date[];
-    static int Enable_Seasonality;
-    static int Enable_Climate;
     static char Seasonality_Timestep[];
+
+    //Boolean flags
+    static bool Enable_Large_Grid;
+    static bool Enable_Small_Grid;
+    static bool Enable_Aging;
+    static bool Enable_Births;
+    static bool Enable_Deaths;
+    static bool Enable_Migration;
+    static bool Enable_Mobility;
+    static bool Enable_Travel;
+    static bool Enable_Local_Workplace_Assignment;
+    static bool Enable_Seasonality;
+    static bool Enable_Climate;
 
     // global singleton objects
     static Population Pop;
@@ -134,6 +136,7 @@ class Global {
     static FILE *Prevfp;
     static FILE *Incfp;
     static FILE *ErrorLogfp;
+
 
     /**
      * Fills the static variables with values from the parameter file.
