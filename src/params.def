@@ -53,8 +53,7 @@ min_travel_distance = 100.0
 # trips per day assuming entire US population
 max_trips_per_day = 1000000
 # file containing list of sample trips
-tripfile = none
-# tripfile = trips.txt
+tripfile = trips.txt
 # file with population estimate for each large cell
 cell_popfile = cell_pop.txt
 
