@@ -35,7 +35,6 @@ using namespace std;
 char ** pstring;
 
 // used for reporting
-int V_count;
 int age_count_male[Demographics::MAX_AGE + 1];
 int age_count_female[Demographics::MAX_AGE + 1];
 int birth_count[Demographics::MAX_AGE + 1];

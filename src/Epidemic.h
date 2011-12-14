@@ -126,7 +126,6 @@ private:
   int total_clinical_incidents;
   int incident_infections;
   int total_incidents;
-  int vaccine_acceptance;
   int * new_cases;
   int * infectees;
   double RR;					// reproductive rate

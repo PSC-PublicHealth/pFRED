@@ -32,8 +32,6 @@ using namespace std;
 #include "Utils.h"
 #include "Seasonality.h"
 
-extern int V_count;
-
 Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   disease = dis;
   id = disease->get_id();
@@ -65,7 +63,6 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   clinical_incidents = 0;
   total_clinical_incidents = 0;
   incident_infections = 0;
-  V_count = 0;
   symptomatic_count = 0;
   exposed_count = removed_count = immune_count = 0;
 }
@@ -148,7 +145,6 @@ void Epidemic::print_stats(int day) {
     N_init = N = disease->get_population()->get_pop_size();
   }
 
-  vaccine_acceptance = V_count;
   new_cases[day] = incident_infections;
   total_incidents += incident_infections;
   total_clinical_incidents += clinical_incidents;
@@ -179,9 +175,9 @@ void Epidemic::print_stats(int day) {
 	  day, id, susceptible_count, exposed_count, infectious_count,
 	  symptomatic_count, removed_count, immune_count);
   fprintf(Global::Outfp,
-	  "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
+	  "C %7d  N %7d  AR %5.2f  CI %7d RR %4.2f NR %d  CAR %5.2f  ",
 	  incident_infections, N, attack_rate, clinical_incidents,
-	  vaccine_acceptance, RR,cohort_size, clinical_attack_rate);
+	  RR, cohort_size, clinical_attack_rate);
   fprintf(Global::Outfp, "%s %s Year %d Week %d",
       Global::Sim_Date->get_day_of_week_string(day).c_str(),
       Global::Sim_Date->get_YYYYMMDD(day).c_str(),
@@ -200,9 +196,9 @@ void Epidemic::print_stats(int day) {
 	    day, id, susceptible_count, exposed_count, infectious_count,
 	    symptomatic_count, removed_count, immune_count);
     fprintf(Global::Statusfp,
-	    "C %7d  N %7d  AR %5.2f  CI %7d V %7d RR %4.2f NR %d  CAR %5.2f  ",
+	    "C %7d  N %7d  AR %5.2f  CI %7d RR %4.2f NR %d  CAR %5.2f  ",
 	    incident_infections, N, attack_rate, clinical_incidents,
-	    vaccine_acceptance, RR,cohort_size, clinical_attack_rate);
+	    RR,cohort_size, clinical_attack_rate);
     fprintf(Global::Statusfp, "%s %s Year %d Week %d",
       Global::Sim_Date->get_day_of_week_string(day).c_str(),
       Global::Sim_Date->get_YYYYMMDD(day).c_str(),
@@ -217,7 +213,6 @@ void Epidemic::print_stats(int day) {
   }
   // prepare for next day
   incident_infections = clinical_incidents = 0;
-  V_count = 0;
 }
 
 
