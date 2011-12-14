@@ -56,8 +56,7 @@ max_trips_per_day = 1000000
 tripfile = none
 # tripfile = trips.txt
 # file with population estimate for each large cell
-cell_popfile = none
-# cell_popfile = cell_pop.txt
+cell_popfile = cell_pop.txt
 
 # Parameters to allow for output of Population at scheduled times
 # Only done if output_population != 0
