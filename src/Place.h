@@ -392,6 +392,8 @@ public:
    */
   void set_container(Place *cont) { container = cont; }
 
+  Place * get_container() { return container; }
+
   /**
    * Increment the cases count. Note that the cases variable will be reset when <code>update()</code> is called
    */

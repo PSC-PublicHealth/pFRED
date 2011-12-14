@@ -551,6 +551,44 @@ void Place_List::quality_control(char *directory) {
   }
   
   if (Global::Verbose) {
+    int covered[4];
+    int all[4];
+    // distribution of sick leave in workplaces
+    for (int c = 0; c < 4; c++) { all[c] = covered[c] = 0; }
+    for (int p = 0; p < number_places; p++) {
+      if (places[p]->get_type() == WORKPLACE) {
+	Workplace * work = (Workplace *) places[p];
+        char s = work->get_size_code();
+        bool sl = work->is_sick_leave_available();
+	switch(s) {
+	case 'S':
+	  all[0] += s;
+	  if (sl) covered[0] += s;
+	  break;
+	case 'M':
+	  all[1] += s;
+	  if (sl) covered[1] += s;
+	  break;
+	case 'L':
+	  all[2] += s;
+	  if (sl) covered[2] += s;
+	  break;
+	case 'X':
+	  all[3] += s;
+	  if (sl) covered[3] += s;
+	  break;
+	}
+      }
+    }
+    fprintf(Global::Statusfp, "\nWorkplace sick leave coverage: ");
+    for (int c = 0; c < 4; c++) {
+      fprintf(Global::Statusfp, "%3d: %d/%d %5.2f | ", 
+	      c, covered[c], all[c], (all[c]? (1.0*covered[c])/all[c] : 0));
+    }
+    fprintf(Global::Statusfp, "\n");
+  }
+  
+  if (Global::Verbose) {
     int count[60];
     int total = 0;
     // size distribution of offices

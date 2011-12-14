@@ -22,6 +22,7 @@
 //Private static variables that will be set by parameter lookups
 int Behavior::number_of_vaccines = 0;
 Behavior_params Behavior::stay_home_when_sick_params = {};
+Behavior_params Behavior::take_sick_leave_params = {};
 Behavior_params Behavior::keep_child_home_when_sick_params = {};
 Behavior_params Behavior::accept_vaccine_params = {};
 Behavior_params Behavior::accept_vaccine_dose_params = {};
@@ -29,6 +30,7 @@ Behavior_params Behavior::accept_vaccine_for_child_params = {};
 Behavior_params Behavior::accept_vaccine_dose_for_child_params = {};
 
 Behavior_survey Behavior::stay_home_when_sick_survey = {NULL, NULL, 0,0,NULL, NULL, 0,0,-1};
+Behavior_survey Behavior::take_sick_leave_survey = {NULL, NULL, 0,0,NULL, NULL, 0,0,-1};
 Behavior_survey Behavior::keep_child_home_when_sick_survey = {NULL, NULL, 0,0,NULL, NULL, 0,0,-1};
 Behavior_survey Behavior::accept_vaccine_survey = {NULL, NULL, 0,0,NULL, NULL, 0,0,-1};
 Behavior_survey Behavior::accept_vaccine_dose_survey = {NULL, NULL, 0,0,NULL, NULL, 0,0,-1};
@@ -43,6 +45,7 @@ Behavior::Behavior(Person * person) {
 
   // initialize to null behaviors
   stay_home_when_sick = NULL;
+  take_sick_leave = NULL;
   keep_child_home_when_sick = NULL;
   accept_vaccine = NULL;
   accept_vaccine_dose = NULL;
@@ -64,6 +67,7 @@ Behavior::Behavior(Person * person) {
 
 Behavior::~Behavior() {
   if (stay_home_when_sick != NULL) delete stay_home_when_sick;
+  if (take_sick_leave != NULL) delete take_sick_leave;
   if (keep_child_home_when_sick != NULL) delete keep_child_home_when_sick;
   if (accept_vaccine != NULL) delete accept_vaccine;
   if (accept_vaccine_dose != NULL) delete accept_vaccine_dose;
@@ -73,9 +77,14 @@ Behavior::~Behavior() {
 
 
 void Behavior::initialize_adult_behavior(Person * person) {
+  if (Global::Enable_Behaviors == 0) return;
   Utils::fred_verbose(1,"init adult behavior for agent %d age %d\n", self->get_id(),self->get_age());
   if (stay_home_when_sick_params.enabled) {
     stay_home_when_sick = setup(self, &stay_home_when_sick_params, &stay_home_when_sick_survey);
+  }
+  
+  if (take_sick_leave_params.enabled) {
+    take_sick_leave = setup(self, &take_sick_leave_params, &take_sick_leave_survey);
   }
   
   if (keep_child_home_when_sick_params.enabled) {
@@ -179,12 +188,15 @@ Attitude * Behavior::setup(Person * self, Behavior_params * params, Behavior_sur
 
 void Behavior::get_parameters() {
   if (Behavior::parameters_are_set == true) return;
-  get_parameters_for_behavior((char *) "stay_home_when_sick", &stay_home_when_sick_params);
-  get_parameters_for_behavior((char *) "keep_child_home_when_sick", &keep_child_home_when_sick_params);
-  get_parameters_for_behavior((char *) "accept_vaccine", &accept_vaccine_params);
-  get_parameters_for_behavior((char *) "accept_vaccine_dose", &accept_vaccine_dose_params);
-  get_parameters_for_behavior((char *) "accept_vaccine_for_child", &accept_vaccine_for_child_params);
-  get_parameters_for_behavior((char *) "accept_vaccine_dose_for_child", &accept_vaccine_dose_for_child_params);
+  if (Global::Enable_Behaviors) {
+    get_parameters_for_behavior((char *) "stay_home_when_sick", &stay_home_when_sick_params);
+    get_parameters_for_behavior((char *) "take_sick_leave", &take_sick_leave_params);
+    get_parameters_for_behavior((char *) "keep_child_home_when_sick", &keep_child_home_when_sick_params);
+    get_parameters_for_behavior((char *) "accept_vaccine", &accept_vaccine_params);
+    get_parameters_for_behavior((char *) "accept_vaccine_dose", &accept_vaccine_dose_params);
+    get_parameters_for_behavior((char *) "accept_vaccine_for_child", &accept_vaccine_for_child_params);
+    get_parameters_for_behavior((char *) "accept_vaccine_dose_for_child", &accept_vaccine_dose_for_child_params);
+  }
   Behavior::parameters_are_set = true;
 }
 
@@ -322,11 +334,18 @@ void Behavior::get_parameters_for_behavior(char * behavior_name, Behavior_params
 
 void Behavior::update(int day) {
 
+  if (Global::Enable_Behaviors == 0) return;
+
   if (self != adult_decision_maker) return;
 
   if (stay_home_when_sick_params.enabled) {
     report_distribution(&stay_home_when_sick_params);
     stay_home_when_sick->update(day);
+  }
+
+  if (take_sick_leave_params.enabled) {
+    report_distribution(&take_sick_leave_params);
+    take_sick_leave->update(day);
   }
 
   if (keep_child_home_when_sick_params.enabled) {
@@ -356,6 +375,9 @@ void Behavior::update(int day) {
 }
 
 bool Behavior::adult_is_staying_home(int day) {
+
+  assert(Global::Enable_Behaviors > 0);
+
   if (stay_home_when_sick_params.enabled == false)
     return false;
 
@@ -366,7 +388,28 @@ bool Behavior::adult_is_staying_home(int day) {
   return stay_home_when_sick->is_willing();
 }
 
+bool Behavior::adult_is_taking_sick_leave(int day) {
+
+  assert(Global::Enable_Behaviors > 0);
+
+  if (self != adult_decision_maker) {
+    return false;
+  }
+
+  if (take_sick_leave_params.enabled == false)
+    return false;
+
+  if (take_sick_leave == NULL) {
+    printf("Help! take_sick_leave not defined for agent %d  age %d\n", self->get_id(), self->get_age());
+  }
+  assert(take_sick_leave != NULL);
+  return take_sick_leave->is_willing();
+}
+
 bool Behavior::child_is_staying_home(int day) {
+
+  assert(Global::Enable_Behaviors > 0);
+
   if (keep_child_home_when_sick_params.enabled == false)
     return false;
 
@@ -381,6 +424,9 @@ bool Behavior::child_is_staying_home(int day) {
 }
 
 bool Behavior::acceptance_of_vaccine() {
+
+  assert(Global::Enable_Behaviors > 0);
+
   if (accept_vaccine_params.enabled == false)
     return true;
 
@@ -395,6 +441,9 @@ bool Behavior::acceptance_of_vaccine() {
 }
 
 bool Behavior::acceptance_of_another_vaccine_dose() {
+
+  assert(Global::Enable_Behaviors > 0);
+
   if (accept_vaccine_dose_params.enabled == false)
     return true;
 
@@ -409,6 +458,9 @@ bool Behavior::acceptance_of_another_vaccine_dose() {
 }
 
 bool Behavior::child_acceptance_of_vaccine() {
+
+  assert(Global::Enable_Behaviors > 0);
+
   if (accept_vaccine_for_child_params.enabled == false)
     return false;
 
@@ -423,6 +475,9 @@ bool Behavior::child_acceptance_of_vaccine() {
 }
 
 bool Behavior::child_acceptance_of_another_vaccine_dose() {
+
+  assert(Global::Enable_Behaviors > 0);
+
   if (accept_vaccine_dose_for_child_params.enabled == false)
     return false;
 
@@ -437,6 +492,9 @@ bool Behavior::child_acceptance_of_another_vaccine_dose() {
 }
 
 void Behavior::select_adult_decision_maker(Person *unavailable_person) {
+
+  if (Global::Enable_Behaviors == 0) return;
+
   if (self->is_adult()) {
     set_adult_decision_maker(self);
   }
@@ -517,10 +575,10 @@ Person * Behavior::select_adult(Household *h, int relationship, Person * unavail
   return oldest;
 }
 
-
-
-
 void Behavior::terminate() {
+
+  if (Global::Enable_Behaviors == 0) return;
+
   if (self != adult_decision_maker)
     return;
 

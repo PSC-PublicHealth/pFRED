@@ -10,6 +10,7 @@
 //
 
 #include "Activities.h"
+#include "Behavior.h"
 #include "Global.h"
 #include "Person.h"
 #include "Place.h"
@@ -40,12 +41,17 @@
 
 bool Activities::is_initialized = false;
 double Activities::age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
-int Activities::last_update = -1;
 bool Activities::is_weekday = false;
 int Activities::day_of_week = 0;
 double Activities::Community_distance = 20;
 double Activities::Community_prob = 0.1;
 double Activities::Home_neighborhood_prob = 0.5;
+double Activities::Unauthorized_sick_leave_prob = 0.0;
+int Activities::Sick_days_worked = 0;
+int Activities::Sick_days_absent = 0;
+int Activities::School_sick_days_attended = 0;
+int Activities::School_sick_days_absent = 0;
+double Activities::sick_day_prob = 0.0;
 
 Activities::Activities (Person *person, Place *house, Place *school, Place *work) {
   //Create the static arrays one time
@@ -83,6 +89,7 @@ Activities::Activities (Person *person, Place *house, Place *school, Place *work
   schedule_updated = -1;
   travel_status = false;
   traveling_outside = false;
+  days_absent = -1;
 }
 
 void Activities::assign_profile() {
@@ -112,6 +119,30 @@ void Activities::assign_profile() {
   }
 }
 
+void Activities::update(int day) {
+
+  // decide if this is a weekday:
+  Activities::day_of_week = Date::get_current_day_of_week(day);
+  Activities::is_weekday = (0 < Activities::day_of_week && Activities::day_of_week < 6);
+
+  if (day>0) {
+    printf("DAY %d ABSENTEEISM: work abs %d att %d %0.2f  school abs %d att %d %0.2f\n", day-1,
+	   Activities::Sick_days_absent,
+	   Activities::Sick_days_worked,
+	   (double) (Activities::Sick_days_absent) /(double)(1+Activities::Sick_days_absent+Activities::Sick_days_worked),
+	   Activities::School_sick_days_absent,
+	   Activities::School_sick_days_attended,
+	   (double) (Activities::School_sick_days_absent) /(double)(1+Activities::School_sick_days_absent+Activities::School_sick_days_attended));
+  }
+
+  // keep track of global activity counts
+  Activities::Sick_days_worked = 0;
+  Activities::Sick_days_absent = 0;
+  Activities::School_sick_days_attended = 0;
+  Activities::School_sick_days_absent = 0;
+}
+
+
 void Activities::update_infectious_activities(int day, int dis) {
   // skip scheduled activities if traveling abroad
   if (traveling_outside)
@@ -121,7 +152,8 @@ void Activities::update_infectious_activities(int day, int dis) {
   update_schedule(day);
 
   for (int i = 0; i < FAVORITE_PLACES; i++) {
-    if (favorite_place[i] != NULL && on_schedule[i]) {
+    if (on_schedule[i]) {
+      assert(favorite_place[i] != NULL);
       favorite_place[i]->add_infectious(dis, self);
     }
   }
@@ -137,8 +169,9 @@ void Activities::update_susceptible_activities(int day, int dis) {
   update_schedule(day);
 
   for (int i = 0; i < FAVORITE_PLACES; i++) {
-    if (favorite_place[i] != NULL && favorite_place[i]->is_infectious(dis)) {
-      if (on_schedule[i]) {
+    if (on_schedule[i]) {
+      assert(favorite_place[i] != NULL);
+      if (favorite_place[i]->is_infectious(dis)) {
 	favorite_place[i]->add_susceptible(dis, self);
       }
     }
@@ -150,52 +183,148 @@ void Activities::update_schedule(int day) {
   // update this schedule only once per day
   if (day <= schedule_updated)
     return;
-
-  // if this is the first person to update their schedule today,
-  // then decide if this is a weekday:
-  if (Activities::last_update < day) {
-    Activities::day_of_week = Date::get_current_day_of_week(day);
-    Activities::is_weekday = (0 < Activities::day_of_week && Activities::day_of_week < 6);
-    Activities::last_update = day;
-  }
   schedule_updated = day;
-
-  // decide which neighborhood to visit today
-  favorite_place[NEIGHBORHOOD_INDEX] =
-    favorite_place[HOUSEHOLD_INDEX]->select_neighborhood(Activities::Community_prob,
-							 Activities::Community_distance,
-							 Activities::Home_neighborhood_prob);
 
   for (int p = 0; p < FAVORITE_PLACES; p++) {
     on_schedule[p] = false;
   }
-  on_schedule[HOUSEHOLD_INDEX] = true;
-  
-  // decide whether to stay at home if symptomatic
-  if (self->is_adult()) {
-    if (self->get_behavior()->adult_is_staying_home(day) && self->is_symptomatic()) {
-      return;
-    }
-  }
-  else {
-    if (self->get_behavior()->child_is_staying_home(day) && self->is_symptomatic()) {
-      return;
-    }
-  }
 
-  // if not staying home, adopt usual schedule according to these rules:
+  // always visit the household
+  on_schedule[HOUSEHOLD_INDEX] = true;
+
+  // provisionally visit the neighborhood
   on_schedule[NEIGHBORHOOD_INDEX] = true;
+
+  // weekday vs weekend provisional activity
   if (Activities::is_weekday) {
-    on_schedule[SCHOOL_INDEX] = true;
-    on_schedule[CLASSROOM_INDEX] = true;
-    on_schedule[WORKPLACE_INDEX] = true;
-    on_schedule[OFFICE_INDEX] = true;
+    if (favorite_place[SCHOOL_INDEX] != NULL)
+      on_schedule[SCHOOL_INDEX] = true;
+    if (favorite_place[CLASSROOM_INDEX] != NULL)
+      on_schedule[CLASSROOM_INDEX] = true;
+    if (favorite_place[WORKPLACE_INDEX] != NULL)
+      on_schedule[WORKPLACE_INDEX] = true;
+    if (favorite_place[OFFICE_INDEX] != NULL)
+      on_schedule[OFFICE_INDEX] = true;
   }
   else {
     if (profile == WEEKEND_WORKER_PROFILE || profile == STUDENT_PROFILE) {
-      on_schedule[WORKPLACE_INDEX] = true;
-      on_schedule[OFFICE_INDEX] = true;
+      if (favorite_place[WORKPLACE_INDEX] != NULL)
+	on_schedule[WORKPLACE_INDEX] = true;
+      if (favorite_place[OFFICE_INDEX] != NULL)
+	on_schedule[OFFICE_INDEX] = true;
     }
+  }
+
+  // skip work at background absenteeism rate
+  if (Global::Work_absenteeism > 0.0 && on_schedule[WORKPLACE_INDEX]) {
+    if (RANDOM() < Global::Work_absenteeism)
+      on_schedule[WORKPLACE_INDEX] = false;
+      on_schedule[OFFICE_INDEX] = false;
+  }
+
+  // skip school at background school absenteeism rate
+  if (Global::School_absenteeism > 0.0 && on_schedule[SCHOOL_INDEX]) {
+    if (RANDOM() < Global::School_absenteeism)
+      on_schedule[SCHOOL_INDEX] = false;
+      on_schedule[CLASSROOM_INDEX] = false;
+  }
+
+  // decide whether to stay home if symptomatic
+  if (self->is_symptomatic()) {
+    bool taking_sick_day = false;
+  
+    if (self->is_adult()) {
+      // sick adult
+      bool stay_home = false;
+      bool take_sick_leave = false;
+      if (Global::Enable_Behaviors) {
+	stay_home = self->get_behavior()->adult_is_staying_home(day);
+	take_sick_leave = self->get_behavior()->adult_is_taking_sick_leave(day);
+      }
+      else {
+	// default sick leave behavior
+	stay_home = (RANDOM() < Activities::sick_day_prob);
+      }
+
+      bool authorized_sick_leave = false;
+      if (on_schedule[WORKPLACE_INDEX]) {
+	Workplace *work = (Workplace *) favorite_place[WORKPLACE_INDEX];
+	authorized_sick_leave = work->is_sick_leave_available();
+      }
+
+      if (authorized_sick_leave) {
+	// the following results in 70% of those taking sick leave taking 2 days off
+	// at the start of the symptomatic period, and 30% take one day off.
+	// this gives and average of 1.7 days off for those taking sick leave.
+	if (take_sick_leave) {
+	  if (days_absent == -1) {
+	    if (RANDOM() < 0.7) days_absent = 2;
+	    else days_absent = 1;
+	  }
+	  if (days_absent > 0)
+	    days_absent--;
+	  else
+	    take_sick_leave = false;
+	}
+      }
+      else {
+	if (on_schedule[WORKPLACE_INDEX]) {
+	  take_sick_leave = (RANDOM() < Activities::Unauthorized_sick_leave_prob);
+	}
+      }
+
+      // decide if staying home for any reason
+      taking_sick_day = stay_home || take_sick_leave;
+
+      // record sick day decision for workdays
+      if (on_schedule[WORKPLACE_INDEX]) {
+	if (taking_sick_day) {
+	  Activities::Sick_days_absent++;
+	  /*
+	  if (take_sick_leave) {
+	    printf("Sick leave person %d days_absent = %d\n", self->get_id(), days_absent+1);
+	  }
+	  */
+	}
+	else {
+	  Activities::Sick_days_worked++;
+	}
+      }
+    }
+    else {
+      // sick child
+      if (Global::Enable_Behaviors) {
+	taking_sick_day = self->get_behavior()->child_is_staying_home(day);
+      }
+      else {
+	// default baseline behavior
+	taking_sick_day = (RANDOM() < Activities::sick_day_prob);
+      }
+      // record sick day decision for school days
+      if (on_schedule[SCHOOL_INDEX]) {
+	if (taking_sick_day)
+	  Activities::School_sick_days_absent++;
+	else
+	  Activities::School_sick_days_attended++;
+      }
+    }
+
+    if (taking_sick_day) {
+      // withdraw to household
+      on_schedule[WORKPLACE_INDEX] = false;
+      on_schedule[OFFICE_INDEX] = false;
+      on_schedule[SCHOOL_INDEX] = false;
+      on_schedule[CLASSROOM_INDEX] = false;
+      on_schedule[NEIGHBORHOOD_INDEX] = false;
+    }
+  }
+
+  // decide which neighborhood to visit today
+  if (on_schedule[NEIGHBORHOOD_INDEX]) {
+    favorite_place[NEIGHBORHOOD_INDEX] =
+      favorite_place[HOUSEHOLD_INDEX]->select_neighborhood(Activities::Community_prob,
+							   Activities::Community_distance,
+							   Activities::Home_neighborhood_prob);
   }
 
   if (Global::Verbose > 2) {
@@ -506,9 +635,11 @@ void Activities::addPrevalence(int disease, vector<int> strains) {
 
 
 void Activities::read_init_files() {
+  Params::get_param((char *) "sick_day_prob", &Activities::sick_day_prob);
   Params::get_param((char *) "community_distance", &Activities::Community_distance);
   Params::get_param((char *) "community_prob", &Activities::Community_prob);
   Params::get_param((char *) "home_neighborhood_prob", &Activities::Home_neighborhood_prob);
+  Params::get_param((char *) "unauthorized_sick_leave_prob", &Activities::Unauthorized_sick_leave_prob);
 
   if (!Global::Enable_Mobility) return;
   char yearly_mobility_rate_file[256];
@@ -600,3 +731,4 @@ void Activities::stop_traveling() {
     fflush(Global::Statusfp);
   }
 }
+

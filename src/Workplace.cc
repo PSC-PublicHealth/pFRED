@@ -21,7 +21,8 @@
 //Private static variables that will be set by parameter lookups
 double * Workplace::Workplace_contacts_per_day;
 double *** Workplace::Workplace_contact_prob;
-int Workplace::office_size = 50;
+int Workplace::Office_size = 50;
+int Workplace::Enable_sick_leave = 0;
 
 //Private static variable to assure we only lookup parameters once
 bool Workplace::Workplace_parameters_set = false;
@@ -32,6 +33,7 @@ Workplace::Workplace(int loc, const char *lab, double lon, double lat, Place *co
   get_parameters(Global::Diseases);
   offices.clear();
   next_office = 0;
+  sick_leave_available = false;
 }
 
 void Workplace::get_parameters(int diseases) {
@@ -43,7 +45,7 @@ void Workplace::get_parameters(int diseases) {
   Workplace::Workplace_contact_prob = new double** [ diseases ];
   
   // people per office
-  Params::get_param((char *) "office_size", &Workplace::office_size);
+  Params::get_param((char *) "office_size", &Workplace::Office_size);
 
   for (int s = 0; s < diseases; s++) {
     int n;
@@ -63,6 +65,9 @@ void Workplace::get_parameters(int diseases) {
     }
   }
   
+  // use workplace-specific sick leave policy
+  Params::get_param((char *) "enable_sick_leave", &Workplace::Enable_sick_leave);
+
   Workplace::Workplace_parameters_set = true;
 }
 
@@ -76,11 +81,45 @@ void Workplace::prepare() {
   open_date = 0;
   close_date = INT_MAX;
   next_office = 0;
+
+  // set workplace size code
+  if (N < 50) {
+    size_code = 'S';
+  }
+  else if (N < 100) {
+    size_code = 'M';
+  }
+  else if (N < 500) {
+    size_code = 'L';
+  }
+  else {
+    size_code = 'X';
+  }
+
+  if (Workplace::Enable_sick_leave) {
+    // probability of having sick leave available
+    if (size_code == 'S') {
+      sick_leave_available = (RANDOM() < 0.53);
+    }
+    else if (size_code == 'M') {
+      sick_leave_available = (RANDOM() < 0.58);
+    }
+    else if (size_code == 'L') {
+      sick_leave_available = (RANDOM() < 0.70);
+    }
+    else {
+      sick_leave_available = (RANDOM() < 0.85);
+    }
+  }    
+  else
+    sick_leave_available = false;
+
   if (Global::Verbose > 2) {
     printf("prepare place: %d\n", id);
     print(0);
     fflush(stdout);
   }
+
 }
 
 double Workplace::get_transmission_prob(int disease, Person * i, Person * s) {
@@ -97,11 +136,11 @@ double Workplace::get_contacts_per_day(int disease) {
 }
 
 void Workplace::setup_offices() {
-  if (Workplace::office_size == 0)
+  if (Workplace::Office_size == 0)
     return;
-  int rooms = N / Workplace::office_size;
+  int rooms = N / Workplace::Office_size;
   next_office = 0;
-  if (N % Workplace::office_size) rooms++;
+  if (N % Workplace::Office_size) rooms++;
   if (Global::Verbose>1) {
     fprintf(Global::Statusfp,
 	    "workplace %d %s number %d rooms %d\n", id, label,N,rooms);
@@ -128,7 +167,7 @@ void Workplace::setup_offices() {
 }
 
 Place * Workplace::assign_office(Person *per) {
-  if (Workplace::office_size == 0)
+  if (Workplace::Office_size == 0)
     return NULL;
   if (Global::Verbose>1) {
     fprintf(Global::Statusfp,

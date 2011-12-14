@@ -25,6 +25,8 @@ track_network_stats = 0
 quality_control = 1
 rr_delay = 20
 mutation_prob = 1 0.0
+work_absenteeism = 0.0
+school_absenteeism = 0.0
 
 # set 0 for end-of-run trace printout only, non-zero to print every n-th day
 incremental_trace = 0
@@ -190,13 +192,26 @@ vaccine_dose_efficacy_values[0][0] = 1 0.70
 vaccine_dose_efficacy_delay_ages[0][0] = 2 0 100
 vaccine_dose_efficacy_delay_values[0][0] = 1 14
 
+#### SICK LEAVE POLICY
+# use workplace size to determine sick leave availability
+enable_sick_leave = 0
+# probability of taking sick leave if not available
+unauthorized_sick_leave_prob = 0.0
+
 #### INDIVIDUAL BEHAVIORS
-stay_home_when_sick_enabled = 1
-keep_child_home_when_sick_enabled = 1
+enable_behaviors = 0
+### prob of staying home when sick if enable_behaviors = 0
+sick_day_prob = 0.5
+
+stay_home_when_sick_enabled = 0
+keep_child_home_when_sick_enabled = 0
 accept_vaccine_enabled = 0
 accept_vaccine_dose_enabled = 0
 accept_vaccine_for_child_enabled = 0
 accept_vaccine_dose_for_child_enabled = 0
+
+# let individuals decide whether to take sick leave if available
+take_sick_leave_enabled = 0
 
 #### BEHAVIOR MARKET SEGMENTS
 #
@@ -215,6 +230,7 @@ accept_vaccine_strategy_distribution = 7 40 60 0 0 0 0 0
 accept_vaccine_dose_strategy_distribution = 7 40 60 0 0 0 0 0
 accept_vaccine_for_child_strategy_distribution = 7 40 60 0 0 0 0 0
 accept_vaccine_dose_for_child_strategy_distribution = 7 40 60 0 0 0 0 0
+take_sick_leave_strategy_distribution = 7 50 50 0 0 0 0 0
 
 ##### FLIP/IMITATE INITIAL PROBS AND DECISION FREQUENCY
 stay_home_when_sick_min_prob = 0
@@ -241,9 +257,14 @@ accept_vaccine_dose_for_child_min_prob = 0
 accept_vaccine_dose_for_child_max_prob = 1
 accept_vaccine_dose_for_child_frequency = 1
 
+take_sick_leave_min_prob = 0
+take_sick_leave_max_prob = 1
+take_sick_leave_frequency = 1
+
 #### IMITATION THRESHOLDS
 
 stay_home_when_sick_imitate_consensus_threshold = 0
+take_sick_leave_imitate_consensus_threshold = 0
 keep_child_home_when_sick_imitate_consensus_threshold = 0
 accept_vaccine_imitate_consensus_threshold = 0
 accept_vaccine_dose_imitate_consensus_threshold = 0
@@ -251,6 +272,7 @@ accept_vaccine_for_child_imitate_consensus_threshold = 0
 accept_vaccine_dose_for_child_imitate_consensus_threshold = 0
 
 stay_home_when_sick_imitate_count_threshold = 0
+take_sick_leave_imitate_count_threshold = 0
 keep_child_home_when_sick_imitate_count_threshold = 0
 accept_vaccine_imitate_count_threshold = 0
 accept_vaccine_dose_imitate_count_threshold = 0
@@ -262,6 +284,7 @@ accept_vaccine_dose_for_child_imitate_count_threshold = 0
 ## Weights can be any real number.
 ##
 stay_home_when_sick_imitate_prevalence_weights = 5 0 0 0 0 1
+take_sick_leave_imitate_prevalence_weights = 5 0 0 0 0 1
 keep_child_home_when_sick_imitate_prevalence_weights = 5 0 0 0 0 1
 accept_vaccine_imitate_prevalence_weights = 5 0 0 0 0 1
 accept_vaccine_dose_imitate_prevalence_weights = 5 0 0 0 0 1
@@ -269,6 +292,7 @@ accept_vaccine_for_child_imitate_prevalence_weights = 5 0 0 0 0 1
 accept_vaccine_dose_for_child_imitate_prevalence_weights = 5 0 0 0 0 1
 
 stay_home_when_sick_imitate_consensus_weights = 5 0 0 0 0 1
+take_sick_leave_imitate_consensus_weights = 5 0 0 0 0 1
 keep_child_home_when_sick_imitate_consensus_weights = 5 0 0 0 0 1
 accept_vaccine_imitate_consensus_weights = 5 0 0 0 0 1
 accept_vaccine_dose_imitate_consensus_weights = 5 0 0 0 0 1
@@ -276,6 +300,7 @@ accept_vaccine_for_child_imitate_consensus_weights = 5 0 0 0 0 1
 accept_vaccine_dose_for_child_imitate_consensus_weights = 5 0 0 0 0 1
 
 stay_home_when_sick_imitate_count_weights = 5 0 0 0 0 1
+take_sick_leave_imitate_count_weights = 5 0 0 0 0 1
 keep_child_home_when_sick_imitate_count_weights = 5 0 0 0 0 1
 accept_vaccine_imitate_count_weights = 5 0 0 0 0 1
 accept_vaccine_dose_imitate_count_weights = 5 0 0 0 0 1
@@ -284,6 +309,7 @@ accept_vaccine_dose_for_child_imitate_count_weights = 5 0 0 0 0 1
 
 #### IMITATE PREVALENCE UPDATE RATE
 stay_home_when_sick_imitate_prevalence_update_rate = 0.1
+take_sick_leave_imitate_prevalence_update_rate = 0.1
 keep_child_home_when_sick_imitate_prevalence_update_rate = 0.1
 accept_vaccine_imitate_prevalence_update_rate = 0.1
 accept_vaccine_dose_imitate_prevalence_update_rate = 0.1
@@ -292,6 +318,7 @@ accept_vaccine_dose_for_child_imitate_prevalence_update_rate = 0.1
 
 #### IMITATE CONSENSUS UPDATE RATE
 stay_home_when_sick_imitate_consensus_update_rate = 0.1
+take_sick_leave_imitate_consensus_update_rate = 0.1
 keep_child_home_when_sick_imitate_consensus_update_rate = 0.1
 accept_vaccine_imitate_consensus_update_rate = 0.1
 accept_vaccine_dose_imitate_consensus_update_rate = 0.1
@@ -300,6 +327,7 @@ accept_vaccine_dose_for_child_imitate_consensus_update_rate = 0.1
 
 #### IMITATE COUNT UPDATE RATE
 stay_home_when_sick_imitate_count_update_rate = 0.1
+take_sick_leave_imitate_count_update_rate = 0.1
 keep_child_home_when_sick_imitate_count_update_rate = 0.1
 accept_vaccine_imitate_count_update_rate = 0.1
 accept_vaccine_dose_imitate_count_update_rate = 0.1
@@ -317,6 +345,17 @@ stay_home_when_sick_susceptibility_odds_ratio = 1
 stay_home_when_sick_severity_odds_ratio = 1
 stay_home_when_sick_benefits_odds_ratio = 1
 stay_home_when_sick_barriers_odds_ratio = 1
+
+take_sick_leave_susceptibility_threshold = 2 0 0
+take_sick_leave_severity_threshold = 2 0 0
+take_sick_leave_benefits_threshold = 2 0 0
+take_sick_leave_barriers_threshold = 2 0 0 
+take_sick_leave_memory_decay = 2 0 0 
+take_sick_leave_base_odds_ratio = 1
+take_sick_leave_susceptibility_odds_ratio = 1
+take_sick_leave_severity_odds_ratio = 1
+take_sick_leave_benefits_odds_ratio = 1
+take_sick_leave_barriers_odds_ratio = 1
 
 keep_child_home_when_sick_susceptibility_threshold = 2 0 0
 keep_child_home_when_sick_severity_threshold = 2 0 0

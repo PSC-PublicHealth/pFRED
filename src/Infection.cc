@@ -17,6 +17,7 @@
 #include "Global.h"
 #include "Person.h"
 #include "Place.h"
+#include "Workplace.h"
 #include "Random.h"
 #include "Disease.h"
 #include "Health.h"
@@ -319,14 +320,26 @@ void Infection::setTrajectory(Trajectory *trajectory) {
 void Infection::report_infection(int day) const {
   if (Global::Infectionfp == NULL) return;
 
+  char place_type = place == NULL? 'X' : place->get_type();
+  char place_size = '-';
+  if (place_type == 'W') {
+    Workplace *work = (Workplace *) place;
+    place_size = work->get_size_code();
+  }
+  if (place_type == 'O') {
+    Workplace *work = (Workplace *) place->get_container();
+    place_size = work->get_size_code();
+  }
+
+
   fprintf(Global::Infectionfp, "day %d dis %d host %d age %.3f "
-          " from %d inf_age %.3f at %c ",
+          " from %d inf_age %.3f at %c size %c ",
           day, id,
           host->get_id(),
           host->get_real_age(day),
           infector == NULL ? -1 : infector->get_id(),
           infector == NULL ? -1 : infector->get_real_age(day),
-          place == NULL ? 'X' : place->get_type());
+	  place_type, place_size);
 
   if (Global::Track_infection_events > 1)
     fprintf(Global::Infectionfp,

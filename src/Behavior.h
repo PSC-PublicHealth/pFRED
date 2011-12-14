@@ -101,6 +101,7 @@ public:
   void update(int day);
 
   bool adult_is_staying_home(int day);
+  bool adult_is_taking_sick_leave(int day);
   bool child_is_staying_home(int day);
   bool acceptance_of_vaccine();
   bool acceptance_of_another_vaccine_dose();
@@ -120,6 +121,7 @@ private:
   void report_distribution(Behavior_params * params);
   Person * select_adult(Household *h, int relationship, Person * unavailable_person);
   
+  Attitude * take_sick_leave;
   Attitude * stay_home_when_sick;
   Attitude * keep_child_home_when_sick;
   Attitude * accept_vaccine;
@@ -132,6 +134,7 @@ private:
 
   // run-time parameters for behaviors
   static Behavior_params stay_home_when_sick_params;
+  static Behavior_params take_sick_leave_params;
   static Behavior_params keep_child_home_when_sick_params;
   static Behavior_params accept_vaccine_params;
   static Behavior_params accept_vaccine_dose_params;
@@ -139,6 +142,7 @@ private:
   static Behavior_params accept_vaccine_dose_for_child_params;
   
   static Behavior_survey stay_home_when_sick_survey;
+  static Behavior_survey take_sick_leave_survey;
   static Behavior_survey keep_child_home_when_sick_survey;
   static Behavior_survey accept_vaccine_survey;
   static Behavior_survey accept_vaccine_dose_survey;

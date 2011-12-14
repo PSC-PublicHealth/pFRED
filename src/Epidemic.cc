@@ -437,6 +437,7 @@ void Epidemic::transmit(int day){
 }
 
 void Epidemic::update(int day) {
+  Activities::update(day);
   for (int d = 0; d < Global::Diseases; d++) {
     Disease * disease = Global::Pop.get_disease(d);
     Epidemic * epidemic = disease->get_epidemic();

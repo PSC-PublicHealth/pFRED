@@ -261,6 +261,7 @@ public:
    * @return <code>true</code> if this agent is an adult, <code>false</code> otherwise
    */
   bool is_adult() { return demographics->get_age() >= Global::ADULT_AGE; }
+  bool is_child() { return demographics->get_age() < Global::ADULT_AGE; }
   
   /**
    * @return a pointer to this Person's Health

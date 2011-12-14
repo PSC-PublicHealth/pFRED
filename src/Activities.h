@@ -172,6 +172,8 @@ public:
   int get_household_size();
   int get_group_size(int index);
 
+  static void update(int day);
+
 private:
   Person * self;	 // pointer to person using having this activities
   int profile;				 // index of usual visit pattern
@@ -181,16 +183,23 @@ private:
   bool travel_status;				// true if traveling
   bool traveling_outside;			// true if traveling outside modeled area
   Place ** tmp_favorite_place; // list of favorite places, stored while traveling
+  int days_absent;
 
   // static variables
   static double age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
   static bool is_initialized; // true if static arrays have been initialized
-  static int last_update;     // simulation day of last schdule update
   static bool is_weekday;     // true if current day is Monday .. Friday
   static int day_of_week;     // day of week index, where Sun = 0, ... Sat = 6
   static double Community_distance;	    // size of community (in km)
   static double Community_prob;	   // prob of visiting Community per day
   static double Home_neighborhood_prob; // prob of visiting home neighborhood per day
+  static double Unauthorized_sick_leave_prob; // prob of taking unauthorized sick leave
+  static int Sick_days_worked;
+  static int Sick_days_absent;
+  static int School_sick_days_attended;
+  static int School_sick_days_absent;
+  static double sick_day_prob;
+
   /**
    * Reads the yearly_mobility_rate_file set in params.def
    * Note: this is not used unless <code>Global::Enable_Mobility</code> is set to <code>true</code>

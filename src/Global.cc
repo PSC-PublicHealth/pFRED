@@ -27,6 +27,7 @@ int Global::StrainEvolution = 0;
 char Global::Prevfilebase[256];
 char Global::Incfilebase[256];
 char Global::ErrorLogbase[256];
+int Global::Enable_Behaviors = 0;
 int Global::Track_infection_events = 0;
 int Global::Track_age_distribution = 0;
 int Global::Track_household_distribution = 0;
@@ -41,6 +42,8 @@ int Global::Epidemic_offset = 0;
 int Global::Vaccine_offset = 0;
 char Global::Start_date[256];
 char Global::Seasonality_Timestep[256];
+double Global::Work_absenteeism = 0.0;
+double Global::School_absenteeism = 0.0;
 bool Global::Enable_Large_Grid = false;
 bool Global::Enable_Small_Grid = false;
 bool Global::Enable_Aging = false;
@@ -99,10 +102,12 @@ void Global::get_global_parameters() {
   Params::get_param((char *) "incremental_trace", &Global::Incremental_Trace);
   Params::get_param((char *) "trace_headers", &Global::Trace_Headers);
   Params:: get_param((char *) "diseases", &Global::Diseases);
+  Params::get_param((char *) "enable_behaviors",&Global::Enable_Behaviors);
   Params::get_param((char *) "prevalencefile", Global::Prevfilebase);
   Params::get_param((char *) "incidencefile", Global::Incfilebase);
   Params::get_param((char *) "seasonality_timestep_file", Global::Seasonality_Timestep);
-
+  Params::get_param((char *) "work_absenteeism", &Global::Work_absenteeism);
+  Params::get_param((char *) "school_absenteeism", &Global::School_absenteeism);
 
   //Set all of the boolean flags
   int temp_int = 0;
@@ -128,6 +133,5 @@ void Global::get_global_parameters() {
   Global::Enable_Seasonality = (temp_int == 1);
   Params::get_param((char *) "enable_climate", &temp_int);
   Global::Enable_Climate = (temp_int == 1);
-
 }
 

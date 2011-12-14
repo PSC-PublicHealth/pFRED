@@ -87,6 +87,7 @@ class Global {
     static char Prevfilebase[];
     static char Incfilebase[];
     static char ErrorLogbase[];
+    static int Enable_Behaviors;
     static int Track_infection_events;
     static int Track_age_distribution;
     static int Track_household_distribution;
@@ -101,6 +102,8 @@ class Global {
     static int Epidemic_offset;
     static int Vaccine_offset;
     static char Seasonality_Timestep[];
+    static double Work_absenteeism;
+    static double School_absenteeism;
 
     //Boolean flags
     static bool Enable_Large_Grid;
