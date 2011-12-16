@@ -76,9 +76,7 @@ while ($error > $threshold) {
   $x = `cat get_distr.dat`;
   my ($H, $N, $S, $W) = split " ", $x;
   $x = `tail -1 $dir/out1.txt`;
-  @tmp = split " ", $x;
-  my $AR = $tmp[31];
-
+  my ($AR) = $x =~ /\sCAR\s+(\S+)\s/;
   my $eh = $H - $Htarget;
   my $en = $N - $Ntarget;
   my $es = $S - $Starget;
