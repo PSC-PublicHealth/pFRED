@@ -32,6 +32,16 @@ public:
   Activities (Person *person, Place *house, Place *school, Place *work);
 
   /**
+   * Setup activities at start of run
+   */
+  void prepare();
+
+  /**
+   * Setup sick leave depending on size of workplace
+   */
+  void initialize_sick_leave();
+
+  /**
    * Assigns an activity profile to the agent
    */
   void assign_profile();
@@ -171,8 +181,11 @@ public:
 
   int get_household_size();
   int get_group_size(int index);
-
+  bool is_sick_leave_available() { return sick_leave_available; }
+  int get_sick_days_absent() { return my_sick_days_absent; }
+  int get_sick_days_present() { return my_sick_days_present; }
   static void update(int day);
+  static void end_of_run();
 
 private:
   Person * self;	 // pointer to person using having this activities
@@ -183,22 +196,42 @@ private:
   bool travel_status;				// true if traveling
   bool traveling_outside;			// true if traveling outside modeled area
   Place ** tmp_favorite_place; // list of favorite places, stored while traveling
-  int days_absent;
+
+  // individual sick day variables
+  int my_sick_days_absent;
+  int my_sick_days_present;
+  double sick_days_remaining;
+  bool sick_leave_available;
 
   // static variables
-  static double age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
   static bool is_initialized; // true if static arrays have been initialized
   static bool is_weekday;     // true if current day is Monday .. Friday
   static int day_of_week;     // day of week index, where Sun = 0, ... Sat = 6
+  static double age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
+
+  // run-time parameters
   static double Community_distance;	    // size of community (in km)
   static double Community_prob;	   // prob of visiting Community per day
   static double Home_neighborhood_prob; // prob of visiting home neighborhood per day
-  static double Unauthorized_sick_leave_prob; // prob of taking unauthorized sick leave
-  static int Sick_days_worked;
+
+  static int Enable_default_sick_behavior;
+  static double Default_sick_day_prob;
+  // mean number of sick days taken if sick leave is available
+  static double SLA_mean_sick_days_absent;
+  // mean number of sick days taken if sick leave is unavailable
+  static double SLU_mean_sick_days_absent;
+  // prob of taking sick days if sick leave is available
+  static double SLA_absent_prob;
+  // prob of taking sick days if sick leave is unavailable
+  static double SLU_absent_prob;
+  // extra sick days for fle
+  static double Flu_days;
+
+  // sick days statistics
+  static int Sick_days_present;
   static int Sick_days_absent;
-  static int School_sick_days_attended;
+  static int School_sick_days_present;
   static int School_sick_days_absent;
-  static double sick_day_prob;
 
   /**
    * Reads the yearly_mobility_rate_file set in params.def

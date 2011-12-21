@@ -550,6 +550,7 @@ void Place_List::quality_control(char *directory) {
     fprintf(Global::Statusfp, "\n");
   }
   
+  /*
   if (Global::Verbose) {
     int covered[4];
     int all[4];
@@ -587,6 +588,7 @@ void Place_List::quality_control(char *directory) {
     }
     fprintf(Global::Statusfp, "\n");
   }
+  */
   
   if (Global::Verbose) {
     int count[60];

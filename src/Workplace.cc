@@ -22,7 +22,6 @@
 double * Workplace::Workplace_contacts_per_day;
 double *** Workplace::Workplace_contact_prob;
 int Workplace::Office_size = 50;
-int Workplace::Enable_sick_leave = 0;
 
 //Private static variable to assure we only lookup parameters once
 bool Workplace::Workplace_parameters_set = false;
@@ -33,7 +32,6 @@ Workplace::Workplace(int loc, const char *lab, double lon, double lat, Place *co
   get_parameters(Global::Diseases);
   offices.clear();
   next_office = 0;
-  sick_leave_available = false;
 }
 
 void Workplace::get_parameters(int diseases) {
@@ -65,9 +63,6 @@ void Workplace::get_parameters(int diseases) {
     }
   }
   
-  // use workplace-specific sick leave policy
-  Params::get_param((char *) "enable_sick_leave", &Workplace::Enable_sick_leave);
-
   Workplace::Workplace_parameters_set = true;
 }
 
@@ -81,38 +76,6 @@ void Workplace::prepare() {
   open_date = 0;
   close_date = INT_MAX;
   next_office = 0;
-
-  // set workplace size code
-  if (N < 50) {
-    size_code = 'S';
-  }
-  else if (N < 100) {
-    size_code = 'M';
-  }
-  else if (N < 500) {
-    size_code = 'L';
-  }
-  else {
-    size_code = 'X';
-  }
-
-  if (Workplace::Enable_sick_leave) {
-    // probability of having sick leave available
-    if (size_code == 'S') {
-      sick_leave_available = (RANDOM() < 0.53);
-    }
-    else if (size_code == 'M') {
-      sick_leave_available = (RANDOM() < 0.58);
-    }
-    else if (size_code == 'L') {
-      sick_leave_available = (RANDOM() < 0.70);
-    }
-    else {
-      sick_leave_available = (RANDOM() < 0.85);
-    }
-  }    
-  else
-    sick_leave_available = false;
 
   if (Global::Verbose > 2) {
     printf("prepare place: %d\n", id);

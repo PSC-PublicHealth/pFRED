@@ -406,6 +406,13 @@ void Population::update(int day) {
     }
   }
 
+  // prepare Activities at start up
+  if (day == 0) {
+    for (int p = 0; p < pop_size; p++) {
+      pop[p]->prepare_activities();
+    }
+  }
+
   // update activity profiles on July 1
     if (Global::Enable_Aging && Date::match_pattern(day, "07-01-*")) {
     for (int p = 0; p < pop_size; p++) {

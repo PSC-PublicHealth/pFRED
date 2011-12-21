@@ -132,6 +132,11 @@ public:
   void update_behavior(int day) { behavior->update(day); }
 
   /**
+   * @Activities::prepare()
+   */
+  void prepare_activities() { activities->prepare(); }
+
+  /**
    * @Activities::update_profile()
    */
   void update_activity_profile() { activities->update_profile(); }

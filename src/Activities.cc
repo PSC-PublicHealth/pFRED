@@ -40,18 +40,27 @@
 #define RETIRED_PROFILE 6
 
 bool Activities::is_initialized = false;
-double Activities::age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
 bool Activities::is_weekday = false;
+double Activities::age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
 int Activities::day_of_week = 0;
+
+// run-time parameters
 double Activities::Community_distance = 20;
 double Activities::Community_prob = 0.1;
 double Activities::Home_neighborhood_prob = 0.5;
-double Activities::Unauthorized_sick_leave_prob = 0.0;
-int Activities::Sick_days_worked = 0;
+int Activities::Enable_default_sick_behavior = 0;
+double Activities::Default_sick_day_prob = 0.0;
+double Activities::SLA_mean_sick_days_absent = 0.0;
+double Activities::SLU_mean_sick_days_absent = 0.0;
+double Activities::SLA_absent_prob = 0.0;
+double Activities::SLU_absent_prob = 0.0;
+double Activities::Flu_days = 0.0;
+
+// sick leave statistics
+int Activities::Sick_days_present = 0;
 int Activities::Sick_days_absent = 0;
-int Activities::School_sick_days_attended = 0;
+int Activities::School_sick_days_present = 0;
 int Activities::School_sick_days_absent = 0;
-double Activities::sick_day_prob = 0.0;
 
 Activities::Activities (Person *person, Place *house, Place *school, Place *work) {
   //Create the static arrays one time
@@ -89,7 +98,59 @@ Activities::Activities (Person *person, Place *house, Place *school, Place *work
   schedule_updated = -1;
   travel_status = false;
   traveling_outside = false;
-  days_absent = -1;
+}
+
+void Activities::prepare() {
+  initialize_sick_leave();
+}
+
+#define SMALL_COMPANY_MAXSIZE 49
+#define MID_COMPANY_MAXSIZE 99
+#define MEDIUM_COMPANY_MAXSIZE 499
+
+void Activities::initialize_sick_leave() {
+  int workplace_size = 0;
+
+  if (favorite_place[WORKPLACE_INDEX] != NULL)
+    workplace_size = favorite_place[WORKPLACE_INDEX]->get_size();
+
+  // is sick leave available?
+  if (workplace_size > 0) {
+    if (workplace_size <= SMALL_COMPANY_MAXSIZE) {
+      sick_leave_available = (RANDOM() < 0.53);
+    }
+    else if (workplace_size <= MID_COMPANY_MAXSIZE) {
+      sick_leave_available = (RANDOM() < 0.58);
+    }
+    else if (workplace_size <= MEDIUM_COMPANY_MAXSIZE) {
+      sick_leave_available = (RANDOM() < 0.70);
+    }
+    else {
+      sick_leave_available = (RANDOM() < 0.85);
+    }
+  }
+  else
+    sick_leave_available = false;
+
+  my_sick_days_absent = 0;
+  my_sick_days_present = 0;
+
+  // compute sick days remaining (for flu)
+  sick_days_remaining = 0.0;
+  if (sick_leave_available) {
+    if (RANDOM() < Activities::SLA_absent_prob) {
+      sick_days_remaining = Activities::SLA_mean_sick_days_absent + Activities::Flu_days;
+    }
+  }
+  else {
+    if (RANDOM() < Activities::SLU_absent_prob) {
+      sick_days_remaining = Activities::SLU_mean_sick_days_absent + Activities::Flu_days;
+    }
+    else if (RANDOM() < Activities::SLA_absent_prob - Activities::SLU_absent_prob) {
+	sick_days_remaining = Activities::Flu_days;
+    }
+  }
+
 }
 
 void Activities::assign_profile() {
@@ -126,19 +187,19 @@ void Activities::update(int day) {
   Activities::is_weekday = (0 < Activities::day_of_week && Activities::day_of_week < 6);
 
   if (day>0) {
-    printf("DAY %d ABSENTEEISM: work abs %d att %d %0.2f  school abs %d att %d %0.2f\n", day-1,
+    printf("DAY %d ABSENTEEISM: work absent %d present %d %0.2f  school absent %d present %d %0.2f\n", day-1,
 	   Activities::Sick_days_absent,
-	   Activities::Sick_days_worked,
-	   (double) (Activities::Sick_days_absent) /(double)(1+Activities::Sick_days_absent+Activities::Sick_days_worked),
+	   Activities::Sick_days_present,
+	   (double) (Activities::Sick_days_absent) /(double)(1+Activities::Sick_days_absent+Activities::Sick_days_present),
 	   Activities::School_sick_days_absent,
-	   Activities::School_sick_days_attended,
-	   (double) (Activities::School_sick_days_absent) /(double)(1+Activities::School_sick_days_absent+Activities::School_sick_days_attended));
+	   Activities::School_sick_days_present,
+	   (double) (Activities::School_sick_days_absent) /(double)(1+Activities::School_sick_days_absent+Activities::School_sick_days_present));
   }
 
   // keep track of global activity counts
-  Activities::Sick_days_worked = 0;
+  Activities::Sick_days_present = 0;
   Activities::Sick_days_absent = 0;
-  Activities::School_sick_days_attended = 0;
+  Activities::School_sick_days_present = 0;
   Activities::School_sick_days_absent = 0;
 }
 
@@ -231,85 +292,64 @@ void Activities::update_schedule(int day) {
 
   // decide whether to stay home if symptomatic
   if (self->is_symptomatic()) {
-    bool taking_sick_day = false;
+    bool stay_home = false;
   
     if (self->is_adult()) {
-      // sick adult
-      bool stay_home = false;
-      bool take_sick_leave = false;
-      if (Global::Enable_Behaviors) {
-	stay_home = self->get_behavior()->adult_is_staying_home(day);
-	take_sick_leave = self->get_behavior()->adult_is_taking_sick_leave(day);
-      }
-      else {
-	// default sick leave behavior
-	stay_home = (RANDOM() < Activities::sick_day_prob);
+
+      // stay home with default probability if we're using the 
+      //default sick behavior model, or it is not a workday,
+      if (Activities::Enable_default_sick_behavior || (!on_schedule[WORKPLACE_INDEX])) {
+	stay_home = (RANDOM() < Activities::Default_sick_day_prob);
       }
 
-      bool authorized_sick_leave = false;
-      if (on_schedule[WORKPLACE_INDEX]) {
-	Workplace *work = (Workplace *) favorite_place[WORKPLACE_INDEX];
-	authorized_sick_leave = work->is_sick_leave_available();
-      }
-
-      if (authorized_sick_leave) {
-	// the following results in 70% of those taking sick leave taking 2 days off
-	// at the start of the symptomatic period, and 30% take one day off.
-	// this gives and average of 1.7 days off for those taking sick leave.
-	if (take_sick_leave) {
-	  if (days_absent == -1) {
-	    if (RANDOM() < 0.7) days_absent = 2;
-	    else days_absent = 1;
-	  }
-	  if (days_absent > 0)
-	    days_absent--;
-	  else
-	    take_sick_leave = false;
-	}
-      }
+      // it is a workday, and we're using rates depending on sick leave availability 
       else {
-	if (on_schedule[WORKPLACE_INDEX]) {
-	  take_sick_leave = (RANDOM() < Activities::Unauthorized_sick_leave_prob);
+	if (sick_days_remaining > 0.0) {
+	  stay_home = (RANDOM() < sick_days_remaining);
+	  sick_days_remaining--;
 	}
       }
 
-      // decide if staying home for any reason
-      taking_sick_day = stay_home || take_sick_leave;
-
-      // record sick day decision for workdays
+      // record absent/present decision for sick day
       if (on_schedule[WORKPLACE_INDEX]) {
-	if (taking_sick_day) {
+	if (stay_home) {
 	  Activities::Sick_days_absent++;
-	  /*
-	  if (take_sick_leave) {
-	    printf("Sick leave person %d days_absent = %d\n", self->get_id(), days_absent+1);
-	  }
-	  */
+	  my_sick_days_absent++;
 	}
 	else {
-	  Activities::Sick_days_worked++;
+	  Activities::Sick_days_present++;
+	  my_sick_days_present++;
 	}
       }
     }
+
     else {
       // sick child
-      if (Global::Enable_Behaviors) {
-	taking_sick_day = self->get_behavior()->child_is_staying_home(day);
+      // stay home with default probability if we're using the 
+      // default sick behavior model, or it is not a school day
+      if (Activities::Enable_default_sick_behavior || (!on_schedule[SCHOOL_INDEX])) {
+	stay_home = (RANDOM() < Activities::Default_sick_day_prob);
       }
+
+      // it is a school day, and we're using behavior model
       else {
-	// default baseline behavior
-	taking_sick_day = (RANDOM() < Activities::sick_day_prob);
+	stay_home = self->get_behavior()->child_is_staying_home(day);
       }
+
       // record sick day decision for school days
       if (on_schedule[SCHOOL_INDEX]) {
-	if (taking_sick_day)
+	if (stay_home) {
 	  Activities::School_sick_days_absent++;
-	else
-	  Activities::School_sick_days_attended++;
+	  my_sick_days_absent++;
+	}
+	else {
+	  Activities::School_sick_days_present++;
+	  my_sick_days_present++;
+	}
       }
     }
 
-    if (taking_sick_day) {
+    if (stay_home) {
       // withdraw to household
       on_schedule[WORKPLACE_INDEX] = false;
       on_schedule[OFFICE_INDEX] = false;
@@ -542,6 +582,7 @@ void Activities::update_profile() {
     // get a job
     profile = WORKER_PROFILE;
     assign_workplace();
+    initialize_sick_leave();
     if (Global::Verbose>1) {
       fprintf(Global::Statusfp,
 	      "changed behavior profile to WORKER: id %d age %d sex %c\n",
@@ -635,11 +676,18 @@ void Activities::addPrevalence(int disease, vector<int> strains) {
 
 
 void Activities::read_init_files() {
-  Params::get_param((char *) "sick_day_prob", &Activities::sick_day_prob);
   Params::get_param((char *) "community_distance", &Activities::Community_distance);
   Params::get_param((char *) "community_prob", &Activities::Community_prob);
   Params::get_param((char *) "home_neighborhood_prob", &Activities::Home_neighborhood_prob);
-  Params::get_param((char *) "unauthorized_sick_leave_prob", &Activities::Unauthorized_sick_leave_prob);
+
+  Params::get_param((char *) "enable_default_sick_behavior", &Activities::Enable_default_sick_behavior);
+  Params::get_param((char *) "sick_day_prob", &Activities::Default_sick_day_prob);
+
+  Params::get_param((char *) "SLA_mean_sick_days_absent", &Activities::SLA_mean_sick_days_absent);
+  Params::get_param((char *) "SLU_mean_sick_days_absent", &Activities::SLU_mean_sick_days_absent);
+  Params::get_param((char *) "SLA_absent_prob", &Activities::SLA_absent_prob);
+  Params::get_param((char *) "SLU_absent_prob", &Activities::SLU_absent_prob);
+  Params::get_param((char *) "flu_days", &Activities::Flu_days);
 
   if (!Global::Enable_Mobility) return;
   char yearly_mobility_rate_file[256];
@@ -732,3 +780,5 @@ void Activities::stop_traveling() {
   }
 }
 
+void Activities::end_of_run() {
+}

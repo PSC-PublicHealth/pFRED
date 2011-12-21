@@ -11,7 +11,7 @@ epidemic_offset = 0
 vaccine_offset = 0
 
 # a date in the format 'YYYY-MM-DD'
-start_date = 2011-01-01
+start_date = 2009-01-01
 reseed_day = -1
 popfile = pop_Alleg.txt
 locfile = loc_Alleg.txt
@@ -191,16 +191,28 @@ vaccine_dose_efficacy_delay_ages[0][0] = 2 0 100
 vaccine_dose_efficacy_delay_values[0][0] = 1 14
 
 #### SICK LEAVE POLICY
-# use workplace size to determine sick leave availability
-enable_sick_leave = 0
-# probability of taking sick leave if not available
-unauthorized_sick_leave_prob = 0.0
+
+## default sick behavior:
+# if set, use sick_day_prob and overide other sick leave behavior
+enable_default_sick_behavior = 1
+# each agent withdraws to the household with sick_day_prob
+# on each day the agent is symptomatic
+sick_day_prob = 0.5
+
+## behavior if sick leave is available (SLA)
+SLA_absent_prob = 0.72
+SLA_mean_sick_days_absent = 2.7
+
+## behavior if sick leave is unavailable (SLA)
+SLU_absent_prob = 0.52
+SLU_mean_sick_days_absent = 2.7
+
+## additional sick days in flu season (intervention)
+flu_days = 0
+
 
 #### INDIVIDUAL BEHAVIORS
 enable_behaviors = 0
-### prob of staying home when sick if enable_behaviors = 0
-sick_day_prob = 0.5
-
 stay_home_when_sick_enabled = 0
 keep_child_home_when_sick_enabled = 0
 accept_vaccine_enabled = 0

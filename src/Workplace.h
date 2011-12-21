@@ -91,20 +91,15 @@ public:
    * @return whether or not the workplace is open on the given day for the given disease
    */
   bool should_be_open(int day, int disease) { return true; }
-  bool is_sick_leave_available() { return sick_leave_available; }
-  char get_size_code() { return size_code; }
 
  private:
   static double * Workplace_contacts_per_day;
   static double *** Workplace_contact_prob;
   static bool Workplace_parameters_set;
   static int Office_size;
-  static int Enable_sick_leave;
 
   vector <Place *> offices;
   int next_office;
-  bool sick_leave_available;
-  char size_code;
 };
 
 #endif // _FRED_WORKPLACE_H

@@ -12,7 +12,6 @@
 #include "Fred.h"
 #include "Utils.h"
 #include "Global.h"
-// #include "Disease.h"
 #include "Population.h"
 #include "Place_List.h"
 #include "Grid.h"
