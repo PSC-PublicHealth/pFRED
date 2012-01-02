@@ -134,7 +134,7 @@ void Person::addPrevalence(int disease, vector<int> strains) {
 string Person::to_string() {
 
   stringstream tmp_string_stream;
-  // (i.e *ID* Age Sex Married Occupation Household School *Classroom* Workplace *Office*)
+  // (i.e *ID* Age Sex Married Occupation Household School *Classroom* Workplace *Office* Relationship)
   tmp_string_stream << this->id << " " << this->get_age() << " " <<  this->get_sex() << " " ;
   tmp_string_stream << this->get_marital_status() << " " << this->get_profession() << " ";
   Place *tmp_place = this->get_household();
@@ -165,7 +165,9 @@ string Person::to_string() {
   if(tmp_place == NULL)
     tmp_string_stream << "-1 ";
   else
-    tmp_string_stream << tmp_place->get_label();
+    tmp_string_stream << tmp_place->get_label() << " ";
+
+  tmp_string_stream << this->get_relationship();
 
   return tmp_string_stream.str();
 }

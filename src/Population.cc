@@ -769,15 +769,15 @@ void Population::write_population_output_file(int day) {
 
   //Loop over the whole population and write the output of each Person's to_string to the file
   char population_output_file[256];
-  sprintf(population_output_file, "%s/%s.%s", Global::Output_directory,
-                (char *) Global::Sim_Date->get_YYYYMMDD(day).c_str(), Population::pop_outfile);
+  sprintf(population_output_file, "%s/%s_%s.txt", Global::Output_directory, Population::pop_outfile,
+                (char *) Global::Sim_Date->get_YYYYMMDD(day).c_str());
   FILE *fp = fopen(population_output_file, "w");
   if (fp == NULL) {
     Utils::fred_abort("Help! population_output_file %s not found\n", population_output_file);
   }
 
-  fprintf(fp, "Population for day %d\n", day);
-  fprintf(fp, "------------------------------------------------------------------\n");
+//  fprintf(fp, "Population for day %d\n", day);
+//  fprintf(fp, "------------------------------------------------------------------\n");
   for (int p = 0; p < pop_size; ++p) {
     fprintf(fp, "%s\n", pop[p]->to_string().c_str());
   }
