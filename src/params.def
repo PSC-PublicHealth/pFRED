@@ -60,7 +60,7 @@ cell_popfile = cell_pop.txt
 # Parameters to allow for output of Population at scheduled times
 # Only done if output_population != 0
 output_population = 0 
-pop_outfile = pop_out.txt
+pop_outfile = pop_out
 # date match should be in format MM-DD-YYYY with * as a wildcard for any of the fields
 output_population_date_match = 01-01-* 
 
