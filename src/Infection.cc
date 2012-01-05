@@ -323,14 +323,10 @@ void Infection::report_infection(int day) const {
 
   int place_id = place == NULL? -1 : place->get_id();
   char place_type = place == NULL? 'X' : place->get_type();
-  int place_size = -1;
-  if (place_type == 'W') {
-    Workplace *work = (Workplace *) place;
-    place_size = work->get_size();
-  }
-  if (place_type == 'O') {
-    Workplace *work = (Workplace *) place->get_container();
-    place_size = work->get_size();
+  int place_size = place == NULL? -1: place->get_size();
+  if (place_type == 'O' || place_type == 'C') {
+    Place *container = place->get_container();
+    place_size = container->get_size();
   }
 
 
