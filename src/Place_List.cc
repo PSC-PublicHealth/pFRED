@@ -695,11 +695,11 @@ Place * Place_List::get_random_workplace() {
 }
 
 void Place_List::end_of_run() {
-  if (Global::Verbose > 1) {
+  if (Global::Verbose > 0) {
     int number_places = places.size();
     for (int p = 0; p < number_places; p++) {
       Place *place = places[p];
-      fprintf(Global::Statusfp,"PLACE REPORT: id type %c %d size %d days_inf %d attack_rate %5.2f\n",
+      fprintf(Global::Statusfp,"PLACE REPORT: id %d type %c size %d days_inf %d attack_rate %5.2f\n",
 	      place->get_id(), place->get_type(), place->get_size(),
 	      place->get_days_infectious(), 100.0*place->get_attack_rate());
     }
