@@ -53,6 +53,8 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   incidence.resize(Global::Diseases);
   prevalence.resize(Global::Diseases);
   N = 0;
+  days_infectious = 0;
+  total_infections = 0;
 }
 
 void Place::print_stats(int day, int disease_id) {
@@ -195,24 +197,28 @@ double Place::get_contact_rate(int day, int disease_id) {
       contacts = Neighborhood::get_weekend_contact_rate(disease_id) * contacts;
     }
   }
-  Utils::fred_verbose(1,"Disease %d, expected contacts = %f\n", disease_id, contacts);
+  // Utils::fred_verbose(1,"Disease %d, expected contacts = %f\n", disease_id, contacts);
   return contacts;
 }
 
 int Place::get_contact_count(Person * infector, int disease_id, int day, double contact_rate) {
   // reduce number of infective contacts by infector's infectivity
-  double infector_contacts = contact_rate * infector->get_infectivity(disease_id, day);
+  double infectivity = infector->get_infectivity(disease_id, day);
+  double infector_contacts = contact_rate * infectivity;
 
-  Utils::fred_verbose(1,"infectivity = %f, so ", infector->get_infectivity(disease_id, day));
-  Utils::fred_verbose(1,"infector's effective contacts = %f\n", infector_contacts);
+  if (Global::Verbose > 1) {
+    Utils::fred_verbose(1,"infectivity = %f, so ", infectivity);
+    Utils::fred_verbose(1,"infector's effective contacts = %f\n", infector_contacts);
+  }
 
   // randomly round off the expected value of the contact counts
   int contact_count = (int) infector_contacts;
   double r = RANDOM();
   if (r < infector_contacts - contact_count) contact_count++;
 
-  Utils::fred_verbose(1,"infector contact_count = %d  r = %f\n", contact_count, r);
-
+  if (Global::Verbose > 1) {
+    Utils::fred_verbose(1,"infector contact_count = %d  r = %f\n", contact_count, r);
+  }
   return contact_count;
 }
 
@@ -220,7 +226,7 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
                                         Person * infectee, int disease_id, int day) {
 
   double susceptibility = infectee->get_susceptibility(disease_id);
-  Utils::fred_verbose(1,"susceptibility = %f\n", susceptibility);
+  // Utils::fred_verbose(1,"susceptibility = %f\n", susceptibility);
 
   double r = RANDOM();
   double infection_prob = transmission_prob * susceptibility;
@@ -230,21 +236,27 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
     Transmission *transmission = new Transmission(infector, this, day);
     infector->infect(infectee, disease_id, transmission);
 
-    Utils::fred_verbose(1,"transmission succeeded: r = %f  prob = %f\n",
-        r, infection_prob);
+    if (disease_id == 0) total_infections++;
 
-    if (infector->get_exposure_date(disease_id) == 0)
-      Utils::fred_verbose(1,"SEED infection day %i from %d to %d\n",
-          day, infector->get_id(),infectee->get_id());
-    else
-      Utils::fred_verbose(1,"infection day %i of disease %i from %d to %d\n",
-          day, disease_id, infector->get_id(),infectee->get_id());
-
-    if (infection_prob > 1) Utils::fred_verbose(3,"infection_prob exceeded unity!\n");
+    if (Global::Verbose > 1) {
+      Utils::fred_verbose(1,"transmission succeeded: r = %f  prob = %f\n",
+			  r, infection_prob);
+      
+      if (infector->get_exposure_date(disease_id) == 0)
+	Utils::fred_verbose(1,"SEED infection day %i from %d to %d\n",
+			    day, infector->get_id(),infectee->get_id());
+      else
+	Utils::fred_verbose(1,"infection day %i of disease %i from %d to %d\n",
+			    day, disease_id, infector->get_id(),infectee->get_id());
+      
+      if (infection_prob > 1) Utils::fred_verbose(3,"infection_prob exceeded unity!\n");
+    }
   }
   else {
-    Utils::fred_verbose(1,"transmission failed: r = %f  prob = %f\n",
-        r, infection_prob); 
+    if (Global::Verbose > 1) {
+      Utils::fred_verbose(1,"transmission failed: r = %f  prob = %f\n",
+			  r, infection_prob);
+    } 
   }
 }
 
@@ -257,8 +269,13 @@ void Place::spread_infection(int day, int disease_id) {
   // since N is estimated only at startup.
   int number_targets = (N-1 > S[disease_id]? N-1 : S[disease_id]);
 
-  Utils::fred_verbose(1,"Disease ID: %d\n",disease_id);
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp,"spread_infection: Disease %d day %d place %d type %c\n",
+	    disease_id, day, id, type);
+    fflush(Global::Statusfp);
+  }
 
+  if (disease_id == 0) days_infectious++;
   if (number_targets == 0) return;
   if (is_open(day) == false) return;
   if (should_be_open(day, disease_id) == false) return;
@@ -278,8 +295,10 @@ void Place::spread_infection(int day, int disease_id) {
     int contact_count = get_contact_count(infector,disease_id,day,contact_rate);
     
     // check for saturation in this place
-    if (contact_count > number_targets) Utils::fred_verbose(3,"frustration! \
-        making %d attempts to infect %d targets\n",contact_count,number_targets);
+    if (contact_count > number_targets && Global::Verbose > 3) {
+      fprintf(Global::Statusfp, "frustration! making %d attempts to infect %d targets\n",
+	      contact_count,number_targets);
+    }
 
     // get a susceptible target for each contact resulting in infection
     for (int c = 0; c < contact_count; c++) {
@@ -289,16 +308,22 @@ void Place::spread_infection(int day, int disease_id) {
       // at this point we have a susceptible target:
       Person * infectee = susceptibles[disease_id][pos];
 
-      Utils::fred_verbose(1,"possible infectee = %d  pos = %d  S[%d] = %d\n",
-          infectee->get_id(), pos, disease_id, S[disease_id]);
+      if (Global::Verbose > 1) {
+	fprintf(Global::Statusfp, "possible infectee = %d  pos = %d  S[%d] = %d\n",
+		infectee->get_id(), pos, disease_id, S[disease_id]);
+      }
 
       // is the target still susceptible?
       if (infectee->is_susceptible(disease_id)) {
 
-        Utils::fred_verbose(1,"Victim is susceptible\n"); 
         // get the transmission probs for this infector/infectee pair
         double transmission_prob = get_transmission_prob(disease_id, infector, infectee);
-        Utils::fred_verbose(1,"trans_prob = %f  ", transmission_prob);
+
+	if (Global::Verbose > 1) {
+	  fprintf(Global::Statusfp,"infectee is susceptible\n");
+	  fprintf(Global::Statusfp,"trans_prob = %f\n", transmission_prob);
+	  fflush(Global::Statusfp);
+	}
 
         attempt_transmission(transmission_prob, infector, infectee, disease_id, day);
 

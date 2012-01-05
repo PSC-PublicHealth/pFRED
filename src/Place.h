@@ -221,7 +221,7 @@ public:
    *
    * @return the type
    */
-  int get_type() { return type; }
+  char get_type() { return type; }
 
   bool is_workplace() { return type == 'W'; }
 
@@ -420,6 +420,9 @@ public:
   
   Place * select_neighborhood(double community_prob, double community_distance, double local_prob);
 
+  int get_days_infectious() { return days_infectious; }
+
+  double get_attack_rate() { return(N?(double)total_infections/(double)N:0.0); }
 
 protected:
   int id;					// place id
@@ -444,6 +447,8 @@ protected:
   Cell * grid_cell;			 // geo grid_cell for this place
   vector< map<int, int> > incidence;
   vector< map<int, int> > prevalence;
+  int days_infectious;
+  int total_infections;
 
   double get_contact_rate(int day, int disease_id);
   int get_contact_count(Person * infector, int disease_id, int day, double contact_rate);

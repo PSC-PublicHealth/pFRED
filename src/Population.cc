@@ -29,6 +29,7 @@
 #include "Date.h"
 #include "Travel.h"
 #include "Utils.h"
+#include "Activities.h"
 
 using namespace std; 
 
@@ -411,6 +412,7 @@ void Population::update(int day) {
     for (int p = 0; p < pop_size; p++) {
       pop[p]->prepare_activities();
     }
+    Activities::before_run();
   }
 
   // update activity profiles on July 1

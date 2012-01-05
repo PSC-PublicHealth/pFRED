@@ -155,8 +155,13 @@ void Household::record_profile() {
 
 void Household::spread_infection(int day, int disease_id) {
 
-  vector<Person *>::iterator itr;
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp,"spread_infection: Disease %d day %d place %d type %c\n",
+	    disease_id, day, id, type);
+    fflush(Global::Statusfp);
+  }
 
+  vector<Person *>::iterator itr;
   double contact_prob = get_contact_rate(day,disease_id);
 
   // randomize the order of the infectious list
@@ -170,23 +175,31 @@ void Household::spread_infection(int day, int disease_id) {
     for (int pos = 0; pos < S[disease_id]; pos++) {
       Person * infectee = susceptibles[disease_id][pos];
 
-      Utils::fred_verbose(1,"possible infectee = %d  pos = %d  S[%d] = %d\n",
-            infectee->get_id(), pos, disease_id, S[disease_id]);
+      if (Global::Verbose > 1) {
+	fprintf(Global::Statusfp,"possible infectee = %d  pos = %d  S[%d] = %d\n",
+		infectee->get_id(), pos, disease_id, S[disease_id]);
+	fflush(Global::Statusfp);
+      }
 
       // is the target still susceptible?
       if (infectee->is_susceptible(disease_id)) {
 
-        Utils::fred_verbose(1,"Victim is susceptible\n");
         // get the transmission probs for this infector/infectee pair
         double transmission_prob = get_transmission_prob(disease_id, infector, infectee);
-        Utils::fred_verbose(1,"trans_prob = %f  ", transmission_prob);
 
-       double infectivity = infector->get_infectivity(disease_id,day);
+	if (Global::Verbose > 1) {
+	  fprintf(Global::Statusfp,"infectee is susceptible\n");
+	  fprintf(Global::Statusfp,"trans_prob = %f\n", transmission_prob);
+	  fflush(Global::Statusfp);
+	}
+
+	double infectivity = infector->get_infectivity(disease_id,day);
+
         // scale transmission prob by infectivity and contact prob
         transmission_prob *= infectivity * contact_prob;     
 
         attempt_transmission(transmission_prob, infector, infectee, disease_id, day);
-
+	
       } // end of susceptible infectee
     } // end contact loop
   } // end infectious list loop

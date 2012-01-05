@@ -82,6 +82,7 @@ void Cell::record_favorite_places() {
   // sprintf(filename, "PATCHES/Cell-%d-%d-households", row, col);
   // fp = fopen(filename, "w");
   for (int i = 0; i < houses; i++) {
+    // printf("house %d of %d\n", i, houses); fflush(stdout);
     house = (Household *) household[i];
     house->record_profile();
     int hsize = house->get_size();

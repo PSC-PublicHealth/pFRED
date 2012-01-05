@@ -290,6 +290,7 @@ int main(int argc, char* argv[]) {
 
   // finish up
   Global::Pop.end_of_run();
+  Global::Places.end_of_run();
   Utils::fred_end();
 
   return 0;

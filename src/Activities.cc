@@ -108,6 +108,15 @@ void Activities::prepare() {
 #define MID_COMPANY_MAXSIZE 99
 #define MEDIUM_COMPANY_MAXSIZE 499
 
+static int employees_small_with_sick_leave = 0;
+static int employees_small_without_sick_leave = 0;
+static int employees_med_with_sick_leave = 0;
+static int employees_med_without_sick_leave = 0;
+static int employees_large_with_sick_leave = 0;
+static int employees_large_without_sick_leave = 0;
+static int employees_xlarge_with_sick_leave = 0;
+static int employees_xlarge_without_sick_leave = 0;
+
 void Activities::initialize_sick_leave() {
   int workplace_size = 0;
 
@@ -118,15 +127,31 @@ void Activities::initialize_sick_leave() {
   if (workplace_size > 0) {
     if (workplace_size <= SMALL_COMPANY_MAXSIZE) {
       sick_leave_available = (RANDOM() < 0.53);
+      if (sick_leave_available)
+	employees_small_with_sick_leave++;
+      else
+	employees_small_without_sick_leave++;
     }
     else if (workplace_size <= MID_COMPANY_MAXSIZE) {
       sick_leave_available = (RANDOM() < 0.58);
+      if (sick_leave_available)
+	employees_med_with_sick_leave++;
+      else
+	employees_med_without_sick_leave++;
     }
     else if (workplace_size <= MEDIUM_COMPANY_MAXSIZE) {
       sick_leave_available = (RANDOM() < 0.70);
+      if (sick_leave_available)
+	employees_large_with_sick_leave++;
+      else
+	employees_large_without_sick_leave++;
     }
     else {
       sick_leave_available = (RANDOM() < 0.85);
+      if (sick_leave_available)
+	employees_xlarge_with_sick_leave++;
+      else
+	employees_xlarge_without_sick_leave++;
     }
   }
   else
@@ -150,7 +175,28 @@ void Activities::initialize_sick_leave() {
 	sick_days_remaining = Activities::Flu_days;
     }
   }
+}
 
+void Activities::before_run() {
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp,"employees at small workplaces with sick leave: %d\n",
+	    employees_small_with_sick_leave);
+    fprintf(Global::Statusfp,"employees at small workplaces without sick leave: %d\n",
+	    employees_small_without_sick_leave);
+    fprintf(Global::Statusfp,"employees at med workplaces with sick leave: %d\n",
+	    employees_med_with_sick_leave);
+    fprintf(Global::Statusfp,"employees at med workplaces without sick leave: %d\n",
+	    employees_med_without_sick_leave);
+    fprintf(Global::Statusfp,"employees at large workplaces with sick leave: %d\n",
+	    employees_large_with_sick_leave);
+    fprintf(Global::Statusfp,"employees at large workplaces without sick leave: %d\n",
+	    employees_large_without_sick_leave);
+    fprintf(Global::Statusfp,"employees at xlarge workplaces with sick leave: %d\n",
+	    employees_xlarge_with_sick_leave);
+    fprintf(Global::Statusfp,"employees at xlareg workplaces without sick leave: %d\n",
+	    employees_xlarge_without_sick_leave);
+    fflush(Global::Statusfp);
+  }
 }
 
 void Activities::assign_profile() {
@@ -278,9 +324,10 @@ void Activities::update_schedule(int day) {
 
   // skip work at background absenteeism rate
   if (Global::Work_absenteeism > 0.0 && on_schedule[WORKPLACE_INDEX]) {
-    if (RANDOM() < Global::Work_absenteeism)
+    if (RANDOM() < Global::Work_absenteeism) {
       on_schedule[WORKPLACE_INDEX] = false;
       on_schedule[OFFICE_INDEX] = false;
+    }
   }
 
   // skip school at background school absenteeism rate
@@ -367,7 +414,7 @@ void Activities::update_schedule(int day) {
 							   Activities::Home_neighborhood_prob);
   }
 
-  if (Global::Verbose > 2) {
+  if (Global::Verbose > 1) {
     fprintf(Global::Statusfp, "update_schedule on day %d\n", day);
     print_schedule(day);
     fflush(Global::Statusfp);
@@ -471,6 +518,9 @@ void Activities::assign_office() {
     Place * place =
       ((Workplace *) favorite_place[WORKPLACE_INDEX])->assign_office(self);
     if (place != NULL) place->enroll(self);
+    else { printf("Warning! No office assigned for person %d workplace %d\n",
+		  self->get_id(), favorite_place[WORKPLACE_INDEX]->get_id());
+    }
     favorite_place[OFFICE_INDEX] = place;
   }
 }

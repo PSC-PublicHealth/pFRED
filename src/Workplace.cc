@@ -130,12 +130,15 @@ void Workplace::setup_offices() {
 }
 
 Place * Workplace::assign_office(Person *per) {
-  if (Workplace::Office_size == 0)
+
+  if (Workplace::Office_size == 0) {
     return NULL;
+  }
+
   if (Global::Verbose>1) {
     fprintf(Global::Statusfp,
-	    "assign office for person %d at workplace %d %s == ",
-	    per->get_id(), id, label);
+	    "assign office for person %d at workplace %d %s size %d == ",
+	    per->get_id(), id, label, N);
     fflush(Global::Statusfp);
   }
 
@@ -149,8 +152,10 @@ Place * Workplace::assign_office(Person *per) {
     fflush(Global::Statusfp);
   }
 
-  next_office++;
-  if (next_office+1 > (int) offices.size())
+  // update next pick
+  if (next_office < (int) offices.size()-1)
+    next_office++;
+  else
     next_office = 0;
   return offices[i];
 }

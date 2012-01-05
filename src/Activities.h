@@ -186,6 +186,7 @@ public:
   int get_sick_days_present() { return my_sick_days_present; }
   static void update(int day);
   static void end_of_run();
+  static void before_run();
 
 private:
   Person * self;	 // pointer to person using having this activities

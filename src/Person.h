@@ -447,6 +447,7 @@ public:
   bool acceptance_of_vaccine() { return behavior->acceptance_of_vaccine(); }
   bool acceptance_of_another_vaccine_dose() { return behavior->acceptance_of_another_vaccine_dose(); }
   void become_an_adult_decision_maker() { behavior->initialize_adult_behavior(this); }
+  bool is_sick_leave_available() { return activities->is_sick_leave_available(); }
 
   void terminate();
 

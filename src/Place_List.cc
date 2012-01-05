@@ -530,6 +530,11 @@ void Place_List::quality_control(char *directory) {
   
   if (Global::Verbose) {
     int count[20];
+    int small_employees = 0;
+    int med_employees = 0;
+    int large_employees = 0;
+    int xlarge_employees = 0;
+    int total_employees = 0;
     int total = 0;
     // size distribution of workplaces
     for (int c = 0; c < 20; c++) { count[c] = 0; }
@@ -540,6 +545,19 @@ void Place_List::quality_control(char *directory) {
         if (n < 20) { count[n]++; }
         else { count[19]++; }
         total++;
+	if (s < 50) {
+	  small_employees += s;
+	}
+	else if (s < 100) {
+	  med_employees += s;
+	}
+	else if (s < 500) {
+	  large_employees += s;
+	}
+	else {
+	  xlarge_employees += s;
+	}
+	total_employees += s;
       }
     }
     fprintf(Global::Statusfp, "\nWorkplace size distribution: %d workplaces\n", total);
@@ -547,7 +565,21 @@ void Place_List::quality_control(char *directory) {
       fprintf(Global::Statusfp, "%3d: %6d (%.2f%%)\n",
               (c+1)*50, count[c], (100.0*count[c])/total);
     }
-    fprintf(Global::Statusfp, "\n");
+    fprintf(Global::Statusfp, "\n\n");
+
+    fprintf(Global::Statusfp, "employees at small workplaces (1-49): ");
+    fprintf(Global::Statusfp, "%d\n", small_employees);
+
+    fprintf(Global::Statusfp, "employees at medium workplaces (50-99): ");
+    fprintf(Global::Statusfp, "%d\n", med_employees);
+
+    fprintf(Global::Statusfp, "employees at small workplaces (100-499): ");
+    fprintf(Global::Statusfp, "%d\n", large_employees);
+
+    fprintf(Global::Statusfp, "employees at small workplaces (500-up): ");
+    fprintf(Global::Statusfp, "%d\n", xlarge_employees);
+ 
+    fprintf(Global::Statusfp, "total employees: %d\n\n", total_employees);
   }
   
   /*
@@ -661,3 +693,16 @@ Place * Place_List::get_random_workplace() {
   else
     return NULL;
 }
+
+void Place_List::end_of_run() {
+  int number_places = places.size();
+  for (int p = 0; p < number_places; p++) {
+    if (places[p]->get_type() == WORKPLACE) {
+      printf("WORKPLACE REPORT: id %d days %d size %d attack_rate %5.2f\n",
+	     places[p]->get_id(), places[p]->get_days_infectious(),
+	     places[p]->get_size(), 100.0*places[p]->get_attack_rate());
+    }
+  }
+}
+
+

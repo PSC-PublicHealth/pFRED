@@ -22,6 +22,7 @@
 #include "Disease.h"
 #include "Health.h"
 #include "IntraHost.h"
+#include "Activities.h"
 #include <map>
 #include <vector>
 #include <float.h>
@@ -320,8 +321,9 @@ void Infection::setTrajectory(Trajectory *trajectory) {
 void Infection::report_infection(int day) const {
   if (Global::Infectionfp == NULL) return;
 
+  int place_id = place == NULL? -1 : place->get_id();
   char place_type = place == NULL? 'X' : place->get_type();
-  int place_size = '-1';
+  int place_size = -1;
   if (place_type == 'W') {
     Workplace *work = (Workplace *) place;
     place_size = work->get_size();
@@ -332,15 +334,17 @@ void Infection::report_infection(int day) const {
   }
 
 
-  fprintf(Global::Infectionfp, "day %d dis %d host %d age %.3f "
-          " from %d inf_age %.3f sympt %d at %c size %d ",
+  fprintf(Global::Infectionfp, "day %d dis %d host %d age %.3f sick_leave %d"
+          " infector %d inf_age %.3f inf_sympt %d inf_sick_leave %d at %c place %d size %d  ",
           day, id,
           host->get_id(),
           host->get_real_age(day),
+          host->is_sick_leave_available(),
           infector == NULL ? -1 : infector->get_id(),
           infector == NULL ? -1 : infector->get_real_age(day),
           infector == NULL ? -1 : infector->is_symptomatic(),
-	  place_type, place_size);
+          infector == NULL ? -1 : infector->is_sick_leave_available(),
+	  place_type, place_id, place_size);
 
   if (Global::Track_infection_events > 1)
     fprintf(Global::Infectionfp,
