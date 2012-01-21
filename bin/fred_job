@@ -21,7 +21,9 @@ die "fred_job: Please set environmental variable FRED_HOME to location of FRED h
 
 # get command line arguments
 my %options = ();
-getopts("cp:k:s:n:", \%options);
+getopts("cSp:k:s:n:z", \%options);
+
+my $zip = exists $options{z};
 
 my $paramsfile = "params";
 $paramsfile = $options{p} if exists $options{p};
@@ -31,7 +33,7 @@ $key = $options{k} if exists $options{k};
 
 my $cache = exists $options{c};
 
-my $use_serial = exists $options{s};
+my $use_serial = exists $options{S};
 
 my $start_run = 1;
 $start_run = $options{s} if exists $options{s};
@@ -294,7 +296,9 @@ my $params = "$work/$params_base";
 if ($use_serial) {
   # NOTE: the next part of the script runs in the WORK directory
   chdir $work or die "Can't change to FRED directory $work\n";
-  system "$FRED/bin/run_fred -p $params -d $out -s $start_run -n $end_run";
+  my $cmd ="$FRED/bin/run_fred -p $params -d $out -s $start_run -n $end_run";
+  $cmd = "$cmd -z" if $zip;
+  system $cmd;
 } else {
   # parallel run
 
