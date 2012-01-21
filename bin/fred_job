@@ -291,9 +291,9 @@ my $params = "$work/$params_base";
 if ($use_serial) {
   # NOTE: the next part of the script runs in the WORK directory
   chdir $work or die "Can't change to FRED directory $work\n";
-  my $cmd ="$FRED/bin/run_fred -p $params -d $out -s $start_run -n $end_run";
-  $cmd = "$cmd -z" if $zip;
-  system $cmd;
+  system "$FRED/bin/run_fred -p $params -d $out -s $start_run -n $end_run";
+  system "gzip $out/inf*.txt" if $zip;
+  system "gzip $tripfile" if $tripfile ne "none";
 } else {
   # parallel run
 

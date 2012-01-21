@@ -19,15 +19,13 @@ my $cwd = getcwd();
 my $FRED = $ENV{FRED_HOME};
 die "run_fred: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
-my $usage = "usage: run_fred -d dir -p params -s start_run -n end_run [-z]\n";
+my $usage = "usage: run_fred -d dir -p params -s start_run -n end_run\n";
 
 my @arg = @ARGV;
 
 # get command line arguments
 my %options = ();
-getopts("d:p:s:n:z", \%options);
-
-my $zip = exists $options{z};
+getopts("d:p:s:n:", \%options);
 
 my $paramsfile = "params";
 $paramsfile = $options{p} if exists $options{p};
@@ -58,9 +56,6 @@ for my $n ($start_run .. $end_run) {
   $cmd = "FRED $paramsfile $n $dir >& $dir/LOG$n";
   print "$cmd\n";
   system $cmd;
-}
-if ($zip) {
-  system "gzip infection*txt";
 }
 
 
