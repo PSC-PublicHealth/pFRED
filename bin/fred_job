@@ -292,8 +292,6 @@ if ($use_serial) {
   # NOTE: the next part of the script runs in the WORK directory
   chdir $work or die "Can't change to FRED directory $work\n";
   system "$FRED/bin/run_fred -p $params -d $out -s $start_run -n $end_run";
-  system "gzip $out/inf*.txt" if $zip;
-  system "gzip $tripfile" if $tripfile ne "none";
 } else {
   # parallel run
 
@@ -349,6 +347,10 @@ if ($use_serial) {
     while (wait() != -1) {}
   } #for run_set
 } # if serial
+
+# gzip files to save space
+system "gzip $out/inf*.txt" if $zip;
+system "gzip $work/$tripfile" if $tripfile ne "none";
 
 # make reports
 `$FRED/bin/fred_report $out $reports`;
