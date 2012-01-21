@@ -47,7 +47,7 @@ void Place_List::read_places() {
     fprintf(Global::Statusfp, "read places entered\n");
     fflush(Global::Statusfp);
   }
-  Params::get_param((char *) "locfile", locfile);
+  Params::get_param_from_string("locfile", locfile);
   // read in locations
   char location_file[256];
   sprintf(location_file, "%s/%s", Global::Population_directory, locfile);

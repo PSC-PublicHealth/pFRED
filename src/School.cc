@@ -95,15 +95,15 @@ void School::get_parameters(int diseases) {
     }
   }
   
-  Params::get_param((char *) "school_classroom_size", &School::school_classroom_size);
-  Params::get_param((char *) "school_closure_policy", School::school_closure_policy);
-  Params::get_param((char *) "school_closure_day", &School::school_closure_day);
-  Params::get_param((char *) "school_closure_threshold", &School::school_closure_threshold);
-  Params::get_param((char *) "school_closure_period", &School::school_closure_period);
-  Params::get_param((char *) "school_closure_delay", &School::school_closure_delay);
-  Params::get_param((char *) "school_summer_schedule", &School::school_summer_schedule);
-  Params::get_param((char *) "school_summer_start", School::school_summer_start);
-  Params::get_param((char *) "school_summer_end", School::school_summer_end);
+  Params::get_param_from_string("school_classroom_size", &School::school_classroom_size);
+  Params::get_param_from_string("school_closure_policy", School::school_closure_policy);
+  Params::get_param_from_string("school_closure_day", &School::school_closure_day);
+  Params::get_param_from_string("school_closure_threshold", &School::school_closure_threshold);
+  Params::get_param_from_string("school_closure_period", &School::school_closure_period);
+  Params::get_param_from_string("school_closure_delay", &School::school_closure_delay);
+  Params::get_param_from_string("school_summer_schedule", &School::school_summer_schedule);
+  Params::get_param_from_string("school_summer_start", School::school_summer_start);
+  Params::get_param_from_string("school_summer_end", School::school_summer_end);
  
   School::school_parameters_set = true;
 }

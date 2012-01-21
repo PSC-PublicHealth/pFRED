@@ -108,7 +108,7 @@ Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxla
 }
 
 void Large_Grid::get_parameters() {
-  Params::get_param((char *) "grid_large_cell_size", &grid_cell_size);
+  Params::get_param_from_string("grid_large_cell_size", &grid_cell_size);
 }
 
 Large_Cell ** Large_Grid::get_neighbors(int row, int col) {
@@ -245,7 +245,7 @@ void Large_Grid::read_max_popsize() {
   int r,c, n;
   char filename[256];
   if (Global::Enable_Travel) {
-    Params::get_param((char *) "cell_popfile", filename);
+    Params::get_param_from_string("cell_popfile", filename);
     FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
       Utils::fred_abort("Help! Can't open cell_pop_file %s\n", filename);

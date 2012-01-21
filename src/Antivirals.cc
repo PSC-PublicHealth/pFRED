@@ -21,11 +21,9 @@ using namespace std;
 #include "Health.h"
 
 Antivirals::Antivirals(){
-  char s[80];
   int nav;
   
-  sprintf(s,"number_antivirals");
-  Params::get_param((char *) "number_antivirals",&nav);
+  Params::get_param_from_string("number_antivirals",&nav);
   
   for(int iav=0;iav<nav;iav++){
     int Disease, CorLength, InitSt, TotAvail, PerDay;

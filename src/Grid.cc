@@ -74,7 +74,7 @@ Grid::Grid(double minlon, double minlat, double maxlon, double maxlat) {
 }
 
 void Grid::get_parameters() {
-  Params::get_param((char *) "grid_cell_size", &grid_cell_size);
+  Params::get_param_from_string("grid_cell_size", &grid_cell_size);
 }
 
 Cell ** Grid::get_neighbors(int row, int col) {

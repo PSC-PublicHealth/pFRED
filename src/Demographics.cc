@@ -259,8 +259,8 @@ void Demographics::read_init_files() {
   }
 
   if (Global::Enable_Births) {
-    Params::get_param((char *) "yearly_birth_rate_file", yearly_birth_rate_file);
-    Params::get_param((char *) "birth_rate_multiplier", &birth_rate_multiplier);
+    Params::get_param_from_string("yearly_birth_rate_file", yearly_birth_rate_file);
+    Params::get_param_from_string("birth_rate_multiplier", &birth_rate_multiplier);
     // read and load the birth rates
     fp = fopen(yearly_birth_rate_file, "r");
     if (fp == NULL) {
@@ -286,7 +286,7 @@ void Demographics::read_init_files() {
   }
 
   if (Global::Enable_Deaths) {
-    Params::get_param((char *) "yearly_mortality_rate_file", yearly_mortality_rate_file);
+    Params::get_param_from_string("yearly_mortality_rate_file", yearly_mortality_rate_file);
     
     // read death rate file and load the values unt the death_rate_array
     FILE *fp = fopen(yearly_mortality_rate_file, "r");

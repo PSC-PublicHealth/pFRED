@@ -58,9 +58,9 @@ void Travel::setup(char * directory) {
 
   // get run-time parameters
   int n;
-  Params::get_param((char *) "max_trips_per_day",&max_trips_per_day);
-  Params::get_param((char *) "tripfile", tripfile);
-  Params::get_param((char *) "travel_duration",&n);
+  Params::get_param_from_string("max_trips_per_day",&max_trips_per_day);
+  Params::get_param_from_string("tripfile", tripfile);
+  Params::get_param_from_string("travel_duration",&n);
   Travel_Duration_Cdf = new double [n];
   max_Travel_Duration = Params::get_param_vector((char *) "travel_duration",
 					 Travel_Duration_Cdf) - 1;

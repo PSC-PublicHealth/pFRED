@@ -43,7 +43,7 @@ void Workplace::get_parameters(int diseases) {
   Workplace::Workplace_contact_prob = new double** [ diseases ];
   
   // people per office
-  Params::get_param((char *) "office_size", &Workplace::Office_size);
+  Params::get_param_from_string("office_size", &Workplace::Office_size);
 
   for (int s = 0; s < diseases; s++) {
     int n;

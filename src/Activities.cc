@@ -726,25 +726,25 @@ void Activities::addPrevalence(int disease, vector<int> strains) {
 
 
 void Activities::read_init_files() {
-  Params::get_param((char *) "community_distance", &Activities::Community_distance);
-  Params::get_param((char *) "community_prob", &Activities::Community_prob);
-  Params::get_param((char *) "home_neighborhood_prob", &Activities::Home_neighborhood_prob);
+  Params::get_param_from_string("community_distance", &Activities::Community_distance);
+  Params::get_param_from_string("community_prob", &Activities::Community_prob);
+  Params::get_param_from_string("home_neighborhood_prob", &Activities::Home_neighborhood_prob);
 
-  Params::get_param((char *) "enable_default_sick_behavior", &Activities::Enable_default_sick_behavior);
-  Params::get_param((char *) "sick_day_prob", &Activities::Default_sick_day_prob);
+  Params::get_param_from_string("enable_default_sick_behavior", &Activities::Enable_default_sick_behavior);
+  Params::get_param_from_string("sick_day_prob", &Activities::Default_sick_day_prob);
 
-  Params::get_param((char *) "SLA_mean_sick_days_absent", &Activities::SLA_mean_sick_days_absent);
-  Params::get_param((char *) "SLU_mean_sick_days_absent", &Activities::SLU_mean_sick_days_absent);
-  Params::get_param((char *) "SLA_absent_prob", &Activities::SLA_absent_prob);
-  Params::get_param((char *) "SLU_absent_prob", &Activities::SLU_absent_prob);
-  Params::get_param((char *) "flu_days", &Activities::Flu_days);
+  Params::get_param_from_string("SLA_mean_sick_days_absent", &Activities::SLA_mean_sick_days_absent);
+  Params::get_param_from_string("SLU_mean_sick_days_absent", &Activities::SLU_mean_sick_days_absent);
+  Params::get_param_from_string("SLA_absent_prob", &Activities::SLA_absent_prob);
+  Params::get_param_from_string("SLU_absent_prob", &Activities::SLU_absent_prob);
+  Params::get_param_from_string("flu_days", &Activities::Flu_days);
 
   if (!Global::Enable_Mobility) return;
   char yearly_mobility_rate_file[256];
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "read activities init files entered\n"); fflush(Global::Statusfp);
   }
-  Params::get_param((char *) "yearly_mobility_rate_file", yearly_mobility_rate_file);
+  Params::get_param_from_string("yearly_mobility_rate_file", yearly_mobility_rate_file);
   // read mobility rate file and load the values into the mobility_rate_array
   FILE *fp = fopen(yearly_mobility_rate_file, "r");
   if (fp == NULL) {

@@ -74,7 +74,7 @@ Small_Grid::Small_Grid(double minlon, double minlat, double maxlon, double maxla
 }
 
 void Small_Grid::get_parameters() {
-  Params::get_param((char *) "grid_small_cell_size", &grid_cell_size);
+  Params::get_param_from_string("grid_small_cell_size", &grid_cell_size);
 }
 
 Small_Cell ** Small_Grid::get_neighbors(int row, int col) {

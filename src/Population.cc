@@ -74,7 +74,7 @@ Population::~Population() {
 }
 
 void Population::get_parameters() {
-  Params::get_param((char *) "popfile", Population::popfile);
+  Params::get_param_from_string("popfile", Population::popfile);
   
   int num_mutation_params =
       Params::get_param_matrix((char *) "mutation_prob", &mutation_prob);
@@ -97,10 +97,10 @@ void Population::get_parameters() {
 
   //Only do this one time
   if(!Population::is_initialized) {
-    Params::get_param((char *) "output_population", &Population::output_population);
+    Params::get_param_from_string("output_population", &Population::output_population);
     if(Population::output_population > 0) {
-      Params::get_param((char *) "pop_outfile", Population::pop_outfile);
-      Params::get_param((char *) "output_population_date_match", Population::output_population_date_match);
+      Params::get_param_from_string("pop_outfile", Population::pop_outfile);
+      Params::get_param_from_string("output_population_date_match", Population::output_population_date_match);
     }
     Population::is_initialized = true;
   }
