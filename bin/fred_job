@@ -89,7 +89,6 @@ if ($popdir eq ".") { $popdir = $cwd; }
 else { $popdir = "$cwd/$popdir"; }
 
 my $primary_cases = get_param_value("primary_cases_file[0]",$paramsfile);
-my $vaccination_capacity_file =  get_param_value("vaccination_capacity_file",$paramsfile);
 my $mortality_rate_file =  get_param_value("yearly_mortality_rate_file",$paramsfile);
 my $birth_rate_file =  get_param_value("yearly_birth_rate_file",$paramsfile);
 my $cell_popfile = get_param_value("cell_popfile",$paramsfile);
@@ -98,8 +97,6 @@ my $seasonality_file = get_param_value("seasonality_timestep_file",$paramsfile);
 
 my $primary_cases_base = $primary_cases;
 $primary_cases_base =~ s/.*\/// if $primary_cases_base =~ /\//;
-my $vaccination_capacity_file_base = $vaccination_capacity_file;
-$vaccination_capacity_file_base =~ s/.*\/// if $vaccination_capacity_file_base =~ /\//;
 my $mortality_rate_file_base = $mortality_rate_file;
 $mortality_rate_file_base =~ s/.*\/// if $mortality_rate_file_base =~ /\//;
 my $birth_rate_file_base = $birth_rate_file;
@@ -266,7 +263,6 @@ chdir $cwd;
 my $params = "$work/$params_base";
 `cp $paramsfile $params`;
 `cp $primary_cases "$work/$primary_cases_base"`;
-`cp $vaccination_capacity_file "$work/$vaccination_capacity_file_base"` if $vaccination_capacity_file ne "none";
 `cp $mortality_rate_file "$work/$mortality_rate_file_base"` if $mortality_rate_file ne "none";
 `cp $birth_rate_file "$work/$birth_rate_file_base"` if $birth_rate_file ne "none";
 `cp $cell_popfile "$work/$cell_popfile"` if $cell_popfile ne "none";
@@ -282,7 +278,6 @@ my $params = "$work/$params_base";
 # redirect output parameters
 `$FRED/bin/ch outdir $out $params >> $logfile`;
 `$FRED/bin/ch 'primary_cases_file[0]' $primary_cases_base $params >> $logfile`;
-`$FRED/bin/ch vaccination_capacity_file $vaccination_capacity_file_base $params >> $logfile` if $vaccination_capacity_file ne "none";
 `$FRED/bin/ch yearly_mortality_rate_file $mortality_rate_file_base $params >> $logfile` if $mortality_rate_file ne "none";
 `$FRED/bin/ch yearly_birth_rate_file $birth_rate_file_base $params >> $logfile` if $birth_rate_file ne "none";
 `$FRED/bin/ch cell_popfile $cell_popfile $params >> $logfile` if $cell_popfile ne "none";
@@ -370,26 +365,9 @@ exit;
 
 sub same_params {
   my ($p1, $p2) = @_;
-  my $vac_file_line;
-  my ($name, $vac_file1, $vac_file2);
+  my ($name);
   #  return 0;
   my $diff = `diff -b -B -q $p1 $p2`;
-  return 1 if $diff eq "";
-
-  #try the diff but ignore lines with vaccination_capacity_file
-  $diff = `diff -b -B -q -I "vaccination_capacity_file" $p1 $p2`;
-  return 0 if !($diff eq "");
-
-  $vac_file_line = `grep "vaccination_capacity_file" $p1`;
-  ($name, $vac_file1) = split(/\s+=\s+/, $vac_file_line);
-  chomp($vac_file1);
-
-  $vac_file_line = `grep "vaccination_capacity_file" $p2`;
-  ($name, $vac_file2) = split(/\s+=\s+/, $vac_file_line);
-  chomp($vac_file2);
-
-  #diff the vaccine_capacity_files themselves
-  $diff = `diff -b -B -q $vac_file1 $vac_file2`;
   return 1 if $diff eq "";
 
   #not the same return 0 (false)
