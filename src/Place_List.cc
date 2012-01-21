@@ -695,7 +695,7 @@ Place * Place_List::get_random_workplace() {
 }
 
 void Place_List::end_of_run() {
-  if (Global::Verbose > 0) {
+  if (Global::Verbose > 1) {
     int number_places = places.size();
     for (int p = 0; p < number_places; p++) {
       Place *place = places[p];
