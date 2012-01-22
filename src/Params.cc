@@ -150,7 +150,7 @@ int Params::get_param(char *s, int *p) {
       printf("PARAMS: %s not found\n", s);
       fflush(stdout);
     }
-    Utils::fred_abort(""); 
+    Utils::fred_abort("PARAMS: %s not found\n", s); 
   }
   return 0;
 }
@@ -175,7 +175,7 @@ int Params::get_param(char *s, unsigned long *p) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
-    Utils::fred_abort(""); 
+    Utils::fred_abort("PARAMS: %s not found\n", s); 
   }
   return 0;
 }
@@ -200,7 +200,7 @@ int Params::get_param(char *s, double *p) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
-    Utils::fred_abort(""); 
+    Utils::fred_abort("PARAMS: %s not found\n", s); 
   }
   return 0;
 }
@@ -225,7 +225,7 @@ int Params::get_param(char *s, float *p) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
-    Utils::fred_abort("");
+    Utils::fred_abort("PARAMS: %s not found\n", s);
   }
   return 0;
 }
@@ -253,7 +253,7 @@ int Params::get_param(char *s, string &p){
       printf("PARAMS: %s not found\n", s);
       fflush(stdout);
     }
-    Utils::fred_abort(""); 
+    Utils::fred_abort("PARAMS: %s not found\n", s); 
   }
   return 0;
 }
@@ -278,7 +278,7 @@ int Params::get_param(char *s, char *p) {
       printf("PARAMS: %s not found\n", s);
       fflush( stdout);
     }
-    Utils::fred_abort(""); 
+    Utils::fred_abort("PARAMS: %s not found\n", s); 
   }
   return 0;
 }
@@ -344,7 +344,7 @@ int Params::get_param_vector(char *s, double *p) {
       sscanf(pch, "%lf", &p[i]);
     }
   } else {
-    Utils::fred_abort(""); 
+    Utils::fred_abort("PARAMS: %s not found\n", s); 
   }
   return n;
 }
