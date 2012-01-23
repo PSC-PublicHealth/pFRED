@@ -21,7 +21,7 @@ die "fred_job: Please set environmental variable FRED_HOME to location of FRED h
 
 # get command line arguments
 my %options = ();
-getopts("cSp:k:s:n:z", \%options);
+getopts("cp:k:s:n:zP", \%options);
 
 my $zip = exists $options{z};
 
@@ -33,7 +33,7 @@ $key = $options{k} if exists $options{k};
 
 my $cache = exists $options{c};
 
-my $use_serial = exists $options{S};
+my $parallel = exists $options{P};
 
 my $start_run = 1;
 $start_run = $options{s} if exists $options{s};
@@ -55,8 +55,8 @@ my @a = ();
 my $cpus;
 my $using_pbs;
 
-# if not using serial mode, determine how many cpus to use for parallel runs
-if (! $use_serial) {
+# if using parallel mode, determine how many cpus to use for parallel runs
+if ($parallel) {
   # are we running in the context of a PBS batch job?
   my $using_pbs = (exists $ENV{PBS_RUNID}) ? 1 : 0;
 
@@ -79,7 +79,7 @@ if (! $use_serial) {
     close FH;
   } else {
     # cannot determine how many cpus are available so force serial mode
-    $use_serial = 1;
+    $parallel = 0;
   }
 }
 
@@ -293,9 +293,10 @@ my $params = "$work/$params_base";
 `echo RUNNING > $meta/STATUS`;
 
 # finally, run FRED
-if ($use_serial) {
+if (not $parallel) {
   # NOTE: the next part of the script runs in the WORK directory
   chdir $work or die "Can't change to FRED directory $work\n";
+  # print "serial mode: $FRED/bin/run_fred -p $params -d $out -s $start_run -n $end_run\n";
   system "$FRED/bin/run_fred -p $params -d $out -s $start_run -n $end_run";
 } else {
   # parallel run
