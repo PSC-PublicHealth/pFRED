@@ -176,6 +176,7 @@ vaccine_priority_age_high = 100
 vaccine_dose_priority = 0
 vaccine_priority_only = 0
 vaccination_capacity_file = none
+# vaccination_capacity_file = vaccination_capacity-0.txt
 
 ## Definition of Vaccine #0
 vaccine_number_of_doses[0]    = 1
