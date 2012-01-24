@@ -17,22 +17,50 @@ for (my $v = $init; $v <= $final; $v += $incr) {
   my $newkey = "${key}_$p=$v";
   my $pfile = "params.$newkey";
   system "cp params.$key $pfile";
-  system "$FRED/bin/ch $p $v $pfile >& /dev/null";
+  system "$FRED/bin/ch \'$p\' $v $pfile >& /dev/null";
   my $cmd = "$FRED/bin/fred_job -p $pfile -k $newkey -n $n";
   # print "$cmd\n";
   system "$cmd";
 }
 exit;
 
-sub good_param {
+sub old_good_param {
   my ($param) = @_;
   $param =~ s/\[/\\[/g;
   $param =~ s/\-/\\-/g;
-  my $dval = `grep '$param =' params.def`;
+  my $dval = `grep '$param =' params.default`;
   chomp $dval;
   my @a = split " ", $dval;
   $dval = shift @a;
   return $dval;
 }
+
+sub good_param {
+  my ($param) = @_;
+
+  # find params.default file
+  my $params_default = "params.default";
+  if (not -e $params_default) {
+    $params_default = "$FRED/input_files/params.default";
+  }
+  if (not -e $params_default) {
+    die "$0: could not find params.default file\n";
+  }
+
+  # add escape characters so that grep work for indexed parameters
+  $param =~ s/\[/\\[/g;
+  $param =~ s/\-/\\-/g;
+
+  # get last line from params.default that starts with the given parameter
+  my $dval = `grep '^$param =' $params_default`;
+  chomp $dval;
+  # retrieve the value portion
+  if ($dval) {
+    my @a = split " ", $dval;
+    $dval = pop @a;
+  }
+  return $dval;
+}
+
 
 

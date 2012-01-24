@@ -61,20 +61,42 @@ for my $n ($start_run .. $end_run) {
 
 sub get_param_value {
   my ($param, $paramsfile) = @_;
+
+  # find params.default file
+  my $params_default = "params.default";
+  if (not -e $params_default) {
+    $params_default = "$FRED/input_files/params.default";
+  }
+  if (not -e $params_default) {
+    die "$0: could not find params.default file\n";
+  }
+
+  # add escape characters so that grep work for indexed parameters
   $param =~ s/\[/\\[/g;
   $param =~ s/\-/\\-/g;
-  my $dval = `grep '$param =' params.def`;
+
+  # get last line from params.default that starts with the given parameter
+  my $dval = `grep '^$param =' $params_default`;
   chomp $dval;
-  my @a = split " ", $dval;
-  $dval = pop @a;
+  # retrieve the value portion
+  if ($dval) {
+    my @a = split " ", $dval;
+    $dval = pop @a;
+  }
+  # print "$param dval = |$dval|\n";
+  # handle invalid parameter
   return "" if not $dval;
-  # print "dval = |$dval|\n";
-  my $pval = `grep '$param =' $paramsfile`;
+
+  # get last line from params file that starts with the given parameter
+  my $pval = `grep '^$param =' $paramsfile`;
+  chomp $pval;
+  # retrieve the value portion
   if ($pval) {
-    @a = split " ", $pval;
+    my @a = split " ", $pval;
     $pval = pop @a;
   }
-  # print "pval = |$pval|\n";
+  # print "$param pval = |$pval|\n";
+
   return $pval if $pval;
   return $dval if $dval;
   return "";
