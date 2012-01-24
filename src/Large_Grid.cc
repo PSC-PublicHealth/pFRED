@@ -246,7 +246,7 @@ void Large_Grid::read_max_popsize() {
   char filename[256];
   if (Global::Enable_Travel) {
     Params::get_param_from_string("cell_popfile", filename);
-    FILE *fp = fopen(filename, "r");
+    FILE *fp = Utils::fred_open_file(filename);
     if (fp == NULL) {
       Utils::fred_abort("Help! Can't open cell_pop_file %s\n", filename);
     }

@@ -746,7 +746,7 @@ void Activities::read_init_files() {
   }
   Params::get_param_from_string("yearly_mobility_rate_file", yearly_mobility_rate_file);
   // read mobility rate file and load the values into the mobility_rate_array
-  FILE *fp = fopen(yearly_mobility_rate_file, "r");
+  FILE *fp = Utils::fred_open_file(yearly_mobility_rate_file);
   if (fp == NULL) {
     fprintf(Global::Statusfp, "Activities init_file %s not found\n", yearly_mobility_rate_file);
     exit(1);

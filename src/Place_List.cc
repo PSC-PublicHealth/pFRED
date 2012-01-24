@@ -50,19 +50,19 @@ void Place_List::read_places() {
   Params::get_param_from_string("locfile", locfile);
   // read in locations
   char location_file[256];
-  sprintf(location_file, "%s/%s", Global::Population_directory, locfile);
+  strcpy(location_file, locfile);
   bool use_gzip = false;
-  FILE *fp = fopen(location_file, "r");
+  FILE *fp = Utils::fred_open_file(location_file);
   if (fp == NULL) {
     // try to find the gzipped version
     char location_file_gz[256];
-    sprintf(location_file_gz, "%s/%s.gz", Global::Population_directory, locfile);
-    if (fopen(location_file_gz, "r")) {
+    sprintf(location_file_gz, "%s.gz", locfile);
+    if (Utils::fred_open_file(location_file_gz)) {
       char cmd[256];
       use_gzip = true;
       sprintf(cmd, "gunzip -c %s > %s", location_file_gz, location_file);
       system(cmd);
-      fp = fopen(location_file, "r");
+      fp = Utils::fred_open_file(location_file);
     }
     // gunzip didn't work ...
     if (fp == NULL) {

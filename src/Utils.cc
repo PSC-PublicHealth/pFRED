@@ -8,18 +8,11 @@
 // File: Utils.cc
 //
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string>
-#include <iostream>
-#include <stdarg.h>
-
 #include "Utils.h"
 #include "Global.h"
-
 using namespace std;
-
 static time_t start_timer, stop_timer, fred_timer, day_timer;
+
 
 void Utils::fred_abort(const char* format, ...){
 
@@ -129,3 +122,28 @@ void Utils::fred_verbose(int verbosity, const char* format, ...){
     fflush(stdout);
   }
 }
+
+FILE *Utils::fred_open_file(char * filename) {
+  FILE *fp;
+  get_fred_file_name(filename);
+  printf("fred_open_file: opening file %s for reading\n", filename);
+  fp = fopen(filename, "r");
+  return fp;
+}
+
+void Utils::get_fred_file_name(char * filename) {
+  string str;
+  str.assign(filename);
+  if (str.compare(0,10,"$FRED_HOME") == 0) {
+    char * fred_home = getenv("FRED_HOME");
+    if (fred_home != NULL) {
+      str.erase(0,10);
+      str.insert(0,fred_home);
+      strcpy(filename, str.c_str());
+    }
+    else {
+      fred_abort("get_fred_file_name: the FRED_HOME environmental variable cannot be found\n");
+    }
+  }
+}
+

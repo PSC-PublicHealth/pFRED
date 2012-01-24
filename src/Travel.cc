@@ -86,7 +86,7 @@ void Travel::setup(char * directory) {
   }
 
   // read the preprocessed trip file
-  FILE *fp = fopen(tripfile, "r");
+  FILE *fp = Utils::fred_open_file(tripfile);
   if (fp == NULL) { Utils::fred_abort("Help! Can't open tripfile %s\n", tripfile); }
   if (Global::Verbose > 0)
     fprintf(Global::Statusfp, "reading tripfile %s\n", tripfile); fflush(stdout);

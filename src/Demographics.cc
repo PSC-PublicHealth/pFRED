@@ -262,7 +262,7 @@ void Demographics::read_init_files() {
     Params::get_param_from_string("yearly_birth_rate_file", yearly_birth_rate_file);
     Params::get_param_from_string("birth_rate_multiplier", &birth_rate_multiplier);
     // read and load the birth rates
-    fp = fopen(yearly_birth_rate_file, "r");
+    fp = Utils::fred_open_file(yearly_birth_rate_file);
     if (fp == NULL) {
       fprintf(Global::Statusfp, "Demographic init_file %s not found\n", yearly_birth_rate_file);
       exit(1);
@@ -289,7 +289,7 @@ void Demographics::read_init_files() {
     Params::get_param_from_string("yearly_mortality_rate_file", yearly_mortality_rate_file);
     
     // read death rate file and load the values unt the death_rate_array
-    FILE *fp = fopen(yearly_mortality_rate_file, "r");
+    FILE *fp = Utils::fred_open_file(yearly_mortality_rate_file);
     if (fp == NULL) {
       fprintf(Global::Statusfp, "Demographic init_file %s not found\n", yearly_mortality_rate_file);
       exit(1);

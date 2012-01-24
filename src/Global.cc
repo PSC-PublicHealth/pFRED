@@ -13,7 +13,6 @@
 #include "Seasonality.h"
 
 // global runtime parameters
-char Global::Population_directory[256];
 char Global::Output_directory[256];
 char Global::Tracefilebase[256];
 char Global::VaccineTracefilebase[256];
@@ -91,7 +90,6 @@ void Global::get_global_parameters() {
   Params::get_param_from_string("vaccine_offset", &Global::Vaccine_offset);
   Params::get_param_from_string("start_date", Global::Start_date);
   Params::get_param_from_string("reseed_day", &Global::Reseed_day);
-  Params::get_param_from_string("popdir", Global::Population_directory);
   Params::get_param_from_string("outdir", Global::Output_directory);
   Params::get_param_from_string("tracefile", Global::Tracefilebase);
   Params::get_param_from_string("track_infection_events", &Global::Track_infection_events);

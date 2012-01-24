@@ -15,6 +15,7 @@
 #include <math.h>
 #include <string>
 #include <sstream>
+#include <stdio.h>
 
 using namespace std;
 
@@ -27,7 +28,8 @@ int Params::read_parameters(char *paramfile) {
   char name[MAX_PARAM_SIZE];
   Params::param_count = 0;
   
-  fp = fopen("params.def", "r");
+  strcpy(name, "$FRED_HOME/input_files/params.default");
+  fp = Utils::fred_open_file(name);
   if (fp != NULL) {
     while (fscanf(fp, "%s", name) == 1) {
       if (name[0] == '#') {
@@ -65,16 +67,16 @@ int Params::read_parameters(char *paramfile) {
           }
           Params::param_count++;
         } else {
-        	Utils::fred_abort("Bad format in params.def file on line starting with %s\n",name);
+        	Utils::fred_abort("Bad format in params.default file on line starting with %s\n",name);
         }
       }
     }
   } else {
-    Utils::fred_abort("Help!  Can't read paramfile %s\n", "params.def");
+    Utils::fred_abort("Help!  Can't read paramfile %s\n", "params.default");
   }
   fclose(fp);
   
-  fp = fopen(paramfile, "r");
+  fp = Utils::fred_open_file(paramfile);
   if (fp != NULL) {
     while (fscanf(fp, "%s", name) == 1) {
       if (name[0] == '#') {

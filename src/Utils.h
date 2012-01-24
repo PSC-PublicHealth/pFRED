@@ -14,6 +14,7 @@
 
 #include <string>
 #include <stdarg.h>
+#include <stdio.h>
 
 using namespace std;
 
@@ -28,6 +29,8 @@ namespace Utils{
   void fred_print_finish_timer();
   void fred_print_lap_time(const char* format, ...);
   void fred_verbose(int verbosity, const char* format, ...);
+  FILE *fred_open_file(char * filename);
+  void get_fred_file_name(char * filename);
 }
 
 #endif /* UTILS_H_ */

@@ -218,18 +218,18 @@ void Population::read_population() {
   char population_file[256];
   char line[256];
   bool use_gzip = false;
-  sprintf(population_file, "%s/%s", Global::Population_directory, Population::popfile);
-  FILE *fp = fopen(population_file, "r");
+  sprintf(population_file, "%s", Population::popfile);
+  FILE *fp = Utils::fred_open_file(population_file);
   if (fp == NULL) {
     // try to find the gzipped version
     char population_file_gz[256];
-    sprintf(population_file_gz, "%s/%s.gz", Global::Population_directory, Population::popfile);
-    if (fopen(population_file_gz, "r")) {
+    sprintf(population_file_gz, "%s.gz", Population::popfile);
+    if (Utils::fred_open_file(population_file_gz)) {
       char cmd[256];
       use_gzip = true;
       sprintf(cmd, "gunzip -c %s > %s", population_file_gz, population_file);
       system(cmd);
-      fp = fopen(population_file, "r");
+      fp = Utils::fred_open_file(population_file);
     }
     // gunzip didn't work ...
     if (fp == NULL) {
