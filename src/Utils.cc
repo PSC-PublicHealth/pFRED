@@ -10,6 +10,9 @@
 
 #include "Utils.h"
 #include "Global.h"
+#include <stdlib.h>
+#include <string.h>
+
 using namespace std;
 static time_t start_timer, stop_timer, fred_timer, day_timer;
 
