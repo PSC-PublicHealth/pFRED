@@ -53,7 +53,7 @@ die $usage if $end_run =~ /\D/;
 my $cmd = "'run_fred @arg'";
 system "echo $cmd > $dir/COMMAND_LINE";
 for my $n ($start_run .. $end_run) {
-  $cmd = "FRED $paramsfile $n $dir >& $dir/LOG$n";
+  $cmd = "FRED $paramsfile $n $dir 2>&1 > $dir/LOG$n";
   print "$cmd\n";
   system $cmd;
 }
