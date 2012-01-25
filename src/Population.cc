@@ -341,15 +341,16 @@ void Population::update(int day) {
       Person * baby = mother->give_birth(day);
       add_person(baby);
 
-      // turn mother into an adult decision maker, if not already
-      if (mother != mother->get_adult_decision_maker()) {
-	Utils::fred_verbose(0, "young mother %d age %d become adult decision maker on day %d\n",
-			    mother->get_id(), mother->get_age(), day);
-	mother->become_an_adult_decision_maker();
+      if (Global::Enable_Behaviors) {
+	// turn mother into an adult decision maker, if not already
+	if (mother != mother->get_adult_decision_maker()) {
+	  Utils::fred_verbose(0, "young mother %d age %d become adult decision maker on day %d\n",
+			      mother->get_id(), mother->get_age(), day);
+	  mother->become_an_adult_decision_maker();
+	}
+	// let mother decide health behaviors for child
+	baby->get_behavior()->set_adult_decision_maker(mother);
       }
-
-      // let mother decide health behaviors for child
-      baby->get_behavior()->set_adult_decision_maker(mother);
 
       if(vacc_manager->do_vaccination()){
 	if(Global::Debug > 1)
