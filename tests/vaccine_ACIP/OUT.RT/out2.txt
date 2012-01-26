@@ -1,0 +1,10 @@
+Day   0  Str 0  S 1242655  E     100  I       0  I_s       0  R       0  M       0  C     100  N 1242755  AR  0.01  CI       0 RR 0.00 NR 0  CAR  0.00  Thu 2009-01-01 Year 2008 Week 53
+Day   1  Str 0  S 1242621  E      46  I      88  I_s      51  R       0  M       0  C      34  N 1242755  AR  0.01  CI      51 RR 0.00 NR 0  CAR  0.00  Fri 2009-01-02 Year 2008 Week 53
+Day   2  Str 0  S 1242590  E      39  I     126  I_s      78  R       0  M       0  C      31  N 1242755  AR  0.01  CI      27 RR 0.00 NR 0  CAR  0.01  Sat 2009-01-03 Year 2008 Week 53
+Day   3  Str 0  S 1242550  E      46  I     159  I_s     101  R       0  M       0  C      40  N 1242755  AR  0.02  CI      23 RR 0.00 NR 0  CAR  0.01  Sun 2009-01-04 Year 2009 Week 1
+Day   4  Str 0  S 1242484  E      74  I     172  I_s     114  R      25  M       0  C      66  N 1242755  AR  0.02  CI      28 RR 0.00 NR 0  CAR  0.01  Mon 2009-01-05 Year 2009 Week 1
+Day   5  Str 0  S 1242372  E     119  I     199  I_s     139  R      65  M       0  C     112  N 1242755  AR  0.03  CI      47 RR 0.00 NR 0  CAR  0.01  Tue 2009-01-06 Year 2009 Week 1
+Day   6  Str 0  S 1242233  E     158  I     249  I_s     163  R     115  M       0  C     139  N 1242755  AR  0.04  CI      61 RR 0.00 NR 0  CAR  0.02  Wed 2009-01-07 Year 2009 Week 1
+Day   7  Str 0  S 1241980  E     286  I     331  I_s     219  R     158  M       0  C     253  N 1242755  AR  0.06  CI      85 RR 0.00 NR 0  CAR  0.03  Thu 2009-01-08 Year 2009 Week 1
+Day   8  Str 0  S 1241546  E     484  I     524  I_s     342  R     201  M       0  C     434  N 1242755  AR  0.10  CI     151 RR 0.00 NR 0  CAR  0.04  Fri 2009-01-09 Year 2009 Week 1
+Day   9  Str 0  S 1241316  E     338  I     835  I_s     560  R     266  M       0  C     230  N 1242755  AR  0.12  CI     262 RR 0.00 NR 0  CAR  0.06  Sat 2009-01-10 Year 2009 Week 1
