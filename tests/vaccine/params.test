@@ -1,4 +1,4 @@
-days = 10
+days = 20
 popfile = $FRED_HOME/region/pop_Alleg.txt
 locfile = $FRED_HOME/region/loc_Alleg.txt
 outdir = OUT.TEST

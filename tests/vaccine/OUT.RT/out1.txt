@@ -8,3 +8,13 @@ Day   6  Str 0  S 1242310  E     134  I     207  I_s     139  R     104  M      
 Day   7  Str 0  S 1242123  E     213  I     281  I_s     184  R     138  M       0  C     187  N 1242755  AR  0.05  CI      73 RR 0.00 NR 0  CAR  0.02  Thu 2009-01-08 Year 2009 Week 1
 Day   8  Str 0  S 1241806  E     362  I     402  I_s     264  R     185  M       0  C     317  N 1242755  AR  0.08  CI     111 RR 0.00 NR 0  CAR  0.03  Fri 2009-01-09 Year 2009 Week 1
 Day   9  Str 0  S 1241607  E     259  I     651  I_s     442  R     238  M       0  C     199  N 1242755  AR  0.09  CI     211 RR 0.00 NR 0  CAR  0.05  Sat 2009-01-10 Year 2009 Week 1
+Day  10  Str 0  S 1241396  E     264  I     779  I_s     535  R     316  M       0  C     211  N 1242755  AR  0.11  CI     147 RR 0.00 NR 0  CAR  0.06  Sun 2009-01-11 Year 2009 Week 2
+Day  11  Str 0  S 1240787  E     650  I     880  I_s     614  R     438  M       0  C     609  N 1242755  AR  0.16  CI     157 RR 0.00 NR 0  CAR  0.07  Mon 2009-01-12 Year 2009 Week 2
+Day  12  Str 0  S 1239921  E     995  I    1226  I_s     849  R     613  M       0  C     866  N 1242755  AR  0.23  CI     350 RR 0.00 NR 0  CAR  0.10  Tue 2009-01-13 Year 2009 Week 2
+Day  13  Str 0  S 1238581  E    1506  I    1840  I_s    1256  R     828  M       0  C    1340  N 1242755  AR  0.34  CI     558 RR 0.00 NR 0  CAR  0.15  Wed 2009-01-14 Year 2009 Week 2
+Day  14  Str 0  S 1228673  E    2252  I    2830  I_s    1870  R    1072  M    7928  C    1980  N 1242755  AR  0.50  CI     796 RR 0.00 NR 0  CAR  0.21  Thu 2009-01-15 Year 2009 Week 2
+Day  15  Str 0  S 1217607  E    3524  I    4346  I_s    2904  R    1398  M   15880  C    3114  N 1242755  AR  0.75  CI    1254 RR 0.00 NR 0  CAR  0.31  Fri 2009-01-16 Year 2009 Week 2
+Day  16  Str 0  S 1207761  E    2587  I    6754  I_s    4538  R    1895  M   23758  C    1968  N 1242755  AR  0.90  CI    1966 RR 0.00 NR 0  CAR  0.47  Sat 2009-01-17 Year 2009 Week 2
+Day  17  Str 0  S 1197564  E    2676  I    8124  I_s    5442  R    2718  M   31673  C    2282  N 1242755  AR  1.09  CI    1429 RR 0.00 NR 0  CAR  0.58  Sun 2009-01-18 Year 2009 Week 3
+Day  18  Str 0  S 1184730  E    5483  I    9105  I_s    6120  R    3959  M   39478  C    5029  N 1242755  AR  1.49  CI    1526 RR 0.00 NR 0  CAR  0.71  Mon 2009-01-19 Year 2009 Week 3
+Day  19  Str 0  S 1170478  E    7419  I   11656  I_s    7822  R    5897  M   47305  C    6425  N 1242755  AR  2.01  CI    2970 RR 0.00 NR 0  CAR  0.95  Tue 2009-01-20 Year 2009 Week 3
