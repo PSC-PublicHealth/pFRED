@@ -27,16 +27,21 @@ if [ x"$1" != x ]; then
     shift
 fi
 
+if [ ! -d $FRED_HOME/tests/$dir ]; then
+    echo No such directory: $FRED_HOME/tests/$dir
+    exit 1
+fi
+
 cd $FRED_HOME/tests/$dir
 
 # sanity checks
 if [ ! -e params.test ]; then
-    echo abort: No params.test file found
+    echo No params.test file found
     exit 1
 fi
 
 if [ ! -x compare ]; then
-    echo abort: No executable compare file found
+    echo No executable compare file found
     exit 1
 fi
 
@@ -49,7 +54,7 @@ fi
 rm -f OUT.TEST/*
 
 # run the regression test
-echo FRED regression test on $dir
+echo FRED regression test: $dir
 echo -n run 1
 if [ x$par = "x-p" ]; then
   shift 
