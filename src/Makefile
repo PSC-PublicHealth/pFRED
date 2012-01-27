@@ -102,7 +102,7 @@ dist:
 	FRED/bin/* FRED/src/OUT.RT/* ; cd FRED/src)
 	make
 
-VER = 1.0.0
+VER = 1.0.1
 
 release:
 	make clean
