@@ -59,15 +59,15 @@ echo -n run 1
 if [ x$par = "x-p" ]; then
   shift 
   echo -n " (in background) ... "
-  ($FRED params.test 1 > OUT.TEST/LOG1) &
+  ($FRED params.test 1 OUT.TEST 2>&1 > OUT.TEST/LOG1) &
   R1=$!
 else
   echo -n " ... "
-  $FRED params.test 1 > OUT.TEST/LOG1
+  $FRED params.test 1 OUT.TEST 2>&1 > OUT.TEST/LOG1
 fi
 
 echo -n "run 2 ..."
-$FRED params.test 2 > OUT.TEST/LOG2
+$FRED params.test 2 OUT.TEST 2>&1 > OUT.TEST/LOG2
 if [ x$par = "x-p" ]; then
   wait $R1
 fi

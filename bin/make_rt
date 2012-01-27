@@ -23,7 +23,8 @@ fi
 
 cd $FRED_HOME/tests/$dir
 
-echo "making files for FRED regression test on $dir.  please wait ..."
+echo "making files for FRED regression test: $dir"
+echo "please wait ..."
 
 # put results in OUT.TEST
 rm -rf OUT.TEST
