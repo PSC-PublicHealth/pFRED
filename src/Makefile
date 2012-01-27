@@ -60,11 +60,9 @@ OBJ =   Fred.o Global.o Age_Map.o Timestep_Map.o Utils.o Params.o Date.o Random.
 
 SRC = $(OBJ:.o=.cc)
 
-HDR = $(OBJ:.o=.h) Behavior_Model.h
+HDR = $(OBJ:.o=.h)
 
-POP := $(wildcard *_pop.txt)
-LOC := $(wildcard *_loc.txt)
-MD5 := FRED.md5 $(POP:.txt=.md5) $(LOC:.txt=.md5)
+MD5 := FRED.md5
 
 all: FRED FRED.tar.gz $(MD5)
 
@@ -78,17 +76,10 @@ DEPENDS: $(SRC) $(HDR)
 include DEPENDS
 
 FRED.tar.gz: $(SRC) $(HDR)
-	tar -czf FRED.tar.gz $(HDR) $(SRC) Makefile params* *.txt
+	tar -czf FRED.tar.gz $(HDR) $(SRC) Makefile
 
 FRED.md5 : FRED.tar.gz
 	$(MD5SUM) $< > $@
-
-%_pop.md5 : %_pop.txt
-	$(MD5SUM) $< > $@
-
-%_loc.md5 : %_loc.txt
-	$(MD5SUM) $< > $@
-
 
 ##############################################
 
@@ -96,7 +87,9 @@ print:
 	enscript $(SRC) $(HDR)
 
 clean:
-	rm -f $(TESTS) gmock.a gmock_main.a *.o FRED *~
+	rm -f gmock.a gmock_main.a *.o FRED ../bin/FRED *~
+	(cd ../region; make clean)
+	(cd ../tests; make clean)
 
 tar: clean
 	cd ..
@@ -108,6 +101,14 @@ dist:
 	FRED/src/*.txt FRED/src/*.cc FRED/src/*.h FRED/src/params* \
 	FRED/bin/* FRED/src/OUT.RT/* ; cd FRED/src)
 	make
+
+VER = 1.0.0
+
+release:
+	make clean
+	(cd ../..; tar cvzf FRED-V${VER}-`date +"%Y-%m-%d"`.tgz --exclude CVS \
+	FRED/Makefile FRED/LICENSE FRED/bin FRED/doc FRED/input_files FRED/region/ \
+	FRED/src/Makefile FRED/src/*.h  FRED/src/*.cc FRED/src/mt*.c FRED/tests)
 
 tags:
 	find . -name \*.[ch]* | xargs etags
