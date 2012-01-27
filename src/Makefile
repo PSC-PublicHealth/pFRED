@@ -10,7 +10,7 @@ CPP = g++
 # CPPFLAGS = -g -m64 -O3 # -DNDEBUG
 
 # Use this for production:
-CPPFLAGS = -g -m64 -O3 -DNDEBUG -fast #-Wall
+CPPFLAGS = -g -m64 -O3 -DNDEBUG #-fast #-Wall
 
 # Use this for unit testing:
 # CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall
