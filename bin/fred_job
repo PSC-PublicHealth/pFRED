@@ -251,8 +251,8 @@ my $logfile = "$meta/LOG";
 # copy source code
 my $version = "$meta/VERSION";
 mkdir $version or die "Can't make directory $version\n";
-`cp -p $FRED/src/FRED.tar.gz $FRED/src/FRED.md5 $version`;
-`cp -p $FRED/region/pop*.md5 $FRED/region/loc*.md5 $version`;
+`cp -p $FRED/src/FRED.tar.gz $version`;
+`ls -l $FRED/region > ${version}/REGION`;
 
 # return to original directory
 chdir $cwd;
