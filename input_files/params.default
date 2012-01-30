@@ -12,6 +12,7 @@ vaccine_offset = 0
 
 # a date in the format 'YYYY-MM-DD'
 start_date = 2009-01-01
+rotate_start_date = 0
 reseed_day = -1
 popfile = $FRED_HOME/region/pop_Alleg.txt
 locfile = $FRED_HOME/region/loc_Alleg.txt
@@ -165,7 +166,23 @@ office_size = 50
 #### ANTIVIRALS
 number_antivirals = 0
 
-# Vaccination Variables
+## Sample Antiviral 1:
+av_disease[0] = 0
+av_initial_stock[0] = 100
+av_total_avail[0] = 1000
+av_additional_per_day[0] = 100
+av_course_length[0] = 10
+av_reduce_infectivity[0] = .70
+av_reduce_susceptibility[0] = 0.30
+av_reduce_symptomatic_period[0] = 0.7
+av_reduce_asymptomatic_period[0] = 0.0
+av_start_day[0] = 0
+av_prophylaxis[0] = 0
+av_prob_symptoms[0] = 0.677
+av_percent_symptomatics[0] = 0.50
+av_course_start_day[0] = 1 1.00000
+
+##### VACCINATION
 number_of_vaccines = 0
 vaccine_tracefile = vacctr
 vaccine_prioritize_acip = 0
@@ -177,13 +194,13 @@ vaccine_priority_only = 0
 vaccination_capacity_file = none
 # vaccination_capacity_file = $FRED_HOME/input_files/vaccination_capacity-0.txt
 
-## Definition of Vaccine #0
+## Sample Definition of Vaccine #0
 vaccine_number_of_doses[0]    = 1
 vaccine_total_avail[0]        = 235881
 vaccine_additional_per_day[0] = 1000000
 vaccine_starting_day[0]       = 0
 
-#### Vaccine #0 Dose #0
+#### Sample Vaccine #0 Dose #0
 vaccine_next_dosage_day[0][0] = 0
 vaccine_dose_efficacy_ages[0][0] = 2 0 100
 vaccine_dose_efficacy_values[0][0] = 1 0.70

@@ -18,7 +18,7 @@ char Global::Tracefilebase[256];
 char Global::VaccineTracefilebase[256];
 int Global::Incremental_Trace = 0;
 int Global::Trace_Headers = 0;
-int Global::Random_start_day = 0;
+int Global::Rotate_start_date = 0;
 int Global::Quality_control = 0;
 int Global::RR_delay = 0;
 int Global::Diseases = 0;
@@ -89,6 +89,7 @@ void Global::get_global_parameters() {
   Params::get_param_from_string("epidemic_offset", &Global::Epidemic_offset);
   Params::get_param_from_string("vaccine_offset", &Global::Vaccine_offset);
   Params::get_param_from_string("start_date", Global::Start_date);
+  Params::get_param_from_string("rotate_start_date", &Global::Rotate_start_date);
   Params::get_param_from_string("reseed_day", &Global::Reseed_day);
   Params::get_param_from_string("outdir", Global::Output_directory);
   Params::get_param_from_string("tracefile", Global::Tracefilebase);

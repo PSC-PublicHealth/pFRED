@@ -156,9 +156,15 @@ int main(int argc, char* argv[]) {
   INIT_RANDOM(Global::Seed);
 
   // Date Setup
-  Global::Random_start_day = (Global::Epidemic_offset > 6);
   // Start_date parameter must have format 'YYYY-MM-DD'
   Global::Sim_Date = new Date(string(Global::Start_date));
+
+  if (Global::Rotate_start_date) {
+    // add one day to the start date for each additional run,
+    // rotating the days of the week to reduce weekend effect.
+    Global::Sim_Date->advance((run-1)%7);
+  }
+
   Global::Sim_Date->setup(directory, Global::Days);
 
   // set random number seed based on run number
@@ -220,12 +226,6 @@ int main(int argc, char* argv[]) {
     if (Global::Track_network_stats) 
       Global::Pop.get_network_stats(directory);
     Utils::fred_print_lap_time("quality control");
-  }
-
-  // allow for an offset in the start of the epidemic
-  if (Global::Random_start_day) {
-    // cycle through days of the week for start day
-    Global::Epidemic_offset = (run-1) % 7;
   }
 
   if (Global::Track_age_distribution) {

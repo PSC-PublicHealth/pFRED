@@ -79,7 +79,7 @@ class Global {
     static char VaccineTracefilebase[];
     static int Incremental_Trace;
     static int Trace_Headers;
-    static int Random_start_day;
+    static int Rotate_start_date;
     static int Quality_control;
     static int RR_delay;
     static int Diseases;
