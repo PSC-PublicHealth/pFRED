@@ -50,6 +50,9 @@ private:
   static char school_summer_end[];
   static int school_classroom_size;
   static double * school_contacts_per_day;
+  static bool global_closure_is_active;
+  static int global_close_date;
+  static int global_open_date;
 
   int students_with_age[20];
   vector <Place *> classrooms[20];

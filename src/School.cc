@@ -35,6 +35,9 @@ char School::school_summer_end[8];
 
 //Private static variable to assure we only lookup parameters once
 bool School::school_parameters_set = false;
+bool School::global_closure_is_active = false;
+int School::global_close_date = 0;
+int School::global_open_date = 0;
 
 School::School(int loc, const char *lab, double lon, double lat, Place* container, Population *pop) {
   type = SCHOOL;
@@ -59,7 +62,7 @@ void School::prepare() {
     next_classroom[i] = 0;
     next_classroom_without_teacher[i] = 0;
   }
-  close_date = INT_MAX;
+  close_date = 0;
   open_date = 0;
   if (Global::Verbose > 2) {
     printf("prepare place: %d\n", id);
@@ -125,6 +128,8 @@ double School::get_transmission_prob(int disease, Person * i, Person * s) {
   return tr_pr;
 }
 
+int should_be_day = -1;
+
 bool School::should_be_open(int day, int disease) {
   
   if (School::school_summer_schedule > 0 && 
@@ -141,21 +146,35 @@ bool School::should_be_open(int day, int disease) {
     // Setting school_closure_day > -1 overrides other global triggers
     //
     // close schools if the closure date has arrived (after a delay)
-    if (School::school_closure_day > -1 && School::school_closure_day == day) {
-      School::close_date = day + School::school_closure_delay;
-      open_date = day + School::school_closure_delay + School::school_closure_period;
-      return is_open(day);
+    if (School::school_closure_day > -1) {
+      if (School::school_closure_day <= day && School::global_closure_is_active == false) {
+	School::global_closure_is_active = true;
+	School::global_close_date = day + School::school_closure_delay;
+	School::global_open_date = day + School::school_closure_delay + School::school_closure_period;
+      }
     }
-    
-    // Close schools if the global attack rate has reached the threshold
-    // (with a delay)
-    Disease * str = Global::Pop.get_disease(disease);
-    if (str->get_attack_rate() > school_closure_threshold) {
-      if (is_open(day))
-        close_date = day + School::school_closure_delay;
-      open_date = day + School::school_closure_delay + School::school_closure_period;
-      return is_open(day);
+    else {
+      // Close schools if the global attack rate has reached the threshold
+      // (with a delay)
+      Disease * str = Global::Pop.get_disease(disease);
+      if (School::global_closure_is_active == false && str->get_attack_rate() > school_closure_threshold) {
+	School::global_closure_is_active = true;
+	School::global_close_date = day + School::school_closure_delay;
+	School::global_open_date = day + School::school_closure_delay + School::school_closure_period;
+      }
     }
+    if (School::global_closure_is_active) {
+      close_date = School::global_close_date;
+      open_date = School::global_open_date;
+    }
+    bool this_is_open = is_open(day);
+    if (Global::Verbose > 1 && should_be_day < day) {
+      Disease * str = Global::Pop.get_disease(disease);
+      printf("SCHOOL day %d ar %.4f is_open %d close_date %d open_date %d\n",
+	     day, str->get_attack_rate(), this_is_open, close_date, open_date);
+      should_be_day = day;
+    }
+    return this_is_open;
   }
   
   if (strcmp(School::school_closure_policy, "individual") == 0) {
