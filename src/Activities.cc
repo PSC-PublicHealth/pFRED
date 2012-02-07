@@ -773,6 +773,11 @@ void Activities::read_init_files() {
 
 
 void Activities::terminate() {
+  // Person was enrolled in only his original 
+  // favorite places, not his host's places while travelling
+  if(travel_status && ! traveling_outside) 
+    restore_favorite_places();
+
   // unenroll from all the favorite places
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     if (favorite_place[i] != NULL) {

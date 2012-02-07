@@ -21,11 +21,14 @@
 #include "Geo_Utils.h"
 #include <stdio.h>
 #include <vector>
+#include <set>
 
-typedef vector <Person*> pvec;			// vector of person ptrs
-typedef pvec * pvec_ptr;			// pointer to above type
-static pvec * traveler_list;		   // list of travelers, per day
-static pvec_ptr * traveler_list_ptr;	      // pointers to above lists
+//typedef vector <Person*> pvec;			// vector of person ptrs
+typedef set <Person*> pset;			// vector of person ptrs
+typedef set<Person*>::iterator piter; // iterator to set of person ptrs
+typedef pset * pset_ptr;			// pointer to above type
+static pset * traveler_list;		   // list of travelers, per day
+static pset_ptr * traveler_list_ptr;	      // pointers to above lists
 static double mean_trip_duration;		// mean days per trip
 
 #include <vector>
@@ -73,14 +76,14 @@ void Travel::setup(char * directory) {
 
   // set up empty vectors of people currently on trips
   // one vector for each day remaining
-  traveler_list = new pvec[max_Travel_Duration+1];
+  traveler_list = new pset[max_Travel_Duration+1];
   for (int i = 0; i <= max_Travel_Duration; i++) {
     traveler_list[i].clear();
   }
 
   // setup pointers to the above lists, to be advanced each day
   // (so that lists are not copied)
-  traveler_list_ptr = new pvec_ptr[max_Travel_Duration+1];
+  traveler_list_ptr = new pset_ptr[max_Travel_Duration+1];
   for (int i = 0; i <= max_Travel_Duration; i++) {
     traveler_list_ptr[i] = &traveler_list[i];
   }
@@ -206,7 +209,7 @@ void Travel::update_travel(int day) {
       // put traveler on list for given number of days to travel
       int duration = draw_from_distribution(max_Travel_Duration, Travel_Duration_Cdf);
       // printf("  for %d days\n", duration); fflush(stdout);
-      traveler_list_ptr[duration]->push_back(visitor);
+      traveler_list_ptr[duration]->insert(visitor);
     }
     else {
       // TODO: process incoming trips from outside the model region
@@ -215,14 +218,13 @@ void Travel::update_travel(int day) {
 
   // process travelers who are returning home
   // printf("returning home:\n"); fflush(stdout);
-  for (unsigned int i = 0; i < traveler_list_ptr[0]->size(); i++) {
-    visitor = traveler_list_ptr[0]->at(i);
-    visitor->stop_traveling();
+  for(piter it=traveler_list_ptr[0]->begin(); it != traveler_list_ptr[0]->end(); it++) {
+    (*it)->stop_traveling();
   }
   traveler_list_ptr[0]->clear();
 
   // update days still on travel (after today)
-  pvec * tmp = traveler_list_ptr[0];
+  pset * tmp = traveler_list_ptr[0];
   for (int i = 0; i < max_Travel_Duration; i++) {
     traveler_list_ptr[i] = traveler_list_ptr[i+1];
   }
@@ -304,6 +306,15 @@ void Travel::select_visitor_and_visited(Person **v1, Person **v2) {
   return;
 }
 
+void Travel::terminate_person(Person *person) {
+  for(unsigned int i = 0; i <= max_Travel_Duration; i++) {
+    piter it = traveler_list[i].find(person);
+    if(it != traveler_list[i].end()) {
+      traveler_list[i].erase(it);
+      break;
+    }
+  }
+}
 
 void Travel::quality_control(char * directory) {
 }

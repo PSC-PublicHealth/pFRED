@@ -50,6 +50,9 @@ class Travel {
    */
   static void test_gravity_model();
 
+
+  static void terminate_person(Person *person);
+
   /**
    * Prints statistics for gravity travel model.
    */

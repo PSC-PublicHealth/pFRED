@@ -18,6 +18,8 @@
 #include "Utils.h"
 #include "Random.h"
 #include "Transmission.h"
+#include "Large_Cell.h"
+#include "Large_Grid.h"
 
 //Private static variables that will be set by parameter lookups
 double * Household::Household_contacts_per_day;
@@ -136,6 +138,11 @@ void Household::unenroll(Person * per) {
       printf("%d ", housemate[i]->get_id()); 
     printf("\n"); fflush(stdout);
     Utils::fred_abort("");
+  }
+  // unenroll from cell as well
+  if(Global::Enable_Large_Grid) {
+    Large_Cell *large_cell = Global::Large_Cells->get_grid_cell_from_lat_lon(latitude, longitude);
+    if(large_cell != NULL) large_cell->unenroll(per);
   }
 }
 

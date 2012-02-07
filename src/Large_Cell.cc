@@ -77,3 +77,16 @@ void Large_Cell::set_max_popsize(int n) {
     fflush(stdout);
   */
 }
+
+void Large_Cell::unenroll(Person *per) {
+  int id = per->get_id();
+  vector<Person *>::iterator it;
+  for(it = person.begin(); it != person.end(); it++) {
+    if(id == (*it)->get_id()) break;
+  }
+  if(it != person.end()) {
+    person.erase(it);
+  }
+}
+
+

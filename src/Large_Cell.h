@@ -33,6 +33,7 @@ public:
   void set_max_popsize(int n);
   int get_max_popsize() { return max_popsize; }
   double get_pop_density() { return pop_density; }
+  void unenroll(Person *per);
 
 protected:
   Large_Grid * grid;
