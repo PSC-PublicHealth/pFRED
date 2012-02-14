@@ -195,10 +195,10 @@ vaccination_capacity_file = none
 # vaccination_capacity_file = $FRED_HOME/input_files/vaccination_capacity-0.txt
 
 ## Sample Definition of Vaccine #0
-vaccine_number_of_doses[0]    = 1
-vaccine_total_avail[0]        = 235881
+vaccine_number_of_doses[0] = 1
+vaccine_total_avail[0] = 235881
 vaccine_additional_per_day[0] = 1000000
-vaccine_starting_day[0]       = 0
+vaccine_starting_day[0] = 0
 
 #### Sample Vaccine #0 Dose #0
 vaccine_next_dosage_day[0][0] = 0
