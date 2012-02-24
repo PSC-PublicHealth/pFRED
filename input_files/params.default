@@ -5,6 +5,11 @@ verbose = 1
 debug = 1
 test = 0
 
+# how are initial infections selected?
+seed_by_age = 0
+seed_age_lower_bound = 0
+seed_age_upper_bound = 120
+
 # To delay the start of the epidemic up to 6 days.  If the value is > 6, 
 #  the system will assign a random delay based on the run number
 epidemic_offset = 0
@@ -143,6 +148,7 @@ school_summer_end = 08-31
 # recommended max size per classroom
 school_classroom_size = 40
 
+## SCHOOL CLOSURE POLICIES
 school_closure_policy = none
 # school_closure_policy = global
 # school_closure_policy = individual
@@ -157,8 +163,12 @@ school_closure_delay = 2
 school_closure_day = 10
 
 # global closure triggered when global attack rate >= threshold (if school_closure_day == -1)
-# reactive closure triggered when school attack rate >= threshold
+# individual school closure triggered when the school's attack rate >= threshold
 school_closure_threshold = 0.1
+
+# Number of cases within a given school that triggers individual school closure
+# If -1, use the school_closure_theshold fraction
+school_closure_cases = -1
 
 #### WORKPLACES
 office_size = 50
