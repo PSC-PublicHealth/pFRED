@@ -590,22 +590,32 @@ void Population::quality_control() {
   }
   
   if (Global::Verbose > 0) {
+    int n0, n5, n18, n65;
     int count[20];
     int total = 0;
+    n0 = n5 = n18 = n65 = 0;
     // age distribution
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int p = 0; p < pop_size; p++) {
       int a = pop[p]->get_age();
-      int n = a / 10;
+      if (a < 5) { n0++; }
+      else if (a < 18) { n5++; }
+      else if (a < 65) { n18++; }
+      else { n65++; }
+      int n = a / 5;
       if (n < 20) { count[n]++; }
       else { count[19]++; }
       total++;
     }
     fprintf(Global::Statusfp, "\nAge distribution: %d people\n", total);
-    for (int c = 0; c < 10; c++) {
+    for (int c = 0; c < 20; c++) {
       fprintf(Global::Statusfp, "age %2d to %d: %6d (%.2f%%)\n",
-              10*c, 10*(c+1)-1, count[c], (100.0*count[c])/total);
+              5*c, 5*(c+1)-1, count[c], (100.0*count[c])/total);
     }
+    fprintf(Global::Statusfp, "AGE 0-4: %d %.2f%%\n", n0, (100.0*n0)/total);
+    fprintf(Global::Statusfp, "AGE 5-17: %d %.2f%%\n", n5, (100.0*n5)/total);
+    fprintf(Global::Statusfp, "AGE 18-64: %d %.2f%%\n", n18, (100.0*n18)/total);
+    fprintf(Global::Statusfp, "AGE 65-100: %d %.2f%%\n", n65, (100.0*n65)/total);
     fprintf(Global::Statusfp, "\n");
     
     // Print out At Risk distribution
@@ -766,6 +776,14 @@ void Population::print_age_distribution(char * dir, char * date_string, int run)
 
 Person * Population::select_random_person() {
   int i = IRAND(0,pop_size-1);
+  return pop[i];
+}
+
+Person * Population::select_random_person_by_age(int min_age, int max_age) {
+  int i = IRAND(0,pop_size-1);
+  while (pop[i]->get_age() < min_age || pop[i]->get_age() > max_age) {
+    i = IRAND(0,pop_size-1);
+  }
   return pop[i];
 }
 

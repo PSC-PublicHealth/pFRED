@@ -27,6 +27,7 @@ int School::school_classroom_size = 0;
 char School::school_closure_policy[80];
 int School::school_closure_day = 0;
 double School::school_closure_threshold = 0.0;
+int School::school_closure_cases = -1;
 int School::school_closure_period = 0;
 int School::school_closure_delay = 0;
 int School::school_summer_schedule = 0;
@@ -102,6 +103,7 @@ void School::get_parameters(int diseases) {
   Params::get_param_from_string("school_closure_policy", School::school_closure_policy);
   Params::get_param_from_string("school_closure_day", &School::school_closure_day);
   Params::get_param_from_string("school_closure_threshold", &School::school_closure_threshold);
+  Params::get_param_from_string("school_closure_cases", &School::school_closure_cases);
   Params::get_param_from_string("school_closure_period", &School::school_closure_period);
   Params::get_param_from_string("school_closure_delay", &School::school_closure_delay);
   Params::get_param_from_string("school_summer_schedule", &School::school_summer_schedule);
@@ -179,14 +181,24 @@ bool School::should_be_open(int day, int disease) {
   
   if (strcmp(School::school_closure_policy, "individual") == 0) {
     if (N == 0) return false;
-    double frac = (double) Sympt[disease] / (double) N;
-    if (frac >= School::school_closure_threshold) {
-      if (is_open(day)) {
-        close_date = day + School::school_closure_delay;
+    bool this_is_open = is_open(day);
+    if (this_is_open) {
+      bool school_closure_triggered = false;
+      if (School::school_closure_cases != -1) {
+	school_closure_triggered = (Sympt[disease] >= School::school_closure_cases);
       }
-      open_date = day + School::school_closure_delay + School::school_closure_period;
-      return is_open(day);
+      else {
+	double frac = (double) Sympt[disease] / (double) N;
+	school_closure_triggered = (frac >= School::school_closure_threshold);
+      }
+      if (school_closure_triggered) {
+	close_date = day + School::school_closure_delay;
+	open_date = day + School::school_closure_delay + School::school_closure_period;
+	printf("School %d cases = %d / %d (%5.2f) and will be closed from %d to %d\n",
+	       id, Sympt[disease], N, (100.0*Sympt[disease]/N), close_date, open_date);
+      }
     }
+    return is_open(day);
   }
   
   // if school_closure_policy is not recognized, then open

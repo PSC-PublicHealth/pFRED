@@ -321,6 +321,8 @@ void Epidemic::get_primary_infections(int day){
         if ( mst->has_location() ) {
           r = IRAND( 0, people.size()-1 );
           person = people[r];
+	} else if (Global::Seed_by_age) {
+	  person = pop->select_random_person_by_age(Global::Seed_age_lower_bound, Global::Seed_age_upper_bound);
         } else {
           n = IRAND(0, N-1);
           person = pop->get_person(n);

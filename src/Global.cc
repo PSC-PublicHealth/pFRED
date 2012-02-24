@@ -54,6 +54,9 @@ bool Global::Enable_Travel = false;
 bool Global::Enable_Local_Workplace_Assignment = false;
 bool Global::Enable_Seasonality = false;
 bool Global::Enable_Climate = false;
+bool Global::Seed_by_age = false;
+int Global::Seed_age_lower_bound = 0;
+int Global::Seed_age_upper_bound = 0;
 
 // global singleton objects
 Population Global::Pop;
@@ -107,6 +110,8 @@ void Global::get_global_parameters() {
   Params::get_param_from_string("seasonality_timestep_file", Global::Seasonality_Timestep);
   Params::get_param_from_string("work_absenteeism", &Global::Work_absenteeism);
   Params::get_param_from_string("school_absenteeism", &Global::School_absenteeism);
+  Params::get_param_from_string("seed_age_lower_bound", &Global::Seed_age_lower_bound);
+  Params::get_param_from_string("seed_age_upper_bound", &Global::Seed_age_upper_bound);
 
   //Set all of the boolean flags
   int temp_int = 0;
@@ -132,5 +137,7 @@ void Global::get_global_parameters() {
   Global::Enable_Seasonality = temp_int;
   Params::get_param_from_string("enable_climate", &temp_int);
   Global::Enable_Climate = temp_int;
+  Params::get_param_from_string("seed_by_age", &temp_int);
+  Global::Seed_by_age = temp_int;
 }
 

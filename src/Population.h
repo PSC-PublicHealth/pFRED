@@ -192,6 +192,12 @@ public:
   Person * select_random_person();
 
   /**
+   * @return a pointer to a random Person in this population
+   * whose age is in the given range
+   */
+  Person * select_random_person_by_age(int min_age, int max_age);
+
+  /**
    * Static function to get and increment the next_id
    * @return the next id value
    */

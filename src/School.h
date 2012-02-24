@@ -42,6 +42,7 @@ private:
   static char school_closure_policy[];
   static int school_closure_day;
   static double school_closure_threshold;
+  static int school_closure_cases;
   static int school_closure_period;
   static int school_closure_delay;
   static bool school_parameters_set;
