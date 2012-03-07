@@ -46,9 +46,10 @@ Timestep_Map::Timestep_Map(string _name){
   else {
     sprintf(map_file_param,"%s_file",name.c_str());
   }
-  
+
   // Read the filename from params
   Params::get_param(map_file_param,map_file_name);
+  
   Utils::get_fred_file_name(map_file_name);
   
   // If this parameter is "none", then there is no map

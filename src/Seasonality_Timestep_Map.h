@@ -36,9 +36,11 @@
 #include <string>
 #include <sstream>
 #include <iterator>
+#include <utility>
 
 #include "Timestep_Map.h"
 #include "Utils.h"
+#include "Date.h"
 
 using namespace std;
 
@@ -65,13 +67,17 @@ public:
       lon = 00.00000;
       seasonalityValue = 0;
       loc = false;
+      simDayRanges.clear();
     }
 
     bool parse_line_format(string tsStr) {
 
+      int simDayStart, simDayEnd;
+
       if ( tsStr.size() <= 0 || tsStr.at(0) == '#' ) { // empty line or comment
         return false;
-      } else {
+      }
+      else {
         vector<string> tsVec; 
         size_t p1 = 0;
         size_t p2 = 0;
@@ -85,8 +91,16 @@ public:
           Utils::fred_abort("Need to specify at least SimulationDayStart, \
               SimulationDayEnd and SeasonalityValue for Seasonality_Timestep_Map. ");
         } else {
-          stringstream( tsVec[0] ) >> simDayStart;
-          stringstream( tsVec[1] ) >> simDayEnd;
+          if (tsVec[0].find('-') == 2 && tsVec[1].find('-') == 2) {
+            // start and end specify only MM-DD (repeat this calendar date's value every year)
+            parseMMDD(tsVec[0], tsVec[1]);
+          }
+          else {
+            // start and end specified as (integer) sim days
+            stringstream( tsVec[0] ) >> simDayStart;
+            stringstream( tsVec[1] ) >> simDayEnd;
+            simDayRanges.push_back( pair <int,int> (simDayStart,simDayEnd) );
+          }
           stringstream( tsVec[2] ) >> seasonalityValue;
           if ( n >= 3 ) {
             stringstream( tsVec[3] ) >> lat;
@@ -99,9 +113,16 @@ public:
       return is_complete;
     }
 
+
     bool is_applicable(int ts, int offset) {
       int t = ts - offset;
-      return t >= simDayStart && t <= simDayEnd;
+      for (int i = 0; i < simDayRanges.size(); i++) {
+        if ( t >= simDayRanges[i].first && t <= simDayRanges[i].second ) {
+          return true;
+        }
+      }
+      return false;
+      //return t >= simDayStart && t <= simDayEnd;
     }
 
     double get_seasonality_value() {
@@ -127,12 +148,51 @@ public:
     }
 
     void print() {
-      printf("start day = %d, end day = %d, seasonality value = %f\n",simDayStart,simDayEnd,seasonalityValue);
+      for (int i = 0; i < simDayRanges.size(); i++) {
+        printf("start day = %d, end day = %d, seasonality value = %f\n",simDayRanges[i].first,simDayRanges[i].second,seasonalityValue);
+      }
     }
 
   private:
 
-    int simDayStart, simDayEnd;
+    bool parseMMDD(string startMMDD, string endMMDD) {
+      int years = 0.5 + (Global::Days / 365);    
+      int startYear = Date::get_current_year(0);
+      string dateFormat = string("YYYY-MM-DD");
+      for (int y = startYear; y <= startYear + years; y++) {
+
+        stringstream ss_s;
+        stringstream ss_e;
+        stringstream ss_s2;
+        stringstream ss_e2;
+
+        ss_s << y << "-" << startMMDD;
+        string startDate = ss_s.str();
+        ss_e << y << "-" << endMMDD;
+        string endDate = ss_e.str();
+        
+        if (!(Date::is_leap_year(y))) {
+          if (Date::parse_month_from_date_string(startDate,dateFormat) == 2 && Date::parse_day_of_month_from_date_string(startDate,dateFormat) == 29) {
+            ss_s2 << y << "-" << "03-01";
+            startDate = ss_s2.str();
+          }
+          if (Date::parse_month_from_date_string(endDate,dateFormat) == 2 && Date::parse_day_of_month_from_date_string(endDate,dateFormat) == 29) {
+            ss_e2 << y << "-" << "03-01";
+            endDate = ss_e2.str();
+          }
+        }
+
+        int simStartDay = Date::days_between(0, new Date::Date(startDate,dateFormat));
+        int simEndDay = Date::days_between(0, new Date::Date(endDate,dateFormat));
+      
+        simDayRanges.push_back( pair <int,int> (simStartDay,simEndDay) );
+
+      }
+      return true;
+    }
+
+    //int simDayStart, simDayEnd;
+    vector < pair <int,int> > simDayRanges;
     double lat, lon, seasonalityValue;
     
     bool is_complete, loc;
