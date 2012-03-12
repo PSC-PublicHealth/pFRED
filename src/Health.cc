@@ -422,8 +422,8 @@ void Health::modify_symptomatic_period(int disease_id, double multp, int cur_day
 
 void Health::modify_develops_symptoms(int disease_id, bool symptoms, int cur_day) {
   if (infection[disease_id] != NULL &&
-      (infection[disease_id]->is_infectious() && !infection[disease_id]->is_symptomatic()) ||
-      (!infection[disease_id]->is_infectious())) {
+      ((infection[disease_id]->is_infectious() && !infection[disease_id]->is_symptomatic()) ||
+       !infection[disease_id]->is_infectious())) {
     if(Global::Debug > 2) cout << "Modifying Agent " << self->get_id() << " symptomaticity  for disease " << disease_id
                                  << " to " << symptoms << "\n";
 
