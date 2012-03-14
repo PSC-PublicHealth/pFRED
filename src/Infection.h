@@ -36,7 +36,7 @@ public:
   // if primary infection, infector and place are null.
   // if mutation, place is null.
   Infection(Disease *s, Person *infector, Person *infectee, Place* place, int day);
-  ~Infection() { }
+  ~Infection();
 
   /**
     * Perform the daily update for this object

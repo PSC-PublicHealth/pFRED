@@ -69,6 +69,16 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
   // host->set_changed();
 }
 
+Infection::~Infection() {
+
+  delete trajectory;
+
+  for (std::vector< Transmission * >::iterator itr = transmissions.begin(); itr != transmissions.end(); ++itr) {
+    delete (*itr);
+  }
+
+}
+
 void Infection::determine_transition_dates() {
   // returns the first date that the agent changes state
   bool was_latent = true;
@@ -280,6 +290,7 @@ void Infection::addTransmission(Transmission *transmission) {
     for( map<int, double>::iterator it = currentLoads->begin(); it != currentLoads->end(); it++ ) {
       loads->insert( pair<int, double> (it->first, it->second) );
     }
+    delete currentLoads;
   }
 
   disease->get_evolution()->doEvolution(this, loads);
@@ -289,6 +300,7 @@ void Infection::addTransmission(Transmission *transmission) {
 
   if(infectious_date == -1) {
     trajectory = NULL;
+    delete trajectory;
 
     if(Global::Verbose > 1) {
       printf("New transmission failed for person %d. \n", host->get_id());

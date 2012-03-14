@@ -22,7 +22,10 @@ class Transmission {
     // if primary transmission, infector and place are null.
     // if mutation, place is null.
     Transmission(Person *infector, Place *place, int day) : infector(infector), place(place), exposure_date(day) { }
-    ~Transmission();
+    ~Transmission() {
+      initialLoads->clear();
+      delete initialLoads;
+    }
 
     // general
     /**

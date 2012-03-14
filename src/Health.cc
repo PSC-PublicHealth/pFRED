@@ -86,6 +86,10 @@ Health::Health (Person * person) {
 }
 
 Health::~Health() {
+  //delete[] infection;
+  for (size_t i = 0; i < Global::Diseases; ++i) {
+    delete infection[i];
+  }
   delete[] infection;
   delete[] susceptibility_multp;
   delete[] susceptible;
