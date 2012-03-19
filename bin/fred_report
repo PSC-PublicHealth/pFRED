@@ -45,3 +45,4 @@ for my $x (@fields) {
   close OUT;
 }
 
+# system "$FRED/bin/fred_risk -o $out -r $reports";

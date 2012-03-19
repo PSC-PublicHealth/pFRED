@@ -61,7 +61,8 @@ my $pngfile = "report-$key-$$.png";
 open FH, ">$pltfile";
 print FH <<"EOF";
 set title \"FRED: Allegheny County Model\"
-set terminal png font \"Arial Bold\" 12
+# set terminal png font \"Arial Bold\" 12
+set terminal png 
 set output \'$pngfile\'
 set grid
 set xrange [$xmin:$xmax]

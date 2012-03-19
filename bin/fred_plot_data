@@ -36,7 +36,7 @@ exit;
 sub check_varlist {
   my $v = shift;
   my @args = ();
-  my %mapping = (C=>'C', S=>'S', E=>'E', I=>'I', R=>'R', s=>'I_s', M=>'M', A=>'AR', c=>'CI', r=>'RR', m=>'SM');
+  my %mapping = (a=>'CAR', C=>'C', S=>'S', E=>'E', I=>'I', R=>'R', s=>'I_s', M=>'M', A=>'AR', c=>'CI', r=>'RR', m=>'SM');
   my @vars = split "", $v;
   for my $x (@vars) {
     if (exists $mapping{$x}) {
@@ -44,7 +44,7 @@ sub check_varlist {
     }
     else {
       print "bad arg: |$x|\n";
-      die "usage: fred_plot_data -k key -v [S|E|I|R|s|C|c|M|A|r|m]\n";
+      die "usage: fred_plot_data -k key -v [S|E|I|R|s|C|c|M|A|a|r|m]\n";
     }
   }
   return @args;
