@@ -11,7 +11,7 @@ $| = 1;  # AUTO_FLUSH
 # File: fred_job
 # Author: John Grefenstette
 # Created: Jan 12, 2010
-# Updated: Apr 7, 2011
+# Updated: Mar 12, 2012
 
 # get current working directory
 my $cwd = getcwd();
@@ -21,24 +21,18 @@ die "fred_job: Please set environmental variable FRED_HOME to location of FRED h
 
 # get command line arguments
 my %options = ();
-getopts("cp:k:s:n:zP", \%options);
-
-my $zip = exists $options{z};
-
-my $paramsfile = "params";
-$paramsfile = $options{p} if exists $options{p};
-
+getopts("cfk:m:n:p:s:zP", \%options);
+my $cache = exists $options{c};
+my $force = exists $options{f};
 my $key;
 $key = $options{k} if exists $options{k};
-
-my $cache = exists $options{c};
-
+my $paramsfile = "params";
+$paramsfile = $options{p} if exists $options{p};
+my $zip = exists $options{z};
 my $parallel = exists $options{P};
-
 my $start_run = 1;
 $start_run = $options{s} if exists $options{s};
 die "fred_job: start_run must be an integer\n" if $start_run =~ /\D/;
-
 my $end_run = $start_run;
 $end_run = $options{n} if exists $options{n};
 die "fred_job: end_run must be an integer\n" if $end_run =~ /\D/;
@@ -81,6 +75,13 @@ if ($parallel) {
     # cannot determine how many cpus are available so force serial mode
     $parallel = 0;
   }
+}
+
+if (exists $options{m}) {
+  $parallel = 1;
+  $using_pbs = 0;
+  $cpus = $options{m};
+  $cpus =~ s/\D//g;
 }
 
 # get the file parameters from the params files
@@ -138,14 +139,21 @@ if (not -e "$fred_results/KEY") {
  close FH;
 }
 
-# determine if key is unique. if not, terminate.
+# determine if key is unique. if not, terminate unless force (-f) in effect
+my $old_id = "-1";
 if ($key) {
   open FH, "$fred_results/KEY";
   while (<FH>) {
     chomp;
-    my ($k) = split;
-    if ($k eq $key) {
-      close SEM and close FH and die "fred_job: key $key already used.\n";
+    my ($k, $i) = split;
+    if ($k eq $key and not $force) {
+      if ($force) {
+	$old_id = $i;
+	last;
+      }
+      else {
+	close SEM and close FH and die "fred_job: key $key already used.\n";
+      }
     }
   }
   close FH;
@@ -176,22 +184,31 @@ if ($key and $cache) {
   close FH;
 }
 
-# get id for this experiment and update counter
-open FH, "$fred_results/ID";
-my $id = <FH>;
-chomp $id;
-# print "id = |$id|\n";
-close FH;
-my $new_id = $id + 1;
-open FH, ">$fred_results/ID";
-print FH "$new_id\n";
-close FH;
-
-# use experiment id unless given command line key
-$key = $id if not defined $key;
-
-# add key-id pair
-`echo $key $id >> $fred_results/KEY`;
+my $id = "";
+if ($old_id > -1) {
+  # use old id
+  $id = $old_id;
+  # remove the old directory
+  system "rm -rf $fred_results/JOB/$id";
+  # use experiment id unless given command line key
+  $key = $id if not defined $key;
+}
+else {
+  # get id for this experiment and update counter
+  open FH, "$fred_results/ID";
+  $id = <FH>;
+  chomp $id;
+  # print "id = |$id|\n";
+  close FH;
+  my $new_id = $id + 1;
+  open FH, ">$fred_results/ID";
+  print FH "$new_id\n";
+  close FH;
+  # use experiment id unless given command line key
+  $key = $id if not defined $key;
+  # add key-id pair
+  `echo $key $id >> $fred_results/KEY`;
+}
 
 # release semaphore
 close SEM;
@@ -331,7 +348,7 @@ if (not $parallel) {
           exec "pbsdsh -n $run_instance /bin/sh -c \"cd $work && $FRED/bin/FRED $params $fred_instance > $logfilep\"\n";
         } else {
           # run on localhost
-          exec "cd $work && $FRED/bin/FRED $params $fred_instance > $logfilep \n" ;
+          exec "cd $work && $FRED/bin/FRED $params $fred_instance > $logfilep" ;
         }
       }
 
