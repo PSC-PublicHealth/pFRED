@@ -486,14 +486,14 @@ prevalencefile = none
 incidencefile = none
 # incidencefile = incd.txt
 
-# default IntraHost - 1; fixed IntraHost - 1; ODEIntraHost - 2
-intra_host_model[0] = 0
+# default IntraHost: 0; fixed IntraHost: 1; ODEIntraHost: 2
 
 # for default IntraHost
 infection_model[0] = 0
 
 # for fixed IntraHost
 # infection_model[0] = 1
+
 infectivity_profile_probabilities[0] = 16   0.0066 0.0198 0.0396 0.066 0.0794 0.1062 0.1464 0.2 0.2264 0.2792 0.3584 0.464 0.5176 0.6248 0.7856 1
 
 fixed_infectivity_profile[0][0] = 8    0 0 0.5 0.5 0.5 0.5 0.5 0.5
