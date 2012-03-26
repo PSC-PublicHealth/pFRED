@@ -487,6 +487,7 @@ incidencefile = none
 # incidencefile = incd.txt
 
 # default IntraHost: 0; fixed IntraHost: 1; ODEIntraHost: 2
+intra_host_model[0] = 0
 
 # for default IntraHost
 infection_model[0] = 0
