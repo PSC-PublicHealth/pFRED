@@ -1,25 +1,35 @@
-**FRED User’s Guide**
+FRED User’s Guide
+=================
 
-**John Grefenstette, Shawn Brown, Jay DePasse, David Galloway, Bruce
-Lee, Yu-Ting Weng**
+John Grefenstette, Shawn Brown, Jay DePasse, David Galloway, Bruce Lee, Yu-Ting Weng
+------------------------------------------------------------------------------------
 
-*University of Pittsburgh*
+University of Pittsburgh
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Roni Rosenfeld, Alona Fyshe, Anuroop Sriram, Christopher Tischuk**
+Roni Rosenfeld, Alona Fyshe, Anuroop Sriram, Christopher Tischuk
+----------------------------------------------------------------
 
-*Carnegie-Mellon University*
+Carnegie-Mellon University
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Nathan Stone**
+Nathan Stone
+------------
 
-*Pittsburgh Supercomputing Center*
+Pittsburgh Supercomputing Center
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Phil Cooley, Bill Wheaton**
+Phil Cooley, Bill Wheaton
+-------------------------
 
-*RTI International*
+RTI International
+~~~~~~~~~~~~~~~~~
 
-**27 Jan 2012**
+27 Jan 2012
+-----------
 
-**Acknowledgments**
+Acknowledgments
+---------------
 
 This work was supported by the National Institute of General Medical
 Sciences MIDAS grant 1U54GM088491-01, and by the Vaccine Modeling
@@ -181,9 +191,8 @@ and to evaluate several possible control measures.          
 
 The main program is contained in Fred.cc [#]_.
 
-.. [#] For further details about
-  the representation of individual agents, see files: ``Person.cc``,
-  ``Population.cc``.
+.. [#] For further details about the representation of individual agents,
+  see files: ``Person.cc``, ``Population.cc``.
 
 Demographics
 ------------
@@ -513,32 +522,25 @@ The key method implementing infection is called
 a day for each infectious place (having at least one infectious
 visitor).  The method follows the following procedure:
 
-For each infectious person ``i``, the expected number of contacts is:
+::
 
- Num\_contacts(i) = Trans(D) \* CR(P) \* Inf(i) \* S(P)/N(P)
+  For each infectious person ``i``, the expected number of contacts is:
+    Num_contacts(i) = Trans(D) * CR(P) * Inf(i) * S(P)/N(P)
 
- where  Trans(D) is the transmissibility factor for disease D,
+    where: Trans(D) is the transmissibility factor for disease D,
+      CR(P) is the contact rate for place P,
+      Inf(i) is the infectivity of agent i,
+      S(P) is the number of susceptible agents visiting place P, and
+      N(P) is the number of total agents who usually visit place P
 
-      CR(P) is the contact rate for place P,
+  For contact number 1 .. Num_contacts(i)
 
-      Inf(i) is the infectivity of agent i,
+    pick a susceptible agent j from today’s visitors;
+    let PROB = Trans_prob(i.j) \* Sus(j)
+    where Trans_prob(i.j) is the transmission probability from i to j,
+    and Sus(j) is the susceptibility of agent j.
 
-     S(P) is the number of susceptible agents visiting place P, and
-
-     N(P) is the number of total agents who usually visit place P
-
-For contact number 1..Num\_contacts(i)
-
-        pick a susceptible agent j from today’s visitors;
-
-             let PROB = Trans\_prob(i.j) \* Sus(j)
-
-where   Trans\_prob(i.j) is the transmission probability from i to j,
-and
-
-Sus(j) is the susceptibility of agent j.
-
-If a random number R is less than PROB, then agent i infects agent j.
+    If a random number R is less than PROB, then agent i infects agent j.
 
 For further details, see ``Place.cc``, ``Household.cc``
 
@@ -727,12 +729,12 @@ from any other source considered appropriate.  The current default is a
 sample of 5 million cell-to-cell trips based on a gravity model of
 travel, using the formula:
 
-{ Prob\_travel(i,j) = Pop(i) \* Pop(j) / (K \* Distance(i,j)) }
+{ Prob_travel(i,j) = Pop(i) \* Pop(j) / (K \* Distance(i,j)) }
 
 where Pop(i) is the total population residing in cell i (derived from
 the entire U.S. synthetic population), Distance(i,j) is the distance in
 kilometers between the center of cells i and j, and K is a normalization
-factor so that Prob\_travel(i,j) sums to 1.0.  Given the pdf defined by
+factor so that Prob_travel(i,j) sums to 1.0.  Given the pdf defined by
 the above formula, we select 5 million trips (with replacement) and
 store these in the trip list file.
 
@@ -767,7 +769,7 @@ Both files have the same format. Lines that begin with a ``#`` character
 are considered comments and are ignored. Parameters with scalar values
 are specified with lines of the form:
 
-``<`` *name* ``> = <`` *value* ``>``
+``<name> = <value>``
 
 For example:
 
@@ -775,7 +777,7 @@ For example:
 
   days = 100
   diseases = 1
-  popfile = pop\_Alleg.txt
+  popfile = pop_Alleg.txt
 
 Some parameters are vector valued, in which case the format is:
 
@@ -953,17 +955,15 @@ Primary Cases File Format
 -------------------------
 
 The primary cases file is a required file giving the number of primary
-infections to introduce for each simulation day.  The default format is:
+infections to introduce for each simulation day.  The default format is::
 
-#line\_format
+  #line_format
+  # the default 100 seeds on day zero...
+  0 0 100
 
-# the default 100 seeds on day zero...
+The full format is::
 
-0 0 100
-
-The full format is:
-
-start end attempts [ strain [ prob [ min [ lat lon radius ] ] ] ]
+  start end attempts [ strain [ prob [ min [ lat lon radius ] ] ] ]
 
 Only the first three fields are mandatory.  The first two fields give
 the starting and ending day, and the third field specifies the number of
@@ -986,75 +986,80 @@ each with attempt probability of 1, requiring a minimum of 100
 transmissions, all selected randomly from people whose households are
 within 100km of the specified point.
 
-0 0 100 0 1 100 40.44181 -80.01278 100
+::
 
-[Output Parameters] {Output Parameters} FRED produces several output
-files. The level of detail can be control by parameters described in the
-following table.** **
+  0 0 100 0 1 100 40.44181 -80.01278 100
+
+Output Parameters
+-----------------
+
+FRED produces several output files. The level of detail can be controlled
+by parameters described in the following table.
 
 Table 2: Output Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        **Parameter** & **Type** & **Definition and Notes**
-         outdir & string & Directory containing the output files.  If
-        the string beings with “/” it is interpreted as an absolute
-        path.  Otherwise, it is relative to the current working
-        directory.
-
-        Default: OUT
-         verbose & int & If set, print information for monitoring system
-        progress to the standard output.  Higher values produce more
-        output.
-
-        Default: 1
-         debug & int & If set, print verbose debugging output to stdout.
-         Higher values produce more output.
-
-        Default: 0
-         track\_infection\_events & int & If set, then a file called
-        infections{<}n{>}.txt is created for run {<}n{>}.  This file
-        contains one line per disease transmission event, showing the id
-        of the infector, the infectee, and various other information.
-        The format for the infections file is:
-
-        DAY DISEASE\_ID HOST\_ID HOST\_AGE INFECTOR\_ID INFECTOR\_AGE
-        PLACE\_ID
-
-        If track\_infection\_events {>} 1, additional data is written on
-        each line.  For further details, see: **Infection.cc.**
-
-        Default: 1
-         quality\_control & int & if set, information about the size and
-        age distribution for the various types of places is printed out
-        the Log file.
-
-        Default: 1
-         rr\_delay & int & Identifies the number of days between the
-        definition of a cohort and the reporting of that cohort’s
-        reproductive rate in the output file.  See examples below.
-
-        Default: 20
-         output\_population & int & If set, a file containing the
-        current population will be output periodically.  See explanation
-        below.
-
-        Default: 0
-         output\_population\_date\_match & string & If
-        output\_population is set, dump the population on any date that
-        matches this string.  The format is DD-MM-YY, with \* matching
-        any value.
-
-        Default: = 01-01-\*
-         pop_outfile
-
-          & string & Name of population dump file.
-
-        Default: ``pop_out``
++----------------------------------+----------+---------------------------------------------------------------------------------+
+| Parameter                        | Type     | Definition, Defaults and Notes                                                  |
++==================================+==========+=================================================================================+
+| ``outdir``                       | string   | Directory containing the output files.  If the string beings with “/” it is     |
+|                                  |          | interpreted as an absolute path.  Otherwise, it is relative to the current      |
+|                                  |          | working directory.                                                              |
+|                                  |          |                                                                                 |
+|                                  |          | **Default:** OUT                                                                |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+| ``verbose``                      | int      | If set, print information for monitoring system progress to the standard        |
+|                                  |          | output.  Higher values produce more output.                                     |
+|                                  |          |                                                                                 |
+|                                  |          | **Default:** 1                                                                  |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+| ``debug``                        | int      | If set, print verbose debugging output to stdout. Higher values produce more    |
+|                                  |          | output.                                                                         |
+|                                  |          |                                                                                 |
+|                                  |          | **Default:** 0                                                                  |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+| ``track_infection_events``       | int      | If set, then a file called ``infections<n>.txt`` is created for ``run <n>``.    |
+|                                  |          | This file contains one line per disease transmission event, showing the id      |
+|                                  |          | of the infector, the infectee, and various other information.  The format for   |
+|                                  |          | the infections file is:                                                         |
+|                                  |          |                                                                                 |
+|                                  |          | ``DAY DISEASE_ID HOST_ID HOST_AGE INFECTOR_ID INFECTOR_AGE PLACE_ID``           |
+|                                  |          |                                                                                 |
+|                                  |          | If ``track_infection_events > 1``, additional data is written on each line.     |
+|                                  |          | For further details, see: ``Infection.cc``.                                     |
+|                                  |          |                                                                                 |
+|                                  |          | **Default:** 1                                                                  |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+| ``quality_control``              | int      | If set, information about the size and age distribution for the various types   |
+|                                  |          | of places is printed out in the Log file.                                       |
+|                                  |          |                                                                                 |
+|                                  |          | **Default:** 1                                                                  |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+| ``rr_delay``                     | int      | Identifies the number of days between the definition of a cohort and the        |
+|                                  |          | reporting of that cohort’s reproductive rate in the output file.  See examples  |
+|                                  |          | below.                                                                          |
+|                                  |          |                                                                                 |
+|                                  |          | **Default:** 20                                                                 |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+| ``output_population``            | int      | If set, a file containing the current population will be output periodically.   |
+|                                  |          | See explanation below.                                                          |
+|                                  |          |                                                                                 |
+|                                  |          | **Default:** 0                                                                  |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+| ``output_population_date_match`` | string   | If ``output_population`` is set, dump the population on any date that matches   |
+|                                  |          | this string.  The format is ``DD-MM-YY``, with ``*`` matching any value.        |
+|                                  |          |                                                                                 |
+|                                  |          | **Default:** = ``01-01-*``                                                      |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+| ``pop_outfile``                  | string   | Name of population dump file.                                                   |
+|                                  |          |                                                                                 |
+|                                  |          | **Default:** ``pop_out``                                                        |
++----------------------------------+----------+---------------------------------------------------------------------------------+
 
 Output file format
 ------------------
 
-The outfile (called out{<}n{>}.txt for run n) contains one line for each
+The outfile (called out<n>.txt for run n) contains one line for each
 simulation day of the run.  The format of the file is:
 
 =================   =============================================================================
@@ -1107,169 +1112,234 @@ Global Control Parameters
 
 The following parameters provide basic control of FRED simulations.
 
-``start_date``: the calender date corresponding the simulation day 0.
-Format YYYY-MM-DD.
+start_date: 
+~~~~~~~~~~~
+
+  the calender date corresponding the simulation day 0.
+  Format YYYY-MM-DD.
 
   ``start_date = 2011-01-01``
 
-``days``: the number of days in a single simulation run.  FRED runs for
-the given number of days regardless of the epidemic state (that is, FRED
-does not stop early if no one is currently infected.)
+days: 
+~~~~~
+
+  the number of days in a single simulation run.  FRED runs for
+  the given number of days regardless of the epidemic state (that is, FRED
+  does not stop early if no one is currently infected.)
 
   ``days = 120``
 
-``seed``: the seed for the random number generator.  The seed values for
-all runs of the simulation are based on the initial seed and the run
-number, and are independent of the number of random numbers generated in
-other runs.
+seed: 
+~~~~~
+
+  the seed for the random number generator.  The seed values for
+  all runs of the simulation are based on the initial seed and the run
+  number, and are independent of the number of random numbers generated in
+  other runs.
 
   ``seed = 123456``
 
-``reseed_day``: if ``reseed_day > -1``, start each run with the same random seed and
-then reset the seed at day reseed\_day.  The effect is that the initial
-days will follow the same trajectory, but the simulations will follow
-independent trajectories starting on ``reseed_day``.  This permits
-estimation of conditional variance.
+reseed_day: 
+~~~~~~~~~~~
+
+  if ``reseed_day > -1``, start each run with the same random seed and
+  then reset the seed at day reseed_day.  The effect is that the initial
+  days will follow the same trajectory, but the simulations will follow
+  independent trajectories starting on ``reseed_day``.  This permits
+  estimation of conditional variance.
 
   ``reseed_day = -1``
 
-``office_size``: maximum number of workers per office.  If set to 0,
-then workplaces are not subdivided into offices.
+office_size: 
+~~~~~~~~~~~~
+
+  maximum number of workers per office.  If set to 0,
+  then workplaces are not subdivided into offices.
 
   ``office_size = 50``
 
-``classroom_size``: maximum number of students per classroom.  If set
-to 0, then schools are not subdivided into classrooms.
+classroom_size: 
+~~~~~~~~~~~~~~~
+
+  maximum number of students per classroom.  If set
+  to 0, then schools are not subdivided into classrooms.
 
   ``school_classroom_size = 40``
 
-``neighborhood``: When deciding where to spend an agent’s
-*neighborhood time*, there are parameters to control the probability
-of selecting a random cell within the *community*, defined by the
-parameter ``community_distance`` (in km), and the probability that the
-agent goes to its *home neighborhood* (where the household is).  The
-default parameters are::
+neighborhood: 
+~~~~~~~~~~~~~
 
-  # neighborhood activities
-  community_distance = 20
-  community_prob = 0.1
-  home_neighborhood_prob = 0.5
+  When deciding where to spend an agent’s
+  *neighborhood time*, there are parameters to control the probability
+  of selecting a random cell within the *community*, defined by the
+  parameter ``community_distance`` (in km), and the probability that the
+  agent goes to its *home neighborhood* (where the household is).  The
+  default parameters are:
 
-That is, 50% of the time, the neighborhood is the cell surrounding the
-household, and 10% of the time it is a random cell within 20km of home.
-The other 40% are distributed uniformly in the 8 cells immediately
-surrounding the home cell.
+  ``# neighborhood activities``
+  ``community_distance = 20``
+  ``community_prob = 0.1``
+  ``home_neighborhood_prob = 0.5``
+
+  That is, 50% of the time, the neighborhood is the cell surrounding the
+  household, and 10% of the time it is a random cell within 20km of home.
+  The other 40% are distributed uniformly in the 8 cells immediately
+  surrounding the home cell.
 
 Disease Model Parameters
 ------------------------
 
-``diseases``: the number of diseases circulating in the population. Any
-number of diseases is allowed.  Runtime and memory required is
-proportional to the number of diseases.
+diseases:
+~~~~~~~~~
+
+  The number of diseases circulating in the population. Any
+  number of diseases is allowed.  Runtime and memory required is
+  proportional to the number of diseases.
 
   ``diseases = 1``
 
   Each disease is described by the following set of parameters, indexed by
   the disease number d, where d = 0,...,diseases-1.
 
-``primary_cases_file[d]``: the file containing the number of primary
-cases to be injected into the simulation during each day.
+primary_cases_file[d]:
+~~~~~~~~~~~~~~~~~~~~~~
 
-  ``primary_cases_file[0] = primary\_case\_schedule-0.txt``
+  The file containing the number of primary
+  cases to be injected into the simulation during each day.
+
+  ``primary_cases_file[0] = primary_case_schedule-0.txt``
 
   The ``primary_cases_file[d]`` follows the *Multistrain Timestep Map input format*.
 
-``trans[d]``: the transmissibility of disease d relative to an arbitrary
-baseline.
+trans[d]:
+~~~~~~~~~
+
+  The transmissibility of disease d relative to an arbitrary
+  baseline.
 
   ``trans[0] = 1.0``
 
-``symp[d]``: the probability of an infected person becoming symptomatic
+symp[d]:
+~~~~~~~~
+
+  The probability of an infected person becoming symptomatic
 
   ``symp[0] = 0.67``
 
-``mortality_rate[d]``: the probability of an infected person dying (Not
-currently implemented)
+mortality_rate[d]:
+~~~~~~~~~~~~~~~~~~
+
+  The probability of an infected person dying (Not
+  currently implemented)
 
   ``mortality_rate[0] = 0.00001``
 
-``infection_model[d]``: Either ``0`` or ``1``.  Infection model 0 is a bifurcating
-model in which each infected agent passes through stages SEIR or SEiR,
-where “I” means infectious and symptomatic, and “i” means infectious but
-not symptomatic.  Infection model 1 is a sequential model in which
-infected agents pass through the stages SEiIR.  In any model, some
-stages may last for 0 days, except E, which always lasts at least 1 day.
+infection_model[d]: 
+~~~~~~~~~~~~~~~~~~~
+
+  Either ``0`` or ``1``.  Infection model 0 is a bifurcating
+  model in which each infected agent passes through stages SEIR or SEiR,
+  where “I” means infectious and symptomatic, and “i” means infectious but
+  not symptomatic.  Infection model 1 is a sequential model in which
+  infected agents pass through the stages SEiIR.  In any model, some
+  stages may last for 0 days, except E, which always lasts at least 1 day.
 
   ``infection_model[0] = 0``
 
-``days_latent[d]``: discrete cdf for number of days between becoming
-exposed and becoming infectious.  With the values shown in the example
-below, there is an 80% chance of becoming infectious 1 day after
-exposure and a 20% chance of becoming infectious 2 days after exposure.
+days_latent[d]: 
+~~~~~~~~~~~~~~~
 
-  ``days\_latent[0] = 3  0 0.8 1.0``
+  discrete cdf for number of days between becoming
+  exposed and becoming infectious.  With the values shown in the example
+  below, there is an 80% chance of becoming infectious 1 day after
+  exposure and a 20% chance of becoming infectious 2 days after exposure.
 
-``days_asymp[d]``: discrete cdf for number of days the agent is
-infectious but asymptomatic.  With the values shown in the example
-below, the default setting , the agent may be asymptomatic between 3 to
-6 days.
+  ``days_latent[0] = 3  0 0.8 1.0``
+
+days_asymp[d]: 
+~~~~~~~~~~~~~~
+
+  discrete cdf for number of days the agent is
+  infectious but asymptomatic.  With the values shown in the example
+  below, the default setting , the agent may be asymptomatic between 3 to
+  6 days.
 
   ``day_asymp[0] = 7   0.0  0.0  0.0  0.3  0.7  0.9  1.0``
 
-``days_symp[d]``: discrete cdf for number of days the agent is
-infectious and symptomatic.  With the values shown in the example below,
-the default setting , the agent may be symptomatic between 3 to 6 days.
+days_symp[d]: 
+~~~~~~~~~~~~~
 
-  ``day\_symp[0] = 7   0.0  0.0  0.0  0.3  0.7  0.9  1.0``
+  discrete cdf for number of days the agent is
+  infectious and symptomatic.  With the values shown in the example below,
+  the default setting , the agent may be symptomatic between 3 to 6 days.
 
-``immunity_loss_rate[d]``: rate at which a person loses immunity after
-recovering from infection. If greater than 0.0, the number of days in
-state ’R’ is drawn from an exponential distribution with parameter
-``1 / immunity_loss_rate``.
+  ``day_symp[0] = 7   0.0  0.0  0.0  0.3  0.7  0.9  1.0``
+
+immunity_loss_rate[d]: 
+~~~~~~~~~~~~~~~~~~~~~~
+
+  rate at which a person loses immunity after
+  recovering from infection. If greater than 0.0, the number of days in
+  state ’R’ is drawn from an exponential distribution with parameter
+  ``1 / immunity_loss_rate``.
 
   ``immunity_loss_rate[0] = 0``
 
-``symp_infectivity[d]``: multiplier for how infective a symptomatic agent is.
+symp_infectivity[d]: 
+~~~~~~~~~~~~~~~~~~~~
+
+  multiplier for how infective a symptomatic agent is.
 
   ``symp_infectivity[0] = 1.0``
 
-**asymp\_infectivity[d]: **multiplier for how infective an asymptomatic
-agent is.
+asymp_infectivity[d]: 
+~~~~~~~~~~~~~~~~~~~~~
 
-asymp\_infectivity[0] = 0.5
+  multiplier for how infective an asymptomatic agent is.
 
-**residual\_immunity\_ages[d]:**
+  ``asymp_infectivity[0] = 0.5``
 
-residual\_immunity\_ages[0] = 0
+residual_immunity_ages[d]:
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**residual\_immunity\_values[d]:**
+  ``residual_immunity_ages[0] = 0``
 
-residual\_immunity\_values[0] = 0
+residual_immunity_values[d]:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**pregnancy\_prob\_ages:**
+  ``residual_immunity_values[0] = 0``
 
-pregnancy\_prob\_ages = 0
+pregnancy_prob_ages:
+~~~~~~~~~~~~~~~~~~~~
 
-**pregnancy\_prob\_values:**
+  ``pregnancy_prob_ages = 0``
 
-pregnancy\_prob\_values = 0
+pregnancy_prob_values:
+~~~~~~~~~~~~~~~~~~~~~~
 
-**at\_risk\_ages[d]:**
+  ``pregnancy_prob_values = 0``
 
-at\_risk\_ages[d] = 0
+at_risk_ages[d]:
+~~~~~~~~~~~~~~~~
 
-**at\_risk\_values[d]:**
+  ``at_risk_ages[d] = 0``
 
-at\_risk\_values[d] = 0
+at_risk_values[d]:
+~~~~~~~~~~~~~~~~~~
 
-**prob\_stay\_home: **the probability that a symptomatic agent stays
-home
+  ``at_risk_values[d] = 0``
 
-prob\_stay\_home = 0.5
+prob_stay_home: 
+~~~~~~~~~~~~~~~
 
-**mutation\_prob:**
+  The probability that a symptomatic agent stays home
 
-mutation\_prob = 1 0.0
+  ``prob_stay_home = 0.5``
+
+mutation_prob:
+~~~~~~~~~~~~~~
+
+  ``mutation_prob = 1 0.0``
 
 Contact Rates
 -------------
@@ -1277,39 +1347,56 @@ Contact Rates
 The following parameters determine the number of potentially infective
 daily contacts between an infectious agent and a susceptible agent in a
 given type of location.  The default values are calibrated for Allegheny
-County using the bifurcating infection model (infection\_model = 0).
+County using the bifurcating infection model (``infection_model = 0``).
 
-**household\_contacts[d]:** contact rate for households.
+household_contacts[d]:
+~~~~~~~~~~~~~~~~~~~~~~
 
-household\_contacts[d] = 0.19
+  contact rate for households.
+  
+  ``household_contacts[d] = 0.19``
 
-**neighborhood\_contacts[d]:** contact rate for neighborhoods.
+neighborhood_contacts[d]: 
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-                neighborhood\_contacts[0] = 42.32
+  contact rate for neighborhoods.
+  
+  ``neighborhood_contacts[0] = 42.32``
 
-**school\_contacts[d]: **contact rate for schools.
+school_contacts[d]: 
+~~~~~~~~~~~~~~~~~~~
 
-                school\_contacts[0] = 15.83
+  contact rate for schools.
 
-**workplace\_contacts[d]:** contact rate for workplaces.
+  ``school_contacts[0] = 15.83``
 
-                workplace\_contacts[0] = 1.66
+workplace_contacts[d]: 
+~~~~~~~~~~~~~~~~~~~~~~
 
-By default, classroom contacts are double the school contacts, and
-office contacts are double the workplace contacts.  These defaults are
-indicated as follows:
+  contact rate for workplaces.
 
-           classroom\_contacts[0] = -1
+  ``workplace_contacts[0] = 1.66``
 
-office\_contacts[0] = -1
+classroom_contacts[d], office_contacts[0]:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-These defaults can be overridden if values other than -1 are provided in
-the params file.
+  By default, classroom contacts are double the school contacts, and
+  office contacts are double the workplace contacts.  These defaults are
+  indicated as follows:
 
-**weekend\_contact\_rate[d]: **multiplier of neighborhood contacts on
-weekend.  The default is to increase weekend contacts by 50%:
+  ``classroom_contacts[0] = -1``
+  ``office_contacts[0] = -1``
 
-weekend\_contact \_rate[0] = 1.5
+  These defaults can be overridden if values other than -1 are provided in
+  the params file.
+
+weekend_contact_rate[d]: 
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+  multiplier of neighborhood contacts on
+  weekend.  The default is to increase weekend contacts by 50%:
+
+  ``weekend_contact _rate[0] = 1.5``
 
 Transmission probabilities
 --------------------------
@@ -1322,340 +1409,352 @@ interpreted as a square matrix with the values given in row-order.  The
 labels associated with the rows and columns (the groups) are specified
 in the comments, and are defined in the class associated with the
 parameter.  For example, the definition of elementary students is
-defined in **School.cc**. The defaults are:
+defined in ``School.cc``. The defaults are::
 
-# groups = children adults
+  # groups = children adults
+  household_prob[d] = 4 0.6 0.3 0.3 0.4
+  neighborhood_prob[d] = 4 0.0048 0.0048 0.0048 0.0048
 
-household\_prob[d] = 4 0.6 0.3 0.3 0.4
+  # groups = adult_workers
+  workplace_prob[d] = 1 0.0575
+  office_prob[d] = 1 0.0575
 
-neighborhood\_prob[d] = 4 0.0048 0.0048 0.0048 0.0048
-
-# groups = adult\_workers
-
-workplace\_prob[d] = 1 0.0575
-
-office\_prob[d] = 1 0.0575
-
-# groups = elem\_students mid\_students high\_students teachers
-
-school\_prob[d] = 16 0.0435 0 0 0 0 0.0375 0 0 0 0 0.0315 0 0 0 0 0.0575
-
-classroom\_prob[d] = 16 0.0435 0 0 0 0 0.0375 0 0 0 0 0.0315 0 0 0 0
-0.0575
+  # groups = elem_students mid_students high_students teachers
+  school_prob[d] = 16 0.0435 0 0 0 0 0.0375 0 0 0 0 0.0315 0 0 0 0 0.0575
+  classroom_prob[d] = 16 0.0435 0 0 0 0 0.0375 0 0 0 0 0.0315 0 0 0 0 0.0575
 
 Multistrain Timestep Map Format
 -------------------------------
 
 The first line of the timestep map file specifies the format to be used.
- Currently #line\_format is the only supported format.  Future work may
+
+Currently ``#line_format`` is the only supported format.  Future work may
 allow for some type of structured (key = value) format to permit more
 detailed specification of seeding behavior.
 
-Any line beginning with # is interpreted as a comment and ignored.
- Every other line is interpreted as a seeding instruction and expected
-to follow the format:
+Any line beginning with ``#`` is interpreted as a comment and ignored.
+Every other line is interpreted as a seeding instruction and expected
+to follow the format::
 
-  start end attempts [ strain [ prob [ min [ lat lon radius ] ] ] ]
+  start end attempts [ strain [ prob [ min [ lat lon radius ] ] ] ]
 
-**Mandatory Fields:**
+Mandatory Fields:
+~~~~~~~~~~~~~~~~~
 
-The first three fields (start, end, attempts) are mandatory.  The others
+The first three fields (*start*, *end*, *attempts*) are mandatory.  The others
 are optional, but, if present, must be given in the order above.
 
-The start and end fields are indexed from zero and can be used to
-specify a range of days beginning on start and continuing to end
-(inclusive).  To specify seeding on a single day, set start equal to
-end.
+The *start* and *end* fields are indexed from zero and can be used to
+specify a range of days beginning on *start* and continuing to *end*
+(inclusive).  To specify seeding on a single day, set *start* equal to
+*end*.
 
-The attempts field determines the number of seeding attempts for the
+The *attempts* field determines the number of seeding attempts for the
 given range of time steps.  If no further fields are present, this
 number of individuals are randomly chosen with replacement from the
 entire population and transmission of the disease is attempted.  Note
 that sampling includes individuals who may already be infected; in this
 case the actual number of new seeds may be less than the number
-specified by attempts.
+specified by *attempts*.
 
-**Optional Fields:**
+Optional Fields:
+~~~~~~~~~~~~~~~~
 
-The strain field gives the numeric id of the strain to be seeded for
-this timestep.  If the strain field is not given, seeds will be strain
-0.
+The *strain* field gives the numeric id of the strain to be seeded for
+this timestep.  If the *strain* field is not given, seeds will be strain
+"0".
 
-The prob field can be used to introduce some randomness into the number
-of seeding events attempted at the time step.  With probability 1-prob
-each of the attempts specified by attempt will be skipped.
+The *prob* field can be used to introduce some randomness into the number
+of seeding events attempted at the time step.  With probability 1 - *prob*
+each of the attempts specified by *attempt* will be skipped.
 
-The min field can be used to ensure that a minimum number of attempts
+The *min* field can be used to ensure that a minimum number of attempts
 actually result in transmission.  If specified, individuals will
 continue (1000 additional times) to be selected from the population
-until min number of successful transmissions have been created.  If 1000
+until *min* number of successful transmissions have been created.  If 1000
 additional selections from the population are insufficient to create the
 specified minimum number of transmissions, a warning is given and
 execution of the program continues.
 
 The geographic area from which individuals are selected can be specified
-by giving the coordinates of a point (lat, lon) and a radius specified
+by giving the coordinates of a point (lat, lon) and a *radius* specified
 in kilometers.  When enabled, random sampling is restricted to only
 those individuals whose households are located within the specified
 area.
 
 Additional information on the timestep map format may be found in
-**README\_Timestep\_Maps**.
+``README_Timestep_Maps``.
 
 Intervention Parameters
 -----------------------
 
-School closure parameters
+school closure parameters:
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+  # set to 1 if schools closed during summer
+  school_summer_schedule = 0
+
+  # summer schedule dates (format MM-DD)
+  school_summer_start = 06-01
+  school_summer_end = 08-31
+  school_closure_policy = none
+
+  # school_closure_policy = global
+
+  # school_closure_policy = individual
+
+  # number of days to keep a school closed
+  school_closure_period = 10
+
+  # delay after reaching any trigger before closing schools
+  school_closure_delay = 2
+
+  # day to close school under global policy
+  school_closure_day = 10
+
+vaccine_tracefile:
+~~~~~~~~~~~~~~~~~~
+
+  If the value is “none”, no vaccine tracefiles
+  are produced.  Otherwise, a vaccine tracefile is produced for each run
+  in the directory given the outdir parameter. A vaccine tracefile
+  contains one record for each agent, giving the agent’s vaccination
+  history. Vaccine tracefiles are named ``vtrace1.txt``, ``vtrace2.txt``, etc.
+
+  ``vaccine_trace = none``
+
+number_of_vaccine: 
+~~~~~~~~~~~~~~~~~~
+
+  the number of types of vaccines that you would
+  like to run in the simulation.  There needs to be a set of vaccine
+  parameters for each vaccine in the system or the simulation will end in
+  error.
+
+  **Default: 0**
+
+vaccine_prioritize_acip: 
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Enable prioritization of vaccination by
+  ACIP recommendations.  This includes persons aged 0-24, people deemed at
+  risk for complications for influenza (see at_risk_ages and
+  at_risk_values keywords), pregnant women (see pregnancy_prob_ages
+  and pregnancy_prob_values keywords), and people over age 64.
+
+  **Default: 0**
+
+vaccine_prioritize_by_age: 
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Enables prioritization of vaccination
+  by age group.  The age groups will be defined by the two following
+  keywords.
+
+  **Default: 0**
+
+vaccine_priority_age_low: 
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Parameters controlling to school closures:
+  If vaccine_prioritize_by_age is
+  specified as 1, this specifies the lower limit of the prioritized age
+  group inclusively.     
 
-# set to 1 if schools closed during summer
+  **Default: 0**
 
-school\_summer\_schedule = 0
+vaccine_priority_age_high: 
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# summer schedule dates (format MM-DD)
+  If vaccine_prioritize_by_age is
+  specified as 1, this specifies the upper limit of the prioritized age
+  group inclusively.     
 
-school\_summer\_start = 06-01
+  **Default: 100**
 
-school\_summer\_end = 08-31
-
-school\_closure\_policy = none
-
-# school\_closure\_policy = global
-
-# school\_closure\_policy = individual
-
-# number of days to keep a school closed
-
-school\_closure\_period = 10
-
-# delay after reaching any trigger before closing schools
-
-school\_closure\_delay = 2
-
-# day to close school under global policy
-
-school\_closure\_day = 10
-
-Vaccination control parameters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Parameters controlling to vaccination:
-
-**vaccine\_tracefile**: If the value is “none”, no vaccine tracefiles
-are produced.  Otherwise, a vaccine tracefile is produced for each run
-in the directory given the outdir parameter. A vaccine tracefile
-contains one record for each agent, giving the agent’s vaccination
-history. Vaccine tracefiles are named vtrace1.txt, vtrace2.txt, etc.
-
-     vaccine\_trace = none
-
-**number\_of\_vaccine: **the number of types of vaccines that you would
-like to run in the simulation.  There needs to be a set of vaccine
-parameters for each vaccine in the system or the simulation will end in
-error.
-
-    Default: 0
-
-**vaccine\_prioritize\_acip**: Enable prioritization of vaccination by
-ACIP recommendations.  This includes persons aged 0-24, people deemed at
-risk for complications for influenza (see at\_risk\_ages and
-at\_risk\_values keywords), pregnant women (see pregnancy\_prob\_ages
-and pregnancy\_prob\_values keywords), and people over age 64.
-
-    Default: 0
-
-**vaccine\_prioritize\_by\_age**: Enables prioritization of vaccination
-by age group.  The age groups will be defined by the two following
-keywords.
-
-    Default: 0
-
-**vaccine\_priority\_age\_low**: If vaccine\_prioritize\_by\_age is
-specified as 1, this specifies the lower limit of the prioritized age
-group inclusively.     Default 0
-
-**vaccine\_priority\_age\_high: **If vaccine\_prioritize\_by\_age is
-specified as 1, this specifies the upper limit of the prioritized age
-group inclusively.     Default 100
-
-**vaccine\_dose\_priority**: If there are multi-dose vaccines, this
-parameter defines prioritization of people getting multiple doses vs.
-people getting their first dose.
-
-    Possible values:
-
-#. No Priority, first come first serve
-
-#. Place people getting subsequent dose at the beginning of the queue
-
-#. Mix in people getting subsequent dose with other priority
-   vaccinations randomly
-
-#. Place people getting subsequent dose at the end of the queue
-
-Default
-
-  0
-
-**vaccine\_capacity\_file:**  This parameter specifies a file that
-defines how many agents the system has the capacity to vaccinate on a
-given day throughout the simulation.  This may be more or less than the
-amount of vaccine available through production.  This parameter is meant
-to allow the user to attenuate the system’s ability to actually
-vaccinate people due to limitations in personnel, time and resources.
-
-The format of this file follows a reduced Multistrain TimeStep file,
-with a format as follows:
-
-Day\_start  Capacity1
-
-Day\_change1   Capacity2
-
-Day\_change2  Capacity3
-
-{}.
-
-For example:  If one wanted to define that for the first 3 days of the
-simulation, the system could vaccinate no one, then on days 4-10, it
-could vaccinate 10000 people per day, then dropping down to 5000 per day
-on day 11 through the rest of the simulation, the
-vaccine\_capacity\_file would look like this:
-
-#. 0
-
-4  10000
-
-11  5000
-
-The next set of parameters need to be defined for every vaccine in the
-simulation, and they will all be indexed by the vaccine number they
-define (signified by X).
-
-**vaccine\_number\_of\_doses[X]**: Specifies the number of doses needed
-for vaccine X.  There needs to be a dose specification for each dose
-indicated, or the simulation will end in error.
-
-    Default
-
-      1
-
-**vaccine\_total\_avail[X]**: Specifies the total amount of doses of
-vaccine X available for the entire simulation.
-
-    Default
-
-      1000000000
-
-**vaccine\_additional\_per\_day[X]**: The amount of vaccine X produced
-each day and made available to the system.   The amount of vaccine
-produced cannot exceed vaccine\_total\_avail[X], for the entire
-simulation.
-
-    Default
-
-      1000000
-
-**vaccine\_starting\_day[X]**: The day to start producing vaccine X at
-the rate defined by vaccine\_additional\_per\_day[X].
-
-    Default
-
-      0
-
-The next set of parameters must be specified for each dose (specified by
-Y) of vaccine X.
-
-**vaccine\_next\_dosage\_day[X][Y]**: Specifies the day of the dosage
-schedule that the next dose should be taken.  For instance, if the dose
-Z of a vaccine is to be taken 7 days after dose Y, then
-
-this parameter for dose Y would be seven.  The last dose of a vaccine is
-always 0.
-
-    Default:
-
-      0
-
-**vaccine\_dose\_efficacy\_ages[X][Y]**
-
-**vaccine\_dose\_efficacy\_values[X][Y]**: These parameters specify the
-age map for defining the efficacy of vaccine X, dose Y.  The values
-should be probabilities between 0 and 1 that specify the probability
-that a person of a certain age will become immune after taking this dose
-of vaccine.
-
-    Default:
-
-      vaccine\_dose\_efficacy\_ages[0][0] = 2 0 100
-
-vaccine\_dose\_efficacy\_values[0][0] = 1 0.70
-
-**vaccine\_dose\_efficacy\_delay\_ages[X][Y]**
-
-**vaccine\_dose\_efficacy\_delay\_values[X][Y]**: These parameters
-specify the age map for defining the delay to efficacy of vaccine X,
-dose Y.  The values should be integer numbers of days by age.
-
-    Default:
-
-      vaccine\_dose\_efficacy\_delay\_ages[0][0] = 2 0 100
-
-vaccine\_dose\_efficacy\_delay\_values[0][0] = 1 14
-
-Anti-virals parameters
+vaccine_dose_priority: 
 ~~~~~~~~~~~~~~~~~~~~~~
 
-number\_antivirals = 0
+  If there are multi-dose vaccines, this
+  parameter defines prioritization of people getting multiple doses vs.
+  people getting their first dose.
+
+  Possible values:
+
+    #. No Priority, first come first serve
+
+    #. Place people getting subsequent dose at the beginning of the queue
+
+    #. Mix in people getting subsequent dose with other priority
+    vaccinations randomly
+
+    #. Place people getting subsequent dose at the end of the queue
+
+  **Default: 0**
+
+
+vaccine_capacity_file:  
+~~~~~~~~~~~~~~~~~~~~~~
+
+  This parameter specifies a file that
+  defines how many agents the system has the capacity to vaccinate on a
+  given day throughout the simulation.  This may be more or less than the
+  amount of vaccine available through production.  This parameter is meant
+  to allow the user to attenuate the system’s ability to actually
+  vaccinate people due to limitations in personnel, time and resources.
+
+  The format of this file follows a reduced Multistrain TimeStep file,
+  with a format as follows::
+
+    Day_start     Capacity1
+    Day_change1   Capacity2
+    Day_change2   Capacity3
+
+  For example: If one wanted to define that for the first 3 days of the
+  simulation, the system could vaccinate no one, then on days 4-10, it
+  could vaccinate 10000 people per day, then dropping down to 5000 per day
+  on day 11 through the rest of the simulation, the
+  vaccine_capacity_file would look like this::
+
+    1   0
+    4   10000
+    11  5000
+
+  The next set of parameters need to be defined for every vaccine in the
+  simulation, and they will all be indexed by the vaccine number they
+  define (signified by X).
+
+vaccine_number_of_doses[X]: 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Specifies the number of doses needed
+  for vaccine X.  There needs to be a dose specification for each dose
+  indicated, or the simulation will end in error.
+
+  **Default: 1**
+
+vaccine_total_avail[X]: 
+~~~~~~~~~~~~~~~~~~~~~~~
+
+  Specifies the total amount of doses of
+  vaccine X available for the entire simulation.
+
+  **Default: 1000000000**
+
+vaccine_additional_per_day[X]: 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The amount of vaccine X produced
+  each day and made available to the system.   The amount of vaccine
+  produced cannot exceed ``vaccine_total_avail[X]``, for the entire
+  simulation.
+
+  **Default: 1000000**
+
+vaccine_starting_day[X]: 
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The day to start producing vaccine X at
+  the rate defined by ``vaccine_additional_per_day[X]``.
+
+  **Default: 0**
+
+  *The next set of parameters must be specified for each dose (specified by Y) of vaccine X.*
+
+vaccine_next_dosage_day[X][Y]: 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Specifies the day of the dosage
+  schedule that the next dose should be taken.  For instance, if the dose
+  Z of a vaccine is to be taken 7 days after dose Y, then this parameter
+  for dose Y would be seven.  The last dose of a vaccine is always 0.
+
+  **Default: 0**
+
+vaccine_dose_efficacy_ages[X][Y] and vaccine_dose_efficacy_values[X][Y]:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  These parameters specify the age map for defining the efficacy of vaccine X, dose Y.  The values
+  should be probabilities between 0 and 1 that specify the probability
+  that a person of a certain age will become immune after taking this dose
+  of vaccine.
+
+  **Defaults:**::
+
+    vaccine_dose_efficacy_ages[0][0] = 2 0 100
+    vaccine_dose_efficacy_values[0][0] = 1 0.70
+
+vaccine_dose_efficacy_delay_ages[X][Y] and vaccine_dose_efficacy_delay_values[X][Y]:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  These parameters specify the age map for defining the delay to efficacy of vaccine X
+  dose Y. The values should be integer numbers of days by age.
+
+  **Defaults:**::
+
+    vaccine_dose_efficacy_delay_ages[0][0] = 2 0 100
+    vaccine_dose_efficacy_delay_values[0][0] = 1 14
+
+Anti-virals parameters:
+~~~~~~~~~~~~~~~~~~~~~~~
+
+  ``number_antivirals = 0`` (**Default**)
 
 Overnight Travel Parameters
 ---------------------------
 
 Parameters controlling long-distance overnight travel:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# enable overnight travel (optional)
+::
 
-enable\_travel = 0
+  # enable overnight travel (optional)
+  enable_travel = 0
 
-# cdf of trip duration in days
+  # cdf of trip duration in days
+  travel_duration = 6 0 0.2 0.4 0.6 0.8 1.0
 
-travel\_duration = 6 0 0.2 0.4 0.6 0.8 1.0
+..
 
-That is, the default probability for the duration of travel being *i*
-days is 0.2, for  *i* =  1 to 5 days.
+  That is, the default probability for the duration of travel being *i*
+  days is 0.2, for  *i* =  1 to 5 days.
 
-# distance threshold for overnight trips (in km)
+::
 
-min\_travel\_distance = 100.0
+  # distance threshold for overnight trips (in km)
+  min_travel_distance = 100.0
 
-# trips per day assuming entire US population
+  # trips per day assuming entire US population
+  max_trips_per_day = 1000000
 
-max\_trips\_per\_day = 1000000
+  # file containing list of sample trips
+  tripfile = trips.txt
 
-# file containing list of sample trips
+..
 
-tripfile = trips.txt
+  The format of the tripfile is:
 
-The format of the tripfile is:
+  ``COL1 ROW1 COL2 ROW2``
 
-COL1 ROW1 COL2 ROW2
+  where (``COL1``, ``ROW1``) give the global cell coordinates for one endpoint,
+  and (``COL2``, ``ROW2``) give the global cell coordinates for the other
+  endpoint.  The order of the endpoints in irrelevant.
 
-where (COL1, ROW1) give the global cell coordinates for one endpoint,
-and (COL2, ROW2) give the global cell coordinates for the other
-endpoint.  The order of the endpoints in irrelevant.
+::
 
-# file with population estimate for each large cell
+  # file with population estimate for each large cell
+  cell_popfile = cell_pop.txt
 
-cell\_popfile = cell\_pop.txt
+..
 
-The format of the cell\_popfile is:
+  The format of the cell_popfile is:
 
-COL1 ROW1 POP
+  ``COL1 ROW1 POP``
 
-where (COL1, ROW1) give the global cell coordinates for one cell and POP
-is the number of agents in that cell according to the overall U.S.
-synthetic population file.
+  where (``COL1``, ``ROW1``) give the global cell coordinates for one cell and ``POP``
+  is the number of agents in that cell according to the overall U.S.
+  synthetic population file.
 
 Behavioral Parameters
 ---------------------
@@ -1664,106 +1763,65 @@ For each health-related behavior, FRED requires several parameters to
 describe how the behavior is modeled in the population. The current set
 of behavior includes:
 
--  stay\_home\_when\_sick
+-  stay_home_when_sick
+-  keep_child_home_when_sick
+-  accept_vaccine
+-  accept_vaccine_dose
+-  accept_vaccine_for_child
+-  accept_vaccine_dose_for_child
 
--  keep\_child\_home\_when\_sick
+ In the following, replace ``<behavior_name>`` with the name of the
+specific behavior::
 
--  accept\_vaccine
+  # enable the behavior
+  <behavior_name>_enabled = 1
 
--  accept\_vaccine\_dose
+  #### BEHAVIOR MARKET SEGMENTS
+  #
+  # BEHAVIOR STRATEGY 0 = ALWAYS REFUSE
+  # BEHAVIOR STRATEGY 1 = ALWAYS ACCEPT
+  # BEHAVIOR STRATEGY 2 = FLIP WEIGHTED COIN FOR EACH DECISION
+  # BEHAVIOR STRATEGY 3 = IMITATE PREVALENCE
+  # BEHAVIOR STRATEGY 4 = IMITATE CONSENSUS
+  # BEHAVIOR STRATEGY 5 = IMITATE COUNT
+  # BEHAVIOR STRATEGY 6 = HEALTH BELIEF MODEL
+  #
+  # Each distribution should add up to 100
+  <behavior_name>_strategy_distribution = 7 50 50 0 0 0 0 0
 
--  accept\_vaccine\_for\_child
+  ##### FLIP/IMITATE INITIAL PROBS AND DECISION FREQUENCY
+  <behavior_name>_min_prob = 0
+  <behavior_name>_max_prob = 1
+  <behavior_name>_frequency = 1
 
--  accept\_vaccine\_dose\_for\_child
+  #### IMITATION THRESHOLDS
+  <behavior_name>_imitate_consensus_threshold = 0
+  <behavior_name>_imitate_count_threshold = 0
 
- In the following, replace {<}behavior\_name{>} with the name of the
-specific behavior.
+  ##### WEIGHTS FOR IMITATION
+  ## ORDER IS HOUSEHOLD NEIGHBORHOOD SCHOOL WORK ALL
+  ## Weights can be any real number.
+  ##
+  <behavior_name>_imitate_prevalence_weights = 5 0 0 0 0 1
+  <behavior_name>_imitate_consensus_weights = 5 0 0 0 0 1
+  <behavior_name>_imitate_count_weights = 5 0 0 0 0 1
 
-# enable the behavior
+  #### IMITATE UPDATE RATES: HOW RAIDLY TO CONFORM TO CONSULT OTHERS
+  <behavior_name>_imitate_prevalence_update_rate = 0.1
+  <behavior_name>_imitate_consensus_update_rate = 0.1
+  <behavior_name>_imitate_count_update_rate = 0.1
+  <behavior_name>_susceptibility_threshold = 2 0 0
 
-{<}behavior\_name{>}\_enabled = 1
-
-#### BEHAVIOR MARKET SEGMENTS
-
-#
-
-# BEHAVIOR STRATEGY 0 = ALWAYS REFUSE
-
-# BEHAVIOR STRATEGY 1 = ALWAYS ACCEPT
-
-# BEHAVIOR STRATEGY 2 = FLIP WEIGHTED COIN FOR EACH DECISION
-
-# BEHAVIOR STRATEGY 3 = IMITATE PREVALENCE
-
-# BEHAVIOR STRATEGY 4 = IMITATE CONSENSUS
-
-# BEHAVIOR STRATEGY 5 = IMITATE COUNT
-
-# BEHAVIOR STRATEGY 6 = HEALTH BELIEF MODEL
-
-#
-
-# Each distribution should add up to 100
-
-{<}behavior\_name{>}\_strategy\_distribution = 7 50 50 0 0 0 0 0
-
-##### FLIP/IMITATE INITIAL PROBS AND DECISION FREQUENCY
-
-{<}behavior\_name{>}\_min\_prob = 0
-
-{<}behavior\_name{>}\_max\_prob = 1
-
-{<}behavior\_name{>}\_frequency = 1
-
-#### IMITATION THRESHOLDS
-
-{<}behavior\_name{>}\_imitate\_consensus\_threshold = 0
-
-{<}behavior\_name{>}\_imitate\_count\_threshold = 0
-
-##### WEIGHTS FOR IMITATION
-
-## ORDER IS HOUSEHOLD NEIGHBORHOOD SCHOOL WORK ALL
-
-## Weights can be any real number.
-
-##
-
-{<}behavior\_name{>}\_imitate\_prevalence\_weights = 5 0 0 0 0 1
-
-{<}behavior\_name{>}\_imitate\_consensus\_weights = 5 0 0 0 0 1
-
-{<}behavior\_name{>}\_imitate\_count\_weights = 5 0 0 0 0 1
-
-#### IMITATE UPDATE RATES: HOW RAIDLY TO CONFORM TO CONSULT OTHERS
-
-{<}behavior\_name{>}\_imitate\_prevalence\_update\_rate = 0.1
-
-{<}behavior\_name{>}\_imitate\_consensus\_update\_rate = 0.1
-
-{<}behavior\_name{>}\_imitate\_count\_update\_rate = 0.1
-
-{<}behavior\_name{>}\_susceptibility\_threshold = 2 0 0
-
-#### HEALTH BELIEF MODEL PARAMETERS (EXPERIMENTAL)
-
-{<}behavior\_name{>}\_severity\_threshold = 2 0 0
-
-{<}behavior\_name{>}\_benefits\_threshold = 2 0 0
-
-{<}behavior\_name{>}\_barriers\_threshold = 2 0 0
-
-{<}behavior\_name{>}\_memory\_decay = 2 0 0
-
-{<}behavior\_name{>}\_base\_odds\_ratio = 1
-
-{<}behavior\_name{>}\_susceptibility\_odds\_ratio = 1
-
-{<}behavior\_name{>}\_severity\_odds\_ratio = 1
-
-{<}behavior\_name{>}\_benefits\_odds\_ratio = 1
-
-{<}behavior\_name{>}\_barriers\_odds\_ratio = 1
+  #### HEALTH BELIEF MODEL PARAMETERS (EXPERIMENTAL)
+  <behavior_name>_severity_threshold = 2 0 0
+  <behavior_name>_benefits_threshold = 2 0 0
+  <behavior_name>_barriers_threshold = 2 0 0
+  <behavior_name>_memory_decay = 2 0 0
+  <behavior_name>_base_odds_ratio = 1
+  <behavior_name>_susceptibility_odds_ratio = 1
+  <behavior_name>_severity_odds_ratio = 1
+  <behavior_name>_benefits_odds_ratio = 1
+  <behavior_name>_barriers_odds_ratio = 1
 
 Running FRED
 ============
@@ -1771,7 +1829,7 @@ Running FRED
 The FRED program takes an optional command line argument, the name of
 the run-time parameters file:
 
-% FRED parameter\_file\_name
+% FRED parameter_file_name
 
 If the argument is omitted the name “params” is assumed.
 
@@ -1784,42 +1842,41 @@ Simulation Information Management System
 There are several options for running FRED. The FRED executable is
 copied to the $FRED/bin directory after each make, so you can run FRED
 as follows from any working directory, assuming that you have added
-$FRED\_HOME/bin to your path:
+$FRED_HOME/bin to your path:
 
-% FRED [paramfile [run\_number [directory]]]
+::
+
+  % FRED [paramfile [run_number [directory]]]
 
 The arguments are optional from right to left.  If all three arguments
 are given, FRED uses the given paramfile, runs a single replication with
-number {}run\_number{}, and writes output files to the given directory.
+number ``run_number``, and writes output files to the given directory.
 The output directory is relative to the current working directory.
 
 If the third argument is omitted, the output directory is taken from the
-runtime parameter {}outdir{}, with default value OUT.
+runtime parameter ``outdir``, with default value "OUT".
 
-If both the second and third arguments are missing, run\_number defaults
+If both the second and third arguments are missing, ``run_number`` defaults
 to 1.
 
-If all arguments are missing, paramfile defaults to {}params{}.
+If all arguments are missing, ``paramfile`` defaults to "params".
 
 Examples:
 
-# run FRED on file **params **and write output files to** ./OUT:**
+::
 
-% FRED
+  # run FRED on file params and write output files to ./OUT:
+  % FRED
 
-# run FRED on file **params.foo **and write output files to** ./OUT:**
+  # run FRED on file params.foo and write output files to ./OUT:
+  % FRED params.foo
 
-% FRED params.foo
+  # run FRED on file params with run number = 2
+  % FRED params 2
 
-# run FRED on file **params **with run number = 2
-
-% FRED params 2
-
-# run FRED on file params.foo
-
-# with run number = 2 writing output files to** ./OUT.foo:**
-
-% FRED params.foo 2 OUT.foo
+  # run FRED on file params.foo
+  # with run number = 2 writing output files to ./OUT.foo:
+  % FRED params.foo 2 OUT.foo
 
 Using the run_fred script for multiple realizations
 ---------------------------------------------------
@@ -1901,206 +1958,182 @@ process of running FRED jobs.  Commands exist for starting FRED jobs,
 reporting the status of those jobs, and organizing and reporting the
 results files. The bin directory contains the following commands:
 
-**fred\_job ****{**-{}- runs FRED and stores all associated data in a
-results database}
+====================================  ==================================================================
+Command                               Explanation
+====================================  ==================================================================
+``fred_job``                          runs FRED and stores all associated data in a results database
+``fred_AR``                           report on the the attack rate of a simulation
+``fred_clear_all_results``            flush the results database
+``fred_delete``                       delete a single job from the results database
+``fred_display_plot``                 display one or more curves
+``fred_jobs``                         show that status of all jobs in the results database
+``fred_plot``                         plot a curve
+``fred_plot_data``                    retrieve the data associated with a curve
+``fred_report``                       create statistical summaries of output variables
+``fred_status``                       report the status of a single job
+``fred_sweep``                        run a set of simulation changing the value of a variable
+``fred_tail``                         show the tail of the current output file
+``get_distr``                         show the distribution of infection locations
+``ch``                                change a parameter value in a params file
+``p``                                 print out the current params file
+====================================  ==================================================================
 
-**fred\_AR**** -{**- report on the the attack rate of a simulation}
-
-**fred\_clear\_all\_results**** -{**- flush the results database}
-
-**fred\_delete**** -{**- delete a single job from the results database}
-
-**fred\_display\_plot**** -{**- display one or more curves}
-
-**fred\_jobs**** -{**- show that status of all jobs in the results
-database}
-
-**fred\_plot**** -{**- plot a curve}
-
-**fred\_plot\_data**** -{**- retrieve the data associated with a curve}
-
-**fred\_report**** -{**- create statistical summaries of output
-variables}
-
-**fred\_status**** -{**- report the status of a single job}
-
-**fred\_sweep**** -{**- run a set of simulation changing the value of a
-variable}
-
-**fred\_tail ****{**-{}- show the tail of the current output file}
-
-**get\_distr**** -{**- show the distribution of infection locations}
-
-**ch****  {**-{}- change a parameter value in a params file}
-
-**p**** -{**- print out the current params file}
-
-To use these commands, set the environmental variable $FRED\_HOME to the
-location of your FRED distribution.  Then add $FRED\_HOME/bin to your
+To use these commands, set the environmental variable ``$FRED_HOME`` to the
+location of your FRED distribution.  Then add ``$FRED_HOME/bin`` to your
 path. The following are most likely to be the most useful commands when
 starting to use FRED.  
 
-**Command descriptions:**
+Command descriptions:
+~~~~~~~~~~~~~~~~~~~~~
 
-**% fred\_job [-p paramsfile {\\** -k key {\\} -c ]}
+``% fred_job [-p paramsfile | -k key | -c ]``
+.............................................
 
-Run FRED with the given parameter file in a working directory created in
-the $FRED\_HOME/RESULTS directory, and associate the working directory
-with the key.  If the {}-p option is omitted, the file {}params{} is
-assumed.  If the {}-k option is omitted, an internally created key is
-generated.  In either case, a {<}key,id{>} pair is printed on standard
-output, where {<}id{>} is the identifier of directory associated with
-the run (i.e. $FRED\_HOME/RESULTS/JOB/{<}id{>}).
+  Run FRED with the given parameter file in a working directory created in
+  the ``$FRED_HOME/RESULTS`` directory, and associate the working directory
+  with the key.  If the ``-p`` option is omitted, the file ``params`` is
+  assumed.  If the ``-k`` option is omitted, an internally created key is
+  generated.  In either case, a ``<key,id>`` pair is printed on standard
+  output, where ``<id>`` is the identifier of directory associated with
+  the run (*i.e.* ``$FRED_HOME/RESULTS/JOB/<id>``).
 
-**fred\_job **will terminate if the user supplied key has already been
-used. If the -c (cache) arguments is specified, then if the params file
-duplicates a previous params file, fred\_job associates the key with
-previous id, and does not re-run FRED.  The script sets the STATUS of
-the request (see fred\_status below).  When FRED finishes, fred\_job
-runs stats to collect data on the output variables in the outfile.
+  ``fred_job`` will terminate if the user supplied key has already been
+  used. If the ``-c`` (cache) arguments is specified, then if the params file
+  duplicates a previous params file, ``fred_job`` associates the key with
+  previous id, and does not re-run FRED.  The script sets the **STATUS** of
+  the request (see fred_status below).  When FRED finishes, ``fred_job``
+  runs stats to collect data on the output variables in the outfile.
 
-**% ch param\_name value [ paramfile ]**
+``% ch param_name value [ paramfile ]``
+.......................................
 
-Edit the given paramfile (or “params” if no file is given) and add a
-line
+  Edit the given paramfile (or “params” if no file is given) and add a
+  line::
 
-param\_name = value
+    param_name = value
 
-First checks to see if the given param\_name occurs in
-**params.default**.
+  First checks to see if the given param_name occurs in ``params.default``.
 
-**Note: ** If the parameter contained a shell meta-character, you should
-enclose the parameter name in quotes.
+  *Note*: If the parameter contained a shell meta-character, you should
+  enclose the parameter name in quotes.
 
-**% fred\_AR -k key**
+``% fred_AR -k key``
+....................
 
-Return mean and std dev of attack rate (AR) for run associated with key.
+  Return mean and std dev of attack rate (AR) for run associated with key.
 
-**% fred\_clear\_all\_results**
+``% fred_clear_all_results``
+............................
 
-Flush all the data from the results database.
+  Flush all the data from the results database.
 
-**% fred\_delete -k key**
+``% fred_delete -k key``
+........................
 
-** **Delete a single job from the results database. Example:
+  Delete a single job from the results database. Example::
 
-**% fred\_delete -k test1**
+    % fred_delete -k test1
+    KEY = test1  RUN = 15
+    You are about to delete /Users/gref/Desktop/FRED/RESULTS/RUN/15. This
+    cannot be undone.
+    Proceed? yes/no [no]
+    y
+    /Users/gref/Desktop/FRED/RESULTS/RUN/15 deleted
 
-**KEY = test1  RUN = 15**
+  The ``-f`` flag forces deletion::
 
-**You are about to delete /Users/gref/Desktop/FRED/RESULTS/RUN/15. This
-cannot be undone.**
+    % fred_delete -f -k test1
+    /Users/gref/Desktop/FRED/RESULTS/RUN/15 deleted
 
-**Proceed? yes/no [no]**
+``% fred_display_plot -k key -v [S|E|I|R|s|C|c|M|A|r]``
+.......................................................
 
-**y**
+  Run fred_plot and then opens the resulting plot file.
 
-**/Users/gref/Desktop/FRED/RESULTS/RUN/15 deleted**
+``% fred_jobs``
+...............
 
-The -f flag forces deletion:
+  Show that status of all jobs in the results database.For example::
 
-**% fred\_delete -f -k test1**
+    % fred_jobs**
+    KEY = baseline           JOB =   1     STATUS = FINISHED Thu Sep 30 12:20:04 2010
+    KEY = baseline_trans[0]=0.9      JOB =   2     STATUS = FINISHED Thu Sep 30 14:21:43 2010
+    KEY = baseline_trans[0]=1     JOB =   3     STATUS = FINISHED Thu Sep 30 14:52:40 2010
+    KEY = baseline_trans[0]=1.1      JOB =   4     STATUS = RUNNING-43 Thu Sep 30 15:07:35 2010
+    The dates shown for FINISHED jobs reflect the time that they finished.
 
-**/Users/gref/Desktop/FRED/RESULTS/RUN/15 deleted**
+``% fred_plot -k key -v [S|E|I|R|s|C|c|M|A|r]``
+...............................................
 
-**% fred\_display\_plot -k key -v
-[S{\\**E{\\}I{\\}R{\\}s{\\}C{\\}c{\\}M{\\}A{\\}r]}
+  Create a plot of one or more of the indicated measures for the indicated
+  run.  The plot file (type PNG) is stored in RESULTS under the run’s
+  REPORT directory.  Prints the full path to the plot file.
 
-Run fred\_plot and then opens the resulting plot file.
+``% fred_plot_data -k key -v [S|E|I|R|s|C|c|M|A|r]``
+....................................................
 
-**% fred\_jobs**
+  Print the data for plotting the graph to standard output, in space
+  delimited format:
 
-Show that status of all jobs in the results database.** For **example:
+  ``day mean stdev``
 
-**% fred\_jobs**
+``% fred_status -k key [-s secs]``
+..................................
 
-**KEY = baseline           JOB =   1     STATUS = FINISHED Thu Sep 30
-12:20:04 2010**
+  Print the status of the FRED run associated with the given key.  If {}-s
+  option is given, repeats status report every secs seconds.
 
-**KEY = baseline\_trans[0]=0.9      JOB =   2     STATUS = FINISHED Thu
-Sep 30 14:21:43 2010**
+``% fred_sweep key param lower_bound upper_bound increment``
+............................................................
 
-**KEY = baseline\_trans[0]=1     JOB =   3     STATUS = FINISHED Thu Sep
-30 14:52:40 2010**
+  Run a set of simulation changing the value of a parameter. All 5
+  arguments are required. The arguments are:
 
-**KEY = baseline\_trans[0]=1.1      JOB =   4     STATUS = RUNNING-43
-Thu Sep 30 15:07:35 2010**
+  ``key`` = a suffix for the parameter file that defines the scenario.
+  ``param`` = the name of the parameter you wish to sweep
+  ``lower_bound``, ``upper_bound``, ``increment`` are self-explanatory.
 
-The dates shown for FINISHED jobs reflect the time that they finished.
+  You must first create a file called ``params.<key>`` that sets up the
+  rest of the parameters.  For each value of the named parameter, the
+  script creates a params file called
+  ``params.<key>_<parameter>=<value>`` and executes the command:
 
-**% fred\_plot -k key -v
-[S{\\**E{\\}I{\\}R{\\}s{\\}C{\\}c{\\}M{\\}A{\\}r]}
+    ``% fred_job -p params.<key>_<parameter>=<value> -k <key>_<parameter>=<value>``
 
-Create a plot of one or more of the indicated measures for the indicated
-run.  The plot file (type PNG) is stored in RESULTS under the run’s
-REPORT directory.  Prints the full path to the plot file.
+  Each ``fred_job`` command is executed in the foreground, so the jobs run
+  one at a time.
 
-**% fred\_plot\_data -k key -v
-[S{\\**E{\\}I{\\}R{\\}s{\\}C{\\}c{\\}M{\\}A{\\}r]}
+  *Note*: If the parameter contained a shell meta-character, you should
+  enclose the parameter name in quotes. Example:
 
-Print the data for plotting the graph to standard output, in space
-delimited format:
+    ``% fred_sweep baseline ’trans[0]’ 0.9 1.1 0.1``
 
-day mean stdev
+  has the effect of making three copies of the file ``params.baseline``,
+  changing the value of ``trans[0]`` in each one and executes
 
-**% fred\_status -k key [-s secs]**
+    ``% fred_job -p params.baseline_trans[0]=0.9 -k baseline-trans[0]-0.9``
+    ``% fred_job -p params.baseline_trans[0]=1 -k baseline-trans[0]-1``
+    ``% fred_job -p params.baseline_trans[0]=1.1 -k baseline-trans[0]-1.1``
 
-Print the status of the FRED run associated with the given key.  If {}-s
-option is given, repeats status report every secs seconds.
+``% fred_tail -k key``
+......................
 
-**% fred\_sweep key param lower\_bound upper\_bound increment**
+  Run the tail -f command on the current output file.
 
-Run a set of simulation changing the value of a parameter. All 5
-arguments are required. The arguments are:
+``% get_distr``
+...............
 
-key = a suffix for the parameter file that defines the scenario.
+  Show the distribution of infection locations.
 
-param = the name of the parameter you wish to sweep
+``% p``
+.......
 
-lower\_bound, upper\_bound, increment are self-explanatory.
+  Print out the current params file.
 
-You must first create a file called params.{<}key{>} that sets up the
-rest of the parameters.  For each value of the named parameter, the
-script creates a params file called
-params.{<}key{>}\_{<}parameter{>}={<}value{>} and executes the command:
+``% rt``
+........
 
-**% fred\_job -p params.{<**key{>}\_{<}parameter{>}={<}value{>} -k
-{<}key{>}\_{<}parameter{>}={<}value{>}}
-
-Each fred\_job command is executed in the foreground, so the jobs run
-one at a time.
-
-**Note: ** If the parameter contained a shell meta-character, you should
-enclose the parameter name in quotes. Example:
-
-% fred\_sweep baseline ’trans[0]’ 0.9 1.1 0.1
-
-has the effect of making three copies of the file params.baseline,
-changing the value of trans[0] in each one and executes
-
-**% fred\_job -p params.baseline\_trans[0]=0.9 -k
-baseline-trans[0]-0.9**
-
-**% fred\_job -p params.baseline\_trans[0]=1 -k baseline-trans[0]-1**
-
-**% fred\_job -p params.baseline\_trans[0]=1.1 -k
-baseline-trans[0]-1.1**
-
-**% fred\_tail -k key**
-
-Run the tail -f command on the current output file.
-
-**% get\_distr**
-
-Show the distribution of infection locations.
-
-**% p**
-
-Print out the current params file.
-
-**% rt**
-
-Run regression test.
+  Run regression test.
 
 Notes for Developers
 ====================
@@ -2131,66 +2164,65 @@ Regression Tests
 ----------------
 
 FRED includes a number of regression tests that can be run after editing
-the code to help catch unintended changes.  The $FRED\_HOME/bin
+the code to help catch unintended changes.  The $FRED_HOME/bin
 directory contains some scripts to support testing FRED:
 
-**make\_rt directory\_name    ****{**-{}- make files for regression
-test}
+============================      ==============================
+``make_rt directory_name``        make files for regression test
+``rt [-p] [directory_name]``      run regression test
+============================      ==============================
 
-**rt**** [-p] [directory\_name]    {**-{}- run regression test}
-
-The test directory tree is located at **$FRED\_HOME/tests.** The tests
-for the FRED base code are located in subdirectory **base.  **There are
+The test directory tree is located at ``$FRED_HOME/tests``. The tests
+for the FRED base code are located in subdirectory ``base``.  There are
 a few other test directories, and more will be added over time.  Each
-test directory contains at least two files: **params.test** and
-**compare.** The **params.test** file contains the run-time parameters
-that test the given feature.  The FRED script **rt** runs a few FRED
-simulations in the test directory, using the **params.test** file.  The
-output is directed to subdirectory **OUT.TEST.  **The **rt** script
-compares the output files in **OUT.TEST** with the files in subdirectory
-**OUT.RT.  **The specific comparisons are up to the developer, and are
-found in the executable file **compare**, which is run by the **rt**
+test directory contains at least two files: ``params.test`` and
+``compare``. The ``params.test`` file contains the run-time parameters
+that test the given feature.  The FRED script ``rt`` runs a few FRED
+simulations in the test directory, using the ``params.test`` file.  The
+output is directed to subdirectory ``OUT.TEST``.  The ``rt`` script
+compares the output files in ``OUT.TEST`` with the files in subdirectory
+``OUT.RT``.  The specific comparisons are up to the developer, and are
+found in the executable file ``compare``, which is run by the ``rt``
 script when the simulations are complete.  If no errors are generated by
-**compare**, then FRED can be said to have passed this particular
+``compare``, then FRED can be said to have passed this particular
 regression test.
 
-The **rt** script takes two optional arguments:
+The ``rt`` script takes two optional arguments:
 
-% rt –p test\_name
+  ``% rt –p test_name``
 
-**test\_name** should be the name of one of the directories in
-**$FRED\_HOME/tests**.  If this argument is omitted, test\_name defaults
-to “base”.
+  ``test_name`` should be the name of one of the directories in
+  ``$FRED_HOME/tests``.  If this argument is omitted, ``test_name`` defaults
+  to “base”.
 
-If the –p argument is given, **rt** will run the test simulations in
-parallel.  If –p is given in must be the first argument.
+  If the ``–p`` argument is given, ``rt`` will run the test simulations in
+  parallel.  If ``–p`` is given in must be the first argument.
 
-The **rt** command can be run from any directory.  It will temporarily
-change to the test directory to run FRED, and then return to the
-original directory.
+  The ``rt`` command can be run from any directory.  It will temporarily
+  change to the test directory to run FRED, and then return to the
+  original directory.
 
 To create a new regression test, do the following:
 
-1. Create a new directory in $FRED\_HOME/tests:
+#. Create a new directory in $FRED_HOME/tests:
 
-% mkdir $FRED\_HOME/tests/foo
+  ``% mkdir $FRED_HOME/tests/foo``
 
-2. Create a params file in that directory.
+#. Create a params file in that directory.
 
-3. Create an executable file called **compare** that implements whatever
+#. Create an executable file called ``compare`` that implements whatever
 tests you wish to make on the resulting FRED output files in
-subdirectory OUT.TEST.
+subdirectory ``OUT.TEST``.
 
-4. Run the script **make\_rt** to create the target output file.  These
-will be stored in subdirectory **OUT.RT.**
+#. Run the script ``make_rt`` to create the target output file.  These
+will be stored in subdirectory ``OUT.RT``.
 
-% make\_rt foo
+  ``% make_rt foo``
 
-Test your regression test by running:
+Test your regression test by running::
 
-% rt foo
-
-% rt –p foo
+  ``rt foo``
+  ``rt –p foo``
 
 References
 ==========
