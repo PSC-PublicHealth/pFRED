@@ -1821,75 +1821,82 @@ Examples:
 
 % FRED params.foo 2 OUT.foo
 
-Using the run\_fred script for multiple realizations
-----------------------------------------------------
+Using the run_fred script for multiple realizations
+---------------------------------------------------
 
-The **run\_fred **script is provided to perform multiple realizations
+The ``run_fred`` script is provided to perform multiple realizations
 (runs) in a local directory.  Each run uses a distinct seed for the
 random number generator, so the results will vary from run to run. The
 format is:
 
-% run\_fred -p paramfile -d directory -s start\_run -n end\_run
+::
+
+  % run_fred -p paramfile -d directory -s start_run -n end_run
 
 The order of the arguments doesn’t matter, and all arguments have
 default values:
 
-{}-p {}params{}
+::
 
-{}-d {}{}
-
-{}-s 1
-
-{}-n 1
+  -p params
+  -d ""
+  -s 1
+  -n 1
 
 For example, the command:
 
-% run\_fred -p params -d FOO -s 1 -n 3
+::
+
+  % run_fred -p params -d FOO -s 1 -n 3
 
 translates to a set of commands:
 
-% FRED params 1 FOO {>} FOO/LOG1
+::
 
-% FRED params 2 FOO {>} FOO/LOG2
+  % FRED params 1 FOO > FOO/LOG1
+  % FRED params 2 FOO > FOO/LOG2
+  % FRED params 3 FOO > FOO/LOG3
 
-% FRED params 3 FOO {>} FOO/LOG3
+after first creating directory ``FOO`` if necessary. The ``run_fred`` script
+also copies the params file into the output directory, for future reference.
 
-after first creating directory FOO if necessary. The run\_fred script
-also copies the params file into the output directory, for future
-reference.
-
-If -d is not specified on the command line, FRED writes output files to
-the output directory specified in the **outdir** runtime parameters,
-which default to **OUT**.  For example, if params does not specify an
+If ``-d`` is not specified on the command line, FRED writes output files to
+the output directory specified in the ``outdir`` runtime parameters,
+which default to ``OUT``.  For example, if params does not specify an
 output directory, then
 
-% run\_fred -n 3
+::
+
+  % run_fred -n 3
 
 translates to:
 
-% FRED params 1 OUT {>} OUT/LOG1
+::
 
-% FRED params 2 OUT {>} OUT/LOG2
-
-% FRED params 3 OUT {>} OUT/LOG3
+  % FRED params 1 OUT > OUT/LOG1
+  % FRED params 2 OUT > OUT/LOG2
+  % FRED params 3 OUT > OUT/LOG3
 
 The random seed for each run is set based on the both the seed value in
 the params file and on the run number, so a collection of FRED runs can
 be executed in any order with the same results.  For example, you should
 get the same results in the output directory from
 
-% run\_fred -n 20
+::
+
+  % run_fred -n 20
 
 as from:
 
-% run\_fred -n 10
+::
 
-% run\_fred -s 11 -n 20
+  % run_fred -n 10
+  % run_fred -s 11 -n 20
 
 FRED runtime management scripts
 -------------------------------
 
-The $FRED\_HOME/bin directory includes several commands to manage the
+The ``$FRED_HOME/bin`` directory includes several commands to manage the
 process of running FRED jobs.  Commands exist for starting FRED jobs,
 reporting the status of those jobs, and organizing and reporting the
 results files. The bin directory contains the following commands:
