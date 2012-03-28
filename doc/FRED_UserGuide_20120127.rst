@@ -2296,7 +2296,7 @@ purposes.
 including copyright rights in the Software and that by entering into
 this license, you do not acquire any such rights in the Software.
 
-3. You acknowledge and agree that THE SOFTWARE IS PROVIDED {}AS IS{},
+3. You acknowledge and agree that THE SOFTWARE IS PROVIDED AS IS,
 WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
 LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
@@ -2309,7 +2309,7 @@ SOFTWARE.
 published in the public literature, then you agree to acknowledge its
 use of the Software in the following citation:
 
-Copyright {} 2011, University of Pittsburgh Graduate School of Public
+Copyright 2011, University of Pittsburgh Graduate School of Public
 Health, John Grefenstette, Shawn Brown, Roni Rosenfield, Alona Fyshe,
 David Galloway, Nathan Stone, Bruce Lee, Phil Cooley, William Wheaton,
 Thomas Abraham, Jay DePasse, Anuroop Sriram, and Donald Burke.
