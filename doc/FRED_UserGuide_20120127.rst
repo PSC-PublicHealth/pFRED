@@ -480,8 +480,8 @@ office, and, with a separate rate, with all workers in the same
 workplace.
 
 For further details, see files: ``Place_List.cc``, ``Place.cc``,
-``Household.cc``, ``Neighborhood.cc``, ``School.cc``, ``Classroom.cc``, ``Workplace.cc``,
-``Office.cc``.
+``Household.cc``, ``Neighborhood.cc``, ``School.cc``, ``Classroom.cc``,
+``Workplace.cc``, ``Office.cc``.
 
 Disease Model
 =============
@@ -1762,12 +1762,12 @@ For each health-related behavior, FRED requires several parameters to
 describe how the behavior is modeled in the population. The current set
 of behavior includes:
 
--  stay_home_when_sick
--  keep_child_home_when_sick
--  accept_vaccine
--  accept_vaccine_dose
--  accept_vaccine_for_child
--  accept_vaccine_dose_for_child
+-  ``stay_home_when_sick``
+-  ``keep_child_home_when_sick``
+-  ``accept_vaccine``
+-  ``accept_vaccine_dose``
+-  ``accept_vaccine_for_child``
+-  ``accept_vaccine_dose_for_child``
 
 In the following, replace ``<behavior_name>`` with the name of the
 specific behavior::
