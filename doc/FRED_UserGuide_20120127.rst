@@ -248,7 +248,7 @@ other agents in each favorite place that is defined.
 Neighborhoods are defined on a grid with 1 km square cells.  The agent’s
 home neighborhood is the cell in which its household is located.
 
-  However, an agent may visit another neighborhood in the community
+However, an agent may visit another neighborhood in the community
 during a given day.  The decision about where to spend the neighborhood
 activity period is made independently each day, with the highest
 probability to visit the home neighborhood, and a lesser probability to
@@ -262,11 +262,11 @@ only become infected at an infectious location, so interactions among
 agents at non-infectious locations need not be simulated.
 
 Schools are closed on weekends and during schedule summer holidays.
- Schools may also be closed due to school closure policies.  Students do
+Schools may also be closed due to school closure policies.  Students do
 not visit their school when the school is closed.
 
 Similarly, most workers do not visit their workplaces on weekends.
- However, some workers are designated as weekend workers, and they
+However, some workers are designated as weekend workers, and they
 continue to visit workplaces on weekends.
 
 To reflect weekend schedules of schools and workplaces, the number of
@@ -314,9 +314,9 @@ Adult Decision-makers for Children
 
 The synthetic population used by FRED was developed by RTI,
 International using a process described in (Wheaton et al, 2009).
- Household level Public Use Microdata Sample (PUMS) includes the ages,
+Household level Public Use Microdata Sample (PUMS) includes the ages,
 sexes, and relationships of all individuals within a household.
- Households from the PUMS are selected with replacement to make up the
+Households from the PUMS are selected with replacement to make up the
 synthetic population, selecting households so that the census counts and
 other statistical distributions are maintained at the census block
 level.  As a result of this process, the FRED synthetic population
@@ -459,7 +459,7 @@ beyond the limits of the modeled region.)
 
 Neighborhoods are defined on a grid with 1 km square cells.  The agent’s
 home neighborhood is the cell in which its household is located.
-  However, an agent may visit another neighborhood in the community
+However, an agent may visit another neighborhood in the community
 during a given day. (See Agent Model section.)
 
 Classrooms are small mixing groups with a given school.  Classrooms are
@@ -727,14 +727,14 @@ one cell to another.  This file covers the entire U.S.  The trip file
 can contain samples based on data obtained from air travel databases or
 from any other source considered appropriate.  The current default is a
 sample of 5 million cell-to-cell trips based on a gravity model of
-travel, using the formula:
+travel, using the formula::
 
-{ Prob_travel(i,j) = Pop(i) \* Pop(j) / (K \* Distance(i,j)) }
+  Prob_travel(i,j) = Pop(i) * Pop(j) / (K * Distance(i,j))
 
-where Pop(i) is the total population residing in cell i (derived from
-the entire U.S. synthetic population), Distance(i,j) is the distance in
-kilometers between the center of cells i and j, and K is a normalization
-factor so that Prob_travel(i,j) sums to 1.0.  Given the pdf defined by
+where ``Pop(i)`` is the total population residing in cell ``i`` (derived from
+the entire U.S. synthetic population), ``Distance(i,j)`` is the distance in
+kilometers between the center of cells ``i`` and ``j``, and ``K`` is a normalization
+factor so that ``Prob_travel(i,j)`` sums to 1.0.  Given the pdf defined by
 the above formula, we select 5 million trips (with replacement) and
 store these in the trip list file.
 
@@ -746,13 +746,13 @@ number of overnight trips involving agents in the modeled regions
 remains invariant, regardless of the size of the model region.
 
 The cell population file is used to set the probability of initiating a
-trip between two cells.  If a trip between cells i and j is selected, it
-is only initiated with probability dens(i)\*dens(j), where dens(i) is
-the fraction of the total population in cell i that actually occurs in
+trip between two cells.  If a trip between cells ``i`` and ``j`` is selected, it
+is only initiated with probability ``dens(i) * dens(j)``, where ``dens(i)`` is
+the fraction of the total population in cell ``i`` that actually occurs in
 the synthetic population for the current model region.  For example, if
-cell i is on the border of the model region and happens to contains only
+cell ``i`` is on the border of the model region and happens to contains only
 50% of the entire cell population according to the current model
-population, then the probability of any trip to or from cell i is
+population, then the probability of any trip to or from cell ``i`` is
 reduced by 50%.
 
 Run-time Parameters
@@ -1059,7 +1059,7 @@ Table 2: Output Parameters
 Output file format
 ------------------
 
-The outfile (called out<n>.txt for run n) contains one line for each
+The outfile (called ``out<n>.txt`` for run *n*) contains one line for each
 simulation day of the run.  The format of the file is:
 
 =================   =============================================================================
@@ -1586,8 +1586,7 @@ vaccine_dose_priority:
 
     #. Place people getting subsequent dose at the beginning of the queue
 
-    #. Mix in people getting subsequent dose with other priority
-    vaccinations randomly
+    #. Mix in people getting subsequent dose with other priority vaccinations randomly
 
     #. Place people getting subsequent dose at the end of the queue
 
@@ -1770,7 +1769,7 @@ of behavior includes:
 -  accept_vaccine_for_child
 -  accept_vaccine_dose_for_child
 
- In the following, replace ``<behavior_name>`` with the name of the
+In the following, replace ``<behavior_name>`` with the name of the
 specific behavior::
 
   # enable the behavior
@@ -1827,9 +1826,9 @@ Running FRED
 ============
 
 The FRED program takes an optional command line argument, the name of
-the run-time parameters file:
+the run-time parameters file::
 
-% FRED parameter_file_name
+  % FRED parameter_file_name
 
 If the argument is omitted the name “params” is assumed.
 
@@ -1840,9 +1839,9 @@ Simulation Information Management System
 ========================================
 
 There are several options for running FRED. The FRED executable is
-copied to the $FRED/bin directory after each make, so you can run FRED
+copied to the ``$FRED/bin directory`` after each make, so you can run FRED
 as follows from any working directory, assuming that you have added
-$FRED_HOME/bin to your path:
+``$FRED_HOME/bin`` to your path:
 
 ::
 
@@ -2153,9 +2152,8 @@ Coding Standards
 
 The FRED team believes that coding standards in general make for
 cleaner, more readable code, and may help avoid certain pitfalls.  We
-have tried to develop FRED according to the Google code standards:
-
-http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml
+have tried to develop FRED according to the
+`Google code standards <http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml>`_.
 
 No claim is made that we have achieved complete success, but we have
 found the attempt helpful.
@@ -2164,7 +2162,7 @@ Regression Tests
 ----------------
 
 FRED includes a number of regression tests that can be run after editing
-the code to help catch unintended changes.  The $FRED_HOME/bin
+the code to help catch unintended changes.  The ``$FRED_HOME/bin``
 directory contains some scripts to support testing FRED:
 
 ============================      ==============================
@@ -2238,9 +2236,9 @@ cost?: a computational simulation of Pennsylvania. BMC Public Health.
 2011 May 20;11:353. PubMed PMID: 21599920; PubMed Central PMCID:
 PMC3119163.
 
-Cajka, JC, Cooley, PC, Wheaton, WD. Attribute Assignment to a Synthetic
+`Cajka, JC, Cooley, PC, Wheaton, WD. Attribute Assignment to a Synthetic
 Population in Support of Agent-Based Disease Modeling RTI Press.
-2010;` <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`http <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`:// <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`www <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`. <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`rti <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`. <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`org <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`/ <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`pubs <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`/ <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`mr <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`{ <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_-0019-1009-}`cajka <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`. <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_`pdf <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_` <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_ 
+2010; <http://www.rti.org/pubs/mr-0019-1009-cajka.pdf>`_
 
 Cooley P, Brown S, Cajka J, Chasteen B, Ganapathi L, Grefenstette J,
 Hollingsworth CR, Lee BY, Levine B, Wheaton WD, Wagener DK. The role of
@@ -2273,12 +2271,11 @@ DS. The benefits to all of ensuring equal and timely access to influenza
 vaccines in poor communities. Health Aff (Millwood). 2011
 Jun;30(6):1141-50. PubMed PMID: 21653968.
 
-Wheaton, W.D., Cajka, J.C., Chasteen, B.M., Wagener, D.K., Cooley, P.C.,
+`Wheaton, W.D., Cajka, J.C., Chasteen, B.M., Wagener, D.K., Cooley, P.C.,
 Ganapathi, L., Roberts, D.J., Allpress, J.L. (May 2009). Synthesized
 population databases: A US geospatial database for agent-based models:
 RTI Press Publication No. MR-0010-0905. Research Triangle Park, NC: RTI
-Press.
-`http <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`:// <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`www <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`. <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`rti <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`. <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`org <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`/ <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`pubs <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`/ <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`mr <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`{ <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_-0010-0905-}`wheaton <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`. <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_`pdf <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_
+Press. <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_
 
 Appendix: FRED License Agreement
 ================================
