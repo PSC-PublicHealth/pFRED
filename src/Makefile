@@ -6,8 +6,9 @@ CPP = g++
 # use this for development:
 # CPPFLAGS = -g -m64 -pg -O3 -Wall
 
-# use this for profiling
+# use one of these for profiling
 # CPPFLAGS = -g -m64 -O3 # -DNDEBUG
+# CPPFLAGS = -pg -m64 -O2 -DNDEBUG -fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls -fno-omit-frame-pointer
 
 # Use this for production:
 CPPFLAGS = -g -m64 -O3 -DNDEBUG #-fast #-Wall

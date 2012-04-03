@@ -136,7 +136,9 @@ void Population::delete_person(Person * person) {
   assert((unsigned) pop_size == pop.size());
   person->terminate();
   Utils::fred_verbose(1,"DELETED PERSON: %d\n", person->get_id());
-  Travel::terminate_person(person);
+  if ( Global::Enable_Travel ) {
+    Travel::terminate_person(person);
+  }
   delete person;
   // graveyard.push_back(person);
 }
