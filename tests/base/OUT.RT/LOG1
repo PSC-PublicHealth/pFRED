@@ -1,4 +1,4 @@
-FRED started Wed Apr 11 12:26:15 2012
+FRED started Wed Apr 11 16:31:31 2012
 param file = params.test
 fred_open_file: opening file /Users/gref/FRED/input_files/params.default for reading
 fred_open_file: opening file params.test for reading
@@ -49,7 +49,7 @@ PARAMS: mutation_prob = 1 0.0
 PARAMS: output_population = 0
 seed = 123456
 
-FRED run 1 started Wed Apr 11 12:26:15 2012
+FRED run 1 started Wed Apr 11 16:31:31 2012
 read places entered
 PARAMS: locfile = $FRED_HOME/region/loc_Alleg.txt
 fred_open_file: opening file /Users/gref/FRED/region/loc_Alleg.txt for reading
@@ -148,7 +148,7 @@ PARAMS: flu_days = 0.000000
 finished reading population, pop_size = 1242755
 number of residually immune people = 0
 population setup finished
-Pop.setup took 9 seconds
+Pop.setup took 10 seconds
 setup classrooms entered
 PARAMS: classroom_contacts[0] = -1.000000
 PARAMS: classroom_prob[0] = 16
@@ -163,14 +163,14 @@ assign classrooms entered
 assign classrooms finished
 assign offices entered
 assign offices finished
-assign classrooms and offices took 1 seconds
+assign classrooms and offices took 0 seconds
 prepare places entered
 prepare places finished
 place prep took 1 seconds
 FRED initialization took 0 seconds
-FRED initialization complete Wed Apr 11 12:26:28 2012
+FRED initialization complete Wed Apr 11 16:31:44 2012
 day 0 update places took 0 seconds
-day 0 update population took 0 seconds
+day 0 update population took 1 seconds
 Number of infectious places = 0
 Number of infectious households = 0
 Number of infectious neighborhoods = 0
@@ -181,37 +181,11 @@ Number of infectious offices = 0
 day 0 update epidemics took 0 seconds
 Day   0  Str 0  S 1242655  E     100  I       0  I_s       0  R       0  M       0  C     100  N 1242755  AR  0.01  CI       0 RR 0.00 NR 0  CAR  0.00  Thu 2009-01-01 Year 2008 Week 53
 day 0 report population took 0 seconds
-day 0 finished Wed Apr 11 12:26:28 2012
-day 0 took 0 seconds
+day 0 finished Wed Apr 11 16:31:45 2012
+day 0 took 1 seconds
 day 1 update places took 0 seconds
-day 1 update population took 1 seconds
+day 1 update population took 0 seconds
 DAY 0 ABSENTEEISM: work absent 0 present 0 0.00  school absent 0 present 0 0.00
-agent 100641 staying home on day 1
-agent 189055 staying home on day 1
-agent 189391 staying home on day 1
-agent 224047 staying home on day 1
-agent 287394 staying home on day 1
-agent 304416 staying home on day 1
-agent 380895 staying home on day 1
-agent 408014 staying home on day 1
-agent 434466 staying home on day 1
-agent 447718 staying home on day 1
-agent 472035 staying home on day 1
-agent 498695 staying home on day 1
-agent 502362 staying home on day 1
-agent 538469 staying home on day 1
-agent 546666 staying home on day 1
-agent 619877 staying home on day 1
-agent 621811 staying home on day 1
-agent 790413 staying home on day 1
-agent 864795 staying home on day 1
-agent 919420 staying home on day 1
-agent 1050607 staying home on day 1
-agent 1084063 staying home on day 1
-agent 1092144 staying home on day 1
-agent 1145142 staying home on day 1
-agent 1163803 staying home on day 1
-agent 1241714 staying home on day 1
 Number of infectious places = 233
 Number of infectious households = 87
 Number of infectious neighborhoods = 57
@@ -219,57 +193,14 @@ Number of infectious schools = 10
 Number of infectious classrooms = 10
 Number of infectious workplaces = 34
 Number of infectious offices = 35
-day 1 update epidemics took 0 seconds
+day 1 update epidemics took 1 seconds
 Day   1  Str 0  S 1242608  E      60  I      87  I_s      55  R       0  M       0  C      47  N 1242755  AR  0.01  CI      55 RR 0.00 NR 0  CAR  0.00  Fri 2009-01-02 Year 2008 Week 53
 day 1 report population took 0 seconds
-day 1 finished Wed Apr 11 12:26:29 2012
+day 1 finished Wed Apr 11 16:31:46 2012
 day 1 took 1 seconds
 day 2 update places took 0 seconds
 day 2 update population took 0 seconds
 DAY 1 ABSENTEEISM: work absent 7 present 17 0.28  school absent 10 present 4 0.67
-agent 11425 staying home on day 2
-agent 98783 staying home on day 2
-agent 100641 staying home on day 2
-agent 118742 staying home on day 2
-agent 155045 staying home on day 2
-agent 189055 staying home on day 2
-agent 189391 staying home on day 2
-agent 219203 staying home on day 2
-agent 224047 staying home on day 2
-agent 287394 staying home on day 2
-agent 304416 staying home on day 2
-agent 380895 staying home on day 2
-agent 408014 staying home on day 2
-agent 413842 staying home on day 2
-agent 434466 staying home on day 2
-agent 447718 staying home on day 2
-agent 472035 staying home on day 2
-agent 498695 staying home on day 2
-agent 502362 staying home on day 2
-agent 538469 staying home on day 2
-agent 546666 staying home on day 2
-agent 565839 staying home on day 2
-agent 572822 staying home on day 2
-agent 605868 staying home on day 2
-agent 619877 staying home on day 2
-agent 621811 staying home on day 2
-agent 643612 staying home on day 2
-agent 653900 staying home on day 2
-agent 708847 staying home on day 2
-agent 749090 staying home on day 2
-agent 783963 staying home on day 2
-agent 790413 staying home on day 2
-agent 864795 staying home on day 2
-agent 910748 staying home on day 2
-agent 919420 staying home on day 2
-agent 990688 staying home on day 2
-agent 1050607 staying home on day 2
-agent 1084063 staying home on day 2
-agent 1092144 staying home on day 2
-agent 1145142 staying home on day 2
-agent 1163803 staying home on day 2
-agent 1181378 staying home on day 2
-agent 1241714 staying home on day 2
 Number of infectious places = 231
 Number of infectious households = 129
 Number of infectious neighborhoods = 86
@@ -277,62 +208,14 @@ Number of infectious schools = 0
 Number of infectious classrooms = 0
 Number of infectious workplaces = 8
 Number of infectious offices = 8
-day 2 update epidemics took 1 seconds
+day 2 update epidemics took 0 seconds
 Day   2  Str 0  S 1242581  E      36  I     138  I_s      83  R       0  M       0  C      27  N 1242755  AR  0.01  CI      28 RR 0.00 NR 0  CAR  0.01  Sat 2009-01-03 Year 2008 Week 53
 day 2 report population took 0 seconds
-day 2 finished Wed Apr 11 12:26:30 2012
-day 2 took 1 seconds
+day 2 finished Wed Apr 11 16:31:46 2012
+day 2 took 0 seconds
 day 3 update places took 0 seconds
 day 3 update population took 0 seconds
 DAY 2 ABSENTEEISM: work absent 5 present 1 0.71  school absent 0 present 0 0.00
-agent 11425 staying home on day 3
-agent 98783 staying home on day 3
-agent 100641 staying home on day 3
-agent 118742 staying home on day 3
-agent 155045 staying home on day 3
-agent 189055 staying home on day 3
-agent 189391 staying home on day 3
-agent 219203 staying home on day 3
-agent 224047 staying home on day 3
-agent 287394 staying home on day 3
-agent 304416 staying home on day 3
-agent 309052 staying home on day 3
-agent 380895 staying home on day 3
-agent 405847 staying home on day 3
-agent 408014 staying home on day 3
-agent 413842 staying home on day 3
-agent 434466 staying home on day 3
-agent 438289 staying home on day 3
-agent 447718 staying home on day 3
-agent 472035 staying home on day 3
-agent 498695 staying home on day 3
-agent 502362 staying home on day 3
-agent 538469 staying home on day 3
-agent 546666 staying home on day 3
-agent 565839 staying home on day 3
-agent 572822 staying home on day 3
-agent 605868 staying home on day 3
-agent 619877 staying home on day 3
-agent 621811 staying home on day 3
-agent 643612 staying home on day 3
-agent 653900 staying home on day 3
-agent 708847 staying home on day 3
-agent 749090 staying home on day 3
-agent 783963 staying home on day 3
-agent 790413 staying home on day 3
-agent 814178 staying home on day 3
-agent 864795 staying home on day 3
-agent 910748 staying home on day 3
-agent 919420 staying home on day 3
-agent 990688 staying home on day 3
-agent 1050607 staying home on day 3
-agent 1050648 staying home on day 3
-agent 1084063 staying home on day 3
-agent 1092144 staying home on day 3
-agent 1145142 staying home on day 3
-agent 1163803 staying home on day 3
-agent 1181378 staying home on day 3
-agent 1241714 staying home on day 3
 Number of infectious places = 282
 Number of infectious households = 153
 Number of infectious neighborhoods = 107
@@ -340,66 +223,14 @@ Number of infectious schools = 0
 Number of infectious classrooms = 0
 Number of infectious workplaces = 11
 Number of infectious offices = 11
-day 3 update epidemics took 0 seconds
+day 3 update epidemics took 1 seconds
 Day   3  Str 0  S 1242542  E      46  I     167  I_s      98  R       0  M       0  C      39  N 1242755  AR  0.02  CI      15 RR 0.00 NR 0  CAR  0.01  Sun 2009-01-04 Year 2009 Week 1
 day 3 report population took 0 seconds
-day 3 finished Wed Apr 11 12:26:30 2012
-day 3 took 0 seconds
+day 3 finished Wed Apr 11 16:31:47 2012
+day 3 took 1 seconds
 day 4 update places took 0 seconds
 day 4 update population took 0 seconds
 DAY 3 ABSENTEEISM: work absent 5 present 3 0.56  school absent 0 present 0 0.00
-agent 11425 staying home on day 4
-agent 84893 staying home on day 4
-agent 98783 staying home on day 4
-agent 100641 staying home on day 4
-agent 118742 staying home on day 4
-agent 155045 staying home on day 4
-agent 189391 staying home on day 4
-agent 219184 staying home on day 4
-agent 219203 staying home on day 4
-agent 309052 staying home on day 4
-agent 380895 staying home on day 4
-agent 405847 staying home on day 4
-agent 408014 staying home on day 4
-agent 413842 staying home on day 4
-agent 434466 staying home on day 4
-agent 438289 staying home on day 4
-agent 444481 staying home on day 4
-agent 447718 staying home on day 4
-agent 472035 staying home on day 4
-agent 498695 staying home on day 4
-agent 507731 staying home on day 4
-agent 538469 staying home on day 4
-agent 546635 staying home on day 4
-agent 546666 staying home on day 4
-agent 565839 staying home on day 4
-agent 572822 staying home on day 4
-agent 605868 staying home on day 4
-agent 619877 staying home on day 4
-agent 621811 staying home on day 4
-agent 643612 staying home on day 4
-agent 653900 staying home on day 4
-agent 708847 staying home on day 4
-agent 749090 staying home on day 4
-agent 753854 staying home on day 4
-agent 774781 staying home on day 4
-agent 783963 staying home on day 4
-agent 790413 staying home on day 4
-agent 814178 staying home on day 4
-agent 843991 staying home on day 4
-agent 864795 staying home on day 4
-agent 873384 staying home on day 4
-agent 910748 staying home on day 4
-agent 990688 staying home on day 4
-agent 1050607 staying home on day 4
-agent 1050648 staying home on day 4
-agent 1084054 staying home on day 4
-agent 1084063 staying home on day 4
-agent 1092144 staying home on day 4
-agent 1163803 staying home on day 4
-agent 1181378 staying home on day 4
-agent 1230086 staying home on day 4
-agent 1241714 staying home on day 4
 Number of infectious places = 402
 Number of infectious households = 152
 Number of infectious neighborhoods = 105
@@ -407,10 +238,10 @@ Number of infectious schools = 19
 Number of infectious classrooms = 24
 Number of infectious workplaces = 50
 Number of infectious offices = 52
-day 4 update epidemics took 1 seconds
+day 4 update epidemics took 0 seconds
 Day   4  Str 0  S 1242466  E      84  I     177  I_s     105  R      28  M       0  C      76  N 1242755  AR  0.02  CI      26 RR 0.00 NR 0  CAR  0.01  Mon 2009-01-05 Year 2009 Week 1
 day 4 report population took 0 seconds
-day 4 finished Wed Apr 11 12:26:31 2012
-day 4 took 1 seconds
-FRED finished Wed Apr 11 12:26:31 2012
+day 4 finished Wed Apr 11 16:31:47 2012
+day 4 took 0 seconds
+FRED finished Wed Apr 11 16:31:47 2012
 FRED took 16 seconds
