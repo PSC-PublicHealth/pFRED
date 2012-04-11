@@ -116,7 +116,7 @@ public:
 
     bool is_applicable(int ts, int offset) {
       int t = ts - offset;
-      for (int i = 0; i < simDayRanges.size(); i++) {
+      for (unsigned i = 0; i < simDayRanges.size(); i++) {
         if ( t >= simDayRanges[i].first && t <= simDayRanges[i].second ) {
           return true;
         }
@@ -148,7 +148,7 @@ public:
     }
 
     void print() {
-      for (int i = 0; i < simDayRanges.size(); i++) {
+      for (unsigned i = 0; i < simDayRanges.size(); i++) {
         printf("start day = %d, end day = %d, seasonality value = %f\n",simDayRanges[i].first,simDayRanges[i].second,seasonalityValue);
       }
     }
