@@ -68,6 +68,21 @@ public:
   void update_schedule(int day);
 
   /**
+   * Decide whether to stay home if symptomatic.
+   * May depend on availability of sick leave at work.
+   *
+   * @param day the simulation day
+   */
+  void decide_whether_to_stay_home(int day);
+
+  /**
+   * Decide whether to stay home if symptomatic.
+   * If Enable_default_sick_leave_behavior is set, the decision is made only once,
+   * and the agent stays home for the entire symptomatic period, or never stays home.
+   */
+  bool default_sick_leave_behavior();
+
+  /**
    * Print the Activity schedule
    */
   void print_schedule(int day);
@@ -203,6 +218,8 @@ private:
   int my_sick_days_present;
   double sick_days_remaining;
   bool sick_leave_available;
+  bool my_sick_leave_decision_has_been_made;
+  bool my_sick_leave_decision;
 
   // static variables
   static bool is_initialized; // true if static arrays have been initialized

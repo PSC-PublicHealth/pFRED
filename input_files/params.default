@@ -108,10 +108,10 @@ birth_rate_multiplier = 1
 # the folowing contacts are calibrated for Allegheny County
 # for a 33% clinical attack rate
 # using the bifurcating SEIR model (SEiIR = 0)
-household_contacts[0] = 0.19
-neighborhood_contacts[0] = 42.32
-school_contacts[0] = 15.83
-workplace_contacts[0] = 1.66
+household_contacts[0] = 0.188089
+neighborhood_contacts[0] = 41.914699
+school_contacts[0] = 15.785288
+workplace_contacts[0] = 1.647926
 classroom_contacts[0] = -1
 office_contacts[0] = -1
 hospital_contacts[0] = 0

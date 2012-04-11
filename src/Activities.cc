@@ -119,6 +119,10 @@ static int employees_xlarge_without_sick_leave = 0;
 
 void Activities::initialize_sick_leave() {
   int workplace_size = 0;
+  my_sick_days_absent = 0;
+  my_sick_days_present = 0;
+  my_sick_leave_decision_has_been_made = false;
+  my_sick_leave_decision = false;
 
   if (favorite_place[WORKPLACE_INDEX] != NULL)
     workplace_size = favorite_place[WORKPLACE_INDEX]->get_size();
@@ -156,9 +160,6 @@ void Activities::initialize_sick_leave() {
   }
   else
     sick_leave_available = false;
-
-  my_sick_days_absent = 0;
-  my_sick_days_present = 0;
 
   // compute sick days remaining (for flu)
   sick_days_remaining = 0.0;
@@ -232,7 +233,8 @@ void Activities::update(int day) {
   Activities::day_of_week = Date::get_current_day_of_week(day);
   Activities::is_weekday = (0 < Activities::day_of_week && Activities::day_of_week < 6);
 
-  if (day>0) {
+  // print out absenteeism/presenteeism counts
+  if (Global::Verbose > 0 && day > 0) {
     printf("DAY %d ABSENTEEISM: work absent %d present %d %0.2f  school absent %d present %d %0.2f\n", day-1,
 	   Activities::Sick_days_absent,
 	   Activities::Sick_days_present,
@@ -339,71 +341,7 @@ void Activities::update_schedule(int day) {
 
   // decide whether to stay home if symptomatic
   if (self->is_symptomatic()) {
-    bool stay_home = false;
-  
-    if (self->is_adult()) {
-
-      // stay home with default probability if we're using the 
-      //default sick behavior model, or it is not a workday,
-      if (Activities::Enable_default_sick_behavior || (!on_schedule[WORKPLACE_INDEX])) {
-	stay_home = (RANDOM() < Activities::Default_sick_day_prob);
-      }
-
-      // it is a workday, and we're using rates depending on sick leave availability 
-      else {
-	if (sick_days_remaining > 0.0) {
-	  stay_home = (RANDOM() < sick_days_remaining);
-	  sick_days_remaining--;
-	}
-      }
-
-      // record absent/present decision for sick day
-      if (on_schedule[WORKPLACE_INDEX]) {
-	if (stay_home) {
-	  Activities::Sick_days_absent++;
-	  my_sick_days_absent++;
-	}
-	else {
-	  Activities::Sick_days_present++;
-	  my_sick_days_present++;
-	}
-      }
-    }
-
-    else {
-      // sick child
-      // stay home with default probability if we're using the 
-      // default sick behavior model, or it is not a school day
-      if (Activities::Enable_default_sick_behavior || (!on_schedule[SCHOOL_INDEX])) {
-	stay_home = (RANDOM() < Activities::Default_sick_day_prob);
-      }
-
-      // it is a school day, and we're using behavior model
-      else {
-	stay_home = self->get_behavior()->child_is_staying_home(day);
-      }
-
-      // record sick day decision for school days
-      if (on_schedule[SCHOOL_INDEX]) {
-	if (stay_home) {
-	  Activities::School_sick_days_absent++;
-	  my_sick_days_absent++;
-	}
-	else {
-	  Activities::School_sick_days_present++;
-	  my_sick_days_present++;
-	}
-      }
-    }
-
-    if (stay_home) {
-      // withdraw to household
-      on_schedule[WORKPLACE_INDEX] = false;
-      on_schedule[OFFICE_INDEX] = false;
-      on_schedule[SCHOOL_INDEX] = false;
-      on_schedule[CLASSROOM_INDEX] = false;
-      on_schedule[NEIGHBORHOOD_INDEX] = false;
-    }
+    decide_whether_to_stay_home(day);
   }
 
   // decide which neighborhood to visit today
@@ -420,6 +358,84 @@ void Activities::update_schedule(int day) {
     fflush(Global::Statusfp);
   }
 }
+
+void Activities::decide_whether_to_stay_home(int day) {
+  bool stay_home = false;
+  
+  if (self->is_adult()) {
+    if (Activities::Enable_default_sick_behavior) {
+      stay_home = default_sick_leave_behavior();
+    }
+    else {
+      if (on_schedule[WORKPLACE_INDEX]) {
+	// it is a work day
+	if (sick_days_remaining > 0.0) {
+	  stay_home = (RANDOM() < sick_days_remaining);
+	  sick_days_remaining--;
+	}
+	else {
+	  stay_home = false;
+	}
+      }
+      else {
+	// it is a not work day
+	stay_home = (RANDOM() < Activities::Default_sick_day_prob);
+      }
+    }
+  }
+  else {
+    // sick child: use default sick behavior, for now.
+    stay_home = default_sick_leave_behavior();
+  }
+
+  // record work absent/present decision if it is a workday
+  if (on_schedule[WORKPLACE_INDEX]) {
+    if (stay_home) {
+      Activities::Sick_days_absent++;
+      my_sick_days_absent++;
+    }
+    else {
+      Activities::Sick_days_present++;
+      my_sick_days_present++;
+    }
+  }
+  
+  // record school absent/present decision if it is a school day
+  if (on_schedule[SCHOOL_INDEX]) {
+    if (stay_home) {
+      Activities::School_sick_days_absent++;
+      my_sick_days_absent++;
+    }
+    else {
+      Activities::School_sick_days_present++;
+      my_sick_days_present++;
+    }
+  }
+
+  if (stay_home) {
+    // withdraw to household
+    on_schedule[WORKPLACE_INDEX] = false;
+    on_schedule[OFFICE_INDEX] = false;
+    on_schedule[SCHOOL_INDEX] = false;
+    on_schedule[CLASSROOM_INDEX] = false;
+    on_schedule[NEIGHBORHOOD_INDEX] = false;
+    // printf("agent %d staying home on day %d\n", self->get_id(), day);
+  }
+}
+
+bool Activities::default_sick_leave_behavior() {
+  bool stay_home = false;
+  if (my_sick_leave_decision_has_been_made) {
+    stay_home = my_sick_leave_decision;
+  }
+  else {
+    stay_home = (RANDOM() < Activities::Default_sick_day_prob);
+    my_sick_leave_decision = stay_home;
+    my_sick_leave_decision_has_been_made = true;
+  }
+  return stay_home;
+}
+
 
 void Activities::print_schedule(int day) {
   fprintf(Global::Statusfp, "day %d schedule for person %d  ", day, self->get_id());
@@ -518,8 +534,11 @@ void Activities::assign_office() {
     Place * place =
       ((Workplace *) favorite_place[WORKPLACE_INDEX])->assign_office(self);
     if (place != NULL) place->enroll(self);
-    else { printf("Warning! No office assigned for person %d workplace %d\n",
-		  self->get_id(), favorite_place[WORKPLACE_INDEX]->get_id());
+    else { 
+      if (Global::Verbose > 0) {
+	printf("Warning! No office assigned for person %d workplace %d\n",
+	       self->get_id(), favorite_place[WORKPLACE_INDEX]->get_id());
+      }
     }
     favorite_place[OFFICE_INDEX] = place;
   }
@@ -693,7 +712,6 @@ void Activities::update_household_mobility() {
     }
   }
 
-
   int popsize = Global::Pop.get_pop_size();
   if (mcount == popsize) {
     double mobility_rate[MAX_MOBILITY_AGE + 1];
@@ -706,8 +724,6 @@ void Activities::update_household_mobility() {
     }
     fclose(fp);
   }
-
-
 }
 
 void Activities::addIncidence(int disease, vector<int> strains) {
@@ -772,20 +788,6 @@ void Activities::read_init_files() {
 }
 
 
-void Activities::terminate() {
-  // Person was enrolled in only his original 
-  // favorite places, not his host's places while travelling
-  if(travel_status && ! traveling_outside) 
-    restore_favorite_places();
-
-  // unenroll from all the favorite places
-  for (int i = 0; i < FAVORITE_PLACES; i++) {
-    if (favorite_place[i] != NULL) {
-      favorite_place[i]->unenroll(self);
-    }
-  }
-}
-
 void Activities::store_favorite_places() {
   tmp_favorite_place = new Place* [FAVORITE_PLACES];
   for (int i = 0; i < FAVORITE_PLACES; i++) {
@@ -832,6 +834,20 @@ void Activities::stop_traveling() {
   if (Global::Verbose > 1) {
     fprintf(Global::Statusfp, "stop traveling: id = %d\n", self->get_id());
     fflush(Global::Statusfp);
+  }
+}
+
+void Activities::terminate() {
+  // Person was enrolled in only his original 
+  // favorite places, not his host's places while travelling
+  if(travel_status && ! traveling_outside) 
+    restore_favorite_places();
+
+  // unenroll from all the favorite places
+  for (int i = 0; i < FAVORITE_PLACES; i++) {
+    if (favorite_place[i] != NULL) {
+      favorite_place[i]->unenroll(self);
+    }
   }
 }
 
