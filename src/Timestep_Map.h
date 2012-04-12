@@ -48,7 +48,7 @@ class Timestep_Map {
 public:
   Timestep_Map();	
   Timestep_Map(string _name);
-  ~Timestep_Map();
+  virtual ~Timestep_Map();
   
   // Utility Members
   int get_value_for_timestep(int ts, int offset); // returns the value for the given timestep - delay

@@ -24,6 +24,11 @@ Multistrain_Timestep_Map::Multistrain_Timestep_Map(string _name) : Timestep_Map(
 }
 
 Multistrain_Timestep_Map::~Multistrain_Timestep_Map() {
+  for ( iterator i = multistrain_timestep_map.begin(); i != multistrain_timestep_map.end(); ++i ) {
+    delete (*i);
+    (*i) = NULL;
+  }
+  multistrain_timestep_map.clear();
 }
 
 

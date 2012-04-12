@@ -24,6 +24,11 @@ Seasonality_Timestep_Map::Seasonality_Timestep_Map(string _name) : Timestep_Map(
 }
 
 Seasonality_Timestep_Map::~Seasonality_Timestep_Map() {
+  for ( iterator i = seasonality_timestep_map.begin(); i != seasonality_timestep_map.end(); ++i ) {
+    delete (*i);
+    (*i) = NULL;
+  }
+  seasonality_timestep_map.clear();
 }
 
 
