@@ -480,9 +480,9 @@ bool Health::is_on_av_for_disease(int day, int d) const {
 }
 
 
-void Health::infect(Person *infectee, int disease_id, Transmission *transmisison) {
+void Health::infect(Person *infectee, int disease_id, Transmission *transmission) {
   Disease * disease = Global::Pop.get_disease(disease_id);
-  infection[disease_id]->transmit(infectee, transmisison);
+  infection[disease_id]->transmit(infectee, transmission);
   infectee_count[disease_id]++;
    disease->increment_infectee_count(infection[disease_id]->get_exposure_date());
   if (Global::Verbose > 1) {
