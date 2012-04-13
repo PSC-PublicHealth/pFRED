@@ -283,6 +283,7 @@ int main(int argc, char* argv[]) {
     Utils::fred_print_wall_time("day %d finished", day);
 
     Utils::fred_print_day_timer(day);
+    Utils::fred_print_resource_usage(day);
   }
 
   Utils::fred_print_wall_time("FRED finished");

@@ -31,6 +31,7 @@ namespace Utils{
   void fred_verbose(int verbosity, const char* format, ...);
   FILE *fred_open_file(char * filename);
   void get_fred_file_name(char * filename);
+  void fred_print_resource_usage(int day);
 }
 
 #endif /* UTILS_H_ */
