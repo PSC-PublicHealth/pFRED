@@ -58,12 +58,13 @@ Person::Person(int index, int age, char sex, int marital, int rel, int occ,
   behavior = new Behavior(this);
 	
   for (int disease = 0; disease < Global::Diseases; disease++) {
-    Disease* s = Global::Pop.get_disease(disease);
-    if (!s->get_residual_immunity()->is_empty()) {
+    Disease* dis = Global::Pop.get_disease(disease);
+    if (!dis->get_residual_immunity()->is_empty()) {
       double residual_immunity_prob =
-	s->get_residual_immunity()->find_value(get_age());
+	dis->get_residual_immunity()->find_value(age);
+      // printf("RESID: age %d prob %f\n",age,residual_immunity_prob);
       if (RANDOM() < residual_immunity_prob)
-	become_immune(s);
+	become_immune(dis);
     }
   }
 }

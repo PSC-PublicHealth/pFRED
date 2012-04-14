@@ -218,7 +218,9 @@ Place * Place_List::get_place_from_label(char *s) {
   if (place_label_map.find(s) != place_label_map.end())
     return places[place_label_map[s]];
   else {
-    printf("Help!  can't find place with label = %s\n", s);
+    if (Global::Verbose > 1) {
+      printf("Help!  can't find place with label = %s\n", s);
+    }
     return NULL;
   }
 }

@@ -261,12 +261,12 @@ void Population::read_population() {
     if (sscanf(line, "%s %d %c %d %d %s %s %s %d",
                label, &age, &sex, &married, &occ,
 	       house_label, school_label, work_label, &relationship) != 9) {
-      relationship = Global::HOUSEHOLDER;
-      if (sscanf(line, "%s %d %c %d %d %s %s %s",
-		 label, &age, &sex, &married, &occ,
-		 house_label, school_label, work_label) != 8) {
-	Utils::fred_abort("Help! Bad format in input line when next_id = %d: %s\n", Population::next_id, line);
-      }
+      // relationship = Global::HOUSEHOLDER;
+      // if (sscanf(line, "%s %d %c %d %d %s %s %s",
+      // label, &age, &sex, &married, &occ,
+      // house_label, school_label, work_label) != 8) {
+      Utils::fred_abort("Help! Bad format in input line when next_id = %d: %s\n", Population::next_id, line);
+      //}
     }
     Place * house = Global::Places.get_place_from_label(house_label);
     if (house == NULL) {
@@ -277,20 +277,25 @@ void Population::read_population() {
     }
     Place * work = Global::Places.get_place_from_label(work_label);
     if (strcmp(work_label,"-1")!=0 && work == NULL) {
-      printf("WARNING: person %s in %s -- no workplace found for label = %s\n",
-	     label, population_file, work_label);
+      if (Global::Verbose > 0) {
+	printf("WARNING: person %s in %s -- no workplace found for label = %s\n",
+	       label, population_file, work_label);
+	fflush(stdout);
+      }
       if (Global::Enable_Local_Workplace_Assignment) {
 	work = Global::Places.get_random_workplace();
-	if (work != NULL) {
-	  printf("WARNING: person %s assigned to workplace %s\n",
-		 label, work->get_label());
+	if (Global::Verbose > 0) {
+	  if (work != NULL) {
+	    printf("WARNING: person %s assigned to workplace %s\n",
+		   label, work->get_label());
+	  }
+	  else {
+	    printf("WARNING: no workplace available for person %s\n",
+		   label);
+	  }
 	}
-	else {
-	  printf("WARNING: no workplace available for person %s\n",
-		 label);
-	}
+	fflush(stdout);
       }
-      fflush(stdout);
     }
     Place * school = Global::Places.get_place_from_label(school_label);
     if (strcmp(school_label,"-1")!=0 && school == NULL) {

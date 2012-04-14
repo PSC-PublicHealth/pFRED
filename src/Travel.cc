@@ -128,7 +128,7 @@ void Travel::setup(char * directory) {
     dest_col.push_back(c2);
     trip_probability.push_back(trip_prob);
     active_trips++;
-    if (Global::Verbose > 0) {
+    if (Global::Verbose > 1) {
       fprintf(Global::Statusfp, "ACTIVE %d %d %d %d %0.2f\n", c1,r1,c2,r2,trip_prob);
       /*
 	int src_pop = src_cell!= NULL? src_cell->get_popsize():-1;
@@ -166,6 +166,7 @@ void Travel::setup(char * directory) {
   trip_list_size = active_trips;
 
   // save the active trips for possible later use
+  /*
   char activefilename[256];
   sprintf(activefilename, "%s/active_trips.txt", directory);
   FILE *outfp = fopen(activefilename,"w");
@@ -173,6 +174,7 @@ void Travel::setup(char * directory) {
     fprintf(outfp, "%d %d %d %d\n", src_col[i], src_row[i], dest_col[i], dest_row[i]);
   }
   fclose(outfp);
+  */
 
 }
 

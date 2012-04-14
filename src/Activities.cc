@@ -530,7 +530,8 @@ void Activities::assign_workplace() {
 
 void Activities::assign_office() {
   if (favorite_place[WORKPLACE_INDEX] != NULL &&
-      favorite_place[OFFICE_INDEX] == NULL) {
+      favorite_place[OFFICE_INDEX] == NULL &&
+      Workplace::get_max_office_size() > 0) {
     Place * place =
       ((Workplace *) favorite_place[WORKPLACE_INDEX])->assign_office(self);
     if (place != NULL) place->enroll(self);

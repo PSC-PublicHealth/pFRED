@@ -92,6 +92,8 @@ public:
    */
   bool should_be_open(int day, int disease) { return true; }
 
+  static int get_max_office_size() { return Office_size; }
+
  private:
   static double * Workplace_contacts_per_day;
   static double *** Workplace_contact_prob;
