@@ -600,7 +600,7 @@ household contacts were treated differently than other locations.
  Following (Cooley at al, 2011), we assumed that each pair of agents
 within a household make contact each day with a specified probability.
  This probability is tunes as part of the calibration step to achieve
-the 30-70 target distribution.  The rersulting contact probability for
+the 30-70 target distribution.  The resulting contact probability for
 Allegheny County is:
 
 ``household_contacts[0] = 0.19``
@@ -695,8 +695,8 @@ Grid, and Small Grid.
 The Large Grid consists of 20km x 20km cells by default. The Large Grid
 is aligned global geo-coordinate system. Cells in the Large Grid store
 the population count for the cell, along with a vector of all persons
-residing in that cell. In the future, the Large Grid may be appropriate
-for storing climate or other environmental profiles.
+residing in that cell. The Large Grid can also be used to store
+climate or other environmental profiles (see **Seasonality** below).
 
 The medium grid, called Grid, consists of 1km x 1km cells by default.
  These cells function as neighborhood units, and store information about
@@ -754,6 +754,34 @@ cell ``i`` is on the border of the model region and happens to contains only
 50% of the entire cell population according to the current model
 population, then the probability of any trip to or from cell ``i`` is
 reduced by 50%.
+
+Seasonality and Climate
+=======================
+
+It is possible to alter the transmissibility of diseases througout the
+simulation run.  A time-series profile of seasonality values that are
+used to scale the disease transmissibility is specified with the parameter
+``seasonality_timestep_file``.  This file allows recurring seasonal forcing
+patterns to be given using Month-Day calendar dates or 'simulation days'.  Optionally,
+the seasonality multiplier may be varied over FRED's **Large Grid** layer.
+The format of the ``seasonality_timestep_file`` is similar to that of the
+``multistrain_timestep_file`` and is described in detail below.
+
+Seasonality vs. Climate
+-----------------------
+
+The Seasonality feature of FRED has two basic modes of operation: the default in which
+the seasonality values are interpreted simply as direct multipliers to
+transmissibility and another ('**climate mode**') in which the values in the profile are
+interpreted as absolute (specific) humidity and transformed according
+to a Disease-specific function hardcoded in the **Disease** class.
+
+The default function found in ``Disease.cc`` is:
+
+``multiplier = exp( ( ( seasonality_Ka * seasonality_value ) + seasonality_Kb ) ) + seasonality_min``
+
+The parameters govern the interpretation of the values given in the 
+``seasonality_timestep_file`` are described in below.
 
 Run-time Parameters
 ===================
@@ -1484,6 +1512,141 @@ area.
 
 Additional information on the timestep map format may be found in
 ``README_Timestep_Maps``.
+
+Seasonal Forcing Parameters:
+----------------------------
+
+
+enable_large_grid:
+~~~~~~~~~~~~~~~~~~
+
+  Seasonal forcing REQUIRES that the large grid is enabled
+
+  **Default: 0**
+
+  
+enable_seasonality:
+~~~~~~~~~~~~~~~~~~~
+
+  Enables seasonality; if used without ``enable_climate = 1``, then the 
+  values in the seasonality timestep file are interpreted as simple multipliers
+  to transmissibility.
+
+  **Default: 0**
+
+enable_climate:
+~~~~~~~~~~~~~~~
+
+  Causes the seasonality values to be interpreted as absolute humidity.
+
+  **Default: 0**
+
+seasonality_timestep_file:
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The seasonal forcing profile.  Sample profiles are available in:
+
+  ``$FRED_HOME/input_files/seasonality_timestep``
+  ``$FRED_HOME/input_files/seasonality_timestep_dateformat``
+
+  **Default: none**
+
+seasonality_multiplier_max[0]:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Disease specific constant used in calculation of transmissibility 
+  multiplier when **climate** is enabled.
+
+  **Default: 1**
+
+
+seasonality_multiplier_min[0]:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Disease specific constant used in calculation of transmissibility 
+  multiplier when **climate** is enabled.
+
+  **Default: 1**
+
+
+seasonality_multiplier_Ka[0]:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Disease specific constant used in calculation of transmissibility 
+  multiplier when **climate** is enabled.
+
+  **Default: -180**
+
+
+Seasonality Timestep Map:
+-------------------------
+
+The sample files   ``$FRED_HOME/input_files/seasonality_timestep`` and
+``$FRED_HOME/input_files/seasonality_timestep_dateformat`` contain simple
+profiles for both the climate and simple seasonal forcing modes of operation.
+See comments within these files for more information.
+
+IMPORTANT NOTE: The first line of the file must be "#line_format"!
+All subsequent lines beginning with "#" are comments.
+
+The **Seasonality_Timestep_Map** uses FRED's date format to specify the daily seasonality 
+multiplier values (alternatively, integer values corresponding to the days
+elapsed since the beginning of the simulation can be used for "start day"
+and "end day").
+
+The seasonality multiplier in this file follows a simple sine
+wave, with a maximum on Jan. 1st and a minimimum on Jul. 1st.
+No claims are made regarding realism (though this is a
+common approximation).
+ 
+Dates given in the format "mm-dd" will be recycled throughout the duration
+of the simulation run.  It is also possible to explicity give the year
+(yyyy-mm-dd), however those values will not be recycled.
+
+It is also possible to mix the various formats in the same seasonality
+input file.  If multiple entries overlap the same simulation day, the
+effect is not additve: the last applicable value in the timestep file
+will be used.
+
+If multiple entries are given for the same time step, but the geopgraphic
+coordinates are different, then the values are interpolated over the
+large grid (using simple nearest-neighbor interpolation).
+
+Timestep files such as this one can be generated easily using the **R**
+programming language.  As an example:
+
+::
+  > formatted_dates = format.Date( seq.Date( as.Date("2012-01-01"), as.Date("2012-12-31"), by=1 ), "%m-%d" )
+  > modulated_values = ( cos( seq( 0, 2*pi, by=2*pi/365 ) ) + 1 ) / 2
+  > latitudes = rep( 40.440788, 366 )
+  > longitudes = rep( -79.960199, 366 )
+
+  > write.table(
+      cbind( 
+          formatted_dates,
+          modulated_values,
+          latitudes,
+          longitudes
+        ) [,c(1,1:4)],
+      file='seasonality-sinewave', row.names=F, col.names=F, quote=F )
+
+Modification of the above code should allow easy generation of any desired
+seasonality profile.
+
+**Example:**
+
+::
+  #
+  # ################################################
+  # ###### Seasonality Profile #####################
+  # ################################################
+  #
+  # "start day" "end day" "seasonality multiplier" "latitude" "longitude"
+  01-01 01-01 1 40.440788 -79.960199
+  01-02 01-02 0.999925919604558 40.440788 -79.960199
+  01-03 01-03 0.999703700369852 40.440788 -79.960199
+  01-04 01-04 0.999333408144238 40.440788 -79.960199
+  01-05 01-05 0.998815152653293 40.440788 -79.960199
 
 Intervention Parameters
 -----------------------
