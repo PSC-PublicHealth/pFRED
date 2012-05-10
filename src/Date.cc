@@ -425,6 +425,67 @@ string Date::to_string() {
   return oss.str();
 }
 
+// member function operators
+
+bool Date::operator< (const Date &other) const {
+  return (this->days_since_jan_1_1600 < other.days_since_jan_1_1600);
+}
+
+bool Date::operator== (const Date &other) const {
+  return (this->days_since_jan_1_1600 == other.days_since_jan_1_1600);
+}
+
+bool Date::operator> (const Date &other) const {
+  return (this->days_since_jan_1_1600 > other.days_since_jan_1_1600);
+}
+
+bool Date::operator>= (const Date &other) const {
+  return ( ! (this->operator< (other.days_since_jan_1_1600) ) );
+}
+
+bool Date::operator<= (const Date &other) const {
+  return ( ! (this->operator> (other.days_since_jan_1_1600) ) );
+}
+
+bool Date::operator!= (const Date &other) const {
+  return ( ! (this->operator== (other.days_since_jan_1_1600) ) );
+}
+
+// overloaded member function operators
+
+bool Date::operator< (const int &sim_day) const {
+  Date other = Date(Global::Sim_Date->get_year(sim_day),
+                          Global::Sim_Date->get_month(sim_day),
+                          Global::Sim_Date->get_day_of_month(sim_day));
+  return (this->days_since_jan_1_1600 < other.days_since_jan_1_1600);
+}
+
+bool Date::operator== (const int &sim_day) const {
+  Date other = Date(Global::Sim_Date->get_year(sim_day),
+                          Global::Sim_Date->get_month(sim_day),
+                          Global::Sim_Date->get_day_of_month(sim_day));
+  return (this->days_since_jan_1_1600 == other.days_since_jan_1_1600);
+}
+
+bool Date::operator> (const int &sim_day) const {
+  Date other = Date(Global::Sim_Date->get_year(sim_day),
+                          Global::Sim_Date->get_month(sim_day),
+                          Global::Sim_Date->get_day_of_month(sim_day));
+  return (this->days_since_jan_1_1600 > other.days_since_jan_1_1600);
+}
+
+bool Date::operator>= (const int &sim_day) const {
+  return ( ! (this->operator< (sim_day) ) );
+}
+
+bool Date::operator<= (const int &sim_day) const {
+  return ( ! (this->operator> (sim_day) ) );
+}
+
+bool Date::operator!= (const int &sim_day) const {
+  return ( ! (this->operator== (sim_day) ) );
+}
+
 //Static Methods
 int Date::days_between(Date * date_1, Date * date_2) {
   return abs(date_1->days_since_jan_1_1600 - date_2->days_since_jan_1_1600);
@@ -879,4 +940,6 @@ bool Date::is_weekday(int day) {
   int day_of_week = Global::Sim_Date->get_day_of_week(day);
   return (1 < day_of_week == 0 && day_of_week < 6);
 }
+
+
 

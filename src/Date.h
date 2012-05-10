@@ -88,6 +88,21 @@ public:
   string get_YYYYMMDD(int day);
   string get_YYYYMM(int day);
   string get_MMDD(int day);
+  
+  bool operator< (const Date &other) const;
+  bool operator> (const Date &other) const;
+  bool operator== (const Date &other) const;
+  bool operator<= (const Date &other) const;
+  bool operator>= (const Date &other) const;
+  bool operator!= (const Date &other) const;
+
+  bool operator< (const int &sim_day) const;
+  bool operator> (const int &sim_day) const;
+  bool operator== (const int &sim_day) const;
+  bool operator<= (const int &sim_day) const;
+  bool operator>= (const int &sim_day) const;
+  bool operator!= (const int &sim_day) const;
+
   static int days_between(Date * date_1, Date * date_2);
   static int days_between(int sim_day, Date * date_2);
   static bool is_leap_year(int year);
@@ -105,6 +120,7 @@ public:
   static Date * new_date(int day);
   static bool is_weekend(int day);
   static bool is_weekday(int day);
+
 
 private:
   static const int day_table[2][13];
