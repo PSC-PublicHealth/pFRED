@@ -143,10 +143,12 @@ void Population::delete_person(Person * person) {
   // graveyard.push_back(person);
 }
 
-void Population::prepare_to_die(int day, Person *per) {
+void Population::prepare_to_die(int day, Person *per) { // aka, 'bring out your dead'
   // add person to daily death_list
   death_list.push_back(per);
   report_death(day, per);
+  // you'll be stone dead in a moment...
+  per->die();
   if (Global::Verbose > 1) {
     fprintf(Global::Statusfp, "prepare to die: ");
     per->print(Global::Statusfp,0);

@@ -451,6 +451,8 @@ public:
 
   void terminate();
 
+  void die() { health->die(); }
+
 private:
   int id;              // person id
   Demographics *demographics;

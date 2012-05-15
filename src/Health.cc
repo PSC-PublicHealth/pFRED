@@ -234,16 +234,9 @@ void Health::become_immune(Disease *disease) {
 }
 
 void Health::update(int day) {
+  // if deceased, health status should have been cleared during population
+  // update (by calling Person->die(), then Health->die(), which will unset (bool) alive
   if (alive == false) return;
-
-  // if deceased, clear health status
-  if (self->is_deceased()) {
-    for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
-      become_removed(disease_id);
-    }
-    alive = false;
-    return;
-  }
 
   // update vaccine status
   if (takes_vaccine) {

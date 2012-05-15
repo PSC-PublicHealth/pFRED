@@ -400,6 +400,8 @@ public:
 
   void terminate();
 
+  void die() { alive = false; }
+
 private:
   Person * self;
   Infection **infection;
