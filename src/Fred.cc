@@ -142,6 +142,7 @@ int main(int argc, char* argv[]) {
     if (Global::Prevfp == NULL) {
       Utils::fred_abort("Can't open %s\n", filename);
     }
+    Global::Report_Prevalence = true;
   }
   Global::Incfp = NULL;
   if (strcmp(Global::Incfilebase, "none") != 0) {
@@ -150,6 +151,7 @@ int main(int argc, char* argv[]) {
     if (Global::Incfp == NULL) {
       Utils::fred_abort("Help! Can't open %s\n", filename);
     }
+    Global::Report_Incidence = true;
   }
 
   // initialize RNG

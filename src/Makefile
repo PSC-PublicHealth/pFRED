@@ -10,8 +10,11 @@ CPP = g++
 # CPPFLAGS = -g -m64 -O3 # -DNDEBUG
 # CPPFLAGS = -pg -m64 -O2 -DNDEBUG -fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls -fno-omit-frame-pointer
 
-# Use this for production:
+# Use one of these for production:
+## If tcmalloc is avaialable, use it  
+#CPPFLAGS = -g -m64 -O3 -DNDEBUG -ltcmalloc #-fast #-Wall
 CPPFLAGS = -g -m64 -O3 -DNDEBUG #-fast #-Wall
+
 
 # Use this for unit testing:
 # CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall

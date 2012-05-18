@@ -403,6 +403,14 @@ void Population::update(int day) {
     }
   }
 
+  // first update everyone's health intervention status
+  if ( Global::Enable_Vaccination || Global::Enable_Antivirals ) {
+    // update everyone's health vaccination and antiviral status
+    for (int p = 0; p < pop_size; p++) {
+      pop[p]->update_health_interventions(day);
+    }
+  }
+
   // update everyone's health status
   for (int p = 0; p < pop_size; p++) {
     pop[p]->update_health(day);
@@ -413,7 +421,7 @@ void Population::update(int day) {
     // update household mobility activity on July 1
     if (Date::match_pattern(day, "07-01-*")) {
       for (int p = 0; p < pop_size; p++) {
-	pop[p]->update_household_mobility();
+        pop[p]->update_household_mobility();
       }
     }
   }

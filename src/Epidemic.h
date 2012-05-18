@@ -134,8 +134,6 @@ private:
   int symptomatic_count;
   int removed_count;
   int immune_count;
-  map<int, int> incidence;
-  map<int, int> prevalence;
 };
 
 #endif // _FRED_EPIDEMIC_H

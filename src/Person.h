@@ -124,6 +124,7 @@ public:
    * @see Health::update(int day)
    */
   void update_health(int day) { health->update(day); }
+  void update_health_interventions(int day) { health->update_interventions(day); }
 
   /**
    * @param day the simulation day

@@ -6,7 +6,7 @@
 
 // Infection.cc
 // ------------
-// Determines the transition dates for this person.
+// Stores the infectivity and symptomaticity trajectories that determine the transition dates for this person.
 
 #include <stdexcept>
 #include "limits.h"
@@ -158,7 +158,9 @@ void Infection::update(int today) {
   if(today != get_recovery_date()) {
     vector<int> strains;
     trajectory->getAllStrains(strains);
-    host->addPrevalence(disease->get_id(), strains);
+    if ( Global::Report_Prevalence ) {
+      host->addPrevalence(disease->get_id(), strains);
+    }
   }
 }
 
@@ -315,8 +317,12 @@ void Infection::addTransmission(Transmission *transmission) {
 
     vector<int> strains;
     trajectory->getAllStrains(strains);
-    host->addIncidence(disease->get_id(), strains);
-    host->addPrevalence(disease->get_id(), strains);
+    if ( Global::Report_Incidence ) {
+      host->addIncidence(disease->get_id(), strains);
+    }
+    if ( Global::Report_Prevalence ) {
+      host->addPrevalence(disease->get_id(), strains);
+    }
 
     if(isSusceptible && susceptibility_period == 0) {
       host->become_unsusceptible(disease);

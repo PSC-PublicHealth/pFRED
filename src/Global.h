@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <assert.h>
+#include <bitset>
 
 // for unit testing, use the line in Makefile: gcc -DUNITTEST ...
 #ifdef UNITTEST
@@ -48,6 +49,10 @@ class Global {
     static const int ADULT_AGE = 18;
     static const int SCHOOL_AGE = 5;
     static const int RETIREMENT_AGE = 67;
+    // MAX_NUM_DISEASES sets the size of stl::bitsets and static arrays used throughout FRED
+    // to store disease-specific flags and pointers; set to the smallest possible value 
+    // for optimal performance and memory usage
+    static const int MAX_NUM_DISEASES = 1;
 
     // household relationship codes
     static const int HOUSEHOLDER = 1;
@@ -120,6 +125,10 @@ class Global {
     static bool Enable_Seasonality;
     static bool Enable_Climate;
     static bool Seed_by_age;
+    static bool Report_Prevalence;
+    static bool Report_Incidence;
+    static bool Enable_Vaccination;
+    static bool Enable_Antivirals;
 
     // global singleton objects
     static Population Pop;
@@ -149,5 +158,23 @@ class Global {
      */
     static void get_global_parameters();
 };
+
+/* 
+ * Put fred's global typedefs in namespace fred.
+ */
+
+namespace fred {
+  /* 
+   * bitset big enough to store flags for MAX_NUM_DISEASES
+   * Global::MAX_NUM_DISEASES should be equal to Global::Diseases
+   * for efficiency. 
+   * IMPORTANT NOTE TO THE PROGRAMMER: 'Diseases' may be less than
+   * 'MAX_NUM_DISEASES' so care should be taken when performing operations
+   * (such as any(), flip(), reset(), etc.) on a disease_bitset to avoid
+   * unintended setting/resetting flags for non-existent diseases.
+   *
+   */
+  typedef std::bitset<Global::MAX_NUM_DISEASES> disease_bitset;
+}
 
 #endif // _FRED_GLOBAL_H

@@ -50,8 +50,12 @@ void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* co
   assert (deaths != NULL);
   total_deaths = new (nothrow) int [Global::Diseases];
   assert (total_deaths != NULL);
-  incidence.resize(Global::Diseases);
-  prevalence.resize(Global::Diseases);
+  if ( Global::Report_Incidence ) {
+    incidence.resize(Global::Diseases);
+  }
+  if ( Global::Report_Prevalence ) {
+    prevalence.resize(Global::Diseases);
+  }
   N = 0;
   days_infectious = 0;
   total_infections = 0;
@@ -114,8 +118,10 @@ void Place::update(int day) {
     susceptibles[d].clear();
     infectious[d].clear();
     Sympt[d] = S[d] = I[d] = 0;
-    incidence[d].clear();
-    prevalence[d].clear();
+    if ( Global::Report_Incidence ) 
+      incidence[d].clear();
+    if ( Global::Report_Prevalence )
+      prevalence[d].clear();
   }
 }
 
@@ -333,18 +339,22 @@ void Place::spread_infection(int day, int disease_id) {
 }
 
 void Place::modifyIncidenceCount(int disease_id, vector<int> strains, int incr) {
-  map<int, int>& inc = incidence[disease_id];
-  for(int s=0; s < (int) strains.size(); s++) {
-    if(inc.find(strains[s]) == inc.end()) inc[strains[s]] = 0;
-    inc[strains[s]] = inc[strains[s]] + 1;
+  if ( Global::Report_Incidence ) {
+    map<int, int>& inc = incidence[disease_id];
+    for(int s=0; s < (int) strains.size(); s++) {
+      if(inc.find(strains[s]) == inc.end()) inc[strains[s]] = 0;
+      inc[strains[s]] = inc[strains[s]] + 1;
+    }
   }
 }
 
 void Place::modifyPrevalenceCount(int disease_id, vector<int> strains, int incr) {
-  map<int, int>& prev = prevalence[disease_id];
-  for(int s=0; s < (int) strains.size(); s++) {
-    if(prev.find(strains[s]) == prev.end()) prev[strains[s]] = 0; 
-    prev[strains[s]] += 1;
+  if ( Global::Report_Prevalence ) {
+    map<int, int>& prev = prevalence[disease_id];
+    for(int s=0; s < (int) strains.size(); s++) {
+      if(prev.find(strains[s]) == prev.end()) prev[strains[s]] = 0; 
+      prev[strains[s]] += 1;
+    }
   }
 }
 

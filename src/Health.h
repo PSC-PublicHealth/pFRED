@@ -14,13 +14,14 @@
 #define _FRED_HEALTH_H
 
 #include <vector>
+#include <bitset>
 using namespace std;
 
 #include "Infection.h"
 #include "Disease.h"
+#include "Global.h"
 
 class Person;
-class Infection;
 class Disease;
 class Antiviral;
 class Antivirals;
@@ -42,12 +43,8 @@ public:
 
   ~Health();
 
-  /**
-   * Perform the daily update for this object
-   *
-   * @param day the simulation day
-   */
   void update(int day);
+  void update_interventions(int day);
 
   /**
    * Agent is susceptible to the disease
@@ -127,7 +124,7 @@ public:
    *
    * @return <code>true</code> if the agent is symptomatic, <code>false</code> otherwise
    */
-  bool is_symptomatic() const { return has_symptoms; }
+  bool is_symptomatic() const { return symptomatic.any(); }
   bool is_symptomatic(int disease_id) { return symptomatic[disease_id]; }
 
   /**
@@ -334,8 +331,6 @@ public:
   Vaccine_Health * get_vaccine_health(int i)  const {
     return vaccine_health[i];
   }
-  bool takes_av;
-  bool takes_vaccine;
 
   //Modifiers
   /**
@@ -401,23 +396,53 @@ public:
   void terminate();
 
   void die() { alive = false; }
+;
 
 private:
   Person * self;
-  Infection **infection;
-  vector < bool > immunity;
-  vector < bool > at_risk;  // Agent is/isn't at risk for severe complications
-  double *susceptibility_multp;
+  bool alive;
+
+  // TODO (JVD): The infection vector & bitset should be combined into a little 
+  // helper class to make sure that they're always synched up.
+  // There would be just a little overhead in doing this but probably well worth it.
+  // Until then make sure that they're always changed together.
+  Infection * infection[ Global::MAX_NUM_DISEASES ];
+  fred::disease_bitset active_infections;
+
+  fred::disease_bitset immunity;
+  fred::disease_bitset at_risk;  // Agent is/isn't at risk for severe complications
+
+  std::vector< double > susceptibility_multp;
+  
   vector < bool > checked_for_av;
   vector < AV_Health * > av_health;
+  typedef vector < AV_Health * >::iterator av_health_itr; 
   vector < Vaccine_Health * > vaccine_health;
-  int * infectee_count;
-  int * susceptible_date;
-  bool * susceptible;
-  bool * infectious;
-  bool * symptomatic;
-  bool has_symptoms;
-  bool alive;
+  typedef vector < Vaccine_Health * >::iterator vaccine_health_itr;
+  
+  int infectee_count[ Global::MAX_NUM_DISEASES ];
+  int susceptible_date[ Global::MAX_NUM_DISEASES ];
+
+  fred::disease_bitset susceptible;
+  fred::disease_bitset infectious;
+
+  fred::disease_bitset symptomatic;
+  fred::disease_bitset recovered_today;
+  fred::disease_bitset evaluate_susceptibility;
+
+  //bool takes_av;
+  //bool takes_vaccine;
+
+  // Define a bitset type to hold health flags
+  typedef std::bitset< 2 > intervention_flags_type;
+  intervention_flags_type intervention_flags;
+  // Enumerate flags corresponding to positions in bitset
+  enum {
+    takes_vaccine,
+    takes_av
+  };
+
+
 protected:
   Health() { }
 };

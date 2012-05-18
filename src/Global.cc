@@ -11,6 +11,7 @@
 #include "Large_Grid.h"
 #include "Small_Grid.h"
 #include "Seasonality.h"
+#include "Utils.h"
 
 // global runtime parameters
 char Global::Output_directory[256];
@@ -57,6 +58,13 @@ bool Global::Enable_Climate = false;
 bool Global::Seed_by_age = false;
 int Global::Seed_age_lower_bound = 0;
 int Global::Seed_age_upper_bound = 0;
+bool Global::Enable_Antivirals = true;
+bool Global::Enable_Vaccination = true;
+
+// per-strain prevalence incidence reporting off by default
+// will be enabled in Fred.cc if valid files are given in params
+bool Global::Report_Prevalence = false;
+bool Global::Report_Incidence = false;
 
 // global singleton objects
 Population Global::Pop;
@@ -139,5 +147,15 @@ void Global::get_global_parameters() {
   Global::Enable_Climate = temp_int;
   Params::get_param_from_string("seed_by_age", &temp_int);
   Global::Seed_by_age = temp_int;
+  Params::get_param_from_string("enable_vaccination",&temp_int);
+  Global::Enable_Vaccination = temp_int;
+  Params::get_param_from_string("enable_antivirals",&temp_int);
+  Global::Enable_Antivirals = temp_int;
+
+
+  // Sanity Checks
+  if ( Global::Diseases > Global::MAX_NUM_DISEASES ) {
+    Utils::fred_abort("Global::Diseases > Global::MAX_NUM_DISEASES!");
+  }
 }
 
