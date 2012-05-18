@@ -52,7 +52,7 @@ class Global {
     // MAX_NUM_DISEASES sets the size of stl::bitsets and static arrays used throughout FRED
     // to store disease-specific flags and pointers; set to the smallest possible value 
     // for optimal performance and memory usage
-    static const int MAX_NUM_DISEASES = 1;
+    static const int MAX_NUM_DISEASES = 4;
 
     // household relationship codes
     static const int HOUSEHOLDER = 1;

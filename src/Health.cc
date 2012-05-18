@@ -238,16 +238,6 @@ void Health::become_immune(Disease *disease) {
  * should be made carefully, especially w.r.t. cache performance and branch
  * predictability.
  *
- * If necessary to get any more out of this, it should be possible to allocate all
- * Infection objects through an intermediary (an Infection Factory) that keeps a list of all
- * active infections.  This list could be updated separately, levaing only the vaccine,
- * susceptibility/recovery and antiviral updates here.  Additionally, deallocation of the
- * Infection objects could be deferred to the factory (which should be good since they'd
- * have locality).  Both the infection updating and the diy garbage collection could be done in
- * separate threads -- JVD
- *
- *
- *
  * @param day the simulation day
  */
 
