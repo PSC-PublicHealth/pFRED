@@ -98,6 +98,14 @@ Activities::Activities (Person *person, Place *house, Place *school, Place *work
   schedule_updated = -1;
   travel_status = false;
   traveling_outside = false;
+
+  // sick leave variables
+  my_sick_days_absent = 0;
+  my_sick_days_present = 0;
+  my_sick_leave_decision_has_been_made = false;
+  my_sick_leave_decision = false;
+  sick_days_remaining = 0.0;
+  sick_leave_available = false;
 }
 
 void Activities::prepare() {
@@ -123,6 +131,8 @@ void Activities::initialize_sick_leave() {
   my_sick_days_present = 0;
   my_sick_leave_decision_has_been_made = false;
   my_sick_leave_decision = false;
+  sick_days_remaining = 0.0;
+  sick_leave_available = false;
 
   if (favorite_place[WORKPLACE_INDEX] != NULL)
     workplace_size = favorite_place[WORKPLACE_INDEX]->get_size();
@@ -360,6 +370,7 @@ void Activities::update_schedule(int day) {
 }
 
 void Activities::decide_whether_to_stay_home(int day) {
+  assert (self->is_symptomatic());
   bool stay_home = false;
   
   if (self->is_adult()) {
@@ -668,6 +679,7 @@ void Activities::update_profile() {
       // quit working
       favorite_place[WORKPLACE_INDEX] = NULL;
       favorite_place[OFFICE_INDEX] = NULL;
+      initialize_sick_leave(); // no sick leave available if retired
       profile = RETIRED_PROFILE;
       if (Global::Verbose>1) {
 	fprintf(Global::Statusfp,
