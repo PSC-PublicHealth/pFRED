@@ -1,6 +1,6 @@
-FRED started Fri Jan 27 10:48:40 2012
+FRED started Tue May 22 15:43:22 2012
 param file = params.test
-fred_open_file: opening file /Users/gref/FRED/input_files/params.default for reading
+fred_open_file: opening file /Users/jay/prj/midas/fred/FRED_TRUNK/src/../input_files/params.default for reading
 fred_open_file: opening file params.test for reading
 PARAMS: debug = 1
 PARAMS: test = 0
@@ -11,6 +11,7 @@ PARAMS: seed = 123456
 PARAMS: epidemic_offset = 0
 PARAMS: vaccine_offset = 0
 PARAMS: start_date = 2009-01-01
+PARAMS: rotate_start_date = 0
 PARAMS: reseed_day = -1
 PARAMS: outdir = OUT.TEST
 PARAMS: tracefile = none
@@ -22,12 +23,14 @@ PARAMS: vaccine_tracefile = vacctrace
 PARAMS: incremental_trace = 0
 PARAMS: trace_headers = 0
 PARAMS: diseases = 1
-PARAMS: enable_behaviors = 0
+PARAMS: enable_behaviors = 1
 PARAMS: prevalencefile = none
 PARAMS: incidencefile = none
 PARAMS: seasonality_timestep_file = none
 PARAMS: work_absenteeism = 0.000000
 PARAMS: school_absenteeism = 0.000000
+PARAMS: seed_age_lower_bound = 0
+PARAMS: seed_age_upper_bound = 120
 PARAMS: enable_large_grid = 0
 PARAMS: enable_small_grid = 0
 PARAMS: enable_aging = 0
@@ -39,30 +42,34 @@ PARAMS: enable_travel = 0
 PARAMS: enable_local_workplace_assignment = 0
 PARAMS: enable_seasonality = 0
 PARAMS: enable_climate = 0
+PARAMS: seed_by_age = 0
+PARAMS: enable_vaccination = 1
+PARAMS: enable_antivirals = 0
 PARAMS: popfile = $FRED_HOME/region/pop_Alleg.txt
 PARAMS: mutation_prob = 1
 PARAMS: mutation_prob = 1 0.0
 PARAMS: output_population = 0
 seed = 12345601
 
-FRED run 2 started Fri Jan 27 10:48:40 2012
+FRED run 2 started Tue May 22 15:43:22 2012
 read places entered
 PARAMS: locfile = $FRED_HOME/region/loc_Alleg.txt
-fred_open_file: opening file /Users/gref/FRED/region/loc_Alleg.txt for reading
-PARAMS: household_contacts[0] = 0.190000
+fred_open_file: opening file /Users/jay/prj/midas/fred/FRED_TRUNK/src/../region/loc_Alleg.txt for reading
+PARAMS: household_contacts[0] = 0.188089
 PARAMS: household_prob[0] = 4
 PARAMS: household_prob[0] = 4 0.6 0.3 0.3 0.4
 PARAMS: office_size = 50
-PARAMS: workplace_contacts[0] = 1.660000
+PARAMS: workplace_contacts[0] = 1.647926
 PARAMS: workplace_prob[0] = 1
 PARAMS: workplace_prob[0] = 1 0.0575
-PARAMS: school_contacts[0] = 15.830000
+PARAMS: school_contacts[0] = 15.785288
 PARAMS: school_prob[0] = 16
 PARAMS: school_prob[0] = 16 0.0435 0 0 0.0435 0 0.0375 0 0.0375 0 0 0.0315 0.0315 0.0435 0.0375 0.0315 0.0575
 PARAMS: school_classroom_size = 40
 PARAMS: school_closure_policy = none
 PARAMS: school_closure_day = 10
 PARAMS: school_closure_threshold = 0.100000
+PARAMS: school_closure_cases = -1
 PARAMS: school_closure_period = 10
 PARAMS: school_closure_delay = 2
 PARAMS: school_summer_schedule = 0
@@ -77,11 +84,11 @@ PARAMS: grid_cell_size = 1.000000
 Grid rows = 54  cols = 58
 Grid max_x = 57.576247  max_y = 53.138214
 PARAMS: weekend_contact_rate[0] = 1.500000
-PARAMS: neighborhood_contacts[0] = 42.320000
+PARAMS: neighborhood_contacts[0] = 41.914699
 PARAMS: neighborhood_prob[0] = 4
 PARAMS: neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 read places finished: Places = 593548
-Places.read_places took 2 seconds
+Places.read_places took 3 seconds
 setup population entered
 disease 0 setup entered
 PARAMS: trans[0] = 1.000000
@@ -176,9 +183,8 @@ Vaccination Priority using ACIP recommendations
 PARAMS: vaccine_priority_only = 0
 PARAMS: vaccine_dose_priority = 0
 PARAMS: vaccination_capacity_file = vaccination_capacity-0.txt
-PARAMS: number_antivirals = 0
 read population entered
-fred_open_file: opening file /Users/gref/FRED/region/pop_Alleg.txt for reading
+fred_open_file: opening file /Users/jay/prj/midas/fred/FRED_TRUNK/src/../region/pop_Alleg.txt for reading
 PARAMS: number_antivirals = 0
 PARAMS: community_distance = 20.000000
 PARAMS: community_prob = 0.100000
@@ -190,6 +196,167 @@ PARAMS: SLU_mean_sick_days_absent = 2.700000
 PARAMS: SLA_absent_prob = 0.720000
 PARAMS: SLU_absent_prob = 0.520000
 PARAMS: flu_days = 0.000000
+PARAMS: stay_home_when_sick_enabled = 0
+PARAMS: stay_home_when_sick_strategy_distribution = 7 50 50 0 0 0 0 0
+PARAMS: stay_home_when_sick_frequency = 1
+PARAMS: stay_home_when_sick_min_prob = 0.000000
+PARAMS: stay_home_when_sick_max_prob = 1.000000
+PARAMS: stay_home_when_sick_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: stay_home_when_sick_imitate_prevalence_update_rate = 0.100000
+PARAMS: stay_home_when_sick_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: stay_home_when_sick_imitate_consensus_update_rate = 0.100000
+PARAMS: stay_home_when_sick_imitate_consensus_threshold = 0.000000
+PARAMS: stay_home_when_sick_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: stay_home_when_sick_imitate_count_update_rate = 0.100000
+PARAMS: stay_home_when_sick_imitate_count_threshold = 0.000000
+PARAMS: stay_home_when_sick_susceptibility_threshold = 2 0 0
+PARAMS: stay_home_when_sick_severity_threshold = 2 0 0
+PARAMS: stay_home_when_sick_benefits_threshold = 2 0 0
+PARAMS: stay_home_when_sick_barriers_threshold = 2 0 0
+PARAMS: stay_home_when_sick_memory_decay = 2 0 0
+PARAMS: stay_home_when_sick_base_odds_ratio = 1.000000
+PARAMS: stay_home_when_sick_susceptibility_odds_ratio = 1.000000
+PARAMS: stay_home_when_sick_severity_odds_ratio = 1.000000
+PARAMS: stay_home_when_sick_benefits_odds_ratio = 1.000000
+PARAMS: stay_home_when_sick_barriers_odds_ratio = 1.000000
+PARAMS: take_sick_leave_enabled = 0
+PARAMS: take_sick_leave_strategy_distribution = 7 50 50 0 0 0 0 0
+PARAMS: take_sick_leave_frequency = 1
+PARAMS: take_sick_leave_min_prob = 0.000000
+PARAMS: take_sick_leave_max_prob = 1.000000
+PARAMS: take_sick_leave_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: take_sick_leave_imitate_prevalence_update_rate = 0.100000
+PARAMS: take_sick_leave_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: take_sick_leave_imitate_consensus_update_rate = 0.100000
+PARAMS: take_sick_leave_imitate_consensus_threshold = 0.000000
+PARAMS: take_sick_leave_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: take_sick_leave_imitate_count_update_rate = 0.100000
+PARAMS: take_sick_leave_imitate_count_threshold = 0.000000
+PARAMS: take_sick_leave_susceptibility_threshold = 2 0 0
+PARAMS: take_sick_leave_severity_threshold = 2 0 0
+PARAMS: take_sick_leave_benefits_threshold = 2 0 0
+PARAMS: take_sick_leave_barriers_threshold = 2 0 0
+PARAMS: take_sick_leave_memory_decay = 2 0 0
+PARAMS: take_sick_leave_base_odds_ratio = 1.000000
+PARAMS: take_sick_leave_susceptibility_odds_ratio = 1.000000
+PARAMS: take_sick_leave_severity_odds_ratio = 1.000000
+PARAMS: take_sick_leave_benefits_odds_ratio = 1.000000
+PARAMS: take_sick_leave_barriers_odds_ratio = 1.000000
+PARAMS: keep_child_home_when_sick_enabled = 0
+PARAMS: keep_child_home_when_sick_strategy_distribution = 7 50 50 0 0 0 0 0
+PARAMS: keep_child_home_when_sick_frequency = 1
+PARAMS: keep_child_home_when_sick_min_prob = 0.000000
+PARAMS: keep_child_home_when_sick_max_prob = 1.000000
+PARAMS: keep_child_home_when_sick_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: keep_child_home_when_sick_imitate_prevalence_update_rate = 0.100000
+PARAMS: keep_child_home_when_sick_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: keep_child_home_when_sick_imitate_consensus_update_rate = 0.100000
+PARAMS: keep_child_home_when_sick_imitate_consensus_threshold = 0.000000
+PARAMS: keep_child_home_when_sick_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: keep_child_home_when_sick_imitate_count_update_rate = 0.100000
+PARAMS: keep_child_home_when_sick_imitate_count_threshold = 0.000000
+PARAMS: keep_child_home_when_sick_susceptibility_threshold = 2 0 0
+PARAMS: keep_child_home_when_sick_severity_threshold = 2 0 0
+PARAMS: keep_child_home_when_sick_benefits_threshold = 2 0 0
+PARAMS: keep_child_home_when_sick_barriers_threshold = 2 0 0
+PARAMS: keep_child_home_when_sick_memory_decay = 2 0 0
+PARAMS: keep_child_home_when_sick_base_odds_ratio = 1.000000
+PARAMS: keep_child_home_when_sick_susceptibility_odds_ratio = 1.000000
+PARAMS: keep_child_home_when_sick_severity_odds_ratio = 1.000000
+PARAMS: keep_child_home_when_sick_benefits_odds_ratio = 1.000000
+PARAMS: keep_child_home_when_sick_barriers_odds_ratio = 1.000000
+PARAMS: accept_vaccine_enabled = 0
+PARAMS: accept_vaccine_strategy_distribution = 7 40 60 0 0 0 0 0
+PARAMS: accept_vaccine_frequency = 1
+PARAMS: accept_vaccine_min_prob = 0.000000
+PARAMS: accept_vaccine_max_prob = 1.000000
+PARAMS: accept_vaccine_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_imitate_prevalence_update_rate = 0.100000
+PARAMS: accept_vaccine_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_imitate_consensus_update_rate = 0.100000
+PARAMS: accept_vaccine_imitate_consensus_threshold = 0.000000
+PARAMS: accept_vaccine_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_imitate_count_update_rate = 0.100000
+PARAMS: accept_vaccine_imitate_count_threshold = 0.000000
+PARAMS: accept_vaccine_susceptibility_threshold = 2 0 0
+PARAMS: accept_vaccine_severity_threshold = 2 0 0
+PARAMS: accept_vaccine_benefits_threshold = 2 0 0
+PARAMS: accept_vaccine_barriers_threshold = 2 0 0
+PARAMS: accept_vaccine_memory_decay = 2 0 0
+PARAMS: accept_vaccine_base_odds_ratio = 0.350000
+PARAMS: accept_vaccine_susceptibility_odds_ratio = 3.000000
+PARAMS: accept_vaccine_severity_odds_ratio = 1.930000
+PARAMS: accept_vaccine_benefits_odds_ratio = 1.000000
+PARAMS: accept_vaccine_barriers_odds_ratio = 0.650000
+PARAMS: accept_vaccine_dose_enabled = 0
+PARAMS: accept_vaccine_dose_strategy_distribution = 7 40 60 0 0 0 0 0
+PARAMS: accept_vaccine_dose_frequency = 1
+PARAMS: accept_vaccine_dose_min_prob = 0.000000
+PARAMS: accept_vaccine_dose_max_prob = 1.000000
+PARAMS: accept_vaccine_dose_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_imitate_prevalence_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_imitate_consensus_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_imitate_consensus_threshold = 0.000000
+PARAMS: accept_vaccine_dose_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_imitate_count_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_imitate_count_threshold = 0.000000
+PARAMS: accept_vaccine_dose_susceptibility_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_severity_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_benefits_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_barriers_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_memory_decay = 2 0 0
+PARAMS: accept_vaccine_dose_base_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_susceptibility_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_severity_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_benefits_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_barriers_odds_ratio = 1.000000
+PARAMS: accept_vaccine_for_child_enabled = 0
+PARAMS: accept_vaccine_for_child_strategy_distribution = 7 40 60 0 0 0 0 0
+PARAMS: accept_vaccine_for_child_frequency = 1
+PARAMS: accept_vaccine_for_child_min_prob = 0.000000
+PARAMS: accept_vaccine_for_child_max_prob = 1.000000
+PARAMS: accept_vaccine_for_child_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_for_child_imitate_prevalence_update_rate = 0.100000
+PARAMS: accept_vaccine_for_child_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_for_child_imitate_consensus_update_rate = 0.100000
+PARAMS: accept_vaccine_for_child_imitate_consensus_threshold = 0.000000
+PARAMS: accept_vaccine_for_child_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_for_child_imitate_count_update_rate = 0.100000
+PARAMS: accept_vaccine_for_child_imitate_count_threshold = 0.000000
+PARAMS: accept_vaccine_for_child_susceptibility_threshold = 2 0 0
+PARAMS: accept_vaccine_for_child_severity_threshold = 2 0 0
+PARAMS: accept_vaccine_for_child_benefits_threshold = 2 0 0
+PARAMS: accept_vaccine_for_child_barriers_threshold = 2 0 0
+PARAMS: accept_vaccine_for_child_memory_decay = 2 0 0
+PARAMS: accept_vaccine_for_child_base_odds_ratio = 1.000000
+PARAMS: accept_vaccine_for_child_susceptibility_odds_ratio = 1.000000
+PARAMS: accept_vaccine_for_child_severity_odds_ratio = 1.000000
+PARAMS: accept_vaccine_for_child_benefits_odds_ratio = 1.000000
+PARAMS: accept_vaccine_for_child_barriers_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_for_child_enabled = 0
+PARAMS: accept_vaccine_dose_for_child_strategy_distribution = 7 40 60 0 0 0 0 0
+PARAMS: accept_vaccine_dose_for_child_frequency = 1
+PARAMS: accept_vaccine_dose_for_child_min_prob = 0.000000
+PARAMS: accept_vaccine_dose_for_child_max_prob = 1.000000
+PARAMS: accept_vaccine_dose_for_child_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_for_child_imitate_prevalence_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_for_child_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_for_child_imitate_consensus_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_for_child_imitate_consensus_threshold = 0.000000
+PARAMS: accept_vaccine_dose_for_child_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_for_child_imitate_count_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_for_child_imitate_count_threshold = 0.000000
+PARAMS: accept_vaccine_dose_for_child_susceptibility_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_for_child_severity_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_for_child_benefits_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_for_child_barriers_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_for_child_memory_decay = 2 0 0
+PARAMS: accept_vaccine_dose_for_child_base_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_for_child_susceptibility_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_for_child_severity_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_for_child_benefits_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_for_child_barriers_odds_ratio = 1.000000
 finished reading population, pop_size = 1242755
 number of residually immune people = 0
 Vaccine Queue Stats 
@@ -197,7 +364,7 @@ Vaccine Queue Stats
    Number in Regular Queue       = 628238
    Total Agents in Vaccine Queue = 1242755
 population setup finished
-Pop.setup took 9 seconds
+Pop.setup took 10 seconds
 setup classrooms entered
 PARAMS: classroom_contacts[0] = -1.000000
 PARAMS: classroom_prob[0] = 16
@@ -217,7 +384,7 @@ prepare places entered
 prepare places finished
 place prep took 0 seconds
 FRED initialization took 0 seconds
-FRED initialization complete Fri Jan 27 10:48:52 2012
+FRED initialization complete Tue May 22 15:43:36 2012
 day 0 update places took 1 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -233,11 +400,12 @@ Number of infectious schools = 0
 Number of infectious classrooms = 0
 Number of infectious workplaces = 0
 Number of infectious offices = 0
-day 0 update epidemics took 0 seconds
+day 0 update epidemics took 1 seconds
 Day   0  Str 0  S 1242655  E     100  I       0  I_s       0  R       0  M       0  C     100  N 1242755  AR  0.01  CI       0 RR 0.00 NR 0  CAR  0.00  Thu 2009-01-01 Year 2008 Week 53
 day 0 report population took 0 seconds
-day 0 finished Fri Jan 27 10:48:53 2012
-day 0 took 1 seconds
+day 0 finished Tue May 22 15:43:38 2012
+day 0 took 2 seconds
+day 0 maxrss 1484132352
 day 1 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -245,7 +413,7 @@ Vaccine Capacity on Day 1 = 10000
 Queues at beginning of vaccination:  priority (604517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 1
 Left in queues:  Priority (594517)    Regular (628238)
-day 1 update population took 1 seconds
+day 1 update population took 0 seconds
 DAY 0 ABSENTEEISM: work absent 0 present 0 0.00  school absent 0 present 0 0.00
 Number of infectious places = 206
 Number of infectious households = 88
@@ -254,11 +422,12 @@ Number of infectious schools = 6
 Number of infectious classrooms = 6
 Number of infectious workplaces = 26
 Number of infectious offices = 26
-day 1 update epidemics took 0 seconds
-Day   1  Str 0  S 1242621  E      46  I      88  I_s      51  R       0  M       0  C      34  N 1242755  AR  0.01  CI      51 RR 0.00 NR 0  CAR  0.00  Fri 2009-01-02 Year 2008 Week 53
+day 1 update epidemics took 1 seconds
+Day   1  Str 0  S 1242620  E      47  I      88  I_s      51  R       0  M       0  C      35  N 1242755  AR  0.01  CI      51 RR 0.00 NR 0  CAR  0.00  Fri 2009-01-02 Year 2008 Week 53
 day 1 report population took 0 seconds
-day 1 finished Fri Jan 27 10:48:54 2012
+day 1 finished Tue May 22 15:43:39 2012
 day 1 took 1 seconds
+day 1 maxrss 1486196736
 day 2 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -268,19 +437,20 @@ Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 2
 Left in queues:  Priority (584517)    Regular (628238)
 day 2 update population took 0 seconds
 DAY 1 ABSENTEEISM: work absent 14 present 8 0.61  school absent 3 present 3 0.43
-Number of infectious places = 220
-Number of infectious households = 115
-Number of infectious neighborhoods = 85
+Number of infectious places = 206
+Number of infectious households = 113
+Number of infectious neighborhoods = 79
 Number of infectious schools = 0
 Number of infectious classrooms = 0
-Number of infectious workplaces = 10
-Number of infectious offices = 10
-day 2 update epidemics took 1 seconds
-Day   2  Str 0  S 1242590  E      39  I     126  I_s      78  R       0  M       0  C      31  N 1242755  AR  0.01  CI      27 RR 0.00 NR 0  CAR  0.01  Sat 2009-01-03 Year 2008 Week 53
+Number of infectious workplaces = 7
+Number of infectious offices = 7
+day 2 update epidemics took 0 seconds
+Day   2  Str 0  S 1242596  E      33  I     126  I_s      74  R       0  M       0  C      24  N 1242755  AR  0.01  CI      23 RR 0.00 NR 0  CAR  0.01  Sat 2009-01-03 Year 2008 Week 53
 day 2 report population took 0 seconds
-day 2 finished Fri Jan 27 10:48:55 2012
-day 2 took 1 seconds
-day 3 update places took 0 seconds
+day 2 finished Tue May 22 15:43:39 2012
+day 2 took 0 seconds
+day 2 maxrss 1487671296
+day 3 update places took 1 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
 Vaccine Capacity on Day 3 = 10000
@@ -288,40 +458,42 @@ Queues at beginning of vaccination:  priority (584517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 3
 Left in queues:  Priority (574517)    Regular (628238)
 day 3 update population took 0 seconds
-DAY 2 ABSENTEEISM: work absent 4 present 5 0.40  school absent 0 present 0 0.00
-Number of infectious places = 251
-Number of infectious households = 129
-Number of infectious neighborhoods = 98
+DAY 2 ABSENTEEISM: work absent 7 present 2 0.70  school absent 0 present 0 0.00
+Number of infectious places = 239
+Number of infectious households = 130
+Number of infectious neighborhoods = 93
 Number of infectious schools = 0
 Number of infectious classrooms = 0
-Number of infectious workplaces = 12
-Number of infectious offices = 12
+Number of infectious workplaces = 8
+Number of infectious offices = 8
 day 3 update epidemics took 0 seconds
-Day   3  Str 0  S 1242550  E      46  I     159  I_s     101  R       0  M       0  C      40  N 1242755  AR  0.02  CI      23 RR 0.00 NR 0  CAR  0.01  Sun 2009-01-04 Year 2009 Week 1
+Day   3  Str 0  S 1242555  E      44  I     156  I_s      98  R       0  M       0  C      41  N 1242755  AR  0.02  CI      24 RR 0.00 NR 0  CAR  0.01  Sun 2009-01-04 Year 2009 Week 1
 day 3 report population took 0 seconds
-day 3 finished Fri Jan 27 10:48:55 2012
-day 3 took 0 seconds
-day 4 update places took 1 seconds
+day 3 finished Tue May 22 15:43:40 2012
+day 3 took 1 seconds
+day 3 maxrss 1488969728
+day 4 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
 Vaccine Capacity on Day 4 = 10000
 Queues at beginning of vaccination:  priority (574517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 4
 Left in queues:  Priority (564517)    Regular (628238)
-day 4 update population took 0 seconds
-DAY 3 ABSENTEEISM: work absent 8 present 5 0.57  school absent 0 present 0 0.00
-Number of infectious places = 378
-Number of infectious households = 135
-Number of infectious neighborhoods = 104
-Number of infectious schools = 16
-Number of infectious classrooms = 18
-Number of infectious workplaces = 52
-Number of infectious offices = 53
+day 4 update population took 1 seconds
+DAY 3 ABSENTEEISM: work absent 11 present 3 0.73  school absent 0 present 0 0.00
+Number of infectious places = 360
+Number of infectious households = 132
+Number of infectious neighborhoods = 97
+Number of infectious schools = 18
+Number of infectious classrooms = 21
+Number of infectious workplaces = 46
+Number of infectious offices = 46
 day 4 update epidemics took 0 seconds
-Day   4  Str 0  S 1242484  E      74  I     172  I_s     114  R      25  M       0  C      66  N 1242755  AR  0.02  CI      28 RR 0.00 NR 0  CAR  0.01  Mon 2009-01-05 Year 2009 Week 1
+Day   4  Str 0  S 1242488  E      78  I     164  I_s     105  R      25  M       0  C      67  N 1242755  AR  0.02  CI      22 RR 0.00 NR 0  CAR  0.01  Mon 2009-01-05 Year 2009 Week 1
 day 4 report population took 0 seconds
-day 4 finished Fri Jan 27 10:48:56 2012
+day 4 finished Tue May 22 15:43:41 2012
 day 4 took 1 seconds
+day 4 maxrss 1490534400
 day 5 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -330,19 +502,20 @@ Queues at beginning of vaccination:  priority (564517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 5
 Left in queues:  Priority (554517)    Regular (628238)
 day 5 update population took 1 seconds
-DAY 4 ABSENTEEISM: work absent 21 present 28 0.42  school absent 17 present 9 0.63
-Number of infectious places = 434
-Number of infectious households = 159
-Number of infectious neighborhoods = 118
-Number of infectious schools = 24
+DAY 4 ABSENTEEISM: work absent 22 present 19 0.52  school absent 14 present 12 0.52
+Number of infectious places = 412
+Number of infectious households = 148
+Number of infectious neighborhoods = 111
+Number of infectious schools = 26
 Number of infectious classrooms = 32
-Number of infectious workplaces = 50
-Number of infectious offices = 51
+Number of infectious workplaces = 47
+Number of infectious offices = 48
 day 5 update epidemics took 0 seconds
-Day   5  Str 0  S 1242372  E     119  I     199  I_s     139  R      65  M       0  C     112  N 1242755  AR  0.03  CI      47 RR 0.00 NR 0  CAR  0.01  Tue 2009-01-06 Year 2009 Week 1
+Day   5  Str 0  S 1242355  E     149  I     182  I_s     122  R      69  M       0  C     133  N 1242755  AR  0.03  CI      41 RR 0.00 NR 0  CAR  0.01  Tue 2009-01-06 Year 2009 Week 1
 day 5 report population took 0 seconds
-day 5 finished Fri Jan 27 10:48:57 2012
+day 5 finished Tue May 22 15:43:42 2012
 day 5 took 1 seconds
+day 5 maxrss 1492226048
 day 6 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -350,20 +523,21 @@ Vaccine Capacity on Day 6 = 10000
 Queues at beginning of vaccination:  priority (554517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 6
 Left in queues:  Priority (544517)    Regular (628238)
-day 6 update population took 0 seconds
-DAY 5 ABSENTEEISM: work absent 20 present 33 0.37  school absent 25 present 21 0.53
-Number of infectious places = 536
+day 6 update population took 1 seconds
+DAY 5 ABSENTEEISM: work absent 20 present 24 0.44  school absent 24 present 23 0.50
+Number of infectious places = 555
 Number of infectious households = 209
-Number of infectious neighborhoods = 144
+Number of infectious neighborhoods = 154
 Number of infectious schools = 34
-Number of infectious classrooms = 49
-Number of infectious workplaces = 49
-Number of infectious offices = 51
-day 6 update epidemics took 1 seconds
-Day   6  Str 0  S 1242233  E     158  I     249  I_s     163  R     115  M       0  C     139  N 1242755  AR  0.04  CI      61 RR 0.00 NR 0  CAR  0.02  Wed 2009-01-07 Year 2009 Week 1
+Number of infectious classrooms = 56
+Number of infectious workplaces = 50
+Number of infectious offices = 52
+day 6 update epidemics took 0 seconds
+Day   6  Str 0  S 1242187  E     201  I     255  I_s     168  R     112  M       0  C     168  N 1242755  AR  0.05  CI      75 RR 0.00 NR 0  CAR  0.02  Wed 2009-01-07 Year 2009 Week 1
 day 6 report population took 0 seconds
-day 6 finished Fri Jan 27 10:48:58 2012
+day 6 finished Tue May 22 15:43:43 2012
 day 6 took 1 seconds
+day 6 maxrss 1494548480
 day 7 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -371,20 +545,21 @@ Vaccine Capacity on Day 7 = 10000
 Queues at beginning of vaccination:  priority (544517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 7
 Left in queues:  Priority (534517)    Regular (628238)
-day 7 update population took 0 seconds
-DAY 6 ABSENTEEISM: work absent 28 present 26 0.51  school absent 43 present 37 0.53
-Number of infectious places = 685
-Number of infectious households = 288
-Number of infectious neighborhoods = 181
-Number of infectious schools = 44
-Number of infectious classrooms = 75
-Number of infectious workplaces = 48
-Number of infectious offices = 49
-day 7 update epidemics took 1 seconds
-Day   7  Str 0  S 1241980  E     286  I     331  I_s     219  R     158  M       0  C     253  N 1242755  AR  0.06  CI      85 RR 0.00 NR 0  CAR  0.03  Thu 2009-01-08 Year 2009 Week 1
+day 7 update population took 1 seconds
+DAY 6 ABSENTEEISM: work absent 22 present 32 0.40  school absent 44 present 43 0.50
+Number of infectious places = 768
+Number of infectious households = 311
+Number of infectious neighborhoods = 214
+Number of infectious schools = 45
+Number of infectious classrooms = 86
+Number of infectious workplaces = 55
+Number of infectious offices = 57
+day 7 update epidemics took 0 seconds
+Day   7  Str 0  S 1241880  E     342  I     377  I_s     243  R     156  M       0  C     307  N 1242755  AR  0.07  CI     103 RR 0.00 NR 0  CAR  0.03  Thu 2009-01-08 Year 2009 Week 1
 day 7 report population took 0 seconds
-day 7 finished Fri Jan 27 10:48:59 2012
+day 7 finished Tue May 22 15:43:44 2012
 day 7 took 1 seconds
+day 7 maxrss 1497112576
 day 8 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -392,20 +567,21 @@ Vaccine Capacity on Day 8 = 10000
 Queues at beginning of vaccination:  priority (534517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 8
 Left in queues:  Priority (524517)    Regular (628238)
-day 8 update population took 0 seconds
-DAY 7 ABSENTEEISM: work absent 35 present 26 0.56  school absent 63 present 63 0.50
-Number of infectious places = 1035
-Number of infectious households = 459
-Number of infectious neighborhoods = 253
-Number of infectious schools = 58
-Number of infectious classrooms = 116
-Number of infectious workplaces = 72
-Number of infectious offices = 77
+day 8 update population took 1 seconds
+DAY 7 ABSENTEEISM: work absent 29 present 42 0.40  school absent 77 present 75 0.50
+Number of infectious places = 1168
+Number of infectious households = 509
+Number of infectious neighborhoods = 311
+Number of infectious schools = 56
+Number of infectious classrooms = 130
+Number of infectious workplaces = 80
+Number of infectious offices = 82
 day 8 update epidemics took 0 seconds
-Day   8  Str 0  S 1241546  E     484  I     524  I_s     342  R     201  M       0  C     434  N 1242755  AR  0.10  CI     151 RR 0.00 NR 0  CAR  0.04  Fri 2009-01-09 Year 2009 Week 1
+Day   8  Str 0  S 1241352  E     599  I     606  I_s     400  R     198  M       0  C     528  N 1242755  AR  0.11  CI     187 RR 0.00 NR 0  CAR  0.04  Fri 2009-01-09 Year 2009 Week 1
 day 8 report population took 0 seconds
-day 8 finished Fri Jan 27 10:48:59 2012
-day 8 took 0 seconds
+day 8 finished Tue May 22 15:43:45 2012
+day 8 took 1 seconds
+day 8 maxrss 1500712960
 day 9 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -414,19 +590,20 @@ Queues at beginning of vaccination:  priority (524517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 9
 Left in queues:  Priority (514517)    Regular (628238)
 day 9 update population took 1 seconds
-DAY 8 ABSENTEEISM: work absent 36 present 44 0.44  school absent 122 present 100 0.55
-Number of infectious places = 1150
-Number of infectious households = 710
-Number of infectious neighborhoods = 377
+DAY 8 ABSENTEEISM: work absent 41 present 54 0.43  school absent 139 present 141 0.49
+Number of infectious places = 1408
+Number of infectious households = 852
+Number of infectious neighborhoods = 442
 Number of infectious schools = 0
 Number of infectious classrooms = 0
-Number of infectious workplaces = 31
-Number of infectious offices = 32
-day 9 update epidemics took 0 seconds
-Day   9  Str 0  S 1241316  E     338  I     835  I_s     560  R     266  M       0  C     230  N 1242755  AR  0.12  CI     262 RR 0.00 NR 0  CAR  0.06  Sat 2009-01-10 Year 2009 Week 1
+Number of infectious workplaces = 57
+Number of infectious offices = 57
+day 9 update epidemics took 1 seconds
+Day   9  Str 0  S 1241060  E     407  I    1024  I_s     687  R     264  M       0  C     292  N 1242755  AR  0.14  CI     326 RR 0.00 NR 0  CAR  0.07  Sat 2009-01-10 Year 2009 Week 1
 day 9 report population took 0 seconds
-day 9 finished Fri Jan 27 10:49:00 2012
-day 9 took 1 seconds
+day 9 finished Tue May 22 15:43:47 2012
+day 9 took 2 seconds
+day 9 maxrss 1504354304
 day 10 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -435,19 +612,20 @@ Queues at beginning of vaccination:  priority (514517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 10
 Left in queues:  Priority (504517)    Regular (628238)
 day 10 update population took 0 seconds
-DAY 9 ABSENTEEISM: work absent 10 present 6 0.59  school absent 0 present 0 0.00
-Number of infectious places = 1355
-Number of infectious households = 826
-Number of infectious neighborhoods = 430
+DAY 9 ABSENTEEISM: work absent 17 present 32 0.34  school absent 0 present 0 0.00
+Number of infectious places = 1662
+Number of infectious households = 992
+Number of infectious neighborhoods = 519
 Number of infectious schools = 0
 Number of infectious classrooms = 0
-Number of infectious workplaces = 49
-Number of infectious offices = 50
+Number of infectious workplaces = 75
+Number of infectious offices = 76
 day 10 update epidemics took 1 seconds
-Day  10  Str 0  S 1240988  E     369  I    1038  I_s     683  R     360  M       0  C     328  N 1242755  AR  0.14  CI     181 RR 0.00 NR 0  CAR  0.07  Sun 2009-01-11 Year 2009 Week 2
+Day  10  Str 0  S 1240673  E     422  I    1280  I_s     856  R     380  M       0  C     387  N 1242755  AR  0.17  CI     247 RR 0.00 NR 0  CAR  0.09  Sun 2009-01-11 Year 2009 Week 2
 day 10 report population took 0 seconds
-day 10 finished Fri Jan 27 10:49:01 2012
+day 10 finished Tue May 22 15:43:48 2012
 day 10 took 1 seconds
+day 10 maxrss 1507237888
 day 11 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -456,19 +634,20 @@ Queues at beginning of vaccination:  priority (504517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 11
 Left in queues:  Priority (494517)    Regular (628238)
 day 11 update population took 0 seconds
-DAY 10 ABSENTEEISM: work absent 13 present 17 0.42  school absent 0 present 0 0.00
-Number of infectious places = 2159
-Number of infectious households = 898
-Number of infectious neighborhoods = 471
-Number of infectious schools = 109
-Number of infectious classrooms = 273
-Number of infectious workplaces = 195
-Number of infectious offices = 213
+DAY 10 ABSENTEEISM: work absent 27 present 37 0.42  school absent 0 present 0 0.00
+Number of infectious places = 2600
+Number of infectious households = 1084
+Number of infectious neighborhoods = 543
+Number of infectious schools = 135
+Number of infectious classrooms = 320
+Number of infectious workplaces = 252
+Number of infectious offices = 266
 day 11 update epidemics took 1 seconds
-Day  11  Str 0  S 1240147  E     911  I    1196  I_s     787  R     501  M       0  C     841  N 1242755  AR  0.21  CI     204 RR 0.00 NR 0  CAR  0.09  Mon 2009-01-12 Year 2009 Week 2
+Day  11  Str 0  S 1239612  E    1141  I    1456  I_s     960  R     546  M       0  C    1061  N 1242755  AR  0.25  CI     211 RR 0.00 NR 0  CAR  0.11  Mon 2009-01-12 Year 2009 Week 2
 day 11 report population took 0 seconds
-day 11 finished Fri Jan 27 10:49:02 2012
+day 11 finished Tue May 22 15:43:49 2012
 day 11 took 1 seconds
+day 11 maxrss 1512177664
 day 12 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -477,19 +656,20 @@ Queues at beginning of vaccination:  priority (494517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 12
 Left in queues:  Priority (484517)    Regular (628238)
 day 12 update population took 0 seconds
-DAY 11 ABSENTEEISM: work absent 108 present 101 0.51  school absent 223 present 209 0.52
-Number of infectious places = 2924
-Number of infectious households = 1302
-Number of infectious neighborhoods = 577
-Number of infectious schools = 140
-Number of infectious classrooms = 386
-Number of infectious workplaces = 247
-Number of infectious offices = 272
+DAY 11 ABSENTEEISM: work absent 129 present 136 0.48  school absent 281 present 266 0.51
+Number of infectious places = 3588
+Number of infectious households = 1676
+Number of infectious neighborhoods = 681
+Number of infectious schools = 149
+Number of infectious classrooms = 428
+Number of infectious workplaces = 314
+Number of infectious offices = 340
 day 12 update epidemics took 1 seconds
-Day  12  Str 0  S 1238954  E    1365  I    1670  I_s    1134  R     766  M       0  C    1193  N 1242755  AR  0.31  CI     521 RR 0.00 NR 0  CAR  0.13  Tue 2009-01-13 Year 2009 Week 2
+Day  12  Str 0  S 1238120  E    1697  I    2092  I_s    1401  R     846  M       0  C    1492  N 1242755  AR  0.37  CI     637 RR 0.00 NR 0  CAR  0.16  Tue 2009-01-13 Year 2009 Week 2
 day 12 report population took 0 seconds
-day 12 finished Fri Jan 27 10:49:03 2012
+day 12 finished Tue May 22 15:43:50 2012
 day 12 took 1 seconds
+day 12 maxrss 1517215744
 day 13 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -498,19 +678,20 @@ Queues at beginning of vaccination:  priority (484517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 13
 Left in queues:  Priority (474517)    Regular (628238)
 day 13 update population took 0 seconds
-DAY 12 ABSENTEEISM: work absent 131 present 124 0.51  school absent 331 present 354 0.48
-Number of infectious places = 4249
-Number of infectious households = 2063
-Number of infectious neighborhoods = 770
-Number of infectious schools = 160
-Number of infectious classrooms = 528
-Number of infectious workplaces = 346
-Number of infectious offices = 382
+DAY 12 ABSENTEEISM: work absent 190 present 186 0.50  school absent 424 present 411 0.51
+Number of infectious places = 5053
+Number of infectious households = 2608
+Number of infectious neighborhoods = 841
+Number of infectious schools = 167
+Number of infectious classrooms = 583
+Number of infectious workplaces = 401
+Number of infectious offices = 453
 day 13 update epidemics took 1 seconds
-Day  13  Str 0  S 1237058  E    2121  I    2521  I_s    1689  R    1055  M       0  C    1896  N 1242755  AR  0.46  CI     751 RR 0.00 NR 0  CAR  0.19  Wed 2009-01-14 Year 2009 Week 2
+Day  13  Str 0  S 1235810  E    2582  I    3144  I_s    2091  R    1219  M       0  C    2310  N 1242755  AR  0.56  CI     947 RR 0.00 NR 0  CAR  0.23  Wed 2009-01-14 Year 2009 Week 2
 day 13 report population took 0 seconds
-day 13 finished Fri Jan 27 10:49:04 2012
+day 13 finished Tue May 22 15:43:51 2012
 day 13 took 1 seconds
+day 13 maxrss 1523236864
 day 14 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -518,20 +699,21 @@ Vaccine Capacity on Day 14 = 10000
 Queues at beginning of vaccination:  priority (474517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 14
 Left in queues:  Priority (464517)    Regular (628238)
-day 14 update population took 0 seconds
-DAY 13 ABSENTEEISM: work absent 183 present 195 0.48  school absent 533 present 540 0.50
-Number of infectious places = 6167
-Number of infectious households = 3232
-Number of infectious neighborhoods = 976
-Number of infectious schools = 203
-Number of infectious classrooms = 763
-Number of infectious workplaces = 468
-Number of infectious offices = 525
-day 14 update epidemics took 1 seconds
-Day  14  Str 0  S 1225986  E    3370  I    3926  I_s    2632  R    1372  M    8101  C    2971  N 1242755  AR  0.70  CI    1144 RR 0.00 NR 0  CAR  0.28  Thu 2009-01-15 Year 2009 Week 2
+day 14 update population took 1 seconds
+DAY 13 ABSENTEEISM: work absent 276 present 253 0.52  school absent 673 present 673 0.50
+Number of infectious places = 7375
+Number of infectious households = 4085
+Number of infectious neighborhoods = 1077
+Number of infectious schools = 194
+Number of infectious classrooms = 829
+Number of infectious workplaces = 556
+Number of infectious offices = 634
+day 14 update epidemics took 0 seconds
+Day  14  Str 0  S 1224207  E    3967  I    4907  I_s    3291  R    1581  M    8093  C    3510  N 1242755  AR  0.84  CI    1434 RR 0.00 NR 0  CAR  0.35  Thu 2009-01-15 Year 2009 Week 2
 day 14 report population took 0 seconds
-day 14 finished Fri Jan 27 10:49:05 2012
+day 14 finished Tue May 22 15:43:52 2012
 day 14 took 1 seconds
+day 14 maxrss 1530515456
 day 15 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -539,20 +721,21 @@ Vaccine Capacity on Day 15 = 10000
 Queues at beginning of vaccination:  priority (464517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 15
 Left in queues:  Priority (454517)    Regular (628238)
-day 15 update population took 0 seconds
-DAY 14 ABSENTEEISM: work absent 239 present 266 0.47  school absent 889 present 923 0.49
-Number of infectious places = 9088
-Number of infectious households = 5102
-Number of infectious neighborhoods = 1210
-Number of infectious schools = 242
-Number of infectious classrooms = 1072
-Number of infectious workplaces = 678
-Number of infectious offices = 784
+day 15 update population took 1 seconds
+DAY 14 ABSENTEEISM: work absent 402 present 386 0.51  school absent 1143 present 1120 0.50
+Number of infectious places = 10694
+Number of infectious households = 6225
+Number of infectious neighborhoods = 1300
+Number of infectious schools = 231
+Number of infectious classrooms = 1140
+Number of infectious workplaces = 826
+Number of infectious offices = 972
 day 15 update epidemics took 1 seconds
-Day  15  Str 0  S 1213399  E    5119  I    6270  I_s    4191  R    1789  M   16178  C    4510  N 1242755  AR  1.06  CI    1834 RR 0.00 NR 0  CAR  0.43  Fri 2009-01-16 Year 2009 Week 2
+Day  15  Str 0  S 1210759  E    6094  I    7618  I_s    5091  R    2140  M   16144  C    5397  N 1242755  AR  1.28  CI    2165 RR 0.00 NR 0  CAR  0.52  Fri 2009-01-16 Year 2009 Week 2
 day 15 report population took 0 seconds
-day 15 finished Fri Jan 27 10:49:06 2012
-day 15 took 1 seconds
+day 15 finished Tue May 22 15:43:54 2012
+day 15 took 2 seconds
+day 15 maxrss 1539313664
 day 16 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -561,19 +744,20 @@ Queues at beginning of vaccination:  priority (454517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 16
 Left in queues:  Priority (444517)    Regular (628238)
 day 16 update population took 0 seconds
-DAY 15 ABSENTEEISM: work absent 390 present 348 0.53  school absent 1549 present 1445 0.52
-Number of infectious places = 10049
-Number of infectious households = 7824
-Number of infectious neighborhoods = 1409
+DAY 15 ABSENTEEISM: work absent 591 present 575 0.51  school absent 1809 present 1783 0.50
+Number of infectious places = 11943
+Number of infectious households = 9351
+Number of infectious neighborhoods = 1495
 Number of infectious schools = 0
 Number of infectious classrooms = 0
-Number of infectious workplaces = 388
-Number of infectious offices = 428
+Number of infectious workplaces = 530
+Number of infectious offices = 567
 day 16 update epidemics took 1 seconds
-Day  16  Str 0  S 1202522  E    3760  I    9691  I_s    6448  R    2575  M   24207  C    2848  N 1242755  AR  1.29  CI    2801 RR 0.00 NR 0  CAR  0.66  Sat 2009-01-17 Year 2009 Week 2
+Day  16  Str 0  S 1199298  E    4533  I   11739  I_s    7857  R    3030  M   24155  C    3450  N 1242755  AR  1.55  CI    3363 RR 0.00 NR 0  CAR  0.79  Sat 2009-01-17 Year 2009 Week 2
 day 16 report population took 0 seconds
-day 16 finished Fri Jan 27 10:49:07 2012
+day 16 finished Tue May 22 15:43:55 2012
 day 16 took 1 seconds
+day 16 maxrss 1545117696
 day 17 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -582,19 +766,20 @@ Queues at beginning of vaccination:  priority (444517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 17
 Left in queues:  Priority (434517)    Regular (628238)
 day 17 update population took 0 seconds
-DAY 16 ABSENTEEISM: work absent 96 present 91 0.51  school absent 0 present 0 0.00
-Number of infectious places = 11568
-Number of infectious households = 8973
-Number of infectious neighborhoods = 1500
+DAY 16 ABSENTEEISM: work absent 278 present 290 0.49  school absent 0 present 0 0.00
+Number of infectious places = 13599
+Number of infectious households = 10645
+Number of infectious neighborhoods = 1594
 Number of infectious schools = 0
 Number of infectious classrooms = 0
-Number of infectious workplaces = 515
-Number of infectious offices = 580
+Number of infectious workplaces = 650
+Number of infectious offices = 710
 day 17 update epidemics took 1 seconds
-Day  17  Str 0  S 1191232  E    3883  I   11778  I_s    7852  R    3678  M   32184  C    3313  N 1242755  AR  1.56  CI    2126 RR 0.00 NR 0  CAR  0.83  Sun 2009-01-18 Year 2009 Week 3
+Day  17  Str 0  S 1187510  E    4582  I   14123  I_s    9446  R    4455  M   32085  C    3858  N 1242755  AR  1.86  CI    2558 RR 0.00 NR 0  CAR  1.00  Sun 2009-01-18 Year 2009 Week 3
 day 17 report population took 0 seconds
-day 17 finished Fri Jan 27 10:49:08 2012
+day 17 finished Tue May 22 15:43:56 2012
 day 17 took 1 seconds
+day 17 maxrss 1548922880
 day 18 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -602,20 +787,21 @@ Vaccine Capacity on Day 18 = 10000
 Queues at beginning of vaccination:  priority (434517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 18
 Left in queues:  Priority (424517)    Regular (628238)
-day 18 update population took 0 seconds
-DAY 17 ABSENTEEISM: work absent 134 present 139 0.49  school absent 0 present 0 0.00
-Number of infectious places = 17899
-Number of infectious households = 9671
-Number of infectious neighborhoods = 1577
-Number of infectious schools = 371
-Number of infectious classrooms = 2070
-Number of infectious workplaces = 1873
-Number of infectious offices = 2337
+day 18 update population took 1 seconds
+DAY 17 ABSENTEEISM: work absent 350 present 385 0.48  school absent 0 present 0 0.00
+Number of infectious places = 20778
+Number of infectious households = 11453
+Number of infectious neighborhoods = 1668
+Number of infectious schools = 366
+Number of infectious classrooms = 2223
+Number of infectious workplaces = 2249
+Number of infectious offices = 2819
 day 18 update epidemics took 1 seconds
-Day  18  Str 0  S 1175629  E    8381  I   13150  I_s    8746  R    5485  M   40110  C    7677  N 1242755  AR  2.17  CI    2116 RR 0.00 NR 0  CAR  1.00  Mon 2009-01-19 Year 2009 Week 3
+Day  18  Str 0  S 1170944  E    9407  I   15756  I_s   10591  R    6658  M   39990  C    8661  N 1242755  AR  2.56  CI    2565 RR 0.00 NR 0  CAR  1.21  Mon 2009-01-19 Year 2009 Week 3
 day 18 report population took 0 seconds
-day 18 finished Fri Jan 27 10:49:09 2012
-day 18 took 1 seconds
+day 18 finished Tue May 22 15:43:58 2012
+day 18 took 2 seconds
+day 18 maxrss 1560109056
 day 19 update places took 0 seconds
 Current Vaccine Stock = 10000
 Vaccinating!
@@ -624,18 +810,19 @@ Queues at beginning of vaccination:  priority (424517)    Regular (628238)
 Vaccinated priority to stock out 10000 agents, for a total of 10000 on day 19
 Left in queues:  Priority (414517)    Regular (628238)
 day 19 update population took 1 seconds
-DAY 18 ABSENTEEISM: work absent 1089 present 1138 0.49  school absent 2341 present 2433 0.49
-Number of infectious places = 23003
-Number of infectious households = 13209
-Number of infectious neighborhoods = 1704
-Number of infectious schools = 399
-Number of infectious classrooms = 2516
-Number of infectious workplaces = 2283
-Number of infectious offices = 2892
+DAY 18 ABSENTEEISM: work absent 1653 present 1591 0.51  school absent 2858 present 2842 0.50
+Number of infectious places = 26179
+Number of infectious households = 15293
+Number of infectious neighborhoods = 1774
+Number of infectious schools = 388
+Number of infectious classrooms = 2604
+Number of infectious workplaces = 2683
+Number of infectious offices = 3437
 day 19 update epidemics took 1 seconds
-Day  19  Str 0  S 1158337  E   11036  I   17141  I_s   11453  R    8309  M   47932  C    9470  N 1242755  AR  2.94  CI    4568 RR 0.00 NR 0  CAR  1.37  Tue 2009-01-20 Year 2009 Week 3
+Day  19  Str 0  S 1152457  E   12454  I   20009  I_s   13425  R   10120  M   47715  C   10762  N 1242755  AR  3.43  CI    5200 RR 0.00 NR 0  CAR  1.62  Tue 2009-01-20 Year 2009 Week 3
 day 19 report population took 0 seconds
-day 19 finished Fri Jan 27 10:49:11 2012
+day 19 finished Tue May 22 15:44:00 2012
 day 19 took 2 seconds
-FRED finished Fri Jan 27 10:49:11 2012
-FRED took 31 seconds
+day 19 maxrss 1567985664
+FRED finished Tue May 22 15:44:00 2012
+FRED took 38 seconds

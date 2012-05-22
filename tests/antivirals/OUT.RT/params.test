@@ -3,7 +3,11 @@ popfile = $FRED_HOME/region/pop_Alleg.txt
 locfile = $FRED_HOME/region/loc_Alleg.txt
 quality_control = 0
 
+# enable behaviors must be set
+enable_behaviors = 1
+
 ## Antivirals
+enable_antivirals = 1
 number_antivirals = 1
 
 ## Antiviral 1 - reduces infectivity

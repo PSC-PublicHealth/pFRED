@@ -20,6 +20,13 @@
 #include "Params.h"
 #include "Person.h"
 
+AV_Manager::AV_Manager() {
+  pop = NULL;
+  are_policies_set = false;
+  do_av = false;
+  overall_start_day = -1;
+}
+
 AV_Manager::AV_Manager(Population *_pop) : Manager(_pop){
   pop = _pop;
   are_policies_set = false;

@@ -4,12 +4,16 @@ locfile = $FRED_HOME/region/loc_Alleg.txt
 outdir = OUT.TEST
 quality_control = 0
 
+# enable behaviors must be set
+enable_behaviors = 1
+
 vaccine_prioritize_by_age = 1
 vaccine_priority_age_low = 0
 vaccine_priority_age_high = 24
 vaccination_capacity_file = vaccination_capacity-0.txt
 vaccine_tracefile = vacctrace
 
+enable_vaccination = 1
 number_of_vaccines = 1
 prob_accept_vaccine = 0.6
 prob_accept_another_vaccine_dose = 1.0

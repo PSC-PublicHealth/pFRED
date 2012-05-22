@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+   Copyright 2009 by the University of Pittsburgh
+   Licensed under the Academic Free License version 3.0
+   See the file "LICENSE" for more information
+   */
 
 //
 //
@@ -75,13 +75,13 @@ Population::~Population() {
 
 void Population::get_parameters() {
   Params::get_param_from_string("popfile", Population::popfile);
-  
+
   int num_mutation_params =
-      Params::get_param_matrix((char *) "mutation_prob", &mutation_prob);
+    Params::get_param_matrix((char *) "mutation_prob", &mutation_prob);
   if (num_mutation_params != Global::Diseases) {
     fprintf(Global::Statusfp,
-            "Improper mutation matrix: expected square matrix of %i rows, found %i",
-            Global::Diseases, num_mutation_params);
+        "Improper mutation matrix: expected square matrix of %i rows, found %i",
+        Global::Diseases, num_mutation_params);
     exit(1);
   }
 
@@ -131,7 +131,7 @@ void Population::delete_person(Person * person) {
   pop_map[last] = n;
   if ((unsigned) pop_size != pop.size()) {
     Utils::fred_verbose(0,"pop_size = %d  pop.size() = %d\n",
-	   pop_size, (int) pop.size());
+        pop_size, (int) pop.size());
   }
   assert((unsigned) pop_size == pop.size());
   person->terminate();
@@ -174,9 +174,19 @@ void Population::setup() {
   for (int d = 0; d < Global::Diseases; d++) {
     disease[d].setup(d, this, mutation_prob[d]);
   }
-  
-  vacc_manager = new Vaccine_Manager(this);
-  av_manager   = new AV_Manager(this);
+
+  if ( Global::Enable_Vaccination ) {
+    vacc_manager = new Vaccine_Manager(this);
+  } else {
+    vacc_manager = new Vaccine_Manager();
+  }
+
+  if ( Global::Enable_Antivirals ) {
+    av_manager = new AV_Manager(this);
+  } else {
+    av_manager = new AV_Manager();
+  }
+
   if (Global::Verbose > 1) av_manager->print();
   pop.clear();
   pop_map.clear();
@@ -190,10 +200,10 @@ void Population::setup() {
   incremental_changes.clear();
   never_changed.clear();
   /*
-  for (int p = 0; p < pop_size; p++){
-    never_changed[pop[p]]=true; // add all agents to this list at start
-  }
-  */
+     for (int p = 0; p < pop_size; p++){
+     never_changed[pop[p]]=true; // add all agents to this list at start
+     }
+     */
 
   if(Global::Verbose > 0){
     int count = 0;
@@ -206,7 +216,7 @@ void Population::setup() {
   }
   av_manager->reset();
   vacc_manager->reset();
-  
+
   if (Global::Verbose > 0) {
     fprintf(Global::Statusfp, "population setup finished\n");
     fflush(Global::Statusfp);
@@ -218,7 +228,7 @@ void Population::read_population() {
     fprintf(Global::Statusfp, "read population entered\n");
     fflush(Global::Statusfp);
   }
-  
+
   // read in population
   char population_file[256];
   char line[256];
@@ -241,7 +251,7 @@ void Population::read_population() {
       Utils::fred_abort("population_file %s not found\n", population_file);
     }
   }
-    
+
   // create strings for original individuals
   // pstring = new char* [psize];
   // for (int i = 0; i < psize; i++) pstring[i] = new char[256];
@@ -251,7 +261,7 @@ void Population::read_population() {
     int age, married, occ, relationship;
     char label[32], house_label[32], school_label[32], work_label[32];
     char sex;
-	
+
     // skip white-space-only lines
     int i = 0;
     while (i < 255 && line[i] != '\0' && isspace(line[i])) i++;
@@ -261,8 +271,8 @@ void Population::read_population() {
     if (line[0] == '#') continue;
 
     if (sscanf(line, "%s %d %c %d %d %s %s %s %d",
-               label, &age, &sex, &married, &occ,
-	       house_label, school_label, work_label, &relationship) != 9) {
+          label, &age, &sex, &married, &occ,
+          house_label, school_label, work_label, &relationship) != 9) {
       // relationship = Global::HOUSEHOLDER;
       // if (sscanf(line, "%s %d %c %d %d %s %s %s",
       // label, &age, &sex, &married, &occ,
@@ -273,42 +283,42 @@ void Population::read_population() {
     Place * house = Global::Places.get_place_from_label(house_label);
     if (house == NULL) {
       printf("WARNING: skipping person %s in %s --  no household found for label = %s\n",
-	     label, population_file, house_label);
+          label, population_file, house_label);
       fflush(stdout);
       continue;
     }
     Place * work = Global::Places.get_place_from_label(work_label);
     if (strcmp(work_label,"-1")!=0 && work == NULL) {
       if (Global::Verbose > 0) {
-	printf("WARNING: person %s in %s -- no workplace found for label = %s\n",
-	       label, population_file, work_label);
-	fflush(stdout);
+        printf("WARNING: person %s in %s -- no workplace found for label = %s\n",
+            label, population_file, work_label);
+        fflush(stdout);
       }
       if (Global::Enable_Local_Workplace_Assignment) {
-	work = Global::Places.get_random_workplace();
-	if (Global::Verbose > 0) {
-	  if (work != NULL) {
-	    printf("WARNING: person %s assigned to workplace %s\n",
-		   label, work->get_label());
-	  }
-	  else {
-	    printf("WARNING: no workplace available for person %s\n",
-		   label);
-	  }
-	}
-	fflush(stdout);
+        work = Global::Places.get_random_workplace();
+        if (Global::Verbose > 0) {
+          if (work != NULL) {
+            printf("WARNING: person %s assigned to workplace %s\n",
+                label, work->get_label());
+          }
+          else {
+            printf("WARNING: no workplace available for person %s\n",
+                label);
+          }
+        }
+        fflush(stdout);
       }
     }
     Place * school = Global::Places.get_place_from_label(school_label);
     if (strcmp(school_label,"-1")!=0 && school == NULL) {
       printf("WARNING: person %s in %s -- no school found for label = %s\n",
-	     label, population_file, school_label);
+          label, population_file, school_label);
       fflush(stdout);
     }
     bool today_is_birthday = false;
     int day = 0;
     Person * person = new Person(Population::next_id, age, sex, married, relationship, occ,
-				 house, school, work, day, today_is_birthday);
+        house, school, work, day, today_is_birthday);
     add_person(person);
     Population::next_id++;
   }
@@ -322,7 +332,7 @@ void Population::read_population() {
   for (int p = 0; p < pop_size; p++) {
     pop[p]->select_adult_decision_maker(NULL);
   }
-  
+
   if (Global::Verbose > 0) {
     fprintf(Global::Statusfp, "finished reading population, pop_size = %d\n", pop_size);
     fflush(Global::Statusfp);
@@ -352,24 +362,24 @@ void Population::update(int day) {
       add_person(baby);
 
       if (Global::Enable_Behaviors) {
-	// turn mother into an adult decision maker, if not already
-	if (mother != mother->get_adult_decision_maker()) {
-	  Utils::fred_verbose(0, "young mother %d age %d become adult decision maker on day %d\n",
-			      mother->get_id(), mother->get_age(), day);
-	  mother->become_an_adult_decision_maker();
-	}
-	// let mother decide health behaviors for child
-	baby->get_behavior()->set_adult_decision_maker(mother);
+        // turn mother into an adult decision maker, if not already
+        if (mother != mother->get_adult_decision_maker()) {
+          Utils::fred_verbose(0, "young mother %d age %d become adult decision maker on day %d\n",
+              mother->get_id(), mother->get_age(), day);
+          mother->become_an_adult_decision_maker();
+        }
+        // let mother decide health behaviors for child
+        baby->get_behavior()->set_adult_decision_maker(mother);
       }
 
       if(vacc_manager->do_vaccination()){
-	if(Global::Debug > 1)
-	  fprintf(Global::Statusfp,"Adding %d to Vaccine Queue\n",baby->get_id());
-	vacc_manager->add_to_queue(baby);
+        if(Global::Debug > 1)
+          fprintf(Global::Statusfp,"Adding %d to Vaccine Queue\n",baby->get_id());
+        vacc_manager->add_to_queue(baby);
       }
       int age_lookup = mother->get_age();
       if (age_lookup > Demographics::MAX_AGE)
-	age_lookup = Demographics::MAX_AGE;
+        age_lookup = Demographics::MAX_AGE;
       birth_count[age_lookup]++;
     }
     if (Global::Verbose > 0) {
@@ -385,16 +395,16 @@ void Population::update(int day) {
       //For reporting
       int age_lookup = death_list[i]->get_age();
       if (age_lookup > Demographics::MAX_AGE)
-	age_lookup = Demographics::MAX_AGE;
+        age_lookup = Demographics::MAX_AGE;
       if (death_list[i]->get_sex() == 'F')
-	death_count_female[age_lookup]++;
+        death_count_female[age_lookup]++;
       else
-	death_count_male[age_lookup]++;
+        death_count_male[age_lookup]++;
       delete_person(death_list[i]);
       if(vacc_manager->do_vaccination()){
-	if(Global::Debug > 1)
-	  fprintf(Global::Statusfp,"Removing %d from Vaccine Queue\n", death_list[i]->get_id());
-	vacc_manager->remove_from_queue(death_list[i]);
+        if(Global::Debug > 1)
+          fprintf(Global::Statusfp,"Removing %d from Vaccine Queue\n", death_list[i]->get_id());
+        vacc_manager->remove_from_queue(death_list[i]);
       }
     }
     if (Global::Verbose > 0) {
@@ -435,7 +445,7 @@ void Population::update(int day) {
   }
 
   // update activity profiles on July 1
-    if (Global::Enable_Aging && Date::match_pattern(day, "07-01-*")) {
+  if (Global::Enable_Aging && Date::match_pattern(day, "07-01-*")) {
     for (int p = 0; p < pop_size; p++) {
       pop[p]->update_activity_profile();
     }
@@ -475,32 +485,32 @@ void Population::report(int day) {
     for (int i = 0; i < pop_size; ++i) {
       int age_lookup = pop[i]->get_age();
       if (age_lookup > Demographics::MAX_AGE)
-	age_lookup = Demographics::MAX_AGE;
+        age_lookup = Demographics::MAX_AGE;
       if (pop[i]->get_sex() == 'F')
-	age_count_female[age_lookup]++;
+        age_count_female[age_lookup]++;
       else
-	age_count_male[age_lookup]++;
+        age_count_male[age_lookup]++;
     }
     for (int i = 0; i <= Demographics::MAX_AGE; ++i) {
       int count, num_deaths, num_births;
       double birthrate, deathrate;
       fprintf(Global::Statusfp,
-	      "DEMOGRAPHICS Year %d TotalPop %d Age %d ", 
-	      Date::get_current_year(day), pop_size, i);
+          "DEMOGRAPHICS Year %d TotalPop %d Age %d ", 
+          Date::get_current_year(day), pop_size, i);
       count = age_count_female[i];
       num_births = birth_count[i];
       num_deaths = death_count_female[i];
       birthrate = count>0 ? ((100.0*num_births)/count) : 0.0;
       deathrate = count>0 ? ((100.0*num_deaths)/count) : 0.0;
       fprintf(Global::Statusfp,
-	      "count_f %d births_f %d birthrate_f %.03f deaths_f %d deathrate_f %.03f ",
-	      count, num_births, birthrate, num_deaths, deathrate);
+          "count_f %d births_f %d birthrate_f %.03f deaths_f %d deathrate_f %.03f ",
+          count, num_births, birthrate, num_deaths, deathrate);
       count = age_count_male[i];
       num_deaths = death_count_male[i];
       deathrate = count?((100.0*num_deaths)/count):0.0;
       fprintf(Global::Statusfp,
-	      "count_m %d deaths_m %d deathrate_m %.03f\n",
-	      count, num_deaths, deathrate);
+          "count_m %d deaths_m %d deathrate_m %.03f\n",
+          count, num_deaths, deathrate);
       fflush(Global::Statusfp);
     }
     clear_static_arrays();
@@ -529,25 +539,25 @@ void Population::print(int incremental, int day) {
     if (Global::Trace_Headers) fprintf(Global::Tracefp, "# All agents, by ID\n");
     for (int p = 0; p < pop_size; p++)
       for (int i=0; i<Global::Diseases; i++)
-	pop[p]->print(Global::Tracefp, i);
+        pop[p]->print(Global::Tracefp, i);
   } else if (1==incremental) {
     ChangeMap::const_iterator iter;
-		
+
     if (Global::Trace_Headers){
       if (day < Global::Days)
-	fprintf(Global::Tracefp, "# Incremental Changes (every %d): Day %3d\n", Global::Incremental_Trace, day);
+        fprintf(Global::Tracefp, "# Incremental Changes (every %d): Day %3d\n", Global::Incremental_Trace, day);
       else
-	fprintf(Global::Tracefp, "# End-of-simulation: Remaining unreported changes\n");
-			
+        fprintf(Global::Tracefp, "# End-of-simulation: Remaining unreported changes\n");
+
       if (! incremental_changes.size()){
-	fprintf(Global::Tracefp, "# <LIST-EMPTY>\n");
-	return;
+        fprintf(Global::Tracefp, "# <LIST-EMPTY>\n");
+        return;
       }
     }
-		
+
     for (iter = this->incremental_changes.begin();
-         iter != this->incremental_changes.end();
-         iter++){
+        iter != this->incremental_changes.end();
+        iter++){
       (iter->first)->print(Global::Tracefp, 0); // the map key is a Person*
     }
   } else {
@@ -555,18 +565,18 @@ void Population::print(int incremental, int day) {
     if (Global::Trace_Headers){
       fprintf(Global::Tracefp, "# Agents that never changed\n");
       if (! never_changed.size()){
-	fprintf(Global::Tracefp, "# <LIST-EMPTY>\n");
-	return;
+        fprintf(Global::Tracefp, "# <LIST-EMPTY>\n");
+        return;
       }
     }
-		
+
     for (iter = this->never_changed.begin();
-         iter != this->never_changed.end();
-         iter++){
+        iter != this->never_changed.end();
+        iter++){
       (iter->first)->print(Global::Tracefp, 0); // the map key is a Person*
     }
   }
-	
+
   // empty out the incremental list of Person's who have changed
   if (-1 < incremental)
     incremental_changes.clear();
@@ -576,7 +586,7 @@ void Population::print(int incremental, int day) {
 void Population::end_of_run() {
   // print out agents who have changes yet unreported
   this->print(1, Global::Days);
-  
+
   // print out all those agents who never changed
   this->print(-1);
 
@@ -597,7 +607,7 @@ void Population::quality_control() {
     fprintf(Global::Statusfp, "population quality control check\n");
     fflush(Global::Statusfp);
   }
-  
+
   // check population
   for (int p = 0; p < pop_size; p++) {
     if (pop[p]->get_activities()->get_household() == NULL) {
@@ -605,7 +615,7 @@ void Population::quality_control() {
       pop[p]->print(Global::Statusfp, 0);
     }
   }
-  
+
   if (Global::Verbose > 0) {
     int n0, n5, n18, n65;
     int count[20];
@@ -627,14 +637,14 @@ void Population::quality_control() {
     fprintf(Global::Statusfp, "\nAge distribution: %d people\n", total);
     for (int c = 0; c < 20; c++) {
       fprintf(Global::Statusfp, "age %2d to %d: %6d (%.2f%%)\n",
-              5*c, 5*(c+1)-1, count[c], (100.0*count[c])/total);
+          5*c, 5*(c+1)-1, count[c], (100.0*count[c])/total);
     }
     fprintf(Global::Statusfp, "AGE 0-4: %d %.2f%%\n", n0, (100.0*n0)/total);
     fprintf(Global::Statusfp, "AGE 5-17: %d %.2f%%\n", n5, (100.0*n5)/total);
     fprintf(Global::Statusfp, "AGE 18-64: %d %.2f%%\n", n18, (100.0*n18)/total);
     fprintf(Global::Statusfp, "AGE 65-100: %d %.2f%%\n", n65, (100.0*n65)/total);
     fprintf(Global::Statusfp, "\n");
-    
+
     // Print out At Risk distribution
     for(int d = 0; d < Global::Diseases; d++){
       if(disease[d].get_at_risk()->get_num_ages() > 0){
@@ -652,14 +662,14 @@ void Population::quality_control() {
         fprintf(Global::Statusfp, "\n Age Distribution of At Risk for Disease %d: %d people\n",d,total);
         for(int c = 0; c < 10; c++ ) {
           fprintf(Global::Statusfp, "age %2d to %2d: %6d (%.2f%%)\n",
-                  10*c, 10*(c+1)-1, rcount[c], (100.0*rcount[c])/total);
+              10*c, 10*(c+1)-1, rcount[c], (100.0*rcount[c])/total);
         }
         fprintf(Global::Statusfp, "\n");
       }
-    }	
+    }  
   }
-  
-  
+
+
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "population quality control finished\n");
     fflush(Global::Statusfp);
@@ -728,15 +738,15 @@ void Population::get_network_stats(char *directory) {
   fprintf(fp, "id,age,deg,h,n,s,c,w,o\n");
   for (int p = 0; p < pop_size; p++){
     fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-	    pop[p]->get_id(),
-	    pop[p]->get_age(),
-	    pop[p]->get_degree(),
-	    pop[p]->get_household_size(),
-	    pop[p]->get_neighborhood_size(),
-	    pop[p]->get_school_size(),
-	    pop[p]->get_classroom_size(),
-	    pop[p]->get_workplace_size(),
-	    pop[p]->get_office_size());
+        pop[p]->get_id(),
+        pop[p]->get_age(),
+        pop[p]->get_degree(),
+        pop[p]->get_household_size(),
+        pop[p]->get_neighborhood_size(),
+        pop[p]->get_school_size(),
+        pop[p]->get_classroom_size(),
+        pop[p]->get_workplace_size(),
+        pop[p]->get_office_size());
   }
   fclose(fp);
   if (Global::Verbose > 0) {
@@ -748,18 +758,18 @@ void Population::get_network_stats(char *directory) {
 void Population::report_birth(int day, Person *per) const {
   if (Global::Birthfp == NULL) return;
   fprintf(Global::Birthfp, "day %d mother %d age %d\n",
-	  day,
-	  per->get_id(),
-	  per->get_age());
+      day,
+      per->get_id(),
+      per->get_age());
   fflush(Global::Birthfp);
 }
 
 void Population::report_death(int day, Person *per) const {
   if (Global::Deathfp == NULL) return;
   fprintf(Global::Deathfp, "day %d person %d age %d\n",
-	  day,
-	  per->get_id(),
-	  per->get_age());
+      day,
+      per->get_id(),
+      per->get_age());
   fflush(Global::Deathfp);
 }
 
@@ -809,14 +819,14 @@ void Population::write_population_output_file(int day) {
   //Loop over the whole population and write the output of each Person's to_string to the file
   char population_output_file[256];
   sprintf(population_output_file, "%s/%s_%s.txt", Global::Output_directory, Population::pop_outfile,
-                (char *) Global::Sim_Date->get_YYYYMMDD(day).c_str());
+      (char *) Global::Sim_Date->get_YYYYMMDD(day).c_str());
   FILE *fp = fopen(population_output_file, "w");
   if (fp == NULL) {
     Utils::fred_abort("Help! population_output_file %s not found\n", population_output_file);
   }
 
-//  fprintf(fp, "Population for day %d\n", day);
-//  fprintf(fp, "------------------------------------------------------------------\n");
+  //  fprintf(fp, "Population for day %d\n", day);
+  //  fprintf(fp, "------------------------------------------------------------------\n");
   for (int p = 0; p < pop_size; ++p) {
     fprintf(fp, "%s\n", pop[p]->to_string().c_str());
   }

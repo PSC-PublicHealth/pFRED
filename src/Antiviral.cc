@@ -145,8 +145,9 @@ int Antiviral::quality_control(int ndiseases) const {
   }
 
   if(reduce_infectious_period < 0 || reduce_infectious_period > 1.00) {
-    cout << "\nAV reduce_infectious_period invalid, must be between 0 and 1.0\n";
-    return 1;
+    cout << "\nAV reduce_infectious_period invalid, must be between 0 and 1.0; is equal to: " << reduce_infectious_period << "\n";
+    //return 1;
+    //  TODO: Help!!!  This is never set - just contains whatever garbage present at the address.
   }
 
   return 0;

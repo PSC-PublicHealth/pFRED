@@ -1,6 +1,6 @@
-FRED started Thu Jan 26 21:30:09 2012
+FRED started Tue May 22 15:36:00 2012
 param file = params.test
-fred_open_file: opening file /Users/gref/FRED/input_files/params.default for reading
+fred_open_file: opening file /Users/jay/prj/midas/fred/FRED_TRUNK/src/../input_files/params.default for reading
 fred_open_file: opening file params.test for reading
 PARAMS: debug = 1
 PARAMS: test = 0
@@ -11,6 +11,7 @@ PARAMS: seed = 123456
 PARAMS: epidemic_offset = 0
 PARAMS: vaccine_offset = 0
 PARAMS: start_date = 2009-01-01
+PARAMS: rotate_start_date = 0
 PARAMS: reseed_day = -1
 PARAMS: outdir = OUT
 PARAMS: tracefile = none
@@ -22,12 +23,14 @@ PARAMS: vaccine_tracefile = vacctr
 PARAMS: incremental_trace = 0
 PARAMS: trace_headers = 0
 PARAMS: diseases = 1
-PARAMS: enable_behaviors = 0
+PARAMS: enable_behaviors = 1
 PARAMS: prevalencefile = none
 PARAMS: incidencefile = none
 PARAMS: seasonality_timestep_file = none
 PARAMS: work_absenteeism = 0.000000
 PARAMS: school_absenteeism = 0.000000
+PARAMS: seed_age_lower_bound = 0
+PARAMS: seed_age_upper_bound = 120
 PARAMS: enable_large_grid = 0
 PARAMS: enable_small_grid = 0
 PARAMS: enable_aging = 0
@@ -39,30 +42,34 @@ PARAMS: enable_travel = 0
 PARAMS: enable_local_workplace_assignment = 0
 PARAMS: enable_seasonality = 0
 PARAMS: enable_climate = 0
+PARAMS: seed_by_age = 0
+PARAMS: enable_vaccination = 0
+PARAMS: enable_antivirals = 1
 PARAMS: popfile = $FRED_HOME/region/pop_Alleg.txt
 PARAMS: mutation_prob = 1
 PARAMS: mutation_prob = 1 0.0
 PARAMS: output_population = 0
 seed = 12345601
 
-FRED run 2 started Thu Jan 26 21:30:09 2012
+FRED run 2 started Tue May 22 15:36:00 2012
 read places entered
 PARAMS: locfile = $FRED_HOME/region/loc_Alleg.txt
-fred_open_file: opening file /Users/gref/FRED/region/loc_Alleg.txt for reading
-PARAMS: household_contacts[0] = 0.190000
+fred_open_file: opening file /Users/jay/prj/midas/fred/FRED_TRUNK/src/../region/loc_Alleg.txt for reading
+PARAMS: household_contacts[0] = 0.188089
 PARAMS: household_prob[0] = 4
 PARAMS: household_prob[0] = 4 0.6 0.3 0.3 0.4
 PARAMS: office_size = 50
-PARAMS: workplace_contacts[0] = 1.660000
+PARAMS: workplace_contacts[0] = 1.647926
 PARAMS: workplace_prob[0] = 1
 PARAMS: workplace_prob[0] = 1 0.0575
-PARAMS: school_contacts[0] = 15.830000
+PARAMS: school_contacts[0] = 15.785288
 PARAMS: school_prob[0] = 16
 PARAMS: school_prob[0] = 16 0.0435 0 0 0.0435 0 0.0375 0 0.0375 0 0 0.0315 0.0315 0.0435 0.0375 0.0315 0.0575
 PARAMS: school_classroom_size = 40
 PARAMS: school_closure_policy = none
 PARAMS: school_closure_day = 10
 PARAMS: school_closure_threshold = 0.100000
+PARAMS: school_closure_cases = -1
 PARAMS: school_closure_period = 10
 PARAMS: school_closure_delay = 2
 PARAMS: school_summer_schedule = 0
@@ -77,11 +84,11 @@ PARAMS: grid_cell_size = 1.000000
 Grid rows = 54  cols = 58
 Grid max_x = 57.576247  max_y = 53.138214
 PARAMS: weekend_contact_rate[0] = 1.500000
-PARAMS: neighborhood_contacts[0] = 42.320000
+PARAMS: neighborhood_contacts[0] = 41.914699
 PARAMS: neighborhood_prob[0] = 4
 PARAMS: neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 read places finished: Places = 593548
-Places.read_places took 3 seconds
+Places.read_places took 2 seconds
 setup population entered
 disease 0 setup entered
 PARAMS: trans[0] = 1.000000
@@ -125,7 +132,6 @@ PARAMS: days_symp[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
 PARAMS: infection_model[0] = 0
 PARAMS: evolution[0] = 0
 disease 0 setup finished
-PARAMS: number_of_vaccines = 0
 PARAMS: number_antivirals = 1
 PARAMS: number_antivirals = 1
 PARAMS: av_disease[0] = 0
@@ -164,8 +170,10 @@ Antiviral #0
 		         1 
 
 
+
+AV reduce_infectious_period invalid, must be between 0 and 1.0; is equal to: 1.29173e+171
 read population entered
-fred_open_file: opening file /Users/gref/FRED/region/pop_Alleg.txt for reading
+fred_open_file: opening file /Users/jay/prj/midas/fred/FRED_TRUNK/src/../region/pop_Alleg.txt for reading
 PARAMS: number_antivirals = 1
 PARAMS: community_distance = 20.000000
 PARAMS: community_prob = 0.100000
@@ -177,6 +185,167 @@ PARAMS: SLU_mean_sick_days_absent = 2.700000
 PARAMS: SLA_absent_prob = 0.720000
 PARAMS: SLU_absent_prob = 0.520000
 PARAMS: flu_days = 0.000000
+PARAMS: stay_home_when_sick_enabled = 0
+PARAMS: stay_home_when_sick_strategy_distribution = 7 50 50 0 0 0 0 0
+PARAMS: stay_home_when_sick_frequency = 1
+PARAMS: stay_home_when_sick_min_prob = 0.000000
+PARAMS: stay_home_when_sick_max_prob = 1.000000
+PARAMS: stay_home_when_sick_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: stay_home_when_sick_imitate_prevalence_update_rate = 0.100000
+PARAMS: stay_home_when_sick_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: stay_home_when_sick_imitate_consensus_update_rate = 0.100000
+PARAMS: stay_home_when_sick_imitate_consensus_threshold = 0.000000
+PARAMS: stay_home_when_sick_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: stay_home_when_sick_imitate_count_update_rate = 0.100000
+PARAMS: stay_home_when_sick_imitate_count_threshold = 0.000000
+PARAMS: stay_home_when_sick_susceptibility_threshold = 2 0 0
+PARAMS: stay_home_when_sick_severity_threshold = 2 0 0
+PARAMS: stay_home_when_sick_benefits_threshold = 2 0 0
+PARAMS: stay_home_when_sick_barriers_threshold = 2 0 0
+PARAMS: stay_home_when_sick_memory_decay = 2 0 0
+PARAMS: stay_home_when_sick_base_odds_ratio = 1.000000
+PARAMS: stay_home_when_sick_susceptibility_odds_ratio = 1.000000
+PARAMS: stay_home_when_sick_severity_odds_ratio = 1.000000
+PARAMS: stay_home_when_sick_benefits_odds_ratio = 1.000000
+PARAMS: stay_home_when_sick_barriers_odds_ratio = 1.000000
+PARAMS: take_sick_leave_enabled = 0
+PARAMS: take_sick_leave_strategy_distribution = 7 50 50 0 0 0 0 0
+PARAMS: take_sick_leave_frequency = 1
+PARAMS: take_sick_leave_min_prob = 0.000000
+PARAMS: take_sick_leave_max_prob = 1.000000
+PARAMS: take_sick_leave_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: take_sick_leave_imitate_prevalence_update_rate = 0.100000
+PARAMS: take_sick_leave_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: take_sick_leave_imitate_consensus_update_rate = 0.100000
+PARAMS: take_sick_leave_imitate_consensus_threshold = 0.000000
+PARAMS: take_sick_leave_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: take_sick_leave_imitate_count_update_rate = 0.100000
+PARAMS: take_sick_leave_imitate_count_threshold = 0.000000
+PARAMS: take_sick_leave_susceptibility_threshold = 2 0 0
+PARAMS: take_sick_leave_severity_threshold = 2 0 0
+PARAMS: take_sick_leave_benefits_threshold = 2 0 0
+PARAMS: take_sick_leave_barriers_threshold = 2 0 0
+PARAMS: take_sick_leave_memory_decay = 2 0 0
+PARAMS: take_sick_leave_base_odds_ratio = 1.000000
+PARAMS: take_sick_leave_susceptibility_odds_ratio = 1.000000
+PARAMS: take_sick_leave_severity_odds_ratio = 1.000000
+PARAMS: take_sick_leave_benefits_odds_ratio = 1.000000
+PARAMS: take_sick_leave_barriers_odds_ratio = 1.000000
+PARAMS: keep_child_home_when_sick_enabled = 0
+PARAMS: keep_child_home_when_sick_strategy_distribution = 7 50 50 0 0 0 0 0
+PARAMS: keep_child_home_when_sick_frequency = 1
+PARAMS: keep_child_home_when_sick_min_prob = 0.000000
+PARAMS: keep_child_home_when_sick_max_prob = 1.000000
+PARAMS: keep_child_home_when_sick_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: keep_child_home_when_sick_imitate_prevalence_update_rate = 0.100000
+PARAMS: keep_child_home_when_sick_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: keep_child_home_when_sick_imitate_consensus_update_rate = 0.100000
+PARAMS: keep_child_home_when_sick_imitate_consensus_threshold = 0.000000
+PARAMS: keep_child_home_when_sick_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: keep_child_home_when_sick_imitate_count_update_rate = 0.100000
+PARAMS: keep_child_home_when_sick_imitate_count_threshold = 0.000000
+PARAMS: keep_child_home_when_sick_susceptibility_threshold = 2 0 0
+PARAMS: keep_child_home_when_sick_severity_threshold = 2 0 0
+PARAMS: keep_child_home_when_sick_benefits_threshold = 2 0 0
+PARAMS: keep_child_home_when_sick_barriers_threshold = 2 0 0
+PARAMS: keep_child_home_when_sick_memory_decay = 2 0 0
+PARAMS: keep_child_home_when_sick_base_odds_ratio = 1.000000
+PARAMS: keep_child_home_when_sick_susceptibility_odds_ratio = 1.000000
+PARAMS: keep_child_home_when_sick_severity_odds_ratio = 1.000000
+PARAMS: keep_child_home_when_sick_benefits_odds_ratio = 1.000000
+PARAMS: keep_child_home_when_sick_barriers_odds_ratio = 1.000000
+PARAMS: accept_vaccine_enabled = 0
+PARAMS: accept_vaccine_strategy_distribution = 7 40 60 0 0 0 0 0
+PARAMS: accept_vaccine_frequency = 1
+PARAMS: accept_vaccine_min_prob = 0.000000
+PARAMS: accept_vaccine_max_prob = 1.000000
+PARAMS: accept_vaccine_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_imitate_prevalence_update_rate = 0.100000
+PARAMS: accept_vaccine_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_imitate_consensus_update_rate = 0.100000
+PARAMS: accept_vaccine_imitate_consensus_threshold = 0.000000
+PARAMS: accept_vaccine_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_imitate_count_update_rate = 0.100000
+PARAMS: accept_vaccine_imitate_count_threshold = 0.000000
+PARAMS: accept_vaccine_susceptibility_threshold = 2 0 0
+PARAMS: accept_vaccine_severity_threshold = 2 0 0
+PARAMS: accept_vaccine_benefits_threshold = 2 0 0
+PARAMS: accept_vaccine_barriers_threshold = 2 0 0
+PARAMS: accept_vaccine_memory_decay = 2 0 0
+PARAMS: accept_vaccine_base_odds_ratio = 0.350000
+PARAMS: accept_vaccine_susceptibility_odds_ratio = 3.000000
+PARAMS: accept_vaccine_severity_odds_ratio = 1.930000
+PARAMS: accept_vaccine_benefits_odds_ratio = 1.000000
+PARAMS: accept_vaccine_barriers_odds_ratio = 0.650000
+PARAMS: accept_vaccine_dose_enabled = 0
+PARAMS: accept_vaccine_dose_strategy_distribution = 7 40 60 0 0 0 0 0
+PARAMS: accept_vaccine_dose_frequency = 1
+PARAMS: accept_vaccine_dose_min_prob = 0.000000
+PARAMS: accept_vaccine_dose_max_prob = 1.000000
+PARAMS: accept_vaccine_dose_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_imitate_prevalence_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_imitate_consensus_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_imitate_consensus_threshold = 0.000000
+PARAMS: accept_vaccine_dose_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_imitate_count_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_imitate_count_threshold = 0.000000
+PARAMS: accept_vaccine_dose_susceptibility_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_severity_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_benefits_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_barriers_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_memory_decay = 2 0 0
+PARAMS: accept_vaccine_dose_base_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_susceptibility_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_severity_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_benefits_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_barriers_odds_ratio = 1.000000
+PARAMS: accept_vaccine_for_child_enabled = 0
+PARAMS: accept_vaccine_for_child_strategy_distribution = 7 40 60 0 0 0 0 0
+PARAMS: accept_vaccine_for_child_frequency = 1
+PARAMS: accept_vaccine_for_child_min_prob = 0.000000
+PARAMS: accept_vaccine_for_child_max_prob = 1.000000
+PARAMS: accept_vaccine_for_child_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_for_child_imitate_prevalence_update_rate = 0.100000
+PARAMS: accept_vaccine_for_child_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_for_child_imitate_consensus_update_rate = 0.100000
+PARAMS: accept_vaccine_for_child_imitate_consensus_threshold = 0.000000
+PARAMS: accept_vaccine_for_child_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_for_child_imitate_count_update_rate = 0.100000
+PARAMS: accept_vaccine_for_child_imitate_count_threshold = 0.000000
+PARAMS: accept_vaccine_for_child_susceptibility_threshold = 2 0 0
+PARAMS: accept_vaccine_for_child_severity_threshold = 2 0 0
+PARAMS: accept_vaccine_for_child_benefits_threshold = 2 0 0
+PARAMS: accept_vaccine_for_child_barriers_threshold = 2 0 0
+PARAMS: accept_vaccine_for_child_memory_decay = 2 0 0
+PARAMS: accept_vaccine_for_child_base_odds_ratio = 1.000000
+PARAMS: accept_vaccine_for_child_susceptibility_odds_ratio = 1.000000
+PARAMS: accept_vaccine_for_child_severity_odds_ratio = 1.000000
+PARAMS: accept_vaccine_for_child_benefits_odds_ratio = 1.000000
+PARAMS: accept_vaccine_for_child_barriers_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_for_child_enabled = 0
+PARAMS: accept_vaccine_dose_for_child_strategy_distribution = 7 40 60 0 0 0 0 0
+PARAMS: accept_vaccine_dose_for_child_frequency = 1
+PARAMS: accept_vaccine_dose_for_child_min_prob = 0.000000
+PARAMS: accept_vaccine_dose_for_child_max_prob = 1.000000
+PARAMS: accept_vaccine_dose_for_child_imitate_prevalence_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_for_child_imitate_prevalence_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_for_child_imitate_consensus_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_for_child_imitate_consensus_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_for_child_imitate_consensus_threshold = 0.000000
+PARAMS: accept_vaccine_dose_for_child_imitate_count_weights = 5 0 0 0 0 1
+PARAMS: accept_vaccine_dose_for_child_imitate_count_update_rate = 0.100000
+PARAMS: accept_vaccine_dose_for_child_imitate_count_threshold = 0.000000
+PARAMS: accept_vaccine_dose_for_child_susceptibility_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_for_child_severity_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_for_child_benefits_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_for_child_barriers_threshold = 2 0 0
+PARAMS: accept_vaccine_dose_for_child_memory_decay = 2 0 0
+PARAMS: accept_vaccine_dose_for_child_base_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_for_child_susceptibility_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_for_child_severity_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_for_child_benefits_odds_ratio = 1.000000
+PARAMS: accept_vaccine_dose_for_child_barriers_odds_ratio = 1.000000
 finished reading population, pop_size = 1242755
 number of residually immune people = 0
 population setup finished
@@ -200,9 +369,9 @@ prepare places entered
 prepare places finished
 place prep took 1 seconds
 FRED initialization took 0 seconds
-FRED initialization complete Thu Jan 26 21:30:24 2012
+FRED initialization complete Tue May 22 15:36:14 2012
 day 0 update places took 0 seconds
-day 0 update population took 0 seconds
+day 0 update population took 1 seconds
 Number of infectious places = 0
 Number of infectious households = 0
 Number of infectious neighborhoods = 0
@@ -210,13 +379,14 @@ Number of infectious schools = 0
 Number of infectious classrooms = 0
 Number of infectious workplaces = 0
 Number of infectious offices = 0
-day 0 update epidemics took 1 seconds
+day 0 update epidemics took 0 seconds
 Day   0  Str 0  S 1242655  E     100  I       0  I_s       0  R       0  M       0  C     100  N 1242755  AR  0.01  CI       0 RR 0.00 NR 0  CAR  0.00  Thu 2009-01-01 Year 2008 Week 53
 day 0 report population took 0 seconds
-day 0 finished Thu Jan 26 21:30:25 2012
+day 0 finished Tue May 22 15:36:15 2012
 day 0 took 1 seconds
+day 0 maxrss 1458667520
 day 1 update places took 0 seconds
-day 1 update population took 0 seconds
+day 1 update population took 1 seconds
 DAY 0 ABSENTEEISM: work absent 0 present 0 0.00  school absent 0 present 0 0.00
 Number of infectious places = 193
 Number of infectious households = 80
@@ -225,280 +395,299 @@ Number of infectious schools = 7
 Number of infectious classrooms = 7
 Number of infectious workplaces = 22
 Number of infectious offices = 22
-day 1 update epidemics took 1 seconds
+day 1 update epidemics took 0 seconds
 Day   1  Str 0  S 1242616  E      59  I      80  I_s      51  R       0  M       0  C      39  N 1242755  AR  0.01  CI      51 RR 0.00 NR 0  CAR  0.00  Fri 2009-01-02 Year 2008 Week 53
 day 1 report population took 0 seconds
-day 1 finished Thu Jan 26 21:30:26 2012
+day 1 finished Tue May 22 15:36:16 2012
 day 1 took 1 seconds
-day 2 update places took 0 seconds
+day 1 maxrss 1460510720
+day 2 update places took 1 seconds
 day 2 update population took 0 seconds
 DAY 1 ABSENTEEISM: work absent 7 present 14 0.32  school absent 4 present 3 0.50
-Number of infectious places = 226
-Number of infectious households = 125
-Number of infectious neighborhoods = 83
+Number of infectious places = 224
+Number of infectious households = 124
+Number of infectious neighborhoods = 86
 Number of infectious schools = 0
 Number of infectious classrooms = 0
-Number of infectious workplaces = 9
-Number of infectious offices = 9
-day 2 update epidemics took 1 seconds
-Day   2  Str 0  S 1242584  E      39  I     132  I_s      87  R       0  M       0  C      32  N 1242755  AR  0.01  CI      36 RR 0.00 NR 0  CAR  0.01  Sat 2009-01-03 Year 2008 Week 53
-day 2 report population took 0 seconds
-day 2 finished Thu Jan 26 21:30:27 2012
-day 2 took 1 seconds
+Number of infectious workplaces = 7
+Number of infectious offices = 7
+day 2 update epidemics took 0 seconds
+Day   2  Str 0  S 1242588  E      38  I     129  I_s      84  R       0  M       0  C      28  N 1242755  AR  0.01  CI      33 RR 0.00 NR 0  CAR  0.01  Sat 2009-01-03 Year 2008 Week 53
+day 2 report population took 1 seconds
+day 2 finished Tue May 22 15:36:18 2012
+day 2 took 2 seconds
+day 2 maxrss 1461764096
 day 3 update places took 0 seconds
 day 3 update population took 0 seconds
-DAY 2 ABSENTEEISM: work absent 1 present 5 0.14  school absent 0 present 0 0.00
-Number of infectious places = 265
+DAY 2 ABSENTEEISM: work absent 4 present 3 0.50  school absent 0 present 0 0.00
+Number of infectious places = 266
 Number of infectious households = 145
-Number of infectious neighborhoods = 98
+Number of infectious neighborhoods = 107
 Number of infectious schools = 0
 Number of infectious classrooms = 0
-Number of infectious workplaces = 11
-Number of infectious offices = 11
-day 3 update epidemics took 1 seconds
-Day   3  Str 0  S 1242545  E      47  I     163  I_s     106  R       0  M       0  C      39  N 1242755  AR  0.02  CI      19 RR 0.00 NR 0  CAR  0.01  Sun 2009-01-04 Year 2009 Week 1
-day 3 report population took 0 seconds
-day 3 finished Thu Jan 26 21:30:28 2012
+Number of infectious workplaces = 7
+Number of infectious offices = 7
+day 3 update epidemics took 0 seconds
+Day   3  Str 0  S 1242553  E      41  I     161  I_s     102  R       0  M       0  C      35  N 1242755  AR  0.02  CI      18 RR 0.00 NR 0  CAR  0.01  Sun 2009-01-04 Year 2009 Week 1
+day 3 report population took 1 seconds
+day 3 finished Tue May 22 15:36:19 2012
 day 3 took 1 seconds
+day 3 maxrss 1462931456
 day 4 update places took 0 seconds
 day 4 update population took 0 seconds
-DAY 3 ABSENTEEISM: work absent 1 present 6 0.12  school absent 0 present 0 0.00
-Number of infectious places = 392
-Number of infectious households = 154
+DAY 3 ABSENTEEISM: work absent 4 present 3 0.50  school absent 0 present 0 0.00
+Number of infectious places = 396
+Number of infectious households = 157
 Number of infectious neighborhoods = 107
-Number of infectious schools = 17
-Number of infectious classrooms = 19
-Number of infectious workplaces = 47
-Number of infectious offices = 48
-day 4 update epidemics took 1 seconds
-Day   4  Str 0  S 1242484  E      69  I     182  I_s     131  R      20  M       0  C      61  N 1242755  AR  0.02  CI      34 RR 0.00 NR 0  CAR  0.01  Mon 2009-01-05 Year 2009 Week 1
-day 4 report population took 0 seconds
-day 4 finished Thu Jan 26 21:30:29 2012
+Number of infectious schools = 16
+Number of infectious classrooms = 18
+Number of infectious workplaces = 48
+Number of infectious offices = 50
+day 4 update epidemics took 0 seconds
+Day   4  Str 0  S 1242503  E      55  I     177  I_s     119  R      20  M       0  C      50  N 1242755  AR  0.02  CI      26 RR 0.00 NR 0  CAR  0.01  Mon 2009-01-05 Year 2009 Week 1
+day 4 report population took 1 seconds
+day 4 finished Tue May 22 15:36:20 2012
 day 4 took 1 seconds
+day 4 maxrss 1464262656
 day 5 update places took 0 seconds
 day 5 update population took 0 seconds
-DAY 4 ABSENTEEISM: work absent 27 present 29 0.47  school absent 12 present 12 0.48
-Number of infectious places = 372
-Number of infectious households = 155
-Number of infectious neighborhoods = 99
-Number of infectious schools = 23
-Number of infectious classrooms = 31
-Number of infectious workplaces = 32
-Number of infectious offices = 32
+DAY 4 ABSENTEEISM: work absent 19 present 29 0.39  school absent 10 present 11 0.45
+Number of infectious places = 385
+Number of infectious households = 152
+Number of infectious neighborhoods = 104
+Number of infectious schools = 17
+Number of infectious classrooms = 19
+Number of infectious workplaces = 45
+Number of infectious offices = 48
 day 5 update epidemics took 1 seconds
-Day   5  Str 0  S 1242429  E      72  I     182  I_s     127  R      72  M       0  C      55  N 1242755  AR  0.03  CI      33 RR 0.00 NR 0  CAR  0.01  Tue 2009-01-06 Year 2009 Week 1
+Day   5  Str 0  S 1242455  E      60  I     168  I_s     111  R      72  M       0  C      48  N 1242755  AR  0.02  CI      29 RR 0.00 NR 0  CAR  0.01  Tue 2009-01-06 Year 2009 Week 1
 day 5 report population took 0 seconds
-day 5 finished Thu Jan 26 21:30:30 2012
+day 5 finished Tue May 22 15:36:21 2012
 day 5 took 1 seconds
+day 5 maxrss 1465262080
 day 6 update places took 0 seconds
 day 6 update population took 0 seconds
-DAY 5 ABSENTEEISM: work absent 28 present 20 0.57  school absent 12 present 20 0.36
-Number of infectious places = 394
-Number of infectious households = 166
-Number of infectious neighborhoods = 101
-Number of infectious schools = 22
-Number of infectious classrooms = 31
-Number of infectious workplaces = 37
-Number of infectious offices = 37
+DAY 5 ABSENTEEISM: work absent 17 present 25 0.40  school absent 18 present 13 0.56
+Number of infectious places = 384
+Number of infectious households = 152
+Number of infectious neighborhoods = 102
+Number of infectious schools = 21
+Number of infectious classrooms = 22
+Number of infectious workplaces = 43
+Number of infectious offices = 44
 day 6 update epidemics took 1 seconds
-Day   6  Str 0  S 1242342  E     101  I     190  I_s     133  R     122  M       0  C      87  N 1242755  AR  0.03  CI      37 RR 0.00 NR 0  CAR  0.02  Wed 2009-01-07 Year 2009 Week 1
+Day   6  Str 0  S 1242391  E      74  I     170  I_s     115  R     120  M       0  C      64  N 1242755  AR  0.03  CI      32 RR 0.00 NR 0  CAR  0.02  Wed 2009-01-07 Year 2009 Week 1
 day 6 report population took 0 seconds
-day 6 finished Thu Jan 26 21:30:31 2012
+day 6 finished Tue May 22 15:36:22 2012
 day 6 took 1 seconds
+day 6 maxrss 1466097664
 day 7 update places took 0 seconds
 day 7 update population took 0 seconds
-DAY 6 ABSENTEEISM: work absent 26 present 19 0.57  school absent 27 present 22 0.54
-Number of infectious places = 497
-Number of infectious households = 202
-Number of infectious neighborhoods = 130
-Number of infectious schools = 32
-Number of infectious classrooms = 51
-Number of infectious workplaces = 41
-Number of infectious offices = 41
+DAY 6 ABSENTEEISM: work absent 23 present 20 0.52  school absent 20 present 18 0.51
+Number of infectious places = 411
+Number of infectious households = 168
+Number of infectious neighborhoods = 107
+Number of infectious schools = 19
+Number of infectious classrooms = 22
+Number of infectious workplaces = 46
+Number of infectious offices = 49
 day 7 update epidemics took 1 seconds
-Day   7  Str 0  S 1242189  E     177  I     233  I_s     165  R     156  M       0  C     153  N 1242755  AR  0.05  CI      57 RR 0.00 NR 0  CAR  0.02  Thu 2009-01-08 Year 2009 Week 1
+Day   7  Str 0  S 1242309  E      98  I     187  I_s     127  R     161  M       0  C      82  N 1242755  AR  0.04  CI      40 RR 0.00 NR 0  CAR  0.02  Thu 2009-01-08 Year 2009 Week 1
 day 7 report population took 0 seconds
-day 7 finished Thu Jan 26 21:30:32 2012
+day 7 finished Tue May 22 15:36:23 2012
 day 7 took 1 seconds
+day 7 maxrss 1467142144
 day 8 update places took 0 seconds
 day 8 update population took 0 seconds
-DAY 7 ABSENTEEISM: work absent 26 present 23 0.52  school absent 47 present 40 0.53
-Number of infectious places = 664
-Number of infectious households = 273
-Number of infectious neighborhoods = 175
-Number of infectious schools = 43
-Number of infectious classrooms = 77
-Number of infectious workplaces = 48
-Number of infectious offices = 48
+DAY 7 ABSENTEEISM: work absent 26 present 24 0.51  school absent 31 present 24 0.55
+Number of infectious places = 495
+Number of infectious households = 202
+Number of infectious neighborhoods = 132
+Number of infectious schools = 26
+Number of infectious classrooms = 38
+Number of infectious workplaces = 46
+Number of infectious offices = 51
 day 8 update epidemics took 1 seconds
-Day   8  Str 0  S 1241966  E     258  I     327  I_s     232  R     204  M       0  C     223  N 1242755  AR  0.06  CI     104 RR 0.00 NR 0  CAR  0.03  Fri 2009-01-09 Year 2009 Week 1
+Day   8  Str 0  S 1242173  E     150  I     241  I_s     166  R     191  M       0  C     136  N 1242755  AR  0.05  CI      60 RR 0.00 NR 0  CAR  0.02  Fri 2009-01-09 Year 2009 Week 1
 day 8 report population took 0 seconds
-day 8 finished Thu Jan 26 21:30:33 2012
+day 8 finished Tue May 22 15:36:24 2012
 day 8 took 1 seconds
+day 8 maxrss 1468260352
 day 9 update places took 0 seconds
 day 9 update population took 0 seconds
-DAY 8 ABSENTEEISM: work absent 27 present 28 0.48  school absent 67 present 84 0.44
-Number of infectious places = 670
-Number of infectious households = 404
-Number of infectious neighborhoods = 228
+DAY 8 ABSENTEEISM: work absent 32 present 26 0.54  school absent 44 present 48 0.47
+Number of infectious places = 454
+Number of infectious households = 252
+Number of infectious neighborhoods = 158
 Number of infectious schools = 0
 Number of infectious classrooms = 0
-Number of infectious workplaces = 19
-Number of infectious offices = 19
+Number of infectious workplaces = 21
+Number of infectious offices = 23
 day 9 update epidemics took 1 seconds
-Day   9  Str 0  S 1241856  E     154  I     485  I_s     325  R     260  M       0  C     110  N 1242755  AR  0.07  CI     127 RR 0.00 NR 0  CAR  0.04  Sat 2009-01-10 Year 2009 Week 1
+Day   9  Str 0  S 1242091  E     108  I     310  I_s     210  R     246  M       0  C      82  N 1242755  AR  0.05  CI      81 RR 0.00 NR 0  CAR  0.03  Sat 2009-01-10 Year 2009 Week 1
 day 9 report population took 0 seconds
-day 9 finished Thu Jan 26 21:30:34 2012
+day 9 finished Tue May 22 15:36:25 2012
 day 9 took 1 seconds
+day 9 maxrss 1469214720
 day 10 update places took 0 seconds
 day 10 update population took 0 seconds
-DAY 9 ABSENTEEISM: work absent 8 present 4 0.62  school absent 0 present 0 0.00
-Number of infectious places = 731
-Number of infectious households = 446
-Number of infectious neighborhoods = 247
+DAY 9 ABSENTEEISM: work absent 11 present 9 0.52  school absent 0 present 0 0.00
+Number of infectious places = 508
+Number of infectious households = 279
+Number of infectious neighborhoods = 189
 Number of infectious schools = 0
 Number of infectious classrooms = 0
 Number of infectious workplaces = 19
-Number of infectious offices = 19
+Number of infectious offices = 21
 day 10 update epidemics took 1 seconds
-Day  10  Str 0  S 1241708  E     177  I     561  I_s     380  R     309  M       0  C     148  N 1242755  AR  0.08  CI      88 RR 0.00 NR 0  CAR  0.05  Sun 2009-01-11 Year 2009 Week 2
+Day  10  Str 0  S 1242028  E      79  I     357  I_s     234  R     291  M       0  C      63  N 1242755  AR  0.06  CI      56 RR 0.00 NR 0  CAR  0.03  Sun 2009-01-11 Year 2009 Week 2
 day 10 report population took 0 seconds
-day 10 finished Thu Jan 26 21:30:35 2012
+day 10 finished Tue May 22 15:36:26 2012
 day 10 took 1 seconds
+day 10 maxrss 1470181376
 day 11 update places took 0 seconds
 day 11 update population took 0 seconds
-DAY 10 ABSENTEEISM: work absent 10 present 7 0.56  school absent 0 present 0 0.00
-Number of infectious places = 1142
-Number of infectious households = 458
-Number of infectious neighborhoods = 257
-Number of infectious schools = 63
-Number of infectious classrooms = 154
-Number of infectious workplaces = 102
-Number of infectious offices = 108
+DAY 10 ABSENTEEISM: work absent 12 present 10 0.52  school absent 0 present 0 0.00
+Number of infectious places = 682
+Number of infectious households = 265
+Number of infectious neighborhoods = 168
+Number of infectious schools = 43
+Number of infectious classrooms = 80
+Number of infectious workplaces = 60
+Number of infectious offices = 66
 day 11 update epidemics took 1 seconds
-Day  11  Str 0  S 1241393  E     341  I     613  I_s     412  R     408  M       0  C     315  N 1242755  AR  0.11  CI     107 RR 0.00 NR 0  CAR  0.06  Mon 2009-01-12 Year 2009 Week 2
+Day  11  Str 0  S 1241872  E     166  I     356  I_s     234  R     361  M       0  C     156  N 1242755  AR  0.07  CI      48 RR 0.00 NR 0  CAR  0.04  Mon 2009-01-12 Year 2009 Week 2
 day 11 report population took 0 seconds
-day 11 finished Thu Jan 26 21:30:36 2012
+day 11 finished Tue May 22 15:36:27 2012
 day 11 took 1 seconds
+day 11 maxrss 1471365120
 day 12 update places took 0 seconds
 day 12 update population took 0 seconds
-DAY 11 ABSENTEEISM: work absent 49 present 44 0.52  school absent 133 present 112 0.54
-Number of infectious places = 1387
-Number of infectious households = 589
-Number of infectious neighborhoods = 298
-Number of infectious schools = 70
-Number of infectious classrooms = 182
-Number of infectious workplaces = 120
-Number of infectious offices = 128
+DAY 11 ABSENTEEISM: work absent 44 present 30 0.59  school absent 56 present 65 0.46
+Number of infectious places = 816
+Number of infectious households = 334
+Number of infectious neighborhoods = 195
+Number of infectious schools = 46
+Number of infectious classrooms = 85
+Number of infectious workplaces = 75
+Number of infectious offices = 81
 day 12 update epidemics took 1 seconds
-Day  12  Str 0  S 1240950  E     503  I     766  I_s     510  R     536  M       0  C     443  N 1242755  AR  0.15  CI     179 RR 0.00 NR 0  CAR  0.07  Tue 2009-01-13 Year 2009 Week 2
+Day  12  Str 0  S 1241666  E     228  I     416  I_s     274  R     445  M       0  C     206  N 1242755  AR  0.09  CI      96 RR 0.00 NR 0  CAR  0.05  Tue 2009-01-13 Year 2009 Week 2
 day 12 report population took 0 seconds
-day 12 finished Thu Jan 26 21:30:37 2012
+day 12 finished Tue May 22 15:36:28 2012
 day 12 took 1 seconds
+day 12 maxrss 1472876544
 day 13 update places took 0 seconds
 day 13 update population took 0 seconds
-DAY 12 ABSENTEEISM: work absent 59 present 51 0.53  school absent 167 present 141 0.54
-Number of infectious places = 1843
-Number of infectious households = 823
-Number of infectious neighborhoods = 402
-Number of infectious schools = 88
-Number of infectious classrooms = 251
-Number of infectious workplaces = 132
-Number of infectious offices = 147
+DAY 12 ABSENTEEISM: work absent 55 present 37 0.59  school absent 67 present 78 0.46
+Number of infectious places = 1022
+Number of infectious households = 435
+Number of infectious neighborhoods = 244
+Number of infectious schools = 53
+Number of infectious classrooms = 105
+Number of infectious workplaces = 89
+Number of infectious offices = 96
 day 13 update epidemics took 1 seconds
-Day  13  Str 0  S 1240280  E     758  I    1016  I_s     672  R     701  M       0  C     670  N 1242755  AR  0.20  CI     274 RR 0.00 NR 0  CAR  0.09  Wed 2009-01-14 Year 2009 Week 2
+Day  13  Str 0  S 1241329  E     374  I     516  I_s     352  R     536  M       0  C     337  N 1242755  AR  0.11  CI     132 RR 0.00 NR 0  CAR  0.06  Wed 2009-01-14 Year 2009 Week 2
 day 13 report population took 0 seconds
-day 13 finished Thu Jan 26 21:30:38 2012
+day 13 finished Tue May 22 15:36:29 2012
 day 13 took 1 seconds
+day 13 maxrss 1474506752
 day 14 update places took 0 seconds
-day 14 update population took 0 seconds
-DAY 13 ABSENTEEISM: work absent 68 present 72 0.48  school absent 194 present 223 0.46
-Number of infectious places = 2545
-Number of infectious households = 1231
-Number of infectious neighborhoods = 496
-Number of infectious schools = 92
-Number of infectious classrooms = 334
-Number of infectious workplaces = 186
-Number of infectious offices = 206
-day 14 update epidemics took 1 seconds
-Day  14  Str 0  S 1239256  E    1168  I    1475  I_s     968  R     856  M       0  C    1024  N 1242755  AR  0.28  CI     399 RR 0.00 NR 0  CAR  0.12  Thu 2009-01-15 Year 2009 Week 2
+day 14 update population took 1 seconds
+DAY 13 ABSENTEEISM: work absent 58 present 53 0.52  school absent 96 present 114 0.45
+Number of infectious places = 1402
+Number of infectious households = 625
+Number of infectious neighborhoods = 326
+Number of infectious schools = 66
+Number of infectious classrooms = 159
+Number of infectious workplaces = 109
+Number of infectious offices = 117
+day 14 update epidemics took 0 seconds
+Day  14  Str 0  S 1240825  E     572  I     739  I_s     492  R     619  M       0  C     504  N 1242755  AR  0.16  CI     196 RR 0.00 NR 0  CAR  0.07  Thu 2009-01-15 Year 2009 Week 2
 day 14 report population took 0 seconds
-day 14 finished Thu Jan 26 21:30:39 2012
+day 14 finished Tue May 22 15:36:30 2012
 day 14 took 1 seconds
+day 14 maxrss 1476685824
 day 15 update places took 0 seconds
-day 15 update population took 0 seconds
-DAY 14 ABSENTEEISM: work absent 90 present 101 0.47  school absent 321 present 342 0.48
-Number of infectious places = 3566
-Number of infectious households = 1861
-Number of infectious neighborhoods = 639
-Number of infectious schools = 110
-Number of infectious classrooms = 452
-Number of infectious workplaces = 240
-Number of infectious offices = 264
-day 15 update epidemics took 1 seconds
-Day  15  Str 0  S 1237664  E    1804  I    2234  I_s    1492  R    1053  M       0  C    1592  N 1242755  AR  0.41  CI     652 RR 0.00 NR 0  CAR  0.18  Fri 2009-01-16 Year 2009 Week 2
+day 15 update population took 1 seconds
+DAY 14 ABSENTEEISM: work absent 64 present 59 0.52  school absent 152 present 186 0.45
+Number of infectious places = 1920
+Number of infectious households = 910
+Number of infectious neighborhoods = 434
+Number of infectious schools = 76
+Number of infectious classrooms = 210
+Number of infectious workplaces = 135
+Number of infectious offices = 155
+day 15 update epidemics took 0 seconds
+Day  15  Str 0  S 1240106  E     840  I    1087  I_s     715  R     722  M       0  C     719  N 1242755  AR  0.21  CI     298 RR 0.00 NR 0  CAR  0.10  Fri 2009-01-16 Year 2009 Week 2
 day 15 report population took 0 seconds
-day 15 finished Thu Jan 26 21:30:40 2012
+day 15 finished Tue May 22 15:36:31 2012
 day 15 took 1 seconds
-day 16 update places took 0 seconds
+day 15 maxrss 1479659520
+day 16 update places took 1 seconds
 day 16 update population took 0 seconds
-DAY 15 ABSENTEEISM: work absent 127 present 134 0.48  school absent 531 present 550 0.49
-Number of infectious places = 3898
-Number of infectious households = 2828
-Number of infectious neighborhoods = 818
+DAY 15 ABSENTEEISM: work absent 83 present 79 0.51  school absent 236 present 278 0.46
+Number of infectious places = 2093
+Number of infectious households = 1354
+Number of infectious neighborhoods = 581
 Number of infectious schools = 0
 Number of infectious classrooms = 0
-Number of infectious workplaces = 123
-Number of infectious offices = 129
-day 16 update epidemics took 1 seconds
-Day  16  Str 0  S 1236626  E    1366  I    3424  I_s    2262  R    1339  M       0  C    1038  N 1242755  AR  0.49  CI     958 RR 0.00 NR 0  CAR  0.25  Sat 2009-01-17 Year 2009 Week 2
+Number of infectious workplaces = 76
+Number of infectious offices = 82
+day 16 update epidemics took 0 seconds
+Day  16  Str 0  S 1239689  E     567  I    1636  I_s    1073  R     863  M       0  C     417  N 1242755  AR  0.25  CI     452 RR 0.00 NR 0  CAR  0.13  Sat 2009-01-17 Year 2009 Week 2
 day 16 report population took 0 seconds
-day 16 finished Thu Jan 26 21:30:41 2012
+day 16 finished Tue May 22 15:36:32 2012
 day 16 took 1 seconds
+day 16 maxrss 1482334208
 day 17 update places took 0 seconds
-day 17 update population took 0 seconds
-DAY 16 ABSENTEEISM: work absent 28 present 33 0.45  school absent 0 present 0 0.00
-Number of infectious places = 4438
-Number of infectious households = 3230
-Number of infectious neighborhoods = 890
+day 17 update population took 1 seconds
+DAY 16 ABSENTEEISM: work absent 44 present 37 0.54  school absent 0 present 0 0.00
+Number of infectious places = 2337
+Number of infectious households = 1499
+Number of infectious neighborhoods = 635
 Number of infectious schools = 0
 Number of infectious classrooms = 0
-Number of infectious workplaces = 155
-Number of infectious offices = 163
-day 17 update epidemics took 1 seconds
-Day  17  Str 0  S 1235496  E    1336  I    4171  I_s    2763  R    1752  M       0  C    1130  N 1242755  AR  0.58  CI     784 RR 0.00 NR 0  CAR  0.32  Sun 2009-01-18 Year 2009 Week 3
+Number of infectious workplaces = 97
+Number of infectious offices = 106
+day 17 update epidemics took 0 seconds
+Day  17  Str 0  S 1239245  E     533  I    1918  I_s    1261  R    1059  M       0  C     444  N 1242755  AR  0.28  CI     315 RR 0.00 NR 0  CAR  0.16  Sun 2009-01-18 Year 2009 Week 3
 day 17 report population took 0 seconds
-day 17 finished Thu Jan 26 21:30:42 2012
+day 17 finished Tue May 22 15:36:33 2012
 day 17 took 1 seconds
+day 17 maxrss 1484070912
 day 18 update places took 0 seconds
-day 18 update population took 0 seconds
-DAY 17 ABSENTEEISM: work absent 52 present 44 0.54  school absent 0 present 0 0.00
-Number of infectious places = 6897
-Number of infectious households = 3444
-Number of infectious neighborhoods = 965
-Number of infectious schools = 203
-Number of infectious classrooms = 831
-Number of infectious workplaces = 683
-Number of infectious offices = 771
-day 18 update epidemics took 1 seconds
-Day  18  Str 0  S 1232454  E    3275  I    4646  I_s    3124  R    2380  M       0  C    3042  N 1242755  AR  0.83  CI     769 RR 0.00 NR 0  CAR  0.38  Mon 2009-01-19 Year 2009 Week 3
+day 18 update population took 1 seconds
+DAY 17 ABSENTEEISM: work absent 47 present 53 0.47  school absent 0 present 0 0.00
+Number of infectious places = 3488
+Number of infectious households = 1534
+Number of infectious neighborhoods = 672
+Number of infectious schools = 140
+Number of infectious classrooms = 392
+Number of infectious workplaces = 353
+Number of infectious offices = 397
+day 18 update epidemics took 0 seconds
+Day  18  Str 0  S 1238044  E    1281  I    2047  I_s    1334  R    1383  M       0  C    1201  N 1242755  AR  0.38  CI     294 RR 0.00 NR 0  CAR  0.18  Mon 2009-01-19 Year 2009 Week 3
 day 18 report population took 0 seconds
-day 18 finished Thu Jan 26 21:30:43 2012
+day 18 finished Tue May 22 15:36:34 2012
 day 18 took 1 seconds
+day 18 maxrss 1488453632
 day 19 update places took 0 seconds
-day 19 update population took 0 seconds
-DAY 18 ABSENTEEISM: work absent 413 present 385 0.52  school absent 831 present 866 0.49
-Number of infectious places = 9238
-Number of infectious households = 4914
-Number of infectious neighborhoods = 1127
-Number of infectious schools = 248
-Number of infectious classrooms = 1073
-Number of infectious workplaces = 871
-Number of infectious offices = 1005
-day 19 update epidemics took 1 seconds
-Day  19  Str 0  S 1228259  E    4820  I    6310  I_s    4225  R    3366  M       0  C    4195  N 1242755  AR  1.17  CI    1755 RR 0.00 NR 0  CAR  0.52  Tue 2009-01-20 Year 2009 Week 3
+day 19 update population took 1 seconds
+DAY 18 ABSENTEEISM: work absent 199 present 206 0.49  school absent 399 present 349 0.53
+Number of infectious places = 4450
+Number of infectious households = 2078
+Number of infectious neighborhoods = 802
+Number of infectious schools = 165
+Number of infectious classrooms = 482
+Number of infectious workplaces = 436
+Number of infectious offices = 487
+day 19 update epidemics took 0 seconds
+Day  19  Str 0  S 1236416  E    1860  I    2644  I_s    1753  R    1835  M       0  C    1628  N 1242755  AR  0.51  CI     708 RR 0.00 NR 0  CAR  0.24  Tue 2009-01-20 Year 2009 Week 3
 day 19 report population took 0 seconds
-day 19 finished Thu Jan 26 21:30:44 2012
+day 19 finished Tue May 22 15:36:35 2012
 day 19 took 1 seconds
-FRED finished Thu Jan 26 21:30:44 2012
+day 19 maxrss 1492840448
+FRED finished Tue May 22 15:36:35 2012
 FRED took 35 seconds

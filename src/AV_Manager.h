@@ -26,7 +26,15 @@ class AV_Manager: public Manager {
 public:
 
   /**
-   * Constructor that sets the Population to which this AV_Manager is tied
+   * Default constructor. Does not set 'do_av' bool, thereby disabling antirals.
+   */
+
+  AV_Manager();
+
+  /**
+   * Constructor that sets the Population to which this AV_Manager is tied.
+   * This constructor also checks to see if the number of antivirals given in the
+   * params file greater than one and, if so, sets the 'do_av' bool.
    */
   AV_Manager(Population *_pop);
   

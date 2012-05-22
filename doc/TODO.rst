@@ -11,6 +11,7 @@ BUGS
 ----
 
 #. Lack of reproducibility when running with births enabled (new people not initialized completely) <---- [fix committed, need to verify]
+#. Antiviral.{cc,h}: Antiviral::quality_control/initialization problem: 'reduce_infectious_period' never initialized!!! Apparently never used throughout FRED.  Removed from quality_control for now.
 
 TESTING
 -------
