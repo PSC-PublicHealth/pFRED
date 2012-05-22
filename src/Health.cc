@@ -229,18 +229,6 @@ void Health::become_immune(Disease *disease) {
   }
 }
 
-/**
- *
- * Perform the daily update for this object.  This method is performance-critical and
- * accounts for much of the time spent when the epidemic is otherwise 'idle' (little active
- * infection spreading).  Though there is still room for improvement, performance
- * is currently much better than the original implementation.  Any changes made here
- * should be made carefully, especially w.r.t. cache performance and branch
- * predictability.
- *
- * @param day the simulation day
- */
-
 void Health::update(int day) {
   // if deceased, health status should have been cleared during population
   // update (by calling Person->die(), then Health->die(), which will reset (bool) alive
@@ -281,12 +269,6 @@ void Health::update(int day) {
     }
   }
 } // end Health::update //
-
-/*
- * Separating the updates for vaccine & antivirals from the
- * infection update gives improvement for the base.  
- *
- */
 
 void Health::update_interventions(int day) {
   // if deceased, health status should have been cleared during population
