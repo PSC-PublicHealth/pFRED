@@ -698,7 +698,7 @@ the population count for the cell, along with a vector of all persons
 residing in that cell. The Large Grid can also be used to store
 climate or other environmental profiles (see **Seasonality** below).
 
-The medium grid, called Grid, consists of 1km x 1km cells by default.
+The medium grid, called ``Grid``, consists of 1km x 1km cells by default.
  These cells function as neighborhood units, and store information about
 the preferred schools and workplaces attended by people living with the
 cells.  This information is used when agents need to change schools, or
@@ -1134,6 +1134,18 @@ the start day, the end day, and on any day matching
 the population that will be identical to the input population file, but
 will have additional fields for the classroom and office ids (which are
 both set at runtime).
+
+Global Compile-Time Constants
+-----------------------------
+
+MAX_NUM_DISEASES:
+~~~~~~~~~~~~~~~~~
+
+  For optimal performance, set this to the minimum value possible.
+  The default value allows **four diseases**.
+  Changing this values requires recompilation.
+
+  This constant is defined in ``Global.h``.
 
 Global Control Parameters
 -------------------------
@@ -1677,6 +1689,13 @@ school closure parameters:
   # day to close school under global policy
   school_closure_day = 10
 
+enable_vaccination:
+~~~~~~~~~~~~~~~~~~~
+
+  Set this parameter to enable vaccination.
+
+  **Default: 0**
+
 vaccine_tracefile:
 ~~~~~~~~~~~~~~~~~~
 
@@ -1860,6 +1879,8 @@ vaccine_dose_efficacy_delay_ages[X][Y] and vaccine_dose_efficacy_delay_values[X]
 
 Anti-virals parameters:
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+  ``enable_antivirals = 0`` (**Default**)
 
   ``number_antivirals = 0`` (**Default**)
 
