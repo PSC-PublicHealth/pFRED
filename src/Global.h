@@ -55,6 +55,7 @@ class Global {
     static const int MAX_NUM_DISEASES = 4;
 
     // household relationship codes
+    static const int UNKNOWN_RELATION = 0;
     static const int HOUSEHOLDER = 1;
     static const int SPOUSE = 2;
     static const int NATURAL_CHILD = 3;
@@ -129,6 +130,8 @@ class Global {
     static bool Report_Incidence;
     static bool Enable_Vaccination;
     static bool Enable_Antivirals;
+    static bool Use_Mean_Latitude;
+    static bool Print_Household_Locations;
 
     // global singleton objects
     static Population Pop;
@@ -151,6 +154,7 @@ class Global {
     static FILE *Prevfp;
     static FILE *Incfp;
     static FILE *ErrorLogfp;
+    static FILE *Householdfp;
 
 
     /**

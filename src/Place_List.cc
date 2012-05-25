@@ -133,10 +133,15 @@ void Place_List::read_places() {
     fflush(Global::Statusfp);
   }
 
-  // NOTE: Use code below to make projection based on the location file.
-  // CURRENT DEFAULT: Use mean US lat-lon (see Geo_Utils.cc)
-  // double mean_lat = (min_lat + max_lat) / 2.0;
-  // Geo_Utils::set_km_per_degree(mean_lat);
+  if (Global::Use_Mean_Latitude) {
+    // Make projection based on the location file.
+    double mean_lat = (min_lat + max_lat) / 2.0;
+    Geo_Utils::set_km_per_degree(mean_lat);
+    printf("min_lat: %f  max_lat: %f  mean_lat: %f\n", min_lat, max_lat, mean_lat);
+  }
+  else {
+    // DEFAULT: Use mean US latitude (see Geo_Utils.cc)
+  }
 
   // create geographical grids
   if (Global::Enable_Large_Grid) {

@@ -56,13 +56,14 @@ void Cell::make_neighborhood() {
 void Cell::add_household(Place *p) {
   houses++;
   household.push_back(p);
-  if (Global::Verbose > 1) {
+  if (Global::Householdfp != NULL) {
     double lat, lon, x, y;
     lat = p->get_latitude();
     lon = p->get_longitude();
     grid->translate_to_cartesian(lat,lon,&x,&y);
-    // p->print(0);
-    // printf("HHH %f %f %f %f house_id: %d row = %d  col = %d  houses = %d\n", lon,lat, x,y, p->get_id(), row, col, houses);
+    fprintf(Global::Householdfp,"%s %f %f %f %f house_id: %d row = %d  col = %d  house_number = %d\n",
+	    p->get_label(),lon,lat, x,y, p->get_id(), row, col, houses);
+    fflush(Global::Householdfp);
   }
 }
 

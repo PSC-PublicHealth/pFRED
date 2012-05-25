@@ -28,7 +28,6 @@
 int main(int argc, char* argv[]) {
   int run;          // number of current run
   unsigned long new_seed;
-  char filename[256];
   char directory[256];
   char paramfile[256];
 
@@ -81,78 +80,8 @@ int main(int argc, char* argv[]) {
   if (0!=mkdir(directory, mode) && EEXIST!=errno) // make it
     Utils::fred_abort("mkdir(Output_directory) failed with %d\n",errno); // or die
 
-  // open output files
-  // Do the error file first so that it captures
-  // as much errors as possible.
-  Global::ErrorLogfp = NULL;
-  sprintf(filename, "%s/err%d.txt", directory, run);
-  Global::ErrorLogfp = fopen(filename, "w");
-  if (Global::ErrorLogfp == NULL) {
-    Utils::fred_abort("Can't open %s\n", filename);
-  }
-  sprintf(filename, "%s/out%d.txt", directory, run);
-  Global::Outfp = fopen(filename, "w");
-  if (Global::Outfp == NULL) {
-    Utils::fred_abort("Can't open %s\n", filename);
-  }
-  Global::Tracefp = NULL;
-  if (strcmp(Global::Tracefilebase, "none") != 0) {
-    sprintf(filename, "%s/trace%d.txt", directory, run);
-    Global::Tracefp = fopen(filename, "w");
-    if (Global::Tracefp == NULL) {
-      Utils::fred_abort("Can't open %s\n", filename);
-    }
-  }
-  Global::Infectionfp = NULL;
-  if (Global::Track_infection_events) {
-    sprintf(filename, "%s/infections%d.txt", directory, run);
-    Global::Infectionfp = fopen(filename, "w");
-    if (Global::Infectionfp == NULL) {
-      Utils::fred_abort("Can't open %s\n", filename);
-    }
-  }
-  Global::VaccineTracefp = NULL;
-  if (strcmp(Global::VaccineTracefilebase, "none") != 0) {
-    sprintf(filename, "%s/vacctr%d.txt", directory, run);
-    Global::VaccineTracefp = fopen(filename, "w");
-    if (Global::VaccineTracefp == NULL) {
-      Utils::fred_abort("Can't open %s\n", filename);
-    }
-  }
-  Global::Birthfp = NULL;
-  if (Global::Enable_Births) {
-    sprintf(filename, "%s/births%d.txt", directory, run);
-    Global::Birthfp = fopen(filename, "w");
-    if (Global::Birthfp == NULL) {
-      Utils::fred_abort("Can't open %s\n", filename);
-    }
-  }
-  Global::Deathfp = NULL;
-  if (Global::Enable_Deaths) {
-    sprintf(filename, "%s/deaths%d.txt", directory, run);
-    Global::Deathfp = fopen(filename, "w");
-    if (Global::Deathfp == NULL) {
-      Utils::fred_abort("Can't open %s\n", filename);
-    }
-  }
-  Global::Prevfp = NULL;
-  if (strcmp(Global::Prevfilebase, "none") != 0) {
-    sprintf(filename, "%s/prev%d.txt", directory, run);
-    Global::Prevfp = fopen(filename, "w");
-    if (Global::Prevfp == NULL) {
-      Utils::fred_abort("Can't open %s\n", filename);
-    }
-    Global::Report_Prevalence = true;
-  }
-  Global::Incfp = NULL;
-  if (strcmp(Global::Incfilebase, "none") != 0) {
-    sprintf(filename, "%s/inc%d.txt", directory, run);
-    Global::Incfp = fopen(filename, "w");
-    if (Global::Incfp == NULL) {
-      Utils::fred_abort("Help! Can't open %s\n", filename);
-    }
-    Global::Report_Incidence = true;
-  }
+  // open output files with global file pointers
+  Utils::fred_open_output_files(directory, run);
 
   // initialize RNG
   INIT_RANDOM(Global::Seed);
@@ -294,6 +223,8 @@ int main(int argc, char* argv[]) {
   // finish up
   Global::Pop.end_of_run();
   Global::Places.end_of_run();
+
+  // close all open output files with global file pointers
   Utils::fred_end();
 
   return 0;

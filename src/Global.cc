@@ -60,6 +60,8 @@ int Global::Seed_age_lower_bound = 0;
 int Global::Seed_age_upper_bound = 0;
 bool Global::Enable_Antivirals = true;
 bool Global::Enable_Vaccination = true;
+bool Global::Use_Mean_Latitude = false;
+bool Global::Print_Household_Locations = false;
 
 // per-strain prevalence incidence reporting off by default
 // will be enabled in Fred.cc if valid files are given in params
@@ -87,6 +89,7 @@ FILE *Global::Deathfp = NULL;
 FILE *Global::Prevfp = NULL;
 FILE *Global::Incfp = NULL;
 FILE *Global::ErrorLogfp = NULL;
+FILE *Global::Householdfp = NULL;
 
 void Global::get_global_parameters() {
 
@@ -151,6 +154,10 @@ void Global::get_global_parameters() {
   Global::Enable_Vaccination = temp_int;
   Params::get_param_from_string("enable_antivirals",&temp_int);
   Global::Enable_Antivirals = temp_int;
+  Params::get_param_from_string("use_mean_latitude",&temp_int);
+  Global::Use_Mean_Latitude = temp_int;
+  Params::get_param_from_string("print_household_locations",&temp_int);
+  Global::Print_Household_Locations = temp_int;
 
 
   // Sanity Checks

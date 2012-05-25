@@ -56,6 +56,89 @@ void Utils::fred_warning(const char* format, ...){
   fflush(stdout);
 }
 
+void Utils::fred_open_output_files(char * directory, int run){
+  char filename[256];
+  // Do the error file first so that it captures
+  // as much errors as possible.
+  Global::ErrorLogfp = NULL;
+  sprintf(filename, "%s/err%d.txt", directory, run);
+  Global::ErrorLogfp = fopen(filename, "w");
+  if (Global::ErrorLogfp == NULL) {
+    Utils::fred_abort("Can't open %s\n", filename);
+  }
+  sprintf(filename, "%s/out%d.txt", directory, run);
+  Global::Outfp = fopen(filename, "w");
+  if (Global::Outfp == NULL) {
+    Utils::fred_abort("Can't open %s\n", filename);
+  }
+  Global::Tracefp = NULL;
+  if (strcmp(Global::Tracefilebase, "none") != 0) {
+    sprintf(filename, "%s/trace%d.txt", directory, run);
+    Global::Tracefp = fopen(filename, "w");
+    if (Global::Tracefp == NULL) {
+      Utils::fred_abort("Can't open %s\n", filename);
+    }
+  }
+  Global::Infectionfp = NULL;
+  if (Global::Track_infection_events) {
+    sprintf(filename, "%s/infections%d.txt", directory, run);
+    Global::Infectionfp = fopen(filename, "w");
+    if (Global::Infectionfp == NULL) {
+      Utils::fred_abort("Can't open %s\n", filename);
+    }
+  }
+  Global::VaccineTracefp = NULL;
+  if (strcmp(Global::VaccineTracefilebase, "none") != 0) {
+    sprintf(filename, "%s/vacctr%d.txt", directory, run);
+    Global::VaccineTracefp = fopen(filename, "w");
+    if (Global::VaccineTracefp == NULL) {
+      Utils::fred_abort("Can't open %s\n", filename);
+    }
+  }
+  Global::Birthfp = NULL;
+  if (Global::Enable_Births) {
+    sprintf(filename, "%s/births%d.txt", directory, run);
+    Global::Birthfp = fopen(filename, "w");
+    if (Global::Birthfp == NULL) {
+      Utils::fred_abort("Can't open %s\n", filename);
+    }
+  }
+  Global::Deathfp = NULL;
+  if (Global::Enable_Deaths) {
+    sprintf(filename, "%s/deaths%d.txt", directory, run);
+    Global::Deathfp = fopen(filename, "w");
+    if (Global::Deathfp == NULL) {
+      Utils::fred_abort("Can't open %s\n", filename);
+    }
+  }
+  Global::Prevfp = NULL;
+  if (strcmp(Global::Prevfilebase, "none") != 0) {
+    sprintf(filename, "%s/prev%d.txt", directory, run);
+    Global::Prevfp = fopen(filename, "w");
+    if (Global::Prevfp == NULL) {
+      Utils::fred_abort("Can't open %s\n", filename);
+    }
+    Global::Report_Prevalence = true;
+  }
+  Global::Incfp = NULL;
+  if (strcmp(Global::Incfilebase, "none") != 0) {
+    sprintf(filename, "%s/inc%d.txt", directory, run);
+    Global::Incfp = fopen(filename, "w");
+    if (Global::Incfp == NULL) {
+      Utils::fred_abort("Help! Can't open %s\n", filename);
+    }
+    Global::Report_Incidence = true;
+  }
+  Global::Householdfp = NULL;
+  if (Global::Print_Household_Locations) {
+    sprintf(filename, "%s/households.txt", directory);
+    Global::Householdfp = fopen(filename, "w");
+    if (Global::Householdfp == NULL) {
+      Utils::fred_abort("Can't open %s\n", filename);
+    }
+  }
+  return;
+}
 
 void Utils::fred_end(void){
   // This is a function that cleans up FRED and exits
@@ -65,6 +148,7 @@ void Utils::fred_end(void){
   if (Global::VaccineTracefp != NULL) fclose(Global::VaccineTracefp);
   if (Global::Prevfp != NULL) fclose(Global::Prevfp);
   if (Global::Incfp != NULL) fclose(Global::Incfp);
+  if (Global::Householdfp != NULL) fclose(Global::Householdfp);
 }
 
 
