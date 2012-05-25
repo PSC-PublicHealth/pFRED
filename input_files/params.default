@@ -28,6 +28,7 @@ track_age_distribution = 0
 track_household_distribution = 0
 track_network_stats = 0
 quality_control = 1
+print_household_locations = 0
 rr_delay = 20
 mutation_prob = 1 0.0
 work_absenteeism = 0.0
@@ -454,6 +455,8 @@ accept_vaccine_dose_for_child_barriers_odds_ratio = 1
 #### Geographical Grids
 enable_large_grid = 0
 enable_small_grid = 0
+use_mean_latitude = 0
+
 # size of large-scale grid cells in km
 grid_large_cell_size = 20.0
 # size of normal grid cells in km
