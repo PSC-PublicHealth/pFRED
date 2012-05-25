@@ -1190,6 +1190,27 @@ reseed_day:
 
   ``reseed_day = -1``
 
+use_mean_latitude:
+~~~~~~~~~~~~~~~~~~
+
+  if ``use_mean_latitude = 1``, then the mean latitude in the location
+  file is used for the planar projection from (longitude,latitude) to
+  (x,y) coordinates.  This is recommended for regions substantially
+  North or South from the US mean latitude.  If set to 0 (the default),
+  then the mean US latitude is used.
+
+  ``use_mean_latitude = 0``
+
+print_household_locations
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  if set, a file called ``households.txt`` is printed in the output
+  directory with format:
+
+  HOUSE_LABEL LON LAT  X Y ID GRID_ROW GRID_COL GRID_HOUSE_NUMBER
+
+  ``print_household_locations = 0``
+
 office_size: 
 ~~~~~~~~~~~~
 
