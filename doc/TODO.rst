@@ -1,6 +1,3 @@
-TODO:
-=====
-
 FRED RELEASE
 ------------
 
@@ -12,6 +9,7 @@ BUGS
 
 #. Lack of reproducibility when running with births enabled (new people not initialized completely) <---- [fix committed, need to verify]
 #. Antiviral.{cc,h}: Antiviral::quality_control/initialization problem: 'reduce_infectious_period' never initialized!!! Apparently never used throughout FRED.  Removed from quality_control for now.
+#. Why is "int get_next_id()" in Population static?  Should be accessed as method of singleton Global::Pop.  Same applies to other statics in Population.
 
 TESTING
 -------
@@ -46,7 +44,6 @@ OPTIMIZATION
 DOCUMENTATION
 -------------
 
-#. Check this TODO list into cvs
+#. Checked this TODO list into cvs
 #. Doxygen commenting conventions <---- [put everything in headers]
 #. reSt FAQ document
-
