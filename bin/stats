@@ -3,7 +3,7 @@ use warnings;
 use strict;
 use Scalar::Util qw(looks_like_number);
 #
-# File: stats
+# File: fred_stats
 # Purpose: Simple report generator
 # Author: John Grefenstette
 #
@@ -16,7 +16,7 @@ use Scalar::Util qw(looks_like_number);
 # all files.
 #
 
-die "usage: stats file ...\n" if not @ARGV;
+die "usage: fred_stats file ...\n" if not @ARGV;
 my @files = @ARGV;
 
 # 2-dim array containing the sum for each numeric field

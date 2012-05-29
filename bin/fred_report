@@ -17,9 +17,8 @@ my $FRED = $ENV{FRED_HOME};
 die "fred_report: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
 # process output files
-system "$FRED/bin/stats $out/out* > $reports/stats.out";
+system "$FRED/bin/fred_stats $out/out* > $reports/stats.out";
 
-# my @fields = qw/S E I R I_s M C AR CI RR V/;
 my @fields = ();
 open IN, "$reports/stats.out";
 my $line = <IN>;

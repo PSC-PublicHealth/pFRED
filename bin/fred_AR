@@ -30,7 +30,7 @@ my $outdir = "$FREDRESULTS/RESULTS/JOB/$id/DATA/OUT";
 
 chdir $reportsdir or die "Can't find REPORTS directory: $reportsdir\n";
 
-system "$bindir/stats $outdir/out* > stats.out";
+system "$bindir/fred_stats $outdir/out* > stats.out";
 
 my $x = "AR";
 my $AR = "";

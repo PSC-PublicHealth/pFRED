@@ -5,7 +5,8 @@ use Env;
 use Getopt::Std;
 
 my %options = ();
-getopts("ek:v:a:x:X:y:Y:", \%options);
+getopts("ek:v:a:x:X:y:Y:T:", \%options);
+my $usage = "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r|m] [-a start_year | -e | -x xmin | -y ymin |-X xmax |-Y ymax \-T title]\n";
 my $key = "";
 my $varlist = "";
 my $year = "0";
@@ -20,9 +21,11 @@ $ymin = $options{y} if exists $options{y};
 $ymax = $options{Y} if exists $options{Y};
 my $errorbars = exists $options{e};
 $key = $options{k} if exists $options{k};
-die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r|m] [-e]\n" if not $key;
+my $title = "FRED: Allegheny County Model";
+$title = $options{T} if exists $options{T};
+die $usage if not $key;
 $varlist = $options{v} if exists $options{v};
-die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r|m] [-e]\n" if not $varlist;
+die $usage if not $varlist;
 my @args = check_varlist($varlist);
 
 my $FRED = $ENV{FRED_HOME};
@@ -60,9 +63,9 @@ my $pltfile = "sim-$key-$$.plt";
 my $pngfile = "report-$key-$$.png";
 open FH, ">$pltfile";
 print FH <<"EOF";
-set title \"FRED: Allegheny County Model\"
+set title \"$title\"
 # set terminal png font \"Arial Bold\" 12
-set terminal png 
+set terminal png giant 
 set output \'$pngfile\'
 set grid
 set xrange [$xmin:$xmax]
@@ -131,7 +134,7 @@ sub check_varlist {
     }
     else {
       print "bad arg: |$x|\n";
-      die "usage: fred_plot -k key -v [S|E|I|R|s|C|c|M|A|a|r|m]\n";
+      die $usage;
     }
   }
   return @args;
