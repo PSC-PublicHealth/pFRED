@@ -69,6 +69,11 @@ int main(int argc, char* argv[]) {
     // use the directory in the params file
     strcpy(directory, Global::Output_directory);
     //printf("directory = %s\n",directory);
+  } 
+  else {
+    // change the Output_directory
+    strcpy(Global::Output_directory, directory);
+    printf("Overridden from command line: Output_directory = %s\n",Global::Output_directory);
   }
 
   // create the output directory, if necessary

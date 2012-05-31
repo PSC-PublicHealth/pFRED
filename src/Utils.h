@@ -30,6 +30,8 @@ namespace Utils{
   void fred_print_finish_timer();
   void fred_print_lap_time(const char* format, ...);
   void fred_verbose(int verbosity, const char* format, ...);
+  void fred_log(const char* format, ...);
+  void fred_report(const char* format, ...);
   FILE *fred_open_file(char * filename);
   void get_fred_file_name(char * filename);
   void fred_print_resource_usage(int day);

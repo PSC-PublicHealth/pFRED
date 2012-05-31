@@ -15,19 +15,37 @@
 
 using namespace std;
 static time_t start_timer, stop_timer, fred_timer, day_timer;
-
+static char ErrorFilename[256];
 
 void Utils::fred_abort(const char* format, ...){
 
-  if(Global::ErrorLogfp != NULL){
-    va_list ap;
-    va_start(ap,format);
-    fprintf(Global::ErrorLogfp,"FRED ERROR: ");
-    vfprintf(Global::ErrorLogfp,format,ap);
-    va_end(ap);
-    fflush(Global::ErrorLogfp);
+  // open ErrorLog file if it doesn't exist
+  if(Global::ErrorLogfp == NULL){
+    Global::ErrorLogfp = fopen(ErrorFilename, "w");
+    if (Global::ErrorLogfp == NULL) {
+      // output to stdout
+      printf("FRED ERROR: Can't open errorfile %s\n", ErrorFilename);
+      // current error message:
+      va_list ap;
+      va_start(ap,format);
+      printf("FRED ERROR: ");
+      vprintf(format,ap);
+      va_end(ap);
+      fflush(stdout);
+      fred_end();
+      abort();
+    }
   }
+
+  // output to error file
   va_list ap;
+  va_start(ap,format);
+  fprintf(Global::ErrorLogfp,"FRED ERROR: ");
+  vfprintf(Global::ErrorLogfp,format,ap);
+  va_end(ap);
+  fflush(Global::ErrorLogfp);
+
+  // output to stdout
   va_start(ap,format);
   printf("FRED ERROR: ");
   vprintf(format,ap);
@@ -40,15 +58,33 @@ void Utils::fred_abort(const char* format, ...){
 
 void Utils::fred_warning(const char* format, ...){
 
-  if(Global::ErrorLogfp != NULL){
-    va_list ap;
-    va_start(ap,format);
-    fprintf(Global::ErrorLogfp,"FRED WARNING: ");
-    vfprintf(Global::ErrorLogfp,format,ap);
-    va_end(ap);
-    fflush(Global::ErrorLogfp);
+  // open ErrorLog file if it doesn't exist
+  if(Global::ErrorLogfp == NULL){
+    Global::ErrorLogfp = fopen(ErrorFilename, "w");
+    if (Global::ErrorLogfp == NULL) {
+      // output to stdout
+      printf("FRED ERROR: Can't open errorfile %s\n", ErrorFilename);
+      // current error message:
+      va_list ap;
+      va_start(ap,format);
+      printf("FRED WARNING: ");
+      vprintf(format,ap);
+      va_end(ap);
+      fflush(stdout);
+      fred_end();
+      abort();
+    }
   }
+
+  // output to error file
   va_list ap;
+  va_start(ap,format);
+  fprintf(Global::ErrorLogfp,"FRED WARNING: ");
+  vfprintf(Global::ErrorLogfp,format,ap);
+  va_end(ap);
+  fflush(Global::ErrorLogfp);
+
+  // output to stdout
   va_start(ap,format);
   printf("FRED WARNING: ");
   vprintf(format,ap);
@@ -58,14 +94,11 @@ void Utils::fred_warning(const char* format, ...){
 
 void Utils::fred_open_output_files(char * directory, int run){
   char filename[256];
-  // Do the error file first so that it captures
-  // as much errors as possible.
+
+  // ErrorLog file is created at the first warning or error
   Global::ErrorLogfp = NULL;
-  sprintf(filename, "%s/err%d.txt", directory, run);
-  Global::ErrorLogfp = fopen(filename, "w");
-  if (Global::ErrorLogfp == NULL) {
-    Utils::fred_abort("Can't open %s\n", filename);
-  }
+  sprintf(ErrorFilename, "%s/err%d.txt", directory, run);
+
   sprintf(filename, "%s/out%d.txt", directory, run);
   Global::Outfp = fopen(filename, "w");
   if (Global::Outfp == NULL) {
@@ -208,6 +241,25 @@ void Utils::fred_verbose(int verbosity, const char* format, ...){
     va_end(ap);
     fflush(stdout);
   }
+}
+
+void Utils::fred_log(const char* format, ...){
+  va_list ap;
+  va_start(ap,format);
+  vfprintf(Global::Statusfp,format,ap);
+  va_end(ap);
+  fflush(Global::Statusfp);
+}
+
+void Utils::fred_report(const char* format, ...){
+  va_list ap;
+  va_start(ap,format);
+  vfprintf(Global::Outfp,format,ap);
+  fflush(Global::Outfp);
+  va_start(ap,format);
+  vfprintf(Global::Statusfp,format,ap);
+  fflush(Global::Statusfp);
+  va_end(ap);
 }
 
 FILE *Utils::fred_open_file(char * filename) {
