@@ -328,9 +328,9 @@ public:
 
   /**
    * @param disease the disease to check
-   * @return the id of the Person who infected this agent with disease
+   * @return the Person who infected this agent with disease
    */
-  int get_infector(int disease) const { return health->get_infector(disease); }
+  Person * get_infector(int disease) const { return health->get_infector(disease); }
 
   /**
    * @param disease the disease to check

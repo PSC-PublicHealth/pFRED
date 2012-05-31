@@ -209,9 +209,9 @@ public:
 
   /**
    * @param disease the disease to check
-   * @return
+   * @return Person who gave this person the disease
    */
-  int get_infector(int disease_id) const;
+  Person * get_infector(int disease_id) const;
 
   /**
    * @param disease the disease to check

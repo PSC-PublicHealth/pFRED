@@ -324,13 +324,11 @@ int Health:: get_symptomatic_date(int disease_id) const {
     return infection[disease_id]->get_symptomatic_date();
 }
 
-int Health::get_infector(int disease_id) const {
+Person * Health::get_infector(int disease_id) const {
   if (!( active_infections[ disease_id ] ))
-    return -1;
-  else if (infection[disease_id]->get_infector() == NULL)
-    return -1;
+    return NULL;
   else
-    return infection[disease_id]->get_infector()->get_id();
+    return infection[disease_id]->get_infector();
 }
 
 int Health::get_infected_place(int disease_id) const {

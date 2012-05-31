@@ -86,7 +86,13 @@ void Person::print(FILE *fp, int disease) const {
   fprintf(fp, "infected_at %c %6d ",
           health->get_infected_place_type(disease),
 	  health->get_infected_place(disease));
-  fprintf(fp, "infector %d ", health->get_infector(disease));
+  Person * infector = health->get_infector(disease);
+  int infector_id;
+  if (infector == NULL) 
+    infector_id = -1;
+  else 
+    infector_id = infector->get_id();
+  fprintf(fp, "infector %d ", infector_id);
   fprintf(fp, "infectees %d ", health->get_infectees(disease));
   fprintf(fp, "antivirals: %2d ",health->get_number_av_taken());
   for(int i=0;i<health->get_number_av_taken();i++)
