@@ -23,6 +23,10 @@ my %titles = ( AR => "Attack Rate",
 	       SM => "Seasonality Mult",
 	       Wrk => "Workplace Transmissions",
 	       X => "Imported Transmissions",
+	       small => "Presenteeism at Small Workplaces",
+	       med => "Presenteeism at Medium Workplaces",
+	       large => "Presenteeism at Large Workplaces",
+	       xlarge => "Presenteeism at Xlarge Workplaces",
 );
 
 my $key = "";
@@ -34,8 +38,10 @@ my $ymin = "0";
 my $ymax = "*";
 my $errorbars;
 my $title = "FRED: Allegheny County Model";
+my $fontsize = "giant";
 
 my $opt_result = GetOptions("e" => \$errorbars,
+			    "f=s" => \$fontsize,
 			    "k=s" => \$key,
 			    "v=s" => \@varlist,
 			    "a=i" => \$year,
@@ -45,7 +51,7 @@ my $opt_result = GetOptions("e" => \$errorbars,
 			    "Y=i" => \$ymax,
 			    "T=s" => \$title);
 
-my $usage = "usage: fred_plot --k key --v [--a start_year | --e | --x xmin | --y ymin |--X xmax |--Y ymax \--T title]\n";
+my $usage = "usage: fred_plot -k key -v [-a start_year|-e|-f fontsize|-x xmin|-y ymin|-X xmax|-Y ymax|-T title]\n";
 
 die $usage if not $key;
 die $usage if not @varlist;
@@ -86,7 +92,7 @@ open FH, ">$pltfile";
 print FH <<"EOF";
 set title \"$title\"
 # set terminal png font \"Arial Bold\" 12
-set terminal png giant 
+set terminal png $fontsize 
 set output \'$pngfile\'
 set grid
 set xrange [$xmin:$xmax]
