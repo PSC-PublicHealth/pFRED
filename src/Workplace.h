@@ -94,11 +94,28 @@ public:
 
   static int get_max_office_size() { return Office_size; }
 
+  static int get_total_workers() { return total_workers; }
+  static int get_workers_in_small_workplaces() { return workers_in_small_workplaces; }
+  static int get_workers_in_medium_workplaces() { return workers_in_medium_workplaces; }
+  static int get_workers_in_large_workplaces() { return workers_in_large_workplaces; }
+  static int get_workers_in_xlarge_workplaces() { return workers_in_xlarge_workplaces; }
+  static int get_small_workplace_size() { return Small_workplace_size; }
+  static int get_medium_workplace_size() { return Medium_workplace_size; }
+  static int get_large_workplace_size() { return Large_workplace_size; }
+
  private:
   static double * Workplace_contacts_per_day;
   static double *** Workplace_contact_prob;
   static bool Workplace_parameters_set;
   static int Office_size;
+  static int Small_workplace_size;
+  static int Medium_workplace_size;
+  static int Large_workplace_size;
+  static int total_workers;
+  static int workers_in_small_workplaces;
+  static int workers_in_medium_workplaces;
+  static int workers_in_large_workplaces;
+  static int workers_in_xlarge_workplaces;
 
   vector <Place *> offices;
   int next_office;

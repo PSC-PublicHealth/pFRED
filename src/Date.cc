@@ -817,6 +817,7 @@ Date::~Date() {
 }
 
 void Date::setup(char * output_directory, int days) {
+  return;
   // Write the date info to a file
   char filename[256];
   sprintf(filename, "%s/dates.txt", output_directory);

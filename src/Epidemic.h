@@ -36,6 +36,10 @@ public:
    */
   void print_stats(int day);
 
+  void report_age_of_infection(int day);
+  void report_place_of_infection(int day);
+  void report_presenteeism(int day);
+
   /**
    * Add an infectious place of a given type to this Epidemic's list
    * @param p the Place to be added
@@ -114,6 +118,7 @@ private:
   Timestep_Map* primary_cases_map;
   set <person_pair, person_pair_comparator> susceptible_list;
   set <person_pair, person_pair_comparator> infectious_list;
+  vector <Person *> daily_infections_list;
   vector <Place *> inf_households;
   vector <Place *> inf_neighborhoods;
   vector <Place *> inf_classrooms;

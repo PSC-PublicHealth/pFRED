@@ -22,9 +22,19 @@
 double * Workplace::Workplace_contacts_per_day;
 double *** Workplace::Workplace_contact_prob;
 int Workplace::Office_size = 50;
+int Workplace::Small_workplace_size = 50;
+int Workplace::Medium_workplace_size = 100;
+int Workplace::Large_workplace_size = 500;
 
 //Private static variable to assure we only lookup parameters once
 bool Workplace::Workplace_parameters_set = false;
+
+//Private static variables for population level statistics
+int Workplace::workers_in_small_workplaces = 0;
+int Workplace::workers_in_medium_workplaces = 0;
+int Workplace::workers_in_large_workplaces = 0;
+int Workplace::workers_in_xlarge_workplaces = 0;
+int Workplace::total_workers = 0;
 
 Workplace::Workplace(int loc, const char *lab, double lon, double lat, Place *container, Population *pop) {
   type = WORKPLACE;
@@ -45,6 +55,11 @@ void Workplace::get_parameters(int diseases) {
   // people per office
   Params::get_param_from_string("office_size", &Workplace::Office_size);
 
+  // workplace size limits
+  Params::get_param_from_string("small_workplace_size", &Workplace::Small_workplace_size);
+  Params::get_param_from_string("medium_workplace_size", &Workplace::Medium_workplace_size);
+  Params::get_param_from_string("large_workplace_size", &Workplace::Large_workplace_size);
+
   for (int s = 0; s < diseases; s++) {
     int n;
     sprintf(param_str, "workplace_contacts[%d]", s);
@@ -62,20 +77,37 @@ void Workplace::get_parameters(int diseases) {
       }
     }
   }
-  
   Workplace::Workplace_parameters_set = true;
 }
 
+// this method is called after all workers are assigned to workplaces
 void Workplace::prepare() {
+
+  // update employment stats based on size of workplace
+  if (N < Workplace::Small_workplace_size) {
+    Workplace::workers_in_small_workplaces += N;
+  }
+  else if (N < Workplace::Medium_workplace_size) {
+    Workplace::workers_in_medium_workplaces += N;
+  }
+  else if (N < Workplace::Large_workplace_size) {
+    Workplace::workers_in_large_workplaces += N;
+  }
+  else {
+    Workplace::workers_in_xlarge_workplaces += N;
+  }
+  Workplace::total_workers += N;
+
+  // reserve memory for place-specific agent lists
   for (int s = 0; s < Global::Diseases; s++) {
     susceptibles[s].reserve(N);
     infectious[s].reserve(N);
     total_cases[s] = total_deaths[s] = 0;
   }
-  update(0);
   open_date = 0;
   close_date = INT_MAX;
   next_office = 0;
+  update(0);
 
   if (Global::Verbose > 2) {
     printf("prepare place: %d\n", id);
