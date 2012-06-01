@@ -27,6 +27,9 @@ track_infection_events = 1
 track_age_distribution = 0
 track_household_distribution = 0
 track_network_stats = 0
+report_age_of_infection = 0
+report_place_of_infection = 0
+report_presenteeism = 0
 quality_control = 1
 print_household_locations = 0
 rr_delay = 20
@@ -173,6 +176,9 @@ school_closure_cases = -1
 
 #### WORKPLACES
 office_size = 50
+small_workplace_size = 50
+medium_workplace_size = 100
+large_workplace_size = 500
 
 #### ANTIVIRALS
 enable_antivirals = 0
