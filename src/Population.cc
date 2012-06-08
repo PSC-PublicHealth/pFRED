@@ -53,11 +53,16 @@ Population::Population() {
   clear_static_arrays();
   pop.clear();
   pop_map.clear();
+  birthday_map.clear();
   pop_size = 0;
   disease = NULL;
   av_manager = NULL;
   vacc_manager = NULL;
   mutation_prob = NULL;
+
+  for(int i = 0; i < 367; ++i) {
+	birthday_vecs[i].clear();
+  }
 }
 
 Population::~Population() {
@@ -112,6 +117,17 @@ void Population::add_person(Person * person) {
   assert((unsigned) pop_size == pop.size()-1);
   pop_map[person] = pop_size;
   pop_size = pop.size();
+
+  //Put the person into the correct birthday list
+  if(Global::Enable_Aging) {
+	int pos = person->get_demographics()->get_birthdate()->get_day_of_year();
+	//Check to see if the day of the year is after FEB 28
+	if(pos > 59 && !Date::is_leap_year(person->get_demographics()->get_birthdate()->get_year()))
+	  pos++;
+
+	this->birthday_vecs[pos].push_back(person);
+	this->birthday_map[person] = ((int)this->birthday_vecs[pos].size() - 1);
+  }
 }
 
 void Population::delete_person(Person * person) {
@@ -134,6 +150,7 @@ void Population::delete_person(Person * person) {
         pop_size, (int) pop.size());
   }
   assert((unsigned) pop_size == pop.size());
+
   person->terminate();
   Utils::fred_verbose(1,"DELETED PERSON: %d\n", person->get_id());
   if ( Global::Enable_Travel ) {
@@ -345,6 +362,39 @@ void Population::update(int day) {
   if (Global::Enable_Deaths) death_list.clear();
   if (Global::Enable_Births) maternity_list.clear();
 
+  if (Global::Enable_Aging) {
+
+	//Find out if we are currently in a leap year
+	int year = Global::Sim_Start_Date->get_year(day);
+	int day_of_year = Date::get_day_of_year(year, Global::Sim_Start_Date->get_month(day), Global::Sim_Start_Date->get_day_of_month(day));
+
+	int bd_count = 0;
+	size_t vec_size = 0;
+
+	printf("day_of_year = [%d]\n", day_of_year);
+
+	bool is_leap = Date::is_leap_year(year);
+
+	if((is_leap && day_of_year == 60) || (!is_leap && day_of_year != 60)) {
+	  vec_size = this->birthday_vecs[day_of_year].size();
+      for (size_t p = 0; p < vec_size; p++) {
+        this->birthday_vecs[day_of_year][p]->get_demographics()->birthday(day);
+        bd_count++;
+      }
+	}
+
+	//If we are NOT in a leap year, then we need to do all of the day 60 (feb 29) birthdays on day 61
+	if(!is_leap && day_of_year == 61) {
+	  vec_size = this->birthday_vecs[60].size();
+	  for (size_t p = 0; p < vec_size; p++) {
+		this->birthday_vecs[60][p]->get_demographics()->birthday(day);
+		bd_count++;
+	  }
+	}
+
+	printf("birthday count = [%d]\n", bd_count);
+  }
+
   // update everyone's demographics
   if (Global::Enable_Births || Global::Enable_Deaths || Global::Enable_Aging) {
     for (int p = 0; p < pop_size; p++) {
@@ -400,12 +450,37 @@ void Population::update(int day) {
         death_count_female[age_lookup]++;
       else
         death_count_male[age_lookup]++;
-      delete_person(death_list[i]);
+
       if(vacc_manager->do_vaccination()){
         if(Global::Debug > 1)
           fprintf(Global::Statusfp,"Removing %d from Vaccine Queue\n", death_list[i]->get_id());
         vacc_manager->remove_from_queue(death_list[i]);
       }
+
+      //Remove the person from the birthday lists
+      if(Global::Enable_Aging) {
+    	map<Person *, int>::iterator itr;
+    	itr = birthday_map.find(death_list[i]);
+        if (itr == birthday_map.end()) {
+          Utils::fred_verbose(0,"Help! person %d deleted, but not in the birthday_map\n", death_list[i]->get_id());
+        }
+        assert(itr != birthday_map.end());
+        int pos = (*itr).second;
+        int day_of_year = death_list[i]->get_demographics()->get_birthdate()->get_day_of_year();
+
+    	//Check to see if the day of the year is after FEB 28
+    	if(day_of_year > 59 && !Date::is_leap_year(death_list[i]->get_demographics()->get_birthdate()->get_year()))
+    	  day_of_year++;
+
+        Person * last = this->birthday_vecs[day_of_year].back();
+        birthday_map.erase(itr);
+        birthday_map[last] = pos;
+
+        this->birthday_vecs[day_of_year][pos] = this->birthday_vecs[day_of_year].back();
+        this->birthday_vecs[day_of_year].pop_back();
+      }
+
+      delete_person(death_list[i]);
     }
     if (Global::Verbose > 0) {
       fprintf(Global::Statusfp, "deaths = %d\n", (int)deaths);
@@ -429,7 +504,7 @@ void Population::update(int day) {
 
   if (Global::Enable_Mobility) {
     // update household mobility activity on July 1
-    if (Date::match_pattern(day, "07-01-*")) {
+    if (Date::match_pattern(Global::Sim_Current_Date, "07-01-*")) {
       for (int p = 0; p < pop_size; p++) {
         pop[p]->update_household_mobility();
       }
@@ -445,7 +520,7 @@ void Population::update(int day) {
   }
 
   // update activity profiles on July 1
-  if (Global::Enable_Aging && Date::match_pattern(day, "07-01-*")) {
+  if (Global::Enable_Aging && Date::match_pattern(Global::Sim_Current_Date, "07-01-*")) {
     for (int p = 0; p < pop_size; p++) {
       pop[p]->update_activity_profile();
     }
@@ -473,6 +548,7 @@ void Population::update(int day) {
     fprintf(Global::Statusfp, "population begin_day finished\n");
     fflush(Global::Statusfp);
   }
+
 }
 
 void Population::report(int day) {
@@ -480,7 +556,7 @@ void Population::report(int day) {
   // give out anti-virals (after today's infections)
   av_manager->disseminate(day);
 
-  if (Global::Verbose > 0 && Date::match_pattern(day, "12-31-*")) {
+  if (Global::Verbose > 0 && Date::match_pattern(Global::Sim_Current_Date, "12-31-*")) {
     // print the statistics on December 31 of each year
     for (int i = 0; i < pop_size; ++i) {
       int age_lookup = pop[i]->get_age();
@@ -496,7 +572,7 @@ void Population::report(int day) {
       double birthrate, deathrate;
       fprintf(Global::Statusfp,
           "DEMOGRAPHICS Year %d TotalPop %d Age %d ", 
-          Date::get_current_year(day), pop_size, i);
+          Global::Sim_Current_Date->get_year(), pop_size, i);
       count = age_count_female[i];
       num_births = birth_count[i];
       num_deaths = death_count_female[i];
@@ -525,7 +601,7 @@ void Population::report(int day) {
   // matching the date pattern in the parameter file, and the on
   // the last day of the simulation
   if(Population::output_population > 0) {
-    if((day == 0) || (Date::match_pattern(day, Population::output_population_date_match))) {
+    if((day == 0) || (Date::match_pattern(Global::Sim_Current_Date, Population::output_population_date_match))) {
       this->write_population_output_file(day);
     }
   }
@@ -819,7 +895,7 @@ void Population::write_population_output_file(int day) {
   //Loop over the whole population and write the output of each Person's to_string to the file
   char population_output_file[256];
   sprintf(population_output_file, "%s/%s_%s.txt", Global::Output_directory, Population::pop_outfile,
-      (char *) Global::Sim_Date->get_YYYYMMDD(day).c_str());
+      (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str());
   FILE *fp = fopen(population_output_file, "w");
   if (fp == NULL) {
     Utils::fred_abort("Help! population_output_file %s not found\n", population_output_file);

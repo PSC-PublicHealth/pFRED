@@ -53,7 +53,7 @@ public:
   /**
    * @return the number of days the agent has been alive / 365.0
    */
-  double get_real_age(int day);
+  double get_real_age();
 
   /**
    * @return the agent's age
@@ -107,8 +107,22 @@ public:
 	
   void set_relationship(int rel) { relationship = rel; }
   int get_relationship() { return relationship; }
+
+  /**
+   * @return <code>true</code> if the agent is a householder, <code>false</code> otherwise
+   */
   bool is_householder() { return relationship == 1; }
 
+  /**
+   * Perform the necessary changes to the demographics on an agent's birthday
+   */
+  void birthday(int day);
+
+  /**
+   * @return the agent's birthdate
+   */
+  Date * get_birthdate() { return this->birthdate; }
+  
   void terminate(){}
 
 private:
@@ -117,9 +131,9 @@ private:
   int init_marital_status;     // Initial marital status
   int init_profession;         // Initial profession (from census)
   Date *birthdate;             // When the agent was born
-  Date *deceased_date;         // When the agent (will die) / (died)
-  Date *conception_date;       // When the agent will conceive
-  Date *due_date;              // When the agent will give birth
+  int deceased_sim_day;        // When the agent (will die) / (died)
+  int conception_sim_day;      // When the agent will conceive
+  int due_sim_day;             // When the agent will give birth
   int age;                     // Current age of the agent
   char sex;                    // Male or female?
   int marital_status;          // Current marital status 

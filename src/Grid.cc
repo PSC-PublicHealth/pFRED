@@ -345,7 +345,7 @@ void Grid::select_emigrants(int day) {
 }
 
 void Grid::select_immigrants(int day) {
-  int current_year = Date::get_current_year(day);
+  int current_year = Global::Sim_Current_Date->get_year();
   int current_popsize = Global::Pop.get_pop_size();
   printf("IMM curr = %d target = %d ", current_popsize, target_popsize);
   printf("vacant houses = %d  current_year = %d\n", get_vacant_houses(), current_year);

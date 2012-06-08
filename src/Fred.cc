@@ -93,15 +93,15 @@ int main(int argc, char* argv[]) {
 
   // Date Setup
   // Start_date parameter must have format 'YYYY-MM-DD'
-  Global::Sim_Date = new Date(string(Global::Start_date));
+  Global::Sim_Start_Date = new Date(string(Global::Start_date));
+  Global::Sim_Current_Date = new Date(string(Global::Start_date));
 
   if (Global::Rotate_start_date) {
     // add one day to the start date for each additional run,
     // rotating the days of the week to reduce weekend effect.
-    Global::Sim_Date->advance((run-1)%7);
+    Global::Sim_Start_Date->advance((run-1)%7);
+    Global::Sim_Current_Date->advance((run-1)%7);
   }
-
-  Global::Sim_Date->setup(directory, Global::Days);
 
   // set random number seed based on run number
   if (run > 1 && Global::Reseed_day == -1) {
@@ -165,7 +165,7 @@ int main(int argc, char* argv[]) {
   }
 
   if (Global::Track_age_distribution) {
-    Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Date->get_YYYYMMDD(0).c_str(), run);
+    Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Start_Date->get_YYYYMMDD().c_str(), run);
   }
 
   if (Global::Enable_Seasonality) {
@@ -195,20 +195,20 @@ int main(int argc, char* argv[]) {
     Global::Pop.report(day);
     Utils::fred_print_lap_time("day %d report population", day);
 
-    if (Global::Enable_Migration && Date::match_pattern(day, "02-*-*")) {
+    if (Global::Enable_Migration && Date::match_pattern(Global::Sim_Current_Date, "02-*-*")) {
       Global::Cells->population_migration(day);
     }
     
-    if (Global::Enable_Aging && Global::Verbose && Date::match_pattern(day, "12-31-*")) {
+    if (Global::Enable_Aging && Global::Verbose && Date::match_pattern(Global::Sim_Current_Date, "12-31-*")) {
       Global::Pop.quality_control();
     }
 
-    if (Date::match_pattern(day,"01-01-*")) {
+    if (Date::match_pattern(Global::Sim_Current_Date, "01-01-*")) {
       if (Global::Track_age_distribution) {
-	Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Date->get_YYYYMMDD(day).c_str(), run);
+	    Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
       }
       if (Global::Track_household_distribution) {
-	Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Date->get_YYYYMMDD(day).c_str(), run);
+	    Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
       }
     }
 
@@ -220,6 +220,8 @@ int main(int argc, char* argv[]) {
 
     Utils::fred_print_day_timer(day);
     Utils::fred_print_resource_usage(day);
+
+    Global::Sim_Current_Date->advance();
   }
 
   Utils::fred_print_wall_time("FRED finished");

@@ -135,7 +135,7 @@ int should_be_day = -1;
 bool School::should_be_open(int day, int disease) {
   
   if (School::school_summer_schedule > 0 && 
-      Date::day_in_range_MMDD(day, School::school_summer_start, School::school_summer_end)) {
+      Date::day_in_range_MMDD(Global::Sim_Current_Date, School::school_summer_start, School::school_summer_end)) {
     if (Global::Verbose > 1) {
       fprintf(Global::Statusfp,"School %s closed for summer\n", label);
       fflush(Global::Statusfp);

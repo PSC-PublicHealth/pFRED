@@ -92,6 +92,7 @@ class Global {
     static int StrainEvolution;
     static char Prevfilebase[];
     static char Incfilebase[];
+    static char ErrorLogbase[];
     static int Enable_Behaviors;
     static int Track_infection_events;
     static int Track_age_distribution;
@@ -131,9 +132,6 @@ class Global {
     static bool Enable_Antivirals;
     static bool Use_Mean_Latitude;
     static bool Print_Household_Locations;
-    static bool Report_Age_Of_Infection;
-    static bool Report_Place_Of_Infection;
-    static bool Report_Presenteeism;
 
     // global singleton objects
     static Population Pop;
@@ -141,7 +139,8 @@ class Global {
     static Grid *Cells;
     static Large_Grid *Large_Cells;
     static Small_Grid *Small_Cells;
-    static Date *Sim_Date;
+    static Date *Sim_Start_Date;
+    static Date *Sim_Current_Date;
     static Evolution *Evol;
     static Seasonality *Clim;
 

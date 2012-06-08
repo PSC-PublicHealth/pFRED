@@ -99,7 +99,7 @@ public:
             // start and end specified as (integer) sim days
             stringstream( tsVec[0] ) >> simDayStart;
             stringstream( tsVec[1] ) >> simDayEnd;
-            simDayRanges.push_back( pair <int,int> (simDayStart,simDayEnd) );
+            simDayRanges.push_back( pair <int,int> (simDayStart, simDayEnd) );
           }
           stringstream( tsVec[2] ) >> seasonalityValue;
           if ( n >= 3 ) {
@@ -149,10 +149,16 @@ public:
 
     void print() {
       for (unsigned i = 0; i < simDayRanges.size(); i++) {
+    	Date * tmp_start_date = Global::Sim_Start_Date->clone();
+    	Date * tmp_end_date = Global::Sim_Start_Date->clone();
+    	tmp_start_date->advance(simDayRanges[i].first);
+    	tmp_end_date->advance(simDayRanges[i].second);
         printf("start day = %d (%s), end day = %d (%s), seasonality value = %f\n",
-            simDayRanges[i].first, Date::new_date( simDayRanges[i].first )->to_string().c_str(),
-            simDayRanges[i].second, Date::new_date( simDayRanges[i].first )->to_string().c_str(),
+            simDayRanges[i].first, tmp_start_date->to_string().c_str(),
+            simDayRanges[i].second, tmp_end_date->to_string().c_str(),
             seasonalityValue);
+        delete tmp_start_date;
+        delete tmp_end_date;
       }
     }
 

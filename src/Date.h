@@ -19,7 +19,7 @@ using namespace std;
 
 class Date {
 public:
-  static const int DEFAULT_MAX_DAYS = 200000;
+  static const int DEFAULT_MAX_DAYS = 50000;
   static const int SUNDAY = 0;
   static const int MONDAY = 1;
   static const int TUESDAY = 2;
@@ -58,36 +58,119 @@ public:
   Date(int year, int day_of_year);
   Date(int year, int month, int day_of_month);
   void set_date(int year, int month, int day_of_month);
-  int get_year() { return this->get_year(0); }
+
+  /**
+   * Get the instance variable for the year
+   *
+   * @return the year
+   */
+  int get_year() { return this->year; }
+
+  /**
+   * Get the year that it will be in t days
+   *
+   * @param t the number of days from this instance's current date
+   * @return the year
+   */
   int get_year(int t);
-  int get_month() { return this->get_month(0); }
+
+  /**
+   * Get the instance variable for the month
+   *
+   * @return the month
+   */
+  int get_month() { return this->month; }
+
+  /**
+   * Get the month that it will be in t days
+   *
+   * @param t the number of days from this instance's current date
+   * @return the month
+   */
   int get_month(int t);
-  string get_month_string() { return this->get_month_string(0); }
+
+  /**
+   * Get the month in string format
+   *
+   * @return the month in string format
+   */
+  string get_month_string();
+
+  /**
+   * Get the month in string format that it will be in t days
+   *
+   * @param t the number of days from this instance's current date
+   * @return the month in string format
+   */
   string get_month_string(int t);
-  int get_day_of_month() { return this->get_day_of_month(0); }
+
+  /**
+   * Get the instance variable for the day_of_month
+   *
+   * @return the day_of_month
+   */
+  int get_day_of_month() { return this->day_of_month; }
+
+  /**
+   * Get the day_of_month that it will be in t days
+   *
+   * @param t the number of days from this instance's current date
+   * @return the day_of_month
+   */
   int get_day_of_month(int t);
-  int get_day_of_year() { return this->get_day_of_year(0); }
+
+  /**
+   * Get the instance variable for the day_of_year
+   *
+   * @return the day_of_year
+   */
+  int get_day_of_year() { return this->day_of_year; }
+
+  /**
+   * Get the day_of_year that it will be in t days
+   *
+   * @param t the number of days from this instance's current date
+   * @return the day_of_year
+   */
   int get_day_of_year(int t);
-  int get_day_of_week();
+
+  /**
+   * Get the instance variable for the day_of_week
+   *
+   * @return the day_of_week
+   */
+  int get_day_of_week() { return this->day_of_week; }
+
+  /**
+   * Get the day_of_week that it will be in t days
+   *
+   * @param t the number of days from this instance's current date
+   * @return the day_of_week
+   */
   int get_day_of_week(int t);
+
   string get_day_of_week_string() { return this->get_day_of_week_string(0); }
   string get_day_of_week_string(int t);
   int get_epi_week() { return this->get_epi_week(0); }
   int get_epi_week(int t);
   int get_epi_week_year()  { return this->get_epi_week_year(0); }
   int get_epi_week_year(int t);
-  int get_days_since_jan_1_1600() { return this->days_since_jan_1_1600; }
-  void advance() { this->days_since_jan_1_1600++; }
-  void advance(int days) { this->days_since_jan_1_1600+=days; }
+  int get_days_since_jan_1_1900() { return this->days_since_jan_1_1900; }
+  void advance();
+  void advance(int days);
   Date * clone();
   bool equals(Date * check_date);
   int compare_to(Date * check_date);
   string to_string();
   virtual ~Date();
-  void setup(char * output_directory, int days);
+  string get_YYYYMMDD();
   string get_YYYYMMDD(int day);
+  string get_YYYYMM();
   string get_YYYYMM(int day);
+  string get_MMDD();
   string get_MMDD(int day);
+  bool is_weekend();
+  bool is_weekday();
   
   bool operator< (const Date &other) const;
   bool operator> (const Date &other) const;
@@ -96,31 +179,16 @@ public:
   bool operator>= (const Date &other) const;
   bool operator!= (const Date &other) const;
 
-  bool operator< (const int &sim_day) const;
-  bool operator> (const int &sim_day) const;
-  bool operator== (const int &sim_day) const;
-  bool operator<= (const int &sim_day) const;
-  bool operator>= (const int &sim_day) const;
-  bool operator!= (const int &sim_day) const;
-
-  static int days_between(Date * date_1, Date * date_2);
-  static int days_between(int sim_day, Date * date_2);
+  static int days_between(const Date * date_1, const Date * date_2);
+  //static int days_between(int sim_day, Date * date_2);
   static bool is_leap_year(int year);
   static int get_day_of_year(int year, int month, int day);
   static int parse_month_from_date_string(string date_string, string format_string);
   static int parse_day_of_month_from_date_string(string date_string, string format_string);
   static int parse_year_from_date_string(string date_string, string format_string);
   static bool day_is_between_MMDD(char * current, char * start, char * end);
-  static bool match_pattern(int simulation_day, string pattern);
-  static bool day_in_range_MMDD(int day, char * start_day, char * end_day);
-  static int get_current_year(int day);
-  static int get_current_month(int day);
-  static int get_current_day_of_month(int day);
-  static int get_current_day_of_week(int day);
-  static Date * new_date(int day);
-  static bool is_weekend(int day);
-  static bool is_weekday(int day);
-
+  static bool match_pattern(Date * check_date, string pattern);
+  static bool day_in_range_MMDD(Date * check_date, char * start_day, char * end_day);
 
 private:
   static const int day_table[2][13];
@@ -129,9 +197,16 @@ private:
   static vector<int> *month_vec;
   static vector<int> *year_vec;
   static bool is_initialized;
-  int days_since_jan_1_1600;
+  int days_since_jan_1_1900;
+
+  int day_of_month;
+  int month;
+  int year;
+  int day_of_week;
+  int day_of_year;
+
   static void initialize_vectors();
-  static void add_to_vectors(int days_since_jan_1_1600);
+  static void add_to_vectors(int days_since_jan_1_1900);
   static int get_doomsday_month(int month, int year)
   { return Date::doomsday_month_val[(Date::is_leap_year(year) ? 1 : 0)][month]; }
   static int get_doomsday_century(int year);

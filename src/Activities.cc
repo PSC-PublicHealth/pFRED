@@ -240,7 +240,7 @@ void Activities::assign_profile() {
 void Activities::update(int day) {
 
   // decide if this is a weekday:
-  Activities::day_of_week = Date::get_current_day_of_week(day);
+  Activities::day_of_week = Global::Sim_Current_Date->get_day_of_week();
   Activities::is_weekday = (0 < Activities::day_of_week && Activities::day_of_week < 6);
 
   // print out absenteeism/presenteeism counts

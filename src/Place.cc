@@ -198,7 +198,7 @@ double Place::get_contact_rate(int day, int disease_id) {
   }
   // increase neighborhood contacts on weekends
   if (type == NEIGHBORHOOD) {
-    int day_of_week = Date::get_current_day_of_week(day);
+    int day_of_week = Global::Sim_Current_Date->get_day_of_week();
     if (day_of_week == 0 || day_of_week == 6) {
       contacts = Neighborhood::get_weekend_contact_rate(disease_id) * contacts;
     }

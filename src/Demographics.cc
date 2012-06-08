@@ -41,9 +41,9 @@ Demographics::Demographics() {
   init_profession = -1;
   profession = -1;
   birthdate = NULL;
-  deceased_date = NULL;
-  conception_date = NULL;
-  due_date = NULL;
+  deceased_sim_day = -1;
+  conception_sim_day = -1;
+  due_sim_day = -1;
   pregnant = false;
   deceased = false;
 }
@@ -74,26 +74,24 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
   init_profession     = _profession;
   profession         = init_profession;
   birthdate           = NULL;
-  deceased_date       = NULL;
-  conception_date     = NULL;
-  due_date            = NULL;
+  deceased_sim_day = -1;
+  conception_sim_day = -1;
+  due_sim_day = -1;
   pregnant            = false;
   deceased            = false;
-
-  Date * current_date = Date::new_date(day);
 
   if (is_newborn == false) {
 
     double rand_birthday = URAND(0.0, 365.0);
-    int current_day_of_year = current_date->get_day_of_year();
+    int current_day_of_year = Global::Sim_Current_Date->get_day_of_year();
     int birthyear;
 
     //If the random birthday selected is less than or equal to the system day then the birthyear is
     // found using system_year - init_age, else it is system_year - (init_age + 1)
     if (((int) ceil(rand_birthday)) <= current_day_of_year) {
-      birthyear = current_date->get_year() - init_age;
+      birthyear = Global::Sim_Current_Date->get_year() - init_age;
     } else {
-      birthyear = current_date->get_year() - (init_age + 1);
+      birthyear = Global::Sim_Current_Date->get_year() - (init_age + 1);
     }
 
     //If the birthyear would have been a leap year, adjust the random number
@@ -106,9 +104,7 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
 
   } else {
 
-    this->birthdate = new Date(current_date->get_year(),
-                               current_date->get_month(),
-                               current_date->get_day_of_month());
+    this->birthdate = Global::Sim_Current_Date->clone();
   }
 
   //Will this person die in the next year?
@@ -122,10 +118,7 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
 
     if(URAND(0.0, 1.0) <= pct_chance_to_die) {
       //Yes, so set the death day (in simulation days)
-      this->deceased_date = new Date(current_date->get_year(),
-                                   current_date->get_month(),
-                                   current_date->get_day_of_month());
-      this->deceased_date->advance(IRAND(1,364));
+      this->deceased_sim_day = (day + IRAND(1,364));
     }
   }
 
@@ -133,69 +126,24 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
   if (Global::Enable_Births && this->sex == 'F' && age <= Demographics::MAX_PREGNANCY_AGE) {
     if (URAND(0.0, 1.0) <= ((0.75) * Demographics::age_yearly_birth_rate[age])) {
       //Yes, so set the due_date (in simulation days)
-      this->due_date = new Date(current_date->get_year(),
-                              current_date->get_month(),
-                              current_date->get_day_of_month());
-      this->due_date->advance(IRAND(1, 280));
+      this->due_sim_day = (day + IRAND(1, 280));
       this->pregnant = true;
     }
   }
-  delete current_date;
 }
 
 Demographics::~Demographics() {
   if (birthdate != NULL) delete birthdate;
-  if (deceased_date != NULL) delete deceased_date;
-  if (conception_date != NULL) delete conception_date;
-  if (due_date != NULL) delete due_date;
 }
 
 void Demographics::update(int day) {
 
-  int cur_year = Date::get_current_year(day);
-  int cur_month = Date::get_current_month(day);
-  int cur_day_of_month = Date::get_current_day_of_month(day);
+  int cur_year = Global::Sim_Current_Date->get_year();
+  int cur_month = Global::Sim_Current_Date->get_month();
+  int cur_day_of_month = Global::Sim_Current_Date->get_day_of_month();
 
   //The age to look up should be an integer between 0 and the MAX_AGE
   int age_lookup = (age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE);
-
-  //Is this day your birthday?
-  //Or is your birthday on the leap day and this year is not a leap year?
-  if ((this->birthdate->get_month() == cur_month &&
-       this->birthdate->get_day_of_month() == cur_day_of_month) ||
-      (this->birthdate->get_month() == Date::FEBRUARY &&
-       this->birthdate->get_day_of_month() == 29 &&
-       cur_month == Date::FEBRUARY &&
-       cur_day_of_month == 28 &&
-       !Date::is_leap_year(cur_year))) {
-
-    if (Global::Enable_Aging) {
-      age++;
-      if (age == Global::ADULT_AGE and self != self->get_adult_decision_maker()) {
-	// become responsible for adult decisions
-	self->become_an_adult_decision_maker();
-      }
-    }
-
-    //Will this person die in the next year?
-    if (Global::Enable_Deaths) {
-      double pct_chance_to_die = 0.0;
-
-      if (this->sex == 'F')
-        pct_chance_to_die = Demographics::age_yearly_mortality_rate_female[age_lookup];
-      else
-        pct_chance_to_die = Demographics::age_yearly_mortality_rate_male[age_lookup];
-
-      if(!this->deceased &&
-         this->deceased_date == NULL &&
-         URAND(0.0, 1.0) <= pct_chance_to_die) {
-
-        //Yes, so set the death day (in simulation days)
-        this->deceased_date = new Date(cur_year, cur_month, cur_day_of_month);
-        this->deceased_date->advance(IRAND(0,364));
-      }
-    }
-  }
 
   if (Global::Enable_Births) {
 
@@ -205,29 +153,23 @@ void Demographics::update(int day) {
     //Is this your day to conceive?
     if (this->sex == 'F' && age <= MAX_PREGNANCY_AGE &&
 	!this->pregnant &&
-	this->conception_date == NULL &&
-	this->due_date == NULL &&
+	this->conception_sim_day == -1 &&
+	this->due_sim_day == -1 &&
 	URAND(0.0, 1.0) <= Demographics::age_daily_birth_rate[age]) {
-      this->conception_date = new Date(cur_year, cur_month, cur_day_of_month);
-      this->due_date = new Date(cur_year, cur_month, cur_day_of_month);
-      double random_due_date = draw_normal(Demographics::MEAN_PREG_DAYS, Demographics::STDDEV_PREG_DAYS);
-      this->due_date->advance((int)(random_due_date + 0.5)); //round the random_due_date
+      this->conception_sim_day = day;
+      this->due_sim_day = day + (int)(draw_normal(Demographics::MEAN_PREG_DAYS, Demographics::STDDEV_PREG_DAYS) + 0.5);
       this->pregnant = true;
     }
     
     //Is this your day to give birth
     if(this->sex == 'F' &&
        this->pregnant &&
-       this->due_date != NULL &&
-       this->due_date->get_year() == cur_year &&
-       this->due_date->get_month() == cur_month &&
-       this->due_date->get_day_of_month() == cur_day_of_month) {
-      if (this->conception_date != NULL) {
-	delete this->conception_date;
-	this->conception_date = NULL;
+       this->due_sim_day != -1 &&
+       this->due_sim_day == day) {
+      if (this->conception_sim_day != -1) {
+    	this->conception_sim_day = -1;
       }
-      delete this->due_date;
-      this->due_date = NULL;
+      this->due_sim_day = -1;
       this->pregnant = false;
       Global::Pop.prepare_to_give_birth(day, self);
     }
@@ -235,14 +177,43 @@ void Demographics::update(int day) {
 
   //Is this your day to die?
   if(Global::Enable_Deaths &&
-     this->deceased_date != NULL &&
-     this->deceased_date->get_year() == cur_year &&
-     this->deceased_date->get_month() == cur_month &&
-     this->deceased_date->get_day_of_month() == cur_day_of_month) {
+     this->deceased_sim_day != -1 &&
+     this->deceased_sim_day == day) {
     this->deceased = true;
     Global::Pop.prepare_to_die(day, self);
   }
 
+}
+
+void Demographics::birthday(int day) {
+  //The age to look up should be an integer between 0 and the MAX_AGE
+  int age_lookup = (this->age <= Demographics::MAX_AGE ? this->age : Demographics::MAX_AGE);
+
+  if (Global::Enable_Aging) {
+    this->age++;
+    if (this->age == Global::ADULT_AGE && this->self != this->self->get_adult_decision_maker()) {
+	  // become responsible for adult decisions
+	  this->self->become_an_adult_decision_maker();
+    }
+  }
+
+  //Will this person die in the next year?
+  if (Global::Enable_Deaths) {
+    double pct_chance_to_die = 0.0;
+
+    if (this->sex == 'F')
+      pct_chance_to_die = Demographics::age_yearly_mortality_rate_female[age_lookup];
+    else
+      pct_chance_to_die = Demographics::age_yearly_mortality_rate_male[age_lookup];
+
+    if(!this->deceased &&
+       this->deceased_sim_day == -1 &&
+       URAND(0.0, 1.0) <= pct_chance_to_die) {
+
+      //Yes, so set the death day (in simulation days)
+      this->deceased_sim_day = (day + IRAND(0,364));
+    }
+  }
 }
 
 void Demographics::read_init_files() {
@@ -316,12 +287,11 @@ void Demographics::read_init_files() {
   }
 }
 
-
 void Demographics::print() {
 }
 
-double Demographics::get_real_age(int day) {
-  int days_of_life = Date::days_between(day, birthdate);
+double Demographics::get_real_age() {
+  int days_of_life = Date::days_between(Global::Sim_Current_Date, birthdate);
   return ((double) days_of_life / 365.0);
 }
 

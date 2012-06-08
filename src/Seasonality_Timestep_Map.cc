@@ -86,7 +86,7 @@ void Seasonality_Timestep_Map::print() {
 
 bool Seasonality_Timestep_Map::Seasonality_Timestep::parseMMDD(string startMMDD, string endMMDD) {
   int years = 0.5 + (Global::Days / 365);    
-  int startYear = Date::get_current_year(0);
+  int startYear = Global::Sim_Start_Date->get_year();
   string dateFormat = string("YYYY-MM-DD");
   for (int y = startYear; y <= startYear + years; y++) {
 
@@ -113,17 +113,16 @@ bool Seasonality_Timestep_Map::Seasonality_Timestep::parseMMDD(string startMMDD,
 
     int simStartDay = 0;
     int simEndDay = 0;
-    int day_zero = 0;
 
     Date startDateObj = Date::Date(startDateStr,dateFormat);
 
-    if (startDateObj >= day_zero) {
+    if (startDateObj >= *Global::Sim_Start_Date) {
       simStartDay = Date::days_between(0, &startDateObj);
     }
 
-    Date endDateObj = Date::Date(endDateStr,dateFormat);
+    Date endDateObj = Date::Date(endDateStr, dateFormat);
 
-    if (endDateObj >= day_zero) {
+    if (endDateObj >= *Global::Sim_Start_Date) {
       simEndDay = Date::days_between(0, &endDateObj);
       simDayRanges.push_back( pair <int,int> (simStartDay,simEndDay) );
     }

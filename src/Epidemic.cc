@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <new>
 #include <iostream>
-#include <vector>
 using namespace std;
 #include "Random.h"
 #include "Params.h"
@@ -32,7 +31,6 @@ using namespace std;
 #include "Household.h"
 #include "Utils.h"
 #include "Seasonality.h"
-#include "Workplace.h"
 
 Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   disease = dis;
@@ -52,8 +50,6 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   inf_schools.reserve(places);
   inf_workplaces.reserve(places);
   inf_offices.reserve(places);
-  daily_infections_list.reserve(N_init);
-  daily_infections_list.clear();
   susceptible_list.clear();
   infectious_list.clear();
   inf_households.clear();
@@ -87,7 +83,6 @@ void Epidemic::become_unsusceptible(Person *person) {
 }
 
 void Epidemic::become_exposed(Person *person) {
-  daily_infections_list.push_back(person);
   exposed_count++;
   incident_infections++;
 }
@@ -145,11 +140,9 @@ void Epidemic::become_immune(Person *person, bool susceptible, bool infectious, 
 
 void Epidemic::print_stats(int day) {
   Utils::fred_verbose(1, "epidemic update stats\n");
+
   if (day == 0) {
     N_init = N = disease->get_population()->get_pop_size();
-  }
-  else {
-    N = disease->get_population()->get_pop_size();
   }
 
   new_cases[day] = incident_infections;
@@ -170,195 +163,57 @@ void Epidemic::print_stats(int day) {
     }
   }
 
-  // basic epidemic measures
   int susceptible_count = susceptible_list.size();
   int infectious_count = infectious_list.size();
-
-  /*
-  // date related information
-  Utils::fred_report("Day %3d %s %s Yr %d Wk %2d",
-	  day, Global::Sim_Date->get_day_of_week_string(day).c_str(),
-	  Global::Sim_Date->get_YYYYMMDD(day).c_str(),
-	  Global::Sim_Date->get_epi_week_year(day),
-	  Global::Sim_Date->get_epi_week(day));
-
-  Utils::fred_report(
-	  " Str %d N %7d S %7d E %7d I %7d I_s %7d R %7d M %d",
-	  id, N, susceptible_count, exposed_count, infectious_count,
-	  symptomatic_count, removed_count, immune_count);
-  Utils::fred_report(
-	  " C %7d CI %7d AR %5.2f CAR %5.2f RR %4.2f",
-	  incident_infections, clinical_incidents, attack_rate,
-	  clinical_attack_rate, RR);
-
-  */
-
-  Utils::fred_report("Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
-		     day, id, susceptible_count, exposed_count, infectious_count,
-		     symptomatic_count, removed_count, immune_count);
-
-  
-  Utils::fred_report("C %7d  N %7d  AR %5.2f  CI %7d RR %4.2f NR %d  CAR %5.2f  ",
-		     incident_infections, N, attack_rate, clinical_incidents,
-		     RR, cohort_size, clinical_attack_rate);
-  
-  Utils::fred_report("%s %s Year %d Week %d",
-		   Global::Sim_Date->get_day_of_week_string(day).c_str(),
-		   Global::Sim_Date->get_YYYYMMDD(day).c_str(),
-		   Global::Sim_Date->get_epi_week_year(day),
-		   Global::Sim_Date->get_epi_week(day));
-
-  // optional reports
+  double average_seasonality_multiplier = 1.0;
   if (Global::Enable_Seasonality) {
-    Utils::fred_report(" SM %2.4f",
-	    Global::Clim->get_average_seasonality_multiplier(id));
+    average_seasonality_multiplier = Global::Clim->get_average_seasonality_multiplier(disease->get_id());
   }
-  if (Global::Report_Presenteeism) { report_presenteeism(day); }
-  if (Global::Report_Place_Of_Infection) { report_place_of_infection(day); }
-  if (Global::Report_Age_Of_Infection) { report_age_of_infection(day); }
 
-  // terminate daily output line
-  Utils::fred_report("\n");
-
-
+  fprintf(Global::Outfp,
+	  "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
+	  day, id, susceptible_count, exposed_count, infectious_count,
+	  symptomatic_count, removed_count, immune_count);
+  fprintf(Global::Outfp,
+	  "C %7d  N %7d  AR %5.2f  CI %7d RR %4.2f NR %d  CAR %5.2f  ",
+	  incident_infections, N, attack_rate, clinical_incidents,
+	  RR, cohort_size, clinical_attack_rate);
+  fprintf(Global::Outfp, "%s %s Year %d Week %d",
+      Global::Sim_Current_Date->get_day_of_week_string().c_str(),
+      Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
+      Global::Sim_Current_Date->get_epi_week_year(),
+	    Global::Sim_Current_Date->get_epi_week());
+  if (Global::Enable_Seasonality) {
+    fprintf(Global::Outfp, " SM %2.4f\n", average_seasonality_multiplier);
+  } else {
+    fprintf(Global::Outfp, "\n");
+  }
+  fflush(Global::Outfp);
+  
+  if (Global::Verbose) {
+    fprintf(Global::Statusfp,
+	    "Day %3d  Str %d  S %7d  E %7d  I %7d  I_s %7d  R %7d  M %7d  ",
+	    day, id, susceptible_count, exposed_count, infectious_count,
+	    symptomatic_count, removed_count, immune_count);
+    fprintf(Global::Statusfp,
+	    "C %7d  N %7d  AR %5.2f  CI %7d RR %4.2f NR %d  CAR %5.2f  ",
+	    incident_infections, N, attack_rate, clinical_incidents,
+	    RR,cohort_size, clinical_attack_rate);
+    fprintf(Global::Statusfp, "%s %s Year %d Week %d",
+      Global::Sim_Current_Date->get_day_of_week_string().c_str(),
+      Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
+      Global::Sim_Current_Date->get_epi_week_year(),
+      Global::Sim_Current_Date->get_epi_week());
+    if (Global::Enable_Seasonality) {
+      fprintf(Global::Statusfp, " SM %2.4f\n", average_seasonality_multiplier);
+    } else {
+      fprintf(Global::Statusfp, "\n");
+    }
+    fflush(Global::Statusfp);
+  }
   // prepare for next day
   incident_infections = clinical_incidents = 0;
-  daily_infections_list.clear();
 }
-
-void::Epidemic::report_age_of_infection(int day) {
-  int age_count[21];				// age group counts
-  for (int i = 0; i < 21; i++) age_count[i] = 0;
-  for (int i = 0; i < incident_infections; i++) {
-    Person * infectee = daily_infections_list[i];
-    int age_group = infectee->get_age() / 5;
-    if (age_group > 20) age_group = 20;
-    age_count[age_group]++;
-  }
-  Utils::fred_log("\nDay %d INF_AGE: ", day);
-  for (int i = 0; i <= 20; i++) {
-    Utils::fred_report(" A%d %d", i*5, age_count[i]);
-  }
-  Utils::fred_log("\n");
-}
-
-void::Epidemic::report_place_of_infection(int day) {
-  // type of place of infection
-  int X = 0;
-  int H = 0;
-  int N = 0;
-  int S = 0;
-  int C = 0;
-  int W = 0;
-  int O = 0;
-  for (int i = 0; i < incident_infections; i++) {
-    Person * infectee = daily_infections_list[i];
-    char c = infectee->get_infected_place_type(id);
-    switch(c) {
-    case 'X': X++; break;
-    case 'H': H++; break;
-    case 'N': N++; break;
-    case 'S': S++; break;
-    case 'C': C++; break;
-    case 'W': W++; break;
-    case 'O': O++; break;
-    }
-  }
-  Utils::fred_log("\nDay %d INF_PLACE: ", day);
-  Utils::fred_report(" X %d H %d Nbr %d Sch %d", X, H, N, S);
-  Utils::fred_report(" Cls %d Wrk %d Off %d ", C, W, O);
-  Utils::fred_log("\n");
-}
-
-void Epidemic::report_presenteeism(int day) {
-  // daily totals
-  int infections_in_pop = 0;
-  int presenteeism_small = 0;
-  int presenteeism_med = 0;
-  int presenteeism_large = 0;
-  int presenteeism_xlarge = 0;
-  int presenteeism_small_with_sl = 0;
-  int presenteeism_med_with_sl = 0;
-  int presenteeism_large_with_sl = 0;
-  int presenteeism_xlarge_with_sl = 0;
-  int infections_at_work = 0;
-
-  // company size limits
-  static int small;
-  static int medium;
-  static int large;
-  if (day == 0) {
-    small = Workplace::get_small_workplace_size();
-    medium = Workplace::get_medium_workplace_size();
-    large = Workplace::get_large_workplace_size();
-  }
-
-  for (int i = 0; i < incident_infections; i++) {
-    Person * infectee = daily_infections_list[i];
-    char c = infectee->get_infected_place_type(id);
-    infections_in_pop++;
-
-    // presenteeism requires that place of infection is work or office
-    if (c != 'W' && c != 'O') {
-      continue;
-    }
-    infections_at_work++;
-
-    // get the work place size (note we don't care about the office size)
-    Place * work = infectee->get_workplace();
-    assert(work != NULL);
-    int size = work->get_size();
-
-    // presenteeism requires that the infector have symptoms
-    Person * infector = infectee->get_infector(this->id);
-    assert(infector != NULL);
-    if (infector->is_symptomatic()) {
-
-      // determine whether sick leave was available to infector
-      bool infector_has_sick_leave = infector->is_sick_leave_available();
-
-      if (size < small) {			// small workplace
-	presenteeism_small++;
-	if (infector_has_sick_leave)
-	  presenteeism_small_with_sl++;
-      } else if (size < medium) {		// medium workplace
-	presenteeism_med++;
-	if (infector_has_sick_leave)
-	  presenteeism_med_with_sl++;
-      } else if (size < large) {		// large workplace
-	presenteeism_large++;
-	if (infector_has_sick_leave)
-	  presenteeism_large_with_sl++;
-      } else {					// xlarge workplace
-	presenteeism_xlarge++;
-	if (infector_has_sick_leave)
-	  presenteeism_xlarge_with_sl++;
-      }
-    }
-  } // end loop over infectees
-
-  // raw counts
-  int presenteeism = presenteeism_small + presenteeism_med
-    + presenteeism_large + presenteeism_xlarge;
-  int presenteeism_with_sl = presenteeism_small_with_sl + presenteeism_med_with_sl
-    + presenteeism_large_with_sl + presenteeism_xlarge_with_sl;
-  
-  Utils::fred_log("\nDay %d PRESENTEE: ",day);
-  Utils::fred_report(" small %d ", presenteeism_small);
-  Utils::fred_report("small_n %d ", Workplace::get_workers_in_small_workplaces());
-  Utils::fred_report("med %d ", presenteeism_med);
-  Utils::fred_report("med_n %d ", Workplace::get_workers_in_medium_workplaces());
-  Utils::fred_report("large %d ", presenteeism_large);
-  Utils::fred_report("large_n %d ", Workplace::get_workers_in_large_workplaces());
-  Utils::fred_report("xlarge %d ", presenteeism_xlarge);
-  Utils::fred_report("xlarge_n %d ", Workplace::get_workers_in_xlarge_workplaces());
-  Utils::fred_report("pres %d ", presenteeism);
-  Utils::fred_report("pres_sl %d ", presenteeism_with_sl);
-  Utils::fred_report("inf_at_work %d ", infections_at_work);
-  Utils::fred_report("tot_emp %d ", Workplace::get_total_workers());
-  Utils::fred_log("N %d\n", N);
-}
-
 
 
 void Epidemic::add_infectious_place(Place *place, char type) {

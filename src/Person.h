@@ -237,7 +237,7 @@ public:
    * @return the Person's age as a double value based on the number of days alive
    * @see Demographics::get_real_age()
    */
-  double get_real_age(int day) const { return demographics->get_real_age(day); }
+  double get_real_age() const { return demographics->get_real_age(); }
 
   /**
    * @return the Person's sex

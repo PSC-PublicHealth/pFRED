@@ -352,10 +352,10 @@ void Infection::report_infection(int day) const {
           " infector %d inf_age %.3f inf_sympt %d inf_sick_leave %d at %c place %d size %d  ",
           day, id,
           host->get_id(),
-          host->get_real_age(day),
+          host->get_real_age(),
           host->is_sick_leave_available(),
           infector == NULL ? -1 : infector->get_id(),
-          infector == NULL ? -1 : infector->get_real_age(day),
+          infector == NULL ? -1 : infector->get_real_age(),
           infector == NULL ? -1 : infector->is_symptomatic(),
           infector == NULL ? -1 : infector->is_sick_leave_available(),
 	  place_type, place_id, place_size);

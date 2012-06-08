@@ -210,6 +210,10 @@ private:
   vector <Person *> maternity_list;   // list agents to give birth today
   int pop_size;
   Disease *disease;
+
+  vector <Person *> birthday_vecs[367]; //0 won't be used | day 1 - 366
+  map<Person *, int> birthday_map;
+
   double **mutation_prob;
   map<Person *,int> pop_map;
   ChangeMap incremental_changes; // incremental "list" (actually a C++ map)
