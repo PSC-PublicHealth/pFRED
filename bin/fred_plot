@@ -38,7 +38,9 @@ my $ymin = "0";
 my $ymax = "*";
 my $errorbars;
 my $title = "FRED: Allegheny County Model";
-my $fontsize = "giant";
+# my $fontsize = "giant";
+# my $fontsize = "large";
+my $fontsize = "medium";
 
 my $opt_result = GetOptions("e" => \$errorbars,
 			    "f=s" => \$fontsize,
