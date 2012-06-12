@@ -65,6 +65,8 @@ my $gnuplot = $ENV{FRED_GNUPLOT};
 die "no gnuplot\n" if (not $gnuplot or (not -x $gnuplot));
 
 my $v = $varlist[0];
+my $titlevar = $v;
+$titlevar = $titles{$v} if exists $titles{$v};
 for my $key (@keys) {
   system "$FRED/bin/fred_plot_data -k $key -v $v > fred_plots.$key-$$";
 }
@@ -75,7 +77,7 @@ my $pngfile = "plots-$$.png";
 
 open FH, ">$pltfile";
 print FH <<"EOF";
-set title \"$title\"
+set title \"$title\\n$titlevar\"
 set terminal png $fontsize
 set output \"$pngfile\"
 # set terminal aqua font \"Arial,20\"
