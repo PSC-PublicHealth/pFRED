@@ -46,7 +46,7 @@ vector<int> * Date::year_vec = NULL;
 
 Date::Date() {
 
-  this->days_since_jan_1_1900 = 0;
+  this->days_since_jan_1_epoch_year = 0;
 
   //Create the vectors once
   if(!Date::is_initialized) {
@@ -76,7 +76,7 @@ Date::Date() {
 
 Date::Date(string date_string, string format_string) {
 
-  this->days_since_jan_1_1900 = 0;
+  this->days_since_jan_1_epoch_year = 0;
 
   //Create the vectors once
   if(!Date::is_initialized) {
@@ -95,7 +95,7 @@ Date::Date(string date_string, string format_string) {
 
 Date::Date(int year, int day_of_year) {
 
-  this->days_since_jan_1_1900 = 0;
+  this->days_since_jan_1_epoch_year = 0;
 
   //Create the vectors once
   if(!Date::is_initialized) {
@@ -131,7 +131,7 @@ Date::Date(int year, int day_of_year) {
 
 Date::Date(int year, int month, int day_of_month) {
 
-  this->days_since_jan_1_1900 = 0;
+  this->days_since_jan_1_epoch_year = 0;
 
   //Create the vectors once
   if(!Date::is_initialized) {
@@ -148,8 +148,8 @@ Date::Date(int year, int month, int day_of_month) {
  * month in that year.
  */
 void Date::set_date(int year, int month, int day_of_month) {
-  if (year < 1900) {
-    Utils::fred_abort("Help! Year prior to 1900 [\"%d\"] is not recognized\n", year);
+  if (year < Date::EPOCH_START_YEAR) {
+    Utils::fred_abort("Help! Year prior to %d [\"%d\"] is not recognized\n", Date::EPOCH_START_YEAR, year);
   } else {
     this->year = year;
   }
@@ -166,23 +166,23 @@ void Date::set_date(int year, int month, int day_of_month) {
     this->day_of_month = day_of_month;
   }
 
-  //total years since 1900
-  int temp_days = (year - 1900) * 365;
+  //total years since Date::EPOCH_START_YEAR
+  int temp_days = (year - Date::EPOCH_START_YEAR) * 365;
 
   //add in the leap days
-  for (int i = 1900; i < year; i += 4) {
+  for (int i = Date::EPOCH_START_YEAR; i < year; i += 4) {
     if (i % 4 == 0)
       temp_days++;
   }
 
   //subtract the leap days of centuries
-  for (int i = 1900; i < year; i += 100) {
+  for (int i = Date::EPOCH_START_YEAR; i < year; i += 100) {
     if (i % 100 == 0)
       temp_days--;
   }
 
   //add in the leap days for centuries divisible by 400
-  for (int i = 1900; i < year; i += 100) {
+  for (int i = Date::EPOCH_START_YEAR; i < year; i += 100) {
     if (i % 400 == 0)
       temp_days++;
   }
@@ -201,16 +201,16 @@ void Date::set_date(int year, int month, int day_of_month) {
 
   this->day_of_week = Date::get_day_of_week(this->year, this->month, this->day_of_month);
 
-  this->days_since_jan_1_1900 = temp_days;
+  this->days_since_jan_1_epoch_year = temp_days;
 
 }
 
 void Date::advance() {
-  this->days_since_jan_1_1900++;
+  this->days_since_jan_1_epoch_year++;
 
-  this->year = Date::year_vec->at(this->days_since_jan_1_1900);
-  this->month = Date::month_vec->at(this->days_since_jan_1_1900);
-  this->day_of_month = Date::day_of_month_vec->at(this->days_since_jan_1_1900);
+  this->year = Date::year_vec->at(this->days_since_jan_1_epoch_year);
+  this->month = Date::month_vec->at(this->days_since_jan_1_epoch_year);
+  this->day_of_month = Date::day_of_month_vec->at(this->days_since_jan_1_epoch_year);
 
   this->day_of_year = Date::get_day_of_year(this->year, this->month, this->day_of_month);
   if(this->day_of_week == Date::SATURDAY) {
@@ -232,13 +232,13 @@ int Date::get_year(int t) {
   if(t == 0) {
 	return this->year;
   } else {
-	if(Date::year_vec != NULL && (this->days_since_jan_1_1900 + t) < (int)Date::year_vec->size()) {
-      int * temp = & Date::year_vec->at(this->days_since_jan_1_1900 + t);
+	if(Date::year_vec != NULL && (this->days_since_jan_1_epoch_year + t) < (int)Date::year_vec->size()) {
+      int * temp = & Date::year_vec->at(this->days_since_jan_1_epoch_year + t);
       return * temp;
     } else {
-      Date::add_to_vectors(this->days_since_jan_1_1900 + t);
+      Date::add_to_vectors(this->days_since_jan_1_epoch_year + t);
 
-      int * temp = & Date::year_vec->at(this->days_since_jan_1_1900 + t);
+      int * temp = & Date::year_vec->at(this->days_since_jan_1_epoch_year + t);
       return * temp;
     }
   }
@@ -250,13 +250,13 @@ int Date::get_month(int t) {
   if (t == 0) {
 	return this->month;
   } else{
-	if(Date::month_vec != NULL && (this->days_since_jan_1_1900 + t) < (int)Date::month_vec->size()) {
-	  int * temp = & Date::month_vec->at(this->days_since_jan_1_1900 + t);
+	if(Date::month_vec != NULL && (this->days_since_jan_1_epoch_year + t) < (int)Date::month_vec->size()) {
+	  int * temp = & Date::month_vec->at(this->days_since_jan_1_epoch_year + t);
 	  return * temp;
 	} else {
-	  Date::add_to_vectors(this->days_since_jan_1_1900 + t);
+	  Date::add_to_vectors(this->days_since_jan_1_epoch_year + t);
 
-	  int * temp = & Date::month_vec->at(this->days_since_jan_1_1900 + t);
+	  int * temp = & Date::month_vec->at(this->days_since_jan_1_epoch_year + t);
 	  return * temp;
 	}
   }
@@ -337,13 +337,13 @@ int Date::get_day_of_month(int t) {
   if(t == 0) {
 	return this->day_of_month;
   } else {
-    if(Date::day_of_month_vec != NULL && (this->days_since_jan_1_1900 + t) < (int)Date::day_of_month_vec->size()) {
-      int * temp = & Date::day_of_month_vec->at(this->days_since_jan_1_1900 + t);
+    if(Date::day_of_month_vec != NULL && (this->days_since_jan_1_epoch_year + t) < (int)Date::day_of_month_vec->size()) {
+      int * temp = & Date::day_of_month_vec->at(this->days_since_jan_1_epoch_year + t);
       return * temp;
     } else {
-      Date::add_to_vectors(this->days_since_jan_1_1900 + t);
+      Date::add_to_vectors(this->days_since_jan_1_epoch_year + t);
 
-      int * temp = & Date::day_of_month_vec->at(this->days_since_jan_1_1900 + t);
+      int * temp = & Date::day_of_month_vec->at(this->days_since_jan_1_epoch_year + t);
       return * temp;
     }
   }
@@ -488,6 +488,8 @@ int Date::get_epi_week_year(int t) {
     future_day_of_month = this->get_day_of_month(t);
   }
 
+  future_day_of_year = Date::get_day_of_year(future_year, future_month, future_day_of_month);
+
   //Figure out on which day of the week Jan 1 occurs for the future date
   int jan_1_day_of_week = this->get_day_of_week((t - (future_day_of_year - 1)));
 
@@ -523,7 +525,7 @@ bool Date::equals(Date * check_date) {
 
 int Date::compare_to(Date * check_date) {
 
-  return (this->days_since_jan_1_1900 - check_date->days_since_jan_1_1900);
+  return (this->days_since_jan_1_epoch_year - check_date->days_since_jan_1_epoch_year);
 
 }
 
@@ -538,15 +540,15 @@ string Date::to_string() {
 // member function operators
 
 bool Date::operator< (const Date &other) const {
-  return (this->days_since_jan_1_1900 < other.days_since_jan_1_1900);
+  return (this->days_since_jan_1_epoch_year < other.days_since_jan_1_epoch_year);
 }
 
 bool Date::operator== (const Date &other) const {
-  return (this->days_since_jan_1_1900 == other.days_since_jan_1_1900);
+  return (this->days_since_jan_1_epoch_year == other.days_since_jan_1_epoch_year);
 }
 
 bool Date::operator> (const Date &other) const {
-  return (this->days_since_jan_1_1900 > other.days_since_jan_1_1900);
+  return (this->days_since_jan_1_epoch_year > other.days_since_jan_1_epoch_year);
 }
 
 bool Date::operator>= (const Date &other) const {
@@ -563,7 +565,7 @@ bool Date::operator!= (const Date &other) const {
 
 //Static Methods
 int Date::days_between(const Date * date_1, const Date * date_2) {
-  return abs(date_1->days_since_jan_1_1900 - date_2->days_since_jan_1_1900);
+  return abs(date_1->days_since_jan_1_epoch_year - date_2->days_since_jan_1_epoch_year);
 }
 
 bool Date::is_leap_year(int year) {
@@ -803,15 +805,30 @@ int Date::parse_year_from_date_string(string date_string, string format_string) 
 }
 
 void Date::initialize_vectors() {
+  //Get the system time
+  time_t rawtime;
+  time(&rawtime);
 
-  Date::add_to_vectors(Date::DEFAULT_MAX_DAYS);
+  int cur_year;
+  int min_days_to_reserve;
+  struct tm * curr_time = localtime(&rawtime);
+
+  /*
+   * Meaning of values in structure tm:
+   * tm_year years since 1900
+   */
+  cur_year = curr_time->tm_year + 1900;
+  min_days_to_reserve = abs(cur_year - Date::EPOCH_START_YEAR + 10) * 366;
+
+
+  Date::add_to_vectors(min_days_to_reserve);
   Date::is_initialized = true;
 
 }
 
-void Date::add_to_vectors(int days_since_jan_1_1900) {
+void Date::add_to_vectors(int _days_since_jan_1_epoch_year) {
 
-  size_t vec_size = (size_t) (days_since_jan_1_1900 + 1);
+  size_t vec_size = (size_t) (_days_since_jan_1_epoch_year + 1);
 
   //If the vectors do not exist, create now
   if (Date::year_vec == NULL) {
@@ -832,11 +849,11 @@ void Date::add_to_vectors(int days_since_jan_1_1900) {
   //Check to see if the vector is empty
   size_t current_vec_size = Date::day_of_month_vec->size();
   if (current_vec_size == 0) {
-    int current_year = 1900;
+    int current_year = Date::EPOCH_START_YEAR;
     int current_month = Date::JANUARY;
     int current_day_of_month = 1;
 
-    for (int i = 0; i <= days_since_jan_1_1900; i++) {
+    for (int i = 0; i <= _days_since_jan_1_epoch_year; i++) {
 
       Date::year_vec->push_back(current_year);
       Date::month_vec->push_back(current_month);
@@ -851,13 +868,13 @@ void Date::add_to_vectors(int days_since_jan_1_1900) {
         }
       }
     }
-  } else if (current_vec_size <= (size_t)days_since_jan_1_1900) {
+  } else if (current_vec_size <= (size_t)_days_since_jan_1_epoch_year) {
 
     int current_year = Date::year_vec->back();
     int current_month = Date::month_vec->back();
     int current_day_of_month = Date::day_of_month_vec->back();
 
-    for (size_t i = 0; i <= ((size_t)days_since_jan_1_1900 - current_vec_size); i++) {
+    for (size_t i = 0; i <= ((size_t)_days_since_jan_1_epoch_year - current_vec_size); i++) {
 
       if (++current_day_of_month >
         Date::day_table[(Date::is_leap_year(current_year) ? 1 : 0)][current_month]) {

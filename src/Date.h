@@ -19,7 +19,6 @@ using namespace std;
 
 class Date {
 public:
-  static const int DEFAULT_MAX_DAYS = 50000;
   static const int SUNDAY = 0;
   static const int MONDAY = 1;
   static const int TUESDAY = 2;
@@ -155,7 +154,7 @@ public:
   int get_epi_week(int t);
   int get_epi_week_year()  { return this->get_epi_week_year(0); }
   int get_epi_week_year(int t);
-  int get_days_since_jan_1_1900() { return this->days_since_jan_1_1900; }
+  int get_days_since_jan_1_epoch_year() { return this->days_since_jan_1_epoch_year; }
   void advance();
   void advance(int days);
   Date * clone();
@@ -191,13 +190,14 @@ public:
   static bool day_in_range_MMDD(Date * check_date, char * start_day, char * end_day);
 
 private:
+  static const int EPOCH_START_YEAR = 1800;
   static const int day_table[2][13];
   static const int doomsday_month_val[2][13];
   static vector<int> *day_of_month_vec;
   static vector<int> *month_vec;
   static vector<int> *year_vec;
   static bool is_initialized;
-  int days_since_jan_1_1900;
+  int days_since_jan_1_epoch_year;
 
   int day_of_month;
   int month;
@@ -206,7 +206,7 @@ private:
   int day_of_year;
 
   static void initialize_vectors();
-  static void add_to_vectors(int days_since_jan_1_1900);
+  static void add_to_vectors(int _days_since_jan_1_epoch_year);
   static int get_doomsday_month(int month, int year)
   { return Date::doomsday_month_val[(Date::is_leap_year(year) ? 1 : 0)][month]; }
   static int get_doomsday_century(int year);
