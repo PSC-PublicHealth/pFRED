@@ -89,10 +89,10 @@ set ylabel \"Individuals\" offset 1.2,0
 EOF
 if ($v eq "AR") {
   print FH "set key left Left reverse\n";
-  print FH "set ylabel 'Per cent of Population' 1.2,0\n";
+  print FH "set ylabel 'Per cent of Population' offset 1.2,0\n";
 }
 if ($v eq "RR") {
-  print FH "set ylabel 'Reproductive Rate' 1.2,0\n";
+  print FH "set ylabel 'Reproductive Rate' offset 1.2,0\n";
 }
 
 for my $n (0..$#keys) {

@@ -104,7 +104,7 @@ set ylabel \'Individuals\' offset 1.2,0
 set xtics out
 EOF
 if ($year) {
-  print FH "set xlabel 'Year' 0,0.5\n";
+  print FH "set xlabel 'Year' offset 0,0.5\n";
   print FH "set xtics rotate by 90 1\n";
   print FH "set mxtics 4\n";
 }
