@@ -26,7 +26,6 @@ int Global::Diseases = 0;
 int Global::StrainEvolution = 0;
 char Global::Prevfilebase[256];
 char Global::Incfilebase[256];
-char Global::ErrorLogbase[256];
 int Global::Enable_Behaviors = 0;
 int Global::Track_infection_events = 0;
 int Global::Track_age_distribution = 0;
@@ -62,6 +61,9 @@ bool Global::Enable_Antivirals = true;
 bool Global::Enable_Vaccination = true;
 bool Global::Use_Mean_Latitude = false;
 bool Global::Print_Household_Locations = false;
+bool Global::Report_Age_Of_Infection = false;
+bool Global::Report_Place_Of_Infection = false;
+bool Global::Report_Presenteeism = false;
 
 // per-strain prevalence incidence reporting off by default
 // will be enabled in Fred.cc if valid files are given in params
@@ -159,7 +161,12 @@ void Global::get_global_parameters() {
   Global::Use_Mean_Latitude = temp_int;
   Params::get_param_from_string("print_household_locations",&temp_int);
   Global::Print_Household_Locations = temp_int;
-
+  Params::get_param_from_string("report_age_of_infection",&temp_int);
+  Global::Report_Age_Of_Infection = temp_int;
+  Params::get_param_from_string("report_place_of_infection",&temp_int);
+  Global::Report_Place_Of_Infection = temp_int;
+  Params::get_param_from_string("report_presenteeism",&temp_int);
+  Global::Report_Presenteeism = temp_int;
 
   // Sanity Checks
   if ( Global::Diseases > Global::MAX_NUM_DISEASES ) {

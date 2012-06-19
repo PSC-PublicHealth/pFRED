@@ -120,9 +120,9 @@ void Population::add_person(Person * person) {
 
   //Put the person into the correct birthday list
   if(Global::Enable_Aging) {
-	int pos = person->get_demographics()->get_birthdate()->get_day_of_year();
+	int pos = person->get_demographics()->get_birth_day_of_year();
 	//Check to see if the day of the year is after FEB 28
-	if(pos > 59 && !Date::is_leap_year(person->get_demographics()->get_birthdate()->get_year()))
+	if(pos > 59 && !Date::is_leap_year(person->get_demographics()->get_birth_year()))
 	  pos++;
 
 	this->birthday_vecs[pos].push_back(person);
@@ -466,10 +466,10 @@ void Population::update(int day) {
         }
         assert(itr != birthday_map.end());
         int pos = (*itr).second;
-        int day_of_year = death_list[i]->get_demographics()->get_birthdate()->get_day_of_year();
+        int day_of_year = death_list[i]->get_demographics()->get_birth_day_of_year();
 
     	//Check to see if the day of the year is after FEB 28
-    	if(day_of_year > 59 && !Date::is_leap_year(death_list[i]->get_demographics()->get_birthdate()->get_year()))
+    	if(day_of_year > 59 && !Date::is_leap_year(death_list[i]->get_demographics()->get_birth_year()))
     	  day_of_year++;
 
         Person * last = this->birthday_vecs[day_of_year].back();

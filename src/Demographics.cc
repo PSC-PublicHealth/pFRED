@@ -40,7 +40,7 @@ Demographics::Demographics() {
   marital_status = -1;
   init_profession = -1;
   profession = -1;
-  birthdate = NULL;
+  birth_day_of_year = -1;
   deceased_sim_day = -1;
   conception_sim_day = -1;
   due_sim_day = -1;
@@ -48,7 +48,7 @@ Demographics::Demographics() {
   deceased = false;
 }
 
-Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_status,
+Demographics::Demographics(Person * _self, short int _age, char _sex, int _marital_status,
 			   int rel, int _profession, int day, bool is_newborn) {
 
   //Create the static arrays one time
@@ -73,7 +73,7 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
   relationship = rel;
   init_profession     = _profession;
   profession         = init_profession;
-  birthdate           = NULL;
+  birth_day_of_year  = -1;
   deceased_sim_day = -1;
   conception_sim_day = -1;
   due_sim_day = -1;
@@ -100,11 +100,14 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
       rand_birthday = rand_birthday * 366.0 / 365.0;
     }
 
-    this->birthdate = new Date(birthyear, (int) ceil(rand_birthday));
+    Date * tmpDate = new Date(birthyear, (int) ceil(rand_birthday));
+    this->birth_day_of_year = tmpDate->get_day_of_year();
+    this->birth_year = birthyear;
+    delete tmpDate;
 
   } else {
 
-    this->birthdate = Global::Sim_Current_Date->clone();
+    this->birth_day_of_year = Global::Sim_Current_Date->get_day_of_year();
   }
 
   //Will this person die in the next year?
@@ -133,7 +136,7 @@ Demographics::Demographics(Person * _self, int _age, char _sex, int _marital_sta
 }
 
 Demographics::~Demographics() {
-  if (birthdate != NULL) delete birthdate;
+
 }
 
 void Demographics::update(int day) {
@@ -291,7 +294,8 @@ void Demographics::print() {
 }
 
 double Demographics::get_real_age() {
-  int days_of_life = Date::days_between(Global::Sim_Current_Date, birthdate);
+  Date * tmp_date = new Date(this->birth_year, this->birth_day_of_year);
+  int days_of_life = Date::days_between(Global::Sim_Current_Date, tmp_date);
   return ((double) days_of_life / 365.0);
 }
 

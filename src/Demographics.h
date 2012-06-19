@@ -38,7 +38,7 @@ public:
    * @param day the simulation day
    * @param is_newborn needed to know how to set the date of birth
    */
-  Demographics(Person* _self, int _age, char _sex, int _marital_status, int rel,
+  Demographics(Person* _self, short int _age, char _sex, int _marital_status, int rel,
 	       int _profession, int day, bool is_newborn = false);
 
   ~Demographics();
@@ -58,7 +58,7 @@ public:
   /**
    * @return the agent's age
    */
-  int get_age()            { return age; }
+  short int get_age()      { return age; }
 
   /**
    * @return the agent's sex
@@ -93,7 +93,7 @@ public:
   /**
    * @return the agent's init_age
    */
-  int get_init_age()            { return init_age; }
+  short int get_init_age()            { return init_age; }
 
   /**
    * @return the agent's init_marital_status
@@ -119,22 +119,28 @@ public:
   void birthday(int day);
 
   /**
-   * @return the agent's birthdate
+   * @return the agent's birth_day_of_year
    */
-  Date * get_birthdate() { return this->birthdate; }
+  short int get_birth_day_of_year() { return this->birth_day_of_year; }
+
+  /**
+   * @return the agent's birth_year
+   */
+  short int get_birth_year() { return this->birth_year; }
   
   void terminate(){}
 
 private:
   Person *self;                // Pointer to the person class belongs
-  int init_age;                // Initial age of the agent
+  short int init_age;                // Initial age of the agent
   int init_marital_status;     // Initial marital status
   int init_profession;         // Initial profession (from census)
-  Date *birthdate;             // When the agent was born
-  int deceased_sim_day;        // When the agent (will die) / (died)
-  int conception_sim_day;      // When the agent will conceive
-  int due_sim_day;             // When the agent will give birth
-  int age;                     // Current age of the agent
+  short int birth_day_of_year;
+  short int birth_year;
+  short int deceased_sim_day;        // When the agent (will die) / (died)
+  short int conception_sim_day;      // When the agent will conceive
+  short int due_sim_day;             // When the agent will give birth
+  short int age;                     // Current age of the agent
   char sex;                    // Male or female?
   int marital_status;          // Current marital status 
   int profession;              // Current profession (from census)
