@@ -108,6 +108,8 @@ Demographics::Demographics(Person * _self, short int _age, char _sex, int _marit
   } else {
 
     this->birth_day_of_year = Global::Sim_Current_Date->get_day_of_year();
+    // newborns need a birth year too...
+    birth_year = Global::Sim_Current_Date->get_year();  
   }
 
   //Will this person die in the next year?
