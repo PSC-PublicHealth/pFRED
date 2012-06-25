@@ -52,7 +52,6 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   inf_schools.reserve(places);
   inf_workplaces.reserve(places);
   inf_offices.reserve(places);
-  daily_infections_list.reserve(N_init);
   daily_infections_list.clear();
   susceptible_list.clear();
   infectious_list.clear();
