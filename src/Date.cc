@@ -568,6 +568,10 @@ int Date::days_between(const Date * date_1, const Date * date_2) {
   return abs(date_1->days_since_jan_1_epoch_year - date_2->days_since_jan_1_epoch_year);
 }
 
+int Date::days_between(int sim_day, Date * date_2) {
+  return abs(Global::Sim_Current_Date->days_since_jan_1_epoch_year - date_2->days_since_jan_1_epoch_year);
+}
+
 bool Date::is_leap_year(int year) {
 
   if (year%400 == 0)

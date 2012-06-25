@@ -179,7 +179,7 @@ public:
   bool operator!= (const Date &other) const;
 
   static int days_between(const Date * date_1, const Date * date_2);
-  //static int days_between(int sim_day, Date * date_2);
+  static int days_between(int sim_day, Date * date_2);
   static bool is_leap_year(int year);
   static int get_day_of_year(int year, int month, int day);
   static int parse_month_from_date_string(string date_string, string format_string);
