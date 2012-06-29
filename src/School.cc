@@ -150,9 +150,9 @@ bool School::should_be_open(int day, int disease) {
     // close schools if the closure date has arrived (after a delay)
     if (School::school_closure_day > -1) {
       if (School::school_closure_day <= day && School::global_closure_is_active == false) {
-	School::global_closure_is_active = true;
-	School::global_close_date = day + School::school_closure_delay;
-	School::global_open_date = day + School::school_closure_delay + School::school_closure_period;
+  School::global_closure_is_active = true;
+  School::global_close_date = day + School::school_closure_delay;
+  School::global_open_date = day + School::school_closure_delay + School::school_closure_period;
       }
     }
     else {
@@ -160,9 +160,9 @@ bool School::should_be_open(int day, int disease) {
       // (with a delay)
       Disease * str = Global::Pop.get_disease(disease);
       if (School::global_closure_is_active == false && str->get_attack_rate() > school_closure_threshold) {
-	School::global_closure_is_active = true;
-	School::global_close_date = day + School::school_closure_delay;
-	School::global_open_date = day + School::school_closure_delay + School::school_closure_period;
+  School::global_closure_is_active = true;
+  School::global_close_date = day + School::school_closure_delay;
+  School::global_open_date = day + School::school_closure_delay + School::school_closure_period;
       }
     }
     if (School::global_closure_is_active) {
@@ -173,7 +173,7 @@ bool School::should_be_open(int day, int disease) {
     if (Global::Verbose > 1 && should_be_day < day) {
       Disease * str = Global::Pop.get_disease(disease);
       printf("SCHOOL day %d ar %.4f is_open %d close_date %d open_date %d\n",
-	     day, str->get_attack_rate(), this_is_open, close_date, open_date);
+       day, str->get_attack_rate(), this_is_open, close_date, open_date);
       should_be_day = day;
     }
     return this_is_open;
@@ -185,17 +185,17 @@ bool School::should_be_open(int day, int disease) {
     if (this_is_open) {
       bool school_closure_triggered = false;
       if (School::school_closure_cases != -1) {
-	school_closure_triggered = (Sympt[disease] >= School::school_closure_cases);
+  school_closure_triggered = (Sympt[disease] >= School::school_closure_cases);
       }
       else {
-	double frac = (double) Sympt[disease] / (double) N;
-	school_closure_triggered = (frac >= School::school_closure_threshold);
+  double frac = (double) Sympt[disease] / (double) N;
+  school_closure_triggered = (frac >= School::school_closure_threshold);
       }
       if (school_closure_triggered) {
-	close_date = day + School::school_closure_delay;
-	open_date = day + School::school_closure_delay + School::school_closure_period;
-	printf("School %d cases = %d / %d (%5.2f) and will be closed from %d to %d\n",
-	       id, Sympt[disease], N, (100.0*Sympt[disease]/N), close_date, open_date);
+  close_date = day + School::school_closure_delay;
+  open_date = day + School::school_closure_delay + School::school_closure_period;
+  printf("School %d cases = %d / %d (%5.2f) and will be closed from %d to %d\n",
+         id, Sympt[disease], N, (100.0*Sympt[disease]/N), close_date, open_date);
       }
     }
     return is_open(day);
@@ -249,7 +249,7 @@ void School::setup_classrooms() {
     if (n % School::school_classroom_size) rooms++;
     if (Global::Verbose > 1) {
       fprintf(Global::Statusfp, "school %d %s age %d number %d rooms %d\n",
-	      id, label,a,n,rooms);
+        id, label,a,n,rooms);
       fflush(Global::Statusfp);
     }
     for (int c = 0; c < rooms; c++) {
@@ -257,17 +257,17 @@ void School::setup_classrooms() {
       char new_label[128];
       sprintf(new_label, "%s-%02d-%02d", this->get_label(), a, c+1);
       Place *p = new (nothrow) Classroom(new_id, new_label,
-					 this->get_longitude(),
-					 this->get_latitude(),
-					 this,
-					 this->get_population());
+           this->get_longitude(),
+           this->get_latitude(),
+           this,
+           this->get_population());
       Global::Places.add_place(p);
       classrooms[a].push_back(p);
       total_classrooms++;
       if (Global::Verbose > 1) {
-	      fprintf(Global::Statusfp, "school %d %s age %d added classroom %d %s %d\n",
-		            id, label,a,c,p->get_label(),p->get_id());
-	      fflush(Global::Statusfp);
+        fprintf(Global::Statusfp, "school %d %s age %d added classroom %d %s %d\n",
+                id, label,a,c,p->get_label(),p->get_id());
+        fflush(Global::Statusfp);
       }
     }
   }
@@ -282,8 +282,8 @@ Place * School::assign_classroom(Person *per) {
     // assign classroom to a student
     if (Global::Verbose > 1) {
       fprintf(Global::Statusfp,
-	      "assign classroom for student %d in school %d %s for age %d == ",
-	      per->get_id(), id, label, age);
+        "assign classroom for student %d in school %d %s for age %d == ",
+        per->get_id(), id, label, age);
       fflush(Global::Statusfp);
     }
     assert(classrooms[age].size() > 0);
@@ -296,7 +296,7 @@ Place * School::assign_classroom(Person *per) {
     
     if (Global::Verbose > 1) {
       fprintf(Global::Statusfp, "room = %d %s %d\n",
-	            c, classrooms[age][c]->get_label(), classrooms[age][c]->get_id());
+              c, classrooms[age][c]->get_label(), classrooms[age][c]->get_id());
       fflush(Global::Statusfp);
     }
     return classrooms[age][c];
@@ -305,8 +305,8 @@ Place * School::assign_classroom(Person *per) {
     // assign classroom to a teacher
     if (Global::Verbose > 1) {
       fprintf(Global::Statusfp,
-	      "assign classroom for teacher %d in school %d %s for age %d == ",
-	      per->get_id(), id, label, age);
+        "assign classroom for teacher %d in school %d %s for age %d == ",
+        per->get_id(), id, label, age);
       fflush(Global::Statusfp);
     }
 
@@ -315,14 +315,14 @@ Place * School::assign_classroom(Person *per) {
       int n = (int) classrooms[a].size();
       if (n == 0) continue;
       if (next_classroom_without_teacher[a] < n) {
-	      int c = next_classroom_without_teacher[a];
-	      next_classroom_without_teacher[a]++;
-	      if (Global::Verbose > 1) {
-	        fprintf(Global::Statusfp, "room = %d %s %d\n",
-		              c, classrooms[a][c]->get_label(), classrooms[a][c]->get_id());
-	        fflush(Global::Statusfp);
-	      }
-	      return classrooms[a][c];
+        int c = next_classroom_without_teacher[a];
+        next_classroom_without_teacher[a]++;
+        if (Global::Verbose > 1) {
+          fprintf(Global::Statusfp, "room = %d %s %d\n",
+                  c, classrooms[a][c]->get_label(), classrooms[a][c]->get_id());
+          fflush(Global::Statusfp);
+        }
+        return classrooms[a][c];
       }
     }
 
@@ -330,15 +330,15 @@ Place * School::assign_classroom(Person *per) {
     int x = IRAND(0,total_classrooms-1);
     for (int a = 0; a < 20; a++) {
       for (unsigned int c = 0 ; c < classrooms[a].size(); c++) {
-	      if (x == 0) {
-	        if (Global::Verbose > 1) {
-	          fprintf(Global::Statusfp, "room = %d %s %d\n",
-		            c, classrooms[a][c]->get_label(), classrooms[a][c]->get_id());
-	          fflush(Global::Statusfp);
-	        }
-	        return classrooms[a][c];
-	      }
-	      else { x--; }
+        if (x == 0) {
+          if (Global::Verbose > 1) {
+            fprintf(Global::Statusfp, "room = %d %s %d\n",
+                c, classrooms[a][c]->get_label(), classrooms[a][c]->get_id());
+            fflush(Global::Statusfp);
+          }
+          return classrooms[a][c];
+        }
+        else { x--; }
       } 
     }
 

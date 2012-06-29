@@ -22,8 +22,10 @@
 #include "Cell.h"
 #include "Seasonality.h"
 #include "Utils.h"
+#include "Large_Grid.h"
+#include "Large_Cell.h"
 
-void Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop) {
+void Place::setup(int loc_id, const char *lab, fred::geo lon, fred::geo lat, Place* cont, Population *pop) {
   population = pop;
   id = loc_id;
   container = cont;
@@ -140,12 +142,18 @@ void Place::unenroll(Person * per) {
 }
 
 void Place::add_susceptible(int disease_id, Person * per) {
+  // Protect from concurrent writes
+  fred::Scoped_Lock lock( mutex ); 
+  // push person onto susceptible container for this place
   susceptibles[disease_id].push_back(per);
   S[disease_id]++;
   assert (S[disease_id] == static_cast <int> (susceptibles[disease_id].size()));
 }
 
 void Place::add_infectious(int disease_id, Person * per) {
+  // Protect from concurrent writes
+  fred::Scoped_Lock lock( mutex );
+  // push person onto infectious container for this place
   infectious[disease_id].push_back(per);
   I[disease_id]++;
   assert(I[disease_id] == static_cast <int> (infectious[disease_id].size()));
@@ -193,9 +201,16 @@ double Place::get_contact_rate(int day, int disease_id) {
   // OLD: double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
   double contacts = get_contacts_per_day(disease_id) * disease->get_transmissibility();
   if (Global::Enable_Seasonality) {
-    contacts = contacts * Global::Clim->get_seasonality_multiplier_by_lat_lon(
+
+    //contacts = contacts * Global::Clim->get_seasonality_multiplier_by_lat_lon(
+    //    latitude,longitude,disease_id);
+
+    double m = Global::Clim->get_seasonality_multiplier_by_lat_lon(
         latitude,longitude,disease_id);
+    //cout << "SEASONALITY: " << day << " " << m << endl;
+    contacts *= m;
   }
+
   // increase neighborhood contacts on weekends
   if (type == NEIGHBORHOOD) {
     int day_of_week = Global::Sim_Current_Date->get_day_of_week();
@@ -212,19 +227,16 @@ int Place::get_contact_count(Person * infector, int disease_id, int day, double 
   double infectivity = infector->get_infectivity(disease_id, day);
   double infector_contacts = contact_rate * infectivity;
 
-  if (Global::Verbose > 1) {
-    Utils::fred_verbose(1,"infectivity = %f, so ", infectivity);
-    Utils::fred_verbose(1,"infector's effective contacts = %f\n", infector_contacts);
-  }
-
+  FRED_VERBOSE( 1, "infectivity = %f, so ", infectivity );
+  FRED_VERBOSE( 1, "infector's effective contacts = %f\n", infector_contacts );
+  
   // randomly round off the expected value of the contact counts
   int contact_count = (int) infector_contacts;
   double r = RANDOM();
   if (r < infector_contacts - contact_count) contact_count++;
 
-  if (Global::Verbose > 1) {
-    Utils::fred_verbose(1,"infector contact_count = %d  r = %f\n", contact_count, r);
-  }
+  FRED_VERBOSE( 1, "infector contact_count = %d  r = %f\n", contact_count, r );
+  
   return contact_count;
 }
 
@@ -232,37 +244,33 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
                                         Person * infectee, int disease_id, int day) {
 
   double susceptibility = infectee->get_susceptibility(disease_id);
-  // Utils::fred_verbose(1,"susceptibility = %f\n", susceptibility);
+  
+  FRED_VERBOSE( 2, "susceptibility = %f\n", susceptibility );
 
   double r = RANDOM();
   double infection_prob = transmission_prob * susceptibility;
+  
+  FRED_CONDITIONAL_VERBOSE( 1, r >= infection_prob,
+      "transmission failed: r = %f  prob = %f\n", r, infection_prob );
 
   if (r < infection_prob) {
     // successful transmission; create a new infection in infectee
     Transmission *transmission = new Transmission(infector, this, day);
-    infector->infect(infectee, disease_id, transmission);
+    infector->infect( infectee, disease_id, transmission );
 
-    if (disease_id == 0) total_infections++;
-
-    if (Global::Verbose > 1) {
-      Utils::fred_verbose(1,"transmission succeeded: r = %f  prob = %f\n",
-			  r, infection_prob);
-      
-      if (infector->get_exposure_date(disease_id) == 0)
-	Utils::fred_verbose(1,"SEED infection day %i from %d to %d\n",
-			    day, infector->get_id(),infectee->get_id());
-      else
-	Utils::fred_verbose(1,"infection day %i of disease %i from %d to %d\n",
-			    day, disease_id, infector->get_id(),infectee->get_id());
-      
-      if (infection_prob > 1) Utils::fred_verbose(3,"infection_prob exceeded unity!\n");
+    if (disease_id == 0) {
+      #pragma omp atomic
+      total_infections++;
     }
-  }
-  else {
-    if (Global::Verbose > 1) {
-      Utils::fred_verbose(1,"transmission failed: r = %f  prob = %f\n",
-			  r, infection_prob);
-    } 
+
+    FRED_VERBOSE( 1, "transmission succeeded: r = %f  prob = %f\n", r, infection_prob );
+    FRED_CONDITIONAL_VERBOSE( 1, infector->get_exposure_date(disease_id) == 0,
+        "SEED infection day %i from %d to %d\n", day, infector->get_id(),infectee->get_id() );
+    FRED_CONDITIONAL_VERBOSE( 1, infector->get_exposure_date(disease_id) != 0,
+        "infection day %i of disease %i from %d to %d\n",
+        day, disease_id, infector->get_id(), infectee->get_id() );
+    FRED_CONDITIONAL_VERBOSE( 3, infection_prob > 1, "infection_prob exceeded unity!\n" );
+
   }
 }
 
@@ -275,16 +283,13 @@ void Place::spread_infection(int day, int disease_id) {
   // since N is estimated only at startup.
   int number_targets = (N-1 > S[disease_id]? N-1 : S[disease_id]);
 
-  if (Global::Verbose > 1) {
-    fprintf(Global::Statusfp,"spread_infection: Disease %d day %d place %d type %c\n",
-	    disease_id, day, id, type);
-    fflush(Global::Statusfp);
-  }
+  FRED_STATUS(1,"spread_infection: Disease %d day %d place %d type %c\n",
+      disease_id, day, id, type);
 
-  if (disease_id == 0) days_infectious++;
-  if (number_targets == 0) return;
-  if (is_open(day) == false) return;
-  if (should_be_open(day, disease_id) == false) return;
+  if ( disease_id == 0 ) days_infectious++;
+  if ( number_targets == 0 ) return;
+  if ( is_open( day ) == false ) return;
+  if ( should_be_open( day, disease_id ) == false ) return;
 
   vector<Person *>::iterator itr;
   // contact_rate is contacts_per_day with weeked and seasonality modulation (if applicable)
@@ -293,52 +298,45 @@ void Place::spread_infection(int day, int disease_id) {
   // randomize the order of the infectious list
   FYShuffle<Person *>(infectious[disease_id]);
 
-  for (itr = infectious[disease_id].begin(); itr != infectious[disease_id].end(); itr++) {
-    Person * infector = *itr;			// infectious indiv
+  for (itr = infectious[disease_id].begin(); itr != infectious[disease_id].end(); ++itr) {
+    Person * infector = *itr;      // infectious indiv
     assert(infector->get_health()->is_infectious(disease_id));
     
     // get the actual number of contacts to attempt to infect
     int contact_count = get_contact_count(infector,disease_id,day,contact_rate);
     
-    // check for saturation in this place
-    if (contact_count > number_targets && Global::Verbose > 3) {
-      fprintf(Global::Statusfp, "frustration! making %d attempts to infect %d targets\n",
-	      contact_count,number_targets);
-    }
+    // report saturation in this place
+    FRED_CONDITIONAL_VERBOSE(3, contact_count > number_targets, 
+        "frustration! making %d attempts to infect %d targets\n",
+        contact_count,number_targets);
 
     // get a susceptible target for each contact resulting in infection
-    for (int c = 0; c < contact_count; c++) {
+    for (int c = 0; c < contact_count; ++c) {
       // select a target infectee with replacement, including all possible visitors
       int pos = IRAND(0,number_targets-1);
       if (pos > S[disease_id]-1) continue; // target is not one of the susceptibles present
       // at this point we have a susceptible target:
       Person * infectee = susceptibles[disease_id][pos];
 
-      if (Global::Verbose > 1) {
-	fprintf(Global::Statusfp, "possible infectee = %d  pos = %d  S[%d] = %d\n",
-		infectee->get_id(), pos, disease_id, S[disease_id]);
-      }
+      FRED_VERBOSE( 1, "possible infectee = %d  pos = %d  S[%d] = %d\n",
+            infectee->get_id(), pos, disease_id, S[disease_id] );
 
       // is the target still susceptible?
-      if (infectee->is_susceptible(disease_id)) {
-
+      if ( infectee->is_susceptible( disease_id ) ) {
         // get the transmission probs for this infector/infectee pair
         double transmission_prob = get_transmission_prob(disease_id, infector, infectee);
-
-	if (Global::Verbose > 1) {
-	  fprintf(Global::Statusfp,"infectee is susceptible\n");
-	  fprintf(Global::Statusfp,"trans_prob = %f\n", transmission_prob);
-	  fflush(Global::Statusfp);
-	}
-
-        attempt_transmission(transmission_prob, infector, infectee, disease_id, day);
+        
+        FRED_STATUS(1,"infectee is susceptible\n","");
+        FRED_STATUS(1,"trans_prob = %f\n", transmission_prob);
+        
+        attempt_transmission( transmission_prob, infector, infectee, disease_id, day );
 
       } // end of susceptible infectee
     } // end contact loop
   } // end infectious list loop
 }
 
-void Place::modifyIncidenceCount(int disease_id, vector<int> strains, int incr) {
+void Place::modify_incidence_count(int disease_id, vector<int> strains, int incr) {
   if ( Global::Report_Incidence ) {
     map<int, int>& inc = incidence[disease_id];
     for(int s=0; s < (int) strains.size(); s++) {
@@ -348,7 +346,7 @@ void Place::modifyIncidenceCount(int disease_id, vector<int> strains, int incr) 
   }
 }
 
-void Place::modifyPrevalenceCount(int disease_id, vector<int> strains, int incr) {
+void Place::modify_prevalence_count(int disease_id, vector<int> strains, int incr) {
   if ( Global::Report_Prevalence ) {
     map<int, int>& prev = prevalence[disease_id];
     for(int s=0; s < (int) strains.size(); s++) {

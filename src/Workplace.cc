@@ -100,7 +100,7 @@ void Workplace::prepare() {
 
   // reserve memory for place-specific agent lists
   for (int s = 0; s < Global::Diseases; s++) {
-    susceptibles[s].reserve(N);
+    //susceptibles[s].reserve(N);
     infectious[s].reserve(N);
     total_cases[s] = total_deaths[s] = 0;
   }
@@ -138,7 +138,7 @@ void Workplace::setup_offices() {
   if (N % Workplace::Office_size) rooms++;
   if (Global::Verbose>1) {
     fprintf(Global::Statusfp,
-	    "workplace %d %s number %d rooms %d\n", id, label,N,rooms);
+      "workplace %d %s number %d rooms %d\n", id, label,N,rooms);
     fflush(Global::Statusfp);
   }
   for (int i = 0; i < rooms; i++) {
@@ -146,16 +146,16 @@ void Workplace::setup_offices() {
     char new_label[128];
     sprintf(new_label, "%s-%03d", this->get_label(), i);
     Place *p = new Office(new_id, new_label,
-			  this->get_longitude(),
-			  this->get_latitude(),
-			  this,
-			  this->get_population());
+        this->get_longitude(),
+        this->get_latitude(),
+        this,
+        this->get_population());
     Global::Places.add_place(p);
     offices.push_back(p);
     if (Global::Verbose>1) {
       fprintf(Global::Statusfp,
-	      "workplace %d %s added office %d %s %d\n",
-	      id, label,i,p->get_label(),p->get_id());
+        "workplace %d %s added office %d %s %d\n",
+        id, label,i,p->get_label(),p->get_id());
       fflush(Global::Statusfp);
     }
   }
@@ -169,8 +169,8 @@ Place * Workplace::assign_office(Person *per) {
 
   if (Global::Verbose>1) {
     fprintf(Global::Statusfp,
-	    "assign office for person %d at workplace %d %s size %d == ",
-	    per->get_id(), id, label, N);
+      "assign office for person %d at workplace %d %s size %d == ",
+      per->get_id(), id, label, N);
     fflush(Global::Statusfp);
   }
 
@@ -179,8 +179,8 @@ Place * Workplace::assign_office(Person *per) {
 
   if (Global::Verbose>1) {
     fprintf(Global::Statusfp,
-	    "office = %d %s %d\n",
-	    i, offices[i]->get_label(), offices[i]->get_id());
+      "office = %d %s %d\n",
+      i, offices[i]->get_label(), offices[i]->get_id());
     fflush(Global::Statusfp);
   }
 

@@ -26,7 +26,8 @@ class Vaccine{
 public:
   // Creation
   Vaccine(string _name, int _id, int _disease, 
-          int _total_avail, int _additional_per_day, int _start_day);
+          int _total_avail, int _additional_per_day, 
+          int _start_day, int num_strains, int *_strains);
   ~Vaccine();
   
   void add_dose(Vaccine_Dose* dose);
@@ -57,7 +58,13 @@ public:
     stock-=remove;
     if(stock < 0) stock = 0;
   }
+
+  int get_num_strains() {
+    return num_strains;
+  }
   
+  int get_strain(int i);
+
   //Utility Functions
   void print() const;
   void update(int day);
@@ -78,13 +85,16 @@ private:
   int additional_per_day;              // How much can be introduced into the system on a given day
   
   int start_day;                       // When to start production
+
+  int *strains;
+  int num_strains;
   
   // for statistics
   int number_delivered;
   int number_effective;
-	
+  
 protected:
-	Vaccine() { }
+  Vaccine() { }
 };
 
 #endif

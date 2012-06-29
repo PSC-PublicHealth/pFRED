@@ -54,6 +54,7 @@ void Multistrain_Timestep_Map::read_map() {
   } else { 
     Utils::fred_abort("Nothing in the file!");
   }
+  delete ts_input;
 }
 
 void Multistrain_Timestep_Map::read_map_line(ifstream * ts_input) {

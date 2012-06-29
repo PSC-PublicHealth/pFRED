@@ -34,77 +34,71 @@ class Household;
 
 Person::Person() {
   id = -1;
-  demographics = NULL;
-  health = NULL;
-  activities = NULL;
-  behavior = NULL;
+  index = -1;
 }
 
 Person::~Person() {
-  if (demographics != NULL) delete demographics;
-  if (health != NULL) delete health;
-  if (activities != NULL) delete activities;
-  if (behavior != NULL) delete behavior;
 }
 
-Person::Person(int index, int age, char sex, int marital, int rel, int occ,
-	       Place *house, Place *school, Place *work,
-	       int day, bool today_is_birthday) {
-  id = index;
-  demographics =
-    new Demographics(this, age, sex, marital, rel, occ, day, today_is_birthday);
-  health = new Health(this);
-  activities = new Activities(this, house, school, work);
-  behavior = new Behavior(this);
-	
+Person::Person(int _index, int _id, int age, char sex, int marital,
+    int rel, int occ, Place *house, Place *school, Place *work,
+    int day, bool today_is_birthday) {
+
+  index = _index;
+  id = _id;
+  demographics = Demographics(this, age, sex, marital, rel, occ, day, today_is_birthday);
+  health = Health( this );
+  activities = Activities( this, house, school, work );
+  behavior = Behavior( this );
+
   for (int disease = 0; disease < Global::Diseases; disease++) {
     Disease* dis = Global::Pop.get_disease(disease);
     if (!dis->get_residual_immunity()->is_empty()) {
-      double residual_immunity_prob =
-	dis->get_residual_immunity()->find_value(age);
+      double residual_immunity_prob = dis->get_residual_immunity()->find_value(age);
       // printf("RESID: age %d prob %f\n",age,residual_immunity_prob);
-      if (RANDOM() < residual_immunity_prob)
-	become_immune(dis);
+      if (RANDOM() < residual_immunity_prob) {
+        become_immune(dis);
+      }
     }
   }
 }
 
-void Person::print(FILE *fp, int disease) const {
+void Person::print(FILE *fp, int disease) {
   if (fp == NULL) return;
   fprintf(fp, "%d id %7d  a %3d  s %c %d ",
           disease, id,
-          demographics->get_age(),
-          demographics->get_sex(),
-          demographics->get_profession());
+          demographics.get_age(),
+          demographics.get_sex(),
+          demographics.get_profession());
   fprintf(fp, "exp: %2d  inf: %2d  rem: %2d ",
-          health->get_exposure_date(disease),
-	  health->get_infectious_date(disease),
-	  health->get_recovered_date(disease));
-  fprintf(fp, "sympt: %d ", health->get_symptomatic_date(disease));
+          health.get_exposure_date(disease),
+    health.get_infectious_date(disease),
+    health.get_recovered_date(disease));
+  fprintf(fp, "sympt: %d ", health.get_symptomatic_date(disease));
 
   fprintf(fp, "places %d ", FAVORITE_PLACES);
   fprintf(fp, "infected_at %c %6d ",
-          health->get_infected_place_type(disease),
-	  health->get_infected_place(disease));
-  Person * infector = health->get_infector(disease);
+          health.get_infected_place_type(disease),
+    health.get_infected_place(disease));
+  Person * infector = health.get_infector(disease);
   int infector_id;
   if (infector == NULL) 
     infector_id = -1;
   else 
     infector_id = infector->get_id();
   fprintf(fp, "infector %d ", infector_id);
-  fprintf(fp, "infectees %d ", health->get_infectees(disease));
-  fprintf(fp, "antivirals: %2d ",health->get_number_av_taken());
-  for(int i=0;i<health->get_number_av_taken();i++)
-    fprintf(fp," %2d",health->get_av_health(i)->get_av_start_day());
+  fprintf(fp, "infectees %d ", health.get_infectees(disease));
+  fprintf(fp, "antivirals: %2d ",health.get_number_av_taken());
+  for(int i=0;i<health.get_number_av_taken();i++)
+    fprintf(fp," %2d",health.get_av_health(i)->get_av_start_day());
   fprintf(fp,"\n");
   fflush(fp);
 }
 
 void Person::become_immune(Disease* disease) {
   int disease_id = disease->get_id();
-  if(health->is_susceptible(disease_id)){
-    health->become_immune(disease);
+  if(health.is_susceptible(disease_id)){
+    health.become_immune(disease);
   }
 }
 
@@ -113,7 +107,7 @@ void Person::set_changed(){
 }
 
 void Person::infect(Person *infectee, int disease, Transmission *transmission) {
-  this->health->infect(infectee, disease, transmission);
+  health.infect( infectee, disease, transmission );
 }
 
 Person * Person::give_birth(int day) {
@@ -125,17 +119,17 @@ Person * Person::give_birth(int day) {
   Place * school = NULL;
   Place * work = NULL;
   bool today_is_birthday = true;
-  Person * baby = new Person(id, age, sex, married, rel, prof,
-			     house, school, work, day, today_is_birthday);
+  Person * baby = Global::Pop.add_person( id, age, sex, married, rel, prof,
+           house, school, work, day, today_is_birthday );
   return baby;
 }
 
 void Person::addIncidence(int disease, vector<int> strains) {
-  activities->addIncidence(disease, strains);
+  activities.addIncidence(disease, strains);
 }
 
 void Person::addPrevalence(int disease, vector<int> strains) {
-  activities->addPrevalence(disease, strains);
+  activities.addPrevalence(disease, strains);
 }
 
 string Person::to_string() {
@@ -181,9 +175,9 @@ string Person::to_string() {
 
 void Person::terminate() {
   Utils::fred_verbose(1, "terminating person %d\n", id);
-  behavior->terminate();
-  activities->terminate();
-  health->terminate();
-  demographics->terminate();
+  behavior.terminate();
+  activities.terminate();
+  health.terminate();
+  demographics.terminate();
 }
 

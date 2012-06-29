@@ -28,8 +28,8 @@ double *** Household::Household_contact_prob;
 //Private static variable to assure we only lookup parameters once
 bool Household::Household_parameters_set = false;
 
-Household::Household(int loc, const  char *lab, double lon,
-		     double lat, Place *container, Population* pop) {
+Household::Household(int loc, const  char *lab, fred::geo lon,
+         fred::geo lat, Place *container, Population* pop) {
   type = HOUSEHOLD;
   setup(loc, lab, lon, lat, container, pop);
   get_parameters(Global::Diseases);
@@ -106,7 +106,7 @@ void Household::unenroll(Person * per) {
   int age = per->get_age();
   if (Global::Verbose>1) {
     printf("Removing person %d age %d from household %d\n",
-	   per->get_id(), age, get_id()); fflush(stdout);
+     per->get_id(), age, get_id()); fflush(stdout);
     for (int i = 0; i < N; i++)
       printf("%d ", housemate[i]->get_id()); 
     printf("\n"); fflush(stdout);
@@ -115,14 +115,14 @@ void Household::unenroll(Person * per) {
 
   // erase from housemates
   vector <Person *>::iterator it;
-  for (it = housemate.begin(); *it != per; it++);
+  for (it = housemate.begin(); *it != per && it != housemate.end(); it++);
   if (*it == per) {
     housemate.erase(it);
     N--;
     if (Global::Verbose>1) {
       printf("Removed person %d from household %d\n", per->get_id(), get_id());
       for (int i = 0; i < N; i++)
-	printf("%d ", housemate[i]->get_id()); 
+  printf("%d ", housemate[i]->get_id()); 
       printf("\n\n"); fflush(stdout);
     }
     if (N == 0) { 
@@ -132,13 +132,14 @@ void Household::unenroll(Person * per) {
   }
   else {
     printf("Removing person %d age %d from household %d\n",
-	   per->get_id(), age, get_id()); fflush(stdout);
+     per->get_id(), age, get_id()); fflush(stdout);
     printf("Household::unenroll -- Help! unenrolled person not found in housemate list\n");
     for (int i = 0; i < N; i++)
       printf("%d ", housemate[i]->get_id()); 
     printf("\n"); fflush(stdout);
     Utils::fred_abort("");
   }
+
   // unenroll from cell as well
   if(Global::Enable_Large_Grid) {
     Large_Cell *large_cell = Global::Large_Cells->get_grid_cell_from_lat_lon(latitude, longitude);
@@ -164,7 +165,7 @@ void Household::spread_infection(int day, int disease_id) {
 
   if (Global::Verbose > 1) {
     fprintf(Global::Statusfp,"spread_infection: Disease %d day %d place %d type %c\n",
-	    disease_id, day, id, type);
+      disease_id, day, id, type);
     fflush(Global::Statusfp);
   }
 
@@ -176,16 +177,16 @@ void Household::spread_infection(int day, int disease_id) {
 
   for (itr = infectious[disease_id].begin(); itr != infectious[disease_id].end(); itr++) {
     
-    Person * infector = *itr;			// infectious indiv
+    Person * infector = *itr;      // infectious indiv
     assert(infector->get_health()->is_infectious(disease_id));
 
     for (int pos = 0; pos < S[disease_id]; pos++) {
       Person * infectee = susceptibles[disease_id][pos];
 
       if (Global::Verbose > 1) {
-	fprintf(Global::Statusfp,"possible infectee = %d  pos = %d  S[%d] = %d\n",
-		infectee->get_id(), pos, disease_id, S[disease_id]);
-	fflush(Global::Statusfp);
+  fprintf(Global::Statusfp,"possible infectee = %d  pos = %d  S[%d] = %d\n",
+    infectee->get_id(), pos, disease_id, S[disease_id]);
+  fflush(Global::Statusfp);
       }
 
       // is the target still susceptible?
@@ -194,19 +195,19 @@ void Household::spread_infection(int day, int disease_id) {
         // get the transmission probs for this infector/infectee pair
         double transmission_prob = get_transmission_prob(disease_id, infector, infectee);
 
-	if (Global::Verbose > 1) {
-	  fprintf(Global::Statusfp,"infectee is susceptible\n");
-	  fprintf(Global::Statusfp,"trans_prob = %f\n", transmission_prob);
-	  fflush(Global::Statusfp);
-	}
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp,"infectee is susceptible\n");
+    fprintf(Global::Statusfp,"trans_prob = %f\n", transmission_prob);
+    fflush(Global::Statusfp);
+  }
 
-	double infectivity = infector->get_infectivity(disease_id,day);
+  double infectivity = infector->get_infectivity(disease_id,day);
 
         // scale transmission prob by infectivity and contact prob
         transmission_prob *= infectivity * contact_prob;     
 
         attempt_transmission(transmission_prob, infector, infectee, disease_id, day);
-	
+  
       } // end of susceptible infectee
     } // end contact loop
   } // end infectious list loop

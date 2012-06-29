@@ -16,7 +16,7 @@ class ODEIntraHost : public IntraHost {
     // TODO set all initial values
 
   public:
-    Trajectory *getTrajectory(Infection *infection, map<int, double> *loads);
+    Trajectory *get_trajectory(Infection *infection, map<int, double> *loads);
     void setup(Disease *disease);
     int get_days_symp() {
       return 1;  // TODO
@@ -25,7 +25,7 @@ class ODEIntraHost : public IntraHost {
   private:
     double get_inoculum_particles (double infector_particles);
     vector<double> getInfectivities(double *viralTiter, int duration);
-    vector<double> getSymptomaticity(double *interferon, int duration);
+    vector<double> get_symptomaticity(double *interferon, int duration);
 
     static const int MAX_LENGTH = 10;
 

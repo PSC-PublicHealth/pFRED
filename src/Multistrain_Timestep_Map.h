@@ -128,8 +128,8 @@ public:
       return ( radius < 40075 && radius >= 0 );
     }
 
-    double get_lon() { return lon; }
-    double get_lat() { return lat; }
+    fred::geo get_lon() { return lon; }
+    fred::geo get_lat() { return lat; }
     double get_radius() { return radius; }
 
     void print() {
@@ -139,7 +139,8 @@ public:
   private:
 
     int simDayStart, simDayEnd, strain, numSeedingAttempts, minNumSuccessful;
-    double seedingAttemptProb, lat, lon, radius;
+    fred::geo lat, lon;
+    double seedingAttemptProb, radius;
     
     bool is_complete;
 

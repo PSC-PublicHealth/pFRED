@@ -60,6 +60,13 @@ double Large_Cell::distance_to_grid_cell(Large_Cell *p2) {
 Person *Large_Cell::select_random_person() {
   if ((int)person.size() == 0) return NULL;
   int i = IRAND(0, ((int) person.size())-1);
+
+  //if (Global::Verbose > 2) {
+    //fprintf(Global::Statusfp, "ABC%d,%d\n", i, person[i]->get_id());
+    //fflush(Global::Statusfp);
+    //fprintf(stderr, "ABC%d,%d\n", i, person[i]->get_id());
+    //fflush(stderr);
+  //}
   return person[i];
 }
 
@@ -88,5 +95,4 @@ void Large_Cell::unenroll(Person *per) {
     person.erase(it);
   }
 }
-
 

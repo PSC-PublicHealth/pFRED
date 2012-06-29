@@ -49,3 +49,6 @@ vaccine_dose_efficacy_values[0][2] = 2 1.0 1.0
 vaccine_dose_efficacy_delay_ages[0][2] = 2 0 100
 vaccine_dose_efficacy_delay_values[0][2] = 1 7
 
+# these are the strain ids that the vaccine will
+# protect against
+vaccine_strains[0] = 0

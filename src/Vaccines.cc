@@ -42,9 +42,14 @@ void Vaccines::setup(void) {
     Params::get_indexed_param("vaccine_additional_per_day",iv,&apd);
     Params::get_indexed_param("vaccine_starting_day",iv,&std);
 
+    int nstrains;
+    Params::get_indexed_param((char *)"vaccine_strains", iv, &nstrains);
+    int *strains = new int[nstrains];
+    Params::get_indexed_param_vector<int>("vaccine_strains", iv, strains);
+
     stringstream name;
     name << "Vaccine#"<<iv+1;
-    vaccines.push_back(new Vaccine(name.str(),iv,0,ta,apd,std));
+    vaccines.push_back(new Vaccine(name.str(),iv,0,ta,apd,std,nstrains,strains));
     
     for(int id=0;id<num_doses;id++) {
       Age_Map* efficacy_map = new Age_Map("Dose Efficacy");
@@ -55,7 +60,7 @@ void Vaccines::setup(void) {
       vaccines[iv]->add_dose(new Vaccine_Dose(efficacy_map,efficacy_delay_map,tbd));
     }
   }
-}	
+}  
 
 void Vaccines::print() const {
   cout <<"Vaccine Package Information\n";

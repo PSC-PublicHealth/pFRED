@@ -40,9 +40,9 @@ private:
   int days_between_doses;       // Number of days until the next dose is administered
   Age_Map* efficacy;            // Age specific efficacy of vaccine, does the dose provide immunity
   Age_Map* efficacy_delay;      // Age specific delay to efficacy, how long does it take to develop immunity
-	
+  
 protected:
-	Vaccine_Dose() { }
+  Vaccine_Dose() { }
 };
 
 #endif

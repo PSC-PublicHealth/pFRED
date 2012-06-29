@@ -64,8 +64,8 @@ public:
   /**
    * @return a pointer to the AV
    */
-  virtual Antiviral * get_antiviral()		const { return AV; }
-	
+  virtual Antiviral * get_antiviral()    const { return AV; }
+  
   /**
    * @param day the simulation day to check for
    * @return <code>true</code> if day is between the start and end days, <code>false</code> otherwise

@@ -27,7 +27,7 @@ using namespace std;
 #include "Population.h"
 #include "Date.h"
 
-Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxlat) {
+Large_Grid::Large_Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fred::geo maxlat) {
   min_lon  = minlon;
   min_lat  = minlat;
   max_lon  = maxlon;
@@ -77,15 +77,18 @@ Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxla
   max_lat = max_y / Geo_Utils::km_per_deg_latitude - 90.0;
   max_lon = max_x / Geo_Utils::km_per_deg_longitude - 180.0;
 
+    // Added by Anuroop
+    //fprintf(Global::Statusfp, "Large_Grid global_col_min = %d  global_row_min = %d\n",
+    //  global_col_min, global_row_min);
   if (Global::Verbose > 0) {
     fprintf(Global::Statusfp, "Large_Grid new min_lon = %f\n", min_lon);
     fprintf(Global::Statusfp, "Large_Grid new min_lat = %f\n", min_lat);
     fprintf(Global::Statusfp, "Large_Grid new max_lon = %f\n", max_lon);
     fprintf(Global::Statusfp, "Large_Grid new max_lat = %f\n", max_lat);
     fprintf(Global::Statusfp, "Large_Grid global_col_min = %d  global_row_min = %d\n",
-	    global_col_min, global_row_min);
+      global_col_min, global_row_min);
     fprintf(Global::Statusfp, "Large_Grid global_col_max = %d  global_row_max = %d\n",
-	    global_col_max, global_row_max);
+      global_col_max, global_row_max);
     fprintf(Global::Statusfp, "Large_Grid rows = %d  cols = %d\n",rows,cols);
     fprintf(Global::Statusfp, "Large_Grid min_x = %f  min_y = %f\n",min_x,min_y);
     fprintf(Global::Statusfp, "Large_Grid max_x = %f  max_y = %f\n",max_x,max_y);
@@ -97,10 +100,10 @@ Large_Grid::Large_Grid(double minlon, double minlat, double maxlon, double maxla
     grid[i] = new Large_Cell[cols];
     for (int j = 0; j < cols; j++) {
       grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
-		       i*grid_cell_size,(i+1)*grid_cell_size);
+           i*grid_cell_size,(i+1)*grid_cell_size);
       if (Global::Verbose > 2) {
-	printf("print grid[%d][%d]:\n",i,j);
-	grid[i][j].print();
+  printf("print grid[%d][%d]:\n",i,j);
+  grid[i][j].print();
       }
     }
   }
@@ -151,7 +154,7 @@ Large_Cell * Large_Grid::get_grid_cell_from_cartesian(double x, double y) {
 }
 
 
-Large_Cell * Large_Grid::get_grid_cell_from_lat_lon(double lat, double lon) {
+Large_Cell * Large_Grid::get_grid_cell_from_lat_lon(fred::geo lat, fred::geo lon) {
   double x, y;
   Geo_Utils::translate_to_cartesian(lat,lon,&x,&y,min_lat,min_lon);
   return get_grid_cell_from_cartesian(x,y);
@@ -176,17 +179,17 @@ void Large_Grid::quality_control(char * directory) {
     FILE *fp = fopen(filename, "w");
     for (int row = 0; row < rows; row++) {
       if (row%2) {
-	for (int col = cols-1; col >= 0; col--) {
-	  double x = min_x + grid[row][col].get_center_x();
-	  double y = min_y + grid[row][col].get_center_y();
-	  fprintf(fp, "%f %f\n",x,y);
-	}
+  for (int col = cols-1; col >= 0; col--) {
+    double x = min_x + grid[row][col].get_center_x();
+    double y = min_y + grid[row][col].get_center_y();
+    fprintf(fp, "%f %f\n",x,y);
+  }
       }
       else {
-	for (int col = 0; col < cols; col++) {
-	  double x = min_x + grid[row][col].get_center_x();
-	  double y = min_y + grid[row][col].get_center_y();
-	  fprintf(fp, "%f %f\n",x,y);
+  for (int col = 0; col < cols; col++) {
+    double x = min_x + grid[row][col].get_center_x();
+    double y = min_y + grid[row][col].get_center_y();
+    fprintf(fp, "%f %f\n",x,y);
       }
       }
     }
@@ -205,11 +208,11 @@ void Large_Grid::quality_control(char * directory) {
 void Large_Grid::set_population_size() {
   int pop_size = Global::Pop.get_pop_size();
   for (int p = 0; p < pop_size; p++) {
-    Person *per = Global::Pop.get_person(p);
+    Person *per = Global::Pop.get_person_by_index(p);
     Place * h = per->get_household();
     assert (h != NULL);
-    double lat = h->get_latitude();
-    double lon = h->get_longitude();
+    fred::geo lat = h->get_latitude();
+    fred::geo lon = h->get_longitude();
     Large_Cell * cell = get_grid_cell_from_lat_lon(lat, lon);
     cell->add_person(per);
   }
@@ -221,7 +224,7 @@ void Large_Grid::set_population_size() {
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       Large_Cell * cell = get_grid_cell(i,j);
-      double lon, lat;
+      fred::geo lon, lat;
       double x = cell->get_center_x();
       double y = cell->get_center_y();
       Geo_Utils::translate_to_lat_lon(x,y,&lat,&lon,min_lat,min_lon);
@@ -233,11 +236,11 @@ void Large_Grid::set_population_size() {
   fclose(fp);
 }
 
-void Large_Grid::translate_to_lat_lon(double x, double y, double *lat, double *lon) {
+void Large_Grid::translate_to_lat_lon(double x, double y, fred::geo *lat, fred::geo *lon) {
   Geo_Utils::translate_to_lat_lon(x,y,lat,lon,min_lat,min_lon);
 }
 
-void Large_Grid::translate_to_cartesian(double lat, double lon, double *x, double *y) {
+void Large_Grid::translate_to_cartesian(fred::geo lat, fred::geo lon, double *x, double *y) {
   Geo_Utils::translate_to_cartesian(lat,lon,x,y,min_lat,min_lon);
 }
 
@@ -254,7 +257,7 @@ void Large_Grid::read_max_popsize() {
     while (fscanf(fp, "%d %d %d ", &c,&r,&n) == 3) {
       Large_Cell * cell = get_grid_cell_with_global_coords(r,c);
       if (cell != NULL) {
-	cell->set_max_popsize(n);
+  cell->set_max_popsize(n);
       }
     }
     fclose(fp);

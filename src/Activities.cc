@@ -1,8 +1,8 @@
 /*
-  Copyright 2009 by the University of Pittsburgh
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+   Copyright 2009 by the University of Pittsburgh
+   Licensed under the Academic Free License version 3.0
+   See the file "LICENSE" for more information
+   */
 
 //
 //
@@ -83,7 +83,7 @@ Activities::Activities (Person *person, Place *house, Place *school, Place *work
     favorite_place[HOUSEHOLD_INDEX]->get_grid_cell()->get_neighborhood();
   if (get_neighborhood() == NULL) {
     printf("Help! NO NEIGHBORHOOD for person %d house %d \n",
-           self->get_id(), get_household()->get_id());
+        self->get_id(), get_household()->get_id());
   }
   assert(get_neighborhood() != NULL);
   assign_profile();
@@ -142,30 +142,30 @@ void Activities::initialize_sick_leave() {
     if (workplace_size <= SMALL_COMPANY_MAXSIZE) {
       sick_leave_available = (RANDOM() < 0.53);
       if (sick_leave_available)
-	employees_small_with_sick_leave++;
+        employees_small_with_sick_leave++;
       else
-	employees_small_without_sick_leave++;
+        employees_small_without_sick_leave++;
     }
     else if (workplace_size <= MID_COMPANY_MAXSIZE) {
       sick_leave_available = (RANDOM() < 0.58);
       if (sick_leave_available)
-	employees_med_with_sick_leave++;
+        employees_med_with_sick_leave++;
       else
-	employees_med_without_sick_leave++;
+        employees_med_without_sick_leave++;
     }
     else if (workplace_size <= MEDIUM_COMPANY_MAXSIZE) {
       sick_leave_available = (RANDOM() < 0.70);
       if (sick_leave_available)
-	employees_large_with_sick_leave++;
+        employees_large_with_sick_leave++;
       else
-	employees_large_without_sick_leave++;
+        employees_large_without_sick_leave++;
     }
     else {
       sick_leave_available = (RANDOM() < 0.85);
       if (sick_leave_available)
-	employees_xlarge_with_sick_leave++;
+        employees_xlarge_with_sick_leave++;
       else
-	employees_xlarge_without_sick_leave++;
+        employees_xlarge_without_sick_leave++;
     }
   }
   else
@@ -183,7 +183,7 @@ void Activities::initialize_sick_leave() {
       sick_days_remaining = Activities::SLU_mean_sick_days_absent + Activities::Flu_days;
     }
     else if (RANDOM() < Activities::SLA_absent_prob - Activities::SLU_absent_prob) {
-	sick_days_remaining = Activities::Flu_days;
+      sick_days_remaining = Activities::Flu_days;
     }
   }
 }
@@ -191,21 +191,21 @@ void Activities::initialize_sick_leave() {
 void Activities::before_run() {
   if (Global::Verbose > 1) {
     fprintf(Global::Statusfp,"employees at small workplaces with sick leave: %d\n",
-	    employees_small_with_sick_leave);
+        employees_small_with_sick_leave);
     fprintf(Global::Statusfp,"employees at small workplaces without sick leave: %d\n",
-	    employees_small_without_sick_leave);
+        employees_small_without_sick_leave);
     fprintf(Global::Statusfp,"employees at med workplaces with sick leave: %d\n",
-	    employees_med_with_sick_leave);
+        employees_med_with_sick_leave);
     fprintf(Global::Statusfp,"employees at med workplaces without sick leave: %d\n",
-	    employees_med_without_sick_leave);
+        employees_med_without_sick_leave);
     fprintf(Global::Statusfp,"employees at large workplaces with sick leave: %d\n",
-	    employees_large_with_sick_leave);
+        employees_large_with_sick_leave);
     fprintf(Global::Statusfp,"employees at large workplaces without sick leave: %d\n",
-	    employees_large_without_sick_leave);
+        employees_large_without_sick_leave);
     fprintf(Global::Statusfp,"employees at xlarge workplaces with sick leave: %d\n",
-	    employees_xlarge_with_sick_leave);
+        employees_xlarge_with_sick_leave);
     fprintf(Global::Statusfp,"employees at xlareg workplaces without sick leave: %d\n",
-	    employees_xlarge_without_sick_leave);
+        employees_xlarge_without_sick_leave);
     fflush(Global::Statusfp);
   }
 }
@@ -232,7 +232,7 @@ void Activities::assign_profile() {
 
   // unemployed
   if ((profile == WORKER_PROFILE ||
-       profile == WEEKEND_WORKER_PROFILE) && RANDOM() < 0.1) {
+        profile == WEEKEND_WORKER_PROFILE) && RANDOM() < 0.1) {
     profile = UNEMPLOYED_PROFILE;   // 10% unemployed
   }
 }
@@ -246,12 +246,12 @@ void Activities::update(int day) {
   // print out absenteeism/presenteeism counts
   if (Global::Verbose > 0 && day > 0) {
     printf("DAY %d ABSENTEEISM: work absent %d present %d %0.2f  school absent %d present %d %0.2f\n", day-1,
-	   Activities::Sick_days_absent,
-	   Activities::Sick_days_present,
-	   (double) (Activities::Sick_days_absent) /(double)(1+Activities::Sick_days_absent+Activities::Sick_days_present),
-	   Activities::School_sick_days_absent,
-	   Activities::School_sick_days_present,
-	   (double) (Activities::School_sick_days_absent) /(double)(1+Activities::School_sick_days_absent+Activities::School_sick_days_present));
+        Activities::Sick_days_absent,
+        Activities::Sick_days_present,
+        (double) (Activities::Sick_days_absent) /(double)(1+Activities::Sick_days_absent+Activities::Sick_days_present),
+        Activities::School_sick_days_absent,
+        Activities::School_sick_days_present,
+        (double) (Activities::School_sick_days_absent) /(double)(1+Activities::School_sick_days_absent+Activities::School_sick_days_present));
   }
 
   // keep track of global activity counts
@@ -291,7 +291,7 @@ void Activities::update_susceptible_activities(int day, int dis) {
     if (on_schedule[i]) {
       assert(favorite_place[i] != NULL);
       if (favorite_place[i]->is_infectious(dis)) {
-	favorite_place[i]->add_susceptible(dis, self);
+        favorite_place[i]->add_susceptible(dis, self);
       }
     }
   }
@@ -328,9 +328,9 @@ void Activities::update_schedule(int day) {
   else {
     if (profile == WEEKEND_WORKER_PROFILE || profile == STUDENT_PROFILE) {
       if (favorite_place[WORKPLACE_INDEX] != NULL)
-	on_schedule[WORKPLACE_INDEX] = true;
+        on_schedule[WORKPLACE_INDEX] = true;
       if (favorite_place[OFFICE_INDEX] != NULL)
-	on_schedule[OFFICE_INDEX] = true;
+        on_schedule[OFFICE_INDEX] = true;
     }
   }
 
@@ -346,7 +346,7 @@ void Activities::update_schedule(int day) {
   if (Global::School_absenteeism > 0.0 && on_schedule[SCHOOL_INDEX]) {
     if (RANDOM() < Global::School_absenteeism)
       on_schedule[SCHOOL_INDEX] = false;
-      on_schedule[CLASSROOM_INDEX] = false;
+    on_schedule[CLASSROOM_INDEX] = false;
   }
 
   // decide whether to stay home if symptomatic
@@ -358,8 +358,8 @@ void Activities::update_schedule(int day) {
   if (on_schedule[NEIGHBORHOOD_INDEX]) {
     favorite_place[NEIGHBORHOOD_INDEX] =
       favorite_place[HOUSEHOLD_INDEX]->select_neighborhood(Activities::Community_prob,
-							   Activities::Community_distance,
-							   Activities::Home_neighborhood_prob);
+          Activities::Community_distance,
+          Activities::Home_neighborhood_prob);
   }
 
   if (Global::Verbose > 1) {
@@ -372,25 +372,25 @@ void Activities::update_schedule(int day) {
 void Activities::decide_whether_to_stay_home(int day) {
   assert (self->is_symptomatic());
   bool stay_home = false;
-  
+
   if (self->is_adult()) {
     if (Activities::Enable_default_sick_behavior) {
       stay_home = default_sick_leave_behavior();
     }
     else {
       if (on_schedule[WORKPLACE_INDEX]) {
-	// it is a work day
-	if (sick_days_remaining > 0.0) {
-	  stay_home = (RANDOM() < sick_days_remaining);
-	  sick_days_remaining--;
-	}
-	else {
-	  stay_home = false;
-	}
+        // it is a work day
+        if (sick_days_remaining > 0.0) {
+          stay_home = (RANDOM() < sick_days_remaining);
+          sick_days_remaining--;
+        }
+        else {
+          stay_home = false;
+        }
       }
       else {
-	// it is a not work day
-	stay_home = (RANDOM() < Activities::Default_sick_day_prob);
+        // it is a not work day
+        stay_home = (RANDOM() < Activities::Default_sick_day_prob);
       }
     }
   }
@@ -410,7 +410,7 @@ void Activities::decide_whether_to_stay_home(int day) {
       my_sick_days_present++;
     }
   }
-  
+
   // record school absent/present decision if it is a school day
   if (on_schedule[SCHOOL_INDEX]) {
     if (stay_home) {
@@ -487,19 +487,74 @@ void Activities::assign_school() {
     assign_classroom();
     return;
   }
-  int trials = 0;
-  while (trials < 100) {
-    grid_cell = (Cell *) Global::Cells->select_random_grid_cell();
-    p = grid_cell->select_random_school(age);
-    if (p != NULL) {
-      favorite_place[SCHOOL_INDEX] = p;
-      favorite_place[CLASSROOM_INDEX] = NULL;
-      assign_classroom();
-      return;
-    }
-    trials++;
+  else {
+    favorite_place[SCHOOL_INDEX] = NULL;
+    favorite_place[CLASSROOM_INDEX] = NULL;
+    return;
   }
+
+  int src_pop = grid_cell->get_target_popsize();
+  int row = grid_cell->get_row();
+  int col = grid_cell->get_col();
+  int level = 1;
+  vector<Cell *> nbrs;
+  while(level < 100) {
+    nbrs.clear();
+    for(int j=-level; j<level; j++)
+      nbrs.push_back( Global::Cells->get_grid_cell(row-level, col+j) );
+    for(int j=-level; j<level; j++)
+      nbrs.push_back( Global::Cells->get_grid_cell(row+j, col+level) );
+    for(int j=-level; j<level; j++)
+      nbrs.push_back( Global::Cells->get_grid_cell(row+level, col+j) );
+    for(int j=-level; j<level; j++)
+      nbrs.push_back( Global::Cells->get_grid_cell(row+j, col-level) );
+
+    int target_pop = 0;
+    for(unsigned int i=0; i<nbrs.size(); i++) {
+      target_pop += nbrs.at(i)->get_target_popsize();
+    }
+    // Radiation model (Simini et al, 2011)
+    // Approximated to concentric squares instead of concentric circles
+    double prob = 1.0 / (1.0 + ((double) target_pop) / src_pop);
+    double prob_per_person = prob / target_pop;
+
+    int attempts = 0;
+    for(unsigned int i=0; i<nbrs.size(); i++) {
+      Cell *nbr = nbrs.at(i);
+      if(nbr == NULL) continue;
+      else attempts++;
+      double r = RANDOM();
+      r = 0;
+      if(r < prob_per_person * nbr->get_target_popsize()) {
+        p = nbr->select_random_school(age);
+        if(p != NULL) {
+          favorite_place[SCHOOL_INDEX] = p;
+          favorite_place[CLASSROOM_INDEX] = NULL;
+          assign_classroom();
+          return;
+        }
+      }
+    }
+    if(attempts == 0) break;
+    level++;
+  }
+
+  /*
+     int trials = 0;
+     while (trials < 100) {
+     grid_cell = (Cell *) Global::Cells->select_random_grid_cell();
+     p = grid_cell->select_random_school(age);
+     if (p != NULL) {
+     favorite_place[SCHOOL_INDEX] = p;
+     favorite_place[CLASSROOM_INDEX] = NULL;
+     assign_classroom();
+
+     return;
+     }
+     trials++;
+     }*/
   Utils::fred_abort("assign_school: can't locate school for person %d\n", self->get_id());
+  //FRED_WARNING("assign_school: can't locate school for person %d\n", self->get_id());
 }
 
 void Activities::assign_classroom() {
@@ -524,19 +579,74 @@ void Activities::assign_workplace() {
     assign_office();
     return;
   }
-  int trials = 0;
-  while (trials < 100) {
-    grid_cell = (Cell *) Global::Cells->select_random_grid_cell();
-    p = grid_cell->select_random_workplace();
-    if (p != NULL) {
-      favorite_place[WORKPLACE_INDEX] = p;
-      favorite_place[OFFICE_INDEX] = NULL;
-      assign_office();
-      return;
-    }
-    trials++;
+  else {
+    favorite_place[WORKPLACE_INDEX] = NULL;
+    favorite_place[OFFICE_INDEX] = NULL;
+    return;
   }
-  Utils::fred_abort("assign_workplace: can't locate workplace for person %d\n", self->get_id());
+
+
+  int src_pop = grid_cell->get_target_popsize();
+  int row = grid_cell->get_row();
+  int col = grid_cell->get_col();
+  int level = 1;
+  vector<Cell *> nbrs;
+  while(level < 100) {
+    nbrs.clear();
+    for(int j=-level; j<level; j++)
+      nbrs.push_back( Global::Cells->get_grid_cell(row-level, col+j) );
+    for(int j=-level; j<level; j++)
+      nbrs.push_back( Global::Cells->get_grid_cell(row+j, col+level) );
+    for(int j=-level; j<level; j++)
+      nbrs.push_back( Global::Cells->get_grid_cell(row+level, col+j) );
+    for(int j=-level; j<level; j++)
+      nbrs.push_back( Global::Cells->get_grid_cell(row+j, col-level) );
+
+    int target_pop = 0;
+    for(unsigned int i=0; i<nbrs.size(); i++) {
+      target_pop += nbrs.at(i)->get_target_popsize();
+    }
+    // Radiation model (Simini et al, 2011)
+    // Approximated to concentric squares instead of concentric circles
+    double prob = 1.0 / (1.0 + ((double) target_pop) / src_pop);
+    double prob_per_person = prob / target_pop;
+
+    int attempts = 0;
+    for(unsigned int i=0; i<nbrs.size(); i++) {
+      Cell *nbr = nbrs.at(i);
+      if(nbr == NULL) continue;
+      else attempts++;
+      double r = RANDOM();
+      r = 0;
+      if(r < prob_per_person * nbr->get_target_popsize()) {
+        p = nbr->select_random_workplace();
+        if(p != NULL) {
+          favorite_place[WORKPLACE_INDEX] = p;
+          favorite_place[OFFICE_INDEX] = NULL;
+          assign_office();
+          return;
+        }
+      }
+    }
+    if(attempts == 0) break;
+    level++;
+  }
+
+  /*
+     int trials = 0;
+     while (trials < 100) {
+     grid_cell = (Cell *) Global::Cells->select_random_grid_cell();
+     p = grid_cell->select_random_workplace();
+     if (p != NULL) {
+     favorite_place[WORKPLACE_INDEX] = p;
+     favorite_place[OFFICE_INDEX] = NULL;
+     assign_office();
+     return;
+     }
+     trials++;
+     }*/
+  //Utils::fred_abort("assign_workplace: can't locate workplace for person %d\n", self->get_id());
+  FRED_WARNING("assign_workplace: can't locate workplace for person %d\n", self->get_id());
 }
 
 void Activities::assign_office() {
@@ -548,8 +658,8 @@ void Activities::assign_office() {
     if (place != NULL) place->enroll(self);
     else { 
       if (Global::Verbose > 0) {
-	printf("Warning! No office assigned for person %d workplace %d\n",
-	       self->get_id(), favorite_place[WORKPLACE_INDEX]->get_id());
+        printf("Warning! No office assigned for person %d workplace %d\n",
+            self->get_id(), favorite_place[WORKPLACE_INDEX]->get_id());
       }
     }
     favorite_place[OFFICE_INDEX] = place;
@@ -586,8 +696,8 @@ void Activities::update_profile() {
     assign_school();
     if (Global::Verbose>1) {
       fprintf(Global::Statusfp,
-	      "changed behavior profile to STUDENT: id %d age %d sex %c\n",
-	      self->get_id(), age, self->get_sex());
+          "changed behavior profile to STUDENT: id %d age %d sex %c\n",
+          self->get_id(), age, self->get_sex());
       print();
       fflush(Global::Statusfp);
     }
@@ -601,13 +711,13 @@ void Activities::update_profile() {
     if (c == NULL || c->get_age_level() == age) {
       // no change
       if (Global::Verbose>1) {
-	fprintf(Global::Statusfp,
-		"KEPT CLASSROOM ASSIGNMENT: id %d age %d sex %c ",
-		self->get_id(), age, self->get_sex());
-	fprintf(Global::Statusfp, "%s %s | ",
-		s->get_label(), c->get_label());
-	print();
-	fflush(Global::Statusfp);
+        fprintf(Global::Statusfp,
+            "KEPT CLASSROOM ASSIGNMENT: id %d age %d sex %c ",
+            self->get_id(), age, self->get_sex());
+        fprintf(Global::Statusfp, "%s %s | ",
+            s->get_label(), c->get_label());
+        print();
+        fflush(Global::Statusfp);
       }
       return;
     } else if (s != NULL && s->classrooms_for_age(age) > 0) {
@@ -615,42 +725,42 @@ void Activities::update_profile() {
       favorite_place[CLASSROOM_INDEX] = NULL;
       assign_classroom();
       if (Global::Verbose>1) {
-	fprintf(Global::Statusfp,
-		"CHANGED CLASSROOM ASSIGNMENT: id %d age %d sex %c ",
-		self->get_id(), age, self->get_sex());
-	if (s != NULL && c != NULL) {
-	  fprintf(Global::Statusfp, "from %s %s to %s %s | ",
-		  s->get_label(), c->get_label(),
-		  favorite_place[SCHOOL_INDEX]->get_label(),
-		  favorite_place[CLASSROOM_INDEX]->get_label());
-	} else {
-	  fprintf(Global::Statusfp, "from NULL NULL to %s %s | ",
-		  favorite_place[SCHOOL_INDEX]->get_label(),
-		  favorite_place[CLASSROOM_INDEX]->get_label());
-	}
-	print();
-	fflush(Global::Statusfp);
+        fprintf(Global::Statusfp,
+            "CHANGED CLASSROOM ASSIGNMENT: id %d age %d sex %c ",
+            self->get_id(), age, self->get_sex());
+        if (s != NULL && c != NULL) {
+          fprintf(Global::Statusfp, "from %s %s to %s %s | ",
+              s->get_label(), c->get_label(),
+              favorite_place[SCHOOL_INDEX]->get_label(),
+              favorite_place[CLASSROOM_INDEX]->get_label());
+        } else {
+          fprintf(Global::Statusfp, "from NULL NULL to %s %s | ",
+              favorite_place[SCHOOL_INDEX]->get_label(),
+              favorite_place[CLASSROOM_INDEX]->get_label());
+        }
+        print();
+        fflush(Global::Statusfp);
       }
     } else {
       // pick a new school and classroom
       assign_school();
       if (Global::Verbose>1) {
-	fprintf(Global::Statusfp,
-		"CHANGED SCHOOL ASSIGNMENT: id %d age %d sex %c ",
-		self->get_id(), age, self->get_sex());
-	if (s != NULL && c != NULL) {
-	  fprintf(Global::Statusfp, "from %s %s to %s %s | ",
-		  s->get_label(), c->get_label(),
-		  favorite_place[SCHOOL_INDEX]->get_label(),
-		  favorite_place[CLASSROOM_INDEX]->get_label());
-	} else {
-	  fprintf(Global::Statusfp, "from NULL NULL to %s %s | ",
-		  favorite_place[SCHOOL_INDEX]->get_label(),
-		  (favorite_place[CLASSROOM_INDEX] == NULL)?
-		  "NULL" : favorite_place[CLASSROOM_INDEX]->get_label());
-	}
-	print();
-	fflush(Global::Statusfp);
+        fprintf(Global::Statusfp,
+            "CHANGED SCHOOL ASSIGNMENT: id %d age %d sex %c ",
+            self->get_id(), age, self->get_sex());
+        if (s != NULL && c != NULL) {
+          fprintf(Global::Statusfp, "from %s %s to %s %s | ",
+              s->get_label(), c->get_label(),
+              favorite_place[SCHOOL_INDEX]->get_label(),
+              favorite_place[CLASSROOM_INDEX]->get_label());
+        } else {
+          fprintf(Global::Statusfp, "from NULL NULL to %s %s | ",
+              favorite_place[SCHOOL_INDEX]->get_label(),
+              (favorite_place[CLASSROOM_INDEX] == NULL)?
+              "NULL" : favorite_place[CLASSROOM_INDEX]->get_label());
+        }
+        print();
+        fflush(Global::Statusfp);
       }
     }
     return;
@@ -666,8 +776,8 @@ void Activities::update_profile() {
     initialize_sick_leave();
     if (Global::Verbose>1) {
       fprintf(Global::Statusfp,
-	      "changed behavior profile to WORKER: id %d age %d sex %c\n",
-	      self->get_id(), age, self->get_sex());
+          "changed behavior profile to WORKER: id %d age %d sex %c\n",
+          self->get_id(), age, self->get_sex());
       print();
       fflush(Global::Statusfp);
     }
@@ -682,11 +792,11 @@ void Activities::update_profile() {
       initialize_sick_leave(); // no sick leave available if retired
       profile = RETIRED_PROFILE;
       if (Global::Verbose>1) {
-	fprintf(Global::Statusfp,
-		"changed behavior profile to RETIRED: age %d age %d sex %c\n",
-		self->get_id(), age, self->get_sex());
-	print();
-	fflush(Global::Statusfp);
+        fprintf(Global::Statusfp,
+            "changed behavior profile to RETIRED: age %d age %d sex %c\n",
+            self->get_id(), age, self->get_sex());
+        print();
+        fflush(Global::Statusfp);
       }
     }
     return;
@@ -703,7 +813,7 @@ void Activities::update_household_mobility() {
     fprintf(Global::Statusfp, "update_household_mobility entered with mcount = %d\n", mcount);
     fflush(Global::Statusfp);
   }
-  
+
   if (mcount == 0) {
     for (int i = 0; i <= MAX_MOBILITY_AGE; i++) {
       mobility_count[i] = mobility_moved[i] = 0;
@@ -719,8 +829,8 @@ void Activities::update_household_mobility() {
     if (RANDOM() < Activities::age_yearly_mobility_rate[age]) {
       int size = household->get_size();
       for (int i = 0; i < size; i++) {
-	Person *p = household->get_housemate(i);
-	mobility_moved[p->get_age()]++;
+        Person *p = household->get_housemate(i);
+        mobility_moved[p->get_age()]++;
       }
     }
   }
@@ -742,14 +852,14 @@ void Activities::update_household_mobility() {
 void Activities::addIncidence(int disease, vector<int> strains) {
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     if(favorite_place[i] == NULL) continue;
-    favorite_place[i]->modifyIncidenceCount(disease, strains, 1);
+    favorite_place[i]->modify_incidence_count(disease, strains, 1);
   }
 }
 
 void Activities::addPrevalence(int disease, vector<int> strains) {
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     if(favorite_place[i] == NULL) continue;
-    favorite_place[i]->modifyPrevalenceCount(disease, strains, 1);
+    favorite_place[i]->modify_prevalence_count(disease, strains, 1);
   }
 }
 
@@ -784,7 +894,7 @@ void Activities::read_init_files() {
     int age;
     double mobility_rate;
     if (fscanf(fp, "%d %lf",
-	       &age, &mobility_rate) != 2) {
+          &age, &mobility_rate) != 2) {
       fprintf(Global::Statusfp, "Help! Read failure for age %d\n", i);
       Utils::fred_abort("");
     }
@@ -799,7 +909,6 @@ void Activities::read_init_files() {
     fflush(Global::Statusfp);
   }
 }
-
 
 void Activities::store_favorite_places() {
   tmp_favorite_place = new Place* [FAVORITE_PLACES];
@@ -830,6 +939,8 @@ void Activities::start_traveling(Person * visited) {
       favorite_place[WORKPLACE_INDEX] = visited->get_workplace();
       favorite_place[OFFICE_INDEX] = visited->get_office();
     }
+
+    //Anuroop: Should this person enroll in visited's favorite places??
   }
   travel_status = true;
   if (Global::Verbose > 1) {

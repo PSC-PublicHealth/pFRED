@@ -92,11 +92,18 @@ class Global {
     static int StrainEvolution;
     static char Prevfilebase[];
     static char Incfilebase[];
+    static char Immunityfilebase[];
+    static char Transmissionsfilebase[];
+    static char Strainsfilebase[];
+    static char ErrorLogbase[];
     static int Enable_Behaviors;
+    static int Enable_Protection;
     static int Track_infection_events;
     static int Track_age_distribution;
     static int Track_household_distribution;
     static int Track_network_stats;
+    static int Track_Multi_Strain_Stats;
+    static int Track_Residual_Immunity;
     static int Verbose;
     static int Debug;
     static int Test;
@@ -127,6 +134,9 @@ class Global {
     static bool Seed_by_age;
     static bool Report_Prevalence;
     static bool Report_Incidence;
+    static bool Report_Immunity;
+    static bool Report_Transmissions;
+    static bool Report_Strains;
     static bool Enable_Vaccination;
     static bool Enable_Antivirals;
     static bool Use_Mean_Latitude;
@@ -157,8 +167,10 @@ class Global {
     static FILE *Prevfp;
     static FILE *Incfp;
     static FILE *ErrorLogfp;
+    static FILE *Immunityfp;
+    static FILE *Transmissionsfp;
+    static FILE *Strainsfp;
     static FILE *Householdfp;
-
 
     /**
      * Fills the static variables with values from the parameter file.
@@ -182,6 +194,49 @@ namespace fred {
    *
    */
   typedef std::bitset<Global::MAX_NUM_DISEASES> disease_bitset;
+
+  typedef float geo;
+
+  enum Population_Masks {
+    Infectious,
+    Susceptible
+  };
+
+
+  #ifdef _OPENMP
+  
+  #include <omp.h>
+  struct Mutex {
+    Mutex()   { omp_init_lock( & lock ); }
+    ~Mutex()  { omp_destroy_lock( & lock ); }
+    void Lock()   { omp_set_lock( & lock ); }
+    void Unlock() { omp_unset_lock( & lock ); }
+   
+    Mutex( const Mutex & ) { omp_init_lock( & lock ); }
+    Mutex & operator= ( const Mutex & ) { return *( this ); }
+    omp_lock_t lock;
+  };
+  
+  #else
+  /// Dummy Mutex when _OPENMP not defined
+  struct Mutex {
+    void Lock() {}
+    void Unlock() {}
+  };
+  #endif
+ 
+  struct Scoped_Lock {
+    explicit Scoped_Lock( Mutex & m ) : mut( m ), locked( true ) { mut.Lock(); }
+    ~Scoped_Lock() { Unlock(); }
+    void Unlock()     { if ( !locked ) return; locked = false; mut.Unlock(); }
+    void LockAgain()  { if (  locked ) return; mut.Lock(); locked = true; }
+  private:
+    Mutex & mut;
+    bool locked;
+    void operator=( const Scoped_Lock &);
+    Scoped_Lock( const Scoped_Lock & );
+  };
+
 }
 
 #endif // _FRED_GLOBAL_H

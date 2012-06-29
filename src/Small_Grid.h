@@ -33,7 +33,7 @@ public:
   // Specific to Small_Cell grid:
 
 protected:
-  Small_Cell ** grid;			      // Rectangular array of grid_cells
+  Small_Cell ** grid;            // Rectangular array of grid_cells
 
   // Specific to Small_Cell grid:
 };

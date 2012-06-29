@@ -83,7 +83,7 @@ Manager(_pop) {
       Params::get_param_from_string("vaccine_priority_age_low",&vaccine_priority_age_low);
       Params::get_param_from_string("vaccine_priority_age_high",&vaccine_priority_age_high);
       cout <<"      Between Ages "<< vaccine_priority_age_low << " and " 
-	   << vaccine_priority_age_high << "\n";
+     << vaccine_priority_age_high << "\n";
     }
     else{
       vaccine_priority_age_low = 0;
@@ -128,12 +128,12 @@ void Vaccine_Manager::fill_queues(){
   int popsize = pop->get_pop_size();
   
   for (int ip = 0; ip < popsize; ip++){
-    Person* current_person = pop->get_person(ip);
+    Person* current_person = pop->get_person_by_index(ip);
     if(policies[current_policy]->choose_first_positive(current_person,0,0)==true)
       priority_queue.push_back(current_person);
     else
       if(vaccine_priority_only == false)
-	queue.push_back(current_person);
+  queue.push_back(current_person);
   }
   
   vector <Person *> random_queue(queue.size());
@@ -141,10 +141,10 @@ void Vaccine_Manager::fill_queues(){
   FYShuffle < Person *>(random_queue);
   copy(random_queue.begin(), random_queue.end(),queue.begin());
   
-  vector <Person *> random_priority_queue(priority_queue.size());			
-  copy(priority_queue.begin(),priority_queue.end(),random_priority_queue.begin());			
-	FYShuffle <Person *> (random_priority_queue); 
-	copy(random_priority_queue.begin(),random_priority_queue.end(),priority_queue.begin());
+  vector <Person *> random_priority_queue(priority_queue.size());      
+  copy(priority_queue.begin(),priority_queue.end(),random_priority_queue.begin());      
+  FYShuffle <Person *> (random_priority_queue); 
+  copy(random_priority_queue.begin(),random_priority_queue.end(),priority_queue.begin());
   
   if (Global::Verbose > 0) {
     cout << "Vaccine Queue Stats \n";
@@ -286,33 +286,33 @@ void Vaccine_Manager::vaccinate(int day) {
     if(vacc_app > -1){
       bool accept_vaccine = false;
       if(current_person->get_health()->is_vaccinated()) {
-	accept_vaccine = current_person->get_behavior()->acceptance_of_another_vaccine_dose();
+  accept_vaccine = current_person->get_behavior()->acceptance_of_another_vaccine_dose();
       }
       else {
-	accept_vaccine = current_person->get_behavior()->acceptance_of_vaccine();
+  accept_vaccine = current_person->get_behavior()->acceptance_of_vaccine();
       }
       if(accept_vaccine==true){
-	number_vaccinated++;
-	current_vaccine_capacity--;
-	n_p_vaccinated++;
-	Vaccine* vacc = vaccine_package->get_vaccine(vacc_app);
-	vacc->remove_stock(1);
-	total_vaccines_avail--;
-	current_person->get_health()->take(vacc,day,this);
-	ip = priority_queue.erase(ip);  // remove a vaccinated person 
+  number_vaccinated++;
+  current_vaccine_capacity--;
+  n_p_vaccinated++;
+  Vaccine* vacc = vaccine_package->get_vaccine(vacc_app);
+  vacc->remove_stock(1);
+  total_vaccines_avail--;
+  current_person->get_health()->take(vacc,day,this);
+  ip = priority_queue.erase(ip);  // remove a vaccinated person 
       }
       else {
-	// skip non-compliant person under HBM
-	// if(strcmp(Global::Behavior_model_type,"HBM") == 0) ++ip;
-	if(0) ++ip;
-	// remove non-compliant person if not HBM
-	else ip = priority_queue.erase(ip);
+  // skip non-compliant person under HBM
+  // if(strcmp(Global::Behavior_model_type,"HBM") == 0) ++ip;
+  if(0) ++ip;
+  // remove non-compliant person if not HBM
+  else ip = priority_queue.erase(ip);
       }
     }
     else {
       if(Global::Verbose > 1) {
-	cout << "Vaccine not applicable for agent "<<current_person->get_id() << " " \
-	     << current_person->get_age() << "\n";
+  cout << "Vaccine not applicable for agent "<<current_person->get_id() << " " \
+       << current_person->get_age() << "\n";
       }
       ++ip;
     }
@@ -353,27 +353,27 @@ void Vaccine_Manager::vaccinate(int day) {
     if(vacc_app > -1){
       bool accept_vaccine = true;
       if(current_person->get_health()->is_vaccinated()) {
-	accept_vaccine = current_person->get_behavior()->acceptance_of_another_vaccine_dose();
+  accept_vaccine = current_person->get_behavior()->acceptance_of_another_vaccine_dose();
       }
       else {
-	accept_vaccine = current_person->get_behavior()->acceptance_of_vaccine();
+  accept_vaccine = current_person->get_behavior()->acceptance_of_vaccine();
       }
       if(accept_vaccine==true){
         number_vaccinated++;
-	current_vaccine_capacity--;
+  current_vaccine_capacity--;
         n_r_vaccinated++;
         Vaccine* vacc = vaccine_package->get_vaccine(vacc_app);
         vacc->remove_stock(1);
         total_vaccines_avail--;
         current_person->get_health()->take(vacc,day,this);
-	ip = queue.erase(ip);  // remove a vaccinated person 
+  ip = queue.erase(ip);  // remove a vaccinated person 
       }
       else {
-	// skip non-compliant person under HBM
-	// if(strcmp(Global::Behavior_model_type,"HBM") == 0) ip++;
-	if(0) ip++;
-	// remove non-compliant person if not HBM
-	else ip = queue.erase(ip);
+  // skip non-compliant person under HBM
+  // if(strcmp(Global::Behavior_model_type,"HBM") == 0) ip++;
+  if(0) ip++;
+  // remove non-compliant person if not HBM
+  else ip = queue.erase(ip);
       }
     }
     else{

@@ -60,7 +60,7 @@ void Attitude::reset_survey(int day) {
   // allocate space for survey if needed
   if (survey->yes_responses == NULL) {
     printf("SURVEY for %s allocated on day %d for %d places\n",
-	   params->name,day,places); fflush(stdout);
+     params->name,day,places); fflush(stdout);
     survey->yes_responses = new int [places];
     assert (survey->yes_responses != NULL);
     survey->total_responses = new int [places];
@@ -81,8 +81,8 @@ void Attitude::reset_survey(int day) {
   
   if (day > 0) {
     printf("SURVEY of %s for day %d YES %d TOT %d PREVALENCE %f\n",
-	   params->name,day, survey->yes, survey->total,
-	   survey->total?(survey->yes/(double)survey->total):0.0);
+     params->name,day, survey->yes, survey->total,
+     survey->total?(survey->yes/(double)survey->total):0.0);
   }
 
   // clear out today's survey
@@ -146,10 +146,10 @@ void Attitude::imitate() {
     if (place != NULL) {
       int place_id = place->get_id();
       if (total_responses[place_id] > 0) {
-	double contribution = weight[HOUSEHOLD_WT] * yes_responses[place_id];
-	if (strategy != IMITATE_COUNT)
-	  contribution /= total_responses[place_id];
-	weighted_sum += contribution;
+  double contribution = weight[HOUSEHOLD_WT] * yes_responses[place_id];
+  if (strategy != IMITATE_COUNT)
+    contribution /= total_responses[place_id];
+  weighted_sum += contribution;
       }
     }
   }
@@ -160,10 +160,10 @@ void Attitude::imitate() {
     if (place != NULL) {
       place_id = place->get_id();
       if (total_responses[place_id] > 0) {
-	double contribution = weight[NEIGHBORHOOD_WT] * yes_responses[place_id];
-	if (strategy != IMITATE_COUNT)
-	  contribution /= total_responses[place_id];
-	weighted_sum += contribution;
+  double contribution = weight[NEIGHBORHOOD_WT] * yes_responses[place_id];
+  if (strategy != IMITATE_COUNT)
+    contribution /= total_responses[place_id];
+  weighted_sum += contribution;
       }
     }
   }
@@ -174,10 +174,10 @@ void Attitude::imitate() {
     if (place != NULL) {
       place_id = place->get_id();
       if (total_responses[place_id] > 0) {
-	double contribution = weight[SCHOOL_WT] * yes_responses[place_id];
-	if (strategy != IMITATE_COUNT)
-	  contribution /= total_responses[place_id];
-	weighted_sum += contribution;
+  double contribution = weight[SCHOOL_WT] * yes_responses[place_id];
+  if (strategy != IMITATE_COUNT)
+    contribution /= total_responses[place_id];
+  weighted_sum += contribution;
       }
     }
   }
@@ -188,10 +188,10 @@ void Attitude::imitate() {
     if (place != NULL) {
       place_id = place->get_id();
       if (total_responses[place_id] > 0) {
-	double contribution = weight[WORK_WT] * yes_responses[place_id];
-	if (strategy != IMITATE_COUNT)
-	  contribution /= total_responses[place_id];
-	weighted_sum += contribution;
+  double contribution = weight[WORK_WT] * yes_responses[place_id];
+  if (strategy != IMITATE_COUNT)
+    contribution /= total_responses[place_id];
+  weighted_sum += contribution;
       }
     }
   }
@@ -202,19 +202,19 @@ void Attitude::imitate() {
       weighted_sum += weight[ALL_WT] * survey->previous_yes;
     else
       weighted_sum += weight[ALL_WT] *
-	(double) survey->previous_yes / (double) survey->previous_total;
+  (double) survey->previous_yes / (double) survey->previous_total;
   }
 
   double prevalence = weighted_sum / total_weight;
 
   /*
   printf("imitate person %d yes %d  tot %d ws = %f  w: %f %f %f %f %f ",
-	 self->get_id(), survey->yes, survey->total, weighted_sum,
-	 weight[HOUSEHOLD_WT],weight[NEIGHBORHOOD_WT],weight[SCHOOL_WT],
-	 weight[WORK_WT],weight[ALL_WT]);
+   self->get_id(), survey->yes, survey->total, weighted_sum,
+   weight[HOUSEHOLD_WT],weight[NEIGHBORHOOD_WT],weight[SCHOOL_WT],
+   weight[WORK_WT],weight[ALL_WT]);
 
   printf("strategy %d update_rate %f prevalance %f prob before %f ",
-	 strategy, update_rate, prevalence, probability);
+   strategy, update_rate, prevalence, probability);
 
   */
 
@@ -262,7 +262,7 @@ void Attitude::update_hbm(int day) {
     }
     else {
       cumm_susceptibility[disease_id] = (1.0 - memory_decay) * cumm_susceptibility[disease_id] +
-	memory_decay * current_incidence;
+  memory_decay * current_incidence;
     }
     cumm_severity[disease_id] = (1.0 - memory_decay) * cumm_severity[disease_id] + memory_decay * current_deaths;
 

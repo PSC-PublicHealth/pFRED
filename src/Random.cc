@@ -10,8 +10,9 @@
 //
 
 #include <vector>
-#include "Random.h"
 #include <stdio.h>
+
+#include "Random.h"
 
 // static
 int draw_from_distribution(int n, double *dist) {
@@ -57,18 +58,18 @@ int draw_from_cdf(double *v, int size) {
   while (bottom <= top) {
     if (r <= v[s]) {
       if (s == 0 || r > v[s-1])
-	return s;
+  return s;
       else {
-	top = s-1;
+  top = s-1;
       }
     }
     else { // r > v[s]
       if (s == size-1)
-	return s;
+  return s;
       if (r < v[s+1])
-	return s+1;
+  return s+1;
       else {
-	bottom = s+1;
+  bottom = s+1;
       }
     }
     s = bottom + (top-bottom)/2;
@@ -86,18 +87,18 @@ int draw_from_cdf_vector(const vector <double>& v) {
   while (bottom <= top) {
     if (r <= v[s]) {
       if (s == 0 || r > v[s-1])
-	return s;
+  return s;
       else {
-	top = s-1;
+  top = s-1;
       }
     }
     else { // r > v[s]
       if (s == size-1)
-	return s;
+  return s;
       if (r < v[s+1])
-	return s+1;
+  return s+1;
       else {
-	bottom = s+1;
+  bottom = s+1;
       }
     }
     s = bottom + (top-bottom)/2;

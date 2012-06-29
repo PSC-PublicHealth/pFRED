@@ -64,7 +64,7 @@ void DefaultIntraHost::setup(Disease *disease) {
   }
 }
 
-Trajectory * DefaultIntraHost::getTrajectory(Infection *infection, std :: map<int, double> *loads) {
+Trajectory * DefaultIntraHost::get_trajectory(Infection *infection, std :: map<int, double> *loads) {
   // TODO  take loads into account - multiple strains
   Trajectory * trajectory = new Trajectory();
   int sequential = get_infection_model();

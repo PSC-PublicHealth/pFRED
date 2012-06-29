@@ -19,12 +19,14 @@ using namespace std;
 #include "Vaccine_Dose.h"
 
 Vaccine::Vaccine(string _name, int _id, int _disease, 
-                 int _total_avail, int _additional_per_day, int _start_day){
+                 int _total_avail, int _additional_per_day, 
+                 int _start_day, int num_strains, int *_strains){
   name =               _name;
   id =                 _id;
   disease =             _disease;
   additional_per_day = _additional_per_day;
   start_day =          _start_day;
+  strains =            _strains;
   
   initial_stock = 0;
   stock = 0;
@@ -36,6 +38,7 @@ Vaccine::Vaccine(string _name, int _id, int _disease,
 
 Vaccine::~Vaccine(){ 
   for(unsigned int i = 0; i < doses.size(); i++) delete doses[i];
+  delete strains;
 }
 
 void Vaccine::add_dose(Vaccine_Dose* _vaccine_dose) {
@@ -64,4 +67,9 @@ void Vaccine::reset() {
 
 void Vaccine::update(int day) {
   if(day >= start_day) add_stock(additional_per_day);
+}
+
+int Vaccine::get_strain(int i) {
+  if(i < num_strains) return strains[i];
+  else return -1;
 }

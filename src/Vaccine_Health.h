@@ -29,7 +29,7 @@ public:
   //Creation Operations
   Vaccine_Health();
   Vaccine_Health(int _vaccination_day, Vaccine* _vaccine, int _age, 
-		 Health* _health, Vaccine_Manager* _vaccine_manager);
+     Health* _health, Vaccine_Manager* _vaccine_manager);
   
   // Access Members
   int get_vaccination_day()              const { return vaccination_day; }
@@ -47,9 +47,10 @@ public:
     }
     else{
       //This is an error, but it will not stop a run, only pring a Warning.
-      Utils::fred_warning("WARNING! Vaccination Status, setting vaccine day of someone who has already been vaccinated\n");
+      FRED_WARNING("WARNING! Vaccination Status, setting vaccine day of someone who has already been vaccinated\n");
     }
   }
+  bool isEffective() { return effective; }
   
   //Utility Functions
   void print() const;
@@ -65,6 +66,7 @@ private:
   int days_to_next_dose;           // How long between doses
   Health* health;                  // The health object this belongs to.
   Vaccine_Manager* vaccine_manager; // Which manager did the vaccine come from?
+  bool effective;
 };
 
 #endif

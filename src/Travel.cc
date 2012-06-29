@@ -23,13 +23,13 @@
 #include <vector>
 #include <set>
 
-//typedef vector <Person*> pvec;			// vector of person ptrs
-typedef set <Person*> pset;			// vector of person ptrs
+//typedef vector <Person*> pvec;      // vector of person ptrs
+typedef set <Person*> pset;      // vector of person ptrs
 typedef set<Person*>::iterator piter; // iterator to set of person ptrs
-typedef pset * pset_ptr;			// pointer to above type
-static pset * traveler_list;		   // list of travelers, per day
-static pset_ptr * traveler_list_ptr;	      // pointers to above lists
-static double mean_trip_duration;		// mean days per trip
+typedef pset * pset_ptr;      // pointer to above type
+static pset * traveler_list;       // list of travelers, per day
+static pset_ptr * traveler_list_ptr;        // pointers to above lists
+static double mean_trip_duration;    // mean days per trip
 
 #include <vector>
 static vector <int> src_row;
@@ -46,8 +46,8 @@ static int trips_per_day;
 char tripfile[256];
 
 // runtime parameters
-static double * Travel_Duration_Cdf;		// cdf for trip duration
-static int max_Travel_Duration = 0;		// number of days in cdf
+static double * Travel_Duration_Cdf;    // cdf for trip duration
+static int max_Travel_Duration = 0;    // number of days in cdf
 
 void Travel::setup(char * directory) {
   assert(Global::Enable_Large_Grid && Global::Enable_Travel);
@@ -66,7 +66,8 @@ void Travel::setup(char * directory) {
   Params::get_param_from_string("travel_duration",&n);
   Travel_Duration_Cdf = new double [n];
   max_Travel_Duration = Params::get_param_vector((char *) "travel_duration",
-					 Travel_Duration_Cdf) - 1;
+           Travel_Duration_Cdf) - 1;
+ 
   if (Global::Verbose > 0) {
     for (int i = 0; i <= max_Travel_Duration; i++)
       fprintf(Global::Statusfp,"travel duration = %d %f ",i,Travel_Duration_Cdf[i]);
@@ -104,7 +105,7 @@ void Travel::setup(char * directory) {
 
     // reject this trip if neither endpoint is in the model region
     if (src_cell == NULL && dest_cell == NULL) continue;
-
+ 
     // swap endpoint so that the source cell is in the model region
     if (src_cell == NULL) {
       src_cell = dest_cell;
@@ -128,15 +129,15 @@ void Travel::setup(char * directory) {
     dest_col.push_back(c2);
     trip_probability.push_back(trip_prob);
     active_trips++;
-    if (Global::Verbose > 1) {
+   if (Global::Verbose > 1) {
       fprintf(Global::Statusfp, "ACTIVE %d %d %d %d %0.2f\n", c1,r1,c2,r2,trip_prob);
       /*
-	int src_pop = src_cell!= NULL? src_cell->get_popsize():-1;
-	int src_maxpop = src_cell!= NULL? src_cell->get_max_popsize():-1;
-	int dest_pop = dest_cell!= NULL? dest_cell->get_popsize():-1;
-	int dest_maxpop = dest_cell!= NULL? dest_cell->get_max_popsize():-1;
-	fprintf(Global::Statusfp, "%d %d %0.2f %d %d %0.2f\n", 
-	src_pop,src_maxpop,src_density,dest_pop,dest_maxpop, dest_density);
+  int src_pop = src_cell!= NULL? src_cell->get_popsize():-1;
+  int src_maxpop = src_cell!= NULL? src_cell->get_max_popsize():-1;
+  int dest_pop = dest_cell!= NULL? dest_cell->get_popsize():-1;
+  int dest_maxpop = dest_cell!= NULL? dest_cell->get_max_popsize():-1;
+  fprintf(Global::Statusfp, "%d %d %0.2f %d %d %0.2f\n", 
+  src_pop,src_maxpop,src_density,dest_pop,dest_maxpop, dest_density);
       */
     }
 
@@ -194,8 +195,8 @@ void Travel::update_travel(int day) {
 
   // initiate new trips
   for (int i = 0; i < trips_per_day; i++) {
-    select_visitor_and_visited(&visitor, &visited);
-
+    select_visitor_and_visited(&visitor, &visited, day);
+    
     // check to see if trip was rejected
     if (visitor == NULL && visited == NULL)
       continue;
@@ -204,20 +205,31 @@ void Travel::update_travel(int day) {
       // can't start new trip if traveling
       if (visitor->get_travel_status()) continue;
       if (visited != NULL && visited->get_travel_status()) continue;
-
+  
+      // Anuroop
+      /*{
+        if(visitor && visited){
+          double lat1 = visitor->get_household()->get_latitude();
+          double lat2 = visited->get_household()->get_latitude();
+          if( (lat1 < 45.93 && lat2 > 45.93) || (lat1 > 45.93 && lat2 < 45.93) ) {
+            cout << "TRIP MADE: " << lat1 << " " << lat2 << endl;
+          }
+        }
+      }*/
+      
       // put traveler in travel status
       visitor->start_traveling(visited);
 
       // put traveler on list for given number of days to travel
       int duration = draw_from_distribution(max_Travel_Duration, Travel_Duration_Cdf);
       // printf("  for %d days\n", duration); fflush(stdout);
-      traveler_list_ptr[duration]->insert(visitor);
+     traveler_list_ptr[duration]->insert(visitor);
     }
     else {
       // TODO: process incoming trips from outside the model region
     }
   }
-
+  
   // process travelers who are returning home
   // printf("returning home:\n"); fflush(stdout);
   for(piter it=traveler_list_ptr[0]->begin(); it != traveler_list_ptr[0]->end(); it++) {
@@ -240,16 +252,17 @@ void Travel::update_travel(int day) {
   return;
 }
 
-
-void Travel::select_visitor_and_visited(Person **v1, Person **v2) {
-  static int trip_counter = 0;
+void Travel::select_visitor_and_visited(Person **v1, Person **v2, int day) {
+  //static int trip_counter = 0;
+  // Anuroop
+  static long trip_counter = 0;
   Person * visitor = NULL;
   Person * visited = NULL;
 
   if (Global::Verbose > 2) {
     fprintf(Global::Statusfp, "select_visitor entered ");
-    fprintf(Global::Statusfp, "trip_counter %d trip_list_size %d\n",
-	    trip_counter, trip_list_size);
+    fprintf(Global::Statusfp, "trip_counter %ld trip_list_size %d\n",
+      trip_counter, trip_list_size);
     fflush(Global::Statusfp);
   }
 
@@ -261,21 +274,33 @@ void Travel::select_visitor_and_visited(Person **v1, Person **v2) {
   trip_counter++;
 
   if (Global::Verbose > 2) {
-    fprintf(Global::Statusfp, "trip_index %d trip_counter %d\n",
-	    trip, trip_counter);
+  //if(day >= 430) 
+    fprintf(Global::Statusfp, "trip_index %d trip_counter %ld\n",
+      trip, trip_counter);
+    fprintf(Global::Statusfp, "src_sizes: %zu %zu dest_sizes %zu %zu\n",
+      src_row.size(), src_col.size(), dest_row.size(), dest_col.size());
     fflush(Global::Statusfp);
   }
+  
+  // Anuroop
+  if(src_row.size() <= trip || src_col.size() <= trip || 
+      dest_row.size() <= trip || dest_col.size() <= trip) {
+    fprintf(Global::Statusfp, "Illegal trip: %d\n", trip);
+    fflush(Global::Statusfp);
+    *v1 = NULL, *v2 = NULL;
+    return;
+  }
 
-  // extract rows and cols for cells at endpoints
+ // extract rows and cols for cells at endpoints
   int r1 = src_row[trip];
   int c1 = src_col[trip];
   int r2 = dest_row[trip];
   int c2 = dest_col[trip];
   double trip_pr = trip_probability[trip];
-  if (Global::Verbose > 2) {
-    fprintf(Global::Statusfp,"TRIP %d %d %d %d %.2f\n", c1,r1,c2,r2,trip_pr);
-    fflush(Global::Statusfp);
-  }
+  //if (Global::Verbose > 2) {
+  //  fprintf(Global::Statusfp,"TRIP %d %d %d %d %.2f\n", c1,r1,c2,r2,trip_pr);
+  //  fflush(Global::Statusfp);
+  //}
 
   // reject this trip based on trip probability
   if (trip_pr < RANDOM()) {

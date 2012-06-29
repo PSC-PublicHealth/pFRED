@@ -28,7 +28,7 @@ public:
    * @param maxlon the maximum longitude for this Grid
    * @param maxlat the maximum latitude for this Grid
    */
-  Grid(double minlon, double minlat, double maxlon, double maxlat);
+  Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fred::geo maxlat);
   ~Grid() {}
 
   /**
@@ -73,7 +73,7 @@ public:
    * @param lon the longitude of the Cell to get
    * @return a pointer to the Cell at that latitude and longitude in the Grid
    */
-  Cell * get_grid_cell_from_lat_lon(double lat, double lon);
+  Cell * get_grid_cell_from_lat_lon(fred::geo lat, fred::geo lon);
 
   /**
    * Used during debugging to verify that code is functioning properly.
@@ -94,7 +94,7 @@ public:
    * @param radius_in_km the distance from the center of the circle
    * @return a Vector of places
    */
-  vector < Place * > get_households_by_distance(double lat, double lon, double radius_in_km);
+  vector < Place * > get_households_by_distance(fred::geo lat, fred::geo lon, double radius_in_km);
 
   // Specific to Cell grid:
   /**
@@ -154,7 +154,7 @@ public:
    * @param lon pointer to the longitude of the point
    * @see Geo_Utils::translate_to_lat_lon(double x, double y, double *lat, double *lon, double min_lat, double min_lon)
    */
-  void translate_to_lat_lon(double x, double y, double *lat, double *lon);
+  void translate_to_lat_lon(double x, double y, fred::geo *lat, fred::geo *lon);
 
   /**
    * Translate a given latitude and longitude to an (x,y) coordinate.
@@ -165,10 +165,10 @@ public:
    * @param y pointer to the y coordinate of the point
    * @see Geo_Utils::translate_to_cartesian(double lat, double lon, double *x, double *y, double min_lat, double min_lon)
    */
-  void translate_to_cartesian(double lat, double lon, double *x, double *y);
+  void translate_to_cartesian(fred::geo lat, fred::geo lon, double *x, double *y);
 
 protected:
-  Cell ** grid;			      // Rectangular array of grid_cells
+  Cell ** grid;            // Rectangular array of grid_cells
 
   // Specific to Cell grid:
   int target_popsize;

@@ -40,7 +40,7 @@ void FixedIntraHost::setup(Disease *disease) {
   }
 }
 
-Trajectory * FixedIntraHost::getTrajectory(Infection *infection, map<int, double> *loads) {
+Trajectory * FixedIntraHost::get_trajectory(Infection *infection, map<int, double> *loads) {
   double r = RANDOM();
   int index = 0;
   vector<double> :: iterator it;

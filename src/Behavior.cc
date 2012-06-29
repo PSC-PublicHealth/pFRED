@@ -407,9 +407,8 @@ bool Behavior::adult_is_taking_sick_leave(int day) {
 }
 
 bool Behavior::child_is_staying_home(int day) {
-
   assert(Global::Enable_Behaviors > 0);
-
+  
   if (keep_child_home_when_sick_params.enabled == false)
     return false;
 
@@ -502,11 +501,15 @@ void Behavior::select_adult_decision_maker(Person *unavailable_person) {
     int relationship = self->get_relationship();
     Household * h = (Household *) self->get_household();
     Person *person = select_adult(h, relationship, unavailable_person);
-    if (person->is_adult() == false) {
+    // Anuroop
+    if (person == NULL) {
+      person = self;
+    }
+    if(person->is_adult() == false) {
       Utils::fred_verbose(0,"set_adult_decision_maker: No adult is available for child %d age %d ",
-			  self->get_id(), self->get_age());
+        self->get_id(), self->get_age());
       Utils::fred_verbose(0,"so new decision maker is agent %d age %d\n",
-			  person->get_id(), person->get_age());
+        person->get_id(), person->get_age());
       initialize_adult_behavior(person);
     }
     set_adult_decision_maker(person);
@@ -522,11 +525,11 @@ Person * Behavior::select_adult(Household *h, int relationship, Person * unavail
     for (int i = 0; i < N; i++) {
       Person * person = h->get_housemate(i);
       if (person->is_adult() == false || person == unavailable_person)
-	continue;
+  continue;
       int r = person->get_relationship();
       if (r == Global::NATURAL_CHILD || r == Global::ADOPTED_CHILD ||
-	  r == Global::STEP_CHILD || r == Global::SON_DAUGHTER_IN_LAW) {
-	return person;
+    r == Global::STEP_CHILD || r == Global::SON_DAUGHTER_IN_LAW) {
+  return person;
       }
     }
 
@@ -534,10 +537,10 @@ Person * Behavior::select_adult(Household *h, int relationship, Person * unavail
     for (int i = 0; i < N; i++) {
       Person * person = h->get_housemate(i);
       if (person->is_adult() == false || person == unavailable_person)
-	continue;
+  continue;
       int r = person->get_relationship();
       if (r == Global::NEPHEW_NIECE) {
-	return person;
+  return person;
       }
     }
   }
@@ -584,7 +587,7 @@ void Behavior::terminate() {
 
   if (Global::Verbose > 1) {
     printf("terminating behavior for agent %d age %d\n",
-	   self->get_id(), self->get_age());
+     self->get_id(), self->get_age());
   }
 
   // see if this person is the adult decision maker for any child in the household
@@ -594,16 +597,17 @@ void Behavior::terminate() {
     Person * child = household->get_housemate(i);
     if (child != self && child->get_adult_decision_maker() == self) {
       if (Global::Verbose > 1) {
-	printf("need new decision maker for agent %d age %d\n",
-	       child->get_id(), child->get_age());
+        printf("need new decision maker for agent %d age %d\n",
+            child->get_id(), child->get_age());
       }
       child->select_adult_decision_maker(self);
       if (Global::Verbose > 1) {
-	printf("new decision maker is %d age %d\n",
-	       child->get_adult_decision_maker()->get_id(),
-	       child->get_adult_decision_maker()->get_age());
-	fflush(stdout);
+        printf("new decision maker is %d age %d\n",
+            child->get_adult_decision_maker()->get_id(),
+            child->get_adult_decision_maker()->get_age());
+        fflush(stdout);
       }
     }
   }
 }
+  

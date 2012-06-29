@@ -17,6 +17,7 @@
 #include "Seasonality_Timestep_Map.h"
 #include "Params.h"
 #include "Utils.h"
+#include "Date.h"
 
 using namespace std;
 
@@ -74,6 +75,7 @@ void Seasonality_Timestep_Map::insert(Seasonality_Timestep * ct) {
 }
 
 void Seasonality_Timestep_Map::print() {
+  return;
   cout << "\n";
   cout << name << " Seasonality_Timestep_Map size = " << (int) seasonality_timestep_map.size() <<"\n";
   vector < Seasonality_Timestep * >::iterator itr;
@@ -98,33 +100,35 @@ bool Seasonality_Timestep_Map::Seasonality_Timestep::parseMMDD(string startMMDD,
     ss_s << y << "-" << startMMDD;
     string startDateStr = ss_s.str();
     ss_e << y << "-" << endMMDD;
-    string endDateStr = ss_e.str();
+    string end_dateStr = ss_e.str();
 
     if (!(Date::is_leap_year(y))) {
       if (Date::parse_month_from_date_string(startDateStr,dateFormat) == 2 && Date::parse_day_of_month_from_date_string(startDateStr,dateFormat) == 29) {
         ss_s2 << y << "-" << "03-01";
         startDateStr = ss_s2.str();
       }
-      if (Date::parse_month_from_date_string(endDateStr,dateFormat) == 2 && Date::parse_day_of_month_from_date_string(endDateStr,dateFormat) == 29) {
+      if (Date::parse_month_from_date_string(end_dateStr,dateFormat) == 2 && Date::parse_day_of_month_from_date_string(end_dateStr,dateFormat) == 29) {
         ss_e2 << y << "-" << "03-01";
-        endDateStr = ss_e2.str();
+        end_dateStr = ss_e2.str();
       }
     }
 
     int simStartDay = 0;
     int simEndDay = 0;
 
-    Date startDateObj = Date::Date(startDateStr,dateFormat);
+    //Date startDateObj = Date::Date(startDateStr,dateFormat);
+    Date startDateObj(startDateStr,dateFormat);
 
     if (startDateObj >= *Global::Sim_Start_Date) {
       simStartDay = Date::days_between(0, &startDateObj);
     }
 
-    Date endDateObj = Date::Date(endDateStr, dateFormat);
+    //Date end_dateObj = Date::Date(end_dateStr, dateFormat);
+    Date end_dateObj(end_dateStr, dateFormat);
 
-    if (endDateObj >= *Global::Sim_Start_Date) {
-      simEndDay = Date::days_between(0, &endDateObj);
-      simDayRanges.push_back( pair <int,int> (simStartDay,simEndDay) );
+    if (end_dateObj >= *Global::Sim_Start_Date) {
+      simEndDay = Date::days_between(0, &end_dateObj);
+      sim_day_ranges.push_back( pair <int,int> (simStartDay,simEndDay) );
     }
 
   }

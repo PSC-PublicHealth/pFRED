@@ -108,17 +108,17 @@ class Attitude {
   // Health Belief Model
 
   // Memory
-  double * cumm_susceptibility;				// per disease
-  double * cumm_severity;				// per disease
+  double * cumm_susceptibility;        // per disease
+  double * cumm_severity;        // per disease
   double memory_decay;
   
   // Perceptions
   int total_deaths;
   Perceptions * perceptions;
-  double * perceived_susceptibility;		// per disease
-  double * perceived_severity;			// per disease
-  double * perceived_benefits;			// per disease
-  double * perceived_barriers;			// per disease
+  double * perceived_susceptibility;    // per disease
+  double * perceived_severity;      // per disease
+  double * perceived_benefits;      // per disease
+  double * perceived_barriers;      // per disease
 
   // Thresholds for dichotomous variables
   double susceptibility_threshold;

@@ -27,7 +27,7 @@ using namespace std;
 #include "Population.h"
 #include "Date.h"
 
-Grid::Grid(double minlon, double minlat, double maxlon, double maxlat) {
+Grid::Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fred::geo maxlat) {
   min_lon  = minlon;
   min_lat  = minlat;
   max_lon  = maxlon;
@@ -101,10 +101,10 @@ Cell * Grid::select_random_grid_cell(double x0, double y0, double dist) {
   // select a random cell within given distance.
   // if no luck after 20 attempts, return NULL
   for (int i = 0; i < 20; i++) {
-    double r = RANDOM()*dist;			// random distance
+    double r = RANDOM()*dist;      // random distance
     double ang = Geo_Utils::DEG_TO_RAD * URAND(0,360); // random angle
-    double x = x0 + r*cos(ang);			// corresponding x coord
-    double y = y0 + r*sin(ang);			// corresponding y coord
+    double x = x0 + r*cos(ang);      // corresponding x coord
+    double y = y0 + r*sin(ang);      // corresponding y coord
     Cell * cell = get_grid_cell_from_cartesian(x,y);
     if (cell != NULL) return cell;
   }
@@ -129,7 +129,7 @@ Cell * Grid::get_grid_cell_from_cartesian(double x, double y) {
 }
 
 
-Cell * Grid::get_grid_cell_from_lat_lon(double lat, double lon) {
+Cell * Grid::get_grid_cell_from_lat_lon(fred::geo lat, fred::geo lon) {
   double x, y;
   Geo_Utils::translate_to_cartesian(lat,lon,&x,&y,min_lat,min_lon);
   return get_grid_cell_from_cartesian(x,y);
@@ -232,7 +232,7 @@ void Grid::record_favorite_places() {
   }
 }
 
-vector < Place * >  Grid::get_households_by_distance(double lat, double lon, double radius_in_km) {
+vector < Place * >  Grid::get_households_by_distance(fred::geo lat, fred::geo lon, double radius_in_km) {
   double px, py;
   Geo_Utils::translate_to_cartesian(lat, lon, &px, &py, min_lat, min_lon);
   //  get cells around the point, make sure their rows & cols are in bounds
@@ -254,8 +254,8 @@ vector < Place * >  Grid::get_households_by_distance(double lat, double lon, dou
       Cell * p = get_grid_cell(r,c);
       vector <Place *> h = p->get_households();
       for (vector <Place *>::iterator hi = h.begin(); hi != h.end(); hi++) { 
-        double hlat = (*hi)->get_latitude();
-        double hlon = (*hi)->get_longitude();
+        fred::geo hlat = (*hi)->get_latitude();
+        fred::geo hlon = (*hi)->get_longitude();
         //printf("DEBUG: household_latitude %f, household_longitude %f\n",hlat,hlon);
         double hx, hy;
         Geo_Utils::translate_to_cartesian(hlat, hlon, &hx, &hy, min_lat, min_lon);
@@ -375,7 +375,7 @@ void Grid::select_immigrants(int day) {
       char label[32], house_label[32], school_label[32], work_label[32];
       char sex;
       sscanf(pstring, "%s %d %c %d %d %d %s %s %s",
-	     label, &age, &sex, &married, &rel, &occ, house_label, school_label, work_label);
+       label, &age, &sex, &married, &rel, &occ, house_label, school_label, work_label);
 
       // make younger to reflect age based on next decennial
       int year_diff = 2010-current_year;
@@ -389,11 +389,9 @@ void Grid::select_immigrants(int day) {
       Place * work = Global::Places.get_place_from_label(work_label);
       Place * school = Global::Places.get_place_from_label(school_label);
       bool today_is_birthday = false;
-      Person * clone = new Person(next_id, age, sex, married, rel,
-				  occ, house, school, work, day, today_is_birthday);
-
-      // add to the popualtion
-      Global::Pop.add_person(clone);
+      // create and add to the population
+      Person * clone = Global::Pop.add_person( next_id, age, sex, married, rel,
+          occ, house, school, work, day, today_is_birthday );
 
       clone->print(stdout,0);
       current_popsize++;
@@ -429,11 +427,11 @@ void Grid::print_household_distribution(char * dir, char * date_string, int run)
   fclose(fp);
 }
 
-void Grid::translate_to_lat_lon(double x, double y, double *lat, double *lon) {
+void Grid::translate_to_lat_lon(double x, double y, fred::geo *lat, fred::geo *lon) {
   Geo_Utils::translate_to_lat_lon(x,y,lat,lon,min_lat,min_lon);
 }
 
-void Grid::translate_to_cartesian(double lat, double lon, double *x, double *y) {
+void Grid::translate_to_cartesian(fred::geo lat, fred::geo lon, double *x, double *y) {
   Geo_Utils::translate_to_cartesian(lat,lon,x,y,min_lat,min_lon);
 }
 

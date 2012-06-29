@@ -1,6 +1,7 @@
 
 #include "Evolution.h"
 #include "Infection.h"
+#include "Transmission.h"
 #include "Trajectory.h"
 #include "Infection.h"
 #include "Global.h"
@@ -8,16 +9,34 @@
 #include "Antiviral.h"
 #include "Health.h"
 #include "AV_Health.h"
+#include "Person.h"
 
 #include <map>
 
 using namespace std;
 
-void Evolution::doEvolution(Infection *infection, map<int, double> *loads) {
-  Disease *disease = infection->get_disease();
-  Trajectory *trajectory = disease->getTrajectory(infection, loads);
-  infection->setTrajectory(trajectory);
-  infection->set_susceptibility_period(0);
+void Evolution :: setup(Disease *disease) {
+  this->disease = disease;
+}
+
+Infection *Evolution::transmit(Infection *infection, Transmission *transmission, Person *infectee) {
+  if(infection == NULL){
+    infection = new Infection(disease, transmission->get_infector(), infectee,
+           transmission->get_infected_place(), transmission->get_exposure_date());
+    Trajectory *trajectory = disease->get_trajectory(infection, transmission->get_initial_loads() );
+    infection->setTrajectory(trajectory);
+    infection->set_susceptibility_period(0);
+  }
+  else{
+    // Fail repeated infections by default??
+    cout << "REPEATED INFECTION" << endl;
+    return NULL;
+  }
+  return infection;
+}
+
+inline double Evolution::residual_immunity(Person *person, int challenge_strain, int day) {
+  return double(! person->get_health()->is_susceptible(disease->get_id()));
 }
 
 void Evolution::avEffect(Antiviral *av, Health *health, int disease, int cur_day, AV_Health *av_health) {
@@ -59,14 +78,28 @@ void Evolution::avEffect(Antiviral *av, Health *health, int disease, int cur_day
 void Evolution::print() {}
 void Evolution::reset(int run) {}
 
-map<int, double> * Evolution::getPrimaryLoads(int day) {
+map<int, double> * Evolution::get_primary_loads(int day) {
   map<int, double> *loads = new map<int, double>;
-  loads->insert( pair<int, double> (0, 1) );
+  loads->insert( pair<int, double> (1, 1) );
   return loads;
 }
 
-map<int, double> * Evolution::getPrimaryLoads(int day, int strain) {
+map<int, double> * Evolution::get_primary_loads(int day, int strain) {
   map<int, double> *loads = new map<int, double>;
   loads->insert( pair<int, double> (strain, 1) );
   return loads;
+}
+
+double Evolution::antigenic_diversity(Person *p1, Person *p2) {
+  Infection *inf1 = p1->get_health()->get_infection(disease->get_id());
+  Infection *inf2 = p2->get_health()->get_infection(disease->get_id());
+
+  if(!inf1 || !inf2) return 0;
+
+  vector<int> str1; inf1->get_strains(str1);
+  vector<int> str2; inf1->get_strains(str2);
+
+  // TODO how to handle multiple strains???
+
+  return antigenic_distance(str1.at(0), str2.at(0));
 }

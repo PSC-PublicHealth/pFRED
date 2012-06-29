@@ -30,21 +30,30 @@ class Strain {
 
     void reset();
     void setup(int s, Disease *d);
-    void setup(int strain, Disease *disease, map<string, double> *data, double trans);
+    void setup(int strain, Disease *disease, vector<int> *data, double trans, Strain *parent);
     void print();
+    void print_alternate(stringstream &out);
 
     int get_id() {
       return id;
       }
-    double getTransmissibility() {
+    double get_transmissibility() {
       return transmissibility;
       }
+
+    int get_num_data_elements();
+    
+    int get_data_element(int i);
+  
+    int get_substitutions();
+
   private:
+    Strain *parent;
     int id;
     double transmissibility;
-
     Disease *disease;
-    map<string, double> *strainData;
+    vector<int> *strain_data;
+    int substitutions;
   };
 
 #endif // _FRED_STRAIN_H

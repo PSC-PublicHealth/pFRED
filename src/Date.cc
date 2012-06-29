@@ -149,7 +149,7 @@ Date::Date(int year, int month, int day_of_month) {
  */
 void Date::set_date(int year, int month, int day_of_month) {
   if (year < Date::EPOCH_START_YEAR) {
-    Utils::fred_abort("Help! Year prior to %d [\"%d\"] is not recognized\n", Date::EPOCH_START_YEAR, year);
+    Utils::fred_abort("Help! \"%d\" is an invalid year! Years prior to the EPOCH_START_YEAR, %d, are not recognized!\n", year, Date::EPOCH_START_YEAR);
   } else {
     this->year = year;
   }
@@ -214,25 +214,25 @@ void Date::advance() {
 
   this->day_of_year = Date::get_day_of_year(this->year, this->month, this->day_of_month);
   if(this->day_of_week == Date::SATURDAY) {
-	this->day_of_week = Date::SUNDAY;
+  this->day_of_week = Date::SUNDAY;
   } else {
-	this->day_of_week++;
+  this->day_of_week++;
   }
 }
 
 
 void Date::advance(int days){
   for(int i = 0; i < days; ++i) {
-	this->advance();
+  this->advance();
   }
 }
 
 int Date::get_year(int t) {
 
   if(t == 0) {
-	return this->year;
+  return this->year;
   } else {
-	if(Date::year_vec != NULL && (this->days_since_jan_1_epoch_year + t) < (int)Date::year_vec->size()) {
+  if(Date::year_vec != NULL && (this->days_since_jan_1_epoch_year + t) < (int)Date::year_vec->size()) {
       int * temp = & Date::year_vec->at(this->days_since_jan_1_epoch_year + t);
       return * temp;
     } else {
@@ -248,17 +248,17 @@ int Date::get_year(int t) {
 int Date::get_month(int t) {
 
   if (t == 0) {
-	return this->month;
+  return this->month;
   } else{
-	if(Date::month_vec != NULL && (this->days_since_jan_1_epoch_year + t) < (int)Date::month_vec->size()) {
-	  int * temp = & Date::month_vec->at(this->days_since_jan_1_epoch_year + t);
-	  return * temp;
-	} else {
-	  Date::add_to_vectors(this->days_since_jan_1_epoch_year + t);
+  if(Date::month_vec != NULL && (this->days_since_jan_1_epoch_year + t) < (int)Date::month_vec->size()) {
+    int * temp = & Date::month_vec->at(this->days_since_jan_1_epoch_year + t);
+    return * temp;
+  } else {
+    Date::add_to_vectors(this->days_since_jan_1_epoch_year + t);
 
-	  int * temp = & Date::month_vec->at(this->days_since_jan_1_epoch_year + t);
-	  return * temp;
-	}
+    int * temp = & Date::month_vec->at(this->days_since_jan_1_epoch_year + t);
+    return * temp;
+  }
   }
 }
 
@@ -298,9 +298,9 @@ string Date::get_month_string() {
 string Date::get_month_string(int t) {
   int temp_month = 0;
   if(t == 0)
-	temp_month = this->month;
+  temp_month = this->month;
   else
-	temp_month = this->get_month(t);
+  temp_month = this->get_month(t);
 
   switch(temp_month) {
     case Date::JANUARY:
@@ -335,7 +335,7 @@ string Date::get_month_string(int t) {
 int Date::get_day_of_month(int t) {
 
   if(t == 0) {
-	return this->day_of_month;
+  return this->day_of_month;
   } else {
     if(Date::day_of_month_vec != NULL && (this->days_since_jan_1_epoch_year + t) < (int)Date::day_of_month_vec->size()) {
       int * temp = & Date::day_of_month_vec->at(this->days_since_jan_1_epoch_year + t);
@@ -352,9 +352,9 @@ int Date::get_day_of_month(int t) {
 int Date::get_day_of_year(int t) {
 
   if(t == 0) {
-	return Date::get_day_of_year(this->year, this->month, this->day_of_month);
+  return Date::get_day_of_year(this->year, this->month, this->day_of_month);
   } else {
-	return Date::get_day_of_year(this->get_year(t), this->get_month(t), this->get_day_of_month(t));
+  return Date::get_day_of_year(this->get_year(t), this->get_month(t), this->get_day_of_month(t));
   }
 }
 
@@ -363,7 +363,7 @@ int Date::get_day_of_week(int t) {
 
   if(t == 0) {
     year = this->year;
-	month = this->month;
+  month = this->month;
     day_of_month = this->day_of_month;
   } else {
     year = this->get_year(t);
@@ -378,9 +378,9 @@ int Date::get_day_of_week(int t) {
 string Date::get_day_of_week_string(int t) {
   int temp_day_of_week = 0;
   if(t == 0)
-	temp_day_of_week = this->day_of_week;
+  temp_day_of_week = this->day_of_week;
   else
-	temp_day_of_week = this->get_day_of_week(t);
+  temp_day_of_week = this->get_day_of_week(t);
 
   switch(temp_day_of_week) {
     case Date::SUNDAY:
@@ -428,13 +428,13 @@ int Date::get_epi_week(int t) {
   int future_day_of_year = 0;
 
   if(t == 0) {
-	future_year = this->year;
-	future_month = this->month;
-	future_day_of_month = this->day_of_month;
+  future_year = this->year;
+  future_month = this->month;
+  future_day_of_month = this->day_of_month;
   } else {
-	future_year = this->get_year(t);
-	future_month = this->get_month(t);
-	future_day_of_month = this->get_day_of_month(t);
+  future_year = this->get_year(t);
+  future_month = this->get_month(t);
+  future_day_of_month = this->get_day_of_month(t);
   }
 
   future_day_of_year = Date::get_day_of_year(future_year, future_month, future_day_of_month);
@@ -664,7 +664,7 @@ int Date::parse_month_from_date_string(string date_string, string format_string)
     }
   }
   else if (format_string.compare(Date::MMDDYYYY) == 0 ||
-	   format_string.compare(Date::MMDDYY) == 0) {
+     format_string.compare(Date::MMDDYY) == 0) {
     size_t pos;
     pos = date_string.find('/');
     if (pos != string::npos) {
@@ -772,7 +772,7 @@ int Date::parse_year_from_date_string(string date_string, string format_string) 
     }
   }
   else if (format_string.compare(Date::MMDDYYYY) == 0 ||
-	   format_string.compare(Date::DDMMYYYY) == 0 ) {
+     format_string.compare(Date::DDMMYYYY) == 0 ) {
     size_t pos;
     pos = date_string.find('/', date_string.find('/') + 1);
     if (pos != string::npos) {
@@ -936,8 +936,8 @@ string Date::get_YYYYMM(int day) {
     oss << setw(4) << setfill('0') << this->get_year(day) << "-";
     oss << setw(2) << setfill('0') << this->get_month(day);
   } else {
-	oss << setw(4) << setfill('0') << this->year << "-";
-	oss << setw(2) << setfill('0') << this->month;
+  oss << setw(4) << setfill('0') << this->year << "-";
+  oss << setw(2) << setfill('0') << this->month;
   }
   return oss.str();
 }

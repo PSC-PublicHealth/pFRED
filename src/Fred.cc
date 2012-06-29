@@ -24,8 +24,15 @@
 #include "Travel.h"
 #include "Epidemic.h"
 #include "Seasonality.h"
+#include "Past_Infection.h"
+#include "execinfo.h"
+#include <csignal>
+#include <cstdlib>
+#include <cxxabi.h>
 
 int main(int argc, char* argv[]) {
+
+
   int run;          // number of current run
   unsigned long new_seed;
   char directory[256];
@@ -205,10 +212,10 @@ int main(int argc, char* argv[]) {
 
     if (Date::match_pattern(Global::Sim_Current_Date, "01-01-*")) {
       if (Global::Track_age_distribution) {
-	    Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+      Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
       }
       if (Global::Track_household_distribution) {
-	    Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+      Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
       }
     }
 
@@ -236,4 +243,3 @@ int main(int argc, char* argv[]) {
 
   return 0;
 }
-

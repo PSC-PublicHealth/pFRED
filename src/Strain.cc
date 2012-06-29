@@ -32,45 +32,87 @@ using namespace std;
 Strain::Strain() {
   transmissibility = -1.0;
   disease = NULL;
-  strainData = NULL;
+  strain_data = NULL;
 }
 
 Strain::~Strain() {
-  if(strainData != NULL) delete strainData;
+  if(strain_data != NULL) delete strain_data;
 }
 
-void Strain::setup(int strain, Disease *disease, map<string, double> *data, double trans) {
+void Strain::setup(int strain, Disease *disease, vector<int> *data, double trans, Strain *parent) {
   id = strain;
   this->disease = disease;
-  strainData = data;
+  strain_data = data;
   transmissibility = trans;
+  //if(Global::Verbose > 0) print();
+  this->parent = parent;
+  if(parent == NULL) substitutions = 0;
+  else { 
+    substitutions = parent->get_substitutions() + 1;
+  }
 }
 
 void Strain::setup(int strain, Disease *disease) {
-  map<string, double> *data = new map<string, double>;
-  Params::get_double_indexed_param_map ("strain_data", disease->get_id(), strain, data);
+  vector<int> *data = new vector<int>;
+  int numAminoAcids;
+  Params::get_param((char *) "num_amino_acids", &numAminoAcids);
+  // HACK
+  int ns;
 
+  int distance = 3;
+
+  Params::get_param((char *) "num_strains[0]", &ns);
+  for(int i=0; i<numAminoAcids; ++i){
+    int aacid = IRAND(0,63);
+    if(strain == 0){
+      aacid = 0;
+    }
+    else if(strain == 1){
+      if(i < distance) aacid = 1;
+      else aacid = 0;
+    }
+    data->push_back(aacid);
+  }
   double trans;
-  Params::get_double_indexed_param("transmissibility", disease->get_id(), strain, &trans);
+  //Params::get_double_indexed_param("transmissibility", disease->get_id(), strain, &trans);
+  trans = 1.0;
 
-  setup(strain, disease, data, trans);
+  setup(strain, disease, data, trans, NULL);
 
   printf("Strain setup finished\n");
   fflush(stdout);
 
-  if (Global::Verbose > 0) print();
+  //if (Global::Verbose > 0) print();
+}
+
+void Strain::print_alternate(stringstream &out) {
+  //out << "ID: " << id << " Ntide Sequence: ";
+  int pid = -1;
+  if(parent) pid = parent->get_id();
+  out << id << " : " << pid << " : ";
+  for(unsigned int i=0; i < strain_data->size(); ++i){
+    out << strain_data->at(i) << " ";
+  }
 }
 
 void Strain::print() {
-  printf("Strain %d trans %e\n", id, transmissibility);
-
-  printf("data:  ");
-
-  for(map<string, double>::iterator it = strainData->begin(); it != strainData->end(); it++) {
-    printf("%s:%lf ", (it->first).c_str(), it->second);
-  }
-
-  printf("\n");
+  cout << "New Strain: " << id << " Trans: " << transmissibility << " Data: ";
+  for(unsigned int i=0; i < strain_data->size(); ++i){
+    cout << strain_data->at(i) << " ";
+  } cout << endl;
 }
 
+int Strain::get_num_data_elements()
+{
+  return strain_data->size();
+}
 
+int Strain::get_data_element(int i)
+{
+  return strain_data->at(i);
+}
+
+int Strain::get_substitutions()
+{
+  return substitutions;
+}

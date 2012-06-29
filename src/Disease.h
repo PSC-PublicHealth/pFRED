@@ -15,6 +15,7 @@
 #include "Global.h"
 #include "Epidemic.h"
 #include <map>
+#include <fstream>
 
 using namespace std;
 
@@ -115,17 +116,17 @@ public:
   /**
    * @param the simulation day
    * @return a pointer to a map of Primary Loads for a given day
-   * @see Evolution::getPrimaryLoads(int day)
+   * @see Evolution::get_primary_loads(int day)
    */
-  map<int, double> * getPrimaryLoads(int day);
+  map<int, double> * get_primary_loads(int day);
 
   /**
    * @param the simulation day
    * @param the particular strain of the disease
    * @return a pointer to a map of Primary Loads for a particular strain of the disease on a given day
-   * @see Evolution::getPrimaryLoads(int day, int strain)
+   * @see Evolution::get_primary_loads(int day, int strain)
    */
-  map<int, double> * getPrimaryLoads(int day, int strain);
+  map<int, double> * get_primary_loads(int day, int strain);
 
   /**
    * @return a pointer to this Disease's Evolution attribute
@@ -136,9 +137,9 @@ public:
    * @param infection
    * @param loads
    * @return a pointer to a Trajectory object
-   * @see return Trajectory::getTrajectory(Infection *infection, map<int, double> *loads)
+   * @see return Trajectory::get_trajectory(Infection *infection, map<int, double> *loads)
    */
-  Trajectory * getTrajectory(Infection *infection, map<int, double> *loads);
+  Trajectory * get_trajectory(Infection *infection, map<int, double> *loads);
 
   /**
    * Draws from this Disease's mutation probability distribution
@@ -182,6 +183,9 @@ public:
    */
   static void set_prob_stay_home(double);
 
+  int get_num_strains();
+  int get_num_strain_data_elements(int strain);
+  int get_strain_data_element(int strain, int i);
 
   static void get_disease_parameters();
 
@@ -199,6 +203,13 @@ public:
   }
 
   void increment_infectee_count(int day) { epidemic->increment_infectee_count(day); }
+ 
+  bool gen_immunity_infection(int age);
+  bool gen_immunity_vaccination(int age);
+
+  int addStrain(vector<int> strain_data, double transmissibility, int parent);
+  void printStrain(int strain_id, stringstream &out);
+  int getStrainSubstitutions(int strain);
 
 private:
   int id;
@@ -212,6 +223,8 @@ private:
   Epidemic *epidemic;
   Age_Map *residual_immunity;
   Age_Map *at_risk;
+  Age_Map *infection_immunity_prob;
+  Age_Map *vaccination_immunity_prob;
   StrainTable *strainTable;
   IntraHost *ihm;
   Evolution *evol;

@@ -13,6 +13,8 @@
 #define _FRED_ACTIVITIES_H
 
 #include <vector>
+#include <bitset>
+
 #include "Global.h"
 
 class Person;
@@ -100,7 +102,7 @@ public:
   /**
    * @return a pointer to this agent's Neighborhood
    */
-  Place * get_neighborhood() { return favorite_place[NEIGHBORHOOD_INDEX]; }
+  Place * get_neighborhood() const { return favorite_place[NEIGHBORHOOD_INDEX]; }
 
   /**
    * @return a pointer to this agent's School
@@ -204,14 +206,14 @@ public:
   static void before_run();
 
 private:
-  Person * self;	 // pointer to person using having this activities
-  int profile;				 // index of usual visit pattern
+  Person * self;        // pointer to person using having this activities
+  int profile;          // index of usual visit pattern
   Place * favorite_place[FAVORITE_PLACES];    // list of expected places
-  bool on_schedule[FAVORITE_PLACES]; // true iff favorite place is on schedule
-  int schedule_updated;			 // date of last schedule update
-  bool travel_status;				// true if traveling
-  bool traveling_outside;			// true if traveling outside modeled area
-  Place ** tmp_favorite_place; // list of favorite places, stored while traveling
+  std::bitset< FAVORITE_PLACES > on_schedule; // true iff favorite place is on schedule
+  int schedule_updated;     // date of last schedule update
+  bool travel_status;       // true if traveling
+  bool traveling_outside;       // true if traveling outside modeled area
+  Place ** tmp_favorite_place;  // list of favorite places, stored while traveling
 
   // individual sick day variables
   int my_sick_days_absent;
@@ -228,8 +230,8 @@ private:
   static double age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
 
   // run-time parameters
-  static double Community_distance;	    // size of community (in km)
-  static double Community_prob;	   // prob of visiting Community per day
+  static double Community_distance;     // size of community (in km)
+  static double Community_prob;         // prob of visiting Community per day
   static double Home_neighborhood_prob; // prob of visiting home neighborhood per day
 
   static int Enable_default_sick_behavior;
@@ -262,6 +264,7 @@ protected:
   /**
    * Default constructor
    */
+  friend class Person;
   Activities() { }
 
   /**

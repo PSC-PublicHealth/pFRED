@@ -46,7 +46,7 @@ class Timestep_Map {
   // Updated: Shawn Brown
   
 public:
-  Timestep_Map();	
+  Timestep_Map();  
   Timestep_Map(string _name);
   virtual ~Timestep_Map();
   

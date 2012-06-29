@@ -29,7 +29,7 @@ int Classroom::Classroom_closure_delay = 0;
 bool Classroom::Classroom_parameters_set = false;
 
 Classroom::Classroom(int loc, const char *lab, double lon,
-		     double lat, Place *container, Population *pop) {
+         double lat, Place *container, Population *pop) {
   type = CLASSROOM;
   setup(loc, lab, lon, lat, container, pop);
   get_parameters(Global::Diseases);
@@ -95,7 +95,7 @@ double Classroom::get_transmission_prob(int disease, Person * i, Person * s) {
 }
 
 bool Classroom::should_be_open(int day, int disease) {
-	return container->should_be_open(day, disease);
+  return container->should_be_open(day, disease);
 }
 
 double Classroom::get_contacts_per_day(int disease) {

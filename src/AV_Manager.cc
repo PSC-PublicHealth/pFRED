@@ -74,7 +74,7 @@ void AV_Manager::reset(){
 void AV_Manager::print(){
   if(do_av == 1)
     av_package->print();
-}			
+}      
 
 void AV_Manager::set_policies(){
   vector < Antiviral* > avs = av_package->get_AV_vector();
@@ -106,11 +106,11 @@ void AV_Manager::disseminate(int day){
 
       for(int ip=0;ip<npeople;ip++){
         if(av->get_current_stock()== 0) break;
-        Person* current_person = pop->get_person(ip);
+        Person* current_person = pop->get_person_by_index(ip);
         // Should the person get an av
-	//int yeah_or_ney = p->choose(current_person,av->get_disease(),day);
-	//if(yeah_or_ney == 0){
-	if(p->choose_first_negative(current_person,av->get_disease(),day) == true){
+  //int yeah_or_ney = p->choose(current_person,av->get_disease(),day);
+  //if(yeah_or_ney == 0){
+  if(p->choose_first_negative(current_person,av->get_disease(),day) == true){
           if(Global::Debug > 3) cout << "Giving Antiviral for disease " << av->get_disease() << " to " <<ip << "\n";
           av->remove_stock(1);
           current_person->get_health()->take(av,day);

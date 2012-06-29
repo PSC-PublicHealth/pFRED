@@ -25,6 +25,7 @@ class Antiviral;
 class Health;
 class IntraHost;
 class Transmission;
+class Past_Infection;
 
 #define BIFURCATING 0
 #define SEQUENTIAL 1
@@ -208,7 +209,7 @@ public:
   /**
    * @param transmission a Transmission to add
    */
-  void addTransmission(Transmission *transmission);
+  //void addTransmission(Transmission *transmission);
 
   /**
    * @param trajectory the new Trajectory of this Infection
@@ -228,6 +229,24 @@ public:
    * @return a pointer to this Infection's trajectory attribute
    */
   Trajectory * get_trajectory() { return trajectory; }
+
+  int get_num_past_infections();
+  
+  Past_Infection *get_past_infection(int i);
+
+  // change the following two to use disease id
+  int get_num_vaccinations();
+  Past_Infection *get_vaccine_health(int i);
+
+  bool provides_immunity() { return immune_response; }
+
+  void get_strains(std::vector<int> &strains) { return trajectory->get_all_strains(strains); }
+
+  int get_age_at_exposure() { return age_at_exposure; }
+
+  Person *get_host() { return host; }
+
+  void mutate(int old_strain, int new_strain, int day) { trajectory->mutate(old_strain, new_strain, day); }
 
 private:
   // associated disease
@@ -283,6 +302,9 @@ private:
   // as well as in the update() method when evaluating the trajectory
   bool dummy;
   int offset;
+
+  bool immune_response;
+  int age_at_exposure;
 
   std::vector <Transmission *> transmissions;
 

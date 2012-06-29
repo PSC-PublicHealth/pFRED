@@ -26,6 +26,11 @@ int Global::Diseases = 0;
 int Global::StrainEvolution = 0;
 char Global::Prevfilebase[256];
 char Global::Incfilebase[256];
+char Global::Immunityfilebase[256];
+char Global::Transmissionsfilebase[256];
+char Global::Strainsfilebase[256];
+char Global::ErrorLogbase[256];
+int Global::Enable_Protection;
 int Global::Enable_Behaviors = 0;
 int Global::Track_infection_events = 0;
 int Global::Track_age_distribution = 0;
@@ -41,6 +46,8 @@ int Global::Epidemic_offset = 0;
 int Global::Vaccine_offset = 0;
 char Global::Start_date[256];
 char Global::Seasonality_Timestep[256];
+int Global::Track_Residual_Immunity = 0;
+int Global::Track_Multi_Strain_Stats = 0;
 double Global::Work_absenteeism = 0.0;
 double Global::School_absenteeism = 0.0;
 bool Global::Enable_Large_Grid = false;
@@ -65,10 +72,14 @@ bool Global::Report_Age_Of_Infection = false;
 bool Global::Report_Place_Of_Infection = false;
 bool Global::Report_Presenteeism = false;
 
-// per-strain prevalence incidence reporting off by default
-// will be enabled in Fred.cc if valid files are given in params
+// per-strain prevalence, incidence, and immunity reporting off by default
+// will be enabled in Utils::fred_open_output_files (called from Fred.cc)
+// if valid files are given in params
 bool Global::Report_Prevalence = false;
 bool Global::Report_Incidence = false;
+bool Global::Report_Immunity = false;
+bool Global::Report_Transmissions = false;
+bool Global::Report_Strains = false;
 
 // global singleton objects
 Population Global::Pop;
@@ -92,9 +103,43 @@ FILE *Global::Deathfp = NULL;
 FILE *Global::Prevfp = NULL;
 FILE *Global::Incfp = NULL;
 FILE *Global::ErrorLogfp = NULL;
+FILE *Global::Immunityfp = NULL;
+FILE *Global::Transmissionsfp = NULL;
+FILE *Global::Strainsfp = NULL;
 FILE *Global::Householdfp = NULL;
 
 void Global::get_global_parameters() {
+  Params::get_param((char *) "verbose", &Global::Verbose);
+  Params::get_param((char *) "debug", &Global::Debug);
+  Params::get_param((char *) "test", &Global::Test);
+  Params::get_param((char *) "quality_control", &Global::Quality_control);
+  Params::get_param((char *) "rr_delay", &Global::RR_delay);
+  Params::get_param((char *) "days", &Global::Days);
+  Params::get_param((char *) "seed", &Global::Seed);
+  Params::get_param((char *) "epidemic_offset", &Global::Epidemic_offset);
+  Params::get_param((char *) "vaccine_offset", &Global::Vaccine_offset);
+  Params::get_param((char *) "start_date", Global::Start_date);
+  Params::get_param((char *) "reseed_day", &Global::Reseed_day);
+  Params::get_param((char *) "outdir", Global::Output_directory);
+  Params::get_param((char *) "tracefile", Global::Tracefilebase);
+  Params::get_param((char *) "track_infection_events", &Global::Track_infection_events);
+  Params::get_param((char *) "track_age_distribution", &Global::Track_age_distribution);
+  Params::get_param((char *) "track_network_stats", &Global::Track_network_stats);
+  Params::get_param((char *) "track_household_distribution", &Global::Track_household_distribution);
+  Params::get_param((char *) "vaccine_tracefile", Global::VaccineTracefilebase);
+  Params::get_param((char *) "incremental_trace", &Global::Incremental_Trace);
+  Params::get_param((char *) "trace_headers", &Global::Trace_Headers);
+  Params::get_param((char *) "diseases", &Global::Diseases);
+  Params::get_param((char *) "enable_behaviors", &Global::Enable_Behaviors);
+  Params::get_param((char *) "prevalencefile", Global::Prevfilebase);
+  Params::get_param((char *) "incidencefile", Global::Incfilebase);
+  Params::get_param((char *) "immunity_file", Global::Immunityfilebase);
+  Params::get_param((char *) "transmissionsfile", Global::Transmissionsfilebase);
+  Params::get_param((char *) "strainsfile", Global::Strainsfilebase);
+  Params::get_param((char *) "enable_protection", &Global::Enable_Protection);
+  Params::get_param((char *) "seasonality_timestep_file", Global::Seasonality_Timestep);
+  Params::get_param((char *) "track_residual_immunity", &Global::Track_Residual_Immunity);
+  Params::get_param((char *) "track_multi_strain_stats", &Global::Track_Multi_Strain_Stats);
 
   Params::get_param_from_string("verbose", &Global::Verbose);
   Params::get_param_from_string("debug", &Global::Debug);
@@ -118,9 +163,11 @@ void Global::get_global_parameters() {
   Params::get_param_from_string("incremental_trace", &Global::Incremental_Trace);
   Params::get_param_from_string("trace_headers", &Global::Trace_Headers);
   Params::get_param_from_string("diseases", &Global::Diseases);
-  Params::get_param_from_string("enable_behaviors",&Global::Enable_Behaviors);
   Params::get_param_from_string("prevalencefile", Global::Prevfilebase);
   Params::get_param_from_string("incidencefile", Global::Incfilebase);
+  Params::get_param_from_string("immunity_file", Global::Immunityfilebase);
+  Params::get_param_from_string("transmissionsfile", Global::Transmissionsfilebase);
+  Params::get_param_from_string("strainsfile", Global::Strainsfilebase);
   Params::get_param_from_string("seasonality_timestep_file", Global::Seasonality_Timestep);
   Params::get_param_from_string("work_absenteeism", &Global::Work_absenteeism);
   Params::get_param_from_string("school_absenteeism", &Global::School_absenteeism);
@@ -161,6 +208,10 @@ void Global::get_global_parameters() {
   Global::Use_Mean_Latitude = temp_int;
   Params::get_param_from_string("print_household_locations",&temp_int);
   Global::Print_Household_Locations = temp_int;
+
+  // Initialize Demographics
+  Demographics::read_init_files();
+
   Params::get_param_from_string("report_age_of_infection",&temp_int);
   Global::Report_Age_Of_Infection = temp_int;
   Params::get_param_from_string("report_place_of_infection",&temp_int);

@@ -21,7 +21,7 @@ class FixedIntraHost : public IntraHost {
      * @param loads
      * @return a pointer to a Trajectory object
      */
-    Trajectory * getTrajectory(Infection *infection, std :: map<int, double> *loads);
+    Trajectory * get_trajectory(Infection *infection, std :: map<int, double> *loads);
 
     /**
      * Set the attributes for the IntraHost

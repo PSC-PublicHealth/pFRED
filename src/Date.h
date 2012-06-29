@@ -189,6 +189,7 @@ public:
   static bool match_pattern(Date * check_date, string pattern);
   static bool day_in_range_MMDD(Date * check_date, char * start_day, char * end_day);
 
+  static int get_epoch_start_year() { return Date::EPOCH_START_YEAR; }
 private:
   static const int EPOCH_START_YEAR = 1800;
   static const int day_table[2][13];

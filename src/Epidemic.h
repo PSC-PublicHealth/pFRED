@@ -96,7 +96,14 @@ public:
 
   void find_infectious_places(int day, int dis);
   void add_susceptibles_to_infectious_places(int day, int dis);
-  void increment_infectee_count(int day) { infectees[day]++; }
+  void increment_infectee_count(int day) {
+    #pragma omp atomic
+    ++( infectees[ day ] );
+  }
+
+  int get_num_infectious(); 
+  void get_infectious_samples(int num_samples, vector<Person *> &samples);
+  void get_infectious_samples(vector<Person *> &samples, double prob);
 
   // static methods
   static void update(int day);
@@ -106,18 +113,14 @@ public:
 private:
   Disease * disease;
   int id;
-  int N;				      // current population size
-  int N_init;				      // initial population size
-  typedef pair<Person *,int> person_pair;
-  struct person_pair_comparator {
-    bool operator()(const person_pair A, const person_pair B) const  {
-      return A.second < B.second;
-    }
-  };
-
+  int N;          // current population size
+  int N_init;     // initial population size
+  
   Timestep_Map* primary_cases_map;
-  set <person_pair, person_pair_comparator> susceptible_list;
-  set <person_pair, person_pair_comparator> infectious_list;
+  // lists of susceptible and infectious Persons now kept as
+  // bit maskes in Population
+  // set <person_pair, person_pair_comparator> susceptible_list;
+  // set <person_pair, person_pair_comparator> infectious_list;
   vector <Person *> daily_infections_list;
   vector <Place *> inf_households;
   vector <Place *> inf_neighborhoods;
@@ -133,12 +136,31 @@ private:
   int total_incidents;
   int * new_cases;
   int * infectees;
-  double RR;					// reproductive rate
+  double RR;    // reproductive rate
   int cohort_size;
   int exposed_count;
   int symptomatic_count;
   int removed_count;
   int immune_count;
+
+  struct update_susceptible_activities {
+    int day, disease_id;
+    update_susceptible_activities( int _day, int _disease_id ) : day( _day ), disease_id( _disease_id ) { };
+    void operator() ( Person & p );
+  };
+
+  struct update_infectious_activities {
+    int day, disease_id;
+    update_infectious_activities( int _day, int _disease_id ) : day( _day ), disease_id( _disease_id ) { };
+    void operator() ( Person & p );
+  };
+
+  struct infectious_sampler {
+    double prob;
+    vector< Person * > * samples;
+    void operator() ( Person & p );
+  };
+
 };
 
 #endif // _FRED_EPIDEMIC_H

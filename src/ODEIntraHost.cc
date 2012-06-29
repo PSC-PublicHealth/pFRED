@@ -47,7 +47,7 @@ vector<double> ODEIntraHost::getInfectivities(double *viralTiter, int duration) 
   return infectivity;
   }
 
-vector<double> ODEIntraHost::getSymptomaticity(double *interferon, int duration) {
+vector<double> ODEIntraHost::get_symptomaticity(double *interferon, int duration) {
   vector<double> symptomaticity;
   bool flag = false;
 
@@ -62,7 +62,7 @@ vector<double> ODEIntraHost::getSymptomaticity(double *interferon, int duration)
   return symptomaticity;
   }
 
-Trajectory *ODEIntraHost :: getTrajectory(Infection *infection, map<int, double> *loads) {
+Trajectory *ODEIntraHost :: get_trajectory(Infection *infection, map<int, double> *loads) {
   /*  if(! initialized){
       initialize();
       initialized = true;
@@ -100,7 +100,7 @@ Trajectory *ODEIntraHost :: getTrajectory(Infection *infection, map<int, double>
 
   // Symptomaticity Trajectory
   double *ft = ebm->get_interferon_data();
-  vector<double> st = getSymptomaticity(ft, ebm->get_duration());
+  vector<double> st = get_symptomaticity(ft, ebm->get_duration());
   trajectory->set_symptomaticity_trajectory(st);
 
   delete ebm;

@@ -14,6 +14,7 @@
 
 #include <vector>
 #include <map>
+#include <fstream>
 
 class Strain;
 class Disease;
@@ -32,8 +33,16 @@ class StrainTable {
     void reset();
 
     void add(Strain *s);
-    double getTransmissibility(int id);
+    int add(vector<int> &strain_data, double transmissibility, int parent);
+    double get_transmissibility(int id);
 
+    int get_num_strains() { return strains->size(); }
+
+    int get_num_strain_data_elements(int strain);
+    int get_strain_data_element(int strain, int i);
+    void printStrain(int strain_id, stringstream &out);
+  
+    int get_substitutions(int strain_id);
   private:
     Disease *disease;
     vector<Strain *> *strains;

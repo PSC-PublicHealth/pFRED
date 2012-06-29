@@ -21,9 +21,9 @@ Policy::Policy() {
 }
 
 Policy::~Policy() {
-	for (unsigned int i=0; i < decision_list.size(); i++)
-		delete decision_list[i];			
-	decision_list.clear();
+  for (unsigned int i=0; i < decision_list.size(); i++)
+    delete decision_list[i];      
+  decision_list.clear();
 }
 
 Policy::Policy(Manager* mgr){

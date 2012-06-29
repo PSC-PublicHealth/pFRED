@@ -35,7 +35,7 @@ class IntraHost {
      * @param loads
      * @return a pointer to a Trajectory object
      */
-    virtual Trajectory * getTrajectory(Infection *infection, std::map<int, double> *loads) = 0;
+    virtual Trajectory * get_trajectory(Infection *infection, std::map<int, double> *loads) = 0;
 
     /**
      * @return this IntraHost's max_days

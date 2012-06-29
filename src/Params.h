@@ -101,6 +101,8 @@ class Params {
 
     static int get_param_vector(char *s, double *p);
 
+    static int get_param_vector(char *s, int *p);
+
     /**
      * @param s the parameter name
      * @param p a pointer to the 2D array of doubles that will be set

@@ -21,7 +21,7 @@
 #include "Global.h"
 
 Vaccine_Health::Vaccine_Health(int _vaccination_day, Vaccine* _vaccine, int _age, 
-			       Health* _health, Vaccine_Manager* _vaccine_manager){
+             Health* _health, Vaccine_Manager* _vaccine_manager){
   
   vaccine               = _vaccine;
   vaccination_day       = _vaccination_day;
@@ -51,7 +51,7 @@ void Vaccine_Health::print() const {
 
 void Vaccine_Health::printTrace() const {
   fprintf(Global::VaccineTracefp," vaccday %5d age %3d iseff %2d effday %5d currentdose %3d",vaccination_day,
-	  health->get_self()->get_age(),is_effective(), vaccination_effective_day, current_dose);
+    health->get_self()->get_age(),is_effective(), vaccination_effective_day, current_dose);
   fflush(Global::VaccineTracefp);
 }
 
@@ -61,10 +61,11 @@ void Vaccine_Health::update(int day, int age){
     // Going out to Person, so that activities can be accessed
     Disease* s = Global::Pop.get_disease(0);
     health->get_self()->become_immune(s);
+    effective = true;
     if(Global::Debug < 1) {
       cout << "Agent " << health->get_self()->get_id() 
-	   << " has become immune from dose "<< current_dose 
-	   << "on day " << day << "\n";
+     << " has become immune from dose "<< current_dose 
+     << "on day " << day << "\n";
     }
   }
   
@@ -79,25 +80,25 @@ void Vaccine_Health::update(int day, int age){
       days_to_next_dose = day + vaccine->get_dose(current_dose)->get_days_between_doses();
       int vaccine_dose_priority = vaccine_manager->get_vaccine_dose_priority();
       if(Global::Debug < 1){
-	cout << "Agent " << health->get_self()->get_id()
-	     << " being put in to the queue with priority " << vaccine_dose_priority
-	     << " for dose " << current_dose 
-	     << " on day " << day << "\n";
+  cout << "Agent " << health->get_self()->get_id()
+       << " being put in to the queue with priority " << vaccine_dose_priority
+       << " for dose " << current_dose 
+       << " on day " << day << "\n";
       }
       switch(vaccine_dose_priority){
       case VACC_DOSE_NO_PRIORITY:
-	vaccine_manager->add_to_regular_queue_random(health->get_self());
-	break;
+  vaccine_manager->add_to_regular_queue_random(health->get_self());
+  break;
       case VACC_DOSE_FIRST_PRIORITY:
-	vaccine_manager->add_to_priority_queue_begin(health->get_self());
-	break;
+  vaccine_manager->add_to_priority_queue_begin(health->get_self());
+  break;
       case VACC_DOSE_RAND_PRIORITY:
-	vaccine_manager->add_to_priority_queue_random(health->get_self());
-	break;
+  vaccine_manager->add_to_priority_queue_random(health->get_self());
+  break;
       case VACC_DOSE_LAST_PRIORITY:
-	vaccine_manager->add_to_priority_queue_end(health->get_self());
-	break;
-	
+  vaccine_manager->add_to_priority_queue_end(health->get_self());
+  break;
+  
       }
     }
   }

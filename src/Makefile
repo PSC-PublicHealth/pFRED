@@ -3,18 +3,30 @@
 #################  Compiler Flags ##############################
 CPP = g++ 
 
+LOGGING_PRESET_0 = 
+LOGGING_PRESET_1 = -DFREDWARNING
+LOGGING_PRESET_2 = -DFREDSTATUS -DFREDWARNING
+LOGGING_PRESET_3 = -DFREDVERBOSE -DFREDSTATUS -DFREDWARNING
+
 # use this for development:
-#CPPFLAGS = -g -m64 -O3 -Wall
+#CPPFLAGS = -g -m64 -O2 $(LOGGING_PRESET_3) -Wall
 
 # use one of these for profiling
-# CPPFLAGS = -g -m64 -O3 # -DNDEBUG
-# CPPFLAGS = -pg -m64 -O2 -DNDEBUG -fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls -fno-omit-frame-pointer
+# CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) # -DNDEBUG
+# CPPFLAGS = -pg -m64 -O2 -DNDEBUG $(LOGGING_PRESET_3) -fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls -fno-omit-frame-pointer
 
 # Use one of these for production:
-## If tcmalloc is avaialable, use it  
-#CPPFLAGS = -g -m64 -O3 -DNDEBUG -ltcmalloc #-fast #-Wall
-CPPFLAGS = -g -m64 -O3 -DNDEBUG #-fast #-Wall
 
+## If tcmalloc is avaialable, use it  
+#CPPFLAGS = -g -m64 -O3 -DNDEBUG $(LOGGING_PRESET_3) -ltcmalloc #-fast #-Wall
+
+#CPPFLAGS = -g -m64 -O3 -DNDEBUG $(LOGGING_PRESET_3) #-fast #-Wall
+
+## Use this to run with multiple threads
+#CPPFLAGS = -g -m64 -O3 -fopenmp $(LOGGING_PRESET_3) #-fast #-Wall
+
+## Use this to make reproducible serial runs
+CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) #-fast #-Wall
 
 # Use this for unit testing:
 # CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall
@@ -49,17 +61,19 @@ OBJ =   Fred.o Global.o Age_Map.o Timestep_Map.o Utils.o Params.o Date.o Random.
 	Geo_Utils.o Cell.o Grid.o Large_Grid.o Large_Cell.o Small_Grid.o Small_Cell.o Travel.o \
 	Decision.o Policy.o Manager.o \
 	Antiviral.o Antivirals.o AV_Decisions.o AV_Policies.o AV_Manager.o AV_Health.o \
-        Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
-        Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \
+	Vaccine_Health.o Vaccine_Dose.o Vaccine.o Vaccines.o \
+	Vaccine_Priority_Decisions.o Vaccine_Priority_Policies.o Vaccine_Manager.o \
 	Person.o Place.o Place_List.o Population.o \
 	Activities.o Attitude.o Behavior.o Demographics.o Health.o Perceptions.o \
-        Classroom.o Hospital.o Household.o Neighborhood.o Office.o School.o Workplace.o \
+	Classroom.o Hospital.o Household.o Neighborhood.o Office.o School.o Workplace.o \
 	Disease.o Infection.o Epidemic.o \
 	EvolutionFactory.o Evolution.o Strain.o Trajectory.o StrainTable.o \
 	Multistrain_Timestep_Map.o \
 	IntraHost.o DefaultIntraHost.o FixedIntraHost.o \
 	Abstract_Grid.o Abstract_Cell.o \
-	Seasonality_Timestep_Map.o Seasonality.o
+	Seasonality_Timestep_Map.o Seasonality.o \
+	Past_Infection.o MSEvolution.o Piecewise_Linear.o \
+	# FergEvolution.o
 	# ODEIntraHost.o ODE.o
 
 SRC = $(OBJ:.o=.cc)

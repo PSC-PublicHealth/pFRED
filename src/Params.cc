@@ -67,7 +67,7 @@ int Params::read_parameters(char *paramfile) {
           }
           Params::param_count++;
         } else {
-        	Utils::fred_abort("Bad format in params.default file on line starting with %s\n",name);
+          Utils::fred_abort("Bad format in params.default file on line starting with %s\n",name);
         }
       }
     }
@@ -114,7 +114,7 @@ int Params::read_parameters(char *paramfile) {
           }
           Params::param_count++;
         } else {
-	  Utils::fred_abort("Help! Bad format in file %s on line starting with %s\n",paramfile, name);
+    Utils::fred_abort("Help! Bad format in file %s on line starting with %s\n",paramfile, name);
         }
       }
     }
@@ -350,6 +350,27 @@ int Params::get_param_vector(char *s, double *p) {
   }
   return n;
 }
+
+int Params::get_param_vector(char *s, int *p) {
+  char str[1024];
+  int n;
+  char *pch;
+  Params::get_param(s, str);
+  pch = strtok(str, " ");
+  if (sscanf(pch, "%d", &n) == 1) {
+    for (int i = 0; i < n; i++) {
+      pch = strtok(NULL, " ");
+      if (pch == NULL) {
+        Utils::fred_abort("Help! bad param vector: %s\n", s);
+      }
+      sscanf(pch, "%d", &p[i]);
+    }
+  } else {
+    Utils::fred_abort(""); 
+  }
+  return n;
+}
+
 
 int Params::get_param_matrix(char *s, double ***p) {
   int n = 0;

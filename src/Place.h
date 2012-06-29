@@ -22,6 +22,7 @@
 #define COMMUNITY 'X'
 
 #include <vector>
+#include <deque>
 using namespace std;
 
 #include "Population.h"
@@ -46,7 +47,7 @@ public:
    *  @param cont this Place's container
    *  @param pop this Place's population
    */
-  void setup(int loc_id, const char *lab, double lon, double lat, Place *cont, Population *pop);
+  void setup(int loc_id, const char *lab, fred::geo lon, fred::geo lat, Place *cont, Population *pop);
 
   /**
    * Get this place ready
@@ -144,7 +145,7 @@ public:
    * @@param strain a vector of integers representing strains
    * @param incr is unused at this time
    */
-  void modifyIncidenceCount(int disease_id, vector<int> strain, int incr);
+  void modify_incidence_count(int disease_id, vector<int> strain, int incr);
 
   /**
    * Allow update of prevalence vector.
@@ -153,7 +154,7 @@ public:
    * @@param strain a vector of integers representing strains
    * @param incr is unused at this time
    */
-  void modifyPrevalenceCount(int disease_id, vector<int> strain, int incr);
+  void modify_prevalence_count(int disease_id, vector<int> strain, int incr);
 
   /**
    * <bold>Deprecated.</bold>
@@ -230,14 +231,14 @@ public:
    *
    * @return the latitude
    */
-  double get_latitude() { return latitude; }
+  fred::geo get_latitude() { return latitude; }
 
   /**
    * Get the longitude.
    *
    * @return the longitude
    */
-  double get_longitude() { return longitude; }
+  fred::geo get_longitude() { return longitude; }
 
   /**
    * Get the count of (S)usceptibles for a given diease in this place.
@@ -355,14 +356,14 @@ public:
    *
    * @param x the new latitude
    */
-  void set_latitude(double x) { latitude = x; }
+  void set_latitude(fred::geo x) { latitude = x; }
 
   /**
    * Set the longitude.
    *
    * @param x the new longitude
    */
-  void set_longitude(double x) { longitude = x; }
+  void set_longitude(fred::geo x) { longitude = x; }
 
   /**
    * Set the simulation day (an integer value of days from the start of the simulation) when the place will close.
@@ -425,26 +426,26 @@ public:
   double get_attack_rate() { return(N?(double)total_infections/(double)N:0.0); }
 
 protected:
-  int id;					// place id
-  char label[32];				// external id
-  char type;				// HOME, WORK, SCHOOL, COMMUNITY
-  Place *container;				// id of container place
-  double latitude;				// geo location
-  double longitude;				// geo location
-  int N;			   // total number of potential visitors
-  vector <Person *> *susceptibles;	 // list of susceptible visitors
-  vector <Person *> *infectious;	  // list of infectious visitors
-  int *S;					// susceptible count
-  int *I;					// infectious count
-  int *Sympt;					// symptomatics count
-  int close_date;		    // this place will be closed during:
-  int open_date;			    //   [close_date, open_date)
-  int * cases;					// symptomatic cases today
-  int * deaths;					// deaths today
-  int * total_cases;			      // total symptomatic cases
-  int * total_deaths;				// total deaths
+  int id;                 // place id
+  char label[32];         // external id
+  char type;              // HOME, WORK, SCHOOL, COMMUNITY
+  Place *container;       // container place
+  fred::geo latitude;     // geo location
+  fred::geo longitude;    // geo location
+  int N;                  // total number of potential visitors
+  vector <Person *> *susceptibles;    // list of susceptible visitors
+  vector <Person *> *infectious;      // list of infectious visitors
+  int *S;                 // susceptible count
+  int *I;                 // infectious count
+  int *Sympt;             // symptomatics count
+  int close_date;         // this place will be closed during:
+  int open_date;          //   [close_date, open_date)
+  int * cases;            // symptomatic cases today
+  int * deaths;           // deaths today
+  int * total_cases;      // total symptomatic cases
+  int * total_deaths;     // total deaths
   Population *population;
-  Cell * grid_cell;			 // geo grid_cell for this place
+  Cell * grid_cell;       // geo grid_cell for this place
   vector< map<int, int> > incidence;
   vector< map<int, int> > prevalence;
   int days_infectious;
@@ -454,8 +455,7 @@ protected:
   int get_contact_count(Person * infector, int disease_id, int day, double contact_rate);
   void attempt_transmission(double transmission_prob, Person * infector, Person * infectee, int disease_id, int day);
 
-  // disease parameters
-  double *beta;	       // place-independent transmissibility per contact
-};
+  fred::Mutex mutex;
 
+};
 #endif // _FRED_PLACE_H

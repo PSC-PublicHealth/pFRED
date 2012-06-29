@@ -162,6 +162,33 @@ void Utils::fred_open_output_files(char * directory, int run){
     }
     Global::Report_Incidence = true;
   }
+  Global::Immunityfp = NULL;
+  if (strcmp(Global::Immunityfilebase, "none") != 0) {
+    sprintf(filename, "%s/immunity%d.txt", directory, run);
+    Global::Immunityfp = fopen(filename, "w");
+    if (Global::Immunityfp == NULL) {
+      Utils::fred_abort("Help! Can't open %s\n", filename);
+    }
+    Global::Report_Immunity = true;
+  }
+  Global::Transmissionsfp = NULL;
+  if (strcmp(Global::Transmissionsfilebase, "none") != 0) {
+    sprintf(filename, "%s/transmissions%d.txt", directory, run);
+    Global::Transmissionsfp = fopen(filename, "w");
+    if (Global::Transmissionsfp == NULL) {
+      Utils::fred_abort("Help! Can't open %s\n", filename);
+    }
+    Global::Report_Transmissions = true;
+  }
+  Global::Strainsfp = NULL;
+  if (strcmp(Global::Strainsfilebase, "none") != 0) {
+    sprintf(filename, "%s/strains%d.txt", directory, run);
+    Global::Strainsfp = fopen(filename, "w");
+    if (Global::Strainsfp == NULL) {
+      Utils::fred_abort("Help! Can't open %s\n", filename);
+    }
+    Global::Report_Strains = true;
+  }
   Global::Householdfp = NULL;
   if (Global::Print_Household_Locations) {
     sprintf(filename, "%s/households.txt", directory);
@@ -181,6 +208,7 @@ void Utils::fred_end(void){
   if (Global::VaccineTracefp != NULL) fclose(Global::VaccineTracefp);
   if (Global::Prevfp != NULL) fclose(Global::Prevfp);
   if (Global::Incfp != NULL) fclose(Global::Incfp);
+  if (Global::Immunityfp != NULL) fclose(Global::Immunityfp);
   if (Global::Householdfp != NULL) fclose(Global::Householdfp);
 }
 
@@ -209,7 +237,7 @@ void Utils::fred_start_day_timer() {
 void Utils::fred_print_day_timer(int day) {
   time(&stop_timer);
   fprintf(Global::Statusfp, "day %d took %d seconds\n",
-	  day, (int) (stop_timer-day_timer));
+    day, (int) (stop_timer-day_timer));
   fflush(Global::Statusfp);
   start_timer = stop_timer;
 }
@@ -217,7 +245,7 @@ void Utils::fred_print_day_timer(int day) {
 void Utils::fred_print_finish_timer() {
   time(&stop_timer);
   fprintf(Global::Statusfp, "FRED took %d seconds\n",
-	  (int)(stop_timer-fred_timer));
+    (int)(stop_timer-fred_timer));
   fflush(Global::Statusfp);
 }
 
@@ -228,7 +256,7 @@ void Utils::fred_print_lap_time(const char* format, ...) {
   vfprintf(Global::Statusfp,format,ap);
   va_end(ap);
   fprintf(Global::Statusfp, " took %d seconds\n",
-	  (int) (stop_timer - start_timer));
+    (int) (stop_timer - start_timer));
   fflush(Global::Statusfp);
   start_timer = stop_timer;
 }
@@ -240,6 +268,16 @@ void Utils::fred_verbose(int verbosity, const char* format, ...){
     vprintf(format,ap);
     va_end(ap);
     fflush(stdout);
+  }
+}
+
+void Utils::fred_verbose_statusfp(int verbosity, const char* format, ...){
+  if (Global::Verbose > verbosity) {
+    va_list ap;
+    va_start(ap,format);
+    vfprintf(Global::Statusfp,format,ap);
+    va_end(ap);
+    fflush(Global::Statusfp);
   }
 }
 
@@ -314,6 +352,6 @@ void Utils::fred_print_resource_usage(int day) {
   rusage r_usage;
   getrusage(RUSAGE_SELF, &r_usage);
   printf("day %d maxrss %ld\n",
-	 day, r_usage.ru_maxrss);
+   day, r_usage.ru_maxrss);
   fflush(stdout);
 }

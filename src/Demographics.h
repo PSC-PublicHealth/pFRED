@@ -53,7 +53,7 @@ public:
   /**
    * @return the number of days the agent has been alive / 365.0
    */
-  double get_real_age();
+  double get_real_age() const;
 
   /**
    * @return the agent's age
@@ -63,27 +63,27 @@ public:
   /**
    * @return the agent's sex
    */
-  char get_sex()           { return sex; }
+  const char get_sex() const { return sex; }
 
   /**
    * @return the agent's marital_status
    */
-  int get_marital_status() { return marital_status; }
+  const int get_marital_status() const { return marital_status; }
 
   /**
    * @return the agent's profession
    */
-  int get_profession()     { return profession; }
+  const int get_profession() const { return profession; }
 
   /**
    * @return <code>true</code> if the agent is pregnant, <code>false</code> otherwise
    */
-  bool is_pregnant()       { return pregnant; }
+  const bool is_pregnant() const { return pregnant; }
 
   /**
    * @return <code>true</code> if the agent is deceased, <code>false</code> otherwise
    */
-  bool is_deceased()       { return deceased; }
+  const bool is_deceased() const { return deceased; }
 
   /**
    * Print out information about this object
@@ -93,20 +93,21 @@ public:
   /**
    * @return the agent's init_age
    */
-  short int get_init_age()            { return init_age; }
+  short int get_init_age() const           { return init_age; }
 
   /**
    * @return the agent's init_marital_status
    */
-  int get_init_marital_status() { return init_marital_status; }
+  const int get_init_marital_status() const { return init_marital_status; }
 
   /**
    * @return the agent's init_profession
    */
-  int get_init_profession()     { return init_profession; }
-	
+  const int get_init_profession() const { return init_profession; }
+  
   void set_relationship(int rel) { relationship = rel; }
-  int get_relationship() { return relationship; }
+
+  const int get_relationship() const { return relationship; }
 
   /**
    * @return <code>true</code> if the agent is a householder, <code>false</code> otherwise
@@ -129,6 +130,11 @@ public:
   short int get_birth_year() { return this->birth_year; }
   
   void terminate(){}
+
+  /**
+   * This method is only used one time during initialization to load the birth rate and mortality rate arrays from files
+   */
+  static void read_init_files();
 
 private:
   Person *self;                // Pointer to the person class belongs
@@ -154,10 +160,6 @@ private:
   static double age_daily_birth_rate[MAX_PREGNANCY_AGE + 1];
   static bool is_initialized;
 
-  /**
-   * This method is only used one time during initialization to load the birth rate and mortality rate arrays from files
-   */
-  void read_init_files();
 };
 
 #endif // _FRED_DEMOGRAPHICS_H

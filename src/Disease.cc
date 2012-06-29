@@ -35,12 +35,13 @@ using namespace std;
 
 Disease::Disease() {
   // note that the code that establishes the latent/asymptomatic/symptomatic
-  // periods has been moved to the IntraHost class (or classes derived from
-  // it.
+  // periods has been moved to the IntraHost class (or classes derived from it).
   transmissibility = -1.0;
   immunity_loss_rate = -1.0;
   mutation_prob = NULL;
   residual_immunity = NULL;
+  infection_immunity_prob = NULL;
+  vaccination_immunity_prob = NULL;
   at_risk = NULL;
   epidemic = NULL;
   population = NULL;
@@ -50,6 +51,8 @@ Disease::Disease() {
 Disease::~Disease() {
   delete epidemic;
   delete residual_immunity;
+  delete infection_immunity_prob;
+  delete vaccination_immunity_prob;
   delete at_risk;
   delete strainTable;
   delete ihm;
@@ -94,7 +97,14 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   residual_immunity->read_from_input("residual_immunity",id);
 
   if(residual_immunity->is_empty() == false) residual_immunity->print();
+ 
+  // Probability of developing an immune response by past infections
+  infection_immunity_prob = new Age_Map("Infection Immunity Probability");
+  infection_immunity_prob->read_from_input("infection_immunity_prob",id);
 
+  vaccination_immunity_prob = new Age_Map("Vaccination Immunity Probability");
+  vaccination_immunity_prob->read_from_input("vaccination_immunity_prob",id);
+  
   // Define at risk people
   at_risk = new Age_Map("At Risk Population");
   at_risk->read_from_input("at_risk",id);
@@ -113,6 +123,7 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   int evolType;
   Params::get_indexed_param("evolution", id, &evolType);
   evol = EvolutionFactory :: newEvolution(evolType);
+  evol->setup(this);
 
   if(at_risk->is_empty() == false ) at_risk->print();
 
@@ -171,7 +182,7 @@ int Disease::get_days_recovered() {
   if (immunity_loss_rate > 0.0) {
     // draw from exponential distribution
     days = floor(0.5 + draw_exponential(immunity_loss_rate));
-    // printf("DAYS RECOVERED = %d\n", days);
+     // printf("DAYS RECOVERED = %d\n", days);
   } else {
     days = -1;
   }
@@ -193,53 +204,66 @@ void Disease::get_disease_parameters() {
 }
 
 double Disease :: get_transmissibility(int strain) {
-  return strainTable->getTransmissibility(strain);
+  return strainTable->get_transmissibility(strain);
 }
 
-Trajectory * Disease :: getTrajectory(Infection *infection, map<int, double> *loads) {
-  return ihm->getTrajectory(infection, loads);
+Trajectory * Disease :: get_trajectory(Infection *infection, map<int, double> *loads) {
+  return ihm->get_trajectory(infection, loads);
 }
 
-map<int, double> * Disease :: getPrimaryLoads(int day) {
-  return evol->getPrimaryLoads(day);
+map<int, double> * Disease :: get_primary_loads(int day) {
+  return evol->get_primary_loads(day);
 }
 /// @brief Overloaded to allow specification of a single strain to be used for the initial loads.
-map<int, double> * Disease :: getPrimaryLoads(int day, int strain) {
-  return evol->getPrimaryLoads(day, strain);
+map<int, double> * Disease :: get_primary_loads(int day, int strain) {
+  return evol->get_primary_loads(day, strain);
 }
 
 int Disease :: get_max_days() {
   return ihm->get_max_days();
 }
 
+bool Disease :: gen_immunity_infection(int age) {
+  double prob = infection_immunity_prob->find_value(age);
+  return (RANDOM() <= prob);
+}
+
+bool Disease :: gen_immunity_vaccination(int age) {
+  double prob = vaccination_immunity_prob->find_value(age);
+  return (RANDOM() <= prob);
+}
+
+int Disease :: get_num_strain_data_elements(int strain)
+{
+  return strainTable->get_num_strain_data_elements(strain);
+}
+
+int Disease :: get_strain_data_element(int strain, int i)
+{
+  return strainTable->get_strain_data_element(strain, i);
+}
+  
+int Disease :: addStrain(vector<int> strain_data, double transmissibility, int parent)
+{
+  return strainTable->add(strain_data, transmissibility, parent);
+}
+
+int Disease :: getStrainSubstitutions(int strain)
+{
+  return strainTable->get_substitutions(strain);
+}
+
 double Disease::calculate_climate_multiplier(double seasonality_value) {
   return exp( ( ( seasonality_Ka * seasonality_value ) + seasonality_Kb ) ) + seasonality_min;
 }
 
+int Disease::get_num_strains() 
+{
+  return strainTable->get_num_strains();
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void Disease::printStrain(int strain_id, stringstream &out)
+{
+  strainTable->printStrain(strain_id, out);
+}
 

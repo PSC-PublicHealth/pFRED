@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <string>
+#include <fstream>
 
 typedef std::vector<double> trajectory_t;
 
@@ -30,13 +31,13 @@ class Trajectory {
 
     trajectory_t get_infectivity_trajectory(int strain);
     trajectory_t get_symptomaticity_trajectory();
-    void getAllStrains(std::vector<int> &);
+    void get_all_strains(std::vector<int> &);
 
     void set_symptomaticity_trajectory(trajectory_t symt);
     void set_infectivity_trajectory(int strain, trajectory_t vlt);
     void set_infectivities(std::map<int, trajectory_t > inf);
 
-    std::map<int, double> *getCurrentLoads(int day);
+    std::map<int, double> *get_current_loads(int day);
 
     int get_duration() {
       return duration;
@@ -86,12 +87,14 @@ class Trajectory {
 
     void calculate_aggregate_infectivity();
     std::map<int, double> *getInoculum(int day);
-    void modifySympPeriod(int startDate, int daysLeft);
-    void modifyAsympPeriod(int startDate, int daysLeft, int sympDate);
-    void modifyDevelopsSymp(int sympDate, int sympPeriod);
+    void modify_symp_period(int startDate, int days_left);
+    void modify_asymp_period(int startDate, int days_left, int sympDate);
+    void modify_develops_symp(int sympDate, int sympPeriod);
+    void mutate(int from_strain, int to_strain, unsigned int day);
 
     std::string to_string();
     void print();
+    void print_alternate(std::stringstream &out);
 
   private:
     int duration;

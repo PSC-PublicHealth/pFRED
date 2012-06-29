@@ -26,6 +26,7 @@
 #include <map>
 #include <vector>
 #include <float.h>
+#include "Utils.h"
 
 using std::out_of_range;
 
@@ -39,6 +40,7 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
   this->place = place;
   this->trajectory = NULL;
   infectee_count = 0;
+  age_at_exposure = host->get_age();
 
   //  trajectory_infectivity_threshold = IntraHost::singletonIntraHost().get_infectivity_threshold(this);
   //  trajectory_symptomaticity_threshold = IntraHost::singletonIntraHost().get_symptomaticity_threshold(this);
@@ -65,18 +67,20 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
     will_be_symptomatic = false;
   }
 
+  // Determine if this infection produces an immune response
+  immune_response = disease->gen_immunity_infection(host->get_age());
+  //assert(immune_response == true);
+
   report_infection(day);
   // host->set_changed();
 }
 
 Infection::~Infection() {
-
   delete trajectory;
 
   for (std::vector< Transmission * >::iterator itr = transmissions.begin(); itr != transmissions.end(); ++itr) {
     delete (*itr);
   }
-
 }
 
 void Infection::determine_transition_dates() {
@@ -149,15 +153,15 @@ void Infection::update(int today) {
   if (today == get_recovery_date()) {
     host->recover(disease);
   }
-
+ 
   if (today == get_unsusceptible_date()) {
     host->become_unsusceptible(disease);
     isSusceptible = false;
   }
-
+  
   if(today != get_recovery_date()) {
     vector<int> strains;
-    trajectory->getAllStrains(strains);
+    trajectory->get_all_strains(strains);
     if ( Global::Report_Prevalence ) {
       host->addPrevalence(disease->get_id(), strains);
     }
@@ -175,7 +179,7 @@ void Infection::modify_symptomatic_period(double multp, int today) {
 
   // before symptomatic period
   else if (today < get_symptomatic_date()) {
-    trajectory->modifySympPeriod(symptomatic_date, symptomatic_period * multp);
+    trajectory->modify_symp_period(symptomatic_date, symptomatic_period * multp);
     determine_transition_dates();
   }
 
@@ -185,11 +189,9 @@ void Infection::modify_symptomatic_period(double multp, int today) {
     //int days_into = today - get_symptomatic_date();
     int days_left = get_recovery_date() - today;
     days_left *= multp;
-    trajectory->modifySympPeriod(today - exposure_date + offset, days_left);
+    trajectory->modify_symp_period(today - exposure_date + offset, days_left);
     determine_transition_dates();
   }
-
-  // host->set_changed();
 }
 
 void Infection::modify_asymptomatic_period(double multp, int today) {
@@ -205,7 +207,7 @@ void Infection::modify_asymptomatic_period(double multp, int today) {
 
   // before asymptomatic period
   else if (today < get_infectious_date()) {
-    trajectory->modifyAsympPeriod(exposure_date, asymptomatic_period * multp, get_symptomatic_date());
+    trajectory->modify_asymp_period(exposure_date, asymptomatic_period * multp, get_symptomatic_date());
     determine_transition_dates();
   }
 
@@ -213,11 +215,9 @@ void Infection::modify_asymptomatic_period(double multp, int today) {
   else {
     //int days_into = today - get_infectious_date();
     int days_left = get_symptomatic_date() - today;
-    trajectory->modifyAsympPeriod(today - exposure_date, days_left * multp, get_symptomatic_date());
+    trajectory->modify_asymp_period(today - exposure_date, days_left * multp, get_symptomatic_date());
     determine_transition_dates();
   }
-
-  // host->set_changed();
 }
 
 void Infection::modify_infectious_period(double multp, int today) {
@@ -233,9 +233,8 @@ void Infection::modify_develops_symptoms(bool symptoms, int today) {
 
   if (will_be_symptomatic != symptoms) {
     symptomatic_period = will_be_symptomatic ? disease->get_days_symp() : 0;
-    trajectory->modifyDevelopsSymp(get_symptomatic_date(), symptomatic_period);
+    trajectory->modify_develops_symp(get_symptomatic_date(), symptomatic_period);
     determine_transition_dates();
-    // host->set_changed();
   }
 }
 
@@ -273,62 +272,9 @@ Infection *Infection::get_dummy_infection(Disease *s, Person* host, int day) {
 
 void Infection::transmit(Person *infectee, Transmission *transmission) {
   int day = transmission->get_exposure_date() - exposure_date + offset;
-  map<int, double> *loads = trajectory->getInoculum(day);
-  transmission->setInitialLoads(loads);
-  infectee->become_exposed(this->disease, transmission);
-}
-
-void Infection::addTransmission(Transmission *transmission) {
-  transmissions.push_back(transmission);
-
-  int day = transmission->get_exposure_date() - exposure_date + offset;
-
-  map<int, double> *loads = transmission->getInitialLoads();
-
-  if(trajectory != NULL) { // this person is already infected by current disease
-    map<int, double> *currentLoads = trajectory->getCurrentLoads(day);
-
-    // Ignore further transmissions of the same strain
-    for( map<int, double>::iterator it = currentLoads->begin(); it != currentLoads->end(); it++ ) {
-      loads->insert( pair<int, double> (it->first, it->second) );
-    }
-    delete currentLoads;
-  }
-
-  disease->get_evolution()->doEvolution(this, loads);
-
-  // TODO update in case infectious date etc is today
-  // update(exposure_date);
-
-  if(infectious_date == -1) {
-    trajectory = NULL;
-    delete trajectory;
-
-    if(Global::Verbose > 1) {
-      printf("New transmission failed for person %d. \n", host->get_id());
-    }
-  } else {
-    if(Global::Verbose > 1) {
-      printf("Transmission succeeded for person %d.\n", host->get_id());
-      printf("New trajectories:\n");
-      trajectory->print();
-      printf("Dates: %d, %d, %d, %d, %d \n", exposure_date, infectious_date,  symptomatic_date, asymptomatic_date, recovery_date);
-    }
-
-    vector<int> strains;
-    trajectory->getAllStrains(strains);
-    if ( Global::Report_Incidence ) {
-      host->addIncidence(disease->get_id(), strains);
-    }
-    if ( Global::Report_Prevalence ) {
-      host->addPrevalence(disease->get_id(), strains);
-    }
-
-    if(isSusceptible && susceptibility_period == 0) {
-      host->become_unsusceptible(disease);
-      isSusceptible = false;
-    }
-  }
+  map< int, double > * loads = trajectory->getInoculum( day );
+  transmission->set_initial_loads( loads );
+  infectee->become_exposed( this->disease, transmission );
 }
 
 void Infection::setTrajectory(Trajectory *trajectory) {
@@ -347,7 +293,6 @@ void Infection::report_infection(int day) const {
     place_size = container->get_size();
   }
 
-
   fprintf(Global::Infectionfp, "day %d dis %d host %d age %.3f sick_leave %d"
           " infector %d inf_age %.3f inf_sympt %d inf_sick_leave %d at %c place %d size %d  ",
           day, id,
@@ -358,7 +303,7 @@ void Infection::report_infection(int day) const {
           infector == NULL ? -1 : infector->get_real_age(),
           infector == NULL ? -1 : infector->is_symptomatic(),
           infector == NULL ? -1 : infector->is_sick_leave_available(),
-	  place_type, place_id, place_size);
+    place_type, place_id, place_size);
 
   if (Global::Track_infection_events > 1)
     fprintf(Global::Infectionfp,
@@ -390,4 +335,15 @@ void Infection::report_infection(int day) const {
   fprintf(Global::Infectionfp, "\n");
   fflush(Global::Infectionfp);
 }
+
+int Infection::get_num_past_infections()
+{ 
+  return host->get_num_past_infections(id); 
+}
+  
+Past_Infection *Infection::get_past_infection(int i)
+{ 
+  return host->get_past_infection(id, i); 
+}
+
 

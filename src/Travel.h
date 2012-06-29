@@ -42,7 +42,7 @@ class Travel {
    * Select a random person from the source cell as the traveler.
    * Select a random person from the destination cell to be visited.
    */
-  static void select_visitor_and_visited(Person **visitor, Person **visited);
+  static void select_visitor_and_visited(Person **visitor, Person **visited, int day);
 
   /**
    * Creates a sample of trip using the gravity model, prints statistics,
@@ -51,12 +51,12 @@ class Travel {
   static void test_gravity_model();
 
 
-  static void terminate_person(Person *person);
-
   /**
    * Prints statistics for gravity travel model.
    */
   static void quality_control(char * directory);
+
+  static void terminate_person(Person *per);
 };
 
 #endif // _FRED_TRAVEL_H

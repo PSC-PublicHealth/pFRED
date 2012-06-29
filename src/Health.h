@@ -20,6 +20,7 @@ using namespace std;
 #include "Infection.h"
 #include "Disease.h"
 #include "Global.h"
+#include "Past_Infection.h"
 
 class Person;
 class Disease;
@@ -30,6 +31,7 @@ class AV_Health;
 class Vaccine;
 class Vaccine_Health;
 class Vaccine_Manager;
+//class Past_Infection;
 
 class Health {
 public:
@@ -47,10 +49,8 @@ public:
    *
    * Perform the daily update for this object.  This method is performance-critical and
    * accounts for much of the time spent when the epidemic is otherwise 'idle' (little active
-   * infection spreading).  Though there is still room for improvement, performance
-   * is currently much better than the original implementation.  Any changes made here
-   * should be made carefully, especially w.r.t. cache performance and branch
-   * predictability.
+   * infection spreading).  Any changes made here should be made carefully,
+   * especially w.r.t. cache performance and branch predictability.
    *
    * @param day the simulation day
    */
@@ -179,9 +179,12 @@ public:
    *
    * @return a pointer to a Person object
    */
-  Person* get_self() const {
-    return self;
-  }
+  Person* get_self();
+
+  /*
+   * Gets the Person's id from the population
+   */
+  int get_person_id();
 
   /**
    * @param disease
@@ -412,11 +415,22 @@ public:
 
   void terminate();
 
+  int get_num_past_infections(int disease){ return past_infections[disease].size(); }
+  
+  Past_Infection *get_past_infection(int disease, int i){ return &( past_infections[disease].at(i) ) ; }
+  
+  void clear_past_infections(int disease) { past_infections[disease].clear(); }
+
+  //void add_past_infection(int d, Past_Infection *pi){ past_infections[d].push_back(pi); }  
+  void add_past_infection( vector<int> &strains, int recovery_date, int age_at_exposure, Disease * dis, Person * host ) {
+    past_infections[ dis->get_id() ].push_back( Past_Infection( strains, recovery_date, age_at_exposure, dis, host ) );
+  }
+
   void die() { alive = false; }
-;
 
 private:
-  Person * self;
+  
+  int person_index;
   bool alive;
 
   // TODO (JVD): The infection vector & bitset should be combined into a little 
@@ -435,6 +449,9 @@ private:
   vector < AV_Health * > av_health;
   typedef vector < AV_Health * >::iterator av_health_itr; 
   vector < Vaccine_Health * > vaccine_health;
+
+  vector < Past_Infection > *past_infections;
+
   typedef vector < Vaccine_Health * >::iterator vaccine_health_itr;
   
   int infectee_count[ Global::MAX_NUM_DISEASES ];
@@ -459,8 +476,8 @@ private:
     takes_av
   };
 
-
 protected:
+  friend class Person;
   Health() { }
 };
 

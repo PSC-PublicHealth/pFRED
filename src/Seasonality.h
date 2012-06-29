@@ -17,7 +17,7 @@ public:
   Seasonality(Abstract_Grid * grid);
   //~Seasonality(Abstract_Grid * grid);
   void update(int day);
-  double get_seasonality_multiplier_by_lat_lon(double lat, double lon, int disease_id);
+  double get_seasonality_multiplier_by_lat_lon(fred::geo lat, fred::geo lon, int disease_id);
   double get_seasonality_multiplier_by_cartesian(double x, double y, int disease_id);
   double get_seasonality_multiplier(int row, int col, int disease_id);
   double get_average_seasonality_multiplier(int disease_id);

@@ -111,10 +111,13 @@ public:
   Person * get_adult_decision_maker() { return adult_decision_maker; }
   void select_adult_decision_maker(Person *unavailable_person);
   void terminate();
+  //void set_dependent(Person *person) { dependent_children.insert(person); }
+  //void remove_dependent(Person *person) { dependent_children.erase(person); }
 
 private:
   Person * self;
   Person * adult_decision_maker;
+  //set<Person *> dependent_children;
   void get_parameters();
   void get_parameters_for_behavior(char * behavior_name, Behavior_params * par);
   Attitude * setup(Person * self, Behavior_params * params, Behavior_survey * survey);
@@ -148,7 +151,10 @@ private:
   static Behavior_survey accept_vaccine_dose_survey;
   static Behavior_survey accept_vaccine_for_child_survey;
   static Behavior_survey accept_vaccine_dose_for_child_survey;
-  
+
+protected:
+  friend class Person;
+  Behavior() { };
 };
 
 inline

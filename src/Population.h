@@ -14,17 +14,19 @@
 
 #include "Global.h"
 #include "Demographics.h"
+#include "Bloque.h"
 
 class Person;
 class Disease;
 class Antivirals;
 class AV_Manager;
 class Vaccine_Manager;
+class Place;
 
 using namespace std;
 #include <map>
 #include <vector>
-typedef map <Person*, bool> ChangeMap;	
+typedef map <Person*, bool> ChangeMap;  
 
 class Population {
 public:
@@ -99,9 +101,13 @@ public:
   Vaccine_Manager * get_vaccine_manager() { return vacc_manager;}
 
   /**
-   * @param per a pointer to the Person to add to the Population
+   * @param args passes to Person ctor; all persons added to the
+   * Population must be created through this method
+   *
+   * @return pointer to the person created and added
    */
-  void add_person(Person * per);
+  Person * add_person( int id, int age, char sex, int marital, int rel, int occ, Place *house,
+   Place *school, Place *work, int day, bool today_is_birthday );
 
   /**
    * @param per a pointer to the Person to remove from the Population
@@ -123,10 +129,16 @@ public:
   void prepare_to_give_birth(int day, Person *per);
   
   /**
-   * @param n the index of the Person
-   * Return a pointer to the Person object with index n
+   * @param index the index of the Person
+   * Return a pointer to the Person object at this index
    */
-  Person * get_person(int n) { return pop[n]; }
+  Person * get_person_by_index( int index );
+
+  /**
+   * @param n the id of the Person
+   * Return a pointer to the Person object with this id
+   */
+  Person * get_person_by_id( int id );
 
   // Modifiers on the entire pop;
   // void apply_residual_immunity(Disease *disease) {}
@@ -203,11 +215,66 @@ public:
    */
   static int get_next_id();
 
+  /*
+   * Set the mask bit for the person_index
+   *
+   * TODO redefine the mask type so that multiple sets of masks
+   * are available (one set for each disease)
+   */
+  void set_mask_by_index( fred::Population_Masks mask, int person_index );
+
+  /*
+   * Clear the mask bit for the person_index
+   *
+   * TODO redefine the mask type so that multiple sets of masks
+   * are available (one set for each disease)
+   */
+  void clear_mask_by_index( fred::Population_Masks mask, int person_index );
+
+  /*
+   * Check to see if mask is set for person_index
+   */
+  bool check_mask_by_index( fred::Population_Masks mask, int person_index ) {
+    return blq.mask_is_set( mask, person_index );
+  }
+
+  int size() {
+    assert( blq.size() == pop_size );
+    return blq.size();
+  }
+
+  int size( fred::Population_Masks mask ) { return blq.size( mask ); }
+
+  template< typename Functor >
+  void apply( Functor & f ) { blq.apply( f ); }
+
+  template< typename Functor >
+  void apply( fred::Population_Masks m, Functor & f ) { blq.apply( m, f ); }
+
+  template< typename Functor >
+  void parallel_apply( Functor & f ) { blq.parallel_apply( f ); }
+
+  template< typename Functor >
+  void parallel_apply( fred::Population_Masks m, Functor & f ) { blq.parallel_masked_apply( m, f ); }
+
+
+  /* TODO rewrite
+  template< typename MaskType >
+  struct masked_iterator : bloque< Person, fred::Population_Masks >::masked_iterator< MaskType > { };
+
+  template< typename MaskType >
+  masked_iterator< MaskType > begin() { return blq.begin(); }
+
+  template< typename MaskType >
+  masked_iterator< MaskType > end() { return blq.end(); }
+  */
+
 private:
-  vector <Person *> pop;			// list of all agents
-  vector <Person *> graveyard;		      // list of all dead agents
-  vector <Person *> death_list;		     // list agents to die today
-  vector <Person *> maternity_list;   // list agents to give birth today
+  bloque< Person, fred::Population_Masks > blq;   // all Persons in the population
+  std::map< int, int > id_to_index;
+  vector <Person *> graveyard;      // list of all dead agents
+  vector <Person *> death_list;     // list agents to die today
+  vector <Person *> maternity_list; // list agents to give birth today
   int pop_size;
   Disease *disease;
 
@@ -216,10 +283,10 @@ private:
 
   double **mutation_prob;
   map<Person *,int> pop_map;
-  ChangeMap incremental_changes; // incremental "list" (actually a C++ map)
-				 // of those agents whose stats
-				 // have changed since the last history dump
-  ChangeMap never_changed;       // agents who have *never* changed
+  ChangeMap incremental_changes;  // incremental "list" (actually a C++ map)
+                                  // of those agents whose stats
+                                  // have changed since the last history dump
+  ChangeMap never_changed;        // agents who have *never* changed
 
   static char popfile[256];
   static char profilefile[256];
@@ -228,6 +295,8 @@ private:
   static int output_population;
   static bool is_initialized;
   static int next_id;
+
+  vector<int> dead;
 
   //Mitigation Managers
   AV_Manager *av_manager;
@@ -243,6 +312,19 @@ private:
    * @param day the simulation day
    */
   void write_population_output_file(int day);
+
+  struct update_population_demographics {
+    int day;
+    update_population_demographics( int d ) : day( d ) { };
+    void operator() ( Person & p );
+  };
+
+  struct update_population_health {
+    int day;
+    update_population_health( int d ) : day( d ) { };
+    void operator() ( Person & p );
+  };
+
 
 };
 

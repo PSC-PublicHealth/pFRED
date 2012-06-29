@@ -59,15 +59,15 @@ Small_Grid::Small_Grid(double minlon, double minlat, double maxlon, double maxla
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
-		       (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
+           (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
     }
   }
 
   if (Global::Verbose > 1) {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
-	printf("print grid[%d][%d]:\n",i,j);
-	grid[i][j].print();
+  printf("print grid[%d][%d]:\n",i,j);
+  grid[i][j].print();
       }
     }
   }
@@ -137,16 +137,16 @@ void Small_Grid::quality_control() {
   for (int row = 0; row < rows; row++) {
     if (row%2) {
       for (int col = cols-1; col >= 0; col--) {
-	double x = grid[row][col].get_center_x();
-	double y = grid[row][col].get_center_y();
-	fprintf(fp, "%f %f\n",x,y);
+  double x = grid[row][col].get_center_x();
+  double y = grid[row][col].get_center_y();
+  fprintf(fp, "%f %f\n",x,y);
       }
     }
     else {
       for (int col = 0; col < cols; col++) {
-	double x = grid[row][col].get_center_x();
-	double y = grid[row][col].get_center_y();
-	fprintf(fp, "%f %f\n",x,y);
+  double x = grid[row][col].get_center_x();
+  double y = grid[row][col].get_center_y();
+  fprintf(fp, "%f %f\n",x,y);
       }
     }
   }

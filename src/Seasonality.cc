@@ -63,7 +63,7 @@ void Seasonality::update_seasonality_multiplier() {
   }
 }
 
-double Seasonality::get_seasonality_multiplier_by_lat_lon(double lat, double lon, int disease_id) {
+double Seasonality::get_seasonality_multiplier_by_lat_lon(fred::geo lat, fred::geo lon, int disease_id) {
   double x, y;
   Geo_Utils::translate_to_cartesian(lat,lon,&x,&y,grid->get_min_lat(),grid->get_min_lon());
   return get_seasonality_multiplier_by_cartesian(x,y,disease_id);
@@ -109,6 +109,7 @@ void Seasonality::nearest_neighbor_interpolation(vector <point> points, double *
 }
 
 void Seasonality::print() {
+  return;
   cout << "Seasonality Values" << endl;
   print_field(&seasonality_values);
   cout << endl;
@@ -120,6 +121,7 @@ void Seasonality::print() {
 }
 
 void Seasonality::print_field(double *** field) {
+  return;
   for (int r=0; r < grid->get_rows(); r++) {
     for (int c=0; c < grid->get_cols(); c++) {
       printf(" %4.4f", (*field)[r][c]);
@@ -139,6 +141,7 @@ double Seasonality::get_average_seasonality_multiplier(int disease_id) {
 }
 
 void Seasonality::print_summary() {
+  return;
   for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) { 
     double min = 9999999;
     double max = 0;
