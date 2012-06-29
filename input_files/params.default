@@ -226,6 +226,8 @@ vaccine_dose_efficacy_values[0][0] = 1 0.70
 vaccine_dose_efficacy_delay_ages[0][0] = 2 0 100
 vaccine_dose_efficacy_delay_values[0][0] = 1 14
 
+vaccine_strains[0] = 0
+
 #### SICK LEAVE POLICY
 
 ## default sick behavior:
@@ -491,11 +493,36 @@ num_strains[0] = 1
 strain_data[0][0] = a:1
 transmissibility[0][0] = 1
 
+####################################################### THESE PARAMETERS NOW REQUIRED 
+####################################################### IN BASELINE RUNS EVEN IF EVOLUTION
+####################################################### FEATURES NOT USED; SHOULD PROTECT 
+####################################################### WITH GLOBAL ENABLE FLAG
+enable_protection = 0
+track_residual_immunity = 0
+track_multi_strain_stats = 0
+infection_immunity_prob_ages[0] = 2 0 110
+infection_immunity_prob_values[0] = 1 1.0
+vaccination_immunity_prob_ages[0] = 6 0 2 3 70 71 100
+vaccination_immunity_prob_values[0] = 3 0.5 0.9 0.3
+num_amino_acids = 12
+past_infections = none
+past_infections_delay = 20
+#######################################################
+#######################################################
+#######################################################
+#######################################################
+
 # evolution visualization stuff
 prevalencefile = none
 # prevalencefile = prev.txt
 incidencefile = none
 # incidencefile = incd.txt
+immunity_file = none
+# immunity_file = immunityd.txt
+transmissionsfile = none
+# transmissionsfile = transmissionsd.txt
+strainsfile = none
+# strainsfile = strainsd.txt
 
 # default IntraHost: 0; fixed IntraHost: 1; ODEIntraHost: 2
 intra_host_model[0] = 0
