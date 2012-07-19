@@ -92,8 +92,8 @@ set terminal png $fontsize
 set output \"$pngfile\"
 # set terminal aqua font \"Arial,20\"
 set grid
-set yrange [0:*]
-set xrange [0:*]
+set yrange [$xmin:$xmax]
+set xrange [$ymin:$ymax]
 set xlabel \"Days\" offset 0,0.5
 set ylabel \"Individuals\" offset 1.2,0
 EOF
