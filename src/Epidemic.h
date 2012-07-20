@@ -160,7 +160,7 @@ private:
     vector< Person * > * samples;
     void operator() ( Person & p );
   };
-
+  fred::Mutex mutex;
 };
 
 #endif // _FRED_EPIDEMIC_H

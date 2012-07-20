@@ -95,13 +95,11 @@ void Epidemic::become_exposed(Person *person) {
   ++exposed_count;
 #pragma omp atomic
   ++incident_infections;
-  /*
-     =======
-     daily_infections_list.push_back(person);
-     exposed_count++;
-     incident_infections++;
-     >>>>>>> 1.40
-     */
+  // TODO the daily infections list may end up containing defunct pointers if
+  //// enable_deaths is in effect (whether or not we are running in parallel mode).
+  //// Make daily reports and purge list after each report to fix this.
+  fred::Scoped_Lock lock( mutex );
+  daily_infections_list.push_back(person);
 }
 
 void Epidemic::become_infectious(Person *person) {
