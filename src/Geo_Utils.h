@@ -81,23 +81,23 @@ class Geo_Utils{
 
   static double km_per_deg_longitude;
   static double km_per_deg_latitude;
-  static const double DEG_TO_RAD = 0.017453292519943295769236907684886; // PI/180
+  static const double DEG_TO_RAD;		// PI/180
  private:
   // see http://andrew.hedges.name/experiments/haversine/
-  static const double EARTH_RADIUS = 6373.0; // earth's radius in kilometers
-  static const double KM_PER_DEG_LAT = 111.325; // assuming spherical earth
+  static const double EARTH_RADIUS;	 // earth's radius in kilometers
+  static const double KM_PER_DEG_LAT;	     // assuming spherical earth
   
   // Allegheny VALUES - for regression test
-  static const double ALLEG_KM_PER_DEG_LON = 84.83063; // assuming spherical earth
-  static const double ALLEG_KM_PER_DEG_LAT = 111.04326; // assuming spherical earth
+  static const double ALLEG_KM_PER_DEG_LON;  // assuming spherical earth
+  static const double ALLEG_KM_PER_DEG_LAT;  // assuming spherical earth
   
   // US Mean latitude-longitude (http://www.travelmath.com/country/United+States)
-  static const fred::geo MEAN_US_LON = -97.0; // near Wichita, KS
-  static const fred::geo MEAN_US_LAT = 38.0; // near Wichita, KS
+  static const fred::geo MEAN_US_LON;		// near Wichita, KS
+  static const fred::geo MEAN_US_LAT;		// near Wichita, KS
   
   // from http://www.ariesmar.com/degree-latitude.php
-  static const double MEAN_US_KM_PER_DEG_LON = 87.832; // at 38 deg N
-  static const double MEAN_US_KM_PER_DEG_LAT = 110.996; // 
+  static const double MEAN_US_KM_PER_DEG_LON;		// at 38 deg N
+  static const double MEAN_US_KM_PER_DEG_LAT; // 
 };
 
 #endif /* FRED_GEO_UTILS_H_ */

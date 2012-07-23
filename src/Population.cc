@@ -162,6 +162,7 @@ Person * Population::add_person( int id, int age, char sex, int marital, int rel
     birthday_vecs[pos].push_back(person);
     birthday_map[person] = ( (int) birthday_vecs[pos].size() - 1 );
   }
+  return person;
 }
 
 void Population::set_mask_by_index( fred::Population_Masks mask, int person_index ) {

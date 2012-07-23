@@ -15,6 +15,25 @@ double Geo_Utils::km_per_deg_latitude = MEAN_US_KM_PER_DEG_LAT;
 // Geo_Utils::km_per_deg_longitude = Geo_Utils::ALLEG_KM_PER_DEG_LON;
 // Geo_Utils::km_per_deg_latitude = Geo_Utils::ALLEG_KM_PER_DEG_LAT;
 
+const double Geo_Utils::DEG_TO_RAD = 0.017453292519943295769236907684886; // PI/180
+
+// see http://andrew.hedges.name/experiments/haversine/
+const double Geo_Utils::EARTH_RADIUS = 6373.0; // earth's radius in kilometers
+const double Geo_Utils::KM_PER_DEG_LAT = 111.325; // assuming spherical earth
+
+// Allegheny VALUES - for regression test
+const double Geo_Utils::ALLEG_KM_PER_DEG_LON = 84.83063; // assuming spherical earth
+const double Geo_Utils::ALLEG_KM_PER_DEG_LAT = 111.04326; // assuming spherical earth
+
+// US Mean latitude-longitude (http://www.travelmath.com/country/United+States)
+const fred::geo MEAN_US_LON = -97.0; // near Wichita, KS
+const fred::geo MEAN_US_LAT = 38.0; // near Wichita, KS
+
+// from http://www.ariesmar.com/degree-latitude.php
+const double Geo_Utils::MEAN_US_KM_PER_DEG_LON = 87.832; // at 38 deg N
+const double Geo_Utils::MEAN_US_KM_PER_DEG_LAT = 110.996; // 
+
+
 void Geo_Utils::set_km_per_degree(fred::geo lat) {
   lat *= Geo_Utils::DEG_TO_RAD;
   km_per_deg_longitude = cos(lat) * KM_PER_DEG_LAT;

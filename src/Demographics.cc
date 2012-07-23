@@ -20,6 +20,9 @@
 
 class Global;
 
+const double Demographics::MEAN_PREG_DAYS = 280.0; //40 weeks
+const double Demographics::STDDEV_PREG_DAYS = 7.0; //1 week
+
 bool Demographics::is_initialized = false;
 double Demographics::age_yearly_mortality_rate_male[Demographics::MAX_AGE + 1];
 double Demographics::age_yearly_mortality_rate_female[Demographics::MAX_AGE + 1];

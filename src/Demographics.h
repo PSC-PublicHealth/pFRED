@@ -20,8 +20,8 @@ public:
 
   static const int MAX_AGE = 110;
   static const int MAX_PREGNANCY_AGE = 60;
-  static const double MEAN_PREG_DAYS = 280.0; //40 weeks
-  static const double STDDEV_PREG_DAYS = 7.0; //1 week
+  static const double MEAN_PREG_DAYS;
+  static const double STDDEV_PREG_DAYS;
 
   /**
    * Default constructor
