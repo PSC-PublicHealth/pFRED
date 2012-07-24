@@ -8,6 +8,7 @@
 //
 // File: Demographics.cc
 //
+#include <limits>
 
 #include "Demographics.h"
 #include "Population.h"
@@ -85,7 +86,7 @@ Demographics::Demographics(Person * _self, short int _age, char _sex, int _marit
 
   if (is_newborn == false) {
 
-    double rand_birthday = URAND(0.0, 365.0);
+    double rand_birthday = URAND(std::numeric_limits<double>::epsilon(), 365.0);
     int current_day_of_year = Global::Sim_Current_Date->get_day_of_year();
     int birthyear;
 
