@@ -104,6 +104,12 @@ public:
   double get_attack_rate();
 
   /**
+   * @return the Epidemic's clincial attack rate
+   * @see Epidemic::get_attack_rate()
+   */
+  double get_clinical_attack_rate();
+
+  /**
    * @return a pointer to this Disease's residual_immunity Age_Map
    */
   Age_Map * get_residual_immunity() const { return residual_immunity;}

@@ -199,6 +199,10 @@ double Disease::get_attack_rate() {
   return epidemic->get_attack_rate();
 }
 
+double Disease::get_clinical_attack_rate() {
+  return epidemic->get_clinical_attack_rate();
+}
+
 // static
 void Disease::get_disease_parameters() {
 }

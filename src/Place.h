@@ -338,6 +338,15 @@ public:
   double get_incidence_rate(int disease_id) { return (double) total_cases[disease_id] / (double) N; }
   
   /**
+   * Get the clincal attack rate = 100 * number of cases thus far divided by the
+   * number of agents in this place.
+   *
+   * @param disease_id an integer representation of the disease
+   * @return the count of rate of cases per people for a given diease
+   */
+  double get_clinical_attack_rate(int disease_id) { return (100.0*total_cases[disease_id])/ (double) N; }
+  
+  /**
    * Set the id.
    *
    * @param n the new id
@@ -423,7 +432,7 @@ public:
 
   int get_days_infectious() { return days_infectious; }
 
-  double get_attack_rate() { return(N?(double)total_infections/(double)N:0.0); }
+  double get_attack_rate() { return(N?(100.0*total_infections)/(double)N:0.0); }
 
 protected:
   int id;                 // place id

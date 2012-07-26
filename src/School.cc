@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+  Copyright 2009 by the University of Pittsburgh
+  Licensed under the Academic Free License version 3.0
+  See the file "LICENSE" for more information
+*/
 
 //
 //
@@ -27,6 +27,7 @@ int School::school_classroom_size = 0;
 char School::school_closure_policy[80];
 int School::school_closure_day = 0;
 double School::school_closure_threshold = 0.0;
+double School::individual_school_closure_threshold = 0.0;
 int School::school_closure_cases = -1;
 int School::school_closure_period = 0;
 int School::school_closure_delay = 0;
@@ -49,6 +50,7 @@ School::School(int loc, const char *lab, double lon, double lat, Place* containe
     classrooms[i].clear();
   }
   total_classrooms = 0;
+  closure_dates_have_been_set = false;
 }
 
 void School::prepare() {
@@ -103,6 +105,7 @@ void School::get_parameters(int diseases) {
   Params::get_param_from_string("school_closure_policy", School::school_closure_policy);
   Params::get_param_from_string("school_closure_day", &School::school_closure_day);
   Params::get_param_from_string("school_closure_threshold", &School::school_closure_threshold);
+  Params::get_param_from_string("individual_school_closure_threshold", &School::individual_school_closure_threshold);
   Params::get_param_from_string("school_closure_cases", &School::school_closure_cases);
   Params::get_param_from_string("school_closure_period", &School::school_closure_period);
   Params::get_param_from_string("school_closure_delay", &School::school_closure_delay);
@@ -113,7 +116,7 @@ void School::get_parameters(int diseases) {
   School::school_parameters_set = true;
 }
 
-int School::get_group(int disease, Person * per) {
+int School::get_group(int disease_id, Person * per) {
   int age = per->get_age();
   if (age <12) { return 0; }
   else if (age < 16) { return 1; }
@@ -121,19 +124,22 @@ int School::get_group(int disease, Person * per) {
   else return 3;
 }
 
-double School::get_transmission_prob(int disease, Person * i, Person * s) {
+double School::get_transmission_prob(int disease_id, Person * i, Person * s) {
   // i = infected agent
   // s = susceptible agent
-  int row = get_group(disease, i);
-  int col = get_group(disease, s);
-  double tr_pr = School::school_contact_prob[disease][row][col];
+  int row = get_group(disease_id, i);
+  int col = get_group(disease_id, s);
+  double tr_pr = School::school_contact_prob[disease_id][row][col];
   return tr_pr;
 }
 
-int should_be_day = -1;
 
-bool School::should_be_open(int day, int disease) {
+bool School::should_be_open(int day, int disease_id) {
   
+  // no students
+  if (N == 0) return false;
+
+  // summer break
   if (School::school_summer_schedule > 0 && 
       Date::day_in_range_MMDD(Global::Sim_Current_Date, School::school_summer_start, School::school_summer_end)) {
     if (Global::Verbose > 1) {
@@ -143,70 +149,111 @@ bool School::should_be_open(int day, int disease) {
     return false;
   }
 
-  if (strcmp(School::school_closure_policy, "global") == 0) {
-    //
-    // Setting school_closure_day > -1 overrides other global triggers
-    //
-    // close schools if the closure date has arrived (after a delay)
-    if (School::school_closure_day > -1) {
-      if (School::school_closure_day <= day && School::global_closure_is_active == false) {
-  School::global_closure_is_active = true;
-  School::global_close_date = day + School::school_closure_delay;
-  School::global_open_date = day + School::school_closure_delay + School::school_closure_period;
-      }
-    }
-    else {
-      // Close schools if the global attack rate has reached the threshold
-      // (with a delay)
-      Disease * str = Global::Pop.get_disease(disease);
-      if (School::global_closure_is_active == false && str->get_attack_rate() > school_closure_threshold) {
-  School::global_closure_is_active = true;
-  School::global_close_date = day + School::school_closure_delay;
-  School::global_open_date = day + School::school_closure_delay + School::school_closure_period;
-      }
-    }
-    if (School::global_closure_is_active) {
-      close_date = School::global_close_date;
-      open_date = School::global_open_date;
-    }
-    bool this_is_open = is_open(day);
-    if (Global::Verbose > 1 && should_be_day < day) {
-      Disease * str = Global::Pop.get_disease(disease);
-      printf("SCHOOL day %d ar %.4f is_open %d close_date %d open_date %d\n",
-       day, str->get_attack_rate(), this_is_open, close_date, open_date);
-      should_be_day = day;
-    }
-    return this_is_open;
-  }
-  
-  if (strcmp(School::school_closure_policy, "individual") == 0) {
-    if (N == 0) return false;
-    bool this_is_open = is_open(day);
-    if (this_is_open) {
-      bool school_closure_triggered = false;
-      if (School::school_closure_cases != -1) {
-  school_closure_triggered = (Sympt[disease] >= School::school_closure_cases);
-      }
-      else {
-  double frac = (double) Sympt[disease] / (double) N;
-  school_closure_triggered = (frac >= School::school_closure_threshold);
-      }
-      if (school_closure_triggered) {
-  close_date = day + School::school_closure_delay;
-  open_date = day + School::school_closure_delay + School::school_closure_period;
-  printf("School %d cases = %d / %d (%5.2f) and will be closed from %d to %d\n",
-         id, Sympt[disease], N, (100.0*Sympt[disease]/N), close_date, open_date);
-      }
-    }
+  // stick to previously made decision to close
+  if (closure_dates_have_been_set) {
     return is_open(day);
   }
-  
+
+  // global school closure policy in effect
+  if (strcmp(School::school_closure_policy, "global") == 0) {
+    apply_global_school_closure_policy(day, disease_id);
+    return is_open(day);
+  }
+
+  // individual school closure policy in effect
+  if (strcmp(School::school_closure_policy, "individual") == 0) {
+    apply_individual_school_closure_policy(day, disease_id);
+    return is_open(day);
+  }
+
   // if school_closure_policy is not recognized, then open
   return true;
 }
 
-double School::get_contacts_per_day(int disease) {
-  return School::school_contacts_per_day[disease];
+void School::apply_global_school_closure_policy(int day, int disease_id) {
+
+  // Only test triggers for school closure if not global closure is not already activated
+  if (School::global_closure_is_active == false) {
+    // Setting school_closure_day > -1 overrides other global triggers.
+    // Close schools if the closure date has arrived (after a delay)
+    if (School::school_closure_day > -1) {
+      if (School::school_closure_day <= day) {
+	// the following only happens once
+	School::global_closure_is_active = true;
+	School::global_close_date = day + School::school_closure_delay;
+	School::global_open_date = day + School::school_closure_delay + School::school_closure_period;
+      }
+    }
+    else {
+      // Close schools if the global clinical attack rate has reached the threshold (after a delay)
+      Disease * disease = Global::Pop.get_disease(disease_id);
+      if (School::school_closure_threshold <= disease->get_clinical_attack_rate()) {
+	// the following only happens once
+	School::global_closure_is_active = true;
+	School::global_close_date = day + School::school_closure_delay;
+	School::global_open_date = day + School::school_closure_delay + School::school_closure_period;
+      }
+    }
+  }
+  if (School::global_closure_is_active) {
+    // set close and open dates for this school (only once)
+    close_date = School::global_close_date;
+    open_date = School::global_open_date;
+    closure_dates_have_been_set = true;
+
+    // log this school closure decision
+    if (Global::Verbose > 1) {
+      Disease * disease = Global::Pop.get_disease(disease_id);
+      printf("School %d day %d ar %5.2f cases = %d / %d (%5.2f) close_date %d open_date %d\n",
+	     id, day, disease->get_clinical_attack_rate(),
+	     get_total_cases(disease_id), N, get_clinical_attack_rate(disease_id), close_date, open_date);
+    }
+  }
+}
+
+void School::apply_individual_school_closure_policy(int day, int disease_id) {
+
+  // don't apply any policy prior to School::school_closure_day
+  if (day <= School::school_closure_day) {
+    return;
+  }
+
+  // don't apply any policy before the epdemic reaches a noticeable threshold
+  Disease * disease = Global::Pop.get_disease(disease_id);
+  if (disease->get_clinical_attack_rate() < School::school_closure_threshold) {
+    return;
+  }
+
+  bool close_this_school = false;
+
+  // if school_closure_cases > -1 then close if this number of cases occurs
+  if (School::school_closure_cases != -1) {
+    close_this_school = (School::school_closure_cases <= Sympt[disease_id]);
+  }
+  else {
+    // close if attack rate threshold is reached
+    close_this_school = (School::individual_school_closure_threshold <= get_incidence_rate(disease_id));
+  }
+
+  if (close_this_school) {
+    // set close and open dates for this school (only once)
+    close_date = day + School::school_closure_delay;
+    open_date = day + School::school_closure_delay + School::school_closure_period;
+    closure_dates_have_been_set = true;
+
+    // log this school closure decision
+    if (Global::Verbose > 0) {
+      Disease * disease = Global::Pop.get_disease(disease_id);
+      printf("School %d day %d ar %5.2f cases = %d / %d (%5.2f) close_date %d open_date %d\n",
+	     id, day, disease->get_clinical_attack_rate(),
+	     get_total_cases(disease_id), N, get_clinical_attack_rate(disease_id), close_date, open_date);
+    }
+  }
+}
+  
+
+double School::get_contacts_per_day(int disease_id) {
+  return School::school_contacts_per_day[disease_id];
 }
 
 void School::enroll(Person * per) {
@@ -227,9 +274,9 @@ void School::unenroll(Person * per) {
   // else {students_with_age[19]--;}
 }
 
-void School::print(int disease) {
+void School::print(int disease_id) {
   fprintf(Global::Statusfp, "Place %d label %s type %c ", id, label, type);
-  fprintf(Global::Statusfp, "S %d I %d N %d\n", S[disease], I[disease], N);
+  fprintf(Global::Statusfp, "S %d I %d N %d\n", S[disease_id], I[disease_id], N);
   for (int g = 0; g < 20; g++) {
     fprintf(Global::Statusfp, "%d students with age %d | ", students_with_age[g], g);
   }
@@ -249,7 +296,7 @@ void School::setup_classrooms() {
     if (n % School::school_classroom_size) rooms++;
     if (Global::Verbose > 1) {
       fprintf(Global::Statusfp, "school %d %s age %d number %d rooms %d\n",
-        id, label,a,n,rooms);
+	      id, label,a,n,rooms);
       fflush(Global::Statusfp);
     }
     for (int c = 0; c < rooms; c++) {
@@ -257,10 +304,10 @@ void School::setup_classrooms() {
       char new_label[128];
       sprintf(new_label, "%s-%02d-%02d", this->get_label(), a, c+1);
       Place *p = new (nothrow) Classroom(new_id, new_label,
-           this->get_longitude(),
-           this->get_latitude(),
-           this,
-           this->get_population());
+					 this->get_longitude(),
+					 this->get_latitude(),
+					 this,
+					 this->get_population());
       Global::Places.add_place(p);
       classrooms[a].push_back(p);
       total_classrooms++;
@@ -282,8 +329,8 @@ Place * School::assign_classroom(Person *per) {
     // assign classroom to a student
     if (Global::Verbose > 1) {
       fprintf(Global::Statusfp,
-        "assign classroom for student %d in school %d %s for age %d == ",
-        per->get_id(), id, label, age);
+	      "assign classroom for student %d in school %d %s for age %d == ",
+	      per->get_id(), id, label, age);
       fflush(Global::Statusfp);
     }
     assert(classrooms[age].size() > 0);
@@ -305,8 +352,8 @@ Place * School::assign_classroom(Person *per) {
     // assign classroom to a teacher
     if (Global::Verbose > 1) {
       fprintf(Global::Statusfp,
-        "assign classroom for teacher %d in school %d %s for age %d == ",
-        per->get_id(), id, label, age);
+	      "assign classroom for teacher %d in school %d %s for age %d == ",
+	      per->get_id(), id, label, age);
       fflush(Global::Statusfp);
     }
 
@@ -333,7 +380,7 @@ Place * School::assign_classroom(Person *per) {
         if (x == 0) {
           if (Global::Verbose > 1) {
             fprintf(Global::Statusfp, "room = %d %s %d\n",
-                c, classrooms[a][c]->get_label(), classrooms[a][c]->get_id());
+		    c, classrooms[a][c]->get_label(), classrooms[a][c]->get_id());
             fflush(Global::Statusfp);
           }
           return classrooms[a][c];

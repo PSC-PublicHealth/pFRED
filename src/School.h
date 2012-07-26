@@ -22,10 +22,12 @@ public:
   School(int,const char*,double,double,Place *, Population *pop);
   void prepare();
   void get_parameters(int diseases);
-  int get_group(int disease, Person * per);
-  double get_transmission_prob(int disease, Person * i, Person * s);
-  bool should_be_open(int day, int disease);
-  double get_contacts_per_day(int disease);
+  int get_group(int disease_id, Person * per);
+  double get_transmission_prob(int disease_id, Person * i, Person * s);
+  bool should_be_open(int day, int disease_id);
+  void apply_global_school_closure_policy(int day, int disease_id);
+  void apply_individual_school_closure_policy(int day, int disease_id);
+  double get_contacts_per_day(int disease_id);
   void enroll(Person * per);
   void unenroll(Person * per);
   int children_in_grade(int age) {
@@ -42,6 +44,7 @@ private:
   static char school_closure_policy[];
   static int school_closure_day;
   static double school_closure_threshold;
+  static double individual_school_closure_threshold;
   static int school_closure_cases;
   static int school_closure_period;
   static int school_closure_delay;
@@ -60,6 +63,7 @@ private:
   int next_classroom[20];
   int next_classroom_without_teacher[20];
   int total_classrooms;
+  bool closure_dates_have_been_set;
 };
 
 #endif // _FRED_SCHOOL_H
