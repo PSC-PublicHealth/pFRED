@@ -16,32 +16,49 @@ mkdir $reports if not -d $reports;
 my $FRED = $ENV{FRED_HOME};
 die "fred_report: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
-# process output files
-system "$FRED/bin/fred_stats $out/out* > $reports/stats.out";
-
-my @fields = ();
-open IN, "$reports/stats.out";
-my $line = <IN>;
-close IN;
-my @a = split " ", $line;
-for my $i (6..$#a) {
-  push @fields, $a[$i] if $a[$i]=~/[a-z]/i;
+# make week stats files
+my $n = `ls $out/out* | wc -l`;
+chomp $n;
+$n =~ s/\D//g;
+# print "n = |$n|\n";
+# exit;
+for my $i (1..$n) {
+  my $outfile = "$out/out$i.txt";
+  my $weekfile = "$out/week$i.txt";
+  print "$FRED/bin/fred_week_stats $outfile > $weekfile\n";
+  system "$FRED/bin/fred_week_stats $outfile > $weekfile";
 }
 
-for my $x (@fields) {
-  open OUT, ">$reports/$x.dat";
-  open IN, "$reports/stats.out";
-  while (my $line = <IN>) {
-    my @a = split " ", $line;
-    for my $i (0..$#a) {
-      if ($a[$i] eq $x) {
-	print OUT "$a[1] $a[$i+1] $a[$i+2]\n";
-	last;
+# process output files
+system "$FRED/bin/fred_stats $out/out* > $reports/stats.out";
+system "$FRED/bin/fred_stats $out/week* > $reports/week_stats.out";
+
+for my $filebase ("stats", "week_stats") {
+  my $infile = "$reports/$filebase.out";
+  my @fields = ();
+  open IN, "$infile";
+  my $line = <IN>;
+  close IN;
+  my @a = split " ", $line;
+  for my $i (0..$#a) {
+    push @fields, $a[$i] if $a[$i]=~/[a-z]/i;
+  }
+  
+  for my $x (@fields) {
+    open OUT, ">$reports/$x.dat";
+    open IN, "$infile";
+    while (my $line = <IN>) {
+      my @a = split " ", $line;
+      for my $i (0..$#a) {
+	if ($a[$i] eq $x) {
+	  print OUT "$a[1] $a[$i+1] $a[$i+2]\n";
+	  last;
+	}
       }
     }
+    close IN;
+    close OUT;
   }
-  close IN;
-  close OUT;
 }
 
 # system "$FRED/bin/fred_risk -o $out -r $reports";

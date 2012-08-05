@@ -40,6 +40,8 @@ my $errorbars;
 my $nameonly;
 my $dataonly;
 my $cleanup;
+my $smooth;
+my $with = "lines";
 my $title = "FRED: Allegheny County Model";
 # my $fontsize = "giant";
 # my $fontsize = "large";
@@ -48,6 +50,8 @@ my $opt_result = GetOptions("e" => \$errorbars,
 			    "clean" => \$cleanup,
 			    "name" => \$nameonly,
 			    "data" => \$dataonly,
+			    "smooth" => \$smooth,
+			    "with=s" => \$with,
 			    "f=s" => \$fontsize,
 			    "k=s" => \@keys,
 			    "v=s" => \@varlist,
@@ -58,6 +62,7 @@ my $opt_result = GetOptions("e" => \$errorbars,
 			    "Y=i" => \$ymax,
 			    "T=s" => \$title);
 
+$with = "lines" if not $with;
 my $usage = "usage: fred_plot -k key [-k key ...] -v [-a start_year|-e|-f fontsize|-x xmin|-y ymin|-X xmax|-Y ymax|-T title]\n";
 
 die $usage if not @keys;
@@ -73,9 +78,11 @@ my $pltfile = "fred_plot-$$.plt";
 my $pngfile = "fred_plot-$$.png";
 
 for my $v (@varlist) {
+  my $tmpv = $v;
+  $tmpv = "$v\_AVE" if $smooth;
   for my $key (@keys) {
-    my $datafile = "fred_plot_data.key=$key-var=$v-$$";
-    get_data($key, $v, $datafile);
+    my $datafile = "fred_plot_data.key=$key-var=$tmpv-$$";
+    get_data($key, $tmpv, $datafile);
     if ($dataonly) {
       system "cat $datafile";
       cleanup();
@@ -92,27 +99,36 @@ set terminal png $fontsize
 set output \"$pngfile\"
 # set terminal aqua font \"Arial,20\"
 set grid
-set yrange [$xmin:$xmax]
-set xrange [$ymin:$ymax]
+set xrange [$xmin:$xmax]
+set yrange [$ymin:$ymax]
 set xlabel \"Days\" offset 0,0.5
 set ylabel \"Individuals\" offset 1.2,0
 EOF
+
 for my $v (@varlist) {
   my $titlevar = $v;
   $titlevar = $titles{$v} if exists $titles{$v};
+  my $tmpv = $v;
+  $tmpv = "$v\_AVE" if $smooth;
   for my $key (@keys) {
     my $ptitle = "$titlevar";
     $ptitle = "$ptitle-$key" if scalar @keys > 1;
     print FH ($n == 0)? "plot " : ",\\\n";
     $n++;
-    my $datafile = "fred_plot_data.key=$key-var=$v-$$";
+    my $datafile = "fred_plot_data.key=$key-var=$tmpv-$$";
     if ($year) {
       print FH "\"$datafile\" using ($year + (\$1/365)):2:3 notitle with errorbars lw 1 lt $n, \\\n" if $errorbars;
       print FH "\"$datafile\" using  ($year + (\$1/365)):2 title \"$ptitle\" with lines lw 3 lt $n";
     }
     else {
-      print FH "\"$datafile\" using 1:2:3 notitle with errorbars lw 1 lt $n, \\\n" if $errorbars;
-      print FH "\"$datafile\" using  1:2 title \"$ptitle\" with lines lw 3 lt $n";
+      if ($smooth) {
+	print FH "\"$datafile\" using (3.5+7*\$1):2:3 notitle with errorbars lw 1 lt $n, \\\n" if $errorbars;
+	print FH "\"$datafile\" using  (3.5+7*\$1):2 title \"$ptitle\" smooth csplines lw 3 lt $n";
+      }
+      else {
+	print FH "\"$datafile\" using 1:2:3 notitle with errorbars lw 1 lt $n, \\\n" if $errorbars;
+	print FH "\"$datafile\" using  1:2 title \"$ptitle\" with $with lw 3 lt $n";
+      }
     }
   }
 }
@@ -155,6 +171,7 @@ sub cleanup {
     unlink $pltfile if -e $pltfile;
   }
   for my $v (@varlist) {
+    $v = "$v\_AVE" if $smooth;
     for my $key (@keys) {
       my $datafile = "fred_plot_data.key=$key-var=$v-$$";
       unlink $datafile if -e $datafile;
