@@ -63,7 +63,7 @@ my $opt_result = GetOptions("e" => \$errorbars,
 			    "T=s" => \$title);
 
 $with = "lines" if not $with;
-my $usage = "usage: fred_plot -k key [-k key ...] -v [-a start_year|-e|-f fontsize|-x xmin|-y ymin|-X xmax|-Y ymax|-T title]\n";
+my $usage = "usage: fred_plot -k key [-k key ...] -v var [-v var ...][-a start_year|-e|-f fontsize|-x xmin|-y ymin|-X xmax|-Y ymax|-T title]\n";
 
 die $usage if not @keys;
 die $usage if not @varlist;
