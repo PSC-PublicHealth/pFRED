@@ -16,8 +16,10 @@
 #include <string.h>
 #include "Abstract_Cell.h"
 #include "Place.h"
+#include "Global.h"
 class Person;
 class Grid;
+class Neighborhood;
 
 class Cell : public Abstract_Cell {
 public:
@@ -71,7 +73,7 @@ public:
   /**
    * Setup the neighborhood in this Cell
    */
-  void make_neighborhood();
+  void make_neighborhood( Place::Allocator< Neighborhood > & neighborhood_allocator );
 
   /**
    * Add household to this Cell's household vector
@@ -171,6 +173,8 @@ protected:
   int target_households;
   int target_popsize;
   int occupied_houses;
+
+  fred::Mutex mutex;
 };
 
 #endif // _FRED_CELL_H

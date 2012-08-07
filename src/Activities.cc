@@ -270,6 +270,11 @@ void Activities::update_infectious_activities(int day, int dis) {
   // get list of places to visit today
   update_schedule(day);
 
+  // if symptomatic, decide whether or not to stay home
+  if (self->is_symptomatic()) {
+    decide_whether_to_stay_home(day);
+  }
+
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     if (on_schedule[i]) {
       assert(favorite_place[i] != NULL);
@@ -297,16 +302,13 @@ void Activities::update_susceptible_activities(int day, int dis) {
   }
 }
 
-
 void Activities::update_schedule(int day) {
   // update this schedule only once per day
   if (day <= schedule_updated)
     return;
   schedule_updated = day;
 
-  for (int p = 0; p < FAVORITE_PLACES; p++) {
-    on_schedule[p] = false;
-  }
+  on_schedule.reset();
 
   // always visit the household
   on_schedule[HOUSEHOLD_INDEX] = true;
@@ -349,10 +351,18 @@ void Activities::update_schedule(int day) {
     on_schedule[CLASSROOM_INDEX] = false;
   }
 
-  // decide whether to stay home if symptomatic
-  if (self->is_symptomatic()) {
-    decide_whether_to_stay_home(day);
-  }
+  // decide whether to stay home if symptomatic moved to
+  // update_infectious_activities.  Since in general if a person is
+  // symptomatic they will also be infectious, this should be fine.
+  // If later it is decided that a person could be symptomatic without
+  // being infectious, then we would have to change the updates so that
+  // they are applied to all infected people (with a check to see if 
+  // infectious before adding to infectious places and a check to see if 
+  // symptomatic before deciding to stay home
+  //
+  // if (self->is_symptomatic()) {
+  //   decide_whether_to_stay_home(day);
+  // }
 
   // decide which neighborhood to visit today
   if (on_schedule[NEIGHBORHOOD_INDEX]) {

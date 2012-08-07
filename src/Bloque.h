@@ -19,11 +19,16 @@
 
 #include <deque>
 #include <map>
+#include <utility>
+#include <vector>
 #include <iostream>
 #include <typeinfo>
 #include <algorithm>
 #include <cstdarg>
 #include <stdint.h>
+#include <assert.h>
+
+#include <omp.h>
 
 /*
  * use SSE2 (8 128 XMM registers)
@@ -53,15 +58,83 @@ private:
   size_t blockSize;
   size_t numItems;
   size_t endIndex;
-
+  // blockVector stores the items
   std::deque< ObjectType * > blockVector;
+  // each mask provides a bitset for the items in the container
   typedef std::deque< BitType * > mask;
+  // default mask controls insertion/deletion in the container
   mask defaultMask;
   typedef std::map< MaskType, mask > MaskMap; 
   typedef typename MaskMap::iterator MaskMapItr;
+
+
+  struct Range {
+    int begin_index, end_index;
+    int begin_block, end_block;
+    int begin_slot, end_slot;
+    int begin_register, end_register;
+    int begin_bit, end_bit;
+ 
+    std::vector< std::pair< int, int > > range_ij;
+   
+    Range() {
+      begin_index = end_index = -1;
+      begin_block = end_block = -1;
+      begin_slot = end_slot = -1;
+      begin_register = end_register = -1;
+      begin_bit = end_bit = -1;
+    }
+    Range( int _begin_index, int _end_index ):
+      begin_index( _begin_index ), end_index ( _end_index ) {
+        
+        begin_block = begin_index / bitsPerBlock;
+        begin_slot = begin_index % bitsPerBlock;
+        begin_register = begin_slot / registerWidth;
+        begin_bit = begin_slot % registerWidth; 
+
+        end_block = end_index / bitsPerBlock;
+        end_slot = end_index % bitsPerBlock;
+        end_register = end_slot / registerWidth;
+        end_bit = end_slot % registerWidth; 
+
+        for ( int i = begin_block; i < end_block + 1; ++i ) {
+      
+          int j0 = 0;
+          int jN = registersPerBlock;
+
+          if ( i == begin_block ) {
+            j0 = begin_register;
+          }
+          if ( i == end_block ) {
+            jN = end_register + 1;
+          }
+
+          for ( int j = j0; j < jN; ++j ) {
+            range_ij.push_back( std::pair< int, int >( i, j ) );
+          }
+        }
+
+    }
+
+    int size() {
+      assert( begin_index > 0 && end_index >= begin_index );
+      return end_index - begin_index + 1;
+    }
+    bool contains( int index ) {
+      return index >= begin_index && index <= end_index;
+    }
+  };
+
+  // character labels for ranges of indexes
+  std::map< char, Range > labeled_ranges;
+
   MaskMap userMasks;
   std::map< MaskType, int > user_mask_num_items;
 
+  /*
+   * itemPosition: class to simplify conversions to/from (block,slot) coordinates
+   * and integer index
+   */
   struct itemPosition {
     size_t block, slot;
     
@@ -150,6 +223,17 @@ public:
     }
   }
 
+  void add_labeled_range( char label, int begin, int end ) {
+    assert( begin >= 0 );
+    assert( end >= begin );
+    labeled_ranges[ label ] = Range( begin, end );
+  }
+
+  int get_labeled_range_size( char label ) {
+    assert( labeled_ranges.find( label ) != labeled_ranges.end() );
+    return labeled_ranges[ label ].size();
+  }
+
   int get_free_index() {
     if ( freeSlots.empty() ) {
       addBlock();
@@ -174,6 +258,13 @@ public:
     size_t block = itemIndex / bitsPerBlock;
     size_t slot = itemIndex % bitsPerBlock;
     return &( blockVector[ block ][ slot ] );
+  }
+
+  ObjectType & operator[] ( int itemIndex ) {
+    assert( itemIndex >= 0 );
+    size_t block = itemIndex / bitsPerBlock;
+    size_t slot = itemIndex % bitsPerBlock;
+    return blockVector[ block ][ slot ];
   }
 
   size_t size() {
@@ -251,7 +342,20 @@ public:
     #pragma omp atomic
     --( user_mask_num_items[ mask ] );
   }
-  
+ 
+  void clear_mask( MaskType m ) {
+    mask & userMask = userMasks[ m ]; 
+    #pragma omp critical(BLOQUE_CLEAR_MASK) 
+    {
+      for ( int i = 0; i < blockVector.size(); ++i ) {
+        for ( int j = 0; j < registersPerBlock; ++j ) {
+          userMask[ i ][ j ] = (BitType) 0;
+        }
+      }
+      user_mask_num_items[ m ] = 0;
+    }
+  }
+
   /*
    * Returs true if the bit for the specified index is set in the
    * specified mask (assumes that the index is valid)
@@ -291,11 +395,13 @@ public:
   template < typename Functor > 
   void parallel_apply( Functor & f ) {
     #pragma omp parallel for
-    for ( size_t i = 0; i < blockVector.size(); ++i ) {
-      for ( size_t j = 0; j < registersPerBlock; ++j ) {
-        for ( size_t k = 0; k < registerWidth; ++k ) {
-          if ( ( defaultMask[ i ][ j ] ) & ( (BitType) 1 << ( k ) ) ) {
-            f( blockVector[ i ][ ( j * registerWidth ) + k ] );
+    for ( int i = 0; i < blockVector.size(); ++i ) {
+      for ( int j = 0; j < registersPerBlock; ++j ) {
+        if ( ( defaultMask[ i ][ j ] ) > ( (BitType) 0 ) ) {
+          for ( int k = 0; k < registerWidth; ++k ) {
+            if ( ( defaultMask[ i ][ j ] ) & ( (BitType) 1 << ( k ) ) ) {
+              f( blockVector[ i ][ ( j * registerWidth ) + k ] );
+            }
           }
         }
       }
@@ -309,12 +415,101 @@ public:
   void parallel_masked_apply( MaskType m, Functor & f ) {
     mask & userMask = userMasks[ m ]; 
     #pragma omp parallel for
-    for ( size_t i = 0; i < blockVector.size(); ++i ) {
-      for ( size_t j = 0; j < registersPerBlock; ++j ) {
-        for ( size_t k = 0; k < registerWidth; ++k ) {
-          if ( ( ( defaultMask[ i ][ j ] ) & ( (BitType) 1 << ( k ) ) ) &&
-               ( (    userMask[ i ][ j ] ) & ( (BitType) 1 << ( k ) ) ) ) {
-            f( blockVector[ i ][ ( j * registerWidth ) + k ] );
+    for ( int i = 0; i < blockVector.size(); ++i ) {
+      for ( int j = 0; j < registersPerBlock; ++j ) {
+        BitType reg = ( defaultMask[ i ][ j ] ) & ( userMask[ i ][ j ] );  
+        if ( reg > ( (BitType) 0 ) ) {
+          for ( int k = 0; k < registerWidth; ++k ) {
+            if ( ( reg ) & ( (BitType) 1 << ( k ) ) ) {
+              f( blockVector[ i ][ ( j * registerWidth ) + k ] );
+            }
+          }
+        }
+      }
+    }
+  }
+
+  template < typename Functor > 
+  void parallel_masked_apply_to_labeled_range( char label, MaskType m, Functor & f ) {
+    mask & userMask = userMasks[ m ];
+    Range r = labeled_ranges[ label ];
+
+    f.number_applied = 0;
+    int number_applied = 0;
+    #pragma omp parallel for reduction(+:number_applied)
+    for ( int i = r.begin_block; i < r.end_block + 1; ++i ) {
+      
+      int j0 = 0;
+      int jN = registersPerBlock;
+
+      if ( i == r.begin_block ) {
+        j0 = r.begin_register;
+      }
+      if ( i == r.end_block ) {
+        jN = r.end_register + 1;
+      }
+
+      for ( int j = j0; j < jN; ++j ) {
+
+        int k0 = 0;
+        int kN = registerWidth;
+
+        if ( i == r.begin_block && j == r.begin_register ) {
+          k0 = r.begin_bit;
+        }
+        if ( i == r.end_block && j == r.end_register ) {
+          kN = r.end_bit; // TODO TODO TODO TODO something is not right here ... why not r.end_bit + 1 ????
+        }
+
+        BitType reg = ( defaultMask[ i ][ j ] ) & ( userMask[ i ][ j ] );  
+        if ( reg > ( (BitType) 0 ) ) {
+          for ( int k = k0; k < kN; ++k ) {
+            if ( ( reg ) & ( (BitType) 1 << ( k ) ) ) {
+              f( blockVector[ i ][ ( j * registerWidth ) + k ] );
+              ++( number_applied );
+            }
+          }
+        }
+      }
+    }
+    f.number_applied = number_applied;
+  }
+
+
+  /*
+   * Generic, parallel 'masked apply' method for all items in container;
+   * passes the thread id to the functor.  This is intended to enable
+   * parallel application of the functor to gather num_threads sub-results,
+   * which are then subsequently merged to produce final output.
+   *
+   * Expects that the functor operator() takes two arguments: an object
+   * reference and the thread_id
+   *
+   * Expects that the functor implements two methods: get_max_threads()
+   * and get_thread_num().  These should perform the same function as
+   * their similarly named omp_get_max_threads() and omp_get_thread_num()
+   * counterparts declared in omp.h
+   */
+  template < typename Functor > 
+  void parallel_masked_apply_with_thread_id( MaskType m, Functor & f ) {
+    mask & userMask = userMasks[ m ];
+    int num_threads = f.get_max_threads();
+    #pragma omp parallel
+    {
+      int thread_id = f.get_thread_num();
+      int block_items_per_thread = ( blockVector.size() / num_threads ) + 1 ;
+      int begin = thread_id * block_items_per_thread;
+      int end = begin + block_items_per_thread;
+      end = ( end > (int) blockVector.size() ) ? ( (int) blockVector.size() ) : ( end );
+      for ( int i = begin; i < end; ++i ) {
+        for ( int j = 0; j < registersPerBlock; ++j ) {
+          BitType reg = ( defaultMask[ i ][ j ] ) & ( userMask[ i ][ j ] );  
+          if ( reg > ( (BitType) 0 ) ) {
+            for ( int k = 0; k < registerWidth; ++k ) {
+              if ( ( reg ) & ( (BitType) 1 << ( k ) ) ) {
+                f( blockVector[ i ][ ( j * registerWidth ) + k ], thread_id );
+              }
+            }
           }
         }
       }
@@ -488,11 +683,14 @@ public:
     return const_masked_iterator< __MaskType >( this, itemPosition( lastItemPosition.asIndex() + 1 ) );
   }
 
-  ///////////// END ITERATORS ////////////////////////////
+  // TODO masked iterator needs work, prefer one of the 'apply' methods
+  //
+  ///////////// END ITERATORS /////////////////////////////////////////
 
+  /*
   void print() {
-
-    /*
+    // print method for debugging
+    
     //firstItemPosition.print();
     //lastItemPosition.print();
     for ( size_t i = 0; i < blockVector.size(); ++i ) {
@@ -500,18 +698,18 @@ public:
         std::cout << i << " " << j << " " << blockVector[i][j] << " " << (bool) ( ( defaultMask[ i ][ j / registerWidth ] ) & ( (BitType) 1 << ( j % registerWidth ) ) ) << std::endl;
       }
     }
-    */ 
+    
+    /////////////////////////////
 
     for ( iterator i = begin(); i != end(); ++i ) {
       i.currentItemPosition.print();
       std::cout << *i << std::endl;
     }
-    
   }
+  */
 
   /*
    * overloaded stream; mainly for debugging
-   * decorated template names __ObjectType and __MaskType to prevent gcc 'shadowing' error
    *
   
   template < class __ObjectType, class __MaskType >

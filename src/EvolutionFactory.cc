@@ -2,7 +2,7 @@
 #include "EvolutionFactory.h"
 #include "Evolution.h"
 #include "MSEvolution.h"
-//#include "FergEvolution.h"
+#include "FergEvolution.h"
 //#include "BFEvolution.h"
 #include "Global.h"
 #include "Utils.h"
@@ -13,8 +13,8 @@ Evolution *EvolutionFactory :: newEvolution(int type) {
       return new Evolution;
     case 1:
       return new MSEvolution;
-    //case 2:
-    //  return new FergEvolution;
+    case 2:
+      return new FergEvolution;
     //case 3:
     //  return new BFEvolution;
     default:

@@ -21,15 +21,16 @@
 #define HOSPITAL 'M'
 #define COMMUNITY 'X'
 
+#include <new>
 #include <vector>
 #include <deque>
+#include <map>
 using namespace std;
 
 #include "Population.h"
 #include "Global.h"
 class Cell;
 class Person;
-
 
 class Place {
 public:
@@ -40,14 +41,13 @@ public:
    *  Sets the id, label, logitude, latitude , container and population of this Place
    *  Allocates disease-related memory for this place
    *
-   *  @param loc_id this Place's id
    *  @param lab this Place's label
    *  @param lon this Place's longitude
    *  @param lat this Place's latitude
    *  @param cont this Place's container
    *  @param pop this Place's population
    */
-  void setup(int loc_id, const char *lab, fred::geo lon, fred::geo lat, Place *cont, Population *pop);
+  void setup(const char *lab, fred::geo lon, fred::geo lat, Place *cont, Population *pop);
 
   /**
    * Get this place ready
@@ -90,7 +90,20 @@ public:
    * @param disease_id an integer representation of the disease
    * @param per a pointer to a Person object that will be added to the place for a given diease
    */
-  virtual void add_susceptible(int disease_id, Person * per);
+  void add_susceptible(int disease_id, Person * per);
+
+  /**
+   * Adds multiple susceptible persons to the place. Adds the persons contained in the
+   * temporary _susceptibles vector to the place's susceptibles vector and
+   * increments the number of susceptibles in the place (S).
+   *
+   * @param disease_id an integer representation of the disease
+   * @param _susceptibles reference to vector of Person objects that will be added
+   * to the place's susceptibles vector for a given diease
+   */
+  void add_susceptibles( int disease_id, std::vector< Person * > & _susceptibles );
+
+
 
   /**
    * Add a infectious person to the place. This method adds the person to the infectious vector and
@@ -351,7 +364,7 @@ public:
    *
    * @param n the new id
    */
-  void set_id(int n) { id = n; }
+  //void set_id(int n) { id = n; }
 
   /**
    * Set the type.
@@ -465,6 +478,77 @@ protected:
   void attempt_transmission(double transmission_prob, Person * infector, Person * infectee, int disease_id, int day);
 
   fred::Mutex mutex;
+
+  // Place_List, Grid and Cell are friends so that they can access
+  // the Place Allocator.  
+  friend class Place_List;
+  friend class Grid;
+  friend class Cell;
+
+  // friend Place_List can assign id
+  void set_id( int _id ) {
+    id = _id;
+  }
+
+  // Place Allocator reserves chunks of memory and hands out pointers for use
+  // with placement new
+  template< typename Place_Type >
+  struct Allocator {
+
+    Place_Type * allocation_array;
+    int current_allocation_size, current_allocation_index;
+    int number_of_contiguous_blocks_allocated, remaining_allocations;
+    int allocations_made;
+
+    Allocator() {
+      remaining_allocations = 0;
+      number_of_contiguous_blocks_allocated = 0;
+      allocations_made = 0;
+    }
+
+    bool reserve( int n = 1 ) {
+      if ( remaining_allocations == 0 ) {
+        current_allocation_size = n;
+        allocation_array = new Place_Type[ n ];
+        remaining_allocations = n; 
+        current_allocation_index = 0;
+        ++( number_of_contiguous_blocks_allocated );
+        allocations_made += n;
+        return true;
+      }
+      return false;
+    }
+
+    Place_Type * get_free() {
+      if ( remaining_allocations == 0 ) {
+        reserve();
+      }
+      Place_Type * place_pointer = allocation_array + current_allocation_index;  
+      --( remaining_allocations );
+      ++( current_allocation_index );
+      return place_pointer;
+    }
+
+    int get_number_of_remaining_allocations() {
+      return remaining_allocations;
+    }
+
+    int get_number_of_contiguous_blocks_allocated() {
+      return number_of_contiguous_blocks_allocated;
+    }
+
+    int get_number_of_allocations_made() {
+      return allocations_made;
+    }
+
+    Place_Type * get_base_pointer() {
+      return allocation_array;
+    }
+
+    int size() {
+      return allocations_made;
+    }
+  };
 
 };
 #endif // _FRED_PLACE_H

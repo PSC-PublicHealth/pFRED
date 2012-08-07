@@ -17,6 +17,7 @@
 #include "Disease.h"
 #include "Place_List.h"
 #include "Office.h"
+#include "Utils.h"
 
 //Private static variables that will be set by parameter lookups
 double * Workplace::Workplace_contacts_per_day;
@@ -36,9 +37,9 @@ int Workplace::workers_in_large_workplaces = 0;
 int Workplace::workers_in_xlarge_workplaces = 0;
 int Workplace::total_workers = 0;
 
-Workplace::Workplace(int loc, const char *lab, double lon, double lat, Place *container, Population *pop) {
+Workplace::Workplace(const char *lab, double lon, double lat, Place *container, Population *pop) {
   type = WORKPLACE;
-  setup(loc, lab, lon, lat, container, pop);
+  setup(lab, lon, lat, container, pop);
   get_parameters(Global::Diseases);
   offices.clear();
   next_office = 0;
@@ -130,34 +131,36 @@ double Workplace::get_contacts_per_day(int disease) {
   return Workplace::Workplace_contacts_per_day[disease];
 }
 
-void Workplace::setup_offices() {
+int Workplace::get_number_of_rooms() {
   if (Workplace::Office_size == 0)
-    return;
+    return 0;
   int rooms = N / Workplace::Office_size;
   next_office = 0;
   if (N % Workplace::Office_size) rooms++;
-  if (Global::Verbose>1) {
-    fprintf(Global::Statusfp,
-      "workplace %d %s number %d rooms %d\n", id, label,N,rooms);
-    fflush(Global::Statusfp);
-  }
+  return rooms;
+}
+
+void Workplace::setup_offices( Allocator< Office > & office_allocator ) {
+  int rooms = get_number_of_rooms();
+
+  FRED_STATUS( 1, "workplace %d %s number %d rooms %d\n", id, label, N, rooms );
+  
   for (int i = 0; i < rooms; i++) {
-    int new_id = Global::Places.get_max_id() + 1;
     char new_label[128];
     sprintf(new_label, "%s-%03d", this->get_label(), i);
-    Place *p = new Office(new_id, new_label,
+    
+    Place *p = new ( office_allocator.get_free() ) Office( new_label,
         this->get_longitude(),
         this->get_latitude(),
         this,
-        this->get_population());
-    Global::Places.add_place(p);
+        this->get_population() );
+
+    //Global::Places.add_place(p);
     offices.push_back(p);
-    if (Global::Verbose>1) {
-      fprintf(Global::Statusfp,
-        "workplace %d %s added office %d %s %d\n",
+    int id = p->get_id();
+
+    FRED_STATUS( 1, "workplace %d %s added office %d %s %d\n",
         id, label,i,p->get_label(),p->get_id());
-      fflush(Global::Statusfp);
-    }
   }
 }
 
@@ -167,22 +170,14 @@ Place * Workplace::assign_office(Person *per) {
     return NULL;
   }
 
-  if (Global::Verbose>1) {
-    fprintf(Global::Statusfp,
-      "assign office for person %d at workplace %d %s size %d == ",
-      per->get_id(), id, label, N);
-    fflush(Global::Statusfp);
-  }
+  FRED_STATUS( 1, "assign office for person %d at workplace %d %s size %d == ",
+     per->get_id(), id, label, N);
 
   // pick next office, round-robin
   int i = next_office;
 
-  if (Global::Verbose>1) {
-    fprintf(Global::Statusfp,
-      "office = %d %s %d\n",
+  FRED_STATUS( 1, "office = %d %s %d\n",
       i, offices[i]->get_label(), offices[i]->get_id());
-    fflush(Global::Statusfp);
-  }
 
   // update next pick
   if (next_office < (int) offices.size()-1)

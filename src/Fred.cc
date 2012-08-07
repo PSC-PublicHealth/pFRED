@@ -72,6 +72,9 @@ int main(int argc, char* argv[]) {
   // get runtime population parameters
   Global::Pop.get_parameters();
 
+  // initialize masks in Global::Pop
+  Global::Pop.initialize_masks();
+
   if (strcmp(directory, "") == 0) {
     // use the directory in the params file
     strcpy(directory, Global::Output_directory);
@@ -182,6 +185,9 @@ int main(int argc, char* argv[]) {
   Utils::fred_print_lap_time("FRED initialization");
   Utils::fred_print_wall_time("FRED initialization complete");
 
+  time_t simulation_start_time;
+  Utils::fred_start_timer( &simulation_start_time );
+
   for (int day = 0; day < Global::Days; day++) {
     Utils::fred_start_day_timer();
     if (day == Global::Reseed_day) {
@@ -223,6 +229,20 @@ int main(int argc, char* argv[]) {
     if (Global::Incremental_Trace && day && !(day%Global::Incremental_Trace))
       Global::Pop.print(1, day);
 
+    #pragma omp parallel sections
+    {
+      #pragma omp section
+      {
+        // this refreshes all RNG buffers in a new thread team
+        RNG::refresh_all_buffers();
+      }
+      #pragma omp section
+      {
+        // flush infections file buffer
+        fflush(Global::Infectionfp);
+      }
+    }
+
     Utils::fred_print_wall_time("day %d finished", day);
 
     Utils::fred_print_day_timer(day);
@@ -230,6 +250,10 @@ int main(int argc, char* argv[]) {
 
     Global::Sim_Current_Date->advance();
   }
+ 
+  fflush(Global::Infectionfp);
+
+  Utils::fred_print_lap_time( &simulation_start_time, "\nFRED simulation complete. Excluding initialization, %d days", Global::Days);
 
   Utils::fred_print_wall_time("FRED finished");
   Utils::fred_print_finish_timer();

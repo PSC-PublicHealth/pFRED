@@ -15,7 +15,7 @@
 #include "Place.h"
 #include <vector>
 
-
+class Office;
 
 class Workplace: public Place {
 public: 
@@ -29,9 +29,9 @@ public:
   /**
    * Convenience constructor that sets most of the values by calling Place::setup
    *
-   * @see Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop)
+   * @see Place::setup( const char *lab, double lon, double lat, Place* cont, Population *pop)
    */
-  Workplace(int, const char *,double,double,Place *, Population *pop);
+  Workplace( const char *,double,double,Place *, Population *pop );
 
   /**
    * @see Place::get_parameters(int diseases)
@@ -71,10 +71,11 @@ public:
    */
   double get_contacts_per_day(int disease);
 
+  int get_number_of_rooms();
   /**
    * Setup the offices within this Workplace
    */
-  void setup_offices();
+  void setup_offices( Allocator< Office > & office_allocator );
 
   /**
    * Assign a person to a particular Office

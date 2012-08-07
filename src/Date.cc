@@ -114,6 +114,7 @@ Date::Date(int year, int day_of_year) {
       month = i;
       int days_to_subtract = 0;
       for (int j = Date::JANUARY; j < month; j++) {
+        //std::cout << "day table=>" << Date::day_table[Date::is_leap_year(year)][j] << std::endl;
         days_to_subtract += Date::day_table[Date::is_leap_year(year)][j];
       }
       day_of_month = day_of_year - days_to_subtract;

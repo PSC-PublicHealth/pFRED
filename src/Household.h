@@ -34,9 +34,9 @@ public:
   /**
    * Convenience constructor that sets most of the values by calling Place::setup
    *
-   * @see Place::setup(int loc_id, const char *lab, fred::geo lon, fred::geo lat, Place* cont, Population *pop)
+   * @see Place::setup( const char *lab, fred::geo lon, fred::geo lat, Place* cont, Population *pop)
    */
-  Household(int loc, const char *lab, fred::geo lon, fred::geo lat, Place *container, Population* pop);
+  Household( const char *lab, fred::geo lon, fred::geo lat, Place *container, Population* pop );
 
   ~Household() {}
 

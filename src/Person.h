@@ -479,6 +479,7 @@ private:
   // index: Person's location in population container; once set, will be unique at any given time,
   // but can be reused over the course of the simulation for different people (after death/removal)
   int index; 
+  friend class Population;
   Demographics demographics;
   Health health;
   Activities activities;

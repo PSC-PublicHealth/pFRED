@@ -53,12 +53,21 @@ Grid::Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fred::geo maxla
   for (int i = 0; i < rows; i++) {
     grid[i] = new Cell[cols];
   }
+}
 
+int Grid::get_number_of_cells() {
+  // this is also the number of neighhborhoods (one neighborhood)
+  // per cell
+  return rows * cols;
+}
+
+void Grid::setup( Place::Allocator< Neighborhood > & neighborhood_allocator ) { 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
           //       i*grid_cell_size,(i+1)*grid_cell_size);
         (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
+      grid[ i ][ j ].make_neighborhood( neighborhood_allocator );
     }
   }
 

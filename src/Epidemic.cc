@@ -46,19 +46,20 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
     new_cases[i] = infectees[i] = 0;
   }
 
-  int places = Global::Places.get_number_of_places();
-  inf_households.reserve(places);
-  inf_neighborhoods.reserve(places);
-  inf_classrooms.reserve(places);
-  inf_schools.reserve(places);
-  inf_workplaces.reserve(places);
-  inf_offices.reserve(places);
+  inf_households.reserve( Global::Places.get_number_of_places( HOUSEHOLD ) );
+  inf_neighborhoods.reserve( Global::Places.get_number_of_places( NEIGHBORHOOD ) );
+  inf_classrooms.reserve( Global::Places.get_number_of_places( CLASSROOM ) );
+  inf_schools.reserve( Global::Places.get_number_of_places( SCHOOL ) );
+  inf_workplaces.reserve( Global::Places.get_number_of_places( WORKPLACE ) );
+  inf_offices.reserve( Global::Places.get_number_of_places( OFFICE ) );
+  
   inf_households.clear();
   inf_neighborhoods.clear();
   inf_classrooms.clear();
   inf_schools.clear();
   inf_workplaces.clear();
   inf_offices.clear();
+  
   attack_rate = 0.0;
   total_incidents = 0;
   clinical_incidents = 0;
@@ -68,6 +69,7 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   exposed_count = removed_count = immune_count = 0;
   daily_infections_list.clear();
 
+  place_person_list_reserve_size = 1;
 }
 
 Epidemic::~Epidemic() {
@@ -91,13 +93,13 @@ void Epidemic::become_unsusceptible(Person *person) {
 }
 
 void Epidemic::become_exposed(Person *person) {
-#pragma omp atomic
+  #pragma omp atomic
   ++exposed_count;
-#pragma omp atomic
+  #pragma omp atomic
   ++incident_infections;
   // TODO the daily infections list may end up containing defunct pointers if
-  //// enable_deaths is in effect (whether or not we are running in parallel mode).
-  //// Make daily reports and purge list after each report to fix this.
+  // enable_deaths is in effect (whether or not we are running in parallel mode).
+  // Make daily reports and purge list after each report to fix this.
   fred::Scoped_Lock lock( mutex );
   daily_infections_list.push_back(person);
 }
@@ -424,34 +426,54 @@ void Epidemic::report_presenteeism(int day) {
 
 
 
-void Epidemic::add_infectious_place(Place *place, char type) {
+void Epidemic::add_infectious_place( Place *place, char type ) {
   switch (type) {
     case HOUSEHOLD:
-      inf_households.push_back(place);
+      {
+        fred::Scoped_Lock lock( household_mutex );
+        inf_households.push_back(place);
+      }
       break;
 
     case NEIGHBORHOOD:
-      inf_neighborhoods.push_back(place);
+      {
+        fred::Scoped_Lock lock( neighborhood_mutex );
+        inf_neighborhoods.push_back(place);
+      }
       break;
 
     case CLASSROOM:
-      inf_classrooms.push_back(place);
+      {
+        fred::Scoped_Lock lock( classroom_mutex );
+        inf_classrooms.push_back(place);
+      }
       break;
 
     case SCHOOL:
-      inf_schools.push_back(place);
+      {
+        fred::Scoped_Lock lock( school_mutex );
+        inf_schools.push_back(place);
+      }
       break;
 
     case WORKPLACE:
-      inf_workplaces.push_back(place);
+      {
+        fred::Scoped_Lock lock( workplace_mutex );
+        inf_workplaces.push_back(place);
+      }
       break;
 
     case OFFICE:
-      inf_offices.push_back(place);
+      {
+        fred::Scoped_Lock lock( office_mutex );
+        inf_offices.push_back(place);
+      }
       break;
   }
 }
 
+/* NOT CURRENTLY USED...
+ * 
 void Epidemic::get_infectious_places(int day) {
   vector<Person *>::iterator itr;
   vector<Place *>::iterator it;
@@ -488,6 +510,7 @@ void Epidemic::get_infectious_places(int day) {
     }
   }
 }
+*/
 
 void Epidemic::get_primary_infections(int day){
   Population *pop = disease->get_population();
@@ -565,16 +588,13 @@ void Epidemic::get_primary_infections(int day){
 }
 
 void Epidemic::transmit(int day){
-  vector<Person *>::iterator itr;
-  vector<Place *>::iterator it;
   Population *pop = disease->get_population();
-  N = pop->get_pop_size();
 
   // import infections from unknown sources
   get_primary_infections(day);
 
   int infectious_places;
-  infectious_places = (int) inf_households.size();
+  infectious_places =  (int) inf_households.size();
   infectious_places += (int) inf_neighborhoods.size();
   infectious_places += (int) inf_schools.size();
   infectious_places += (int) inf_classrooms.size();
@@ -588,30 +608,39 @@ void Epidemic::transmit(int day){
   FRED_STATUS(0, "Number of infectious classrooms    => %9d\n", (int) inf_classrooms.size());
   FRED_STATUS(0, "Number of infectious workplaces    => %9d\n", (int) inf_workplaces.size());
   FRED_STATUS(0, "Number of infectious offices       => %9d\n", (int) inf_offices.size());
+  
+  #pragma omp parallel
+  {
+    // schools (and classrooms)
+    #pragma omp for schedule(dynamic,10)
+    for ( int i = 0; i < inf_schools.size(); ++i ) {
+      inf_schools[ i ]->spread_infection( day, id );
+    }
 
-#pragma omp parallel for
-  for ( int i = 0; i < inf_schools.size(); ++i ) {
-    inf_schools[ i ]->spread_infection( day, id );
-  }
-#pragma omp parallel for
-  for ( int i = 0; i < inf_classrooms.size(); ++i ) {
-    inf_classrooms[ i ]->spread_infection( day, id );
-  }
-#pragma omp parallel for
-  for ( int i = 0; i < inf_workplaces.size(); ++i ) {
-    inf_workplaces[ i ]->spread_infection( day, id );
-  }
-#pragma omp parallel for
-  for ( int i = 0; i < inf_offices.size(); ++i ) {
-    inf_offices[ i ]->spread_infection( day, id );
-  }
-#pragma omp parallel for
-  for ( int i = 0; i < inf_neighborhoods.size(); ++i ) {
-    inf_neighborhoods[ i ]->spread_infection( day, id );
-  }
-#pragma omp parallel for
-  for ( int i = 0; i < inf_households.size(); ++i ) {
-    inf_households[ i ]->spread_infection( day, id );
+    #pragma omp for schedule(dynamic,10)
+    for ( int i = 0; i < inf_classrooms.size(); ++i ) {
+      inf_classrooms[ i ]->spread_infection( day, id );
+    }
+
+    // workplaces (and offices)
+    #pragma omp for schedule(dynamic,10)
+    for ( int i = 0; i < inf_workplaces.size(); ++i ) {
+      inf_workplaces[ i ]->spread_infection( day, id );
+    }
+    #pragma omp for schedule(dynamic,10)
+    for ( int i = 0; i < inf_offices.size(); ++i ) {
+      inf_offices[ i ]->spread_infection( day, id );
+    }
+
+    // neighborhoods (and households)
+    #pragma omp for schedule(dynamic,100)
+    for ( int i = 0; i < inf_neighborhoods.size(); ++i ) {
+      inf_neighborhoods[ i ]->spread_infection( day, id );
+    }
+    #pragma omp for schedule(dynamic,100)
+    for ( int i = 0; i < inf_households.size(); ++i ) {
+      inf_households[ i ]->spread_infection( day, id );
+    }
   }
 
   inf_households.clear();
@@ -621,6 +650,8 @@ void Epidemic::transmit(int day){
   inf_workplaces.clear();
   inf_offices.clear();
 }
+
+
 
 void Epidemic::update(int day) {
   Activities::update(day);
@@ -661,7 +692,7 @@ void Epidemic::add_susceptibles_to_infectious_places(int day, int disease_id) {
 
 void Epidemic::infectious_sampler::operator() ( Person & person ) {
   if ( RANDOM() < prob ) {
-#pragma omp critical(EPIDEMIC_INFECTIOUS_SAMPLER_1)
+    #pragma omp critical(EPIDEMIC_INFECTIOUS_SAMPLER)
     samples->push_back( &person );
   }
 }

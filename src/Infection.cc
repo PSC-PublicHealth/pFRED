@@ -31,6 +31,9 @@
 using std::out_of_range;
 
 Infection::Infection(Disease *disease, Person* infector, Person* host, Place* place, int day) {
+  
+  // flag for health updates
+  Global::Pop.set_mask_by_index( fred::Update_Health, host->get_pop_index() );
 
   // general
   this->disease = disease;
@@ -41,9 +44,6 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
   this->trajectory = NULL;
   infectee_count = 0;
   age_at_exposure = host->get_age();
-
-  //  trajectory_infectivity_threshold = IntraHost::singletonIntraHost().get_infectivity_threshold(this);
-  //  trajectory_symptomaticity_threshold = IntraHost::singletonIntraHost().get_symptomaticity_threshold(this);
 
   isSusceptible = true;
   trajectory_infectivity_threshold = 0;
@@ -333,7 +333,8 @@ void Infection::report_infection(int day) const {
             symptoms);
 
   fprintf(Global::Infectionfp, "\n");
-  fflush(Global::Infectionfp);
+  // flush performed at the end of every day so that it doesn't gum up multithreading
+  //fflush(Global::Infectionfp);
 }
 
 int Infection::get_num_past_infections()

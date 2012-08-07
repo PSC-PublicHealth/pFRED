@@ -229,6 +229,10 @@ void Utils::fred_start_timer() {
   start_timer = fred_timer;
 }
 
+void Utils::fred_start_timer( time_t * lap_start_time ) {
+  time( lap_start_time );
+}
+
 void Utils::fred_start_day_timer() {
   time(&day_timer);
   start_timer = day_timer;
@@ -261,6 +265,18 @@ void Utils::fred_print_lap_time(const char* format, ...) {
   start_timer = stop_timer;
 }
 
+void Utils::fred_print_lap_time( time_t * start_lap_time, const char* format, ...) {
+  time_t stop_lap_time;
+  time( &stop_lap_time );
+  va_list ap;
+  va_start(ap,format);
+  vfprintf(Global::Statusfp,format,ap);
+  va_end(ap);
+  fprintf(Global::Statusfp, " took %d seconds\n",
+    (int) ( stop_lap_time - ( *start_lap_time ) ) );
+  fflush(Global::Statusfp);
+}
+
 void Utils::fred_verbose(int verbosity, const char* format, ...){
   if (Global::Verbose > verbosity) {
     va_list ap;
@@ -271,7 +287,7 @@ void Utils::fred_verbose(int verbosity, const char* format, ...){
   }
 }
 
-void Utils::fred_verbose_statusfp(int verbosity, const char* format, ...){
+void Utils::fred_verbose_statusfp(int verbosity, const char* format, ...) {
   if (Global::Verbose > verbosity) {
     va_list ap;
     va_start(ap,format);

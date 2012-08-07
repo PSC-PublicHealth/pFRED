@@ -1,6 +1,25 @@
 ##################### FRED Makefile ###########################
 
-#################  Compiler Flags ##############################
+################   Multithreading   ###############################
+# For multithreading, NCPU should be set here or as an argument to make.
+# NCPU must be greater than or equal to the maximum number of threads that will
+# be used by OpenMP.  The number of threads used by OpenMP can be set at runtime
+# with the environment variable OMP_NUM_THREADS.  The value used for OMP_NUM_THREADS
+# must be less than or equal the value of NCPU set during compilation.
+# If NCPU > omp_get_max_threads, some relatively small amount of memory will be
+# wasted, but it's harmless otherwise.
+#
+# NCPU is defined to be 1 in Global.h if value not set here 
+#
+# Autodetect all available processors for linux or mac
+# Fall back to single-threaded operation
+OS := $(shell uname)
+ifeq ($(OS),Linux)
+NCPU ?= $(shell grep -c ^processor /proc/cpuinfo)
+else ifeq ($(OS),Darwin)
+NCPU ?= $(shell sysctl -n hw.ncpu)
+endif
+################   Compiler Flags   ##############################
 CPP = g++ 
 
 LOGGING_PRESET_0 = 
@@ -8,28 +27,29 @@ LOGGING_PRESET_1 = -DFREDWARNING
 LOGGING_PRESET_2 = -DFREDSTATUS -DFREDWARNING
 LOGGING_PRESET_3 = -DFREDVERBOSE -DFREDSTATUS -DFREDWARNING
 
+PRNG_DIR = PRNG__Mersenne_Twister
+DSFMT_CPPFLAGS = -g -m64 -O3 -DDSFMT_MEXP=19937 -DDSFMT_DO_NOT_USE_OLD_NAMES #-msse2 -DHAVE_SSE2
+DSFMT_DIR = $(PRNG_DIR)/dSFMT-src-2.2
+DSFMT_SRC = $(DSFMT_DIR)/dSFMT.c
+DSFMT_HDR = $(DSFMT_DIR)/dSFMT.h $(DSFMT_DIR)/dSFMT-params19937.h
+
+INCLUDE_DIRS = -I$(DSFMT_DIR)
+
 # use this for development:
 #CPPFLAGS = -g -m64 -O2 $(LOGGING_PRESET_3) -Wall
 
 # use one of these for profiling
 # CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) # -DNDEBUG
 # CPPFLAGS = -pg -m64 -O2 -DNDEBUG $(LOGGING_PRESET_3) -fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls -fno-omit-frame-pointer
+# CPPFLAGS = -g -m64 -O3 -fopenmp $(LOGGING_PRESET_3) -fno-omit-frame-pointer -Isnappy/include #-fast #-Wall
 
 # Use one of these for production:
-
-## If tcmalloc is avaialable, use it  
-#CPPFLAGS = -g -m64 -O3 -DNDEBUG $(LOGGING_PRESET_3) -ltcmalloc #-fast #-Wall
-
-#CPPFLAGS = -g -m64 -O3 -DNDEBUG $(LOGGING_PRESET_3) #-fast #-Wall
-
 ## Use this to run with multiple threads
-#CPPFLAGS = -g -m64 -O3 -fopenmp $(LOGGING_PRESET_3) #-fast #-Wall
-
+#CPPFLAGS = -g -m64 -O3 -fopenmp $(LOGGING_PRESET_3) -DNDEBUG -DNCPU=$(NCPU)
 ## Use this to make reproducible serial runs
-CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) #-fast #-Wall
+CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) -DNCPU=1 #-fast #-Wall
 
-# Use this for unit testing:
-# CPPFLAGS = -DUNITTEST -m64 -O3 #-Wall
+CPPFLAGS += $(INCLUDE_DIRS)
 
 #################  MD5 Program ##############################
 
@@ -39,18 +59,6 @@ MD5SUM	:= md5sum
 else
 MD5SUM	:= md5 -q
 endif
-
-###############################################
-
-# SUNDIALS ode solvers
-#SUNDIALS_DIR := sundials/osx
-#CVODE_LIB=/usr/local/lib/libsundials_cvode.a
-#NVECS_LIB=/usr/local/lib/libsundials_nvecserial.a
-
-#IFLAGS := -I$(SUNDIALS_DIR)/include
-#LFLAGS := -L$(SUNDIALS_DIR)/lib -lsundials_cvode -lsundials_nvecserial -lm
-
-#CPPFLAGS = -g -m64 -O3 $(IFLAGS) $(LFLAGS)
 
 ###############################################
 
@@ -72,8 +80,8 @@ OBJ =   Fred.o Global.o Age_Map.o Timestep_Map.o Utils.o Params.o Date.o Random.
 	IntraHost.o DefaultIntraHost.o FixedIntraHost.o \
 	Abstract_Grid.o Abstract_Cell.o \
 	Seasonality_Timestep_Map.o Seasonality.o \
-	Past_Infection.o MSEvolution.o Piecewise_Linear.o \
-	# FergEvolution.o
+	Past_Infection.o MSEvolution.o FergEvolution.o Piecewise_Linear.o \
+	#Compression.o
 	# ODEIntraHost.o ODE.o
 
 SRC = $(OBJ:.o=.cc)
@@ -84,14 +92,23 @@ MD5 := FRED.md5
 
 all: FRED FRED.tar.gz $(MD5)
 
-FRED: $(OBJ)
-	$(CPP) $(CPPFLAGS) $(OBJ) -o FRED
+FRED: $(OBJ) dSFMT.o
+	$(CPP) $(CPPFLAGS) $(INCLUDE_FLAGS) $(OBJ) dSFMT.o -o FRED
 	cp FRED ../bin
+
+dSFMT.o:
+	$(CPP) $(DSFMT_CPPFLAGS) $(DSFMT_SRC) -c $(DSFMT_HDR) 
 
 DEPENDS: $(SRC) $(HDR)
 	$(CPP) -MM $(SRC) > DEPENDS
 
 include DEPENDS
+
+#SNAPPY_VERSION = 1.0.5
+#snappy: SNAPPY_SRC_DIR
+#	cd snappy/snappy-$(SNAPPY_VERSION); ./configure --prefix=`pwd`/..; make && make install;
+#SNAPPY_SRC_DIR: snappy/snappy-$(SNAPPY_VERSION).tar.gz
+#	cd snappy; tar -xzvf snappy-$(SNAPPY_VERSION).tar.gz;
 
 FRED.tar.gz: $(SRC) $(HDR)
 	tar -czf FRED.tar.gz $(HDR) $(SRC) Makefile

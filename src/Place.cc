@@ -25,9 +25,10 @@
 #include "Large_Grid.h"
 #include "Large_Cell.h"
 
-void Place::setup(int loc_id, const char *lab, fred::geo lon, fred::geo lat, Place* cont, Population *pop) {
+void Place::setup( const char *lab, fred::geo lon, fred::geo lat, Place* cont, Population *pop ) {
   population = pop;
-  id = loc_id;
+  // actual id assigned in Place_List::add_place
+  id = -1;
   container = cont;
   strcpy(label, lab);
   longitude = lon;
@@ -150,21 +151,41 @@ void Place::add_susceptible(int disease_id, Person * per) {
   assert (S[disease_id] == static_cast <int> (susceptibles[disease_id].size()));
 }
 
+void Place::add_susceptibles( int disease_id,
+    std::vector< Person * > & _susceptibles ) {
+
+  // Protect from concurrent writes
+  fred::Scoped_Lock lock( mutex ); 
+  // push person onto susceptible container for this place
+  susceptibles[ disease_id ].insert( susceptibles[ disease_id ].end(),
+     _susceptibles.begin(), _susceptibles.end() );
+
+  S[ disease_id ] += _susceptibles.size(); 
+  assert ( S[ disease_id ] == static_cast < int > ( susceptibles[ disease_id ].size() ) );
+}
+
 void Place::add_infectious(int disease_id, Person * per) {
+  
   // Protect from concurrent writes
   fred::Scoped_Lock lock( mutex );
   // push person onto infectious container for this place
   infectious[disease_id].push_back(per);
   I[disease_id]++;
   assert(I[disease_id] == static_cast <int> (infectious[disease_id].size()));
-  if (per->get_health()->is_symptomatic()) {
-    Sympt[disease_id]++;
-    cases[disease_id]++;
-    total_cases[disease_id]++;
-  }
-  if (I[disease_id]==1) {
+
+  
+  if ( I[ disease_id ] == 1 ) {
     Disease * dis = population->get_disease(disease_id);
     dis->add_infectious_place(this, type);
+  }
+
+  if (per->get_health()->is_symptomatic()) {
+    #pragma omp atomic
+    Sympt[disease_id]++;
+    #pragma omp atomic
+    cases[disease_id]++;
+    #pragma omp atomic
+    total_cases[disease_id]++;
   }
 }
 
@@ -255,6 +276,7 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
 
   if (r < infection_prob) {
     // successful transmission; create a new infection in infectee
+    // TODO this should be a const reference instead of new allocation???
     Transmission *transmission = new Transmission(infector, this, day);
     infector->infect( infectee, disease_id, transmission );
 
@@ -315,8 +337,14 @@ void Place::spread_infection(int day, int disease_id) {
       // select a target infectee with replacement, including all possible visitors
       int pos = IRAND(0,number_targets-1);
       if (pos > S[disease_id]-1) continue; // target is not one of the susceptibles present
-      // at this point we have a susceptible target:
-      Person * infectee = susceptibles[disease_id][pos];
+      // at this point we have a susceptible target
+      // make sure that we aren't out of range
+      FRED_CONDITIONAL_WARNING( pos < 0 || pos >= susceptibles[ disease_id ].size(),
+          " susceptibles.size() = %d pos = %d\n",
+          (int) susceptibles[ disease_id ].size(),
+          pos );
+      assert( pos >= 0 && pos < susceptibles[ disease_id ].size() );
+      Person * infectee = susceptibles[ disease_id ][ pos ];
 
       FRED_VERBOSE( 1, "possible infectee = %d  pos = %d  S[%d] = %d\n",
             infectee->get_id(), pos, disease_id, S[disease_id] );

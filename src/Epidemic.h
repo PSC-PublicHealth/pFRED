@@ -12,10 +12,12 @@
 #ifndef _FRED_EPIDEMIC_H
 #define _FRED_EPIDEMIC_H
 
-#include "Global.h"
 #include <set>
 #include <map>
 #include <vector>
+
+#include "Global.h"
+#include "Place.h"
 
 using namespace std;
 
@@ -23,7 +25,7 @@ class Disease;
 class Person;
 class Timestep_Map;
 class Multistrain_Timestep_Map;
-class Place;
+//class Place;
 
 class Epidemic {
 public:
@@ -110,6 +112,24 @@ public:
   static void transmit_infection(int day);
   static void get_visitors_to_infectious_places(int day);
 
+  struct Place_Person {
+    Place * place;
+    Person * person;
+    long int key;
+    
+    Place_Person( Place * _place, Person * _person, int _key ):
+      place( _place ), person( _person ), key( (long) _key ) {
+        key = ( (long) place ) ^ ( key << _key );
+        key = ( _key % 2 == 0 ) ? key : ( key * -1 );
+      };
+
+    bool operator< ( const Place_Person & other ) const {
+      return key < other.key;
+    }
+  };
+
+  typedef std::vector< Place_Person > Place_Person_List;
+
 private:
   Disease * disease;
   int id;
@@ -121,13 +141,16 @@ private:
   // bit maskes in Population
   // set <person_pair, person_pair_comparator> susceptible_list;
   // set <person_pair, person_pair_comparator> infectious_list;
+
   vector <Person *> daily_infections_list;
+
   vector <Place *> inf_households;
   vector <Place *> inf_neighborhoods;
   vector <Place *> inf_classrooms;
   vector <Place *> inf_schools;
   vector <Place *> inf_workplaces;
   vector <Place *> inf_offices;
+
   double attack_rate;
   double clinical_attack_rate;
   int clinical_incidents;
@@ -142,6 +165,18 @@ private:
   int symptomatic_count;
   int removed_count;
   int immune_count;
+
+  fred::Mutex mutex;
+  fred::Mutex neighborhood_mutex;
+  fred::Mutex household_mutex;
+  fred::Mutex workplace_mutex;
+  fred::Mutex office_mutex;
+  fred::Mutex school_mutex;
+  fred::Mutex classroom_mutex;
+
+  size_t place_person_list_reserve_size;
+
+  // /////////// Functors for Population loops //////////////////
 
   struct update_susceptible_activities {
     int day, disease_id;
@@ -160,7 +195,7 @@ private:
     vector< Person * > * samples;
     void operator() ( Person & p );
   };
-  fred::Mutex mutex;
+
 };
 
 #endif // _FRED_EPIDEMIC_H

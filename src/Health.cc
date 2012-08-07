@@ -295,6 +295,11 @@ void Health::update(int day) {
       }
     }
   }
+  else if ( active_infections.none() ) {
+    // no active infections, no need to evaluate susceptibility so we no longer
+    // need to update this Person's Health
+    Global::Pop.clear_mask_by_index( fred::Update_Health, person_index );
+  }
 } // end Health::update //
 
 void Health::update_interventions(int day) {

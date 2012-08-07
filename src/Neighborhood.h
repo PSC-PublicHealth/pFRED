@@ -32,9 +32,9 @@ public:
   /**
    * Convenience constructor that sets most of the values by calling Place::setup
    *
-   * @see Place::setup(int loc_id, const char *lab, double lon, double lat, Place* cont, Population *pop)
+   * @see Place::setup( const char *lab, double lon, double lat, Place* cont, Population *pop )
    */
-  Neighborhood(int loc, const char *lab, double lon, double lat, Place *container, Population* pop);
+  Neighborhood( const char *lab, double lon, double lat, Place *container, Population* pop );
 
   /**
    * @see Place::get_parameters(int diseases)

@@ -37,6 +37,8 @@ public:
   Population();
   ~Population();
 
+  void initialize_masks();
+
   /**
    * Sets the static variables for the class from the parameter file.
    */
@@ -257,6 +259,11 @@ public:
   template< typename Functor >
   void parallel_apply( fred::Population_Masks m, Functor & f ) { blq.parallel_masked_apply( m, f ); }
 
+  template< typename Functor >
+  void parallel_apply_with_thread_id( fred::Population_Masks m, Functor & f ) {
+    blq.parallel_masked_apply_with_thread_id( m, f );
+  }
+
 
   /* TODO rewrite
   template< typename MaskType >
@@ -315,7 +322,11 @@ private:
 
   struct update_population_demographics {
     int day;
-    update_population_demographics( int d ) : day( d ) { };
+    bool update_births, update_deaths;
+    update_population_demographics( int _day ) : day( _day ) {
+        update_births = false;
+        update_deaths = false;
+      }
     void operator() ( Person & p );
   };
 
@@ -325,7 +336,7 @@ private:
     void operator() ( Person & p );
   };
 
-
+  fred::Mutex mutex;
 };
 
 #endif // _FRED_POPULATION_H

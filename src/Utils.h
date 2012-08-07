@@ -92,7 +92,9 @@
 // FRED_CONDITIONAL_WARNING prints only if supplied conditional is true
 #ifdef FREDWARNING
 #define FRED_CONDITIONAL_WARNING(condition, format, ...){\
-  Utils::fred_warning("FRED_CONDITIONAL_WARNING: <%s, LINE:%d> " format, __FILE__, __LINE__, ## __VA_ARGS__);\
+  if (condition) {\
+    Utils::fred_warning("FRED_CONDITIONAL_WARNING: <%s, LINE:%d> " format, __FILE__, __LINE__, ## __VA_ARGS__);\
+  }\
 }
 
 #else
@@ -110,10 +112,12 @@ namespace Utils{
   void fred_end();
   void fred_print_wall_time(const char* format, ...);
   void fred_start_timer();
+  void fred_start_timer( time_t * lap_start_time );
   void fred_start_day_timer();
   void fred_print_day_timer(int day);
   void fred_print_finish_timer();
   void fred_print_lap_time(const char* format, ...);
+  void fred_print_lap_time( time_t * start_lap_time, const char* format, ...);
   void fred_verbose(int verbosity, const char* format, ...);
   void fred_verbose_statusfp(int verbosity, const char* format, ...);
   void fred_log(const char* format, ...);

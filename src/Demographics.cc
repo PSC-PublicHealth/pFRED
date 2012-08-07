@@ -70,23 +70,23 @@ Demographics::Demographics(Person * _self, short int _age, char _sex, int _marit
   // set demographic variables
   self                = _self;
   init_age            = _age;
-  age                = init_age;
+  age                 = init_age;
   sex                 = _sex;
   init_marital_status = _marital_status;
-  marital_status     = init_marital_status;
-  relationship = rel;
+  marital_status      = init_marital_status;
+  relationship        = rel;
   init_profession     = _profession;
-  profession         = init_profession;
-  birth_day_of_year  = -1;
-  deceased_sim_day = -1;
-  conception_sim_day = -1;
-  due_sim_day = -1;
+  profession          = init_profession;
+  birth_day_of_year   = -1;
+  deceased_sim_day    = -1;
+  conception_sim_day  = -1;
+  due_sim_day         = -1;
   pregnant            = false;
   deceased            = false;
 
   if (is_newborn == false) {
-
-    double rand_birthday = URAND(std::numeric_limits<double>::epsilon(), 365.0);
+    double eps = std::numeric_limits<double>::epsilon();
+    double rand_birthday = URAND(0.0 + eps, 365.0);
     int current_day_of_year = Global::Sim_Current_Date->get_day_of_year();
     int birthyear;
 
@@ -118,7 +118,7 @@ Demographics::Demographics(Person * _self, short int _age, char _sex, int _marit
   }
 
   //Will this person die in the next year?
-  if (Global::Enable_Deaths) {
+  if ( Global::Enable_Deaths ) {
     double pct_chance_to_die = 0.0;
     int age_lookup = (age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE);
     if (this->sex == 'F')
@@ -126,18 +126,22 @@ Demographics::Demographics(Person * _self, short int _age, char _sex, int _marit
     else
       pct_chance_to_die = Demographics::age_yearly_mortality_rate_male[age_lookup];
 
-    if(URAND(0.0, 1.0) <= pct_chance_to_die) {
+    if ( RANDOM() <= pct_chance_to_die ) {
       //Yes, so set the death day (in simulation days)
       this->deceased_sim_day = (day + IRAND(1,364));
+      Global::Pop.set_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
     }
   }
 
   //Is this person pregnant?
   if (Global::Enable_Births && this->sex == 'F' && age <= Demographics::MAX_PREGNANCY_AGE) {
-    if (URAND(0.0, 1.0) <= ((0.75) * Demographics::age_yearly_birth_rate[age])) {
+    if ( ( ( 280 ) * Demographics::age_daily_birth_rate[ age ] ) > RANDOM() ) {
       //Yes, so set the due_date (in simulation days)
-      this->due_sim_day = (day + IRAND(1, 280));
+      this->due_sim_day = ( day + IRAND( 1, 280 ) );
       this->pregnant = true;
+      Global::Pop.set_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
+      FRED_STATUS( 2, "Birth scheduled during initialization! conception day: %d, delivery day: %d\n",
+            conception_sim_day, due_sim_day );
     }
   }
 }
@@ -146,51 +150,34 @@ Demographics::~Demographics() {
 }
 
 void Demographics::update(int day) {
+  // TODO: this does nothing, leave as stub for future extensions
+}
 
-  int cur_year = Global::Sim_Current_Date->get_year();
-  int cur_month = Global::Sim_Current_Date->get_month();
-  int cur_day_of_month = Global::Sim_Current_Date->get_day_of_month();
-
-  //The age to look up should be an integer between 0 and the MAX_AGE
-  int age_lookup = (age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE);
-
+void Demographics::update_births( int day ) {
   if (Global::Enable_Births) {
-
-    //The age to look up should be an integer between 0 and the MAX_PREGNANCY_AGE
-    age_lookup = (age <= Demographics::MAX_PREGNANCY_AGE ? age : Demographics::MAX_PREGNANCY_AGE);
-
-    //Is this your day to conceive?
-    if ( sex == 'F' && age <= Demographics::MAX_PREGNANCY_AGE && !pregnant && conception_sim_day == -1
-        && due_sim_day == -1 && URAND(0.0, 1.0) <= Demographics::age_daily_birth_rate[age]) {
-
-      conception_sim_day = day;
-      due_sim_day = day + (int)(draw_normal(Demographics::MEAN_PREG_DAYS, Demographics::STDDEV_PREG_DAYS) + 0.5);
-      pregnant = true;
-    }
-    
-    //Is this your day to give birth
-    if(this->sex == 'F' &&
-       this->pregnant &&
-       this->due_sim_day != -1 &&
-       this->due_sim_day == day) {
-      if (this->conception_sim_day != -1) {
-        this->conception_sim_day = -1;
-      }
-      this->due_sim_day = -1;
-      this->pregnant = false;
-
-      Global::Pop.prepare_to_give_birth(day, self);
+    // Is this your day to give birth? ( previously set in Demographics::birthday )
+    if ( pregnant && due_sim_day == day ) {
+      conception_sim_day = -1;
+      due_sim_day = -1;
+      pregnant = false;
+      // don't update this person's demographics anymore
+      Global::Pop.clear_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
+      // give birth
+      Global::Pop.prepare_to_give_birth( day, self );
     }
   }
+}
 
-  //Is this your day to die?
-  if(Global::Enable_Deaths &&
-     this->deceased_sim_day != -1 &&
-     this->deceased_sim_day == day) {
-    this->deceased = true;
-    Global::Pop.prepare_to_die(day, self);
+void Demographics::update_deaths( int day ) {
+  if ( Global::Enable_Deaths ) {
+    //Is this your day to die?
+    if ( deceased_sim_day == day ) {
+      // don't update this person's demographics anymore
+      Global::Pop.clear_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
+      deceased = true;
+      Global::Pop.prepare_to_die( day, self );
+    }
   }
-
 }
 
 void Demographics::birthday(int day) {
@@ -214,12 +201,37 @@ void Demographics::birthday(int day) {
     else
       pct_chance_to_die = Demographics::age_yearly_mortality_rate_male[age_lookup];
 
-    if(!this->deceased &&
-       this->deceased_sim_day == -1 &&
-       URAND(0.0, 1.0) <= pct_chance_to_die) {
+    if ( !this->deceased &&
+          this->deceased_sim_day == -1 &&
+          RANDOM() <= pct_chance_to_die) {
 
       //Yes, so set the death day (in simulation days)
       this->deceased_sim_day = (day + IRAND(0,364));
+      // and flag for daily updates until death
+      Global::Pop.set_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
+    }
+  }
+
+
+  if ( Global::Enable_Births ) {
+    // Will this person conceive this year ( delivery may occur in the next year )?
+    if ( !pregnant && sex == 'F' && age <= Demographics::MAX_PREGNANCY_AGE && conception_sim_day == -1
+          && due_sim_day == -1 ) {
+
+      // ignore small distortion due to leap years
+      double yearly_birth_prob = 365 * Demographics::age_daily_birth_rate[ age ]; 
+  
+      if ( yearly_birth_prob > RANDOM() ) {
+        // ignore small distortion due to leap years
+        conception_sim_day = day + IRAND( 1, 365 );
+        due_sim_day = conception_sim_day + (int) ( draw_normal(
+              Demographics::MEAN_PREG_DAYS, Demographics::STDDEV_PREG_DAYS) + 0.5 );
+        pregnant = true;
+        // flag for daily updates
+        Global::Pop.set_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
+        FRED_STATUS( 2, "Birth scheduled! conception day: %d, delivery day: %d\n",
+            conception_sim_day, due_sim_day );
+      }
     }
   }
 }

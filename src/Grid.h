@@ -16,6 +16,7 @@
 #include "Place.h"
 #include "Abstract_Grid.h"
 class Cell;
+class Neighborhood;
 
 class Grid : public Abstract_Grid {
 public:
@@ -30,6 +31,17 @@ public:
    */
   Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fred::geo maxlat);
   ~Grid() {}
+
+  /*
+   * @return number of cells in the grid.
+   *
+   * This is used in Place_List to allocate space for neighborhoods.  This
+   * assumes that there is one neighborhood per cell.
+   */
+
+  int get_number_of_cells();
+
+  void setup( Place::Allocator< Neighborhood > & neighborhood_allocator );
 
   /**
    * Get values from the parameter file

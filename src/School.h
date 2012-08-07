@@ -15,11 +15,13 @@
 #include "Place.h"
 #include <vector>
 
+class Classroom;
+
 class School : public Place {
 public: 
   School() {}
   ~School() {}
-  School(int,const char*,double,double,Place *, Population *pop);
+  School( const char*, double, double, Place *, Population *pop );
   void prepare();
   void get_parameters(int diseases);
   int get_group(int disease_id, Person * per);
@@ -36,7 +38,8 @@ public:
   }
   int classrooms_for_age(int age) { return (int) classrooms[age].size(); }
   void print(int disease);
-  void setup_classrooms();
+  int get_number_of_rooms();
+  void setup_classrooms( Allocator< Classroom > & classroom_allocator );
   Place * assign_classroom(Person *per);
 
 private:

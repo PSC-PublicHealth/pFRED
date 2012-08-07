@@ -28,10 +28,10 @@ int Classroom::Classroom_closure_delay = 0;
 //Private static variable to assure we only lookup parameters once
 bool Classroom::Classroom_parameters_set = false;
 
-Classroom::Classroom(int loc, const char *lab, double lon,
+Classroom::Classroom( const char *lab, double lon,
          double lat, Place *container, Population *pop) {
   type = CLASSROOM;
-  setup(loc, lab, lon, lat, container, pop);
+  setup( lab, lon, lat, container, pop);
   get_parameters(Global::Diseases);
   age_level = -1;
 }

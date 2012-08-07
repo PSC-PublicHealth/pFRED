@@ -23,9 +23,9 @@ double *** Hospital::Hospital_contact_prob;
 //Private static variable to assure we only lookup parameters once
 bool Hospital::Hospital_parameters_set = false;
 
-Hospital::Hospital(int loc, const char *lab, double lon, double lat, Place *container, Population *pop) {
+Hospital::Hospital( const char *lab, double lon, double lat, Place *container, Population *pop ) {
   type = HOSPITAL;
-  setup(loc, lab, lon, lat, container, pop);
+  setup( lab, lon, lat, container, pop );
   get_parameters(Global::Diseases);
 }
 

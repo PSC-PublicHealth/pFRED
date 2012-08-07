@@ -13,6 +13,7 @@
 #include <new>
 #include <string>
 #include <sstream>
+#include <fstream>
 
 #include "Population.h"
 #include "Params.h"
@@ -34,6 +35,7 @@
 #include "Evolution.h"
 #include "Activities.h"
 
+
 using namespace std; 
 
 char ** pstring;
@@ -54,9 +56,6 @@ int  Population::next_id = 0;
 
 Population::Population() {
 
-  blq.add_mask( fred::Infectious );
-  blq.add_mask( fred::Susceptible );
-
   clear_static_arrays();
   //pop.clear();
   pop_map.clear();
@@ -71,6 +70,16 @@ Population::Population() {
     birthday_vecs[i].clear();
   }
 }
+
+void Population::initialize_masks() {
+  // can't do this in the constructor because the Global:: variables aren't yet
+  // available when the Global::Pop is defined
+  blq.add_mask( fred::Infectious );
+  blq.add_mask( fred::Susceptible );
+  blq.add_mask( fred::Update_Demographics );
+  blq.add_mask( fred::Update_Health );
+}
+
 
 // index and id are not the same thing!
 
@@ -138,12 +147,14 @@ Person * Population::add_person( int id, int age, char sex, int marital, int rel
     
   Person * person = blq.get_free_pointer( idx );
 
+  // mark valid before adding person so that mask operations will be
+  // available in the constructor (of Person and all ancillary objects)
+  blq.mark_valid_by_index( idx ); 
+
   new( person ) Person( idx, id, age, sex, marital, rel, occ,
         house, school, work, day, today_is_birthday );
 
   //person->set_pop_index( idx );
-
-  blq.mark_valid_by_index( idx ); 
   
   assert( id_to_index.find( id ) == id_to_index.end() );
   id_to_index[ id ] = idx;
@@ -153,14 +164,16 @@ Person * Population::add_person( int id, int age, char sex, int marital, int rel
   pop_map[ person ] = pop_size;
   pop_size = blq.size();
 
-  if(Global::Enable_Aging) {
-  	int pos = person->get_demographics()->get_birth_day_of_year();
-	//Check to see if the day of the year is after FEB 28
-	  if(pos > 59 && !Date::is_leap_year(person->get_demographics()->get_birth_year())) {
+  Demographics * demographics = person->get_demographics();
+
+  if ( Global::Enable_Aging ) {
+  	int pos = demographics->get_birth_day_of_year();
+	  //Check to see if the day of the year is after FEB 28
+	  if ( pos > 59 && !Date::is_leap_year( demographics->get_birth_year() ) ) {
 	    pos++;
     }
-    birthday_vecs[pos].push_back(person);
-    birthday_map[person] = ( (int) birthday_vecs[pos].size() - 1 );
+    birthday_vecs[ pos ].push_back( person );
+    birthday_map[ person ] = ( (int) birthday_vecs[ pos ].size() - 1 );
   }
   return person;
 }
@@ -214,7 +227,8 @@ void Population::delete_person(Person * person) {
   // graveyard.push_back(person);
 }
 
-void Population::prepare_to_die(int day, Person *per) { // aka, 'bring out your dead'
+void Population::prepare_to_die(int day, Person *per) {
+  fred::Scoped_Lock lock( mutex );
   // add person to daily death_list
   death_list.push_back(per);
   report_death(day, per);
@@ -227,6 +241,7 @@ void Population::prepare_to_die(int day, Person *per) { // aka, 'bring out your 
 }
 
 void Population::prepare_to_give_birth(int day, Person *per) {
+  fred::Scoped_Lock lock( mutex );
   // add person to daily maternity_list
   maternity_list.push_back(per);
   report_birth(day, per);
@@ -446,9 +461,11 @@ void Population::update(int day) {
 
   if (Global::Enable_Aging) {
 
-  //Find out if we are currently in a leap year
-  int year = Global::Sim_Start_Date->get_year(day);
-  int day_of_year = Date::get_day_of_year(year, Global::Sim_Start_Date->get_month(day), Global::Sim_Start_Date->get_day_of_month(day));
+    //Find out if we are currently in a leap year
+    int year = Global::Sim_Start_Date->get_year(day);
+    int day_of_year = Date::get_day_of_year(year,
+        Global::Sim_Start_Date->get_month(day),
+        Global::Sim_Start_Date->get_day_of_month(day));
 
   int bd_count = 0;
   size_t vec_size = 0;
@@ -477,10 +494,14 @@ void Population::update(int day) {
   printf("birthday count = [%d]\n", bd_count);
   }
 
-  // update everyone's demographics
-  if (Global::Enable_Births || Global::Enable_Deaths || Global::Enable_Aging) {
+  // process queued births and deaths ( these are calculated on the Person's birthday )
+  if ( Global::Enable_Births || Global::Enable_Deaths ) {
     update_population_demographics update_functor( day );
-    blq.apply( update_functor ); 
+
+    update_functor.update_births = Global::Enable_Births;
+    update_functor.update_deaths = Global::Enable_Deaths;
+    // only check those people who've been flagged for updates in Demographics
+    blq.parallel_masked_apply( fred::Update_Demographics, update_functor ); 
   }
   // Utils::fred_print_wall_time("day %d update_demographics", day);
 
@@ -539,18 +560,19 @@ void Population::update(int day) {
 
       //Remove the person from the birthday lists
       if(Global::Enable_Aging) {
-      map<Person *, int>::iterator itr;
-      itr = birthday_map.find(death_list[i]);
+        map<Person *, int>::iterator itr;
+        itr = birthday_map.find(death_list[i]);
         if (itr == birthday_map.end()) {
-          Utils::fred_verbose(0,"Help! person %d deleted, but not in the birthday_map\n", death_list[i]->get_id());
+          FRED_VERBOSE(0, "Help! person %d deleted, but not in the birthday_map\n",
+              death_list[i]->get_id() );
         }
         assert(itr != birthday_map.end());
         int pos = (*itr).second;
         int day_of_year = death_list[i]->get_demographics()->get_birth_day_of_year();
 
-    	//Check to see if the day of the year is after FEB 28
-    	if(day_of_year > 59 && !Date::is_leap_year(death_list[i]->get_demographics()->get_birth_year()))
-    	  day_of_year++;
+      	//Check to see if the day of the year is after FEB 28
+        if(day_of_year > 59 && !Date::is_leap_year(death_list[i]->get_demographics()->get_birth_year()))
+          day_of_year++;
 
         Person * last = this->birthday_vecs[day_of_year].back();
         birthday_map.erase(itr);
@@ -562,10 +584,7 @@ void Population::update(int day) {
 
       delete_person(death_list[i]);
     }
-    if (Global::Verbose > 0) {
-      fprintf(Global::Statusfp, "deaths = %d\n", (int)deaths);
-      fflush(Global::Statusfp);
-    }
+    FRED_STATUS( 0, "deaths = %d\n", (int) deaths );
   }
 
   // first update everyone's health intervention status
@@ -577,10 +596,8 @@ void Population::update(int day) {
   }
 
   // update everyone's health status
-  { 
-    update_population_health update_functor( day );
-    blq.parallel_apply( update_functor );
-  }
+  update_population_health update_functor( day );
+  blq.parallel_masked_apply( fred::Update_Health, update_functor );
   // Utils::fred_print_wall_time("day %d update_health", day);
 
   if (Global::Enable_Mobility) {
@@ -625,15 +642,18 @@ void Population::update(int day) {
   av_manager->update(day);
   // Utils::fred_print_wall_time("day %d av_manager", day);
 
-  if (Global::Verbose > 1) {
-    fprintf(Global::Statusfp, "population begin_day finished\n");
-    fflush(Global::Statusfp);
-  }
-
+  FRED_STATUS( 1, "population begin_day finished\n");
 }
 
 void Population::update_population_demographics::operator() ( Person & p ) {
-  p.update_demographics( day );
+  // default Demographics::update currently empty
+  //p.demographics.update( day );
+  if ( update_births ) {
+    p.demographics.update_births( day );
+  }
+  if ( update_deaths ) {
+    p.demographics.update_deaths( day );
+  }
 }
 
 void Population::update_population_health::operator() ( Person & p ) {

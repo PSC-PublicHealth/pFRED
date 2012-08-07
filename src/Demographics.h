@@ -20,6 +20,8 @@ public:
 
   static const int MAX_AGE = 110;
   static const int MAX_PREGNANCY_AGE = 60;
+  static const int MIN_PREGNANCY_AGE = 12;
+
   static const double MEAN_PREG_DAYS;
   static const double STDDEV_PREG_DAYS;
 
@@ -47,8 +49,14 @@ public:
    * Perform the daily update for this object
    *
    * @param day the simulation day
+   *
+   * See also Demographics::update_births and Demographics::update_deaths
    */
   void update(int day);
+
+  void update_births( int day );
+
+  void update_deaths( int day );
 
   /**
    * @return the number of days the agent has been alive / 365.0

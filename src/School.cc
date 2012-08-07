@@ -41,9 +41,9 @@ bool School::global_closure_is_active = false;
 int School::global_close_date = 0;
 int School::global_open_date = 0;
 
-School::School(int loc, const char *lab, double lon, double lat, Place* container, Population *pop) {
+School::School( const char *lab, double lon, double lat, Place* container, Population *pop ) {
   type = SCHOOL;
-  setup(loc, lab, lon, lat, container, pop);
+  setup( lab, lon, lat, container, pop );
   get_parameters(Global::Diseases);
   for (int i = 0; i < 20; i++) {
     students_with_age[i] = 0;
@@ -284,9 +284,26 @@ void School::print(int disease_id) {
   fflush(Global::Statusfp);
 }
 
-void School::setup_classrooms() {
+int School::get_number_of_rooms() {
+  int total_rooms = 0;
+  if (School::school_classroom_size == 0)
+    return 0;
+  for (int a = 0; a < 20; a++) {
+    int n = students_with_age[a];
+    next_classroom[a] = 0;
+    next_classroom_without_teacher[a] = 0;
+    if ( n == 0 ) continue;
+    int rooms = n / School::school_classroom_size;
+    if ( n % School::school_classroom_size ) rooms++;
+    total_rooms += rooms;
+  }
+  return total_rooms;
+}
+
+void School::setup_classrooms( Allocator< Classroom > & classroom_allocator ) {
   if (School::school_classroom_size == 0)
     return;
+
   for (int a = 0; a < 20; a++) {
     int n = students_with_age[a];
     next_classroom[a] = 0;
@@ -294,28 +311,25 @@ void School::setup_classrooms() {
     if (n == 0) continue;
     int rooms = n / School::school_classroom_size;
     if (n % School::school_classroom_size) rooms++;
-    if (Global::Verbose > 1) {
-      fprintf(Global::Statusfp, "school %d %s age %d number %d rooms %d\n",
-	      id, label,a,n,rooms);
-      fflush(Global::Statusfp);
-    }
+   
+    FRED_STATUS( 1, "school %d %s age %d number %d rooms %d\n",
+        id, label, a, n, rooms );
+    
     for (int c = 0; c < rooms; c++) {
-      int new_id = Global::Places.get_max_id() + 1;
       char new_label[128];
       sprintf(new_label, "%s-%02d-%02d", this->get_label(), a, c+1);
-      Place *p = new (nothrow) Classroom(new_id, new_label,
-					 this->get_longitude(),
-					 this->get_latitude(),
-					 this,
-					 this->get_population());
-      Global::Places.add_place(p);
+
+      Place *p = new ( classroom_allocator.get_free() ) Classroom( new_label,
+           this->get_longitude(),
+           this->get_latitude(),
+           this,
+           this->get_population());
+      //Global::Places.add_place(p);
       classrooms[a].push_back(p);
       total_classrooms++;
-      if (Global::Verbose > 1) {
-        fprintf(Global::Statusfp, "school %d %s age %d added classroom %d %s %d\n",
-                id, label,a,c,p->get_label(),p->get_id());
-        fflush(Global::Statusfp);
-      }
+
+      //FRED_STATUS( 1, "school %d %s age %d added classroom %d %s %d\n",
+      //    id, label, a, c, p->get_label(), p->get_id() );
     }
   }
 }

@@ -16,6 +16,8 @@
 #include <bitset>
 
 #include "Global.h"
+#include "Random.h"
+#include "Epidemic.h"
 
 class Person;
 class Place;
@@ -61,6 +63,12 @@ public:
    * @param day the simulation day
    */
   void update_susceptible_activities(int day, int dis);
+
+  /*
+   * Appends disease-place-person items to vector passed in as reference
+   */
+  void get_susceptible_places_to_visit( int day, int disease_id,
+      Epidemic::Place_Person_List & list, int thread_id );
 
   /**
    * Perform the daily update to the schedule

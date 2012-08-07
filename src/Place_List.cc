@@ -1,8 +1,8 @@
 /*
- Copyright 2009 by the University of Pittsburgh
- Licensed under the Academic Free License version 3.0
- See the file "LICENSE" for more information
- */
+   Copyright 2009 by the University of Pittsburgh
+   Licensed under the Academic Free License version 3.0
+   See the file "LICENSE" for more information
+   */
 
 //
 //
@@ -31,11 +31,15 @@
 #include "Grid.h"
 #include "Large_Grid.h"
 #include "Small_Grid.h"
-#include "Utils.h"
 #include "Geo_Utils.h"
 #include "Travel.h"
 #include "Seasonality.h"
 #include "Random.h"
+
+// Place_List::quality_control implementation is very large,
+// include from separate .cc file:
+#include "Place_List_Quality_Control.cc"
+
 
 void Place_List::get_parameters() {
 }
@@ -70,15 +74,30 @@ void Place_List::read_places() {
     }
   }
 
-  char line[256];
-  int loc_id = 0;
-  while (fgets(line, 255, fp) != NULL) {
-    char s[80];
-    char place_type;
-    fred::geo lon, lat;
-    Place *place = NULL;
-    Place *container = NULL;
+  // vector to hold init data
+  std::vector< Place_Init_Data > pidv;
 
+  // initialize counts to zero
+  place_type_counts[ HOUSEHOLD ] = 0;       // 'H'
+  place_type_counts[ SCHOOL ] = 0;          // 'S'
+  place_type_counts[ WORKPLACE ] = 0;       // 'W'
+  place_type_counts[ HOSPITAL ] = 0;        // 'M'
+  place_type_counts[ NEIGHBORHOOD ] = 0;    // 'N'
+  place_type_counts[ CLASSROOM ] = 0;       // 'C'
+  place_type_counts[ OFFICE ] = 0;          // 'O'
+  place_type_counts[ COMMUNITY ] = 0;       // 'X'
+
+  // declare temoraries once
+  char s[80];
+  char place_type;
+  fred::geo lon, lat;
+  char line[256];
+
+  // assign location ids sequentially, start with zero
+  // but actual assignment of place id is now done in add_place
+
+  while (fgets(line, 255, fp) != NULL) {
+    
     // skip white-space-only lines
     int i = 0;
     while (i < 255 && line[i] != '\0' && isspace(line[i])) i++;
@@ -88,48 +107,95 @@ void Place_List::read_places() {
     if (line[0] == '#') continue;
 
     if (sscanf(line, "%s %c %f %f", s, &place_type, &lat, &lon) == 4) {
-      if (place_type == 'H' && lat != 0.0) {
+      pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
+      ++( place_type_counts[ place_type ] );
+    }
+    else {
+      Utils::fred_abort( "Help! Bad location format: %s\n", line );
+    }
+  }
+
+  // sort the place init data by type, location ( using Place_Init_Data::operator< )
+  std::sort( pidv.begin(), pidv.end() );
+
+  // HOUSEHOLD in-place allocator
+  Place::Allocator< Household > household_allocator;
+  household_allocator.reserve( place_type_counts[ HOUSEHOLD ] );
+  // SCHOOL in-place allocator
+  Place::Allocator< School > school_allocator;
+  school_allocator.reserve( place_type_counts[ SCHOOL ] );
+  // WORKPLACE in-place allocator
+  Place::Allocator< Workplace > workplace_allocator;
+  workplace_allocator.reserve( place_type_counts[ WORKPLACE ] );
+  // HOSPITAL in-place allocator
+  Place::Allocator< Hospital > hospital_allocator;
+  hospital_allocator.reserve( place_type_counts[ HOSPITAL ] );
+  
+  // fred-specific place types initialized elsewhere (setup_offices, setup_classrooms)
+
+  // more temporaries
+  Place * place = NULL;
+  Place * container = NULL;
+
+  // loop through sorted init data and create objects using Place_Allocator
+  for ( int i = 0; i < pidv.size(); ++i ) {
+      strcpy( s, pidv[ i ].s );
+      place_type = pidv[ i ].place_type;
+      lon = pidv[ i ].lon;
+      lat = pidv[ i ].lat;
+
+      if (place_type == HOUSEHOLD && lat != 0.0) {
         if (lat < min_lat) min_lat = lat;
         if (max_lat < lat) max_lat = lat;
       }
-      if (place_type == 'H' && lon != 0.0) {
+      if (place_type == HOUSEHOLD && lon != 0.0) {
         if (lon < min_lon) min_lon = lon;
         if (max_lon < lon) max_lon = lon;
       }
       if (place_type == HOUSEHOLD) {
-        place = new (nothrow) Household(loc_id, s, lon, lat, container, &Global::Pop);
+        place = new ( household_allocator.get_free() )
+          Household( s, lon, lat, container, &Global::Pop );
       }
       else if (place_type == SCHOOL) {
-        place = new (nothrow) School(loc_id, s, lon, lat, container, &Global::Pop);
+        place = new ( school_allocator.get_free() )
+          School( s, lon, lat, container, &Global::Pop );
       }
       else if (place_type == WORKPLACE) {
-        place = new (nothrow) Workplace(loc_id, s, lon, lat, container, &Global::Pop);
+        place = new ( workplace_allocator.get_free() )
+          Workplace( s, lon, lat, container, &Global::Pop );
       }
       else if (place_type == HOSPITAL) {
-        place = new (nothrow) Hospital(loc_id, s, lon, lat, container, &Global::Pop);
+        place = new ( hospital_allocator.get_free() )
+          Hospital( s, lon, lat, container, &Global::Pop );
       }
       else {
         Utils::fred_abort("Help! bad place_type %c\n", place_type); 
       }
+      
       if (place == NULL) {
-        Utils::fred_abort("Help! allocation failure for place_id %d\n", loc_id); 
+        Utils::fred_abort( "Help! allocation failure for the %dth entry in location file (s=%s, type=%c)\n",
+            i,s,place_type ); 
       }
-      add_place(place);
-      loc_id = places.size();
+
       place = NULL;
-    }
-    else {
-      Utils::fred_abort("Help! Bad location format for location %d: %s\n",
-          loc_id, line);
-    }
   }
+
+  // since everything was allocated in contiguous blocks, we can use pointer arithmetic
+  // call to add_preallocated_places also ensures that all allocations were used for
+  // successful additions to the place list
+  add_preallocated_places< Household >( HOUSEHOLD, household_allocator ); 
+  add_preallocated_places< School    >( SCHOOL,    school_allocator    ); 
+  add_preallocated_places< Workplace >( WORKPLACE, workplace_allocator ); 
+  add_preallocated_places< Hospital  >( HOSPITAL,  hospital_allocator  ); 
+
   fclose(fp);
+
   if (use_gzip) {
     // remove the uncompressed file
     unlink(location_file);
   }
 
-  FRED_STATUS(0, "finished reading locations, loc size = %d\n", loc_id);
+  FRED_STATUS(0, "finished reading %d locations, now creating additional FRED locations\n", next_place_id);
 
   if (Global::Use_Mean_Latitude) {
     // Make projection based on the location file.
@@ -154,7 +220,20 @@ void Place_List::read_places() {
       Global::Clim = new Seasonality(Global::Large_Cells);
     }
   }
+  // Grid/Cells contain neighborhoods
   Global::Cells = new Grid(min_lon, min_lat, max_lon, max_lat);
+  // one neighborhood per cell
+  int number_of_neighborhoods = Global::Cells->get_number_of_cells();
+  // create allocator for neighborhoods
+  Place::Allocator< Neighborhood > neighborhood_allocator;
+  // reserve enough space for all neighborhoods
+  neighborhood_allocator.reserve( number_of_neighborhoods );
+  FRED_STATUS( 0, "Allocated space for %7d neighborhoods\n", number_of_neighborhoods );
+  // pass allocator to Grid::setup (which then passes to Cell::make_neighborhood)
+  Global::Cells->setup( neighborhood_allocator );
+  // add Neighborhoods in one contiguous block
+  add_preallocated_places< Neighborhood >( NEIGHBORHOOD, neighborhood_allocator );
+
   if (Global::Enable_Small_Grid)
     Global::Small_Cells = new Small_Grid(min_lon, min_lat, max_lon, max_lat);
 
@@ -166,10 +245,10 @@ void Place_List::read_places() {
       fred::geo lon = place->get_longitude();
       Cell * grid_cell = (Cell *) Global::Cells->get_grid_cell_from_lat_lon(lat,lon);
 
-      if (grid_cell == NULL) {
-        printf("Help: household %d has bad grid_cell,  lat = %f  lon = %f\n",
-               place->get_id(),lat,lon);
-      }
+      FRED_CONDITIONAL_VERBOSE( 1, grid_cell == NULL,
+          "Help: household %d has bad grid_cell,  lat = %f  lon = %f\n",
+          place->get_id(),lat,lon); 
+
       assert(grid_cell != NULL);
 
       grid_cell->add_household(place);
@@ -181,36 +260,37 @@ void Place_List::read_places() {
 
   // Added by Anuroop
   /*ofstream fplace("results/locations_3deme");
-  for(int i=0; i<places.size(); i++) {
-     fplace << places[i]->get_latitude() << " " << places[i]->get_longitude() << endl;
-  }
-  fplace.close();
-  exit(0);*/
+    for(int i=0; i<places.size(); i++) {
+    fplace << places[i]->get_latitude() << " " << places[i]->get_longitude() << endl;
+    }
+    fplace.close();
+    exit(0);*/
 }
 
 void Place_List::prepare() {
 
   FRED_STATUS(0, "prepare places entered\n","");
-  
+
   int number_places = places.size();
   for (int p = 0; p < number_places; p++) {
     places[p]->prepare();
   }
 
   FRED_STATUS(0, "prepare places finished\n","");
-  
+
 }
 
 void Place_List::update(int day) {
-  
+
   FRED_STATUS(1, "update places entered\n","");
 
   if (Global::Enable_Seasonality) {
     Global::Clim->update(day);
   }
   int number_places = places.size();
-  for (int p = 0; p < number_places; p++) {
-    places[p]->update(day);
+  #pragma omp parallel for
+  for ( int p = 0; p < number_places; ++p ) {
+    places[ p ]->update( day );
   }
 
   FRED_STATUS(1, "update places finished\n", "");
@@ -228,455 +308,113 @@ Place * Place_List::get_place_from_label(char *s) {
   }
 }
 
-void Place_List::add_place(Place * p) {
+int Place_List::add_place( Place * p ) {
+  int index = -1;
   // p->print(0);
   // assert(place_map.find(p->get_id()) == place_map.end());
-  if (place_map.find(p->get_id()) == place_map.end()) {
+  //
+  FRED_CONDITIONAL_WARNING( p->get_id() != -1,
+      "Place id (%d) was overwritten!", p->get_id() ); 
+  assert( p->get_id() == -1 );
+
     string str;
-    str.assign(p->get_label());
-    if (place_label_map.find(str) == place_label_map.end()) {
+    str.assign( p->get_label() );
+
+    if ( place_label_map.find(str) == place_label_map.end() ) {
+ 
+      p->set_id( get_new_place_id() );
+     
       places.push_back(p);
-      place_map[p->get_id()] = places.size()-1;
-      place_label_map[str] = places.size()-1;
-      if (p->get_id() > max_id) max_id = p->get_id();
+
+      place_map[ p->get_id() ] = places.size() - 1;
+
+      place_label_map[ str ] = places.size() - 1;
+
+
       // printf("places now = %d\n", (int)(places.size())); fflush(stdout);
+     
+      // TODO workplaces vector won't be needed once all places stored and labeled in bloque
       if (Global::Enable_Local_Workplace_Assignment && p->is_workplace()) {
-  workplaces.push_back(p);
+        workplaces.push_back(p);
       }
+
     }
     else {
-      printf("Warning: duplicate place found: ");
+      printf("Warning: duplicate place label found: ");
       p->print(0);
     }
-  }
-  else {
-    printf("Warning: duplicate place found: ");
-    p->print(0);
-  }
+
+  return index;
 }
 
-
-void Place_List::quality_control(char *directory) {
-  int number_places = places.size();
-
-  FRED_STATUS(0, "places quality control check for %d places\n", number_places);
-  
-  if (Global::Verbose>1) {
-    if (Global::Enable_Large_Grid) {
-      char filename [256];
-      sprintf(filename, "%s/houses.dat", directory);
-      FILE *fp = fopen(filename, "w");
-      for (int p = 0; p < number_places; p++) {
-        if (places[p]->get_type() == HOUSEHOLD) {
-          fred::geo lat = places[p]->get_latitude();
-          fred::geo lon = places[p]->get_longitude();
-          double x, y;
-          Global::Large_Cells->translate_to_cartesian(lat, lon, &x, &y);
-          // get coordinates of large grid as alinged to global grid
-          double min_x = Global::Large_Cells->get_min_x();
-          double min_y = Global::Large_Cells->get_min_y();
-          fprintf(fp, "%f %f\n", min_x+x, min_y+y);
-        }
-      }
-      fclose(fp);
-    }
-  }
-  
-  if (Global::Verbose) {
-    int count[20];
-    int total = 0;
-    // size distribution of households
-    for (int c = 0; c < 15; c++) { count[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == HOUSEHOLD) {
-        int n = places[p]->get_size();
-        if (n < 15) { count[n]++; }
-        else { count[14]++; }
-        total++;
-      }
-    }
-    fprintf(Global::Statusfp, "\nHousehold size distribution: %d households\n", total);
-    for (int c = 0; c < 15; c++) {
-      fprintf(Global::Statusfp, "%3d: %6d (%.2f%%)\n",
-              c, count[c], (100.0*count[c])/total);
-    }
-    fprintf(Global::Statusfp, "\n");
-  }
-  
-  if (Global::Verbose) {
-    int count[20];
-    int total = 0;
-    // adult distribution of households
-    for (int c = 0; c < 15; c++) { count[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == HOUSEHOLD) {
-        Household *h = (Household *) places[p];
-        int n = h->get_adults();
-        if (n < 15) { count[n]++; }
-        else { count[14]++; }
-        total++;
-      }
-    }
-    fprintf(Global::Statusfp, "\nHousehold adult size distribution: %d households\n", total);
-    for (int c = 0; c < 15; c++) {
-      fprintf(Global::Statusfp, "%3d: %6d (%.2f%%)\n",
-              c, count[c], (100.0*count[c])/total);
-    }
-    fprintf(Global::Statusfp, "\n");
-  }
-  
-  if (Global::Verbose) {
-    int count[20];
-    int total = 0;
-    // children distribution of households
-    for (int c = 0; c < 15; c++) { count[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == HOUSEHOLD) {
-        Household *h = (Household *) places[p];
-        int n = h->get_children();
-        if (n < 15) { count[n]++; }
-        else { count[14]++; }
-        total++;
-      }
-    }
-    fprintf(Global::Statusfp, "\nHousehold children size distribution: %d households\n", total);
-    for (int c = 0; c < 15; c++) {
-      fprintf(Global::Statusfp, "%3d: %6d (%.2f%%)\n",
-              c, count[c], (100.0*count[c])/total);
-    }
-    fprintf(Global::Statusfp, "\n");
-  }
-  
-  if (Global::Verbose) {
-    int count[20];
-    int total = 0;
-    // adult distribution of households with children
-    for (int c = 0; c < 15; c++) { count[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == HOUSEHOLD) {
-        Household *h = (Household *) places[p];
-        if (h->get_children() == 0) continue;
-        int n = h->get_adults();
-        if (n < 15) { count[n]++; }
-        else { count[14]++; }
-        total++;
-      }
-    }
-    fprintf(Global::Statusfp, "\nHousehold w/ children, adult size distribution: %d households\n", total);
-    for (int c = 0; c < 15; c++) {
-      fprintf(Global::Statusfp, "%3d: %6d (%.2f%%)\n",
-              c, count[c], (100.0*count[c])/total);
-    }
-    fprintf(Global::Statusfp, "\n");
-  }
-  
-  // relationship between children and decision maker
-  if (Global::Verbose > 1) {
-    // find adult decision maker for each child
-    for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == HOUSEHOLD) {
-        Household *h = (Household *) places[p];
-        if (h->get_children() == 0) continue;
-  int size = h->get_size();
-  for (int i = 0; i < size; i++) {
-    Person * child = h->get_housemate(i);
-    int ch_age = child->get_age();
-    if (ch_age < 18) {
-      int ch_rel = child->get_relationship();
-      //int dm_age = child->get_adult_decision_maker()->get_age(); // TODO segfault on above line!
-      int dm_rel = child->get_adult_decision_maker()->get_relationship();
-      if (dm_rel != 1 || ch_rel != 3) {
-        //printf("DECISION_MAKER: household %d %s  decision_maker: %d %d child: %d %d\n",
-          //h->get_id(), h->get_label(), dm_age, dm_rel, ch_age, ch_rel);
-      }
-    }
-  }
-      }
-    }
-  }
-  
-  if (Global::Verbose) {
-    int count[100];
-    int total = 0;
-    // age distribution of heads of households
-    for (int c = 0; c < 100; c++) { count[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      Person * per = NULL;
-      if (places[p]->get_type() == HOUSEHOLD) {
-  Household *h = (Household *) places[p];
-  for (int i = 0; i < h->get_size(); i++) {
-    if (h->get_housemate(i)->is_householder())
-      per = h->get_housemate(i);
-  }
-  if (per == NULL) {
-    FRED_WARNING("Help! No head of household found for household id %d label %s\n",
-          h->get_id(), h->get_label());
-    count[0]++;
-  }
-  else {
-    int a = per->get_age();
-    if (a < 100) { count[a]++; }
-    else { count[99]++; }
-    total++;
-  }
-      }
-    }
-    fprintf(Global::Statusfp, "\nAge distribution of heads of households: %d households\n", total);
-    for (int c = 0; c < 100; c++) {
-      fprintf(Global::Statusfp, "age %2d: %6d (%.2f%%)\n",
-              c, count[c], (100.0*count[c])/total);
-    }
-    fprintf(Global::Statusfp, "\n");
-  }
-
-  if (Global::Verbose) {
-    int count[100];
-    int total = 0;
-    int children = 0;
-    // age distribution of heads of households with children
-    for (int c = 0; c < 100; c++) { count[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      Person * per = NULL;
-      if (places[p]->get_type() == HOUSEHOLD) {
-  Household *h = (Household *) places[p];
-        if (h->get_children() == 0) continue;
-  children += h->get_children();
-  for (int i = 0; i < h->get_size(); i++) {
-    if (h->get_housemate(i)->is_householder())
-      per = h->get_housemate(i);
-  }
-  if (per == NULL) {
-    FRED_WARNING("Help! No head of household found for household id %d label %s\n",
-          h->get_id(), h->get_label());
-    count[0]++;
-  }
-  else {
-    int a = per->get_age();
-    if (a < 100) { count[a]++; }
-    else { count[99]++; }
-    total++;
-  }
-      }
-    }
-    fprintf(Global::Statusfp, "\nAge distribution of heads of households with children: %d households\n", total);
-    for (int c = 0; c < 100; c++) {
-      fprintf(Global::Statusfp, "age %2d: %6d (%.2f%%)\n",
-              c, count[c], (100.0*count[c])/total);
-    }
-    fprintf(Global::Statusfp, "children = %d\n", children);
-    fprintf(Global::Statusfp, "\n");
-  }
-
-  if (Global::Verbose) {
-    int count[20];
-    int total = 0;
-    // size distribution of schools
-    for (int c = 0; c < 20; c++) { count[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == SCHOOL) {
-        int s = places[p]->get_size();
-        int n = s / 50;
-        if (n < 20) { count[n]++; }
-        else { count[19]++; }
-        total++;
-      }
-    }
-    fprintf(Global::Statusfp, "\nSchool size distribution: %d schools\n", total);
-    for (int c = 0; c < 20; c++) {
-      fprintf(Global::Statusfp, "%3d: %6d (%.2f%%)\n",
-              (c+1)*50, count[c], (100.0*count[c])/total);
-    }
-    fprintf(Global::Statusfp, "\n");
-  }
-  
-  if (Global::Verbose) {
-  // age distribution in schools
-    fprintf(Global::Statusfp, "\nSchool age distribution:\n");
-    int count[20];
-    for (int c = 0; c < 20; c++) { count[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == SCHOOL) {
-  // places[p]->print(0);
-  for (int c = 0; c < 20; c++) {
-    count[c] += ((School *) places[p])->children_in_grade(c);
-  }
-      }
-    }
-    for (int c = 0; c < 20; c++) {
-      fprintf(Global::Statusfp, "age = %2d  students = %6d\n",
-              c, count[c]);;
-    }
-    fprintf(Global::Statusfp, "\n");
-  }
-  
-  if (Global::Verbose) {
-    int count[50];
-    int total = 0;
-    // size distribution of classrooms
-    for (int c = 0; c < 50; c++) { count[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == CLASSROOM) {
-        int s = places[p]->get_size();
-        int n = s;
-        if (n < 50) { count[n]++; }
-        else { count[50-1]++; }
-        total++;
-      }
-    }
-    fprintf(Global::Statusfp, "\nClassroom size distribution: %d classrooms\n", total);
-    for (int c = 0; c < 50; c++) {
-      fprintf(Global::Statusfp, "%3d: %6d (%.2f%%)\n",
-              c, count[c], (100.0*count[c])/total);
-    }
-    fprintf(Global::Statusfp, "\n");
-  }
-  
-  if (Global::Verbose) {
-    int count[20];
-    int small_employees = 0;
-    int med_employees = 0;
-    int large_employees = 0;
-    int xlarge_employees = 0;
-    int total_employees = 0;
-    int total = 0;
-    // size distribution of workplaces
-    for (int c = 0; c < 20; c++) { count[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == WORKPLACE) {
-        int s = places[p]->get_size();
-        int n = s / 50;
-        if (n < 20) { count[n]++; }
-        else { count[19]++; }
-        total++;
-  if (s < 50) {
-    small_employees += s;
-  }
-  else if (s < 100) {
-    med_employees += s;
-  }
-  else if (s < 500) {
-    large_employees += s;
-  }
-  else {
-    xlarge_employees += s;
-  }
-  total_employees += s;
-      }
-    }
-    fprintf(Global::Statusfp, "\nWorkplace size distribution: %d workplaces\n", total);
-    for (int c = 0; c < 20; c++) {
-      fprintf(Global::Statusfp, "%3d: %6d (%.2f%%)\n",
-              (c+1)*50, count[c], (100.0*count[c])/total);
-    }
-    fprintf(Global::Statusfp, "\n\n");
-
-    fprintf(Global::Statusfp, "employees at small workplaces (1-49): ");
-    fprintf(Global::Statusfp, "%d\n", small_employees);
-
-    fprintf(Global::Statusfp, "employees at medium workplaces (50-99): ");
-    fprintf(Global::Statusfp, "%d\n", med_employees);
-
-    fprintf(Global::Statusfp, "employees at small workplaces (100-499): ");
-    fprintf(Global::Statusfp, "%d\n", large_employees);
-
-    fprintf(Global::Statusfp, "employees at small workplaces (500-up): ");
-    fprintf(Global::Statusfp, "%d\n", xlarge_employees);
- 
-    fprintf(Global::Statusfp, "total employees: %d\n\n", total_employees);
-  }
-  
-  /*
-  if (Global::Verbose) {
-    int covered[4];
-    int all[4];
-    // distribution of sick leave in workplaces
-    for (int c = 0; c < 4; c++) { all[c] = covered[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == WORKPLACE) {
-  Workplace * work = (Workplace *) places[p];
-        char s = work->get_size_code();
-        bool sl = work->is_sick_leave_available();
-  switch(s) {
-  case 'S':
-    all[0] += s;
-    if (sl) covered[0] += s;
-    break;
-  case 'M':
-    all[1] += s;
-    if (sl) covered[1] += s;
-    break;
-  case 'L':
-    all[2] += s;
-    if (sl) covered[2] += s;
-    break;
-  case 'X':
-    all[3] += s;
-    if (sl) covered[3] += s;
-    break;
-  }
-      }
-    }
-    fprintf(Global::Statusfp, "\nWorkplace sick leave coverage: ");
-    for (int c = 0; c < 4; c++) {
-      fprintf(Global::Statusfp, "%3d: %d/%d %5.2f | ", 
-        c, covered[c], all[c], (all[c]? (1.0*covered[c])/all[c] : 0));
-    }
-    fprintf(Global::Statusfp, "\n");
-  }
-  */
-  
-  if (Global::Verbose) {
-    int count[60];
-    int total = 0;
-    // size distribution of offices
-    for (int c = 0; c < 60; c++) { count[c] = 0; }
-    for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == OFFICE) {
-        int s = places[p]->get_size();
-        int n = s;
-        if (n < 60) { count[n]++; }
-        else { count[60-1]++; }
-        total++;
-      }
-    }
-    fprintf(Global::Statusfp, "\nOffice size distribution: %d offices\n", total);
-    for (int c = 0; c < 60; c++) {
-      fprintf(Global::Statusfp, "%3d: %6d (%.2f%%)\n",
-              c, count[c], (100.0*count[c])/total);
-    }
-    fprintf(Global::Statusfp, "\n");
-  }
-  if (Global::Verbose) {
-    fprintf(Global::Statusfp, "places quality control finished\n");
-    fflush(Global::Statusfp);
-  }
+int Place_List::get_number_of_places( char place_type ) {
+  assert( place_type_counts.find( place_type ) !=
+          place_type_counts.end() );
+  return place_type_counts[ place_type ];
 }
 
 void Place_List::setup_classrooms() {
 
   FRED_STATUS(0, "setup classrooms entered\n","");
-  
+
+  int number_classrooms = 0;
   int number_places = places.size();
+  int number_schools = 0;
+
+  //#pragma omp parallel for reduction(+:number_classrooms)
   for (int p = 0; p < number_places; p++) {
     if (places[p]->get_type() == SCHOOL) {
       School * school = (School *) places[p];
-      school->setup_classrooms();
+      number_classrooms += school->get_number_of_rooms();
+      ++( number_schools );
     }
   }
+
+  Place::Allocator< Classroom > classroom_allocator;
+  classroom_allocator.reserve( number_classrooms );
+
+  FRED_STATUS( 0, "Allocating space for %d classrooms in %d schools (out of %d total places)\n",
+      number_classrooms, number_schools, number_places );
+
+  for (int p = 0; p < number_places; p++) {
+    if (places[p]->get_type() == SCHOOL) {
+      School * school = (School *) places[p];
+      school->setup_classrooms( classroom_allocator );
+    }
+  }
+
+  add_preallocated_places< Classroom >( CLASSROOM, classroom_allocator );
+
   FRED_STATUS(0, "setup classrooms finished\n","");
 }
 
 void Place_List::setup_offices() {
 
   FRED_STATUS(0, "setup offices entered\n","");
-  
+
+  int number_offices = 0;
   int number_places = places.size();
+ 
+  #pragma omp parallel for reduction(+:number_offices)
   for (int p = 0; p < number_places; p++) {
     if (places[p]->get_type() == WORKPLACE) {
       Workplace * workplace = (Workplace *) places[p];
-      workplace->setup_offices();
+      number_offices += workplace->get_number_of_rooms();
     }
   }
+
+  Place::Allocator< Office > office_allocator;
+  office_allocator.reserve( number_offices );
+
+  for (int p = 0; p < number_places; p++) {
+    if (places[p]->get_type() == WORKPLACE) {
+      Workplace * workplace = (Workplace *) places[p];
+      workplace->setup_offices( office_allocator );
+    }
+  }
+  // add offices in one contiguous block to Place_List
+  add_preallocated_places< Office >( OFFICE, office_allocator );
+
   FRED_STATUS(0, "setup offices finished\n","");
 }
 
@@ -695,8 +433,8 @@ void Place_List::end_of_run() {
     for (int p = 0; p < number_places; p++) {
       Place *place = places[p];
       fprintf(Global::Statusfp,"PLACE REPORT: id %d type %c size %d days_inf %d attack_rate %5.2f\n",
-        place->get_id(), place->get_type(), place->get_size(),
-        place->get_days_infectious(), 100.0*place->get_attack_rate());
+          place->get_id(), place->get_type(), place->get_size(),
+          place->get_days_infectious(), 100.0*place->get_attack_rate());
     }
   }
 }

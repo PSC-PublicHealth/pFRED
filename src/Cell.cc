@@ -15,6 +15,8 @@
 #include <string>
 using namespace std;
 */
+#include <new>
+
 #include "Global.h"
 #include "Grid.h"
 #include "Cell.h"
@@ -40,17 +42,22 @@ void Cell::setup(Grid * grd, int i, int j, double xmin, double xmax, double ymin
   houses = 0;
   occupied_houses = 0;
   household.clear();
-  make_neighborhood();
+  //make_neighborhood();
 }
 
-void Cell::make_neighborhood() {
+void Cell::make_neighborhood( Place::Allocator< Neighborhood > & neighborhood_allocator ) {
   char str[80];
   fred::geo lat, lon;
   sprintf(str, "N-%04d-%04d",row,col);
-  int id = Global::Places.get_number_of_places();
   grid->translate_to_lat_lon(center_x,center_y,&lat,&lon);
-  neighborhood = new (nothrow) Neighborhood(id, str, lon, lat, 0, &Global::Pop);
-  Global::Places.add_place(neighborhood);
+
+  neighborhood = new ( neighborhood_allocator.get_free() )
+    Neighborhood( str, lon, lat, 0, &Global::Pop );
+  
+  // moved add_place call to Place_List so that all neighborhoods can be added to the
+  // Place_List bloque at once
+  //
+  //Global::Places.add_place(neighborhood);
 }
 
 void Cell::add_household(Place *p) {
@@ -113,6 +120,7 @@ void Cell::record_favorite_places() {
 
 Place * Cell::select_neighborhood(double community_prob,
           double community_distance, double local_prob) {
+
   Cell * grid_cell;
   double r = RANDOM();
 
@@ -126,7 +134,7 @@ Place * Cell::select_neighborhood(double community_prob,
   }
   else {
     // select randomly from among immediate neighbors
-    int n = IRAND(0,7);
+    int n = IRAND_0_7();
     if (n>3) n++;        // excludes local grid_cell
     grid_cell = neighbor_cells[n];
   }

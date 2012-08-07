@@ -16,12 +16,23 @@
 #include <sys/stat.h>
 #include <assert.h>
 #include <bitset>
+#include <map>
 
 // for unit testing, use the line in Makefile: gcc -DUNITTEST ...
 #ifdef UNITTEST
 #define UNIT_TEST_VIRTUAL virtual
 #else
 #define UNIT_TEST_VIRTUAL
+#endif
+
+// For multithreading NCPU should be set in the Makefile.  NCPU must be greater
+// than or equal to the maximum number of threads that will be detected by OpenMP
+// If NCPU > omp_get_max_threads, some memory will be wasted, but it's harmless
+// otherwise.
+//
+// Define NCPU=1 if value not set in Makefile
+#ifndef NCPU
+#define NCPU 1
 #endif
 
 class Population;
@@ -53,6 +64,10 @@ class Global {
     // to store disease-specific flags and pointers; set to the smallest possible value 
     // for optimal performance and memory usage
     static const int MAX_NUM_DISEASES = 4;
+    // Change this constant and recompile to allow more threads.  For efficiency should be
+    // equal to OMP_NUM_THREADS value that will be used.  If OMP_NUM_THREADS greater than
+    // MAX_NUM_THREADS is used, FRED will abort the run.
+    static const int MAX_NUM_THREADS = NCPU;
 
     // household relationship codes
     static const int UNKNOWN_RELATION = 0;
@@ -198,10 +213,14 @@ namespace fred {
   typedef float geo;
 
   enum Population_Masks {
-    Infectious,
-    Susceptible
+    Infectious = 'I',
+    Susceptible = 'S',
+    Update_Demographics,
+    Update_Health
   };
 
+  ////////////////////// OpenMP Utilities
+  ////////////////////// mutexes, status, etc.
 
   #ifdef _OPENMP
   
@@ -216,13 +235,26 @@ namespace fred {
     Mutex & operator= ( const Mutex & ) { return *( this ); }
     omp_lock_t lock;
   };
-  
+
   #else
+  
   /// Dummy Mutex when _OPENMP not defined
   struct Mutex {
     void Lock() {}
     void Unlock() {}
   };
+
+  static int omp_get_max_threads() {
+    return 1; 
+  }
+
+  static int omp_get_num_threads() {
+    return 1;
+  }
+
+  static int omp_get_thread_num() {
+    return 0;
+  }
   #endif
  
   struct Scoped_Lock {

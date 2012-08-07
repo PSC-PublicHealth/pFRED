@@ -24,10 +24,10 @@ double * Neighborhood::Weekend_contact_rate = NULL;
 //Private static variable to assure we only lookup parameters once
 bool Neighborhood::Neighborhood_parameters_set = false;
 
-Neighborhood::Neighborhood(int loc, const char *lab, double lon,
-                           double lat, Place *container, Population *pop) {
+Neighborhood::Neighborhood( const char *lab, double lon,
+                           double lat, Place *container, Population *pop ) {
   type = NEIGHBORHOOD;
-  setup(loc, lab, lon, lat, container, pop);
+  setup( lab, lon, lat, container, pop );
   get_parameters(Global::Diseases);
 }
 
