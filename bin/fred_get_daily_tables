@@ -1,0 +1,62 @@
+#!/usr/bin/perl
+
+# File: fred_get_daily_tables
+
+my ($out, $tables) = @ARGV;
+$out = "OUT" if not $out;
+exit if  not -d $out;
+$tables = "TABLES" if not $tables;
+mkdir $tables if not -e $tables;
+exit if not -d $tables;
+
+# get the outfiles
+my $filelist = `ls $out/out*`;
+chomp $filelist;
+my @outfiles = split " ", $filelist;
+# print "|@outfiles|\n";
+
+for my $file (@outfiles) {
+  # print "$file\n";
+  open FH, $file or die "Can't open file $file\n";
+  my ($run) = ($file =~/(\d+)\.txt/);
+  # print "run = $run\n";
+  my $first = 1;
+  my %created = ();
+
+  while (<FH>) {
+    chomp;
+    my %hash = split " ";
+    my $day = $hash{Day};
+    my $week = $hash{Week};
+    my $year = $hash{Year};
+    my $n = $hash{N};
+    my $str = $hash{Str};
+
+    # make STRAIN directory if needed
+    my $dir = "$tables/$str";
+    mkdir $dir if not -e $dir;
+    exit if not -d $dir;
+
+    # print "$day $week $year $n\n";
+    for my $key (keys %hash) {
+      next if $key eq "Day";
+      next if $key eq "Week";
+      next if $key eq "Year";
+      next if $key eq "N";
+      next if $key eq "Wkday";
+      next if $key eq "Date";
+      next if $key eq "Str";
+      # print "$day $week $year $n $key $hash{$key}\n";
+      my $dfile = "$dir/$key\_daily-$run.txt";
+      # print "split file = $dfile\n";
+      unlink $dfile if (-e $dfile and $first);
+      open OUT, ">>$dfile";
+      print OUT "DAY WEEK YEAR POP $key\n" if $first;
+      print OUT "$day $week $year $n $hash{$key}\n";
+      close OUT;
+    }
+    $first = 0;
+  }
+  close FH;
+}
+
