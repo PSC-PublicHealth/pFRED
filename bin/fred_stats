@@ -56,6 +56,7 @@ for my $file (@files) {
 my $n = scalar @files;
 for my $i (0..$rows-1) {
   my $cols = scalar(@{$data[$i]});
+  print "n $n ";
   for my $j (0..$cols-1) {
     if (looks_like_number($data[$i][$j])) {
       # mean

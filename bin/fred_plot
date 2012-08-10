@@ -40,18 +40,32 @@ my $errorbars;
 my $nameonly;
 my $dataonly;
 my $cleanup;
-my $smooth;
 my $with = "lines";
 my $title = "FRED: Allegheny County Model";
+my $period = "daily";
+my $weekly;
+my $strain = 0;
 # my $fontsize = "giant";
 # my $fontsize = "large";
 my $fontsize = "medium";
+my $epi;
+my $hist;
+my $normalize;
+my $smooth;
+my $xtics;
 my $opt_result = GetOptions("e" => \$errorbars,
 			    "clean" => \$cleanup,
 			    "name" => \$nameonly,
 			    "data" => \$dataonly,
-			    "smooth" => \$smooth,
 			    "with=s" => \$with,
+			    "weekly" => \$weekly,
+			    "smooth" => \$smooth,
+			    "histogram" => \$hist,
+			    "period=s" => \$period,
+			    "strain=i" => \$strain,
+			    "xtics=i" => \$xtics,
+			    "norm" => \$normalize,
+			    "epi" => \$epi,
 			    "f=s" => \$fontsize,
 			    "k=s" => \@keys,
 			    "v=s" => \@varlist,
@@ -62,6 +76,11 @@ my $opt_result = GetOptions("e" => \$errorbars,
 			    "Y=i" => \$ymax,
 			    "T=s" => \$title);
 
+# resolve conflicting options
+# histogram overides smoothing
+$smooth = 0 if $hist;
+
+$period = "weekly" if $weekly or $smooth;
 $with = "lines" if not $with;
 my $usage = "usage: fred_plot -k key [-k key ...] -v var [-v var ...][-a start_year|-e|-f fontsize|-x xmin|-y ymin|-X xmax|-Y ymax|-T title]\n";
 
@@ -78,11 +97,9 @@ my $pltfile = "fred_plot-$$.plt";
 my $pngfile = "fred_plot-$$.png";
 
 for my $v (@varlist) {
-  my $tmpv = $v;
-  $tmpv = "$v\_AVE" if $smooth;
   for my $key (@keys) {
-    my $datafile = "fred_plot_data.key=$key-var=$tmpv-$$";
-    get_data($key, $tmpv, $datafile);
+    my $datafile = "fred_plot_data.key=$key-var=$v-$$";
+    get_data($key, $v, $datafile);
     if ($dataonly) {
       system "cat $datafile";
       cleanup();
@@ -105,31 +122,38 @@ set xlabel \"Days\" offset 0,0.5
 set ylabel \"Individuals\" offset 1.2,0
 EOF
 
+if ($normalize) {
+  print FH "set ylabel \"Per 100,000\" offset 1.2,0\n";
+}
+
+if ($hist) {
+  # print FH "set boxwidth 1.0\n";
+  print FH "set style data histogram\n";
+  print FH "set style fill solid border\n";
+  if ($errorbars) {
+    print FH "set style histogram errorbars linewidth 1\n";
+    print FH "set style fill solid 0.3\n";
+    print FH "set bars front\n";
+  }
+}
+
+if ($weekly or $epi) {
+  print FH "set xlabel \"Week\" offset 0,0\n";
+
+}
+
+print FH "set xtics $xtics\n" if $xtics;
+
 for my $v (@varlist) {
   my $titlevar = $v;
   $titlevar = $titles{$v} if exists $titles{$v};
-  my $tmpv = $v;
-  $tmpv = "$v\_AVE" if $smooth;
   for my $key (@keys) {
     my $ptitle = "$titlevar";
     $ptitle = "$ptitle-$key" if scalar @keys > 1;
     print FH ($n == 0)? "plot " : ",\\\n";
     $n++;
-    my $datafile = "fred_plot_data.key=$key-var=$tmpv-$$";
-    if ($year) {
-      print FH "\"$datafile\" using ($year + (\$1/365)):2:3 notitle with errorbars lw 1 lt $n, \\\n" if $errorbars;
-      print FH "\"$datafile\" using  ($year + (\$1/365)):2 title \"$ptitle\" with lines lw 3 lt $n";
-    }
-    else {
-      if ($smooth) {
-	print FH "\"$datafile\" using (3.5+7*\$1):2:3 notitle with errorbars lw 1 lt $n, \\\n" if $errorbars;
-	print FH "\"$datafile\" using  (3.5+7*\$1):2 title \"$ptitle\" smooth csplines lw 3 lt $n";
-      }
-      else {
-	print FH "\"$datafile\" using 1:2:3 notitle with errorbars lw 1 lt $n, \\\n" if $errorbars;
-	print FH "\"$datafile\" using  1:2 title \"$ptitle\" with $with lw 3 lt $n";
-      }
-    }
+    my $datafile = "fred_plot_data.key=$key-var=$v-$$";
+    print FH plot_spec($datafile,$ptitle,$n);
   }
 }
 print FH "\n";
@@ -160,7 +184,11 @@ sub get_data {
   my $FREDRESULTS = $ENV{FRED_RESULTS};
   $FREDRESULTS = $ENV{FRED_HOME} if not $FREDRESULTS;
   my $reportsdir = "$FREDRESULTS/RESULTS/JOB/$id/DATA/REPORTS";
-  system "cat $reportsdir/$v.dat > $file";
+  die "fred_plot can't find results\n" if not -d $reportsdir;
+
+  my $datafile = "$reportsdir/$v\_$period-$strain.dat";
+  die "fred_plot: can't find data file $datafile\n" if not -e $datafile;
+  system "cat $datafile > $file";
 }
 
 
@@ -171,10 +199,39 @@ sub cleanup {
     unlink $pltfile if -e $pltfile;
   }
   for my $v (@varlist) {
-    $v = "$v\_AVE" if $smooth;
     for my $key (@keys) {
       my $datafile = "fred_plot_data.key=$key-var=$v-$$";
       unlink $datafile if -e $datafile;
     }
   }
+}
+
+
+sub plot_spec {
+  my ($datafile,$ptitle,$n) = @_;
+  $smooth = 0 if $weekly;
+  my $x = "(\$1):";
+  $x = "(7*\$1-3.5):" if $smooth;
+  $x = "" if $hist;
+  my $mult = "";
+  $mult = "(100000.0/\$4)*" if $normalize;
+  my $y = "$mult\$2";
+  $y = "$mult\$2/\$8" if $smooth;
+  $y = "$mult\$2" if $hist;
+  my $e = "";
+  $e = "$mult\$3" if $errorbars;
+  $e = "$mult\$3/\$8" if $errorbars and $smooth;
+  my $xtic = "";
+  $xtic = ":xtic(6)" if $epi;
+  my $title = "title '$ptitle'";
+  my $style = "lw 3 lt $n";
+  my $file = "'$datafile'";
+  my $w = "with lines";
+  $w = "smooth csplines" if $smooth or $weekly;
+  $w = "" if $hist;
+
+  my $spec = "";
+  $spec = "$file using $x($y):($e)$xtic notitle wi errorbars $style, \\\n" if $errorbars;
+  $spec .= "$file using $x($y)$xtic $title $w $style";
+  return $spec;
 }

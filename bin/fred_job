@@ -232,6 +232,9 @@ mkdir $data or die "Can't make directory $data\n";
 my $out = "$data/OUT";
 mkdir $out or die "Can't make directory $out\n";
 
+my $tables = "$data/TABLES";
+mkdir $tables or die "Can't make directory $tables\n";
+
 my $reports = "$data/REPORTS";
 mkdir $reports or die "Can't make directory $reports\n";
 
@@ -365,7 +368,7 @@ if (not $parallel) {
 system "gzip $out/inf*.txt" if $zip;
 
 # make reports
-`$FRED/bin/fred_report $out $reports`;
+`$FRED/bin/fred_post_process $out $tables $reports`;
 
 # update run status
 `echo FINISHED > $meta/STATUS`;

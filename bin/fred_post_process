@@ -21,16 +21,13 @@ die "fred_post_process: $reports not found\n" if not -d $reports;
 my $FRED = $ENV{FRED_HOME};
 die "fred_post_process: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
-# create daily table for each variable
-system "$FRED/bin/fred_get_daily_tables $out $tables";
-
-# get weekly tables
-system "$FRED/bin/fred_get_weekly_tables $tables";
+# create tables for each variable
+system "$FRED/bin/fred_get_tables $out $tables";
 
 # process tables
 
 # get the list of files
-my $filelist = `ls $tables/0/*`;
+my $filelist = `ls $tables/0/*_daily*`;
 chomp $filelist;
 my @files = split " ", $filelist;
 # print "|@files|\n";
@@ -38,7 +35,6 @@ my @files = split " ", $filelist;
 # get the list of variables
 my %vars = ();
 for my $file (@files) {
-  next if ($file !~ /daily/);
   my ($var) = ($file =~/.*\/(.*)_daily-\d+\.txt/);
   $vars{$var} = 1;
 }
@@ -48,8 +44,8 @@ for my $key (sort keys %vars) {
   my $strain = 0;
   my $dir = "$tables/$strain";
   while (-d $dir) {
-    system "$FRED/bin/fred_get_stats 4 $dir/$key\_daily-*.txt > $reports/$key\_daily-$strain.dat";
-    system "$FRED/bin/fred_get_stats 5 $dir/$key\_weekly-*.txt > $reports/$key\_weekly-$strain.dat";
+    system "$FRED/bin/fred_get_stats $dir/$key\_daily-*.txt > $reports/$key\_daily-$strain.dat";
+    system "$FRED/bin/fred_get_stats $dir/$key\_weekly-*.txt > $reports/$key\_weekly-$strain.dat";
     $strain++;
     $dir = "$tables/$strain";
   }

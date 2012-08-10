@@ -16,7 +16,7 @@ my $Htarget = 30;
 my $Ntarget = 33;
 my $Starget = 24.66;
 my $Wtarget = 12.34;
-my $ARtarget = 33;
+my $CARtarget = 33;		# clinical attack rate
 
 # stopping criteria
 my $days = 100;
@@ -79,10 +79,6 @@ while ($error > $threshold) {
   print "classroom_contacts[0] = -1\n";
   print "office_contacts[0] = -1\n";
 
-  # my $kk = `fred_id $paramsfile`;
-  # if ($kk=~/\d/) {
-  # system "fred_delete -k $paramsfile";
-  # }
   system "fred_delete -f -k $paramsfile >& /dev/null";
   system "fred_job -k $paramsfile -p $paramsfile -n $runs -m $m";
   my $dir = `fred_cd -k $paramsfile | awk \'{print \$2}\' `;
@@ -93,16 +89,16 @@ while ($error > $threshold) {
   $x = `cat get_distr.dat`;
   my ($H, $N, $S, $W) = split " ", $x;
 
-  my $AR = `fred_plot_data -k $paramsfile -v a | tail -1 | awk \'{print \$2}\'`;
-  chomp $AR;
+  my $CAR = `fred_CAR -k $paramsfile | awk \'{print \$1}\'`;
+  chomp $CAR;
 
   my $eh = $H - $Htarget;
   my $en = $N - $Ntarget;
   my $es = $S - $Starget;
   my $ew = $W - $Wtarget;
-  my $ea = $AR - $ARtarget;;
+  my $ea = $CAR - $CARtarget;;
 
-  printf "AR = %0.6f\n", $AR;
+  printf "CAR = %0.6f\n", $CAR;
   printf "errors: EH = %0.6f EN = %0.6f  ES = %0.6f  EW = %0.6f  EA = %0.6f\n",
     $eh, $en, $es, $ew, $ea;
 
@@ -117,8 +113,8 @@ while ($error > $threshold) {
     $error = abs($eh) + abs($en) + abs($es) + abs($ew);
   }
   else {
-    # adjust to achieve desired AR 
-    my $ar_ratio = $ARtarget / $AR;
+    # adjust to achieve desired CAR 
+    my $ar_ratio = $CARtarget / $CAR;
     $h *= $ar_ratio * $Htarget / $H;
     $n *= $ar_ratio * $Ntarget / $N;
     $s *= $ar_ratio * $Starget / $S;
@@ -169,16 +165,16 @@ while ($error > $threshold) {
   $x = `cat get_distr.dat`;
   my ($H, $N, $S, $W) = split " ", $x;
 
-  my $AR = `fred_plot_data -k $paramsfile -v a | tail -1 | awk \'{print \$2}\'`;
-  chomp $AR;
-  my $ea = $AR - $ARtarget;;
-  printf "AR = %0.4f\n", $AR;
+  my $CAR = `fred_CAR -k $paramsfile | awk \'{print \$1}\'`;
+  chomp $CAR;
+  my $ea = $CAR - $CARtarget;;
+  printf "CAR = %0.4f\n", $CAR;
   printf "errors: EA = %0.4f\n", $ea;
   $error = abs($ea);
   printf "total error = %0.4f\n\n\n", $error;
   
-  # adjust to achieve desired AR 
-  my $ar_ratio = $ARtarget / $AR;
+  # adjust to achieve desired CAR 
+  my $ar_ratio = $CARtarget / $CAR;
   $h *= $ar_ratio;
   $n *= $ar_ratio;
   $s *= $ar_ratio;

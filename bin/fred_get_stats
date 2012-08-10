@@ -16,8 +16,8 @@ use Scalar::Util qw(looks_like_number);
 # all files.
 #
 
-die "usage: fred_stats skip file ...\n" if not @ARGV;
-my ($skip, @files) = @ARGV;
+die "usage: fred_stats file ...\n" if not @ARGV;
+my (@files) = @ARGV;
 
 # 2-dim array containing the sum for each numeric field
 # and the value in the LAST file for each non-numeric field
@@ -52,7 +52,10 @@ for my $file (@files) {
 }
 
 # output has string value for each non-numeric field and
-# <mean, std> for each numeric field after index 5
+# <mean, std> for each numeric field in %fieldlist
+my %fieldlist = ();
+$fieldlist{1} = 1;
+
 my $n = scalar @files;
 for my $i (0..$rows-1) {
   my $cols = scalar(@{$data[$i]});
@@ -66,11 +69,11 @@ for my $i (0..$rows-1) {
       my $square = 0;
       $square = (($n*$sumsq[$i][$j] - $data[$i][$j]*$data[$i][$j])/($n*($n-1))) if $n>1;
       $stdev = sqrt($square) if $square > 0.000000001;
-      if ($j < $skip) {
-	print "$mean ";
+      if ($fieldlist{$j}) {
+	print "$mean $stdev ";
       }
       else {
-	print "$mean $stdev ";
+	print "$mean ";
       }
     }
     else {

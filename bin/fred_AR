@@ -13,39 +13,12 @@ die "usage: fred_AR -k key\n" if not $key;
 my $FRED = $ENV{FRED_HOME};
 die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
-my $bindir = "$FRED/bin";
-my $id = `$bindir/fred_id $key`;
-chomp $id;
-die "fred_AR: UNKNOWN key: $key\n" if $id eq "UNKNOWN";
-
-my $status = `$bindir/fred_status -k $key`;
+my $bin = "$FRED/bin";
+my $status = `$bin/fred_status -k $key`;
 chomp $status;
 $status =~ s/\s.*//;
 die "fred_AR: bad status: $status\n" if $status ne "FINISHED";
 
-my $FREDRESULTS = $ENV{FRED_RESULTS};
-$FREDRESULTS = $ENV{FRED_HOME} if not $FREDRESULTS;
-my $reportsdir = "$FREDRESULTS/RESULTS/JOB/$id/DATA/REPORTS";
-my $outdir = "$FREDRESULTS/RESULTS/JOB/$id/DATA/OUT";
-
-chdir $reportsdir or die "Can't find REPORTS directory: $reportsdir\n";
-
-system "$bindir/fred_stats $outdir/out* > stats.out";
-
-my $x = "AR";
-my $AR = "";
-open OUT, ">$x.dat";
-open IN, "stats.out";
-while (my $line = <IN>) {
-  my @a = split " ", $line;
-  for my $i (0..$#a) {
-    if ($a[$i] eq $x) {
-      $AR = "$a[$i+1] $a[$i+2]\n";
-      last;
-    }
-  }
-}
-close IN;
-close OUT;
+my $AR = `$bin/fred_plot --data -k $key -v AR | tail -1 | awk '{print \$2, \$3}' `;
 print "$AR";
 
