@@ -28,8 +28,6 @@
 #include <stdint.h>
 #include <assert.h>
 
-#include <omp.h>
-
 /*
  * use SSE2 (8 128 XMM registers)
  */
