@@ -231,16 +231,17 @@ void Epidemic::print_stats(int day) {
   }
 
   char buffer[ 256 ];
-  int nchar_used = sprintf(buffer, "Day %3d  Str %d  S %7d  E %7d  I %7d  \
-      I_s %7d  R %7d  M %7d  C %7d  N %7d  AR %5.2f  CI %7d RR %4.2f NR %d\
-      CAR %5.2f  %s %s Year %d Week %d", day, id, susceptible_count, 
-      exposed_count, infectious_count, symptomatic_count, removed_count, 
-      immune_count, incident_infections, N, attack_rate, clinical_incidents, 
-      RR, cohort_size, clinical_attack_rate, 
-      Global::Sim_Current_Date->get_day_of_week_string().c_str(), 
-      Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
-      Global::Sim_Current_Date->get_epi_week_year(), 
-      Global::Sim_Current_Date->get_epi_week());
+  int nchar_used = sprintf(buffer,
+			   "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d I_s %7d R %7d M %7d C %7d CI %7d AR %5.2f CAR %5.2f RR %4.2f N %7d",
+			   day,
+			   Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
+			   Global::Sim_Current_Date->get_day_of_week_string().c_str(), 
+			   Global::Sim_Current_Date->get_epi_week_year(), 
+			   Global::Sim_Current_Date->get_epi_week(),
+			   id, susceptible_count, exposed_count, infectious_count,
+			   symptomatic_count, removed_count, immune_count,
+			   incident_infections, clinical_incidents, attack_rate, 
+			   clinical_attack_rate, RR, N);
 
   fprintf( Global::Outfp, "%s", buffer );
   FRED_STATUS(0, "%s", buffer);
