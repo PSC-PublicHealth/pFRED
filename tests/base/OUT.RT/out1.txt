@@ -1,5 +1,5 @@
-Day   0  Str 0  S 1242655  E     100  I       0        I_s       0  R       0  M       0  C     100  N 1242755  AR  0.01  CI       0 RR 0.00 NR 0      CAR  0.00  Thu 2009-01-01 Year 2008 Week 53
-Day   1  Str 0  S 1242618  E      65  I      72        I_s      48  R       0  M       0  C      37  N 1242755  AR  0.01  CI      48 RR 0.00 NR 0      CAR  0.00  Fri 2009-01-02 Year 2008 Week 53
-Day   2  Str 0  S 1242584  E      44  I     127        I_s      90  R       0  M       0  C      34  N 1242755  AR  0.01  CI      42 RR 0.00 NR 0      CAR  0.01  Sat 2009-01-03 Year 2008 Week 53
-Day   3  Str 0  S 1242543  E      53  I     159        I_s     112  R       0  M       0  C      41  N 1242755  AR  0.02  CI      22 RR 0.00 NR 0      CAR  0.01  Sun 2009-01-04 Year 2009 Week 1
-Day   4  Str 0  S 1242429  E     121  I     185        I_s     127  R      20  M       0  C     114  N 1242755  AR  0.03  CI      27 RR 0.00 NR 0      CAR  0.01  Mon 2009-01-05 Year 2009 Week 1
+Day   0 Date 2012-01-02 Wkday Mon Year 2012 Week  1 Str 0 S 1242655 E     100 I       0 I_s       0 R       0 M       0 C     100 CI       0 AR  0.01 CAR  0.00 RR 0.00 N 1242755
+Day   1 Date 2012-01-03 Wkday Tue Year 2012 Week  1 Str 0 S 1242616 E      67 I      72 I_s      48 R       0 M       0 C      39 CI      48 AR  0.01 CAR  0.00 RR 0.00 N 1242755
+Day   2 Date 2012-01-04 Wkday Wed Year 2012 Week  1 Str 0 S 1242544 E      80 I     131 I_s      91 R       0 M       0 C      72 CI      43 AR  0.02 CAR  0.01 RR 0.00 N 1242755
+Day   3 Date 2012-01-05 Wkday Thu Year 2012 Week  1 Str 0 S 1242431 E     132 I     192 I_s     132 R       0 M       0 C     113 CI      41 AR  0.03 CAR  0.01 RR 0.00 N 1242755
+Day   4 Date 2012-01-06 Wkday Fri Year 2012 Week  1 Str 0 S 1242268 E     188 I     279 I_s     198 R      20 M       0 C     163 CI      78 AR  0.04 CAR  0.02 RR 0.00 N 1242755
