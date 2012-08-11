@@ -16,7 +16,7 @@ epidemic_offset = 0
 vaccine_offset = 0
 
 # a date in the format 'YYYY-MM-DD'
-start_date = 2009-01-01
+start_date = 2012-01-02
 rotate_start_date = 0
 reseed_day = -1
 popfile = $FRED_HOME/region/pop_Alleg.txt
@@ -32,7 +32,7 @@ report_place_of_infection = 0
 report_presenteeism = 0
 quality_control = 1
 print_household_locations = 0
-rr_delay = 20
+rr_delay = 10
 mutation_prob = 1 0.0
 work_absenteeism = 0.0
 school_absenteeism = 0.0
@@ -112,10 +112,10 @@ birth_rate_multiplier = 1
 # the folowing contacts are calibrated for Allegheny County
 # for a 33% clinical attack rate
 # using the bifurcating SEIR model (SEiIR = 0)
-household_contacts[0] = 0.188089
-neighborhood_contacts[0] = 41.914699
-school_contacts[0] = 15.785288
-workplace_contacts[0] = 1.647926
+household_contacts[0] = 0.187657
+neighborhood_contacts[0] = 40.843980
+school_contacts[0] = 15.824534
+workplace_contacts[0] = 1.647333
 classroom_contacts[0] = -1
 office_contacts[0] = -1
 hospital_contacts[0] = 0
