@@ -91,6 +91,16 @@ my $opt_result = GetOptions(
 			   );
 
 # resolve conflicting options
+
+# if attack rates are requested, disable smoothing and weekly sums
+for my $v (@varlist) {
+ if ($v eq "AR" or $v eq "CAR") {  
+   $smooth = 0;
+   $weekly = 0;
+   $legend = "bottom right";
+ }
+}
+
 # histogram overides smoothing
 $smooth = 0 if $hist;
 
@@ -138,6 +148,13 @@ EOF
 
 if ($normalize) {
   print FH "set ylabel \"Per 100,000\" offset 1.2,0\n";
+}
+
+for my $v (@varlist) {
+ if ($v eq "AR" or $v eq "CAR") {  
+   print FH "set ylabel 'Percent Infected' offset 1.2,0\n";
+   print FH "set yrange [0:100]\n";
+ }
 }
 
 if ($hist) {
