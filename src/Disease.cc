@@ -86,13 +86,7 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   }
 
   if (Disease::R0 > 0) {
-    if (Disease::R0 > 5.0) {
-      printf("You can only specify an R0 value less than or equal to 5.0\n");
-      printf("The R0 parameter value of %f is being ignored\n", Disease::R0);
-    }
-    else {
-      transmissibility = Disease::R0_a*Disease::R0*Disease::R0 + Disease::R0_b*Disease::R0;
-    }
+    transmissibility = Disease::R0_a*Disease::R0*Disease::R0 + Disease::R0_b*Disease::R0;
   }
 
   mutation_prob = mut_prob;
