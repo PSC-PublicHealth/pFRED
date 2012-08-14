@@ -53,28 +53,42 @@ my $hist;
 my $normalize;
 my $smooth;
 my $xtics;
-my $opt_result = GetOptions("e" => \$errorbars,
-			    "clean" => \$cleanup,
-			    "name" => \$nameonly,
-			    "data" => \$dataonly,
-			    "with=s" => \$with,
-			    "weekly" => \$weekly,
-			    "smooth" => \$smooth,
-			    "histogram" => \$hist,
-			    "period=s" => \$period,
-			    "strain=i" => \$strain,
-			    "xtics=i" => \$xtics,
-			    "norm" => \$normalize,
-			    "epi" => \$epi,
+my $legend;
+my $opt_result = GetOptions(
+			    "e" => \$errorbars,
 			    "f=s" => \$fontsize,
 			    "k=s" => \@keys,
+			    "T=s" => \$title,
 			    "v=s" => \@varlist,
-			    "a=i" => \$year,
 			    "x=i" => \$xmin,
 			    "X=i" => \$xmax,
 			    "y=i" => \$ymin,
 			    "Y=i" => \$ymax,
-			    "T=s" => \$title);
+			    "clean" => \$cleanup,
+			    "data" => \$dataonly,
+			    "epi" => \$epi,
+			    "errorbars" => \$errorbars,
+			    "font=s" => \$fontsize,
+			    "histogram" => \$hist,
+			    "keys=s" => \@keys,
+			    "legend=s" => \$legend,
+			    "name" => \$nameonly,
+			    "normalize" => \$normalize,
+			    "period=s" => \$period,
+			    "smooth" => \$smooth,
+			    "strain=i" => \$strain,
+			    "title=s" => \$title,
+			    "var=s" => \@varlist,
+			    "weekly" => \$weekly,
+			    "with=s" => \$with,
+			    "xtics=i" => \$xtics,
+			    "xmin=i" => \$xmin,
+			    "xmax=i" => \$xmax,
+			    "Xmax=i" => \$xmax,
+			    "ymin=i" => \$ymin,
+			    "ymax=i" => \$ymax,
+			    "Ymax=i" => \$ymax,
+			   );
 
 # resolve conflicting options
 # histogram overides smoothing
@@ -143,6 +157,7 @@ if ($weekly or $epi) {
 }
 
 print FH "set xtics $xtics\n" if $xtics;
+print FH "set key $legend\n" if $legend;
 
 for my $v (@varlist) {
   my $titlevar = $v;
