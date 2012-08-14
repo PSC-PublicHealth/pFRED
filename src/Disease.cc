@@ -33,6 +33,10 @@ using namespace std;
 #include "Multistrain_Timestep_Map.h"
 #include "Seasonality.h"
 
+double Disease::R0 = -1.0;
+double Disease::R0_a = -1.0;
+double Disease::R0_b = -1.0;
+
 Disease::Disease() {
   // note that the code that establishes the latent/asymptomatic/symptomatic
   // periods has been moved to the IntraHost class (or classes derived from it).
@@ -66,6 +70,10 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
     fflush(Global::Statusfp);
   }
 
+  Params::get_param((char *) "R0",&R0);
+  Params::get_param((char *) "R0_a",&R0_a);
+  Params::get_param((char *) "R0_b",&R0_b);
+
   Params::get_indexed_param("trans",id,&transmissibility);
   Params::get_indexed_param("mortality_rate",id,&mortality_rate);
   Params::get_indexed_param("immunity_loss_rate",id,&immunity_loss_rate);
@@ -75,6 +83,16 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
     Params::get_indexed_param("seasonality_multiplier_max",id,&seasonality_max);
     Params::get_indexed_param("seasonality_multiplier_Ka",id,&seasonality_Ka); // Ka = -180 by default
     seasonality_Kb = log(seasonality_max - seasonality_min);
+  }
+
+  if (Disease::R0 > 0) {
+    if (Disease::R0 > 5.0) {
+      printf("You can only specify an R0 value less than or equal to 5.0\n");
+      printf("The R0 parameter value of %f is being ignored\n", Disease::R0);
+    }
+    else {
+      transmissibility = Disease::R0_a*Disease::R0*Disease::R0 + Disease::R0_b*Disease::R0;
+    }
   }
 
   mutation_prob = mut_prob;

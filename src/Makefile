@@ -21,6 +21,7 @@ NCPU ?= $(shell sysctl -n hw.ncpu)
 endif
 ################   Compiler Flags   ##############################
 CPP = g++ 
+CXX = $(CPP)
 
 LOGGING_PRESET_0 = 
 LOGGING_PRESET_1 = -DFREDWARNING
@@ -45,9 +46,9 @@ INCLUDE_DIRS = -I$(DSFMT_DIR)
 
 # Use one of these for production:
 ## Use this to run with multiple threads
-#CPPFLAGS = -g -m64 -O3 -fopenmp $(LOGGING_PRESET_3) -DNDEBUG -DNCPU=$(NCPU)
+CPPFLAGS = -g -m64 -O3 -fopenmp $(LOGGING_PRESET_3) -DNDEBUG -DNCPU=$(NCPU)
 ## Use this to make reproducible serial runs
-CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) -DNCPU=1 #-fast #-Wall
+# CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) -DNCPU=1 #-fast #-Wall
 
 CPPFLAGS += $(INCLUDE_DIRS)
 

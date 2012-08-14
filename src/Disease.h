@@ -236,6 +236,9 @@ private:
   Evolution *evol;
 
   static double Prob_stay_home;
+  static double R0;
+  static double R0_a;
+  static double R0_b;
 
   // Vars that are not Disease-specific (for updating global stats).
   Population *population;
