@@ -12,6 +12,7 @@
 #ifndef _FRED_DEMOGRAPHICS_H
 #define _FRED_DEMOGRAPHICS_H
 
+#include "Global.h"
 class Person;
 class Date;
 
@@ -35,13 +36,11 @@ public:
    * @param _self the Person object with which this Demographics object is associated
    * @param _age
    * @param _sex (M or F)
-   * @param _marital_status 1 if married, 0 if not
-   * @param _profession the code for the Person's occupation
    * @param day the simulation day
    * @param is_newborn needed to know how to set the date of birth
    */
-  Demographics(Person* _self, short int _age, char _sex, int _marital_status, int rel,
-	       int _profession, int day, bool is_newborn = false);
+  Demographics(Person* _self, short int _age, char _sex, short int _race,
+	       short int rel, int day, bool is_newborn = false);
 
   ~Demographics();
 
@@ -74,16 +73,6 @@ public:
   const char get_sex() const { return sex; }
 
   /**
-   * @return the agent's marital_status
-   */
-  const int get_marital_status() const { return marital_status; }
-
-  /**
-   * @return the agent's profession
-   */
-  const int get_profession() const { return profession; }
-
-  /**
    * @return <code>true</code> if the agent is pregnant, <code>false</code> otherwise
    */
   const bool is_pregnant() const { return pregnant; }
@@ -104,15 +93,10 @@ public:
   short int get_init_age() const           { return init_age; }
 
   /**
-   * @return the agent's init_marital_status
+   * @return the agent's race
    */
-  const int get_init_marital_status() const { return init_marital_status; }
+  short int get_race() const           { return race; }
 
-  /**
-   * @return the agent's init_profession
-   */
-  const int get_init_profession() const { return init_profession; }
-  
   void set_relationship(int rel) { relationship = rel; }
 
   const int get_relationship() const { return relationship; }
@@ -120,7 +104,7 @@ public:
   /**
    * @return <code>true</code> if the agent is a householder, <code>false</code> otherwise
    */
-  bool is_householder() { return relationship == 1; }
+  bool is_householder() { return relationship == Global::HOUSEHOLDER; }
 
   /**
    * Perform the necessary changes to the demographics on an agent's birthday
@@ -145,10 +129,8 @@ public:
   static void read_init_files();
 
 private:
-  Person *self;                // Pointer to the person class belongs
-  short int init_age;                // Initial age of the agent
-  int init_marital_status;     // Initial marital status
-  int init_profession;         // Initial profession (from census)
+  Person *self;			  // Pointer to the person class belongs
+  short int init_age;		  // Initial age of the agent
   short int birth_day_of_year;
   short int birth_year;
   short int deceased_sim_day;        // When the agent (will die) / (died)
@@ -156,11 +138,10 @@ private:
   short int due_sim_day;             // When the agent will give birth
   short int age;                     // Current age of the agent
   char sex;                    // Male or female?
-  int marital_status;          // Current marital status 
-  int profession;              // Current profession (from census)
   bool pregnant;               // Is the agent pregnant
   bool deceased;               // Is the agent deceased
-  int relationship;
+  short int relationship;   // relationship to the holder (see Global.h)
+  short int race;			  // see Global.h for race codes
 
   static double age_yearly_mortality_rate_male[MAX_AGE + 1];
   static double age_yearly_mortality_rate_female[MAX_AGE + 1];

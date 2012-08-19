@@ -14,6 +14,8 @@
 #include "Utils.h"
 
 // global runtime parameters
+char Global::Synthetic_population_directory[256];
+char Global::Synthetic_population_id[256];
 char Global::Output_directory[256];
 char Global::Tracefilebase[256];
 char Global::VaccineTracefilebase[256];
@@ -109,6 +111,8 @@ FILE *Global::Strainsfp = NULL;
 FILE *Global::Householdfp = NULL;
 
 void Global::get_global_parameters() {
+  Params::get_param((char *) "synthetic_population_directory", Global::Synthetic_population_directory);
+  Params::get_param((char *) "synthetic_population_id", Global::Synthetic_population_id);
   Params::get_param((char *) "verbose", &Global::Verbose);
   Params::get_param((char *) "debug", &Global::Debug);
   Params::get_param((char *) "test", &Global::Test);

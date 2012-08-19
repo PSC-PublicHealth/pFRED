@@ -69,7 +69,36 @@ class Global {
     // MAX_NUM_THREADS is used, FRED will abort the run.
     static const int MAX_NUM_THREADS = NCPU;
 
-    // household relationship codes
+    // race codes (ver 2)
+    static const int WHITE = 1;
+    static const int AFRICAN_AMERICAN = 2;
+    static const int AMERICAN_INDIAN = 3;
+    static const int ALASKA_NATIVE = 4;
+    static const int TRIBAL = 5;
+    static const int ASIAN = 6;
+    static const int HAWAIIN_NATIVE = 7;
+    static const int OTHER_RACE = 8;
+    static const int MULTIPLE_RACE = 9;
+
+    // household relationship codes (ver 2)
+    static const int HOUSEHOLDER = 0;
+    static const int SPOUSE = 1;
+    static const int CHILD = 2;
+    static const int SIBLING = 3;
+    static const int PARENT = 4;
+    static const int GRANDCHILD = 5;
+    static const int IN_LAW = 6;
+    static const int OTHER_RELATIVE = 7;
+    static const int BOARDER = 8;
+    static const int HOUSEMATE = 9;
+    static const int PARTNER = 10;
+    static const int FOSTER_CHILD = 11;
+    static const int OTHER_NON_RELATIVE = 13;
+    static const int INSTITUTIONALIZED_GROUP_QUARTERS_POP = 13;
+    static const int NONINSTITUTIONALIZED_GROUP_QUARTERS_POP = 14;
+
+    /*
+    // OLD RELATIONSHIP CODE (VER 1)
     static const int UNKNOWN_RELATION = 0;
     static const int HOUSEHOLDER = 1;
     static const int SPOUSE = 2;
@@ -92,8 +121,11 @@ class Global {
     static const int PARTNER = 19;
     static const int FOSTER_CHILD = 20;
     static const int NON_RELATIVE = 21;
+    */
 
     // global runtime parameters
+    static char Synthetic_population_directory[];
+    static char Synthetic_population_id[];
     static char Population_directory[];
     static char Output_directory[];
     static char Tracefilebase[];

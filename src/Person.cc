@@ -40,13 +40,13 @@ Person::Person() {
 Person::~Person() {
 }
 
-Person::Person(int _index, int _id, int age, char sex, int marital,
-    int rel, int occ, Place *house, Place *school, Place *work,
-    int day, bool today_is_birthday) {
+Person::Person(int _index, int _id, int age, char sex,
+	       int race, int rel, Place *house, Place *school, Place *work,
+	       int day, bool today_is_birthday) {
 
   index = _index;
   id = _id;
-  demographics = Demographics(this, age, sex, marital, rel, occ, day, today_is_birthday);
+  demographics = Demographics(this, age, sex, race, rel, day, today_is_birthday);
   health = Health( this );
   activities = Activities( this, house, school, work );
   behavior = Behavior( this );
@@ -65,11 +65,11 @@ Person::Person(int _index, int _id, int age, char sex, int marital,
 
 void Person::print(FILE *fp, int disease) {
   if (fp == NULL) return;
-  fprintf(fp, "%d id %7d  a %3d  s %c %d ",
+  fprintf(fp, "%d id %7d  a %3d  s %c %d",
           disease, id,
           demographics.get_age(),
           demographics.get_sex(),
-          demographics.get_profession());
+          demographics.get_race());
   fprintf(fp, "exp: %2d  inf: %2d  rem: %2d ",
           health.get_exposure_date(disease),
     health.get_infectious_date(disease),
@@ -112,14 +112,15 @@ void Person::infect(Person *infectee, int disease, Transmission *transmission) {
 
 Person * Person::give_birth(int day) {
   int id = Global::Pop.get_next_id();
-  int age = 0, married = 0, prof = 2;
+  int age = 0;
   char sex = (URAND(0.0, 1.0) < 0.5 ? 'M' : 'F');
-  int rel = 3;
+  int race = get_race();
+  int rel = Global::CHILD;
   Place * house = get_household();
   Place * school = NULL;
   Place * work = NULL;
   bool today_is_birthday = true;
-  Person * baby = Global::Pop.add_person( id, age, sex, married, rel, prof,
+  Person * baby = Global::Pop.add_person( id, age, sex, race, rel,
            house, school, work, day, today_is_birthday );
   return baby;
 }
@@ -135,9 +136,9 @@ void Person::addPrevalence(int disease, vector<int> strains) {
 string Person::to_string() {
 
   stringstream tmp_string_stream;
-  // (i.e *ID* Age Sex Married Occupation Household School *Classroom* Workplace *Office* Relationship)
+  // (i.e *ID* Age Sex Household School *Classroom* Workplace *Office* Relationship)
   tmp_string_stream << this->id << " " << this->get_age() << " " <<  this->get_sex() << " " ;
-  tmp_string_stream << this->get_marital_status() << " " << this->get_profession() << " ";
+  tmp_string_stream << this->get_race() << " " ;
   Place *tmp_place = this->get_household();
   if(tmp_place == NULL)
     tmp_string_stream << "-1 ";

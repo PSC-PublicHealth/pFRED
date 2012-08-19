@@ -108,7 +108,7 @@ public:
    *
    * @return pointer to the person created and added
    */
-  Person * add_person( int id, int age, char sex, int marital, int rel, int occ, Place *house,
+  Person * add_person( int id, int age, char sex, int race, int rel, Place *house,
    Place *school, Place *work, int day, bool today_is_birthday );
 
   /**

@@ -371,3 +371,51 @@ void Utils::fred_print_resource_usage(int day) {
    day, r_usage.ru_maxrss);
   fflush(stdout);
 }
+
+/********************************************************
+ * Input: in_str is a csv string, possiblly ending with \n
+ * Output out_str is a csv string with empty fields replaced
+ * by replacement string.
+ *
+ * Notes: It is assumed that empty strings do not have white space
+ * between commas. Newlines in the input string are ignored, so the
+ * output string contains no newlines.
+ *        
+ */
+void Utils::replace_csv_missing_data(char* out_str, char* in_str, const char* replacement) {
+  // printf("in = |%s|replacement = %s\n",in_str,replacement);
+  int i = 0;
+  int j = 0;
+  int new_field = 1;
+  while (in_str[i] != '\0') {
+    if (in_str[i] == '\n') {
+      i++;
+    }
+    else if (new_field && in_str[i] == ',') {
+      // field is missing, so insert replacement
+      int k = 0;
+      while (replacement[k] != '\0') { out_str[j++] = replacement[k++]; }
+      out_str[j++] = ',';
+      i++;
+      new_field = 1;
+    }
+    else if (in_str[i] == ',') {
+      out_str[j++] = in_str[i++];
+      new_field = 1;
+    }
+    else {
+      out_str[j++] = in_str[i++];
+      new_field = 0;
+    }
+  }
+  // printf("new_field = %d\n", new_field); fflush(stdout);
+  if (new_field) {
+    // last field is missing
+    int k = 0;
+    while (replacement[k] != '\0') { out_str[j++] = replacement[k++]; }
+  }
+  out_str[j] = '\0';
+  // printf("out = |%s|\n",out_str); fflush(stdout);
+}
+
+

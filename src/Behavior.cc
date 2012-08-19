@@ -525,22 +525,21 @@ Person * Behavior::select_adult(Household *h, int relationship, Person * unavail
     for (int i = 0; i < N; i++) {
       Person * person = h->get_housemate(i);
       if (person->is_adult() == false || person == unavailable_person)
-  continue;
+	continue;
       int r = person->get_relationship();
-      if (r == Global::NATURAL_CHILD || r == Global::ADOPTED_CHILD ||
-    r == Global::STEP_CHILD || r == Global::SON_DAUGHTER_IN_LAW) {
-  return person;
+      if (r == Global::SPOUSE || r == Global::CHILD || r == Global::SIBLING || r == Global::IN_LAW) {
+	return person;
       }
     }
 
-    // consider adult nephew or niece of householder, if any
+    // consider adult relative of householder, if any
     for (int i = 0; i < N; i++) {
       Person * person = h->get_housemate(i);
       if (person->is_adult() == false || person == unavailable_person)
-  continue;
+	continue;
       int r = person->get_relationship();
-      if (r == Global::NEPHEW_NIECE) {
-  return person;
+      if (r == Global::PARENT || r == Global::OTHER_RELATIVE) {
+	return person;
       }
     }
   }
@@ -554,7 +553,7 @@ Person * Behavior::select_adult(Household *h, int relationship, Person * unavail
       return person;
     }
   }
-
+  
   // select householder's spouse if an adult
   for (int i = 0; i < N; i++) {
     Person * person = h->get_housemate(i);

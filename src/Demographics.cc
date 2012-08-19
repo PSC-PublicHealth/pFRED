@@ -40,10 +40,6 @@ Demographics::Demographics() {
   init_age = -1;
   age = -1;
   sex = 'n';
-  init_marital_status = -1;
-  marital_status = -1;
-  init_profession = -1;
-  profession = -1;
   birth_day_of_year = -1;
   deceased_sim_day = -1;
   conception_sim_day = -1;
@@ -52,8 +48,8 @@ Demographics::Demographics() {
   deceased = false;
 }
 
-Demographics::Demographics(Person * _self, short int _age, char _sex, int _marital_status,
-			   int rel, int _profession, int day, bool is_newborn) {
+Demographics::Demographics(Person * _self, short int _age, char _sex, 
+			   short int _race, short int rel, int day, bool is_newborn) {
 
   //Create the static arrays one time
   //if (!Demographics::is_initialized) {
@@ -72,11 +68,8 @@ Demographics::Demographics(Person * _self, short int _age, char _sex, int _marit
   init_age            = _age;
   age                 = init_age;
   sex                 = _sex;
-  init_marital_status = _marital_status;
-  marital_status      = init_marital_status;
+  race                = _race;
   relationship        = rel;
-  init_profession     = _profession;
-  profession          = init_profession;
   birth_day_of_year   = -1;
   deceased_sim_day    = -1;
   conception_sim_day  = -1;

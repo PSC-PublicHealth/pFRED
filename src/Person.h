@@ -44,15 +44,13 @@ public:
    * @param index the person id
    * @param age
    * @param sex (M or F)
-   * @param marital 1 if married, 0 if not
-   * @param occ the code for the Person's occupation
    * @param house pointer to this Person's Household
    * @param school pointer to this Person's School
    * @param work pointer to this Person's Workplace
    * @param day the simulation day
    * @param today_is_birthday true if this is a newborn
    */
-  Person(int index, int id, int age, char sex, int marital, int rel, int occ, Place *house,
+  Person(int index, int id, int age, char sex, int race, int rel, Place *house,
    Place *school, Place *work, int day, bool today_is_birthday);
 
   ~Person();
@@ -224,18 +222,6 @@ public:
   int get_init_age() const { return demographics.get_init_age(); }
 
   /**
-   * @return the Person's initial profession
-   * @see Demographics::get_init_profession()
-   */
-  int get_init_profession() const { return demographics.get_init_profession(); }
-
-  /**
-   * @return the Person's initial marital status
-   * @see Demographics::get_init_marital_status()
-   */
-  int get_init_marital_status() const { return demographics.get_init_marital_status(); }
-
-  /**
    * @return the Person's age as a double value based on the number of days alive
    * @see Demographics::get_real_age()
    */
@@ -247,18 +233,14 @@ public:
   char get_sex() const { return demographics.get_sex(); }
 
   /**
-   * @return the Person's marital status
+   * @return the Person's race
+   * @see Demographics::get_race()
    */
-  int get_marital_status() const { return demographics.get_marital_status(); }
+  int get_race() { return demographics.get_race(); }
 
   int get_relationship() { return demographics.get_relationship(); }
 
   void set_relationship(int rel) { demographics.set_relationship(rel); }
-
-  /**
-   * @return the Person's profession
-   */
-  int get_profession() const { return demographics.get_profession(); }
 
   /**
    * @return <code>true</code> if this agent is deceased, <code>false</code> otherwise

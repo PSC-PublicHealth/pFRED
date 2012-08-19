@@ -126,6 +126,17 @@ public:
   int get_children() { return children; }
 
   /**
+   * Set the household income.
+   */
+  void set_household_income(int x) { household_income = x; }
+
+  /**
+   * Get the household income.
+   * @return income
+   */
+  int get_household_income() { return household_income; }
+
+  /**
    * Determine if the household should be open. It is dependent on the disease and simulation day.
    *
    * @param day the simulation day
@@ -162,6 +173,8 @@ private:
   static double * Household_contacts_per_day;
   static double *** Household_contact_prob;
   static bool Household_parameters_set;
+
+  int household_income;				// household income
 
   vector <Person *> housemate;
   int children;
