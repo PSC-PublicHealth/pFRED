@@ -210,7 +210,7 @@ void Place_List::quality_control(char *directory) {
   }
 
   if (Global::Verbose) {
-    int count[20];
+    int count[100];
     int total = 0;
     // size distribution of schools
     for (int c = 0; c < 20; c++) { count[c] = 0; }
@@ -234,17 +234,17 @@ void Place_List::quality_control(char *directory) {
   if (Global::Verbose) {
     // age distribution in schools
     fprintf(Global::Statusfp, "\nSchool age distribution:\n");
-    int count[20];
-    for (int c = 0; c < 20; c++) { count[c] = 0; }
+    int count[100];
+    for (int c = 0; c < 100; c++) { count[c] = 0; }
     for (int p = 0; p < number_places; p++) {
       if (places[p]->get_type() == SCHOOL) {
         // places[p]->print(0);
-        for (int c = 0; c < 20; c++) {
+        for (int c = 0; c < 100; c++) {
           count[c] += ((School *) places[p])->children_in_grade(c);
         }
       }
     }
-    for (int c = 0; c < 20; c++) {
+    for (int c = 0; c < 100; c++) {
       fprintf(Global::Statusfp, "age = %2d  students = %6d\n",
           c, count[c]);;
     }

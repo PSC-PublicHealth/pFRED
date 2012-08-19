@@ -41,11 +41,12 @@ bool School::global_closure_is_active = false;
 int School::global_close_date = 0;
 int School::global_open_date = 0;
 
+
 School::School( const char *lab, double lon, double lat, Place* container, Population *pop ) {
   type = SCHOOL;
   setup( lab, lon, lat, container, pop );
   get_parameters(Global::Diseases);
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < MAX_GRADE; i++) {
     students_with_age[i] = 0;
     classrooms[i].clear();
   }
@@ -61,7 +62,7 @@ void School::prepare() {
     Sympt[s] = S[s] = I[s] = 0;
     total_cases[s] = total_deaths[s] = 0;
   }
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < MAX_GRADE; i++) {
     next_classroom[i] = 0;
     next_classroom_without_teacher[i] = 0;
   }
@@ -259,25 +260,29 @@ double School::get_contacts_per_day(int disease_id) {
 void School::enroll(Person * per) {
   N++;
   int age = per->get_age();
-  if (age < Global::ADULT_AGE) {
+  if (age < MAX_GRADE) {
     students_with_age[age]++;
   }
-  // else {students_with_age[19]++;}
+  else {
+    students_with_age[MAX_GRADE-1]++;
+  }
 }
 
 void School::unenroll(Person * per) {
   N--;
   int age = per->get_age();
-  if (age < Global::ADULT_AGE) {
+  if (age < MAX_GRADE) {
     students_with_age[age]--;
   }
-  // else {students_with_age[19]--;}
+  else {
+    students_with_age[MAX_GRADE-1]--;
+  }
 }
 
 void School::print(int disease_id) {
   fprintf(Global::Statusfp, "Place %d label %s type %c ", id, label, type);
   fprintf(Global::Statusfp, "S %d I %d N %d\n", S[disease_id], I[disease_id], N);
-  for (int g = 0; g < 20; g++) {
+  for (int g = 0; g < MAX_GRADE; g++) {
     fprintf(Global::Statusfp, "%d students with age %d | ", students_with_age[g], g);
   }
   fprintf(Global::Statusfp, "\n");
@@ -288,7 +293,7 @@ int School::get_number_of_rooms() {
   int total_rooms = 0;
   if (School::school_classroom_size == 0)
     return 0;
-  for (int a = 0; a < 20; a++) {
+  for (int a = 0; a < MAX_GRADE; a++) {
     int n = students_with_age[a];
     next_classroom[a] = 0;
     next_classroom_without_teacher[a] = 0;
@@ -304,7 +309,7 @@ void School::setup_classrooms( Allocator< Classroom > & classroom_allocator ) {
   if (School::school_classroom_size == 0)
     return;
 
-  for (int a = 0; a < 20; a++) {
+  for (int a = 0; a < MAX_GRADE; a++) {
     int n = students_with_age[a];
     next_classroom[a] = 0;
     next_classroom_without_teacher[a] = 0;
@@ -324,6 +329,7 @@ void School::setup_classrooms( Allocator< Classroom > & classroom_allocator ) {
            this->get_latitude(),
            this,
            this->get_population());
+
       //Global::Places.add_place(p);
       classrooms[a].push_back(p);
       total_classrooms++;
@@ -339,28 +345,32 @@ Place * School::assign_classroom(Person *per) {
   if (School::school_classroom_size == 0)
     return NULL;
   int age = per->get_age();
-  if (age < Global::ADULT_AGE) {
-    // assign classroom to a student
-    if (Global::Verbose > 1) {
-      fprintf(Global::Statusfp,
-	      "assign classroom for student %d in school %d %s for age %d == ",
-	      per->get_id(), id, label, age);
-      fflush(Global::Statusfp);
-    }
-    assert(classrooms[age].size() > 0);
+  // if (age < Global::ADULT_AGE) {
 
-    // pick next classroom, round-robin
-    int c = next_classroom[age];
-    next_classroom[age]++;
-    if (next_classroom[age]+1 > (int) classrooms[age].size())
-      next_classroom[age] = 0;
+  // assign classroom to a student
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp,
+	    "assign classroom for student %d in school %d %s for age %d\n",
+	    per->get_id(), id, label, age);
+    fflush(Global::Statusfp);
+  }
+  assert((age < MAX_GRADE) && (classrooms[age].size() > 0));
+
+  // pick next classroom, round-robin
+  int c = next_classroom[age];
+  next_classroom[age]++;
+  if (next_classroom[age]+1 > (int) classrooms[age].size())
+    next_classroom[age] = 0;
     
-    if (Global::Verbose > 1) {
-      fprintf(Global::Statusfp, "room = %d %s %d\n",
-              c, classrooms[age][c]->get_label(), classrooms[age][c]->get_id());
-      fflush(Global::Statusfp);
-    }
-    return classrooms[age][c];
+  if (Global::Verbose > 1) {
+    fprintf(Global::Statusfp, "room = %d %s %d\n",
+	    c, classrooms[age][c]->get_label(), classrooms[age][c]->get_id());
+    fflush(Global::Statusfp);
+  }
+  return classrooms[age][c];
+
+  // the following code is for assigning teachers -- NOT YET IMPLEMENTED
+  /*
   }
   else {
     // assign classroom to a teacher
@@ -372,7 +382,7 @@ Place * School::assign_classroom(Person *per) {
     }
 
     // pick next classroom, round-robin
-    for (int a = 0; a < 20; a++) {
+    for (int a = 0; a < MAX_GRADE; a++) {
       int n = (int) classrooms[a].size();
       if (n == 0) continue;
       if (next_classroom_without_teacher[a] < n) {
@@ -389,7 +399,7 @@ Place * School::assign_classroom(Person *per) {
 
     // all classrooms have a teacher, so assign to a random classroom
     int x = IRAND(0,total_classrooms-1);
-    for (int a = 0; a < 20; a++) {
+    for (int a = 0; a < MAX_GRADE; a++) {
       for (unsigned int c = 0 ; c < classrooms[a].size(); c++) {
         if (x == 0) {
           if (Global::Verbose > 1) {
@@ -402,9 +412,9 @@ Place * School::assign_classroom(Person *per) {
         else { x--; }
       } 
     }
-
     Utils::fred_abort("Help! Can't find classroom for teacher\n\n"); 
   }
+  */
 
   //Should never get here (i.e. fred_abort will happen), but avoids the compiler warning
   return NULL;

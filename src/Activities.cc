@@ -216,10 +216,10 @@ void Activities::assign_profile() {
     profile = PRESCHOOL_PROFILE;    // child at home
   else if (age < Global::SCHOOL_AGE && get_school() != NULL)
     profile = STUDENT_PROFILE;      // child in preschool
-  else if (age < Global::ADULT_AGE && get_school() != NULL)
-    profile = STUDENT_PROFILE;      // student
   else if (get_school() != NULL)
-    profile = TEACHER_PROFILE;      // teacher
+    profile = STUDENT_PROFILE;      // student
+  // else if (get_school() != NULL)
+  // profile = TEACHER_PROFILE;      // teacher
   else if (Global::RETIREMENT_AGE <= age && RANDOM() < 0.5)
     profile = RETIRED_PROFILE;      // retired
   else
@@ -487,7 +487,7 @@ void Activities::print() {
 
 void Activities::assign_school() {
   int age = self->get_age();
-  if (age < Global::SCHOOL_AGE || Global::ADULT_AGE <= age) return;
+  // if (age < Global::SCHOOL_AGE || Global::ADULT_AGE <= age) return;
   Cell *grid_cell = favorite_place[HOUSEHOLD_INDEX]->get_grid_cell();
   assert(grid_cell != NULL);
   Place *p = grid_cell->select_random_school(age);
@@ -579,7 +579,7 @@ void Activities::assign_classroom() {
 
 void Activities::assign_workplace() {
   int age = self->get_age();
-  if (age < Global::ADULT_AGE) return;
+  // if (age < Global::ADULT_AGE) return;
   Cell *grid_cell = favorite_place[HOUSEHOLD_INDEX]->get_grid_cell();
   assert(grid_cell != NULL);
   Place *p = grid_cell->select_random_workplace();

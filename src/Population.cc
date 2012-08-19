@@ -398,6 +398,12 @@ void Population::read_population() {
       // printf("|%s %d %c %d %s %s %s %d|\n", label, age, sex, race
       //    house_label, work_label, school_label, relationship);
       // fflush(stdout);
+      /*
+      if (strcmp(work_label,"-1") && strcmp(school_label,"-1")) {
+	printf("STUDENT-WORKER: %s %d %c %s %s\n", label, age, sex, work_label, school_label);
+	fflush(stdout);
+      }
+      */
     }
     else {
       // old population file format
