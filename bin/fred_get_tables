@@ -115,6 +115,7 @@ sub get_tables {
       close IN;
       print WEEK "$lineno $sum $n $date $oldweek $oldyear $size \n";
       close WEEK;
+      unlink $tfile;
       $strain++;
       $dir = "$tables/$strain";
     }
