@@ -51,7 +51,6 @@ void Place_List::read_places() {
   fred::geo lon, lat;
   fred::geo min_lat, max_lat, min_lon, max_lon;
   char location_file[256];
-  bool use_gzip = false;
   FILE *fp = NULL;
 
   // vector to hold init data
@@ -77,195 +76,142 @@ void Place_List::read_places() {
   place_type_counts[ OFFICE ] = 0;          // 'O'
   place_type_counts[ COMMUNITY ] = 0;       // 'X'
 
-  if (strcmp(Global::Synthetic_population_id, "none") == 0) {
+  // read ver 2.0 synthetic population files
+  char newline[1024];
+  char hh_id[32];
+  char serialno[32];
+  char stcotrbg[32];
+  char hh_race[32];
+  char hh_income[32];
+  char hh_size[32];
+  char hh_age[32];
+  char latitude[32];
+  char longitude[32];
+  int income;
+  char workplace_id[32];
+  char num_workers_assigned[32];
+  char school_id[32];
+  char name[64];
+  char stabbr[32];
+  char address[64];
+  char city[32];
+  char county[32];
+  char zip[32];
+  char zip4[32];
+  char nces_id[32];
+  char total[32];
+  char prek[32];
+  char kinder[32];
+  char gr01_gr12[32];
+  char ungraded[32];
+  char source[32];
+  char stco[32];
 
-    // read original FRED location file
+  household_labels.clear();
+  household_incomes.clear();
 
-    Params::get_param_from_string("locfile", locfile);
-    strcpy(location_file, locfile);
-    fp = Utils::fred_open_file(location_file);
+  // read household locations
+  sprintf(location_file, "%s/%s/%s_synth_households.txt", 
+	  Global::Synthetic_population_directory,
+	  Global::Synthetic_population_id,
+	  Global::Synthetic_population_id);
+  fp = Utils::fred_open_file(location_file);
+  while (fgets(line, 1024, fp) != NULL) {
+    Utils::replace_csv_missing_data(newline,line,"0");
+    // printf("%s%s",line,newline); fflush(stdout); exit(0);
+    strcpy(hh_id,strtok(newline,","));
+    // skip header line
+    if (strcmp(hh_id, "hh_id") == 0) continue;
+    strcpy(serialno,strtok(NULL,","));
+    strcpy(stcotrbg,strtok(NULL,","));
+    strcpy(hh_race,strtok(NULL,","));
+    strcpy(hh_income,strtok(NULL,","));
+    strcpy(hh_size,strtok(NULL,","));
+    strcpy(hh_age,strtok(NULL,","));
+    strcpy(latitude,strtok(NULL,","));
+    strcpy(longitude,strtok(NULL,",\n"));
 
-    if (fp == NULL) {
-      // try to find the gzipped version
-      char location_file_gz[256];
-      sprintf(location_file_gz, "%s.gz", location_file);
-      if (Utils::fred_open_file(location_file_gz)) {
-	char cmd[256];
-	use_gzip = true;
-	sprintf(cmd, "gunzip -c %s > %s", location_file_gz, location_file);
-	system(cmd);
-	fp = Utils::fred_open_file(location_file);
-      }
-      // gunzip didn't work ...
-      if (fp == NULL) {
-	Utils::fred_abort("location_file %s not found\n", location_file);
-      }
-    }
+    place_type = 'H';
+    sprintf(s, "%c%s", place_type, hh_id);
+    sscanf(latitude, "%f", &lat);
+    sscanf(longitude, "%f", &lon);
 
-    // assign location ids sequentially, start with zero
-    // but actual assignment of place id is now done in add_place
-    
-    while (fgets(line, 255, fp) != NULL) {
-      
-      // skip white-space-only lines
-      int i = 0;
-      while (i < 255 && line[i] != '\0' && isspace(line[i])) i++;
-      if (line[i] == '\0') continue;
-      
-      // skip comment lines
-      if (line[0] == '#') continue;
-      
-      if (sscanf(line, "%s %c %f %f", s, &place_type, &lat, &lon) == 4) {
-	pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
-	++( place_type_counts[ place_type ] );
-      }
-      else {
-	Utils::fred_abort( "Help! Bad location format: %s\n", line );
-      }
-    }
-    fclose(fp);
+    pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
+    ++( place_type_counts[ place_type ] );
+    // printf ("%s %c %f %f\n", s, place_type,lat,lon); fflush(stdout);
+
+    // save household incomes for later processing
+    sscanf(hh_income, "%d", &income);
+    household_incomes.push_back(income);
+    household_labels.push_back(string(s));
   }
-  else {
+  fclose(fp);
 
-    // read ver 2.0 synthetic population files
-    char newline[1024];
-    char hh_id[32];
-    char serialno[32];
-    char stcotrbg[32];
-    char hh_race[32];
-    char hh_income[32];
-    char hh_size[32];
-    char hh_age[32];
-    char latitude[32];
-    char longitude[32];
-    int income;
-    char workplace_id[32];
-    char num_workers_assigned[32];
-    char school_id[32];
-    char name[64];
-    char stabbr[32];
-    char address[64];
-    char city[32];
-    char county[32];
-    char zip[32];
-    char zip4[32];
-    char nces_id[32];
-    char total[32];
-    char prek[32];
-    char kinder[32];
-    char gr01_gr12[32];
-    char ungraded[32];
-    char source[32];
-    char stco[32];
+  // read workplace locations
+  sprintf(location_file, "%s/%s/%s_workplaces.txt", 
+	  Global::Synthetic_population_directory,
+	  Global::Synthetic_population_id,
+	  Global::Synthetic_population_id);
+  fp = Utils::fred_open_file(location_file);
+  while (fgets(line, 255, fp) != NULL) {
+    Utils::replace_csv_missing_data(newline,line,"0");
+    strcpy(workplace_id,strtok(newline,","));
+    // skip header line
+    if (strcmp(workplace_id, "workplace_id") == 0) continue;
+    strcpy(num_workers_assigned,strtok(NULL,","));
+    strcpy(latitude,strtok(NULL,","));
+    strcpy(longitude,strtok(NULL,",\n"));
 
-    household_labels.clear();
-    household_incomes.clear();
+    place_type = 'W';
+    sprintf(s, "%c%s", place_type, workplace_id);
+    sscanf(latitude, "%f", &lat);
+    sscanf(longitude, "%f", &lon);
 
-    // read household locations
-    sprintf(location_file, "%s/%s/%s_synth_households.txt", 
-	    Global::Synthetic_population_directory,
-	    Global::Synthetic_population_id,
-	    Global::Synthetic_population_id);
-    fp = Utils::fred_open_file(location_file);
-    fgets(line, 1024, fp);
-    while (fgets(line, 1024, fp) != NULL) {
-      Utils::replace_csv_missing_data(newline,line,"0");
-      // printf("%s%s",line,newline); fflush(stdout); exit(0);
-      strcpy(hh_id,strtok(newline,","));
-      strcpy(serialno,strtok(NULL,","));
-      strcpy(stcotrbg,strtok(NULL,","));
-      strcpy(hh_race,strtok(NULL,","));
-      strcpy(hh_income,strtok(NULL,","));
-      strcpy(hh_size,strtok(NULL,","));
-      strcpy(hh_age,strtok(NULL,","));
-      strcpy(latitude,strtok(NULL,","));
-      strcpy(longitude,strtok(NULL,",\n"));
-
-      place_type = 'H';
-      sprintf(s, "%c%s", place_type, hh_id);
-      sscanf(latitude, "%f", &lat);
-      sscanf(longitude, "%f", &lon);
-
-      pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
-      ++( place_type_counts[ place_type ] );
-      // printf ("%s %c %f %f\n", s, place_type,lat,lon); fflush(stdout);
-
-      // save household incomes for later processing
-      sscanf(hh_income, "%d", &income);
-      household_incomes.push_back(income);
-      household_labels.push_back(string(s));
-    }
-    fclose(fp);
-
-    // read workplace locations
-    sprintf(location_file, "%s/%s/%s_workplaces.txt", 
-	    Global::Synthetic_population_directory,
-	    Global::Synthetic_population_id,
-	    Global::Synthetic_population_id);
-    fp = Utils::fred_open_file(location_file);
-    fgets(line, 255, fp);
-    while (fgets(line, 255, fp) != NULL) {
-      Utils::replace_csv_missing_data(newline,line,"0");
-      strcpy(workplace_id,strtok(newline,","));
-      strcpy(num_workers_assigned,strtok(NULL,","));
-      strcpy(latitude,strtok(NULL,","));
-      strcpy(longitude,strtok(NULL,",\n"));
-
-      place_type = 'W';
-      sprintf(s, "%c%s", place_type, workplace_id);
-      sscanf(latitude, "%f", &lat);
-      sscanf(longitude, "%f", &lon);
-
-      pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
-      ++( place_type_counts[ place_type ] );
-      // printf ("%s %c %f %f\n", s, place_type,lat,lon); fflush(stdout);
-    }
-    fclose(fp);
-
-    // read school locations
-    sprintf(location_file, "%s/%s/%s_schools.txt", 
-	    Global::Synthetic_population_directory,
-	    Global::Synthetic_population_id,
-	    Global::Synthetic_population_id);
-    fp = Utils::fred_open_file(location_file);
-    fgets(line, 255, fp);
-    while (fgets(line, 255, fp) != NULL) {
-      Utils::replace_csv_missing_data(newline,line,"0");
-      strcpy(school_id,strtok(newline,","));
-      strcpy(name,strtok(NULL,","));
-      strcpy(stabbr,strtok(NULL,","));
-      strcpy(address,strtok(NULL,","));
-      strcpy(city,strtok(NULL,","));
-      strcpy(county,strtok(NULL,","));
-      strcpy(zip,strtok(NULL,","));
-      strcpy(zip4,strtok(NULL,","));
-      strcpy(nces_id,strtok(NULL,","));
-      strcpy(total,strtok(NULL,","));
-      strcpy(prek,strtok(NULL,","));
-      strcpy(kinder,strtok(NULL,","));
-      strcpy(gr01_gr12,strtok(NULL,","));
-      strcpy(ungraded,strtok(NULL,","));
-      strcpy(latitude,strtok(NULL,","));
-      strcpy(longitude,strtok(NULL,","));
-      strcpy(source,strtok(NULL,","));
-      strcpy(stco,strtok(NULL,",\n"));
-
-      place_type = 'S';
-      sprintf(s, "%c%s", place_type, school_id);
-      sscanf(latitude, "%f", &lat);
-      sscanf(longitude, "%f", &lon);
-
-      pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
-      ++( place_type_counts[ place_type ] );
-      // printf ("%s %c %f %f\n", s, place_type,lat,lon); fflush(stdout);
-    }
-    fclose(fp);
+    pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
+    ++( place_type_counts[ place_type ] );
+    // printf ("%s %c %f %f\n", s, place_type,lat,lon); fflush(stdout);
   }
+  fclose(fp);
 
-  if (use_gzip) {
-    // remove the uncompressed file
-    unlink(location_file);
+  // read school locations
+  sprintf(location_file, "%s/%s/%s_schools.txt", 
+	  Global::Synthetic_population_directory,
+	  Global::Synthetic_population_id,
+	  Global::Synthetic_population_id);
+  fp = Utils::fred_open_file(location_file);
+  while (fgets(line, 255, fp) != NULL) {
+    Utils::replace_csv_missing_data(newline,line,"0");
+    strcpy(school_id,strtok(newline,","));
+    // skip header line
+    if (strcmp(school_id, "school_id") == 0) continue;
+    strcpy(name,strtok(NULL,","));
+    strcpy(stabbr,strtok(NULL,","));
+    strcpy(address,strtok(NULL,","));
+    strcpy(city,strtok(NULL,","));
+    strcpy(county,strtok(NULL,","));
+    strcpy(zip,strtok(NULL,","));
+    strcpy(zip4,strtok(NULL,","));
+    strcpy(nces_id,strtok(NULL,","));
+    strcpy(total,strtok(NULL,","));
+    strcpy(prek,strtok(NULL,","));
+    strcpy(kinder,strtok(NULL,","));
+    strcpy(gr01_gr12,strtok(NULL,","));
+    strcpy(ungraded,strtok(NULL,","));
+    strcpy(latitude,strtok(NULL,","));
+    strcpy(longitude,strtok(NULL,","));
+    strcpy(source,strtok(NULL,","));
+    strcpy(stco,strtok(NULL,",\n"));
+
+    place_type = 'S';
+    sprintf(s, "%c%s", place_type, school_id);
+    sscanf(latitude, "%f", &lat);
+    sscanf(longitude, "%f", &lon);
+
+    pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
+    ++( place_type_counts[ place_type ] );
+    // printf ("%s %c %f %f\n", s, place_type,lat,lon); fflush(stdout);
   }
+  fclose(fp);
 
   // sort the place init data by type, location ( using Place_Init_Data::operator< )
   std::sort( pidv.begin(), pidv.end() );

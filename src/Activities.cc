@@ -571,7 +571,7 @@ void Activities::assign_classroom() {
   if (favorite_place[SCHOOL_INDEX] != NULL &&
       favorite_place[CLASSROOM_INDEX] == NULL) {
     Place * place =
-      ((School *) favorite_place[SCHOOL_INDEX])->assign_classroom(self);
+      ((School *) favorite_place[SCHOOL_INDEX])->select_classroom_for_student(self);
     if (place != NULL) place->enroll(self);
     favorite_place[CLASSROOM_INDEX] = place;
   }
@@ -579,7 +579,6 @@ void Activities::assign_classroom() {
 
 void Activities::assign_workplace() {
   int age = self->get_age();
-  // if (age < Global::ADULT_AGE) return;
   Cell *grid_cell = favorite_place[HOUSEHOLD_INDEX]->get_grid_cell();
   assert(grid_cell != NULL);
   Place *p = grid_cell->select_random_workplace();

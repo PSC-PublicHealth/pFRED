@@ -15,7 +15,7 @@
 #include "Place.h"
 #include <vector>
 
-#define MAX_GRADE 21
+#define GRADES 20
 class Classroom;
 
 class School : public Place {
@@ -34,14 +34,18 @@ public:
   void enroll(Person * per);
   void unenroll(Person * per);
   int children_in_grade(int age) {
-    if (-1 < age && age < MAX_GRADE) return students_with_age[age];
+    if (0 <= age && age < GRADES)
+      return students_with_age[age];
     else return 0;
   }
-  int classrooms_for_age(int age) { return (int) classrooms[age].size(); }
+  int classrooms_for_age(int age) {
+    if (age < 0 || GRADES <= age) return 0;
+    return (int) classrooms[age].size();
+  }
   void print(int disease);
   int get_number_of_rooms();
   void setup_classrooms( Allocator< Classroom > & classroom_allocator );
-  Place * assign_classroom(Person *per);
+  Place * select_classroom_for_student(Person *per);
 
 private:
   static double *** school_contact_prob;
@@ -62,11 +66,9 @@ private:
   static int global_close_date;
   static int global_open_date;
 
-  int students_with_age[MAX_GRADE];
-  vector <Place *> classrooms[MAX_GRADE];
-  int next_classroom[MAX_GRADE];
-  int next_classroom_without_teacher[MAX_GRADE];
-  int total_classrooms;
+  int students_with_age[GRADES];
+  int next_classroom[GRADES];
+  vector <Place *> classrooms[GRADES];
   bool closure_dates_have_been_set;
 };
 

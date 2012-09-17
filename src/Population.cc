@@ -47,7 +47,6 @@ int birth_count[Demographics::MAX_AGE + 1];
 int death_count_male[Demographics::MAX_AGE + 1];
 int death_count_female[Demographics::MAX_AGE + 1];
 
-char Population::popfile[256];
 char Population::pop_outfile[256];
 char Population::output_population_date_match[256];
 int  Population::output_population = 0;
@@ -105,8 +104,6 @@ Population::~Population() {
 }
 
 void Population::get_parameters() {
-  Params::get_param_from_string("popfile", Population::popfile);
-
   int num_mutation_params =
     Params::get_param_matrix((char *) "mutation_prob", &mutation_prob);
   if (num_mutation_params != Global::Diseases) {
@@ -316,17 +313,11 @@ void Population::read_population() {
   bool use_gzip = false;
   FILE *fp = NULL;
 
-  if (strcmp(Global::Synthetic_population_id, "none") == 0) {
-    sprintf(population_file, "%s", Population::popfile);
-    FILE *fp = Utils::fred_open_file(population_file);
-  }
-  else {
-    sprintf(population_file, "%s/%s/%s_synth_people.txt",
-	    Global::Synthetic_population_directory,
-	    Global::Synthetic_population_id,
-	    Global::Synthetic_population_id);
-    fp = Utils::fred_open_file(population_file);
-  }
+  sprintf(population_file, "%s/%s/%s_synth_people.txt",
+	  Global::Synthetic_population_directory,
+	  Global::Synthetic_population_id,
+	  Global::Synthetic_population_id);
+  fp = Utils::fred_open_file(population_file);
 
   if (fp == NULL) {
     // try to find the gzipped version
@@ -348,94 +339,63 @@ void Population::read_population() {
   // pstring = new char* [psize];
   // for (int i = 0; i < psize; i++) pstring[i] = new char[256];
 
+  // input variables for reading population file
+  int age, race, married, occ, relationship;
+  char sex, label[32], house_label[32], school_label[32], work_label[32];
+  char p_id[32], hh_id[32], serialno[32], stcotrbg[32],  age_str[4];
+  char sex_str[4], race_str[4], sporder[32],  relate[4];
+  char school_id[32], workplace_id[32];
+
   Population::next_id = 0;
-  fgets(line, 255, fp);
   while (fgets(line, 255, fp) != NULL) {
     // printf("line: |%s|\n", line); fflush(stdout); // exit(0);
-    int age, race, married, occ, relationship;
-    char label[32], house_label[32], school_label[32], work_label[32];
-    char sex;
+    Utils::replace_csv_missing_data(newline, line, "-1");
+    strcpy(p_id,strtok(newline,","));
 
-    if (strcmp(Global::Synthetic_population_id, "none") != 0) {
-      // parse the line
-      char p_id[32];
-      char hh_id[32];
-      char serialno[32];
-      char stcotrbg[32];
-      char age_str[4];
-      char sex_str[4];
-      char race_str[4];
-      char sporder[32];
-      char relate[4];
-      char school_id[32];
-      char workplace_id[32];
+    //skip header line
+    if (strcmp(p_id,"p_id")==0) continue;
 
-      Utils::replace_csv_missing_data(newline, line, "-1");
-      // printf("new:  %s\n", newline); fflush(stdout); // exit(0);
-      strcpy(p_id,strtok(newline,","));
-      strcpy(hh_id,strtok(NULL,","));
-      strcpy(serialno,strtok(NULL,","));
-      strcpy(stcotrbg,strtok(NULL,","));
-      strcpy(age_str,strtok(NULL,","));
-      strcpy(sex_str,strtok(NULL,","));
-      strcpy(race_str,strtok(NULL,","));
-      strcpy(sporder,strtok(NULL,","));
-      strcpy(relate,strtok(NULL,","));
-      strcpy(school_id,strtok(NULL,","));
-      strcpy(workplace_id,strtok(NULL,",\n"));
+    strcpy(hh_id,strtok(NULL,","));
+    strcpy(serialno,strtok(NULL,","));
+    strcpy(stcotrbg,strtok(NULL,","));
+    strcpy(age_str,strtok(NULL,","));
+    strcpy(sex_str,strtok(NULL,","));
+    strcpy(race_str,strtok(NULL,","));
+    strcpy(sporder,strtok(NULL,","));
+    strcpy(relate,strtok(NULL,","));
+    strcpy(school_id,strtok(NULL,","));
+    strcpy(workplace_id,strtok(NULL,",\n"));
 
-      strcpy(label, p_id);
-      if (strcmp(hh_id,"-1")) {	sprintf(house_label, "H%s", hh_id);}
-      else { strcpy(house_label,"-1"); }
-      if (strcmp(workplace_id,"-1")) { sprintf(work_label, "W%s", workplace_id); }
-      else { strcpy(work_label,"-1"); }
-      if (strcmp(school_id,"-1")) { sprintf(school_label, "S%s", school_id); }
-      else { strcpy(school_label,"-1"); }
-      sscanf(relate, "%d", &relationship);
-      sscanf(age_str, "%d", &age);
-      sex = strcmp(sex_str,"1")==0 ? 'M' : 'F';
-      sscanf(race_str, "%d", &race);
-      // printf("|%s %d %c %d %s %s %s %d|\n", label, age, sex, race
-      //    house_label, work_label, school_label, relationship);
-      // fflush(stdout);
-      /*
+    strcpy(label, p_id);
+
+    // add type indicator to label for places
+    if (strcmp(hh_id,"-1")) {	sprintf(house_label, "H%s", hh_id);}
+    else { strcpy(house_label,"-1"); }
+    if (strcmp(workplace_id,"-1")) { sprintf(work_label, "W%s", workplace_id); }
+    else { strcpy(work_label,"-1"); }
+    if (strcmp(school_id,"-1")) { sprintf(school_label, "S%s", school_id); }
+    else { strcpy(school_label,"-1"); }
+
+    sscanf(relate, "%d", &relationship);
+    sscanf(age_str, "%d", &age);
+    sex = strcmp(sex_str,"1")==0 ? 'M' : 'F';
+    sscanf(race_str, "%d", &race);
+
+    // printf("|%s %d %c %d %s %s %s %d|\n", label, age, sex, race
+    //    house_label, work_label, school_label, relationship);
+    // fflush(stdout);
+    /*
       if (strcmp(work_label,"-1") && strcmp(school_label,"-1")) {
-	printf("STUDENT-WORKER: %s %d %c %s %s\n", label, age, sex, work_label, school_label);
-	fflush(stdout);
+      printf("STUDENT-WORKER: %s %d %c %s %s\n", label, age, sex, work_label, school_label);
+      fflush(stdout);
       }
-      */
-    }
-    else {
-      // old population file format
-      // skip white-space-only lines
-      int i = 0;
-      while (i < 255 && line[i] != '\0' && isspace(line[i])) i++;
-      if (line[i] == '\0') continue;
-      
-      // skip comment lines
-      if (line[0] == '#') continue;
-      
-      if (sscanf(line, "%s %d %c %d %d %s %s %s %d",
-		 label, &age, &sex, &married, &occ,
-		 house_label, school_label, work_label, &relationship) != 9) {
+    */
 
-	Utils::fred_abort("Help! Bad format in input line when next_id = %d: %s\n", Population::next_id, line);
-      }
-
-      // NOTE: the following adjustment reflects the new relationship
-      // codes in the version 2 synthetic population.  The HOUSEHOLDER,
-      // SPOUSE and CHILD relationships are preserved, but the others
-      // are now incorrect.  Use with caution!!
-      relationship--;
-
-      // nominal race value -- not present in old input files
-      race = 1;
-    }
     Place * house = Global::Places.get_place_from_label(house_label);
 
     FRED_CONDITIONAL_VERBOSE(0, house==NULL,
-        "WARNING: skipping person %s in %s --  no household found for label = %s\n",
-        label, population_file, house_label);
+			     "WARNING: skipping person %s in %s --  no household found for label = %s\n",
+			     label, population_file, house_label);
 
     if (house == NULL) { continue; }
 
@@ -444,15 +404,15 @@ void Population::read_population() {
     if ( strcmp( work_label, "-1" ) != 0 && work == NULL ) {
 
       FRED_VERBOSE(0,"WARNING: person %s in %s -- no workplace found for label = %s\n",
-            label, population_file, work_label);
+		   label, population_file, work_label);
       
       if (Global::Enable_Local_Workplace_Assignment) {
         work = Global::Places.get_random_workplace();
             
         FRED_CONDITIONAL_VERBOSE(0, work!=NULL, "WARNING: person %s assigned to workplace %s\n",
-                label, work->get_label());
+				 label, work->get_label());
         FRED_CONDITIONAL_VERBOSE(0, work==NULL, "WARNING: no workplace available for person %s\n",
-                label);
+				 label);
       }
     }
     Place * school = Global::Places.get_place_from_label(school_label);
@@ -475,6 +435,7 @@ void Population::read_population() {
     // remove the uncompressed file
     unlink(population_file);
   }
+
   // Read past infections
   char past_infections[256];
   int delay;

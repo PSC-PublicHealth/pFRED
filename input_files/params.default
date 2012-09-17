@@ -19,10 +19,11 @@ vaccine_offset = 0
 start_date = 2012-01-02
 rotate_start_date = 0
 reseed_day = -1
+
+# Allegheny County Population (Ver 2)
 synthetic_population_directory = $FRED_HOME/populations
-synthetic_population_id = none
-popfile = $FRED_HOME/region/pop_Alleg.txt
-locfile = $FRED_HOME/region/loc_Alleg.txt
+synthetic_population_id = 2005_2009_ver2_42003
+
 outdir = OUT
 tracefile = none
 track_infection_events = 1
@@ -79,8 +80,8 @@ output_population_date_match = 01-01-*
 primary_cases_file[0] = $FRED_HOME/input_files/primary_case_schedule-0.txt
 trans[0] = 1.0
 R0 = -1.0
-R0_a = 0.047575
-R0_b = 0.562322
+R0_a = 0.053878
+R0_b = 0.56599
 symp[0] = 0.67
 mortality_rate[0] = 0.0
 # infection model: BIFURCATING = 0 , SEQUENTIAL = 1
@@ -117,10 +118,13 @@ birth_rate_multiplier = 1
 # the folowing contacts are calibrated for Allegheny County
 # for a 33% clinical attack rate
 # using the bifurcating SEIR model (SEiIR = 0)
-household_contacts[0] = 0.187657
-neighborhood_contacts[0] = 40.843980
-school_contacts[0] = 15.824534
-workplace_contacts[0] = 1.647333
+#
+## VERSION 2 Synthetic Pop:
+###  CALIBRATION PHASE II STEP 14 at Fri Aug 17 17:09:13 2012
+household_contacts[0] = 0.199354
+neighborhood_contacts[0] = 41.083422
+school_contacts[0] = 15.431306
+workplace_contacts[0] = 1.558709
 classroom_contacts[0] = -1
 office_contacts[0] = -1
 hospital_contacts[0] = 0

@@ -155,7 +155,6 @@ void Workplace::setup_offices( Allocator< Office > & office_allocator ) {
         this,
         this->get_population() );
 
-    //Global::Places.add_place(p);
     offices.push_back(p);
     int id = p->get_id();
 
