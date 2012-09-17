@@ -1,7 +1,5 @@
 days = 20
 runs  = 1
-popfile = $FRED_HOME/region/pop_Alleg.txt
-locfile = $FRED_HOME/region/loc_Alleg.txt
 outdir = OUT.TEST
 quality_control = 0
 
