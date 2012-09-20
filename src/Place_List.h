@@ -66,6 +66,7 @@ public:
   }
 
   void setup_classrooms();
+  void setup_teachers();
   void setup_offices();
   Place * get_random_workplace();
   void end_of_run();

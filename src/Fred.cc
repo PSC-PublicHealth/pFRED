@@ -138,8 +138,10 @@ int main(int argc, char* argv[]) {
   // define FRED-specific places
   // and have each person enroll as needed
   Global::Places.setup_classrooms();
-  Global::Places.setup_offices();
   Global::Pop.assign_classrooms();
+  // Global::Places.setup_teachers();
+  
+  Global::Places.setup_offices();
   Global::Pop.assign_offices();
   Utils::fred_print_lap_time("assign classrooms and offices");
 

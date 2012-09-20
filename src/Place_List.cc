@@ -489,6 +489,56 @@ void Place_List::setup_classrooms() {
   FRED_STATUS(0, "setup classrooms finished\n","");
 }
 
+double distance_between_places(Place * p1, Place * p2) {
+  double x1, y1, x2, y2;
+  Global::Cells->translate_to_cartesian(p1->get_latitude(), p1->get_longitude(), &x1, &y1);
+  Global::Cells->translate_to_cartesian(p2->get_latitude(), p2->get_longitude(), &x2, &y2);
+  double dist = sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+  return dist;
+}
+
+void Place_List::setup_teachers() {
+  int number_places = places.size();
+  for (int p = 0; p < number_places; p++) {
+    Place *place = places[p];
+    if (place->get_type() == SCHOOL) {
+      int size = place->get_size();
+      //from: http://www.statemaster.com/graph/edu_ele_sec_pup_rat-elementary-secondary-pupil-teacher-ratio
+      int staff = 1 + (int) (0.5 + size / 15.5);
+      int min_staff = (int) (0.75 * staff);
+      if (min_staff < 1) min_staff = 1;
+      int max_staff = (int) (0.5 + 1.25 * staff);
+
+      double x1, y1, x2, y2;
+      Global::Cells->translate_to_cartesian(place->get_latitude(), place->get_longitude(), &x1, &y1);
+      printf("School %s size %d staff %d %d %d %f %f ", place->get_label(), size, min_staff, staff, max_staff, x1, y1);
+
+
+      // find nearest workplace that has right number of employees
+      double min_dist = 1e99;
+      int wsize = 0;
+      Place * min_place = NULL;
+      for (int p2 = 0; p2 < number_places; p2++) {
+	Place *place2 = places[p2];
+	if (place2->get_type() == WORKPLACE) {
+	  int size = place2->get_size();
+	  if (1 || (min_staff <= size && size <= max_staff)) {
+	    double dist = distance_between_places(place, place2);
+	    if (dist < min_dist) {
+	      min_dist = dist;
+	      min_place = place2;
+	      wsize = size;
+	      Global::Cells->translate_to_cartesian(place2->get_latitude(), place->get_longitude(), &x2, &y2);
+	    }
+	  }
+	}
+      }
+      printf("workplace %s %f %f wsize %d dist %f\n", min_place->get_label(), x2, y2, wsize, min_dist);
+    }
+  }
+  fflush(stdout);
+}
+
 void Place_List::setup_offices() {
 
   FRED_STATUS(0, "setup offices entered\n","");
