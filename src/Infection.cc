@@ -71,7 +71,8 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
   immune_response = disease->gen_immunity_infection(host->get_age());
   //assert(immune_response == true);
 
-  report_infection(day);
+  // report_infection(day);
+  // print();
   // host->set_changed();
 }
 
@@ -130,6 +131,7 @@ void Infection::determine_transition_dates() {
       asymptomatic_period++;
     }
   }
+  // report_infection(day);
 }
 
 void Infection::update(int today) {
@@ -239,9 +241,9 @@ void Infection::modify_develops_symptoms(bool symptoms, int today) {
 }
 
 void Infection::print() const {
-  printf("Infection of disease type: %i in person %i\n"
-         "periods:  latent %i, asymp: %i, symp: %i recovery: %i \n"
-         "dates: exposed: %i, infectious: %i, symptomatic: %i, recovered: %i susceptible: %i\n"
+  printf("INF: Infection of disease type: %i in person %i "
+         "periods:  latent %i, asymp: %i, symp: %i recovery: %i "
+         "dates: exposed: %i, infectious: %i, symptomatic: %i, recovered: %i susceptible: %i "
          "will have symp? %i, suscept: %.3f infectivity: %.3f "
          "infectivity_multp: %.3f symptms: %.3f\n",
          disease->get_id(),

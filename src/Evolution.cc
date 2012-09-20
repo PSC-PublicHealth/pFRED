@@ -26,6 +26,7 @@ Infection *Evolution::transmit(Infection *infection, Transmission *transmission,
     Trajectory *trajectory = disease->get_trajectory(infection, transmission->get_initial_loads() );
     infection->setTrajectory(trajectory);
     infection->set_susceptibility_period(0);
+    infection->report_infection(transmission->get_exposure_date());
   }
   else{
     // Fail repeated infections by default??
