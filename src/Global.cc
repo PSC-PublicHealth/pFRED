@@ -52,7 +52,6 @@ int Global::Track_Residual_Immunity = 0;
 int Global::Track_Multi_Strain_Stats = 0;
 double Global::Work_absenteeism = 0.0;
 double Global::School_absenteeism = 0.0;
-bool Global::Enable_Large_Grid = false;
 bool Global::Enable_Small_Grid = false;
 bool Global::Enable_Aging = false;
 bool Global::Enable_Births = false;
@@ -73,6 +72,7 @@ bool Global::Print_Household_Locations = false;
 bool Global::Report_Age_Of_Infection = false;
 bool Global::Report_Place_Of_Infection = false;
 bool Global::Report_Presenteeism = false;
+bool Global::Assign_Teachers = false;
 
 // per-strain prevalence, incidence, and immunity reporting off by default
 // will be enabled in Utils::fred_open_output_files (called from Fred.cc)
@@ -180,8 +180,6 @@ void Global::get_global_parameters() {
 
   //Set all of the boolean flags
   int temp_int = 0;
-  Params::get_param_from_string("enable_large_grid", &temp_int);
-  Global::Enable_Large_Grid = temp_int;
   Params::get_param_from_string("enable_small_grid", &temp_int);
   Global::Enable_Small_Grid = temp_int;
   Params::get_param_from_string("enable_aging", &temp_int);
@@ -212,6 +210,8 @@ void Global::get_global_parameters() {
   Global::Use_Mean_Latitude = temp_int;
   Params::get_param_from_string("print_household_locations",&temp_int);
   Global::Print_Household_Locations = temp_int;
+  Params::get_param_from_string("assign_teachers",&temp_int);
+  Global::Assign_Teachers = temp_int;
 
   // Initialize Demographics
   Demographics::read_init_files();

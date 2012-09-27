@@ -41,92 +41,86 @@ Large_Grid::Large_Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fre
   }
 
   get_parameters();
-  min_x = 0.0;
-  min_y = 0.0;
 
   // find the global x,y coordinates of SW corner of grid
-  min_x = (min_lon + 180.0)*Geo_Utils::km_per_deg_longitude;
-  min_y = (min_lat + 90.0)*Geo_Utils::km_per_deg_latitude;
+  min_x = Geo_Utils::get_x(min_lon);
+  min_y = Geo_Utils::get_y(min_lat);
 
   // find the global row and col in which SW corner occurs
   global_row_min = (int) (min_y / grid_cell_size);
   global_col_min = (int) (min_x / grid_cell_size);
 
-  // align min_x and min_y to global grid
+  // align coords to global grid
   min_x = global_col_min * grid_cell_size;
   min_y = global_row_min * grid_cell_size;
 
-  // find the global x,y coordinates of NE corner of grid
-  max_x = (max_lon + 180.0)*Geo_Utils::km_per_deg_longitude;
-  max_y = (max_lat + 90.0)*Geo_Utils::km_per_deg_latitude;
+  // compute lat,lon of SW corner of aligned grid
+  min_lat = Geo_Utils::get_latitude(min_y);
+  min_lon = Geo_Utils::get_longitude(min_x);
 
+  // find x,y coords of NE corner of bounding box
+  max_x = Geo_Utils::get_x(max_lon);
+  max_y = Geo_Utils::get_y(max_lat);
+  
   // find the global row and col in which NE corner occurs
   global_row_max = (int) (max_y / grid_cell_size);
   global_col_max = (int) (max_x / grid_cell_size);
 
-  // align max_x and max_y to global grid
-  max_x = (global_col_max +1) * grid_cell_size;
-  max_y = (global_row_max +1) * grid_cell_size;
+  // align coords_y to global grid
+  max_x = (global_col_max + 1) * grid_cell_size;
+  max_y = (global_row_max + 1) * grid_cell_size;
 
+  // compute lat,lon of NE corner of aligned grid
+  max_lat = Geo_Utils::get_latitude(max_y);
+  max_lon = Geo_Utils::get_longitude(max_x);
+
+  // number of rows and columns needed
   rows = global_row_max - global_row_min + 1;
   cols = global_col_max - global_col_min + 1;
 
-  // compute lat,lon of aligned grid
-  min_lat = min_y / Geo_Utils::km_per_deg_latitude - 90.0;
-  min_lon = min_x / Geo_Utils::km_per_deg_longitude - 180.0;
-  max_lat = max_y / Geo_Utils::km_per_deg_latitude - 90.0;
-  max_lon = max_x / Geo_Utils::km_per_deg_longitude - 180.0;
-
-  // Added by Anuroop
-  //fprintf(Global::Statusfp, "Large_Grid global_col_min = %d  global_row_min = %d\n",
-  //  global_col_min, global_row_min);
   if (Global::Verbose > 0) {
     fprintf(Global::Statusfp, "Large_Grid new min_lon = %f\n", min_lon);
     fprintf(Global::Statusfp, "Large_Grid new min_lat = %f\n", min_lat);
     fprintf(Global::Statusfp, "Large_Grid new max_lon = %f\n", max_lon);
     fprintf(Global::Statusfp, "Large_Grid new max_lat = %f\n", max_lat);
-    fprintf(Global::Statusfp, "Large_Grid global_col_min = %d  global_row_min = %d\n",
-        global_col_min, global_row_min);
-    fprintf(Global::Statusfp, "Large_Grid global_col_max = %d  global_row_max = %d\n",
-        global_col_max, global_row_max);
     fprintf(Global::Statusfp, "Large_Grid rows = %d  cols = %d\n",rows,cols);
     fprintf(Global::Statusfp, "Large_Grid min_x = %f  min_y = %f\n",min_x,min_y);
     fprintf(Global::Statusfp, "Large_Grid max_x = %f  max_y = %f\n",max_x,max_y);
+    fprintf(Global::Statusfp, "Large_Grid global_col_min = %d  global_row_min = %d\n",
+        global_col_min, global_row_min);
     fflush(Global::Statusfp);
   }
 
   grid = new Large_Cell * [rows];
   for (int i = 0; i < rows; i++) {
     grid[i] = new Large_Cell[cols];
+  }
+  for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
-          i*grid_cell_size,(i+1)*grid_cell_size);
-      if (Global::Verbose > 2) {
-        printf("print grid[%d][%d]:\n",i,j);
+      grid[i][j].setup(this,i,j);
+      if (Global::Verbose > 1) {
+        printf("print grid[%d][%d]:\n",i,j); fflush(stdout);
         grid[i][j].print();
       }
     }
   }
-
 }
 
 void Large_Grid::get_parameters() {
   Params::get_param_from_string("grid_large_cell_size", &grid_cell_size);
 }
 
-Large_Cell ** Large_Grid::get_neighbors(int row, int col) {
-  Large_Cell ** neighbors = new Large_Cell*[9];
-  int n = 0;
-  for (int i = row-1; i <= row+1; i++) {
-    for (int j = col-1; j <= col+1; j++) {
-      neighbors[n++] = get_grid_cell(i,j);
-    }
-  }
-  return neighbors;
+Large_Cell * Large_Grid::get_grid_cell(int row, int col) {
+  if ( row >= 0 && col >= 0 && row < rows && col < cols)
+    return &grid[row][col];
+  else
+    return NULL;
 }
 
 
-Large_Cell * Large_Grid::get_grid_cell(int row, int col) {
+Large_Cell * Large_Grid::get_grid_cell(fred::geo lat, fred::geo lon) {
+  int row = get_row(lat);
+  int col = get_col(lon);
   if ( row >= 0 && col >= 0 && row < rows && col < cols)
     return &grid[row][col];
   else
@@ -143,21 +137,6 @@ Large_Cell * Large_Grid::select_random_grid_cell() {
   int row = IRAND(0, rows-1);
   int col = IRAND(0, cols-1);
   return &grid[row][col];
-}
-
-
-Large_Cell * Large_Grid::get_grid_cell_from_cartesian(double x, double y) {
-  int row, col;
-  row = (int) (y/grid_cell_size);
-  col = (int) (x/grid_cell_size);
-  return get_grid_cell(row, col);
-}
-
-
-Large_Cell * Large_Grid::get_grid_cell_from_lat_lon(fred::geo lat, fred::geo lon) {
-  double x, y;
-  Geo_Utils::translate_to_cartesian(lat,lon,&x,&y,min_lat,min_lon);
-  return get_grid_cell_from_cartesian(x,y);
 }
 
 
@@ -180,15 +159,15 @@ void Large_Grid::quality_control(char * directory) {
     for (int row = 0; row < rows; row++) {
       if (row%2) {
         for (int col = cols-1; col >= 0; col--) {
-          double x = min_x + grid[row][col].get_center_x();
-          double y = min_y + grid[row][col].get_center_y();
+          double x = grid[row][col].get_center_x();
+          double y = grid[row][col].get_center_y();
           fprintf(fp, "%f %f\n",x,y);
         }
       }
       else {
         for (int col = 0; col < cols; col++) {
-          double x = min_x + grid[row][col].get_center_x();
-          double y = min_y + grid[row][col].get_center_y();
+          double x = grid[row][col].get_center_x();
+          double y = grid[row][col].get_center_y();
           fprintf(fp, "%f %f\n",x,y);
         }
       }
@@ -211,12 +190,14 @@ void Large_Grid::set_population_size() {
     Person *per = Global::Pop.get_person_by_index(p);
     Place * h = per->get_household();
     assert (h != NULL);
-    fred::geo lat = h->get_latitude();
-    fred::geo lon = h->get_longitude();
-    Large_Cell * cell = get_grid_cell_from_lat_lon(lat, lon);
+    int row = get_row(h->get_latitude());
+    int col = get_col(h->get_longitude());
+    Large_Cell * cell = get_grid_cell(row,col);
     cell->add_person(per);
   }
-  return;
+
+  // print debugging data for large grid
+  /*
   FILE *fp;
   char filename[256];
   sprintf(filename, "OUT/largegrid.txt");
@@ -224,24 +205,17 @@ void Large_Grid::set_population_size() {
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       Large_Cell * cell = get_grid_cell(i,j);
-      fred::geo lon, lat;
       double x = cell->get_center_x();
       double y = cell->get_center_y();
-      Geo_Utils::translate_to_lat_lon(x,y,&lat,&lon,min_lat,min_lon);
+      fred::geo lat = Geo_Utils::get_latitude(y);
+      fred::geo lon = Geo_Utils::get_longitude(x);
       int popsize = cell->get_popsize();
       fprintf(fp, "%d %d %f %f %f %f %d\n", i,j,x,y,lon,lat,popsize);
     }
     fprintf(fp, "\n");
   }
   fclose(fp);
-}
-
-void Large_Grid::translate_to_lat_lon(double x, double y, fred::geo *lat, fred::geo *lon) {
-  Geo_Utils::translate_to_lat_lon(x,y,lat,lon,min_lat,min_lon);
-}
-
-void Large_Grid::translate_to_cartesian(fred::geo lat, fred::geo lon, double *x, double *y) {
-  Geo_Utils::translate_to_cartesian(lat,lon,x,y,min_lat,min_lon);
+  */
 }
 
 void Large_Grid::read_max_popsize() {
@@ -264,3 +238,23 @@ void Large_Grid::read_max_popsize() {
     printf("finished reading %s\n", filename);
   }
 }
+
+Place *Large_Grid::get_nearby_workplace(int row, int col, double x, double y, int min_staff, int max_staff, double * min_dist) {
+  // find nearest workplace that has right number of employees
+  Place * nearby_workplace = NULL;
+  *min_dist = 1e99;
+  for (int i = row-1; i <= row+1; i++) {
+    for (int j = col-1; j <= col+1; j++) {
+      Large_Cell * cell = get_grid_cell(i,j);
+      if (cell != NULL) {
+	Place * closest_workplace = cell->get_closest_workplace(x,y,min_staff,max_staff,min_dist);
+	if (closest_workplace != NULL) {
+	  nearby_workplace = closest_workplace;
+	}
+      }
+    }
+  }
+  return nearby_workplace;
+}
+
+

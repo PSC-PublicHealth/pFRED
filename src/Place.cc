@@ -59,6 +59,7 @@ void Place::setup( const char *lab, fred::geo lon, fred::geo lat, Place* cont, P
   if ( Global::Report_Prevalence ) {
     prevalence.resize(Global::Diseases);
   }
+  enrollees.clear();
   N = 0;
   days_infectious = 0;
   total_infections = 0;
@@ -135,6 +136,7 @@ void Place::print(int disease_id) {
 }
 
 void Place::enroll(Person * per) {
+  enrollees.push_back(per);
   N++;
 }
 
@@ -388,3 +390,15 @@ Place * Place::select_neighborhood(double community_prob, double community_dista
   return grid_cell->select_neighborhood(community_prob, community_distance, local_prob);
 }
 
+void Place::turn_workers_into_teachers(Place *school) {
+  int new_teachers = 0;
+  for (int i = 0; i < (int) enrollees.size(); i++) {
+    if (enrollees[i]->become_a_teacher(school)) new_teachers++;
+    // printf("new teacher %d age %d moving from workplace %s to school %s\n",
+    // enrollees[i]->get_id(), enrollees[i]->get_age(), label, school->get_label());
+  }
+  printf("%d new teachers reassigned from workplace %s to school %s\n",
+	 new_teachers, label, school->get_label());
+  fflush(stdout);
+  N = 0;
+}

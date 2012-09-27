@@ -20,6 +20,8 @@
 class Geo_Utils{
  public:
 
+  static const double DEG_TO_RAD;		// PI/180
+
   /**
    * Sets the kilometers per degree longitude at a given latitiude
    *
@@ -57,31 +59,21 @@ class Geo_Utils{
    */
   static double spherical_projection_distance (fred::geo lon1, fred::geo lat1, fred::geo lon2, fred::geo lat2);
 
-  /**
-   * Translate a given latitude and longitude to an (x,y) coordinate.
-   *
-   * @param lat the latitude of the point
-   * @param lon the longitude of the point
-   * @param x pointer to the x coordinate of the point
-   * @param y pointer to the y coordinate of the point
-   */
-  static void translate_to_cartesian(fred::geo lat, fred::geo lon, double *x, double *y,
-             fred::geo min_lat, fred::geo min_lon);
+  static double get_x(fred::geo lon) { return (lon + 180.0) * km_per_deg_longitude; }
+  static double get_y(fred::geo lat) { return (lat + 90.0) * km_per_deg_latitude; }
 
-  /**
-   * Translate a given (x,y) coordinate to a latitude and longitude.
-   *
-   * @param x the x coordinate of the point
-   * @param y the y coordinate of the point
-   * @param lat pointer to the latitude of the point
-   * @param lon pointer to the longitude of the point
-   */
-  static void translate_to_lat_lon(double x, double y, fred::geo *lat, fred::geo *lon,
-           fred::geo min_lat, fred::geo min_lon);
+  static fred::geo get_longitude(double x) { return (fred::geo) (x / km_per_deg_longitude - 180.0); }
+  static fred::geo get_latitude(double y)  { return (fred::geo) (y / km_per_deg_latitude - 90.0); }
 
   static double km_per_deg_longitude;
   static double km_per_deg_latitude;
-  static const double DEG_TO_RAD;		// PI/180
+
+  static double xy_distance(fred::geo lat1, fred::geo lon1, fred::geo lat2, fred::geo lon2) {
+    double x1 = get_x(lon1); double y1 = get_y(lat1);
+    double x2 = get_x(lon2); double y2 = get_y(lat2);
+    return sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+  }
+
  private:
   // see http://andrew.hedges.name/experiments/haversine/
   static const double EARTH_RADIUS;	 // earth's radius in kilometers
@@ -98,6 +90,7 @@ class Geo_Utils{
   // from http://www.ariesmar.com/degree-latitude.php
   static const double MEAN_US_KM_PER_DEG_LON;		// at 38 deg N
   static const double MEAN_US_KM_PER_DEG_LAT; // 
+
 };
 
 #endif /* FRED_GEO_UTILS_H_ */

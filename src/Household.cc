@@ -140,11 +140,9 @@ void Household::unenroll(Person * per) {
     Utils::fred_abort("");
   }
 
-  // unenroll from cell as well
-  if(Global::Enable_Large_Grid) {
-    Large_Cell *large_cell = Global::Large_Cells->get_grid_cell_from_lat_lon(latitude, longitude);
-    if(large_cell != NULL) large_cell->unenroll(per);
-  }
+  // unenroll from large cell as well
+  Large_Cell *large_cell = Global::Large_Cells->get_grid_cell(latitude, longitude);
+  if(large_cell != NULL) large_cell->unenroll(per);
 }
 
 void Household::record_profile() {

@@ -16,6 +16,7 @@
 #include "Place_List.h"
 #include "Grid.h"
 #include "Large_Grid.h"
+#include "Small_Grid.h"
 #include "Params.h"
 #include "Random.h"
 #include "Vaccine_Manager.h"
@@ -135,15 +136,23 @@ int main(int argc, char* argv[]) {
   Global::Pop.setup();
   Utils::fred_print_lap_time("Pop.setup");
 
-  // define FRED-specific places
-  // and have each person enroll as needed
+  // define FRED-specific places and have each person enroll as needed
+
+  // classrooms
   Global::Places.setup_classrooms();
   Global::Pop.assign_classrooms();
-  // Global::Places.setup_teachers();
-  
+  Utils::fred_print_lap_time("assign classrooms");
+
+  // teachers
+  if (Global::Assign_Teachers) {
+    Global::Places.assign_teachers();
+    Utils::fred_print_lap_time("assign teachers");
+  }
+
+  // offices
   Global::Places.setup_offices();
   Global::Pop.assign_offices();
-  Utils::fred_print_lap_time("assign classrooms and offices");
+  Utils::fred_print_lap_time("assign offices");
 
   // after all enrollments, prepare to receive visitors
   Global::Places.prepare();
@@ -152,7 +161,7 @@ int main(int argc, char* argv[]) {
   Global::Cells->record_favorite_places();
   Utils::fred_print_lap_time("place prep");
 
-  if (Global::Enable_Large_Grid && Global::Enable_Travel) {
+  if (Global::Enable_Travel) {
     Global::Large_Cells->set_population_size();
     Travel::setup(directory);
     Utils::fred_print_lap_time("Travel setup");
@@ -161,18 +170,14 @@ int main(int argc, char* argv[]) {
   if (Global::Quality_control) {
     Global::Pop.quality_control();
     Global::Places.quality_control(directory);
-    if (Global::Enable_Large_Grid) {
-      Global::Large_Cells->quality_control(directory);
-      // get coordinates of large grid as alinged to global grid
-      double min_x = Global::Large_Cells->get_min_x();
-      double min_y = Global::Large_Cells->get_min_y();
-      Global::Cells->quality_control(directory,min_x, min_y);
+    Global::Large_Cells->quality_control(directory);
+    Global::Cells->quality_control(directory);
+    if (Global::Enable_Small_Grid) {
+      Global::Small_Cells->quality_control(directory);
     }
-    else {
-      Global::Cells->quality_control(directory);
-    }
-    if (Global::Track_network_stats) 
+    if (Global::Track_network_stats) {
       Global::Pop.get_network_stats(directory);
+    }
     Utils::fred_print_lap_time("quality control");
   }
 

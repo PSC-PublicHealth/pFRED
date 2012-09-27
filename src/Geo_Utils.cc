@@ -33,7 +33,6 @@ const fred::geo MEAN_US_LAT = 38.0; // near Wichita, KS
 const double Geo_Utils::MEAN_US_KM_PER_DEG_LON = 87.832; // at 38 deg N
 const double Geo_Utils::MEAN_US_KM_PER_DEG_LAT = 110.996; // 
 
-
 void Geo_Utils::set_km_per_degree(fred::geo lat) {
   lat *= Geo_Utils::DEG_TO_RAD;
   km_per_deg_longitude = cos(lat) * KM_PER_DEG_LAT;
@@ -65,7 +64,6 @@ double Geo_Utils::spherical_cosine_distance (fred::geo lon1, fred::geo lat1, fre
   return acos(sin(lat1)*sin(lat2)+cos(lat1)*cos(lat2)*cos(lon2-lon1))*EARTH_RADIUS;
 }
 
-
 double Geo_Utils::spherical_projection_distance (fred::geo lon1, fred::geo lat1, fred::geo lon2, fred::geo lat2) {
   // convert to radians
   lat1 *= DEG_TO_RAD;
@@ -79,22 +77,6 @@ double Geo_Utils::spherical_projection_distance (fred::geo lon1, fred::geo lat1,
   tmp *= tmp;
   return EARTH_RADIUS*sqrt(dlat+tmp);
 }
-
-void Geo_Utils::translate_to_cartesian(fred::geo lat, fred::geo lon, double *x, double *y,
-               fred::geo min_lat, fred::geo min_lon) {
-  *x = (lon - min_lon) * km_per_deg_longitude;
-  *y = (lat - min_lat) * km_per_deg_latitude;
-}
-
-
-void Geo_Utils::translate_to_lat_lon(double x, double y, fred::geo *lat, fred::geo *lon,
-             fred::geo min_lat, fred::geo min_lon) {
-  *lon = min_lon + x / km_per_deg_longitude;
-  *lat = min_lat + y / km_per_deg_latitude;
-}
-
-
-
 
 /*
 

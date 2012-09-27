@@ -14,41 +14,45 @@
 #include <string>
 using namespace std;
 
-#include "Global.h"
-#include "Geo_Utils.h"
 #include "Small_Grid.h"
+#include "Large_Grid.h"
 #include "Small_Cell.h"
-#include "Place_List.h"
-#include "Place.h"
 #include "Params.h"
 #include "Random.h"
-#include "Utils.h"
-#include "Household.h"
-#include "Population.h"
-#include "Date.h"
 
-Small_Grid::Small_Grid(double minlon, double minlat, double maxlon, double maxlat) {
-  min_lon  = minlon;
-  min_lat  = minlat;
-  max_lon  = maxlon;
-  max_lat  = maxlat;
-  printf("min_lon = %f\n", min_lon);
-  printf("min_lat = %f\n", min_lat);
-  printf("max_lon = %f\n", max_lon);
-  printf("max_lat = %f\n", max_lat);
-  fflush(stdout);
+Small_Grid::Small_Grid(Large_Grid * lgrid) {
+  large_grid = lgrid;
+  int large_grid_rows = large_grid->get_rows();
+  int large_grid_cols = large_grid->get_cols();
+  int large_grid_cell_size = large_grid->get_grid_cell_size();
+  min_lat = large_grid->get_min_lat();
+  min_lon = large_grid->get_min_lon();
+  max_lat = large_grid->get_max_lat();
+  max_lon = large_grid->get_max_lon();
+  min_x = large_grid->get_min_x();
+  min_y = large_grid->get_min_y();
+  max_x = large_grid->get_max_x();
+  max_y = large_grid->get_max_y();
 
   get_parameters();
-  min_x = 0.0;
-  max_x = (max_lon-min_lon)*Geo_Utils::km_per_deg_longitude;
-  min_y = 0.0;
-  max_y = (max_lat-min_lat)*Geo_Utils::km_per_deg_latitude;
-  rows = 1 + (int) (max_y/grid_cell_size);
-  cols = 1 + (int) (max_x/grid_cell_size);
-  if (Global::Verbose) {
-    printf("rows = %d  cols = %d\n",rows,cols);
-    printf("max_x = %f  max_y = %f\n",max_x,max_y);
-    fflush(stdout);
+
+  // find the multiple to use in defining this grid;
+  // the multiple must be an integer
+  int mult = large_grid_cell_size / grid_cell_size;
+  assert(mult == (1.0*large_grid_cell_size / (1.0* grid_cell_size)));
+
+  rows = large_grid_rows * mult;
+  cols = large_grid_cols * mult;
+
+  if (Global::Verbose > 0) {
+    fprintf(Global::Statusfp, "Small_Grid min_lon = %f\n", min_lon);
+    fprintf(Global::Statusfp, "Small_Grid min_lat = %f\n", min_lat);
+    fprintf(Global::Statusfp, "Small_Grid max_lon = %f\n", max_lon);
+    fprintf(Global::Statusfp, "Small_Grid max_lat = %f\n", max_lat);
+    fprintf(Global::Statusfp, "Small_Grid rows = %d  cols = %d\n",rows,cols);
+    fprintf(Global::Statusfp, "Small_Grid min_x = %f  min_y = %f\n",min_x,min_y);
+    fprintf(Global::Statusfp, "Small_Grid max_x = %f  max_y = %f\n",max_x,max_y);
+    fflush(Global::Statusfp);
   }
 
   grid = new Small_Cell * [rows];
@@ -58,36 +62,14 @@ Small_Grid::Small_Grid(double minlon, double minlat, double maxlon, double maxla
 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
-           (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
-    }
-  }
-
-  if (Global::Verbose > 1) {
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < cols; j++) {
-  printf("print grid[%d][%d]:\n",i,j);
-  grid[i][j].print();
-      }
-    }
+      grid[i][j].setup(this,i,j);
+    }      
   }
 }
 
 void Small_Grid::get_parameters() {
   Params::get_param_from_string("grid_small_cell_size", &grid_cell_size);
 }
-
-Small_Cell ** Small_Grid::get_neighbors(int row, int col) {
-  Small_Cell ** neighbors = new Small_Cell*[9];
-  int n = 0;
-  for (int i = row-1; i <= row+1; i++) {
-    for (int j = col-1; j <= col+1; j++) {
-      neighbors[n++] = get_grid_cell(i,j);
-    }
-  }
-  return neighbors;
-}
-
 
 Small_Cell * Small_Grid::get_grid_cell(int row, int col) {
   if ( row >= 0 && col >= 0 && row < rows && col < cols)
@@ -96,6 +78,11 @@ Small_Cell * Small_Grid::get_grid_cell(int row, int col) {
     return NULL;
 }
 
+Small_Cell * Small_Grid::get_grid_cell(fred::geo lat, fred::geo lon) {
+  int row = get_row(lat);
+  int col = get_col(lon);
+  return get_grid_cell(row,col);
+}
 
 Small_Cell * Small_Grid::select_random_grid_cell() {
   int row = IRAND(0, rows-1);
@@ -103,26 +90,9 @@ Small_Cell * Small_Grid::select_random_grid_cell() {
   return &grid[row][col];
 }
 
-
-Small_Cell * Small_Grid::get_grid_cell_from_cartesian(double x, double y) {
-  int row, col;
-  row = rows-1 - (int) (y/grid_cell_size);
-  col = (int) (x/grid_cell_size);
-  // printf("x = %f y = %f, row = %d col = %d\n",x,y,row,col);
-  return get_grid_cell(row, col);
-}
-
-
-Small_Cell * Small_Grid::get_grid_cell_from_lat_lon(double lat, double lon) {
-  double x, y;
-  Geo_Utils::translate_to_cartesian(lat,lon,&x,&y,min_lat,min_lon);
-  return get_grid_cell_from_cartesian(x,y);
-}
-
-
-void Small_Grid::quality_control() {
+void Small_Grid::quality_control(char * directory) {
   if (Global::Verbose) {
-    fprintf(Global::Statusfp, "grid quality control check\n");
+    fprintf(Global::Statusfp, "small grid quality control check\n");
     fflush(Global::Statusfp);
   }
   
@@ -132,28 +102,31 @@ void Small_Grid::quality_control() {
     }
   }
   
-  FILE *fp;
-  fp = fopen("small_grid.dat", "w");
-  for (int row = 0; row < rows; row++) {
-    if (row%2) {
-      for (int col = cols-1; col >= 0; col--) {
-  double x = grid[row][col].get_center_x();
-  double y = grid[row][col].get_center_y();
-  fprintf(fp, "%f %f\n",x,y);
+  if (Global::Verbose>1) {
+    char filename [256];
+    sprintf(filename, "%s/smallgrid.dat", directory);
+    FILE *fp = fopen(filename, "w");
+    for (int row = 0; row < rows; row++) {
+      if (row%2) {
+	for (int col = cols-1; col >= 0; col--) {
+	  double x = grid[row][col].get_center_x();
+	  double y = grid[row][col].get_center_y();
+	  fprintf(fp, "%f %f\n",x,y);
+	}
+      }
+      else {
+	for (int col = 0; col < cols; col++) {
+	  double x = grid[row][col].get_center_x();
+	  double y = grid[row][col].get_center_y();
+	  fprintf(fp, "%f %f\n",x,y);
+	}
       }
     }
-    else {
-      for (int col = 0; col < cols; col++) {
-  double x = grid[row][col].get_center_x();
-  double y = grid[row][col].get_center_y();
-  fprintf(fp, "%f %f\n",x,y);
-      }
-    }
+    fclose(fp);
   }
-  fclose(fp);
-  
+
   if (Global::Verbose) {
-    fprintf(Global::Statusfp, "grid quality control finished\n");
+    fprintf(Global::Statusfp, "small grid quality control finished\n");
     fflush(Global::Statusfp);
   }
 }

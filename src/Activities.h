@@ -31,6 +31,19 @@ class Place;
 #define FAVORITE_PLACES 6
 #define MAX_MOBILITY_AGE 100
 
+// Activity Profiles
+#define INFANT_PROFILE 'I'
+#define PRESCHOOL_PROFILE 'P'
+#define STUDENT_PROFILE 'S'
+#define COLLEGE_STUDENT_PROFILE 'C'
+#define TEACHER_PROFILE 'T'
+#define WORKER_PROFILE 'W'
+#define WEEKEND_WORKER_PROFILE 'N'
+#define UNEMPLOYED_PROFILE 'U'
+#define RETIRED_PROFILE 'R'
+#define PRISON_PROFILE 'J'
+#define MILITARY_PROFILE 'M'
+
 class Activities {
 public:
   Activities (Person *person, Place *house, Place *school, Place *work);
@@ -198,6 +211,8 @@ public:
    */
   bool get_travel_status() { return travel_status; }
   
+  bool become_a_teacher(Place *school);
+
   /**
    * Return the number of other agents in an agent's neighborhood, school,
    * and workplace.
@@ -212,16 +227,18 @@ public:
   static void update(int day);
   static void end_of_run();
   static void before_run();
+  bool is_teacher() { return profile == TEACHER_PROFILE; }
+  bool is_student() { return profile == STUDENT_PROFILE; }
 
 private:
-  Person * self;        // pointer to person using having this activities
-  int profile;          // index of usual visit pattern
+  Person * self;	     // pointer to person having this activities
   Place * favorite_place[FAVORITE_PLACES];    // list of expected places
+  Place ** tmp_favorite_place; // list of favorite places, stored while traveling
   std::bitset< FAVORITE_PLACES > on_schedule; // true iff favorite place is on schedule
-  int schedule_updated;     // date of last schedule update
-  bool travel_status;       // true if traveling
-  bool traveling_outside;       // true if traveling outside modeled area
-  Place ** tmp_favorite_place;  // list of favorite places, stored while traveling
+  int schedule_updated;			 // date of last schedule update
+  bool travel_status;				// true if traveling
+  bool traveling_outside;      // true if traveling outside modeled area
+  char profile;				      // activities profile type
 
   // individual sick day variables
   int my_sick_days_absent;

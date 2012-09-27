@@ -33,11 +33,8 @@ void Seasonality::update(int day) {
   while (it != seasonality_timestep_map->end()) {
     Seasonality_Timestep_Map::Seasonality_Timestep * cts = *it; 
     if (cts->is_applicable(day, Global::Epidemic_offset)) {
-      double x,y;
-      Geo_Utils::translate_to_cartesian(cts->get_lat(),cts->get_lon(),
-          &x,&y,grid->get_min_lat(),grid->get_min_lon());
-      int row = grid->get_rows() - 1 - (int) (y/grid->get_grid_cell_size());
-      int col = (int) (x/grid->get_grid_cell_size());
+      int row = grid->get_row(cts->get_lat());
+      int col = grid->get_col(cts->get_lon());
       points.push_back(point(row,col,cts->get_seasonality_value()));
     }
     it++;
@@ -64,15 +61,14 @@ void Seasonality::update_seasonality_multiplier() {
 }
 
 double Seasonality::get_seasonality_multiplier_by_lat_lon(fred::geo lat, fred::geo lon, int disease_id) {
-  double x, y;
-  Geo_Utils::translate_to_cartesian(lat,lon,&x,&y,grid->get_min_lat(),grid->get_min_lon());
-  return get_seasonality_multiplier_by_cartesian(x,y,disease_id);
+  int row = grid->get_row(lat);
+  int col = grid->get_row(lon);
+  return get_seasonality_multiplier(row, col, disease_id);
 }
 
 double Seasonality::get_seasonality_multiplier_by_cartesian(double x, double y, int disease_id) {
-  int row, col;
-  row = grid->get_rows()-1 - (int) (y/grid->get_grid_cell_size());
-  col = (int) (x/grid->get_grid_cell_size());
+  int row = grid->get_row(y);
+  int col = grid->get_row(x);
   return get_seasonality_multiplier(row, col, disease_id);
 }
 

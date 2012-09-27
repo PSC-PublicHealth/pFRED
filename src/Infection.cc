@@ -296,7 +296,7 @@ void Infection::report_infection(int day) const {
   }
 
   fprintf(Global::Infectionfp, "day %d dis %d host %d age %.3f sick_leave %d"
-          " infector %d inf_age %.3f inf_sympt %d inf_sick_leave %d at %c place %d size %d  ",
+          " infector %d inf_age %.3f inf_sympt %d inf_sick_leave %d at %c place %d size %d is_teacher %d ",
           day, id,
           host->get_id(),
           host->get_real_age(),
@@ -305,7 +305,7 @@ void Infection::report_infection(int day) const {
           infector == NULL ? -1 : infector->get_real_age(),
           infector == NULL ? -1 : infector->is_symptomatic(),
           infector == NULL ? -1 : infector->is_sick_leave_available(),
-    place_type, place_id, place_size);
+	  place_type, place_id, place_size, (int) host->is_teacher());
 
   if (Global::Track_infection_events > 1)
     fprintf(Global::Infectionfp,

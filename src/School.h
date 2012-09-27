@@ -47,6 +47,7 @@ public:
   // int get_number_of_classrooms() { return (int) classrooms.size(); }
   void setup_classrooms( Allocator< Classroom > & classroom_allocator );
   Place * select_classroom_for_student(Person *per);
+  int get_staff_size() { return staff_size; }
 
 private:
   static double *** school_contact_prob;
@@ -71,6 +72,7 @@ private:
   int next_classroom[GRADES];
   vector <Place *> classrooms[GRADES];
   bool closure_dates_have_been_set;
+  int staff_size;
 };
 
 #endif // _FRED_SCHOOL_H

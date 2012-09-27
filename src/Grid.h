@@ -15,6 +15,7 @@
 #include <string.h>
 #include "Place.h"
 #include "Abstract_Grid.h"
+class Large_Grid;
 class Cell;
 class Neighborhood;
 
@@ -29,17 +30,9 @@ public:
    * @param maxlon the maximum longitude for this Grid
    * @param maxlat the maximum latitude for this Grid
    */
+  Grid(Large_Grid * lgrid);
   Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fred::geo maxlat);
   ~Grid() {}
-
-  /*
-   * @return number of cells in the grid.
-   *
-   * This is used in Place_List to allocate space for neighborhoods.  This
-   * assumes that there is one neighborhood per cell.
-   */
-
-  int get_number_of_cells();
 
   void setup( Place::Allocator< Neighborhood > & neighborhood_allocator );
 
@@ -51,41 +44,17 @@ public:
   /**
    * @param row the row where the Cell is located
    * @param col the column where the Cell is located
-   * @return an array of pointers to the Cells that are neighbors of the Cell at the row and column requested
-   */
-  Cell ** get_neighbors(int row, int col);
-
-  /**
-   * @param row the row where the Cell is located
-   * @param col the column where the Cell is located
    * @return a pointer to the Cell at the row and column requested
    */
   Cell * get_grid_cell(int row, int col);
-
+  Cell * get_grid_cell(fred::geo lat, fred::geo lon);
   Cell * select_random_grid_cell(double x0, double y0, double dist);
+  Cell * select_random_neighbor(int row, int col);
 
   /**
    * @return a pointer to a random Cell in this Grid
    */
   Cell * select_random_grid_cell();
-
-  /**
-   * Given an (x,y), return the Cell at that position in the Grid
-   *
-   * @param x the x coordinate
-   * @param y the y coordinate
-   * @return a pointer to the Cell at that x and y coordinate in the Grid
-   */
-  Cell * get_grid_cell_from_cartesian(double x, double y);
-
-  /**
-   * Given a latiude and longitude, return the Cell at that position in the Grid
-   *
-   * @param lat the latitude of the Cell to get
-   * @param lon the longitude of the Cell to get
-   * @return a pointer to the Cell at that latitude and longitude in the Grid
-   */
-  Cell * get_grid_cell_from_lat_lon(fred::geo lat, fred::geo lon);
 
   /**
    * Used during debugging to verify that code is functioning properly.
@@ -157,30 +126,9 @@ public:
    */
   void print_household_distribution(char * dir, char * date_string, int run);
 
-  /**
-   * Translate a given (x,y) coordinate to a latitude and longitude.
-   *
-   * @param x the x coordinate of the point
-   * @param y the y coordinate of the point
-   * @param lat pointer to the latitude of the point
-   * @param lon pointer to the longitude of the point
-   * @see Geo_Utils::translate_to_lat_lon(double x, double y, double *lat, double *lon, double min_lat, double min_lon)
-   */
-  void translate_to_lat_lon(double x, double y, fred::geo *lat, fred::geo *lon);
-
-  /**
-   * Translate a given latitude and longitude to an (x,y) coordinate.
-   *
-   * @param lat the latitude of the point
-   * @param lon the longitude of the point
-   * @param x pointer to the x coordinate of the point
-   * @param y pointer to the y coordinate of the point
-   * @see Geo_Utils::translate_to_cartesian(double lat, double lon, double *x, double *y, double min_lat, double min_lon)
-   */
-  void translate_to_cartesian(fred::geo lat, fred::geo lon, double *x, double *y);
-
 protected:
-  Cell ** grid;            // Rectangular array of grid_cells
+  Cell ** grid;			      // Rectangular array of grid_cells
+  Large_Grid * large_grid;	    // Pointer to surrounding large grid
 
   // Specific to Cell grid:
   int target_popsize;
@@ -195,6 +143,7 @@ private:
    *
    * @param day the simulation day
    */
+
   void select_emigrants(int day);
 
   /**

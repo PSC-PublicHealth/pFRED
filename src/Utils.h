@@ -126,6 +126,7 @@ namespace Utils{
   void get_fred_file_name(char * filename);
   void fred_print_resource_usage(int day);
   void replace_csv_missing_data(char *out_str, char* in_str, const char * replacement);
+  void get_next_token(char * out_string, char ** input_string);
 }
 
 #endif /* UTILS_H_ */

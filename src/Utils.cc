@@ -419,3 +419,39 @@ void Utils::replace_csv_missing_data(char* out_str, char* in_str, const char* re
 }
 
 
+void Utils::get_next_token(char * out_string, char ** input_string) {
+  char *token;
+  token = strsep(input_string,",");
+
+  // if the field is empty, we report a value of "-1"
+  if (*token == '\0') {
+    strcpy(out_string,"-1");
+    return;
+  }
+
+  // token is non-empty
+  strcpy(out_string,token);
+
+  // if the token contains an opening quote but not closing quote, then
+  // it was truncated by an intervening comma, so we have to retrieve
+  // the remainder of the field:
+  if (*token == '"') {
+    char * c;
+    c = token;
+    c++;					// skip opening quote
+    while ((*c != '"') && (*c != '\0')) c++;    // search for closing quote
+    if (*c == '\0') {				// no closing quote
+      char *remainder;
+      remainder = strsep(input_string, "\"");
+      // concatenate remainder of field onto out_string
+      (void) strncat(out_string, remainder, sizeof(out_string) - strlen(remainder) - 1);
+      // add closing quote
+      (void) strcat(out_string, "\"");
+      // retrieve rest of field up to next comma (and verify that this is empty)
+      remainder = strsep(input_string, ",");
+      assert(*remainder == '\0');
+    }
+  }
+  return;
+}
+

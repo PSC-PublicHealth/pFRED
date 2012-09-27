@@ -455,6 +455,10 @@ public:
 
   int get_pop_index() { return index; }
 
+  bool become_a_teacher(Place *school) { return activities.become_a_teacher(school); }
+  bool is_teacher() { return activities.is_teacher(); }
+  bool is_student() { return activities.is_student(); }
+
 private:
   // id: Person's unique identifier (never reused)
   int id;

@@ -29,6 +29,7 @@ using namespace std;
 
 #include "Population.h"
 #include "Global.h"
+#include "Geo_Utils.h"
 class Cell;
 class Person;
 
@@ -447,6 +448,11 @@ public:
 
   double get_attack_rate() { return(N?(100.0*total_infections)/(double)N:0.0); }
 
+  void turn_workers_into_teachers(Place *school);
+
+  double get_x() { return Geo_Utils::get_x(longitude); }
+  double get_y() { return Geo_Utils::get_y(latitude); }
+
 protected:
   int id;                 // place id
   char label[32];         // external id
@@ -455,6 +461,7 @@ protected:
   fred::geo latitude;     // geo location
   fred::geo longitude;    // geo location
   int N;                  // total number of potential visitors
+  vector <Person *> enrollees;
   vector <Person *> *susceptibles;    // list of susceptible visitors
   vector <Person *> *infectious;      // list of infectious visitors
   int *S;                 // susceptible count

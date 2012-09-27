@@ -120,11 +120,11 @@ birth_rate_multiplier = 1
 # using the bifurcating SEIR model (SEiIR = 0)
 #
 ## VERSION 2 Synthetic Pop:
-###  CALIBRATION PHASE II STEP 14 at Fri Aug 17 17:09:13 2012
-household_contacts[0] = 0.199354
-neighborhood_contacts[0] = 41.083422
-school_contacts[0] = 15.431306
-workplace_contacts[0] = 1.558709
+###  CALIBRATION PHASE II STEP 8 at Wed Sep 26 15:44:07 2012
+household_contacts[0] = 0.198294
+neighborhood_contacts[0] = 40.913676
+school_contacts[0] = 14.638373
+workplace_contacts[0] = 1.575158
 classroom_contacts[0] = -1
 office_contacts[0] = -1
 hospital_contacts[0] = 0
@@ -150,6 +150,10 @@ classroom_prob[0] = 16 0.0435 0 0 0.0435 0 0.0375 0 0.0375 0 0 0.0315 0.0315 0.0
 neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 
 #### SCHOOLS
+
+# if set, then each school within the region is assigned teachers
+# by recruiting workers from a nearby workplace
+assign_teachers = 1
 
 # set to 1 if schools closed during summer
 school_summer_schedule = 0
@@ -474,7 +478,6 @@ accept_vaccine_dose_for_child_benefits_odds_ratio = 1
 accept_vaccine_dose_for_child_barriers_odds_ratio = 1
 
 #### Geographical Grids
-enable_large_grid = 0
 enable_small_grid = 0
 use_mean_latitude = 0
 
@@ -483,11 +486,10 @@ grid_large_cell_size = 20.0
 # size of normal grid cells in km
 grid_cell_size = 1.0
 # size of high resolution grid cells in km
-grid_small_cell_size = 0.01
+grid_small_cell_size = 0.1
 
 
 #### Seasonality (Seasonal Forcing)
-#### Note that (currently) enable_seasonality REQUIRES enable_large_grid
 enable_seasonality = 0
 enable_climate = 0
 seasonality_timestep_file = none

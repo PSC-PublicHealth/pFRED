@@ -10,14 +10,9 @@
 //
 
 
-/*
-#include <stdio.h>
-#include <string>
-using namespace std;
-*/
 #include <new>
-
 #include "Global.h"
+#include "Geo_Utils.h"
 #include "Grid.h"
 #include "Cell.h"
 #include "Place.h"
@@ -28,49 +23,44 @@ using namespace std;
 #include "School.h"
 class Person;
 
-void Cell::setup(Grid * grd, int i, int j, double xmin, double xmax, double ymin, double ymax) {
+void Cell::setup(Grid * grd, int i, int j) {
   grid = grd;
-  min_x = xmin;
-  max_x = xmax;
-  min_y = ymin;
-  max_y = ymax;
   row = i;
   col = j;
+  double grid_cell_size = grid->get_grid_cell_size();
+  double grid_min_x = grid->get_min_x();
+  double grid_min_y = grid->get_min_y();
+  min_x = grid_min_x + (col)*grid_cell_size;
+  min_y = grid_min_y + (row)*grid_cell_size;
+  max_x = grid_min_x + (col+1)*grid_cell_size;
+  max_y = grid_min_y + (row+1)*grid_cell_size;
   center_y = (min_y+max_y)/2.0;
   center_x = (min_x+max_x)/2.0;
-  neighbor_cells = (Cell **) grid->get_neighbors(i,j);
   houses = 0;
   occupied_houses = 0;
   household.clear();
-  //make_neighborhood();
 }
 
 void Cell::make_neighborhood( Place::Allocator< Neighborhood > & neighborhood_allocator ) {
   char str[80];
-  fred::geo lat, lon;
   sprintf(str, "N-%04d-%04d",row,col);
-  grid->translate_to_lat_lon(center_x,center_y,&lat,&lon);
+  fred::geo lat = Geo_Utils::get_latitude(center_y);
+  fred::geo lon = Geo_Utils::get_longitude(center_x);
 
   neighborhood = new ( neighborhood_allocator.get_free() )
     Neighborhood( str, lon, lat, 0, &Global::Pop );
-  
-  // moved add_place call to Place_List so that all neighborhoods can be added to the
-  // Place_List bloque at once
-  //
-  //Global::Places.add_place(neighborhood);
 }
 
 void Cell::add_household(Place *p) {
   houses++;
   household.push_back(p);
   if (Global::Householdfp != NULL) {
-    fred::geo lat, lon;
-    double x, y;
-    lat = p->get_latitude();
-    lon = p->get_longitude();
-    grid->translate_to_cartesian(lat,lon,&x,&y);
+    fred::geo lat = p->get_latitude();
+    fred::geo lon = p->get_longitude();
+    double x = Geo_Utils::get_x(lon);
+    double y = Geo_Utils::get_y(lat);
     fprintf(Global::Householdfp,"%s %f %f %f %f house_id: %d row = %d  col = %d  house_number = %d\n",
-      p->get_label(),lon,lat, x,y, p->get_id(), row, col, houses);
+	    p->get_label(),lon,lat, x,y, p->get_id(), row, col, houses);
     fflush(Global::Householdfp);
   }
 }
@@ -103,10 +93,10 @@ void Cell::record_favorite_places() {
       if (p != NULL) workplace.push_back(p);
       s = (School *) per->get_activities()->get_school();
       if (s != NULL) {
-  for (int age = 0; age < Global::ADULT_AGE; age++) {
-    if (s->children_in_grade(age) > 0)
-      school[age].push_back(s);
-  }
+	for (int age = 0; age < Global::ADULT_AGE; age++) {
+	  if (s->children_in_grade(age) > 0)
+	    school[age].push_back(s);
+	}
       }
     }
     // fprintf(fp, "\n");
@@ -119,8 +109,7 @@ void Cell::record_favorite_places() {
 
 
 Place * Cell::select_neighborhood(double community_prob,
-          double community_distance, double local_prob) {
-
+				  double community_distance, double local_prob) {
   Cell * grid_cell;
   double r = RANDOM();
 
@@ -134,9 +123,7 @@ Place * Cell::select_neighborhood(double community_prob,
   }
   else {
     // select randomly from among immediate neighbors
-    int n = IRAND_0_7();
-    if (n>3) n++;        // excludes local grid_cell
-    grid_cell = neighbor_cells[n];
+    grid_cell = grid->select_random_neighbor(row,col);
   }
   if (grid_cell == NULL) grid_cell = this; // fall back to local grid_cell
   return grid_cell->get_neighborhood();
@@ -174,8 +161,8 @@ Place *Cell::select_random_school(int age) {
 void Cell::quality_control() {
   return;
   fprintf(Global::Statusfp,
-    "PATCH row = %d col = %d  pop = %d  houses = %d work = %d schools = ",
-    row,col,(int)person.size(),(int)household.size(),(int)workplace.size());
+	  "PATCH row = %d col = %d  pop = %d  houses = %d work = %d schools = ",
+	  row,col,(int)person.size(),(int)household.size(),(int)workplace.size());
   for (int age = 0; age < 20; age++) {
     fprintf(Global::Statusfp, "%d ", (int)school[age].size());
   }
@@ -183,19 +170,6 @@ void Cell::quality_control() {
   fflush(Global::Statusfp);
 }
 
-
-void Cell::print() {
-  printf("Cell %d %d: %f, %f, %f, %f\n",row,col,min_x,max_x,min_y,max_y);
-  for (int i = 0; i < 9; i++) {
-    if (neighbor_cells[i] == NULL) { printf("NULL ");}
-    else {neighbor_cells[i]->print_coord();}
-    printf("\n");
-  }
-}
-
-void Cell::print_coord() {
-  printf("(%d, %d)",row,col);
-}
 
 double Cell::distance_to_grid_cell(Cell *p2) {
   double x1 = center_x;

@@ -4,24 +4,18 @@ void Place_List::quality_control(char *directory) {
   FRED_STATUS(0, "places quality control check for %d places\n", number_places);
 
   if (Global::Verbose>1) {
-    if (Global::Enable_Large_Grid) {
-      char filename [256];
-      sprintf(filename, "%s/houses.dat", directory);
-      FILE *fp = fopen(filename, "w");
-      for (int p = 0; p < number_places; p++) {
-        if (places[p]->get_type() == HOUSEHOLD) {
-          fred::geo lat = places[p]->get_latitude();
-          fred::geo lon = places[p]->get_longitude();
-          double x, y;
-          Global::Large_Cells->translate_to_cartesian(lat, lon, &x, &y);
-          // get coordinates of large grid as alinged to global grid
-          double min_x = Global::Large_Cells->get_min_x();
-          double min_y = Global::Large_Cells->get_min_y();
-          fprintf(fp, "%f %f\n", min_x+x, min_y+y);
-        }
+    char filename [256];
+    sprintf(filename, "%s/houses.dat", directory);
+    FILE *fp = fopen(filename, "w");
+    for (int p = 0; p < number_places; p++) {
+      if (places[p]->get_type() == HOUSEHOLD) {
+	Place *h = places[p];
+	double x = Geo_Utils::get_x(h->get_longitude());
+	double y = Geo_Utils::get_y(h->get_latitude());
+	fprintf(fp, "%f %f\n", x, y);
       }
-      fclose(fp);
     }
+    fclose(fp);
   }
 
   if (Global::Verbose) {
@@ -284,8 +278,12 @@ void Place_List::quality_control(char *directory) {
     // size distribution of workplaces
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int p = 0; p < number_places; p++) {
-      if (places[p]->get_type() == WORKPLACE) {
+      if (places[p]->get_type() == WORKPLACE || places[p]->get_type() == SCHOOL) {
         int s = places[p]->get_size();
+	if (places[p]->get_type() == SCHOOL) {
+	  School * school = (School *) places[p];
+	  s = school->get_staff_size();
+	}
         int n = s / 50;
         if (n < 20) { count[n]++; }
         else { count[19]++; }
@@ -318,10 +316,10 @@ void Place_List::quality_control(char *directory) {
     fprintf(Global::Statusfp, "employees at medium workplaces (50-99): ");
     fprintf(Global::Statusfp, "%d\n", med_employees);
 
-    fprintf(Global::Statusfp, "employees at small workplaces (100-499): ");
+    fprintf(Global::Statusfp, "employees at large workplaces (100-499): ");
     fprintf(Global::Statusfp, "%d\n", large_employees);
 
-    fprintf(Global::Statusfp, "employees at small workplaces (500-up): ");
+    fprintf(Global::Statusfp, "employees at xlarge workplaces (500-up): ");
     fprintf(Global::Statusfp, "%d\n", xlarge_employees);
 
     fprintf(Global::Statusfp, "total employees: %d\n\n", total_employees);

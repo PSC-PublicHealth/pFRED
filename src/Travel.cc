@@ -50,7 +50,7 @@ static double * Travel_Duration_Cdf;    // cdf for trip duration
 static int max_Travel_Duration = 0;    // number of days in cdf
 
 void Travel::setup(char * directory) {
-  assert(Global::Enable_Large_Grid && Global::Enable_Travel);
+  assert(Global::Enable_Travel);
   Global::Large_Cells->read_max_popsize();
   src_row.clear();
   src_col.clear();

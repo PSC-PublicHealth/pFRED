@@ -26,28 +26,42 @@ using namespace std;
 #include "Household.h"
 #include "Population.h"
 #include "Date.h"
+#include "Large_Grid.h"
 
-Grid::Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fred::geo maxlat) {
-  min_lon  = minlon;
-  min_lat  = minlat;
-  max_lon  = maxlon;
-  max_lat  = maxlat;
-  printf("Grid min_lon = %f\n", min_lon);
-  printf("Grid min_lat = %f\n", min_lat);
-  printf("Grid max_lon = %f\n", max_lon);
-  printf("Grid max_lat = %f\n", max_lat);
-  fflush(stdout);
+Grid::Grid(Large_Grid * lgrid) {
+  large_grid = lgrid;
+  int large_grid_rows = large_grid->get_rows();
+  int large_grid_cols = large_grid->get_cols();
+  int large_grid_cell_size = large_grid->get_grid_cell_size();
+  min_lat = large_grid->get_min_lat();
+  min_lon = large_grid->get_min_lon();
+  max_lat = large_grid->get_max_lat();
+  max_lon = large_grid->get_max_lon();
+  min_x = large_grid->get_min_x();
+  min_y = large_grid->get_min_y();
+  max_x = large_grid->get_max_x();
+  max_y = large_grid->get_max_y();
 
   get_parameters();
-  min_x = 0.0;
-  max_x = (max_lon-min_lon) * Geo_Utils::km_per_deg_longitude;
-  min_y = 0.0;
-  max_y = (max_lat-min_lat) * Geo_Utils::km_per_deg_latitude;
-  rows = 1 + (int) (max_y/grid_cell_size);
-  cols = 1 + (int) (max_x/grid_cell_size);
-  printf("Grid rows = %d  cols = %d\n",rows,cols);
-  printf("Grid max_x = %f  max_y = %f\n",max_x,max_y);
-  fflush(stdout);
+
+  // find the multiple to use in defining this grid;
+  // the multiple must be an integer
+  int mult = large_grid_cell_size / grid_cell_size;
+  assert(mult == (1.0*large_grid_cell_size / (1.0* grid_cell_size)));
+
+  rows = large_grid_rows * mult;
+  cols = large_grid_cols * mult;
+
+  if (Global::Verbose > 0) {
+    fprintf(Global::Statusfp, "Grid min_lon = %f\n", min_lon);
+    fprintf(Global::Statusfp, "Grid min_lat = %f\n", min_lat);
+    fprintf(Global::Statusfp, "Grid max_lon = %f\n", max_lon);
+    fprintf(Global::Statusfp, "Grid max_lat = %f\n", max_lat);
+    fprintf(Global::Statusfp, "Grid rows = %d  cols = %d\n",rows,cols);
+    fprintf(Global::Statusfp, "Grid min_x = %f  min_y = %f\n",min_x,min_y);
+    fprintf(Global::Statusfp, "Grid max_x = %f  max_y = %f\n",max_x,max_y);
+    fflush(Global::Statusfp);
+  }
 
   grid = new Cell * [rows];
   for (int i = 0; i < rows; i++) {
@@ -55,19 +69,11 @@ Grid::Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fred::geo maxla
   }
 }
 
-int Grid::get_number_of_cells() {
-  // this is also the number of neighhborhoods (one neighborhood)
-  // per cell
-  return rows * cols;
-}
-
 void Grid::setup( Place::Allocator< Neighborhood > & neighborhood_allocator ) { 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      grid[i][j].setup(this,i,j,j*grid_cell_size,(j+1)*grid_cell_size,
-          //       i*grid_cell_size,(i+1)*grid_cell_size);
-        (rows-i-1)*grid_cell_size,(rows-i)*grid_cell_size);
-      grid[ i ][ j ].make_neighborhood( neighborhood_allocator );
+      grid[i][j].setup(this,i,j);
+      grid[i][j].make_neighborhood( neighborhood_allocator );
     }
   }
 
@@ -86,23 +92,17 @@ void Grid::get_parameters() {
   Params::get_param_from_string("grid_cell_size", &grid_cell_size);
 }
 
-Cell ** Grid::get_neighbors(int row, int col) {
-  Cell ** neighbors = new Cell*[9];
-  int n = 0;
-  for (int i = row-1; i <= row+1; i++) {
-    for (int j = col-1; j <= col+1; j++) {
-      neighbors[n++] = get_grid_cell(i,j);
-    }
-  }
-  return neighbors;
-}
-
-
 Cell * Grid::get_grid_cell(int row, int col) {
   if ( row >= 0 && col >= 0 && row < rows && col < cols)
     return &grid[row][col];
   else
     return NULL;
+}
+
+Cell * Grid::get_grid_cell(fred::geo lat, fred::geo lon) {
+  int row = get_row(lat);
+  int col = get_col(lon);
+  return get_grid_cell(row,col);
 }
 
 
@@ -114,7 +114,9 @@ Cell * Grid::select_random_grid_cell(double x0, double y0, double dist) {
     double ang = Geo_Utils::DEG_TO_RAD * URAND(0,360); // random angle
     double x = x0 + r*cos(ang);      // corresponding x coord
     double y = y0 + r*sin(ang);      // corresponding y coord
-    Cell * cell = get_grid_cell_from_cartesian(x,y);
+    int row = get_row(y);
+    int col = get_col(x);
+    Cell * cell = get_grid_cell(row,col);
     if (cell != NULL) return cell;
   }
   return NULL;
@@ -128,20 +130,12 @@ Cell * Grid::select_random_grid_cell() {
 }
 
 
-Cell * Grid::get_grid_cell_from_cartesian(double x, double y) {
-  int row, col;
-  row = rows-1 - (int) (y/grid_cell_size);
-  // row = (int) (y/grid_cell_size);
-  col = (int) (x/grid_cell_size);
-  // printf("x = %f y = %f, row = %d col = %d\n",x,y,row,col);
-  return get_grid_cell(row, col);
-}
-
-
-Cell * Grid::get_grid_cell_from_lat_lon(fred::geo lat, fred::geo lon) {
-  double x, y;
-  Geo_Utils::translate_to_cartesian(lat,lon,&x,&y,min_lat,min_lon);
-  return get_grid_cell_from_cartesian(x,y);
+Cell * Grid::select_random_neighbor(int row, int col) {
+  int n = IRAND_0_7();
+  if (n>3) n++;        // excludes local grid_cell
+  int r = row-1 + (n/3);
+  int c = col-1 + (n%3);
+  return get_grid_cell(r,c);
 }
 
 
@@ -205,15 +199,15 @@ void Grid::quality_control(char * directory, double min_x, double min_y) {
     for (int row = 0; row < rows; row++) {
       if (row%2) {
         for (int col = cols-1; col >= 0; col--) {
-          double x = min_x + grid[row][col].get_center_x();
-          double y = min_y + grid[row][col].get_center_y();
+          double x = grid[row][col].get_center_x();
+          double y = grid[row][col].get_center_y();
           fprintf(fp, "%f %f\n",x,y);
         }
       }
       else {
         for (int col = 0; col < cols; col++) {
-          double x = min_x + grid[row][col].get_center_x();
-          double y = min_y + grid[row][col].get_center_y();
+          double x = grid[row][col].get_center_x();
+          double y = grid[row][col].get_center_y();
           fprintf(fp, "%f %f\n",x,y);
         }
       }
@@ -242,8 +236,8 @@ void Grid::record_favorite_places() {
 }
 
 vector < Place * >  Grid::get_households_by_distance(fred::geo lat, fred::geo lon, double radius_in_km) {
-  double px, py;
-  Geo_Utils::translate_to_cartesian(lat, lon, &px, &py, min_lat, min_lon);
+  double px = Geo_Utils::get_x(lon);
+  double py = Geo_Utils::get_y(lat);
   //  get cells around the point, make sure their rows & cols are in bounds
   int r1 = rows-1 - (int) ( ( py + radius_in_km ) / grid_cell_size );
   r1 = ( r1 >= 0 ) ? r1 : 0;
@@ -266,8 +260,8 @@ vector < Place * >  Grid::get_households_by_distance(fred::geo lat, fred::geo lo
         fred::geo hlat = (*hi)->get_latitude();
         fred::geo hlon = (*hi)->get_longitude();
         //printf("DEBUG: household_latitude %f, household_longitude %f\n",hlat,hlon);
-        double hx, hy;
-        Geo_Utils::translate_to_cartesian(hlat, hlon, &hx, &hy, min_lat, min_lon);
+        double hx = Geo_Utils::get_x(hlon);
+        double hy = Geo_Utils::get_y(hlat);
         if (sqrt((px-hx)*(px-hx)+(py-hy)*(py-hy)) <= radius_in_km) {
           households.push_back((*hi));
         }
@@ -434,13 +428,5 @@ void Grid::print_household_distribution(char * dir, char * date_string, int run)
     }
   }
   fclose(fp);
-}
-
-void Grid::translate_to_lat_lon(double x, double y, fred::geo *lat, fred::geo *lon) {
-  Geo_Utils::translate_to_lat_lon(x,y,lat,lon,min_lat,min_lon);
-}
-
-void Grid::translate_to_cartesian(fred::geo lat, fred::geo lon, double *x, double *y) {
-  Geo_Utils::translate_to_cartesian(lat,lon,x,y,min_lat,min_lon);
 }
 

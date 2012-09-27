@@ -20,15 +20,12 @@ class Small_Cell : public Abstract_Cell {
 public:
   Small_Cell() {}
   ~Small_Cell() {}
-  void setup(Small_Grid * grd, int i, int j, double xmin, double xmax, double ymin, double ymax);
-  void print();
-  void print_coord();
+  void setup(Small_Grid * grd, int i, int j);
   void quality_control();
   double distance_to_grid_cell(Small_Cell *grid_cell2);
 
 protected:
   Small_Grid * grid;
-  Small_Cell ** neighbors;
 };
 
 #endif // _FRED_SMALL_CELL_H

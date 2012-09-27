@@ -36,23 +36,9 @@ public:
    * @param grd the Grid to which this cell belongs
    * @param i the row of this Cell in the Grid
    * @param j the column of this Cell in the Grid
-   * @param xmin the minimum x value for this cell
-   * @param xmax the maximum x value for this cell
-   * @param ymin the minimum y value for this cell
-   * @param ymax the minimum y value for this cell
    *
    */
-  void setup(Grid * grd, int i, int j, double xmin, double xmax, double ymin, double ymax);
-
-  /**
-   * Print out information about this object
-   */
-  void print();
-
-  /**
-   * Print out the x and y of this Cell as an ordered pair
-   */
-  void print_coord();
+  void setup(Grid * grd, int i, int j);
 
   /**
    * Used during debugging to verify that code is functioning properly.
@@ -159,9 +145,7 @@ public:
   int get_target_popsize() { return target_popsize; }
 
 protected:
-  Cell ** neighbor_cells;
   Grid * grid;
-
   int houses;
   Place * neighborhood;
   vector <Place *> household;

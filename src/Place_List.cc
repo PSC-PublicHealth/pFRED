@@ -30,6 +30,7 @@
 #include "Person.h"
 #include "Grid.h"
 #include "Large_Grid.h"
+#include "Large_Cell.h"
 #include "Small_Grid.h"
 #include "Geo_Utils.h"
 #include "Travel.h"
@@ -46,7 +47,8 @@ void Place_List::get_parameters() {
 
 void Place_List::read_places() {
   char s[80];
-  char line[1024];
+  char line_str[1024];
+  char * line = line_str;
   char place_type;
   fred::geo lon, lat;
   fred::geo min_lat, max_lat, min_lon, max_lon;
@@ -117,19 +119,18 @@ void Place_List::read_places() {
 	  Global::Synthetic_population_id);
   fp = Utils::fred_open_file(location_file);
   while (fgets(line, 1024, fp) != NULL) {
-    Utils::replace_csv_missing_data(newline,line,"0");
     // printf("%s%s",line,newline); fflush(stdout); exit(0);
-    strcpy(hh_id,strtok(newline,","));
+    Utils::get_next_token(hh_id, &line);
     // skip header line
     if (strcmp(hh_id, "hh_id") == 0) continue;
-    strcpy(serialno,strtok(NULL,","));
-    strcpy(stcotrbg,strtok(NULL,","));
-    strcpy(hh_race,strtok(NULL,","));
-    strcpy(hh_income,strtok(NULL,","));
-    strcpy(hh_size,strtok(NULL,","));
-    strcpy(hh_age,strtok(NULL,","));
-    strcpy(latitude,strtok(NULL,","));
-    strcpy(longitude,strtok(NULL,",\n"));
+    Utils::get_next_token(serialno, &line);
+    Utils::get_next_token(stcotrbg, &line);
+    Utils::get_next_token(hh_race, &line);
+    Utils::get_next_token(hh_income, &line);
+    Utils::get_next_token(hh_size, &line);
+    Utils::get_next_token(hh_age, &line);
+    Utils::get_next_token(latitude, &line);
+    Utils::get_next_token(longitude, &line);
 
     place_type = 'H';
     sprintf(s, "%c%s", place_type, hh_id);
@@ -144,6 +145,7 @@ void Place_List::read_places() {
     sscanf(hh_income, "%d", &income);
     household_incomes.push_back(income);
     household_labels.push_back(string(s));
+    line = line_str;
   }
   fclose(fp);
 
@@ -154,13 +156,12 @@ void Place_List::read_places() {
 	  Global::Synthetic_population_id);
   fp = Utils::fred_open_file(location_file);
   while (fgets(line, 255, fp) != NULL) {
-    Utils::replace_csv_missing_data(newline,line,"0");
-    strcpy(workplace_id,strtok(newline,","));
+    Utils::get_next_token(workplace_id, &line);
     // skip header line
     if (strcmp(workplace_id, "workplace_id") == 0) continue;
-    strcpy(num_workers_assigned,strtok(NULL,","));
-    strcpy(latitude,strtok(NULL,","));
-    strcpy(longitude,strtok(NULL,",\n"));
+    Utils::get_next_token(num_workers_assigned, &line);
+    Utils::get_next_token(latitude, &line);
+    Utils::get_next_token(longitude, &line);
 
     place_type = 'W';
     sprintf(s, "%c%s", place_type, workplace_id);
@@ -170,6 +171,7 @@ void Place_List::read_places() {
     pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
     ++( place_type_counts[ place_type ] );
     // printf ("%s %c %f %f\n", s, place_type,lat,lon); fflush(stdout);
+    line = line_str;
   }
   fclose(fp);
 
@@ -180,27 +182,26 @@ void Place_List::read_places() {
 	  Global::Synthetic_population_id);
   fp = Utils::fred_open_file(location_file);
   while (fgets(line, 255, fp) != NULL) {
-    Utils::replace_csv_missing_data(newline,line,"0");
-    strcpy(school_id,strtok(newline,","));
+    Utils::get_next_token(school_id, &line);
     // skip header line
     if (strcmp(school_id, "school_id") == 0) continue;
-    strcpy(name,strtok(NULL,","));
-    strcpy(stabbr,strtok(NULL,","));
-    strcpy(address,strtok(NULL,","));
-    strcpy(city,strtok(NULL,","));
-    strcpy(county,strtok(NULL,","));
-    strcpy(zip,strtok(NULL,","));
-    strcpy(zip4,strtok(NULL,","));
-    strcpy(nces_id,strtok(NULL,","));
-    strcpy(total,strtok(NULL,","));
-    strcpy(prek,strtok(NULL,","));
-    strcpy(kinder,strtok(NULL,","));
-    strcpy(gr01_gr12,strtok(NULL,","));
-    strcpy(ungraded,strtok(NULL,","));
-    strcpy(latitude,strtok(NULL,","));
-    strcpy(longitude,strtok(NULL,","));
-    strcpy(source,strtok(NULL,","));
-    strcpy(stco,strtok(NULL,",\n"));
+    Utils::get_next_token(name, &line);
+    Utils::get_next_token(stabbr, &line);
+    Utils::get_next_token(address, &line);
+    Utils::get_next_token(city, &line);
+    Utils::get_next_token(county, &line);
+    Utils::get_next_token(zip, &line);
+    Utils::get_next_token(zip4, &line);
+    Utils::get_next_token(nces_id, &line);
+    Utils::get_next_token(total, &line);
+    Utils::get_next_token(prek, &line);
+    Utils::get_next_token(kinder, &line);
+    Utils::get_next_token(gr01_gr12, &line);
+    Utils::get_next_token(ungraded, &line);
+    Utils::get_next_token(latitude, &line);
+    Utils::get_next_token(longitude, &line);
+    Utils::get_next_token(source, &line);
+    Utils::get_next_token(stco, &line);
 
     place_type = 'S';
     sprintf(s, "%c%s", place_type, school_id);
@@ -209,7 +210,8 @@ void Place_List::read_places() {
 
     pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
     ++( place_type_counts[ place_type ] );
-    // printf ("%s %c %f %f\n", s, place_type,lat,lon); fflush(stdout);
+    printf ("READ_SCHOOL: %s %c %f %f name |%s|\n", s, place_type,lat,lon,name); fflush(stdout);
+    line = line_str;
   }
   fclose(fp);
 
@@ -306,47 +308,50 @@ void Place_List::read_places() {
   }
   else {
     // DEFAULT: Use mean US latitude (see Geo_Utils.cc)
+    printf("min_lat: %f  max_lat: %f\n", min_lat, max_lat);
   }
 
   // create geographical grids
-  if (Global::Enable_Large_Grid) {
-    Global::Large_Cells = new Large_Grid(min_lon, min_lat, max_lon, max_lat);
-    // get coordinates of large grid as alinged to global grid
-    min_lon = Global::Large_Cells->get_min_lon();
-    min_lat = Global::Large_Cells->get_min_lat();
-    max_lon = Global::Large_Cells->get_max_lon();
-    max_lat = Global::Large_Cells->get_max_lat();
-    // Initialize global seasonality object
-    if (Global::Enable_Seasonality) {
-      Global::Clim = new Seasonality(Global::Large_Cells);
-    }
+  Global::Large_Cells = new Large_Grid(min_lon, min_lat, max_lon, max_lat);
+
+  // Initialize global seasonality object
+  if (Global::Enable_Seasonality) {
+    Global::Clim = new Seasonality(Global::Large_Cells);
   }
+
   // Grid/Cells contain neighborhoods
-  Global::Cells = new Grid(min_lon, min_lat, max_lon, max_lat);
+  Global::Cells = new Grid(Global::Large_Cells);
+
   // one neighborhood per cell
   int number_of_neighborhoods = Global::Cells->get_number_of_cells();
+
   // create allocator for neighborhoods
   Place::Allocator< Neighborhood > neighborhood_allocator;
+
   // reserve enough space for all neighborhoods
   neighborhood_allocator.reserve( number_of_neighborhoods );
   FRED_STATUS( 0, "Allocated space for %7d neighborhoods\n", number_of_neighborhoods );
+
   // pass allocator to Grid::setup (which then passes to Cell::make_neighborhood)
   Global::Cells->setup( neighborhood_allocator );
+
   // add Neighborhoods in one contiguous block
   add_preallocated_places< Neighborhood >( NEIGHBORHOOD, neighborhood_allocator );
 
   if (Global::Enable_Small_Grid)
-    Global::Small_Cells = new Small_Grid(min_lon, min_lat, max_lon, max_lat);
+    Global::Small_Cells = new Small_Grid(Global::Large_Cells);
 
   int number_places = (int) places.size();
   for (int p = 0; p < number_places; p++) {
+
+    // add households to the 1km Cell
     if (places[p]->get_type() == HOUSEHOLD) {
       Place *place = places[p];
-      fred::geo lat = place->get_latitude();
-      fred::geo lon = place->get_longitude();
-      Cell * grid_cell = (Cell *) Global::Cells->get_grid_cell_from_lat_lon(lat,lon);
+      int row = Global::Cells->get_row(place->get_latitude());
+      int col = Global::Cells->get_col(place->get_longitude());
+      Cell * grid_cell = Global::Cells->get_grid_cell(row,col);
 
-      FRED_CONDITIONAL_VERBOSE( 1, grid_cell == NULL,
+      FRED_CONDITIONAL_VERBOSE( 0, grid_cell == NULL,
           "Help: household %d has bad grid_cell,  lat = %f  lon = %f\n",
           place->get_id(),lat,lon); 
 
@@ -355,17 +360,20 @@ void Place_List::read_places() {
       grid_cell->add_household(place);
       place->set_grid_cell(grid_cell);
     }
+
+    // add workplaces to the 20km Large_Cell (needed for teacher assignments to schools)
+    if (places[p]->get_type() == WORKPLACE) {
+      Place *place = places[p];
+      int row = Global::Large_Cells->get_row(place->get_latitude());
+      int col = Global::Large_Cells->get_col(place->get_longitude());
+      Large_Cell * grid_cell = Global::Large_Cells->get_grid_cell(row,col);
+      if (grid_cell != NULL) {
+	grid_cell->add_workplace(place);
+      }
+    }
   }
 
   FRED_STATUS(0, "read places finished: Places = %d\n", (int) places.size());
-
-  // Added by Anuroop
-  /*ofstream fplace("results/locations_3deme");
-    for(int i=0; i<places.size(); i++) {
-    fplace << places[i]->get_latitude() << " " << places[i]->get_longitude() << endl;
-    }
-    fplace.close();
-    exit(0);*/
 }
 
 void Place_List::prepare() {
@@ -490,50 +498,44 @@ void Place_List::setup_classrooms() {
 }
 
 double distance_between_places(Place * p1, Place * p2) {
-  double x1, y1, x2, y2;
-  Global::Cells->translate_to_cartesian(p1->get_latitude(), p1->get_longitude(), &x1, &y1);
-  Global::Cells->translate_to_cartesian(p2->get_latitude(), p2->get_longitude(), &x2, &y2);
-  double dist = sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-  return dist;
+  return Geo_Utils::xy_distance(p1->get_latitude(), p1->get_longitude(),
+				p2->get_latitude(), p2->get_longitude());
 }
 
-void Place_List::setup_teachers() {
+void Place_List::assign_teachers() {
   int number_places = places.size();
+  printf("assign teachers entered. places = %d\n", number_places);
+  fflush(stdout);
   for (int p = 0; p < number_places; p++) {
-    Place *place = places[p];
-    if (place->get_type() == SCHOOL) {
-      int size = place->get_size();
-      //from: http://www.statemaster.com/graph/edu_ele_sec_pup_rat-elementary-secondary-pupil-teacher-ratio
-      int staff = 1 + (int) (0.5 + size / 15.5);
-      int min_staff = (int) (0.75 * staff);
-      if (min_staff < 1) min_staff = 1;
-      int max_staff = (int) (0.5 + 1.25 * staff);
+    Place *school = places[p];
+    if (school->get_type() == SCHOOL) {
+      fred::geo lat = school->get_latitude();
+      fred::geo lon = school->get_longitude();
+      double x1 = Geo_Utils::get_x(lon);
+      double y1 = Geo_Utils::get_y(lat);
+      printf("School %s %f %f ", school->get_label(), x1, y1);
+      fflush(stdout);
 
-      double x1, y1, x2, y2;
-      Global::Cells->translate_to_cartesian(place->get_latitude(), place->get_longitude(), &x1, &y1);
-      printf("School %s size %d staff %d %d %d %f %f ", place->get_label(), size, min_staff, staff, max_staff, x1, y1);
-
-
-      // find nearest workplace that has right number of employees
-      double min_dist = 1e99;
-      int wsize = 0;
-      Place * min_place = NULL;
-      for (int p2 = 0; p2 < number_places; p2++) {
-	Place *place2 = places[p2];
-	if (place2->get_type() == WORKPLACE) {
-	  int size = place2->get_size();
-	  if (1 || (min_staff <= size && size <= max_staff)) {
-	    double dist = distance_between_places(place, place2);
-	    if (dist < min_dist) {
-	      min_dist = dist;
-	      min_place = place2;
-	      wsize = size;
-	      Global::Cells->translate_to_cartesian(place2->get_latitude(), place->get_longitude(), &x2, &y2);
-	    }
-	  }
-	}
+      // ignore school if it is outside the region (because we probably
+      // do not have the teachers in the workforce)
+      Large_Cell * large_cell = Global::Large_Cells->get_grid_cell(lat,lon);
+      if (large_cell == NULL) {
+	printf("school OUTSIDE_REGION lat %f lon %f \n", lat, lon);
+	fflush(stdout);
+	continue;
       }
-      printf("workplace %s %f %f wsize %d dist %f\n", min_place->get_label(), x2, y2, wsize, min_dist);
+      
+      double min_dist;
+      Place * nearby_workplace = large_cell->get_workplace_near_to_school(school, &min_dist);
+      assert(nearby_workplace != NULL);
+
+      double x2 = Geo_Utils::get_x(nearby_workplace->get_longitude());
+      double y2 = Geo_Utils::get_y(nearby_workplace->get_latitude());
+      printf("nearby workplace %s %f %f wsize %d dist %f\n", nearby_workplace->get_label(), x2, y2, nearby_workplace->get_size(), min_dist);
+      fflush(stdout);
+
+      // make all the workers in selected workplace teachers at the nearby school
+      nearby_workplace->turn_workers_into_teachers(school);
     }
   }
   fflush(stdout);

@@ -12,28 +12,27 @@
 #ifndef _FRED_SMALL_GRID_H
 #define _FRED_SMALL_GRID_H
 
-#include <string.h>
-#include "Place.h"
+#include "Global.h"
 #include "Abstract_Grid.h"
-
+class Large_Grid;
 class Small_Cell;
 
 class Small_Grid : public Abstract_Grid {
 public:
-  Small_Grid(double minlon, double minlat, double maxlon, double maxlat);
+  Small_Grid(Large_Grid * lgrid);
   ~Small_Grid() {}
   void get_parameters();
   Small_Cell ** get_neighbors(int row, int col);
   Small_Cell * get_grid_cell(int row, int col);
+  Small_Cell * get_grid_cell(fred::geo lat, fred::geo lon);
   Small_Cell * select_random_grid_cell();
-  Small_Cell * get_grid_cell_from_cartesian(double x, double y);
-  Small_Cell * get_grid_cell_from_lat_lon(double lat, double lon);
-  void quality_control();
+  void quality_control(char * directory);
 
   // Specific to Small_Cell grid:
 
 protected:
   Small_Cell ** grid;            // Rectangular array of grid_cells
+  Large_Grid * large_grid;
 
   // Specific to Small_Cell grid:
 };

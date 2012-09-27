@@ -31,14 +31,6 @@
 #include "Utils.h"
 #include "Travel.h"
 
-#define PRESCHOOL_PROFILE 0
-#define STUDENT_PROFILE 1
-#define TEACHER_PROFILE 2
-#define WORKER_PROFILE 3
-#define WEEKEND_WORKER_PROFILE 4
-#define UNEMPLOYED_PROFILE 5
-#define RETIRED_PROFILE 6
-
 bool Activities::is_initialized = false;
 bool Activities::is_weekday = false;
 double Activities::age_yearly_mobility_rate[MAX_MOBILITY_AGE + 1];
@@ -136,6 +128,11 @@ void Activities::initialize_sick_leave() {
 
   if (favorite_place[WORKPLACE_INDEX] != NULL)
     workplace_size = favorite_place[WORKPLACE_INDEX]->get_size();
+  else {
+    if (is_teacher()) {
+      workplace_size = ((School *) favorite_place[SCHOOL_INDEX])->get_staff_size();
+    }
+  }
 
   // is sick leave available?
   if (workplace_size > 0) {
@@ -204,7 +201,7 @@ void Activities::before_run() {
         employees_large_without_sick_leave);
     fprintf(Global::Statusfp,"employees at xlarge workplaces with sick leave: %d\n",
         employees_xlarge_with_sick_leave);
-    fprintf(Global::Statusfp,"employees at xlareg workplaces without sick leave: %d\n",
+    fprintf(Global::Statusfp,"employees at xlarge workplaces without sick leave: %d\n",
         employees_xlarge_without_sick_leave);
     fflush(Global::Statusfp);
   }
@@ -222,18 +219,14 @@ void Activities::assign_profile() {
   // profile = TEACHER_PROFILE;      // teacher
   else if (Global::RETIREMENT_AGE <= age && RANDOM() < 0.5)
     profile = RETIRED_PROFILE;      // retired
+  else if (favorite_place[WORKPLACE_INDEX] == NULL)
+    profile = UNEMPLOYED_PROFILE;
   else
     profile = WORKER_PROFILE;     // worker
 
   // weekend worker
   if (profile == WORKER_PROFILE && RANDOM() < 0.2) {
     profile = WEEKEND_WORKER_PROFILE;   // 20% weekend worker
-  }
-
-  // unemployed
-  if ((profile == WORKER_PROFILE ||
-        profile == WEEKEND_WORKER_PROFILE) && RANDOM() < 0.1) {
-    profile = UNEMPLOYED_PROFILE;   // 10% unemployed
   }
 }
 
@@ -382,13 +375,14 @@ void Activities::update_schedule(int day) {
 void Activities::decide_whether_to_stay_home(int day) {
   assert (self->is_symptomatic());
   bool stay_home = false;
+  bool it_is_a_workday = (on_schedule[WORKPLACE_INDEX] || (is_teacher() && on_schedule[SCHOOL_INDEX]));
 
   if (self->is_adult()) {
     if (Activities::Enable_default_sick_behavior) {
       stay_home = default_sick_leave_behavior();
     }
     else {
-      if (on_schedule[WORKPLACE_INDEX]) {
+      if (it_is_a_workday) {
         // it is a work day
         if (sick_days_remaining > 0.0) {
           stay_home = (RANDOM() < sick_days_remaining);
@@ -410,7 +404,7 @@ void Activities::decide_whether_to_stay_home(int day) {
   }
 
   // record work absent/present decision if it is a workday
-  if (on_schedule[WORKPLACE_INDEX]) {
+  if (it_is_a_workday) {
     if (stay_home) {
       Activities::Sick_days_absent++;
       my_sick_days_absent++;
@@ -422,7 +416,7 @@ void Activities::decide_whether_to_stay_home(int day) {
   }
 
   // record school absent/present decision if it is a school day
-  if (on_schedule[SCHOOL_INDEX]) {
+  if ((is_teacher()==false) && on_schedule[SCHOOL_INDEX]) {
     if (stay_home) {
       Activities::School_sick_days_absent++;
       my_sick_days_absent++;
@@ -968,6 +962,36 @@ void Activities::stop_traveling() {
     fprintf(Global::Statusfp, "stop traveling: id = %d\n", self->get_id());
     fflush(Global::Statusfp);
   }
+}
+
+bool Activities::become_a_teacher(Place *school) {
+  bool success = false;
+  if (favorite_place[SCHOOL_INDEX] != NULL) {
+    if (Global::Verbose > 1) {
+      Utils::fred_warning("become_a_teacher: person %d already goes to school %d age %d\n",
+			  self->get_id(), favorite_place[SCHOOL_INDEX]->get_id(), self->get_age());
+    }
+    profile = STUDENT_PROFILE;
+  }
+  else {
+    // set profile
+    profile = TEACHER_PROFILE;
+    // join the school
+    favorite_place[SCHOOL_INDEX] = school;
+    favorite_place[SCHOOL_INDEX]->enroll(self);
+    success = true;
+  }
+
+  // withdraw from this workplace and any associated office
+  if (favorite_place[WORKPLACE_INDEX] != NULL) {
+    favorite_place[WORKPLACE_INDEX]->unenroll(self);
+    favorite_place[WORKPLACE_INDEX] = NULL;
+  }
+  if (favorite_place[OFFICE_INDEX] != NULL) {
+    favorite_place[OFFICE_INDEX]->unenroll(self);
+    favorite_place[OFFICE_INDEX] = NULL;
+  }
+  return success;
 }
 
 void Activities::terminate() {

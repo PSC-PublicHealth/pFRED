@@ -12,36 +12,27 @@
 #include "Global.h"
 #include "Large_Cell.h"
 #include "Large_Grid.h"
+#include "Geo_Utils.h"
 #include "Random.h"
 
-void Large_Cell::setup(Large_Grid * grd, int i, int j, double xmin, double xmax, double ymin, double ymax) {
+void Large_Cell::setup(Large_Grid * grd, int i, int j) {
   grid = grd;
   row = i;
   col = j;
-  min_x = xmin;
-  max_x = xmax;
-  min_y = ymin;
-  max_y = ymax;
+  double grid_cell_size = grid->get_grid_cell_size();
+  double grid_min_x = grid->get_min_x();
+  double grid_min_y = grid->get_min_y();
+  min_x = grid_min_x + (col)*grid_cell_size;
+  min_y = grid_min_y + (row)*grid_cell_size;
+  max_x = grid_min_x + (col+1)*grid_cell_size;
+  max_y = grid_min_y + (row+1)*grid_cell_size;
   center_y = (min_y+max_y)/2.0;
   center_x = (min_x+max_x)/2.0;
-  neighbors = (Large_Cell **) grid->get_neighbors(i,j);
   popsize = 0;
   max_popsize = 0;
   pop_density = 0;
   person.clear();
-}
-
-void Large_Cell::print() {
-  printf("Large_Cell %d %d: %f, %f, %f, %f\n",row,col,min_x,max_x,min_y,max_y);
-  for (int i = 0; i < 9; i++) {
-    if (neighbors[i] == NULL) { printf("NULL ");}
-    else {neighbors[i]->print_coord();}
-    printf("\n");
-  }
-}
-
-void Large_Cell::print_coord() {
-  printf("(%d, %d)",row,col);
+  workplaces.clear();
 }
 
 void Large_Cell::quality_control() {
@@ -96,3 +87,54 @@ void Large_Cell::unenroll(Person *per) {
   }
 }
 
+Place *Large_Cell::get_workplace_near_to_school(Place *school, double * min_dist) {
+  // printf("get_workplace_near_school entered\n"); print(); fflush(stdout);
+  int size = school->get_size();
+  double x = Geo_Utils::get_x(school->get_longitude());
+  double y = Geo_Utils::get_y(school->get_latitude());
+
+  //from: http://www.statemaster.com/graph/edu_ele_sec_pup_rat-elementary-secondary-pupil-teacher-ratio
+  int staff = 1 + (int) (0.5 + size / 15.5);
+  int min_staff = (int) (0.75 * staff);
+  if (min_staff < 1) min_staff = 1;
+  int max_staff = (int) (0.5 + 1.25 * staff);
+  printf(" size %d staff %d %d %d \n", size, min_staff, staff, max_staff); fflush(stdout);
+
+  // find nearest workplace that has right number of employees
+  *min_dist = 1e99;
+  Place * nearby_workplace = grid->get_nearby_workplace(row,col,x,y,min_staff,max_staff,min_dist);
+  assert(nearby_workplace != NULL);
+  printf("nearby workplace = %s min_dist = %f\n", nearby_workplace->get_label(), *min_dist);
+  fflush(stdout);
+  return nearby_workplace;
+}
+
+
+Place * Large_Cell::get_closest_workplace(double x, double y, int min_size, int max_size, double * min_dist) {
+  // printf("get_closest_workplace entered for cell %d %d\n", row, col); fflush(stdout);
+  Place * closest_workplace = NULL;
+  int number_workplaces = workplaces.size();
+  for (int j = 0; j < number_workplaces; j++) {
+    Place *workplace = workplaces[j];
+    int size = workplace->get_size();
+    if (min_size <= size && size <= max_size) {
+      double x2 = Geo_Utils::get_x(workplace->get_longitude());
+      double y2 = Geo_Utils::get_y(workplace->get_latitude());
+      double dist = sqrt((x-x2)*(x-x2)+(y-y2)*(y-y2));
+      if (dist < *min_dist) {
+	*min_dist = dist;
+	closest_workplace = workplace;
+	// printf("closer = %s size = %d min_dist = %f\n", closest_workplace->get_label(), size, *min_dist);
+	// fflush(stdout);
+      }
+    }
+  }
+  return closest_workplace;
+}
+
+void Large_Cell::add_workplace(Place *workplace) {
+  workplaces.push_back(workplace);
+  // double x = Geo_Utils::get_x(workplace->get_longitude());
+  // double y = Geo_Utils::get_y(workplace->get_latitude());
+  // printf("ADD WORK: to large cell (%d, %d) %s %f %f\n", row,col,workplace->get_label(),x,y); fflush(stdout);
+}

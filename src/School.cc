@@ -52,6 +52,7 @@ School::School( const char *lab, double lon, double lat, Place* container, Popul
     classrooms[i].clear();
   }
   closure_dates_have_been_set = false;
+  staff_size = 0;
 }
 
 void School::prepare() {
@@ -117,7 +118,7 @@ int School::get_group(int disease_id, Person * per) {
   int age = per->get_age();
   if (age <12) { return 0; }
   else if (age < 16) { return 1; }
-  else if (age < Global::ADULT_AGE) { return 2; }
+  else if (per->is_student()) { return 2; }
   else return 3;
 }
 
@@ -255,23 +256,33 @@ double School::get_contacts_per_day(int disease_id) {
 
 void School::enroll(Person * per) {
   N++;
-  int age = per->get_age();
-  if (age < GRADES) {
-    students_with_age[age]++;
+  if (per->is_teacher()) {
+    staff_size++;
   }
   else {
-    students_with_age[GRADES-1]++;
+    int age = per->get_age();
+    if (age < GRADES) {
+      students_with_age[age]++;
+    }
+    else {
+      students_with_age[GRADES-1]++;
+    }
   }
 }
 
 void School::unenroll(Person * per) {
   N--;
-  int age = per->get_age();
-  if (age < GRADES) {
-    students_with_age[age]--;
+  if (per->is_teacher()) {
+    staff_size--;
   }
   else {
-    students_with_age[GRADES-1]--;
+    int age = per->get_age();
+    if (age < GRADES) {
+      students_with_age[age]--;
+    }
+    else {
+      students_with_age[GRADES-1]--;
+    }
   }
 }
 

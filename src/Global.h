@@ -167,7 +167,6 @@ class Global {
     static int Seed_age_upper_bound;
 
     //Boolean flags
-    static bool Enable_Large_Grid;
     static bool Enable_Small_Grid;
     static bool Enable_Aging;
     static bool Enable_Births;
@@ -191,6 +190,7 @@ class Global {
     static bool Report_Age_Of_Infection;
     static bool Report_Place_Of_Infection;
     static bool Report_Presenteeism;
+    static bool Assign_Teachers;
 
     // global singleton objects
     static Population Pop;
