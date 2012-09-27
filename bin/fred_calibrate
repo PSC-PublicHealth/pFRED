@@ -120,6 +120,8 @@ while ($error > $threshold) {
     $s *= $ar_ratio * $Starget / $S;
     $w *= $ar_ratio * $Wtarget / $W;
   }
+  system "fred_delete -f -k $paramsfile >& /dev/null";
+  unlink $paramsfile;
 }
 
 $error = 100;
@@ -179,6 +181,9 @@ while ($error > $threshold) {
   $n *= $ar_ratio;
   $s *= $ar_ratio;
   $w *= $ar_ratio;
+
+  system "fred_delete -f -k $paramsfile >& /dev/null";
+  unlink $paramsfile;
 }
 
 
