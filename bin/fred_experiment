@@ -1,0 +1,121 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+my $usage = "usage: fred_experiment config_file\n";
+
+my ($config_file) = @ARGV;
+die $usage if (not $config_file) or (not -e $config_file);
+
+open FH, $config_file or die "Can't open $config_file\n";
+
+my $line;
+
+# find the header line
+$line = "";
+while (not $line) { $line = <FH>; chomp $line; }
+$line =~ /FRED Experiment Space/ or die "Bad header format\n";
+
+# get the title of the space
+$line = "";
+while (not $line) { $line = <FH>; chomp $line; }
+my ($title) = $line =~ /Title:\s*(.*)/;
+die "Bad title format\n" if not $title;
+$title =~ s/\s/_/g;
+
+# get the baseline parameter file
+$line = "";
+while (not $line) { $line = <FH>; chomp $line; }
+$line =~ /Baseline parameter file:/ or die "Bad baseline format\n";
+$line = "";
+while (not $line) { $line = <FH>; chomp $line; }
+my ($paramsfile) = $line;
+$paramsfile =~ s/\s//g;
+die "Bad paramsfile format\n" if not $paramsfile;
+die "No such baseline param file\n" if not -e $paramsfile;
+
+
+# get the sweep parameters
+my @names = ();
+my @values = ();
+my $name;
+
+$line = "";
+while (not $line) { $line = <FH>; chomp $line; }
+$line =~ /Sweep parameters:/ or die "Bad sweep format\n";
+
+$line = "";
+while (not $line) { $line = <FH>; chomp $line; }
+while ($line !~ /Output Variables/) {
+  my @pval = ();
+  my ($min, $max, $inc, $value);
+  if ($line =~ /Min:/) {
+    ($name, $min, $max, $inc) = $line =~ /Name:\s+(\S+)\s+Min:\s+(\S+)\s+Max:\s+(\S+)\s+Inc:\s+(\S+)/;
+    for (my $x = $min; $x <= $max; $x += $inc) { push @pval, $x; }
+  }
+  else {
+    ($name, $value) = $line =~ /Name:\s+(\S+)\s+Values: \[(.*)\]/;
+    $value =~ s/\s//g;
+    @pval = split "," , $value;
+  }
+  push @names, $name;
+  push @values, join " ", @pval;
+
+  $line = "";
+  while (not $line) { $line = <FH>; chomp $line; }
+}
+
+# make output file
+my $outfile = "fred_experiment.$title";
+open OUT, ">$outfile";
+print OUT "#!/bin/tcsh\n";
+print OUT "\n# File: $outfile\n";
+print OUT "# Created: ", scalar localtime, "\n";
+
+my $set = "";
+recurse($set,0);
+close OUT;
+
+exit;
+
+sub recurse {
+  my ($s, $n) = @_;
+  if ($n eq $#names) {
+    my $pvals = $values[$n];
+    my @pval = split " ", $pvals;
+    for my $v (@pval) {
+      my $my_value = "$names[$n]=$v";
+      $my_value = "$s-$my_value" if $s;
+      # print "$my_value\n";
+      output_experiment($my_value);
+    }
+  }
+  else {
+    my $pvals = $values[$n];
+    my @pval = split " ", $pvals;
+    for my $v (@pval) {
+      my $my_value = "$names[$n]=$v";
+      $my_value = "$s-$my_value" if $s;
+      recurse($my_value,$n+1);
+    }
+  }
+}
+
+sub output_experiment {
+  my $str = shift;
+  # print "$str\n";
+  
+  my $key = "$paramsfile-$str";
+  print OUT "\n";
+  print OUT "cp $paramsfile $key\n";
+  
+  my @pars = split "-", $str;
+  for my $par_val (@pars) {
+    my ($param, $value) = split "=", $par_val;
+    print OUT "ch $param $value $key\n";
+  }
+  print OUT "fred_delete -f -k $key\n";
+  print OUT "fred_job -k $key -p $key\n";
+}
+
+
