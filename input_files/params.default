@@ -172,6 +172,8 @@ school_closure_policy = none
 
 # number of days to keep a school closed
 school_closure_period = 10
+# if not -1, set school_closure_period = 7 * Weeks
+Weeks = -1
 
 # delay after reaching any trigger before closing schools
 school_closure_delay = 2
@@ -190,6 +192,8 @@ individual_school_closure_threshold = 10.0
 # Number of cases within a given school that triggers individual school closure
 # If -1, use the school_closure_theshold fraction
 school_closure_cases = -1
+# an alias for school_closure_cases
+Cases = -1
 
 #### WORKPLACES
 office_size = 50

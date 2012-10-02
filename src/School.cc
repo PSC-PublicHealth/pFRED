@@ -110,7 +110,19 @@ void School::get_parameters(int diseases) {
   Params::get_param_from_string("school_summer_schedule", &School::school_summer_schedule);
   Params::get_param_from_string("school_summer_start", School::school_summer_start);
   Params::get_param_from_string("school_summer_end", School::school_summer_end);
- 
+
+  int Weeks;
+  Params::get_param_from_string("Weeks", &Weeks);
+  if (Weeks > -1) {
+    School::school_closure_period = 7 * Weeks;
+  }
+
+  int Cases;
+  Params::get_param_from_string("Cases", &Cases);
+  if (Cases > -1) {
+    School::school_closure_cases = Cases;
+  }
+
   School::school_parameters_set = true;
 }
 

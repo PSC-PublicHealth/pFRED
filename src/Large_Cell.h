@@ -33,7 +33,7 @@ public:
   double get_pop_density() { return pop_density; }
   void unenroll(Person *per);
   void add_workplace(Place *workplace);
-  Place *get_workplace_near_to_school(Place *school, double * min_dist);
+  Place *get_workplace_near_to_school(Place *school);
   Place * get_closest_workplace(double x, double y, int min_size, int max_size, double * min_dist);
 
 protected:

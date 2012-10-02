@@ -12,6 +12,21 @@ my $FRED = $ENV{FRED_HOME};
 die "$0: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 my $usage = "usage: $0 [-f config_file | -h | -s ]\n";
 
+# create RESULTS directory if needed
+my $FREDRESULTS = $ENV{FRED_RESULTS};
+$FREDRESULTS = $ENV{FRED_HOME} if not $FREDRESULTS;
+my $fred_results = "$FREDRESULTS/RESULTS";
+if (not -d $fred_results) {
+ mkdir "$fred_results" or die "Can't create RESULTS directory $fred_results\n";
+}
+
+# create EXPERIMENT_SPACES directory if needed
+my $fred_experiment_space_dir = "$fred_results/EXPERIMENT_SPACES";
+if (not -d $fred_experiment_space_dir) {
+ mkdir "$fred_experiment_space_dir" or die "Can't create RESULTS directory $fred_experiment_space_dir\n";
+}
+
+
 # get command line arguments
 my %options = ();
 getopts("hsf:", \%options);
@@ -68,7 +83,6 @@ $title =~ s/\s/_/g;
 
 # get the baseline parameter file
 get_next_line();
-print "LINE = $line\n";
 $line =~ /Baseline Parameter File:/ or die "Bad baseline format\n";
 my ($paramsfile) = $line =~ /File:\s*(.*)/;
 die "Bad Baseline format\n" if not $paramsfile;
@@ -77,10 +91,11 @@ die "Bad paramsfile format\n" if not $paramsfile;
 die "No such baseline param file\n" if not -e $paramsfile;
 
 # make FRED Navigator config file
-my $fred_nav = "fred_navigator_config.$title";
+my $fred_nav = "$fred_experiment_space_dir/$title.txt";
 open NAV, ">$fred_nav";
 print NAV "## File: $fred_nav\n";
 print NAV "## Created: ", scalar localtime, "\n";
+print NAV "Title: $title\n";
 
 # get the sweep parameters
 my @names = ();
@@ -113,7 +128,7 @@ print NAV "##\n";
 
 # pass output variables to fred navigator config file
 while ($line = <FH>) {
-  print NAV $line;
+  print NAV $line unless $line =~/^#/;
 }
 print NAV "##\n";
 
@@ -129,6 +144,10 @@ recurse($set,0);
 close EXEC;
 print NAV "##\n";
 close NAV;
+
+# run script
+system "chmod +x $fred_exp_space";
+system "$fred_exp_space >& fred_exp_space.out &";
 exit;
 
 sub recurse {
@@ -165,7 +184,7 @@ sub add_experiment {
     print EXEC "ch $param $value params.$key\n";
   }
   print EXEC "fred_delete -f -k $key\n";
-  print EXEC "fred_job -k $key -p params.$key\n";
+  print EXEC "fred_job -k $key -p params.$key -n 10 -m 10\n";
   print NAV "$key\n";
 }
 

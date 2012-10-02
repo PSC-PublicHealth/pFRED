@@ -14,6 +14,7 @@
 #include "Large_Grid.h"
 #include "Geo_Utils.h"
 #include "Random.h"
+#include "Utils.h"
 
 void Large_Cell::setup(Large_Grid * grd, int i, int j) {
   grid = grd;
@@ -87,7 +88,7 @@ void Large_Cell::unenroll(Person *per) {
   }
 }
 
-Place *Large_Cell::get_workplace_near_to_school(Place *school, double * min_dist) {
+Place *Large_Cell::get_workplace_near_to_school(Place *school) {
   // printf("get_workplace_near_school entered\n"); print(); fflush(stdout);
   int size = school->get_size();
   double x = Geo_Utils::get_x(school->get_longitude());
@@ -98,14 +99,16 @@ Place *Large_Cell::get_workplace_near_to_school(Place *school, double * min_dist
   int min_staff = (int) (0.75 * staff);
   if (min_staff < 1) min_staff = 1;
   int max_staff = (int) (0.5 + 1.25 * staff);
-  printf(" size %d staff %d %d %d \n", size, min_staff, staff, max_staff); fflush(stdout);
+  FRED_VERBOSE( 0, " size %d staff %d %d %d \n", size, min_staff, staff, max_staff);
 
   // find nearest workplace that has right number of employees
-  *min_dist = 1e99;
-  Place * nearby_workplace = grid->get_nearby_workplace(row,col,x,y,min_staff,max_staff,min_dist);
+  double min_dist = 1e99;
+  Place * nearby_workplace = grid->get_nearby_workplace(row,col,x,y,min_staff,max_staff,&min_dist);
   assert(nearby_workplace != NULL);
-  printf("nearby workplace = %s min_dist = %f\n", nearby_workplace->get_label(), *min_dist);
-  fflush(stdout);
+  double x2 = Geo_Utils::get_x(nearby_workplace->get_longitude());
+  double y2 = Geo_Utils::get_y(nearby_workplace->get_latitude());
+  FRED_VERBOSE(0, "nearby workplace %s %f %f wsize %d work_dist %f\n", nearby_workplace->get_label(), x2, y2, nearby_workplace->get_size(), min_dist);
+
   return nearby_workplace;
 }
 

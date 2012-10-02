@@ -397,8 +397,7 @@ void Place::turn_workers_into_teachers(Place *school) {
     // printf("new teacher %d age %d moving from workplace %s to school %s\n",
     // enrollees[i]->get_id(), enrollees[i]->get_age(), label, school->get_label());
   }
-  printf("%d new teachers reassigned from workplace %s to school %s\n",
+  FRED_VERBOSE(0, "%d new teachers reassigned from workplace %s to school %s\n",
 	 new_teachers, label, school->get_label());
-  fflush(stdout);
   N = 0;
 }

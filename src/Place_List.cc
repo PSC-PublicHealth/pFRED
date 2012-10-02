@@ -210,7 +210,8 @@ void Place_List::read_places() {
 
     pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
     ++( place_type_counts[ place_type ] );
-    printf ("READ_SCHOOL: %s %c %f %f name |%s|\n", s, place_type,lat,lon,name); fflush(stdout);
+
+    FRED_VERBOSE(0, "READ_SCHOOL: %s %c %f %f name |%s|\n", s, place_type,lat,lon,name);
     line = line_str;
   }
   fclose(fp);
@@ -511,28 +512,20 @@ void Place_List::assign_teachers() {
     if (school->get_type() == SCHOOL) {
       fred::geo lat = school->get_latitude();
       fred::geo lon = school->get_longitude();
-      double x1 = Geo_Utils::get_x(lon);
-      double y1 = Geo_Utils::get_y(lat);
-      printf("School %s %f %f ", school->get_label(), x1, y1);
-      fflush(stdout);
+      double x = Geo_Utils::get_x(lon);
+      double y = Geo_Utils::get_y(lat);
+      FRED_VERBOSE(0,"School %s %f %f ", school->get_label(), x, y);
 
       // ignore school if it is outside the region (because we probably
       // do not have the teachers in the workforce)
       Large_Cell * large_cell = Global::Large_Cells->get_grid_cell(lat,lon);
       if (large_cell == NULL) {
-	printf("school OUTSIDE_REGION lat %f lon %f \n", lat, lon);
-	fflush(stdout);
+	FRED_VERBOSE(0, "school OUTSIDE_REGION lat %f lon %f \n", lat, lon);
 	continue;
       }
       
-      double min_dist;
-      Place * nearby_workplace = large_cell->get_workplace_near_to_school(school, &min_dist);
+      Place * nearby_workplace = large_cell->get_workplace_near_to_school(school);
       assert(nearby_workplace != NULL);
-
-      double x2 = Geo_Utils::get_x(nearby_workplace->get_longitude());
-      double y2 = Geo_Utils::get_y(nearby_workplace->get_latitude());
-      printf("nearby workplace %s %f %f wsize %d dist %f\n", nearby_workplace->get_label(), x2, y2, nearby_workplace->get_size(), min_dist);
-      fflush(stdout);
 
       // make all the workers in selected workplace teachers at the nearby school
       nearby_workplace->turn_workers_into_teachers(school);
