@@ -274,35 +274,44 @@ void Epidemic::print_stats(int day) {
     }
   }
 
+  if (Global::Report_Presenteeism) { report_presenteeism(day); }
+  if (Global::Report_Place_Of_Infection) { report_place_of_infection(day); }
+  if (Global::Report_Age_Of_Infection) { report_age_of_infection(day); }
+  
   fprintf(Global::Outfp, "\n");  
   fflush(Global::Outfp);
 
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "\n");
     fflush(Global::Statusfp);
-
-    if (Global::Report_Presenteeism) { report_presenteeism(day); }
-    if (Global::Report_Place_Of_Infection) { report_place_of_infection(day); }
-    if (Global::Report_Age_Of_Infection) { report_age_of_infection(day); }
-
-    // prepare for next day
-    incident_infections = clinical_incidents = 0;
-    daily_infections_list.clear();
   }
+
+  // prepare for next day
+  incident_infections = clinical_incidents = 0;
+  daily_infections_list.clear();
 }
 
 void::Epidemic::report_age_of_infection(int day) {
   int age_count[21];				// age group counts
+  double mean_age = 0.0;
+  int count_infections = 0;
   for (int i = 0; i < 21; i++) age_count[i] = 0;
   for (int i = 0; i < incident_infections; i++) {
     Person * infectee = daily_infections_list[i];
-    int age_group = infectee->get_age() / 5;
+    int age = infectee->get_age();
+    mean_age += age;
+    count_infections++;
+    int age_group = age / 5;
     if (age_group > 20) age_group = 20;
     age_count[age_group]++;
   }
+  if (count_infections > 0) { mean_age /= count_infections; }
   Utils::fred_log("\nDay %d INF_AGE: ", day);
-  for (int i = 0; i <= 20; i++) {
-    Utils::fred_report(" A%d %d", i*5, age_count[i]);
+  Utils::fred_report(" Age_at_infection %f", mean_age);
+  if (Global::Report_Age_Of_Infection > 1) {
+    for (int i = 0; i <= 20; i++) {
+      Utils::fred_report(" A%d %d", i*5, age_count[i]);
+    }
   }
   Utils::fred_log("\n");
 }

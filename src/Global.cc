@@ -69,7 +69,7 @@ bool Global::Enable_Antivirals = true;
 bool Global::Enable_Vaccination = true;
 bool Global::Use_Mean_Latitude = false;
 bool Global::Print_Household_Locations = false;
-bool Global::Report_Age_Of_Infection = false;
+int Global::Report_Age_Of_Infection = 0;
 bool Global::Report_Place_Of_Infection = false;
 bool Global::Report_Presenteeism = false;
 bool Global::Assign_Teachers = false;
@@ -216,8 +216,7 @@ void Global::get_global_parameters() {
   // Initialize Demographics
   Demographics::read_init_files();
 
-  Params::get_param_from_string("report_age_of_infection",&temp_int);
-  Global::Report_Age_Of_Infection = temp_int;
+  Params::get_param_from_string("report_age_of_infection",&Global::Report_Age_Of_Infection);
   Params::get_param_from_string("report_place_of_infection",&temp_int);
   Global::Report_Place_Of_Infection = temp_int;
   Params::get_param_from_string("report_presenteeism",&temp_int);

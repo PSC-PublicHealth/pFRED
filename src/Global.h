@@ -187,7 +187,7 @@ class Global {
     static bool Enable_Antivirals;
     static bool Use_Mean_Latitude;
     static bool Print_Household_Locations;
-    static bool Report_Age_Of_Infection;
+    static int Report_Age_Of_Infection;
     static bool Report_Place_Of_Infection;
     static bool Report_Presenteeism;
     static bool Assign_Teachers;
