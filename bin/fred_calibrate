@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use warnings;
 use strict;
+use Getopt::Long qw(:config no_ignore_case bundling);
 $| = 1;
 
 #####################################
@@ -8,7 +9,7 @@ $| = 1;
 # File: fred_calibrate
 # Author: John Grefenstette
 # 26 Aug 2011
-# Revised: Jan 2012
+# Last Revised: Oct 3, 2012
 #
 # Based on targets proposed by Phil Cooley:
 #
@@ -17,16 +18,31 @@ my $Ntarget = 33;
 my $Starget = 24.66;
 my $Wtarget = 12.34;
 my $CARtarget = 33;		# clinical attack rate
+my $oldparams = "";
+my $runs = 1;
+my $cores = 1;
 
 # stopping criteria
-my $days = 100;
 my $threshold = 0.1;
 
-my ($oldparams, $runs, $m) = @ARGV;
-open FH, $oldparams or die "Can't open file old params file\nusage: calibrate params\n";
-$runs = 1 if not $runs;
-$m = 1 if not $m;
+my $usage = "usage: $0 [ -p oldparams | -r runs | -m cores | -H Htarget | -N Ntarget | -S Starget | -W Wtarget | -A CARtarget ]\n";
+my $help = "";
+my $opt_result = GetOptions(
+			    "h" => \$help,
+			    "p=s" => \$oldparams,
+			    "r=i" => \$runs,
+			    "m=i" => \$cores,
+			    "H=s" => \$Htarget,
+			    "N=s" => \$Ntarget,
+			    "S=s" => \$Starget,
+			    "W=s" => \$Wtarget,
+			    "A=s" => \$CARtarget
+);
+die $usage if $help;
+die $usage if not $oldparams;
+open FH, $oldparams or die "Can't open params file $oldparams\n$usage";
 
+# read original params
 my @orig = <FH>;
 close FH;
 
@@ -57,8 +73,7 @@ while ($error > $threshold) {
   open CAL, ">$paramsfile" or die "Can't create paramsfile $paramsfile\n";
   print CAL @orig;
   print CAL "###  CALIBRATION PHASE I STEP $step at $time\n";
-  print CAL "###  runs = $runs  procs = $m\n";
-  print CAL "days = $days\n";
+  print CAL "###  runs = $runs  cores = $cores\n";
   printf CAL "household_contacts[0] = %0.6f\n", $h;
   printf CAL "neighborhood_contacts[0] = %0.6f\n", $n;
   printf CAL "school_contacts[0] = %0.6f\n", $s;
@@ -70,8 +85,7 @@ while ($error > $threshold) {
   system "cp $paramsfile $paramsfinal";
 
   print "###  CALIBRATION PHASE I STEP $step at $time\n";
-  print "###  runs = $runs  procs = $m\n";
-  print "days = $days\n\n";
+  print "###  runs = $runs  cores = $cores\n";
   printf "household_contacts[0] = %0.6f\n", $h;
   printf "neighborhood_contacts[0] = %0.6f\n", $n;
   printf "school_contacts[0] = %0.6f\n", $s;
@@ -80,7 +94,7 @@ while ($error > $threshold) {
   print "office_contacts[0] = -1\n";
 
   system "fred_delete -f -k $paramsfile >& /dev/null";
-  system "fred_job -k $paramsfile -p $paramsfile -n $runs -m $m";
+  system "fred_job -k $paramsfile -p $paramsfile -n $runs -m $cores";
   my $dir = `fred_cd -k $paramsfile | awk \'{print \$2}\' `;
   chomp $dir;
 
@@ -106,20 +120,21 @@ while ($error > $threshold) {
   printf "total error = %0.6f\n\n\n", $error;
   
   if (abs($ea) < 1.0) {
-    $h *= $Htarget / $H;
-    $n *= $Ntarget / $N;
-    $s *= $Starget / $S;
-    $w *= $Wtarget / $W;
+    $h *= $Htarget / $H if $H > 0;
+    $n *= $Ntarget / $N if $N > 0;
+    $s *= $Starget / $S if $S > 0;
+    $w *= $Wtarget / $W if $W > 0;
     $error = abs($eh) + abs($en) + abs($es) + abs($ew);
   }
   else {
     # adjust to achieve desired CAR 
     my $ar_ratio = $CARtarget / $CAR;
-    $h *= $ar_ratio * $Htarget / $H;
-    $n *= $ar_ratio * $Ntarget / $N;
-    $s *= $ar_ratio * $Starget / $S;
-    $w *= $ar_ratio * $Wtarget / $W;
+    $h *= $ar_ratio * $Htarget / $H if $H > 0;
+    $n *= $ar_ratio * $Ntarget / $N if $N > 0;
+    $s *= $ar_ratio * $Starget / $S if $S > 0;
+    $w *= $ar_ratio * $Wtarget / $W if $W > 0;
   }
+  $h = 1.0 if $h > 1.0;
   system "fred_delete -f -k $paramsfile >& /dev/null";
   unlink $paramsfile;
 }
@@ -135,8 +150,7 @@ while ($error > $threshold) {
   open CAL, ">$paramsfile";
   print CAL @orig;
   print CAL "###  CALIBRATION PHASE II STEP $step at $time\n";
-  print CAL "###  runs = $runs  procs = $m\n";
-  print CAL "days = $days\n";
+  print CAL "###  runs = $runs  cores = $cores\n";
   printf CAL "household_contacts[0] = %0.6f\n", $h;
   printf CAL "neighborhood_contacts[0] = %0.6f\n", $n;
   printf CAL "school_contacts[0] = %0.6f\n", $s;
@@ -148,8 +162,7 @@ while ($error > $threshold) {
   system "cp $paramsfile $paramsfinal";
 
   print "###  CALIBRATION PHASE II STEP $step at $time\n";
-  print "###  runs = $runs  procs = $m\n";
-  print "days = $days\n";
+  print "###  runs = $runs  cores = $cores\n";
   printf "household_contacts[0] = %0.6f\n", $h;
   printf "neighborhood_contacts[0] = %0.6f\n", $n;
   printf "school_contacts[0] = %0.6f\n", $s;
@@ -158,7 +171,7 @@ while ($error > $threshold) {
   print "office_contacts[0] = -1\n";
 
   system "fred_delete -f -k $paramsfile >& /dev/null";
-  system "fred_job -k $paramsfile -p $paramsfile -n $runs -m $m";
+  system "fred_job -k $paramsfile -p $paramsfile -n $runs -m $cores";
 
   my $dir = `fred_cd -k $paramsfile | awk \'{print \$2}\' `;
   chomp $dir;
@@ -177,10 +190,11 @@ while ($error > $threshold) {
   
   # adjust to achieve desired CAR 
   my $ar_ratio = $CARtarget / $CAR;
-  $h *= $ar_ratio;
-  $n *= $ar_ratio;
-  $s *= $ar_ratio;
-  $w *= $ar_ratio;
+  $h = ($h + $h * $ar_ratio ) / 2.0;
+  $n = ($n + $n * $ar_ratio ) / 2.0;
+  $s = ($s + $s * $ar_ratio ) / 2.0;
+  $w = ($w + $w * $ar_ratio ) / 2.0;
+  $h = 1.0 if $h > 1.0;
 
   system "fred_delete -f -k $paramsfile >& /dev/null";
   unlink $paramsfile;
