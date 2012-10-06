@@ -25,7 +25,7 @@ my $cores = 1;
 # stopping criteria
 my $threshold = 0.1;
 
-my $usage = "usage: $0 [ -p oldparams | -r runs | -m cores | -H Htarget | -N Ntarget | -S Starget | -W Wtarget | -A CARtarget ]\n";
+my $usage = "usage: $0 -p oldparams [ -r runs | -m cores | -H Htarget | -N Ntarget | -S Starget | -W Wtarget | -A CARtarget ]\n";
 my $help = "";
 my $opt_result = GetOptions(
 			    "h" => \$help,
@@ -200,5 +200,5 @@ while ($error > $threshold) {
   unlink $paramsfile;
 }
 
-
+system "fred_get_R0_coefficients -p $paramsfinal -r $runs -m $cores";
 

@@ -10,7 +10,7 @@ my $dir = `pwd`;
 $dir = `basename $dir`;
 chomp $dir;
 my $oldparams = "";
-my $usage = "usage: $0 [ -p oldparams | -r runs | -m cores ]\n";
+my $usage = "usage: $0 -p oldparams [ -h | -r runs | -m cores ]\n";
 my $help = "";
 my $opt_result = GetOptions(
 			    "h" => \$help,
@@ -21,9 +21,8 @@ my $opt_result = GetOptions(
 die $usage if $help;
 die $usage if not $oldparams;
 
-if (0) {
 open FH, ">R0.txt";
-for (my $tr = 1.0; $tr <= 5.0; $tr += 1.0) {
+for (my $tr = 0.5; $tr <= 6.0; $tr += 0.5) {
   $tr = sprintf "%.1f", $tr;
   my $label = "get_coeff-$dir-tr=$tr";
   my $params = "params.$label";
@@ -39,9 +38,9 @@ for (my $tr = 1.0; $tr <= 5.0; $tr += 1.0) {
   chomp $r0;
   print FH "$tr $r0\n";
   system "fred_delete -f -k $label";
+  unlink $params;
 }
 close FH;
-}
 
 open PLT, ">R0.plt" or die "Can't write file R0.plt\n";
 my $date = scalar localtime();
@@ -98,6 +97,26 @@ for (my $r = 1.0; $r <= 2.5; $r += 0.1) {
   my $r0 = `fred_R0 $label 10`;
   chomp $r0;
   print FH "$r $r0\n";
+  system "fred_delete -f -k $label";
+  unlink $params;
+}
+for (my $r = 3.0; $r <= 10.0; $r += 1.0) {
+  $r = sprintf "%.1f", $r;
+  my $label = "get_coeff-$dir-R0=$r";
+  my $params = "params.$label";
+  system "cp $oldparams $params";
+  system "ch 'R0' $r $params";
+  system "ch days 11 $params";
+  system "ch track_infection_events 0 $params";
+  system "date";
+  system "fred_delete -f -k $label";
+  system "fred_job -p $params -k $label -n $runs -m $cores";
+  system "date";
+  my $r0 = `fred_R0 $label 10`;
+  chomp $r0;
+  print FH "$r $r0\n";
+  system "fred_delete -f -k $label";
+  unlink $params;
 }
 close FH;
 
