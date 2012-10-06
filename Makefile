@@ -2,8 +2,8 @@
 
 all:
 	(cd populations; make)
-	(cd region; make)
 	(cd src; make)
+	(cd tests; make)
 
 
 
