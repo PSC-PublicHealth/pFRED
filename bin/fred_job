@@ -4,14 +4,16 @@ use warnings;
 use Env;
 use Cwd;
 use Fcntl qw(:flock);
-use Getopt::Std;
+use Getopt::Long qw(:config no_ignore_case bundling);
 use POSIX qw/ceil/;
 $| = 1;  # AUTO_FLUSH
 
+#####################################
+#
 # File: fred_job
 # Author: John Grefenstette
 # Created: Jan 12, 2010
-# Updated: Mar 12, 2012
+# Updated: Oct 6, 2012
 
 # get current working directory
 my $cwd = getcwd();
@@ -19,25 +21,37 @@ my $cwd = getcwd();
 my $FRED = $ENV{FRED_HOME};
 die "fred_job: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
-# get command line arguments
-my %options = ();
-getopts("cfk:m:n:p:s:zP", \%options);
-my $cache = exists $options{c};
-my $force = exists $options{f};
-my $key;
-$key = $options{k} if exists $options{k};
-my $paramsfile = "params";
-$paramsfile = $options{p} if exists $options{p};
-my $zip = exists $options{z};
-my $parallel = exists $options{P};
-my $start_run = 1;
-$start_run = $options{s} if exists $options{s};
-die "fred_job: start_run must be an integer\n" if $start_run =~ /\D/;
-my $end_run = $start_run;
-$end_run = $options{n} if exists $options{n};
-die "fred_job: end_run must be an integer\n" if $end_run =~ /\D/;
-$end_run = $start_run if $end_run < $start_run;
+my $usage = "usage: $0 [ -h | -k key | -p paramsfile | -s start_run_number | -n end_run_number | -P | -m cores ]\n";
+my $help = "";
+my $cache = "";
+my $cores = "";
+my $force = "";
+my $key = "";
+my $paramsfile = "";
+my $zip = "";
+my $parallel = "";
+my $start_run = "";
+my $end_run = "";
+my $opt_result = GetOptions(
+			    "c" => \$cache,
+			    "f" => \$force,
+			    "h" => \$help,
+			    "k=s" => \$key,
+			    "m=i" => \$cores,
+			    "n=i" => \$end_run,
+			    "p=s" => \$paramsfile,
+			    "P" => \$parallel,
+			    "s=i" => \$start_run,
+			    "z" => \$zip
+);
+die $usage if $help;
 
+# set default parameter values:
+$paramsfile = "params" if not $paramsfile;
+die $usage if not -e $paramsfile;
+$start_run = 1 if $start_run eq "";
+$end_run = $start_run if $end_run eq "";
+$end_run = $start_run if $end_run < $start_run;
 my $runs = $end_run - $start_run + 1;
 
 # get the base of the params file name
@@ -77,11 +91,10 @@ if ($parallel) {
   }
 }
 
-if (exists $options{m}) {
+if ($cores) {
   $parallel = 1;
   $using_pbs = 0;
-  $cpus = $options{m};
-  $cpus =~ s/\D//g;
+  $cpus = $cores;
 }
 
 # get the file parameters from the params files

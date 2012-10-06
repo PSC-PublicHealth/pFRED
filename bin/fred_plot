@@ -54,9 +54,11 @@ my $normalize;
 my $smooth;
 my $xtics;
 my $legend;
+my $help;
 my $opt_result = GetOptions(
 			    "e" => \$errorbars,
 			    "f=s" => \$fontsize,
+			    "h" => \$help,
 			    "k=s" => \@keys,
 			    "T=s" => \$title,
 			    "v=s" => \@varlist,
@@ -90,6 +92,30 @@ my $opt_result = GetOptions(
 			    "Ymax=i" => \$ymax,
 			   );
 
+# my $usage = "usage: fred_plot -k key [-k key ...] -v var [-v var ...][-a start_year|-e|-f fontsize|-x xmin|-y ymin|-X xmax|-Y ymax|-T title]\n";
+
+my $usage = <<EOH;
+usage: fred_plot -k key -v var [ options ], where options include:
+       -h: print this help message.
+       -e: include errorbars on plot.
+       -f fontsize: specify "small", "medium", "large" or "giant" font.
+       -k key [ -k key ... ]: keys of jobs to plot
+       -T title: Title to appear on plot.
+       -v var [ -v var ... ]: variable to be plotted.
+       -x xmin: min value for x-axis.
+       -X xmax: max value for x-axis.
+       -y ymin: min value for y-axis.
+       -Y ymax: max value for y-axis.
+       --data: print x,y values to standard output.
+       --epi: label weeks by epi week numbers instead of simulation weeks.
+       --histogram: plot histograms instead of curves.
+       --name: return the name of the plot file only.
+       --normalize: scale y-axis to show counts per 100,000 people.
+       --weekly: plot variables averaged over epi weeks, with a smooth spline curve.
+EOH
+
+die $usage if $help;
+
 # resolve conflicting options
 
 # if attack rates are requested, disable smoothing and weekly sums
@@ -106,8 +132,6 @@ $smooth = 0 if $hist;
 
 $period = "weekly" if $weekly or $smooth;
 $with = "lines" if not $with;
-my $usage = "usage: fred_plot -k key [-k key ...] -v var [-v var ...][-a start_year|-e|-f fontsize|-x xmin|-y ymin|-X xmax|-Y ymax|-T title]\n";
-
 die $usage if not @keys;
 die $usage if not @varlist;
 

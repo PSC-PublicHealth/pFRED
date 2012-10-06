@@ -23,15 +23,16 @@ my $runs = 1;
 my $cores = 1;
 
 # stopping criteria
-my $threshold = 0.1;
+my $threshold = 0.01;
 
-my $usage = "usage: $0 -p oldparams [ -r runs | -m cores | -H Htarget | -N Ntarget | -S Starget | -W Wtarget | -A CARtarget ]\n";
+my $usage = "usage: $0 -p oldparams [ -r runs | -m cores | -H Htarget | -N Ntarget | -S Starget | -W Wtarget | -A CARtarget | -t threshold]\n";
 my $help = "";
 my $opt_result = GetOptions(
 			    "h" => \$help,
 			    "p=s" => \$oldparams,
 			    "r=i" => \$runs,
 			    "m=i" => \$cores,
+			    "t=s" => \$threshold,
 			    "H=s" => \$Htarget,
 			    "N=s" => \$Ntarget,
 			    "S=s" => \$Starget,
@@ -63,9 +64,9 @@ $x = `grep workplace_contact $oldparams`;
 @tmp = split " ", $x;
 my $w = pop @tmp;
 
-my $error = $threshold + 1.0;
+my $error = 20*$threshold;
 my $step = 0;
-while ($error > $threshold) {
+while ($error > 10*$threshold) {
   $step++;
   my $time = localtime();
   my $paramsfile = "$oldparams-cal-$step";
@@ -139,8 +140,7 @@ while ($error > $threshold) {
   unlink $paramsfile;
 }
 
-$error = 100;
-$threshold = 0.01;
+$error = $threshold + 1;
 
 while ($error > $threshold) {
   $step++;
