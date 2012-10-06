@@ -1,475 +1,345 @@
-day 0 dis 0 host 338630 age 31.682 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 573417 age 28.679 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 959246 age 10.093 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 970135 age 66.504 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 381350 age 79.614 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1005041 age 33.296 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 172540 age 64.049 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 631945 age 29.203 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 153701 age 22.674 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1032534 age 39.353 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 228771 age 82.079 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 635209 age 19.397 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 813552 age 67.414 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 750650 age 100.723 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 828292 age 15.058 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 966100 age 62.099 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 682216 age 34.353 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 468761 age 66.825 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 251471 age 28.658 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 490775 age 10.770 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 401843 age 1.638 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 770780 age 47.353 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 311467 age 20.038 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 953976 age 48.477 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 561241 age 9.781 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1082578 age 53.290 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 321849 age 51.841 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 287025 age 52.959 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 835665 age 4.255 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 986455 age 73.668 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 804014 age 26.737 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 974660 age 11.238 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 85894 age 7.249 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 117093 age 52.121 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 419597 age 17.499 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 809454 age 14.710 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 499193 age 11.052 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 955066 age 63.121 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 616558 age 11.181 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1027040 age 86.866 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 543246 age 29.896 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 884550 age 31.879 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 517994 age 4.047 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 603987 age 54.438 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 423780 age 24.321 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 990500 age 7.460 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 222873 age 5.921 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 559561 age 11.088 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 178987 age 33.422 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 241967 age 30.293 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1082157 age 47.315 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1025412 age 60.033 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 769049 age 28.997 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1042120 age 43.658 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 63020 age 10.030 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 829297 age 25.233 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 921856 age 47.370 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 27751 age 23.008 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 997514 age 2.222 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 63374 age 78.685 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 884496 age 67.510 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 535002 age 5.855 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 813709 age 46.501 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 969021 age 82.595 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 289435 age 2.112 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1029466 age 24.271 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 894039 age 57.773 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 312585 age 3.910 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 727100 age 55.247 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 671519 age 82.600 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 167098 age 42.230 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 775049 age 72.855 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 189951 age 45.978 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 66653 age 55.378 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 46730 age 54.762 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 28272 age 2.740 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 187465 age 23.052 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 169640 age 51.126 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 292642 age 57.455 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1153971 age 51.359 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 723796 age 84.797 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 708772 age 12.540 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 698192 age 50.052 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 586073 age 13.852 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 665949 age 69.792 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 596259 age 27.477 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1081623 age 79.452 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 297061 age 18.649 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 7425 age 14.614 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 421743 age 3.641 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 821493 age 49.093 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1132791 age 67.356 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 95682 age 36.126 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 741243 age 40.386 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 10109 age 12.882 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1020895 age 17.710 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 1064400 age 29.118 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 825402 age 8.723 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 290058 age 48.679 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 0 dis 0 host 17885 age 28.622 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1  
-day 1 dis 0 host 504472 age 11.597 sick_leave 0 infector 616558 inf_age 11.184 inf_sympt 1 inf_sick_leave 0 at S place 524679 size 700  
-day 1 dis 0 host 62738 age 10.351 sick_leave 0 infector 63020 inf_age 10.033 inf_sympt 0 inf_sick_leave 0 at C place 581067 size 424  
-day 1 dis 0 host 296987 age 18.737 sick_leave 0 infector 297061 inf_age 18.652 inf_sympt 0 inf_sick_leave 0 at C place 581246 size 167  
-day 1 dis 0 host 931731 age 3.860 sick_leave 0 infector 312585 inf_age 3.912 inf_sympt 1 inf_sick_leave 0 at C place 582219 size 239  
-day 1 dis 0 host 481517 age 3.858 sick_leave 0 infector 312585 inf_age 3.912 inf_sympt 1 inf_sick_leave 0 at C place 582219 size 239  
-day 1 dis 0 host 557588 age 10.219 sick_leave 0 infector 490775 inf_age 10.773 inf_sympt 0 inf_sick_leave 0 at C place 584207 size 475  
-day 1 dis 0 host 107988 age 11.608 sick_leave 0 infector 499193 inf_age 11.055 inf_sympt 1 inf_sick_leave 0 at C place 577194 size 628  
-day 1 dis 0 host 319200 age 11.556 sick_leave 0 infector 499193 inf_age 11.055 inf_sympt 1 inf_sick_leave 0 at C place 577194 size 628  
-day 1 dis 0 host 41902 age 11.959 sick_leave 0 infector 559561 inf_age 11.090 inf_sympt 0 inf_sick_leave 0 at C place 583601 size 503  
-day 1 dis 0 host 127912 age 11.449 sick_leave 0 infector 616558 inf_age 11.184 inf_sympt 1 inf_sick_leave 0 at C place 578260 size 700  
-day 1 dis 0 host 1009289 age 11.521 sick_leave 0 infector 616558 inf_age 11.184 inf_sympt 1 inf_sick_leave 0 at C place 578260 size 700  
-day 1 dis 0 host 151652 age 12.778 sick_leave 0 infector 708772 inf_age 12.542 inf_sympt 1 inf_sick_leave 0 at C place 580779 size 202  
-day 1 dis 0 host 472628 age 12.216 sick_leave 0 infector 708772 inf_age 12.542 inf_sympt 1 inf_sick_leave 0 at C place 580779 size 202  
-day 1 dis 0 host 44831 age 8.263 sick_leave 0 infector 825402 inf_age 8.726 inf_sympt 0 inf_sick_leave 0 at C place 580413 size 286  
-day 1 dis 0 host 708922 age 8.395 sick_leave 0 infector 825402 inf_age 8.726 inf_sympt 0 inf_sick_leave 0 at C place 580413 size 286  
-day 1 dis 0 host 921670 age 28.422 sick_leave 0 infector 27751 inf_age 23.011 inf_sympt 1 inf_sick_leave 0 at W place 535280 size 15  
-day 1 dis 0 host 633715 age 21.523 sick_leave 1 infector 95682 inf_age 36.129 inf_sympt 0 inf_sick_leave 1 at W place 550735 size 11255  
-day 1 dis 0 host 1149452 age 48.375 sick_leave 1 infector 241967 inf_age 30.296 inf_sympt 1 inf_sick_leave 1 at W place 548437 size 855  
-day 1 dis 0 host 993963 age 27.173 sick_leave 1 infector 573417 inf_age 28.682 inf_sympt 1 inf_sick_leave 1 at O place 612035 size 222  
-day 1 dis 0 host 531049 age 46.036 sick_leave 0 infector 770780 inf_age 47.356 inf_sympt 1 inf_sick_leave 0 at O place 618462 size 31  
-day 1 dis 0 host 394161 age 48.019 sick_leave 1 infector 894039 inf_age 57.775 inf_sympt 1 inf_sick_leave 0 at O place 618331 size 195  
-day 1 dis 0 host 443611 age 42.373 sick_leave 0 infector 169640 inf_age 51.129 inf_sympt 1 inf_sick_leave 1 at N place 574720 size 886  
-day 1 dis 0 host 1081910 age 23.408 sick_leave 1 infector 986455 inf_age 73.671 inf_sympt 1 inf_sick_leave 0 at N place 576402 size 514  
-day 1 dis 0 host 745128 age 45.411 sick_leave 0 infector 986455 inf_age 73.671 inf_sympt 1 inf_sick_leave 0 at N place 576402 size 514  
-day 1 dis 0 host 1081318 age 46.984 sick_leave 0 infector 1153971 inf_age 51.362 inf_sympt 1 inf_sick_leave 0 at N place 575814 size 1831  
-day 1 dis 0 host 27750 age 60.192 sick_leave 0 infector 27751 inf_age 23.011 inf_sympt 1 inf_sick_leave 0 at H place 9006 size 4  
-day 1 dis 0 host 28270 age 7.438 sick_leave 0 infector 28272 inf_age 2.742 inf_sympt 1 inf_sick_leave 0 at H place 496789 size 5  
-day 1 dis 0 host 46733 age 10.348 sick_leave 0 infector 46730 inf_age 54.764 inf_sympt 0 inf_sick_leave 1 at H place 459461 size 4  
-day 1 dis 0 host 117095 age 21.085 sick_leave 1 infector 117093 inf_age 52.123 inf_sympt 1 inf_sick_leave 0 at H place 98160 size 5  
-day 1 dis 0 host 172541 age 38.756 sick_leave 0 infector 172540 inf_age 64.052 inf_sympt 1 inf_sick_leave 1 at H place 311501 size 3  
-day 1 dis 0 host 178986 age 34.304 sick_leave 0 infector 178987 inf_age 33.425 inf_sympt 1 inf_sick_leave 0 at H place 55514 size 2  
-day 1 dis 0 host 297060 age 24.085 sick_leave 0 infector 297061 inf_age 18.652 inf_sympt 0 inf_sick_leave 0 at H place 295396 size 2  
-day 1 dis 0 host 312586 age 1.677 sick_leave 0 infector 312585 inf_age 3.912 inf_sympt 1 inf_sick_leave 0 at H place 360686 size 3  
-day 1 dis 0 host 517992 age 44.545 sick_leave 1 infector 517994 inf_age 4.049 inf_sympt 0 inf_sick_leave 0 at H place 113483 size 3  
-day 1 dis 0 host 535000 age 38.496 sick_leave 1 infector 535002 inf_age 5.858 inf_sympt 1 inf_sick_leave 0 at H place 220015 size 4  
-day 1 dis 0 host 535001 age 8.805 sick_leave 0 infector 535002 inf_age 5.858 inf_sympt 1 inf_sick_leave 0 at H place 220015 size 4  
-day 1 dis 0 host 586070 age 48.868 sick_leave 0 infector 586073 inf_age 13.855 inf_sympt 1 inf_sick_leave 0 at H place 506498 size 4  
-day 1 dis 0 host 665948 age 73.449 sick_leave 0 infector 665949 inf_age 69.795 inf_sympt 1 inf_sick_leave 0 at H place 148867 size 2  
-day 1 dis 0 host 828291 age 50.970 sick_leave 1 infector 828292 inf_age 15.060 inf_sympt 1 inf_sick_leave 0 at H place 470207 size 3  
-day 1 dis 0 host 884497 age 42.334 sick_leave 1 infector 884496 inf_age 67.512 inf_sympt 0 inf_sick_leave 0 at H place 200067 size 4  
-day 1 dis 0 host 959247 age 8.797 sick_leave 0 infector 959246 inf_age 10.096 inf_sympt 0 inf_sick_leave 0 at H place 135811 size 4  
-day 1 dis 0 host 990499 age 11.644 sick_leave 0 infector 990500 inf_age 7.463 inf_sympt 1 inf_sick_leave 0 at H place 496860 size 8  
-day 2 dis 0 host 864412 age 11.896 sick_leave 0 infector 559561 inf_age 11.093 inf_sympt 0 inf_sick_leave 0 at S place 525032 size 503  
-day 2 dis 0 host 579595 age 11.995 sick_leave 0 infector 616558 inf_age 11.186 inf_sympt 1 inf_sick_leave 0 at S place 524679 size 700  
-day 2 dis 0 host 613852 age 5.321 sick_leave 0 infector 222873 inf_age 5.926 inf_sympt 1 inf_sick_leave 0 at S place 524691 size 374  
-day 2 dis 0 host 563788 age 5.126 sick_leave 0 infector 312585 inf_age 3.915 inf_sympt 1 inf_sick_leave 0 at S place 524944 size 239  
-day 2 dis 0 host 978524 age 11.479 sick_leave 0 infector 561241 inf_age 9.786 inf_sympt 0 inf_sick_leave 0 at S place 524894 size 599  
-day 2 dis 0 host 38419 age 18.885 sick_leave 0 infector 828292 inf_age 15.063 inf_sympt 1 inf_sick_leave 0 at S place 525028 size 418  
-day 2 dis 0 host 294957 age 10.918 sick_leave 0 infector 46733 inf_age 10.351 inf_sympt 0 inf_sick_leave 0 at C place 583600 size 503  
-day 2 dis 0 host 246623 age 11.477 sick_leave 0 infector 1009289 inf_age 11.523 inf_sympt 0 inf_sick_leave 0 at C place 578260 size 700  
-day 2 dis 0 host 449702 age 11.986 sick_leave 0 infector 1009289 inf_age 11.523 inf_sympt 0 inf_sick_leave 0 at C place 578260 size 700  
-day 2 dis 0 host 151526 age 12.556 sick_leave 0 infector 472628 inf_age 12.219 inf_sympt 0 inf_sick_leave 0 at C place 580779 size 202  
-day 2 dis 0 host 1026867 age 12.751 sick_leave 0 infector 151652 inf_age 12.781 inf_sympt 1 inf_sick_leave 0 at C place 580779 size 202  
-day 2 dis 0 host 949759 age 10.858 sick_leave 0 infector 490775 inf_age 10.775 inf_sympt 0 inf_sick_leave 0 at C place 584207 size 475  
-day 2 dis 0 host 449692 age 11.918 sick_leave 0 infector 499193 inf_age 11.058 inf_sympt 1 inf_sick_leave 0 at C place 577194 size 628  
-day 2 dis 0 host 441839 age 8.753 sick_leave 0 infector 535001 inf_age 8.808 inf_sympt 1 inf_sick_leave 0 at C place 580178 size 671  
-day 2 dis 0 host 17608 age 13.058 sick_leave 0 infector 586073 inf_age 13.858 inf_sympt 1 inf_sick_leave 0 at C place 584450 size 633  
-day 2 dis 0 host 279354 age 8.140 sick_leave 0 infector 825402 inf_age 8.729 inf_sympt 0 inf_sick_leave 0 at C place 580413 size 286  
-day 2 dis 0 host 1162854 age 8.425 sick_leave 0 infector 708922 inf_age 8.397 inf_sympt 0 inf_sick_leave 0 at C place 580413 size 286  
-day 2 dis 0 host 630954 age 15.441 sick_leave 0 infector 828292 inf_age 15.063 inf_sympt 1 inf_sick_leave 0 at C place 583551 size 418  
-day 2 dis 0 host 84629 age 15.707 sick_leave 0 infector 828292 inf_age 15.063 inf_sympt 1 inf_sick_leave 0 at C place 583551 size 418  
-day 2 dis 0 host 774949 age 15.879 sick_leave 0 infector 828292 inf_age 15.063 inf_sympt 1 inf_sick_leave 0 at C place 583551 size 418  
-day 2 dis 0 host 851299 age 15.611 sick_leave 0 infector 828292 inf_age 15.063 inf_sympt 1 inf_sick_leave 0 at C place 583551 size 418  
-day 2 dis 0 host 218182 age 11.668 sick_leave 0 infector 974660 inf_age 11.244 inf_sympt 0 inf_sick_leave 0 at C place 577193 size 628  
-day 2 dis 0 host 272243 age 11.625 sick_leave 0 infector 990499 inf_age 11.647 inf_sympt 0 inf_sick_leave 0 at C place 583541 size 344  
-day 2 dis 0 host 1061147 age 11.351 sick_leave 0 infector 990499 inf_age 11.647 inf_sympt 0 inf_sick_leave 0 at C place 583541 size 344  
-day 2 dis 0 host 937045 age 49.378 sick_leave 0 infector 117093 inf_age 52.126 inf_sympt 1 inf_sick_leave 0 at W place 528677 size 7  
-day 2 dis 0 host 699449 age 30.951 sick_leave 1 infector 894039 inf_age 57.778 inf_sympt 1 inf_sick_leave 0 at W place 554279 size 195  
-day 2 dis 0 host 493437 age 51.427 sick_leave 1 infector 813709 inf_age 46.507 inf_sympt 0 inf_sick_leave 1 at W place 533901 size 395  
-day 2 dis 0 host 216251 age 55.833 sick_leave 1 infector 17885 inf_age 28.627 inf_sympt 0 inf_sick_leave 1 at O place 603829 size 197  
-day 2 dis 0 host 910108 age 38.841 sick_leave 1 infector 95682 inf_age 36.132 inf_sympt 0 inf_sick_leave 1 at O place 613574 size 11255  
-day 2 dis 0 host 1141049 age 52.986 sick_leave 0 infector 251471 inf_age 28.663 inf_sympt 1 inf_sick_leave 1 at O place 617586 size 12  
-day 2 dis 0 host 541917 age 49.178 sick_leave 1 infector 297060 inf_age 24.088 inf_sympt 1 inf_sick_leave 0 at O place 625236 size 17  
-day 2 dis 0 host 11241 age 54.762 sick_leave 1 infector 804014 inf_age 26.742 inf_sympt 1 inf_sick_leave 1 at O place 613458 size 11255  
-day 2 dis 0 host 728146 age 17.236 sick_leave 0 infector 1064400 inf_age 29.123 inf_sympt 0 inf_sick_leave 0 at O place 606263 size 121  
-day 2 dis 0 host 954778 age 28.260 sick_leave 0 infector 1082578 inf_age 53.296 inf_sympt 1 inf_sick_leave 0 at O place 622414 size 5  
-day 2 dis 0 host 1164445 age 54.471 sick_leave 1 infector 169640 inf_age 51.132 inf_sympt 1 inf_sick_leave 1 at N place 574721 size 1208  
-day 2 dis 0 host 829544 age 40.532 sick_leave 1 infector 169640 inf_age 51.132 inf_sympt 1 inf_sick_leave 1 at N place 574721 size 1208  
-day 2 dis 0 host 937741 age 36.515 sick_leave 1 infector 189951 inf_age 45.984 inf_sympt 0 inf_sick_leave 0 at N place 576536 size 297  
-day 2 dis 0 host 890013 age 19.008 sick_leave 0 infector 287025 inf_age 52.964 inf_sympt 0 inf_sick_leave 0 at N place 575473 size 4080  
-day 2 dis 0 host 117966 age 13.877 sick_leave 0 infector 289435 inf_age 2.118 inf_sympt 1 inf_sick_leave 0 at N place 575364 size 3068  
-day 2 dis 0 host 54595 age 47.195 sick_leave 1 infector 517994 inf_age 4.052 inf_sympt 0 inf_sick_leave 0 at N place 575714 size 2055  
-day 2 dis 0 host 26651 age 3.230 sick_leave 0 infector 671519 inf_age 82.605 inf_sympt 1 inf_sick_leave 0 at N place 575250 size 1984  
-day 2 dis 0 host 686592 age 34.512 sick_leave 1 infector 741243 inf_age 40.392 inf_sympt 0 inf_sick_leave 0 at N place 573842 size 22  
-day 2 dis 0 host 62737 age 11.501 sick_leave 0 infector 62738 inf_age 10.353 inf_sympt 1 inf_sick_leave 0 at H place 86058 size 6  
-day 2 dis 0 host 63017 age 15.868 sick_leave 0 infector 63020 inf_age 10.036 inf_sympt 0 inf_sick_leave 0 at H place 138198 size 6  
-day 2 dis 0 host 241969 age 4.868 sick_leave 0 infector 241967 inf_age 30.299 inf_sympt 1 inf_sick_leave 1 at H place 169232 size 4  
-day 2 dis 0 host 289434 age 32.329 sick_leave 0 infector 289435 inf_age 2.118 inf_sympt 1 inf_sick_leave 0 at H place 302424 size 3  
-day 2 dis 0 host 292643 age 70.137 sick_leave 0 infector 292642 inf_age 57.460 inf_sympt 1 inf_sick_leave 0 at H place 106731 size 2  
-day 2 dis 0 host 443614 age 5.849 sick_leave 0 infector 443611 inf_age 42.375 inf_sympt 0 inf_sick_leave 0 at H place 467297 size 5  
-day 2 dis 0 host 531050 age 18.868 sick_leave 0 infector 531049 inf_age 46.038 inf_sympt 1 inf_sick_leave 0 at H place 356063 size 4  
-day 2 dis 0 host 616559 age 8.310 sick_leave 0 infector 616558 inf_age 11.186 inf_sympt 1 inf_sick_leave 0 at H place 31246 size 4  
-day 2 dis 0 host 974663 age 6.427 sick_leave 0 infector 974660 inf_age 11.244 inf_sympt 0 inf_sick_leave 0 at H place 32735 size 6  
-day 2 dis 0 host 986454 age 71.858 sick_leave 0 infector 986455 inf_age 73.674 inf_sympt 1 inf_sick_leave 0 at H place 6738 size 2  
-day 2 dis 0 host 1042118 age 50.521 sick_leave 1 infector 1042120 inf_age 43.663 inf_sympt 1 inf_sick_leave 0 at H place 307324 size 3  
-day 2 dis 0 host 1064399 age 27.995 sick_leave 1 infector 1064400 inf_age 29.123 inf_sympt 0 inf_sick_leave 0 at H place 130547 size 2  
-day 3 dis 0 host 1001819 age 14.000 sick_leave 0 infector 17608 inf_age 13.060 inf_sympt 1 inf_sick_leave 0 at S place 525088 size 633  
-day 3 dis 0 host 774873 age 15.636 sick_leave 0 infector 828292 inf_age 15.066 inf_sympt 1 inf_sick_leave 0 at S place 525028 size 418  
-day 3 dis 0 host 919755 age 10.515 sick_leave 0 infector 44831 inf_age 8.268 inf_sympt 1 inf_sick_leave 0 at S place 524815 size 286  
-day 3 dis 0 host 441979 age 11.841 sick_leave 0 infector 559561 inf_age 11.096 inf_sympt 0 inf_sick_leave 0 at S place 525032 size 503  
-day 3 dis 0 host 1001717 age 11.808 sick_leave 0 infector 864412 inf_age 11.899 inf_sympt 0 inf_sick_leave 0 at S place 525032 size 503  
-day 3 dis 0 host 519828 age 11.044 sick_leave 0 infector 449702 inf_age 11.989 inf_sympt 1 inf_sick_leave 0 at S place 524679 size 700  
-day 3 dis 0 host 351845 age 11.507 sick_leave 0 infector 499193 inf_age 11.060 inf_sympt 1 inf_sick_leave 0 at S place 524609 size 628  
-day 3 dis 0 host 806288 age 3.077 sick_leave 0 infector 1061147 inf_age 11.353 inf_sympt 1 inf_sick_leave 0 at S place 525027 size 344  
-day 3 dis 0 host 142701 age 8.562 sick_leave 0 infector 272243 inf_age 11.627 inf_sympt 1 inf_sick_leave 0 at S place 525027 size 344  
-day 3 dis 0 host 837956 age 11.337 sick_leave 0 infector 312585 inf_age 3.918 inf_sympt 1 inf_sick_leave 0 at S place 524944 size 239  
-day 3 dis 0 host 1145958 age 5.981 sick_leave 0 infector 557588 inf_age 10.225 inf_sympt 1 inf_sick_leave 0 at S place 525072 size 475  
-day 3 dis 0 host 563338 age 9.616 sick_leave 0 infector 949759 inf_age 10.860 inf_sympt 0 inf_sick_leave 0 at S place 525072 size 475  
-day 3 dis 0 host 863301 age 9.222 sick_leave 0 infector 535001 inf_age 8.811 inf_sympt 1 inf_sick_leave 0 at S place 524798 size 671  
-day 3 dis 0 host 561214 age 9.723 sick_leave 0 infector 978524 inf_age 11.482 inf_sympt 1 inf_sick_leave 0 at S place 524894 size 599  
-day 3 dis 0 host 369371 age 7.466 sick_leave 0 infector 561241 inf_age 9.789 inf_sympt 0 inf_sick_leave 0 at S place 524894 size 599  
-day 3 dis 0 host 57827 age 13.581 sick_leave 0 infector 17608 inf_age 13.060 inf_sympt 1 inf_sick_leave 0 at C place 584450 size 633  
-day 3 dis 0 host 1113103 age 13.874 sick_leave 0 infector 586073 inf_age 13.860 inf_sympt 1 inf_sick_leave 0 at C place 584450 size 633  
-day 3 dis 0 host 917107 age 7.192 sick_leave 0 infector 28270 inf_age 7.444 inf_sympt 0 inf_sick_leave 0 at C place 584047 size 742  
-day 3 dis 0 host 432854 age 7.301 sick_leave 0 infector 28270 inf_age 7.444 inf_sympt 0 inf_sick_leave 0 at C place 584047 size 742  
-day 3 dis 0 host 1025775 age 8.362 sick_leave 0 infector 825402 inf_age 8.732 inf_sympt 0 inf_sick_leave 0 at C place 580413 size 286  
-day 3 dis 0 host 499175 age 11.479 sick_leave 0 infector 62737 inf_age 11.504 inf_sympt 0 inf_sick_leave 0 at C place 578757 size 478  
-day 3 dis 0 host 693487 age 15.252 sick_leave 0 infector 63017 inf_age 15.871 inf_sympt 1 inf_sick_leave 0 at C place 580378 size 1484  
-day 3 dis 0 host 421273 age 15.964 sick_leave 0 infector 828292 inf_age 15.066 inf_sympt 1 inf_sick_leave 0 at C place 583551 size 418  
-day 3 dis 0 host 185590 age 15.274 sick_leave 0 infector 828292 inf_age 15.066 inf_sympt 1 inf_sick_leave 0 at C place 583551 size 418  
-day 3 dis 0 host 1142714 age 13.088 sick_leave 0 infector 117966 inf_age 13.879 inf_sympt 0 inf_sick_leave 0 at C place 579739 size 413  
-day 3 dis 0 host 343882 age 11.600 sick_leave 0 infector 449702 inf_age 11.989 inf_sympt 1 inf_sick_leave 0 at C place 578260 size 700  
-day 3 dis 0 host 273611 age 11.866 sick_leave 0 infector 1009289 inf_age 11.526 inf_sympt 0 inf_sick_leave 0 at C place 578260 size 700  
-day 3 dis 0 host 488964 age 12.967 sick_leave 0 infector 708772 inf_age 12.548 inf_sympt 1 inf_sick_leave 0 at C place 580779 size 202  
-day 3 dis 0 host 974862 age 11.132 sick_leave 0 infector 974660 inf_age 11.247 inf_sympt 0 inf_sick_leave 0 at C place 577193 size 628  
-day 3 dis 0 host 364435 age 11.197 sick_leave 0 infector 218182 inf_age 11.671 inf_sympt 1 inf_sick_leave 0 at C place 577193 size 628  
-day 3 dis 0 host 627849 age 5.605 sick_leave 0 infector 222873 inf_age 5.929 inf_sympt 1 inf_sick_leave 0 at C place 578485 size 374  
-day 3 dis 0 host 15619 age 5.789 sick_leave 0 infector 222873 inf_age 5.929 inf_sympt 1 inf_sick_leave 0 at C place 578485 size 374  
-day 3 dis 0 host 258152 age 5.841 sick_leave 0 infector 222873 inf_age 5.929 inf_sympt 1 inf_sick_leave 0 at C place 578485 size 374  
-day 3 dis 0 host 272219 age 11.082 sick_leave 0 infector 272243 inf_age 11.627 inf_sympt 1 inf_sick_leave 0 at C place 583541 size 344  
-day 3 dis 0 host 300810 age 11.416 sick_leave 0 infector 272243 inf_age 11.627 inf_sympt 1 inf_sick_leave 0 at C place 583541 size 344  
-day 3 dis 0 host 472780 age 11.885 sick_leave 0 infector 990499 inf_age 11.649 inf_sympt 0 inf_sick_leave 0 at C place 583541 size 344  
-day 3 dis 0 host 296995 age 18.326 sick_leave 0 infector 297061 inf_age 18.658 inf_sympt 0 inf_sick_leave 0 at C place 581246 size 167  
-day 3 dis 0 host 297087 age 18.085 sick_leave 0 infector 296987 inf_age 18.742 inf_sympt 1 inf_sick_leave 0 at C place 581246 size 167  
-day 3 dis 0 host 557473 age 3.885 sick_leave 0 infector 312585 inf_age 3.918 inf_sympt 1 inf_sick_leave 0 at C place 582219 size 239  
-day 3 dis 0 host 1079532 age 10.184 sick_leave 0 infector 557588 inf_age 10.225 inf_sympt 1 inf_sick_leave 0 at C place 584207 size 475  
-day 3 dis 0 host 224704 age 10.595 sick_leave 0 infector 949759 inf_age 10.860 inf_sympt 0 inf_sick_leave 0 at C place 584207 size 475  
-day 3 dis 0 host 392820 age 11.392 sick_leave 0 infector 499193 inf_age 11.060 inf_sympt 1 inf_sick_leave 0 at C place 577194 size 628  
-day 3 dis 0 host 1122914 age 11.912 sick_leave 0 infector 499193 inf_age 11.060 inf_sympt 1 inf_sick_leave 0 at C place 577194 size 628  
-day 3 dis 0 host 572147 age 11.260 sick_leave 0 infector 499193 inf_age 11.060 inf_sympt 1 inf_sick_leave 0 at C place 577194 size 628  
-day 3 dis 0 host 364462 age 11.674 sick_leave 0 infector 499193 inf_age 11.060 inf_sympt 1 inf_sick_leave 0 at C place 577194 size 628  
-day 3 dis 0 host 88011 age 18.786 sick_leave 1 infector 531050 inf_age 18.871 inf_sympt 0 inf_sick_leave 0 at C place 583193 size 1470  
-day 3 dis 0 host 55958 age 18.748 sick_leave 0 infector 531050 inf_age 18.871 inf_sympt 0 inf_sick_leave 0 at C place 583193 size 1470  
-day 3 dis 0 host 634769 age 8.348 sick_leave 0 infector 535001 inf_age 8.811 inf_sympt 1 inf_sick_leave 0 at C place 580178 size 671  
-day 3 dis 0 host 344727 age 8.649 sick_leave 0 infector 535001 inf_age 8.811 inf_sympt 1 inf_sick_leave 0 at C place 580178 size 671  
-day 3 dis 0 host 117863 age 8.964 sick_leave 0 infector 535001 inf_age 8.811 inf_sympt 1 inf_sick_leave 0 at C place 580178 size 671  
-day 3 dis 0 host 846643 age 8.564 sick_leave 0 infector 535001 inf_age 8.811 inf_sympt 1 inf_sick_leave 0 at C place 580178 size 671  
-day 3 dis 0 host 300107 age 9.044 sick_leave 0 infector 561241 inf_age 9.789 inf_sympt 0 inf_sick_leave 0 at C place 581541 size 599  
-day 3 dis 0 host 537346 age 17.997 sick_leave 1 infector 728146 inf_age 17.238 inf_sympt 1 inf_sick_leave 0 at C place 584832 size 1461  
-day 3 dis 0 host 990273 age 11.411 sick_leave 0 infector 864412 inf_age 11.899 inf_sympt 0 inf_sick_leave 0 at C place 583602 size 503  
-day 3 dis 0 host 502955 age 6.997 sick_leave 0 infector 974663 inf_age 6.430 inf_sympt 1 inf_sick_leave 0 at C place 577653 size 229  
-day 3 dis 0 host 1049902 age 48.526 sick_leave 0 infector 54595 inf_age 47.197 inf_sympt 1 inf_sick_leave 1 at W place 540811 size 256  
-day 3 dis 0 host 223946 age 21.422 sick_leave 0 infector 394161 inf_age 48.025 inf_sympt 1 inf_sick_leave 1 at W place 554279 size 195  
-day 3 dis 0 host 331643 age 44.600 sick_leave 0 infector 813709 inf_age 46.510 inf_sympt 0 inf_sick_leave 1 at W place 533901 size 395  
-day 3 dis 0 host 662945 age 16.436 sick_leave 1 infector 11241 inf_age 54.764 inf_sympt 1 inf_sick_leave 1 at O place 613458 size 11255  
-day 3 dis 0 host 597908 age 31.984 sick_leave 0 infector 216251 inf_age 55.836 inf_sympt 1 inf_sick_leave 1 at O place 603829 size 197  
-day 3 dis 0 host 880422 age 64.847 sick_leave 0 infector 993963 inf_age 27.178 inf_sympt 0 inf_sick_leave 1 at O place 612035 size 222  
-day 3 dis 0 host 833555 age 54.112 sick_leave 1 infector 631945 inf_age 29.211 inf_sympt 0 inf_sick_leave 1 at O place 615643 size 4  
-day 3 dis 0 host 228086 age 49.312 sick_leave 0 infector 829544 inf_age 40.534 inf_sympt 1 inf_sick_leave 1 at O place 627286 size 114  
-day 3 dis 0 host 605538 age 13.912 sick_leave 0 infector 216251 inf_age 55.836 inf_sympt 1 inf_sick_leave 1 at N place 575529 size 1805  
-day 3 dis 0 host 43325 age 36.184 sick_leave 1 infector 251471 inf_age 28.666 inf_sympt 1 inf_sick_leave 1 at N place 575304 size 5749  
-day 3 dis 0 host 972470 age 15.718 sick_leave 0 infector 296987 inf_age 18.742 inf_sympt 1 inf_sick_leave 0 at N place 575416 size 323  
-day 3 dis 0 host 722001 age 11.581 sick_leave 0 infector 381350 inf_age 79.622 inf_sympt 1 inf_sick_leave 0 at N place 575647 size 1136  
-day 3 dis 0 host 1124639 age 49.112 sick_leave 1 infector 543246 inf_age 29.904 inf_sympt 1 inf_sick_leave 0 at N place 575119 size 1028  
-day 3 dis 0 host 998286 age 12.767 sick_leave 0 infector 708922 inf_age 8.400 inf_sympt 0 inf_sick_leave 0 at N place 575428 size 1111  
-day 3 dis 0 host 707420 age 45.197 sick_leave 0 infector 723796 inf_age 84.805 inf_sympt 0 inf_sick_leave 0 at N place 575306 size 6227  
-day 3 dis 0 host 680817 age 75.074 sick_leave 0 infector 770780 inf_age 47.362 inf_sympt 1 inf_sick_leave 0 at N place 575822 size 1188  
-day 3 dis 0 host 325535 age 63.940 sick_leave 0 infector 813552 inf_age 67.422 inf_sympt 0 inf_sick_leave 0 at N place 575773 size 1062  
-day 3 dis 0 host 732091 age 17.753 sick_leave 0 infector 828292 inf_age 15.066 inf_sympt 1 inf_sick_leave 0 at N place 574652 size 438  
-day 3 dis 0 host 1134555 age 33.778 sick_leave 0 infector 851299 inf_age 15.614 inf_sympt 1 inf_sick_leave 0 at N place 574943 size 455  
-day 3 dis 0 host 1098196 age 50.710 sick_leave 0 infector 966100 inf_age 62.107 inf_sympt 1 inf_sick_leave 1 at N place 574724 size 1182  
-day 3 dis 0 host 204404 age 42.038 sick_leave 0 infector 990499 inf_age 11.649 inf_sympt 0 inf_sick_leave 0 at N place 574370 size 210  
-day 3 dis 0 host 55248 age 7.732 sick_leave 0 infector 1042120 inf_age 43.666 inf_sympt 1 inf_sick_leave 0 at N place 575256 size 1847  
-day 3 dis 0 host 26648 age 25.090 sick_leave 1 infector 26651 inf_age 3.233 inf_sympt 1 inf_sick_leave 0 at H place 336086 size 5  
-day 3 dis 0 host 27752 age 16.548 sick_leave 0 infector 27751 inf_age 23.016 inf_sympt 1 inf_sick_leave 0 at H place 9006 size 4  
-day 3 dis 0 host 44829 age 49.238 sick_leave 0 infector 44831 inf_age 8.268 inf_sympt 1 inf_sick_leave 0 at H place 200834 size 4  
-day 3 dis 0 host 44830 age 13.879 sick_leave 0 infector 44831 inf_age 8.268 inf_sympt 1 inf_sick_leave 0 at H place 200834 size 4  
-day 3 dis 0 host 62736 age 12.290 sick_leave 0 infector 62737 inf_age 11.504 inf_sympt 0 inf_sick_leave 0 at H place 86058 size 6  
-day 3 dis 0 host 117092 age 52.866 sick_leave 1 infector 117095 inf_age 21.090 inf_sympt 0 inf_sick_leave 1 at H place 98160 size 5  
-day 3 dis 0 host 117096 age 18.058 sick_leave 0 infector 117093 inf_age 52.129 inf_sympt 1 inf_sick_leave 0 at H place 98160 size 5  
-day 3 dis 0 host 151525 age 14.753 sick_leave 0 infector 151526 inf_age 12.559 inf_sympt 1 inf_sick_leave 0 at H place 195384 size 7  
-day 3 dis 0 host 151650 age 15.299 sick_leave 0 infector 151652 inf_age 12.784 inf_sympt 1 inf_sick_leave 0 at H place 195037 size 7  
-day 3 dis 0 host 222870 age 42.860 sick_leave 0 infector 222873 inf_age 5.929 inf_sympt 1 inf_sick_leave 0 at H place 110452 size 5  
-day 3 dis 0 host 289433 age 33.548 sick_leave 1 infector 289434 inf_age 32.332 inf_sympt 1 inf_sick_leave 0 at H place 302424 size 3  
-day 3 dis 0 host 296986 age 24.896 sick_leave 1 infector 296987 inf_age 18.742 inf_sympt 1 inf_sick_leave 0 at H place 254764 size 2  
-day 3 dis 0 host 449691 age 35.296 sick_leave 0 infector 449692 inf_age 11.921 inf_sympt 1 inf_sick_leave 0 at H place 3868 size 2  
-day 3 dis 0 host 543248 age 0.901 sick_leave 0 infector 543246 inf_age 29.904 inf_sympt 1 inf_sick_leave 0 at H place 364122 size 3  
-day 3 dis 0 host 557587 age 17.701 sick_leave 0 infector 557588 inf_age 10.225 inf_sympt 1 inf_sick_leave 0 at H place 492380 size 4  
-day 3 dis 0 host 682214 age 10.773 sick_leave 0 infector 682216 inf_age 34.362 inf_sympt 0 inf_sick_leave 1 at H place 330534 size 7  
-day 3 dis 0 host 708921 age 16.636 sick_leave 0 infector 708922 inf_age 8.400 inf_sympt 0 inf_sick_leave 0 at H place 231854 size 4  
-day 3 dis 0 host 910109 age 32.559 sick_leave 0 infector 910108 inf_age 38.844 inf_sympt 0 inf_sick_leave 1 at H place 293544 size 2  
-day 3 dis 0 host 959248 age 44.795 sick_leave 1 infector 959247 inf_age 8.803 inf_sympt 1 inf_sick_leave 0 at H place 135811 size 4  
-day 3 dis 0 host 969022 age 74.468 sick_leave 0 infector 969021 inf_age 82.603 inf_sympt 1 inf_sick_leave 1 at H place 401820 size 2  
-day 3 dis 0 host 997513 age 7.740 sick_leave 0 infector 997514 inf_age 2.230 inf_sympt 1 inf_sick_leave 0 at H place 501634 size 5  
-day 3 dis 0 host 1081319 age 45.307 sick_leave 0 infector 1081318 inf_age 46.989 inf_sympt 1 inf_sick_leave 0 at H place 102309 size 3  
-day 3 dis 0 host 1153968 age 13.756 sick_leave 0 infector 1153971 inf_age 51.367 inf_sympt 1 inf_sick_leave 0 at H place 91079 size 4  
-day 3 dis 0 host 1162852 age 32.822 sick_leave 1 infector 1162854 inf_age 8.427 inf_sympt 1 inf_sick_leave 0 at H place 277881 size 5  
-day 4 dis 0 host 666895 age 14.948 sick_leave 0 infector 1001819 inf_age 14.003 inf_sympt 1 inf_sick_leave 0 at S place 525088 size 633  
-day 4 dis 0 host 1125251 age 12.362 sick_leave 0 infector 17608 inf_age 13.063 inf_sympt 1 inf_sick_leave 0 at S place 525088 size 633  
-day 4 dis 0 host 572547 age 7.945 sick_leave 0 infector 917107 inf_age 7.195 inf_sympt 0 inf_sick_leave 0 at S place 525062 size 742  
-day 4 dis 0 host 55384 age 16.003 sick_leave 0 infector 774873 inf_age 15.638 inf_sympt 0 inf_sick_leave 0 at S place 525028 size 418  
-day 4 dis 0 host 1009484 age 17.299 sick_leave 0 infector 38419 inf_age 18.890 inf_sympt 0 inf_sick_leave 0 at S place 525028 size 418  
-day 4 dis 0 host 124699 age 15.181 sick_leave 0 infector 851299 inf_age 15.616 inf_sympt 1 inf_sick_leave 0 at S place 525028 size 418  
-day 4 dis 0 host 982840 age 14.430 sick_leave 0 infector 84629 inf_age 15.712 inf_sympt 1 inf_sick_leave 0 at S place 525028 size 418  
-day 4 dis 0 host 421281 age 15.137 sick_leave 0 infector 421273 inf_age 15.967 inf_sympt 0 inf_sick_leave 0 at S place 525028 size 418  
-day 4 dis 0 host 649309 age 6.367 sick_leave 0 infector 44831 inf_age 8.271 inf_sympt 1 inf_sick_leave 0 at S place 524815 size 286  
-day 4 dis 0 host 889179 age 15.967 sick_leave 0 infector 55958 inf_age 18.751 inf_sympt 1 inf_sick_leave 0 at S place 525006 size 1470  
-day 4 dis 0 host 732164 age 15.603 sick_leave 0 infector 55958 inf_age 18.751 inf_sympt 1 inf_sick_leave 0 at S place 525006 size 1470  
-day 4 dis 0 host 863219 age 6.948 sick_leave 0 infector 117863 inf_age 8.967 inf_sympt 1 inf_sick_leave 0 at S place 524798 size 671  
-day 4 dis 0 host 922061 age 6.381 sick_leave 0 infector 846643 inf_age 8.567 inf_sympt 1 inf_sick_leave 0 at S place 524798 size 671  
-day 4 dis 0 host 700648 age 6.978 sick_leave 0 infector 846643 inf_age 8.567 inf_sympt 1 inf_sick_leave 0 at S place 524798 size 671  
-day 4 dis 0 host 487131 age 5.879 sick_leave 0 infector 535001 inf_age 8.814 inf_sympt 1 inf_sick_leave 0 at S place 524798 size 671  
-day 4 dis 0 host 1136073 age 9.970 sick_leave 0 infector 535001 inf_age 8.814 inf_sympt 1 inf_sick_leave 0 at S place 524798 size 671  
-day 4 dis 0 host 634750 age 10.551 sick_leave 0 infector 246623 inf_age 11.482 inf_sympt 1 inf_sick_leave 0 at S place 524679 size 700  
-day 4 dis 0 host 72839 age 6.460 sick_leave 0 infector 1061147 inf_age 11.356 inf_sympt 1 inf_sick_leave 0 at S place 525027 size 344  
-day 4 dis 0 host 819115 age 9.608 sick_leave 0 infector 1061147 inf_age 11.356 inf_sympt 1 inf_sick_leave 0 at S place 525027 size 344  
-day 4 dis 0 host 393259 age 4.655 sick_leave 0 infector 272219 inf_age 11.085 inf_sympt 1 inf_sick_leave 0 at S place 525027 size 344  
-day 4 dis 0 host 308434 age 11.534 sick_leave 0 infector 1122914 inf_age 11.915 inf_sympt 1 inf_sick_leave 0 at S place 524609 size 628  
-day 4 dis 0 host 974666 age 11.225 sick_leave 0 infector 351845 inf_age 11.510 inf_sympt 1 inf_sick_leave 0 at S place 524609 size 628  
-day 4 dis 0 host 279277 age 10.997 sick_leave 0 infector 258152 inf_age 5.844 inf_sympt 0 inf_sick_leave 0 at S place 524691 size 374  
-day 4 dis 0 host 114268 age 11.825 sick_leave 0 infector 557588 inf_age 10.227 inf_sympt 1 inf_sick_leave 0 at S place 525072 size 475  
-day 4 dis 0 host 201735 age 6.258 sick_leave 0 infector 296987 inf_age 18.745 inf_sympt 1 inf_sick_leave 0 at S place 524875 size 167  
-day 4 dis 0 host 297041 age 18.521 sick_leave 0 infector 297087 inf_age 18.088 inf_sympt 0 inf_sick_leave 0 at S place 524875 size 167  
-day 4 dis 0 host 856903 age 18.351 sick_leave 0 infector 297061 inf_age 18.660 inf_sympt 0 inf_sick_leave 0 at S place 524875 size 167  
-day 4 dis 0 host 303022 age 9.411 sick_leave 0 infector 978524 inf_age 11.485 inf_sympt 1 inf_sick_leave 0 at S place 524894 size 599  
-day 4 dis 0 host 686642 age 4.507 sick_leave 0 infector 561241 inf_age 9.792 inf_sympt 0 inf_sick_leave 0 at S place 524894 size 599  
-day 4 dis 0 host 699970 age 10.000 sick_leave 0 infector 561241 inf_age 9.792 inf_sympt 0 inf_sick_leave 0 at S place 524894 size 599  
-day 4 dis 0 host 807525 age 16.441 sick_leave 0 infector 708921 inf_age 16.638 inf_sympt 1 inf_sick_leave 0 at S place 524833 size 1526  
-day 4 dis 0 host 373943 age 13.836 sick_leave 0 infector 17608 inf_age 13.063 inf_sympt 1 inf_sick_leave 0 at C place 584450 size 633  
-day 4 dis 0 host 222853 age 13.521 sick_leave 0 infector 17608 inf_age 13.063 inf_sympt 1 inf_sick_leave 0 at C place 584450 size 633  
-day 4 dis 0 host 1001889 age 13.737 sick_leave 0 infector 1113103 inf_age 13.877 inf_sympt 1 inf_sick_leave 0 at C place 584450 size 633  
-day 4 dis 0 host 234006 age 7.488 sick_leave 0 infector 917107 inf_age 7.195 inf_sympt 0 inf_sick_leave 0 at C place 584047 size 742  
-day 4 dis 0 host 558284 age 7.967 sick_leave 0 infector 917107 inf_age 7.195 inf_sympt 0 inf_sick_leave 0 at C place 584047 size 742  
-day 4 dis 0 host 872081 age 7.216 sick_leave 0 infector 28270 inf_age 7.447 inf_sympt 0 inf_sick_leave 0 at C place 584047 size 742  
-day 4 dis 0 host 344196 age 7.573 sick_leave 0 infector 432854 inf_age 7.304 inf_sympt 0 inf_sick_leave 0 at C place 584047 size 742  
-day 4 dis 0 host 851727 age 8.115 sick_leave 0 infector 44831 inf_age 8.271 inf_sympt 1 inf_sick_leave 0 at C place 580413 size 286  
-day 4 dis 0 host 43915 age 8.211 sick_leave 0 infector 708922 inf_age 8.403 inf_sympt 0 inf_sick_leave 0 at C place 580413 size 286  
-day 4 dis 0 host 279330 age 8.466 sick_leave 0 infector 708922 inf_age 8.403 inf_sympt 0 inf_sick_leave 0 at C place 580413 size 286  
-day 4 dis 0 host 904980 age 8.819 sick_leave 0 infector 825402 inf_age 8.734 inf_sympt 0 inf_sick_leave 0 at C place 580413 size 286  
-day 4 dis 0 host 62277 age 10.759 sick_leave 0 infector 46733 inf_age 10.356 inf_sympt 0 inf_sick_leave 0 at C place 583600 size 503  
-day 4 dis 0 host 460503 age 19.014 sick_leave 1 infector 55958 inf_age 18.751 inf_sympt 1 inf_sick_leave 0 at C place 583193 size 1470  
-day 4 dis 0 host 312912 age 18.173 sick_leave 1 infector 55958 inf_age 18.751 inf_sympt 1 inf_sick_leave 0 at C place 583193 size 1470  
-day 4 dis 0 host 616261 age 18.129 sick_leave 0 infector 531050 inf_age 18.874 inf_sympt 0 inf_sick_leave 0 at C place 583193 size 1470  
-day 4 dis 0 host 761156 age 12.019 sick_leave 0 infector 62736 inf_age 12.293 inf_sympt 1 inf_sick_leave 0 at C place 578759 size 478  
-day 4 dis 0 host 27182 age 15.162 sick_leave 0 infector 63017 inf_age 15.874 inf_sympt 1 inf_sick_leave 0 at C place 580378 size 1484  
-day 4 dis 0 host 308952 age 15.964 sick_leave 0 infector 84629 inf_age 15.712 inf_sympt 1 inf_sick_leave 0 at C place 583551 size 418  
-day 4 dis 0 host 889119 age 15.233 sick_leave 0 infector 84629 inf_age 15.712 inf_sympt 1 inf_sick_leave 0 at C place 583551 size 418  
-day 4 dis 0 host 980804 age 15.455 sick_leave 0 infector 851299 inf_age 15.616 inf_sympt 1 inf_sick_leave 0 at C place 583551 size 418  
-day 4 dis 0 host 458463 age 15.836 sick_leave 0 infector 851299 inf_age 15.616 inf_sympt 1 inf_sick_leave 0 at C place 583551 size 418  
-day 4 dis 0 host 675501 age 15.962 sick_leave 0 infector 421273 inf_age 15.967 inf_sympt 0 inf_sick_leave 0 at C place 583551 size 418  
-day 4 dis 0 host 157668 age 8.436 sick_leave 0 infector 846643 inf_age 8.567 inf_sympt 1 inf_sick_leave 0 at C place 580178 size 671  
-day 4 dis 0 host 869004 age 8.299 sick_leave 0 infector 846643 inf_age 8.567 inf_sympt 1 inf_sick_leave 0 at C place 580178 size 671  
-day 4 dis 0 host 1109261 age 12.005 sick_leave 0 infector 449702 inf_age 11.992 inf_sympt 1 inf_sick_leave 0 at C place 578260 size 700  
-day 4 dis 0 host 632829 age 11.559 sick_leave 0 infector 616558 inf_age 11.192 inf_sympt 1 inf_sick_leave 0 at C place 578260 size 700  
-day 4 dis 0 host 844586 age 11.449 sick_leave 0 infector 246623 inf_age 11.482 inf_sympt 1 inf_sick_leave 0 at C place 578260 size 700  
-day 4 dis 0 host 753725 age 8.559 sick_leave 0 infector 142701 inf_age 8.564 inf_sympt 0 inf_sick_leave 0 at C place 583538 size 344  
-day 4 dis 0 host 878218 age 12.879 sick_leave 0 infector 151652 inf_age 12.786 inf_sympt 1 inf_sick_leave 0 at C place 580779 size 202  
-day 4 dis 0 host 10005 age 12.307 sick_leave 0 infector 1026867 inf_age 12.756 inf_sympt 1 inf_sick_leave 0 at C place 580779 size 202  
-day 4 dis 0 host 844411 age 11.268 sick_leave 0 infector 364435 inf_age 11.200 inf_sympt 1 inf_sick_leave 0 at C place 577193 size 628  
-day 4 dis 0 host 1122774 age 11.679 sick_leave 0 infector 218182 inf_age 11.674 inf_sympt 1 inf_sick_leave 0 at C place 577193 size 628  
-day 4 dis 0 host 490855 age 10.214 sick_leave 0 infector 557588 inf_age 10.227 inf_sympt 1 inf_sick_leave 0 at C place 584207 size 475  
-day 4 dis 0 host 104533 age 10.449 sick_leave 0 infector 557588 inf_age 10.227 inf_sympt 1 inf_sick_leave 0 at C place 584207 size 475  
-day 4 dis 0 host 376275 age 10.425 sick_leave 0 infector 557588 inf_age 10.227 inf_sympt 1 inf_sick_leave 0 at C place 584207 size 475  
-day 4 dis 0 host 189903 age 10.879 sick_leave 0 infector 949759 inf_age 10.863 inf_sympt 0 inf_sick_leave 0 at C place 584207 size 475  
-day 4 dis 0 host 1047351 age 10.975 sick_leave 0 infector 1079532 inf_age 10.186 inf_sympt 0 inf_sick_leave 0 at C place 584207 size 475  
-day 4 dis 0 host 861045 age 10.510 sick_leave 0 infector 224704 inf_age 10.597 inf_sympt 1 inf_sick_leave 0 at C place 584207 size 475  
-day 4 dis 0 host 158624 age 11.003 sick_leave 0 infector 224704 inf_age 10.597 inf_sympt 1 inf_sick_leave 0 at C place 584207 size 475  
-day 4 dis 0 host 272057 age 11.348 sick_leave 0 infector 472780 inf_age 11.888 inf_sympt 1 inf_sick_leave 0 at C place 583541 size 344  
-day 4 dis 0 host 266450 age 11.296 sick_leave 0 infector 472780 inf_age 11.888 inf_sympt 1 inf_sick_leave 0 at C place 583541 size 344  
-day 4 dis 0 host 782469 age 11.351 sick_leave 0 infector 300810 inf_age 11.419 inf_sympt 0 inf_sick_leave 0 at C place 583541 size 344  
-day 4 dis 0 host 271979 age 11.548 sick_leave 0 infector 990499 inf_age 11.652 inf_sympt 0 inf_sick_leave 0 at C place 583541 size 344  
-day 4 dis 0 host 995840 age 11.318 sick_leave 0 infector 272243 inf_age 11.630 inf_sympt 1 inf_sick_leave 0 at C place 583541 size 344  
-day 4 dis 0 host 856887 age 19.014 sick_leave 0 infector 297061 inf_age 18.660 inf_sympt 0 inf_sick_leave 0 at C place 581246 size 167  
-day 4 dis 0 host 233976 age 7.101 sick_leave 0 infector 369371 inf_age 7.468 inf_sympt 0 inf_sick_leave 0 at C place 581535 size 599  
-day 4 dis 0 host 17806 age 11.422 sick_leave 0 infector 864412 inf_age 11.901 inf_sympt 0 inf_sick_leave 0 at C place 583602 size 503  
-day 4 dis 0 host 579905 age 11.668 sick_leave 0 infector 864412 inf_age 11.901 inf_sympt 0 inf_sick_leave 0 at C place 583602 size 503  
-day 4 dis 0 host 658881 age 11.822 sick_leave 0 infector 864412 inf_age 11.901 inf_sympt 0 inf_sick_leave 0 at C place 583602 size 503  
-day 4 dis 0 host 974870 age 11.364 sick_leave 0 infector 1122914 inf_age 11.915 inf_sympt 1 inf_sick_leave 0 at C place 577194 size 628  
-day 4 dis 0 host 844431 age 11.868 sick_leave 0 infector 499193 inf_age 11.063 inf_sympt 1 inf_sick_leave 0 at C place 577194 size 628  
-day 4 dis 0 host 234854 age 17.833 sick_leave 0 infector 537346 inf_age 18.000 inf_sympt 0 inf_sick_leave 1 at C place 584832 size 1461  
-day 4 dis 0 host 1001479 age 11.263 sick_leave 0 infector 559561 inf_age 11.099 inf_sympt 0 inf_sick_leave 0 at C place 583601 size 503  
-day 4 dis 0 host 252366 age 11.323 sick_leave 0 infector 722001 inf_age 11.584 inf_sympt 1 inf_sick_leave 0 at C place 579732 size 413  
-day 4 dis 0 host 415384 age 14.710 sick_leave 0 infector 809454 inf_age 14.721 inf_sympt 0 inf_sick_leave 0 at C place 582553 size 431  
-day 4 dis 0 host 774710 age 11.008 sick_leave 0 infector 919755 inf_age 10.518 inf_sympt 0 inf_sick_leave 0 at C place 580416 size 286  
-day 4 dis 0 host 496112 age 11.022 sick_leave 0 infector 978524 inf_age 11.485 inf_sympt 1 inf_sick_leave 0 at C place 581544 size 599  
-day 4 dis 0 host 941113 age 11.397 sick_leave 0 infector 978524 inf_age 11.485 inf_sympt 1 inf_sick_leave 0 at C place 581544 size 599  
-day 4 dis 0 host 158649 age 5.748 sick_leave 0 infector 1145958 inf_age 5.984 inf_sympt 0 inf_sick_leave 0 at C place 584197 size 475  
-day 4 dis 0 host 425816 age 5.699 sick_leave 0 infector 1145958 inf_age 5.984 inf_sympt 0 inf_sick_leave 0 at C place 584197 size 475  
-day 4 dis 0 host 394393 age 5.373 sick_leave 0 infector 1145958 inf_age 5.984 inf_sympt 0 inf_sick_leave 0 at C place 584197 size 475  
-day 4 dis 0 host 701459 age 41.055 sick_leave 1 infector 804014 inf_age 26.748 inf_sympt 1 inf_sick_leave 1 at W place 550735 size 11255  
-day 4 dis 0 host 381225 age 54.433 sick_leave 1 infector 216251 inf_age 55.838 inf_sympt 1 inf_sick_leave 1 at W place 543273 size 197  
-day 4 dis 0 host 533132 age 28.616 sick_leave 0 infector 954778 inf_age 28.266 inf_sympt 0 inf_sick_leave 0 at W place 557893 size 5  
-day 4 dis 0 host 976479 age 32.027 sick_leave 1 infector 1042120 inf_age 43.668 inf_sympt 1 inf_sick_leave 0 at W place 546723 size 53  
-day 4 dis 0 host 900149 age 35.332 sick_leave 0 infector 11241 inf_age 54.767 inf_sympt 1 inf_sick_leave 1 at O place 613458 size 11255  
-day 4 dis 0 host 105622 age 75.014 sick_leave 1 infector 662945 inf_age 16.438 inf_sympt 1 inf_sick_leave 1 at O place 613458 size 11255  
-day 4 dis 0 host 561735 age 40.551 sick_leave 1 infector 169640 inf_age 51.137 inf_sympt 1 inf_sick_leave 1 at O place 627870 size 15  
-day 4 dis 0 host 296098 age 41.211 sick_leave 0 infector 597908 inf_age 31.986 inf_sympt 1 inf_sick_leave 0 at O place 603829 size 197  
-day 4 dis 0 host 444735 age 57.641 sick_leave 1 infector 251471 inf_age 28.668 inf_sympt 1 inf_sick_leave 1 at O place 617586 size 12  
-day 4 dis 0 host 388062 age 51.636 sick_leave 1 infector 517992 inf_age 44.553 inf_sympt 0 inf_sick_leave 1 at O place 614248 size 315  
-day 4 dis 0 host 354528 age 31.534 sick_leave 1 infector 1032534 inf_age 39.364 inf_sympt 0 inf_sick_leave 0 at O place 587070 size 7  
-day 4 dis 0 host 404054 age 53.597 sick_leave 1 infector 1149452 inf_age 48.384 inf_sympt 1 inf_sick_leave 1 at O place 609838 size 855  
-day 4 dis 0 host 339044 age 45.984 sick_leave 1 infector 919755 inf_age 10.518 inf_sympt 0 inf_sick_leave 0 at N place 575485 size 1454  
-day 4 dis 0 host 1086861 age 13.959 sick_leave 0 infector 44831 inf_age 8.271 inf_sympt 1 inf_sick_leave 0 at N place 575485 size 1454  
-day 4 dis 0 host 841386 age 2.975 sick_leave 0 infector 46730 inf_age 54.773 inf_sympt 0 inf_sick_leave 1 at N place 574644 size 579  
-day 4 dis 0 host 818134 age 20.137 sick_leave 0 infector 55248 inf_age 7.734 inf_sympt 1 inf_sick_leave 0 at N place 575313 size 1196  
-day 4 dis 0 host 777865 age 46.356 sick_leave 1 infector 63017 inf_age 15.874 inf_sympt 1 inf_sick_leave 0 at N place 575721 size 298  
-day 4 dis 0 host 598615 age 42.129 sick_leave 1 infector 117093 inf_age 52.132 inf_sympt 1 inf_sick_leave 0 at N place 575817 size 1482  
-day 4 dis 0 host 137982 age 83.099 sick_leave 0 infector 178987 inf_age 33.433 inf_sympt 1 inf_sick_leave 0 at N place 575986 size 557  
-day 4 dis 0 host 791231 age 27.266 sick_leave 0 infector 178987 inf_age 33.433 inf_sympt 1 inf_sick_leave 0 at N place 575986 size 557  
-day 4 dis 0 host 372083 age 48.397 sick_leave 0 infector 228086 inf_age 49.315 inf_sympt 1 inf_sick_leave 0 at N place 575029 size 245  
-day 4 dis 0 host 828363 age 5.249 sick_leave 0 infector 228086 inf_age 49.315 inf_sympt 1 inf_sick_leave 0 at N place 575029 size 245  
-day 4 dis 0 host 974117 age 62.356 sick_leave 0 infector 289435 inf_age 2.123 inf_sympt 1 inf_sick_leave 0 at N place 575307 size 2264  
-day 4 dis 0 host 355276 age 26.452 sick_leave 0 infector 344727 inf_age 8.652 inf_sympt 1 inf_sick_leave 0 at N place 575597 size 1205  
-day 4 dis 0 host 1018592 age 18.342 sick_leave 0 infector 351845 inf_age 11.510 inf_sympt 1 inf_sick_leave 0 at N place 575719 size 233  
-day 4 dis 0 host 899554 age 70.104 sick_leave 0 infector 394161 inf_age 48.027 inf_sympt 1 inf_sick_leave 1 at N place 575235 size 1184  
-day 4 dis 0 host 740976 age 6.534 sick_leave 0 infector 421273 inf_age 15.967 inf_sympt 0 inf_sick_leave 0 at N place 574886 size 472  
-day 4 dis 0 host 155189 age 41.995 sick_leave 1 infector 531050 inf_age 18.874 inf_sympt 0 inf_sick_leave 0 at N place 575190 size 4975  
-day 4 dis 0 host 1123232 age 83.912 sick_leave 0 infector 543248 inf_age 0.904 inf_sympt 1 inf_sick_leave 0 at N place 575114 size 1176  
-day 4 dis 0 host 696834 age 57.178 sick_leave 0 infector 559561 inf_age 11.099 inf_sympt 0 inf_sick_leave 0 at N place 574762 size 966  
-day 4 dis 0 host 902562 age 45.334 sick_leave 1 infector 722001 inf_age 11.584 inf_sympt 1 inf_sick_leave 0 at N place 575532 size 3967  
-day 4 dis 0 host 9991 age 32.986 sick_leave 1 infector 722001 inf_age 11.584 inf_sympt 1 inf_sick_leave 0 at N place 575532 size 3967  
-day 4 dis 0 host 495265 age 0.362 sick_leave 0 infector 616558 inf_age 11.192 inf_sympt 1 inf_sick_leave 0 at N place 576178 size 249  
-day 4 dis 0 host 567936 age 33.416 sick_leave 1 infector 616558 inf_age 11.192 inf_sympt 1 inf_sick_leave 0 at N place 576178 size 249  
-day 4 dis 0 host 420350 age 35.929 sick_leave 1 infector 634769 inf_age 8.351 inf_sympt 1 inf_sick_leave 0 at N place 575539 size 323  
-day 4 dis 0 host 67205 age 52.600 sick_leave 0 infector 728146 inf_age 17.241 inf_sympt 1 inf_sick_leave 0 at N place 574138 size 347  
-day 4 dis 0 host 1154376 age 22.068 sick_leave 1 infector 804014 inf_age 26.748 inf_sympt 1 inf_sick_leave 1 at N place 575064 size 2107  
-day 4 dis 0 host 1089592 age 50.438 sick_leave 0 infector 829544 inf_age 40.537 inf_sympt 1 inf_sick_leave 1 at N place 574663 size 1353  
-day 4 dis 0 host 483519 age 48.142 sick_leave 0 infector 917107 inf_age 7.195 inf_sympt 0 inf_sick_leave 0 at N place 574485 size 632  
-day 4 dis 0 host 725162 age 16.200 sick_leave 0 infector 949759 inf_age 10.863 inf_sympt 0 inf_sick_leave 0 at N place 574426 size 746  
-day 4 dis 0 host 193625 age 57.995 sick_leave 0 infector 978524 inf_age 11.485 inf_sympt 1 inf_sick_leave 0 at N place 574193 size 306  
-day 4 dis 0 host 1008017 age 0.638 sick_leave 0 infector 997514 inf_age 2.233 inf_sympt 1 inf_sick_leave 0 at N place 574335 size 2279  
-day 4 dis 0 host 423663 age 52.132 sick_leave 1 infector 1009289 inf_age 11.529 inf_sympt 0 inf_sick_leave 0 at N place 575598 size 2659  
-day 4 dis 0 host 884943 age 19.110 sick_leave 0 infector 1026867 inf_age 12.756 inf_sympt 1 inf_sick_leave 0 at N place 575590 size 3251  
-day 4 dis 0 host 710762 age 67.816 sick_leave 0 infector 1032534 inf_age 39.364 inf_sympt 0 inf_sick_leave 0 at N place 576169 size 0  
-day 4 dis 0 host 291823 age 64.940 sick_leave 0 infector 1042120 inf_age 43.668 inf_sympt 1 inf_sick_leave 0 at N place 575314 size 1462  
-day 4 dis 0 host 942549 age 26.822 sick_leave 1 infector 1064399 inf_age 28.000 inf_sympt 0 inf_sick_leave 1 at N place 575704 size 3786  
-day 4 dis 0 host 182603 age 79.052 sick_leave 0 infector 1149452 inf_age 48.384 inf_sympt 1 inf_sick_leave 1 at N place 576047 size 282  
-day 4 dis 0 host 716075 age 19.326 sick_leave 1 infector 1164445 inf_age 54.477 inf_sympt 0 inf_sick_leave 1 at N place 574778 size 967  
-day 4 dis 0 host 11243 age 23.277 sick_leave 0 infector 11241 inf_age 54.767 inf_sympt 1 inf_sick_leave 1 at H place 259410 size 4  
-day 4 dis 0 host 151524 age 15.896 sick_leave 0 infector 151526 inf_age 12.562 inf_sympt 1 inf_sick_leave 0 at H place 195384 size 7  
-day 4 dis 0 host 151649 age 17.770 sick_leave 0 infector 151652 inf_age 12.786 inf_sympt 1 inf_sick_leave 0 at H place 195037 size 7  
-day 4 dis 0 host 343881 age 14.189 sick_leave 0 infector 343882 inf_age 11.603 inf_sympt 1 inf_sick_leave 0 at H place 125279 size 5  
-day 4 dis 0 host 344730 age 34.767 sick_leave 1 infector 344727 inf_age 8.652 inf_sympt 1 inf_sick_leave 0 at H place 177218 size 7  
-day 4 dis 0 host 472629 age 9.151 sick_leave 0 infector 472628 inf_age 12.225 inf_sympt 0 inf_sick_leave 0 at H place 214018 size 3  
-day 4 dis 0 host 472776 age 45.682 sick_leave 0 infector 472780 inf_age 11.888 inf_sympt 1 inf_sick_leave 0 at H place 495905 size 5  
-day 4 dis 0 host 472777 age 45.814 sick_leave 0 infector 472780 inf_age 11.888 inf_sympt 1 inf_sick_leave 0 at H place 495905 size 5  
-day 4 dis 0 host 499194 age 8.203 sick_leave 0 infector 499193 inf_age 11.063 inf_sympt 1 inf_sick_leave 0 at H place 7051 size 3  
-day 4 dis 0 host 502953 age 32.132 sick_leave 0 infector 502955 inf_age 7.000 inf_sympt 1 inf_sick_leave 0 at H place 34631 size 4  
-day 4 dis 0 host 543247 age 4.575 sick_leave 0 infector 543246 inf_age 29.907 inf_sympt 1 inf_sick_leave 0 at H place 364122 size 3  
-day 4 dis 0 host 561240 age 12.923 sick_leave 0 infector 561241 inf_age 9.792 inf_sympt 0 inf_sick_leave 0 at H place 359635 size 3  
-day 4 dis 0 host 563340 age 74.167 sick_leave 0 infector 563338 inf_age 9.619 inf_sympt 1 inf_sick_leave 0 at H place 494723 size 5  
-day 4 dis 0 host 563789 age 5.808 sick_leave 0 infector 563788 inf_age 5.132 inf_sympt 1 inf_sick_leave 0 at H place 396637 size 5  
-day 4 dis 0 host 596258 age 48.203 sick_leave 0 infector 596259 inf_age 27.488 inf_sympt 1 inf_sick_leave 1 at H place 205494 size 3  
-day 4 dis 0 host 596260 age 25.011 sick_leave 1 infector 596259 inf_age 27.488 inf_sympt 1 inf_sick_leave 1 at H place 205494 size 3  
-day 4 dis 0 host 634767 age 46.808 sick_leave 1 infector 634769 inf_age 8.351 inf_sympt 1 inf_sick_leave 0 at H place 229004 size 6  
-day 4 dis 0 host 662944 age 16.214 sick_leave 1 infector 662945 inf_age 16.438 inf_sympt 1 inf_sick_leave 1 at H place 15012 size 3  
-day 4 dis 0 host 686589 age 33.896 sick_leave 1 infector 686592 inf_age 34.518 inf_sympt 1 inf_sick_leave 1 at H place 515269 size 4  
-day 4 dis 0 host 708771 age 18.589 sick_leave 1 infector 708772 inf_age 12.551 inf_sympt 1 inf_sick_leave 0 at H place 250011 size 4  
-day 4 dis 0 host 727099 age 76.329 sick_leave 0 infector 727100 inf_age 55.258 inf_sympt 1 inf_sick_leave 1 at H place 72999 size 2  
-day 4 dis 0 host 728144 age 46.479 sick_leave 0 infector 728146 inf_age 17.241 inf_sympt 1 inf_sick_leave 0 at H place 515600 size 5  
-day 4 dis 0 host 728147 age 14.238 sick_leave 0 infector 728146 inf_age 17.241 inf_sympt 1 inf_sick_leave 0 at H place 515600 size 5  
-day 4 dis 0 host 745131 age 13.704 sick_leave 0 infector 745128 inf_age 45.419 inf_sympt 1 inf_sick_leave 0 at H place 7046 size 5  
-day 4 dis 0 host 835666 age 3.033 sick_leave 0 infector 835665 inf_age 4.266 inf_sympt 1 inf_sick_leave 0 at H place 79598 size 4  
-day 4 dis 0 host 864413 age 7.756 sick_leave 0 infector 864412 inf_age 11.901 inf_sympt 0 inf_sick_leave 0 at H place 456335 size 7  
-day 4 dis 0 host 894043 age 3.841 sick_leave 0 infector 894039 inf_age 57.784 inf_sympt 1 inf_sick_leave 0 at H place 269417 size 5  
-day 4 dis 0 host 949762 age 12.400 sick_leave 0 infector 949759 inf_age 10.863 inf_sympt 0 inf_sick_leave 0 at H place 494212 size 4  
-day 4 dis 0 host 990272 age 13.507 sick_leave 0 infector 990273 inf_age 11.414 inf_sympt 1 inf_sick_leave 0 at H place 458079 size 6  
-day 4 dis 0 host 990277 age 72.488 sick_leave 0 infector 990273 inf_age 11.414 inf_sympt 1 inf_sick_leave 0 at H place 458079 size 6  
-day 4 dis 0 host 997515 age 45.323 sick_leave 0 infector 997513 inf_age 7.742 inf_sympt 1 inf_sick_leave 0 at H place 501634 size 5  
-day 4 dis 0 host 1001815 age 11.458 sick_leave 0 infector 1001819 inf_age 14.003 inf_sympt 1 inf_sick_leave 0 at H place 503483 size 7  
-day 4 dis 0 host 1001817 age 20.830 sick_leave 0 infector 1001819 inf_age 14.003 inf_sympt 1 inf_sick_leave 0 at H place 503483 size 7  
-day 4 dis 0 host 1009288 age 1.088 sick_leave 0 infector 1009289 inf_age 11.529 inf_sympt 0 inf_sick_leave 0 at H place 166220 size 5  
-day 4 dis 0 host 1081913 age 50.630 sick_leave 1 infector 1081910 inf_age 23.416 inf_sympt 1 inf_sick_leave 1 at H place 7592 size 4  
-day 4 dis 0 host 1141048 age 52.792 sick_leave 0 infector 1141049 inf_age 52.992 inf_sympt 0 inf_sick_leave 0 at H place 191270 size 3  
-day 4 dis 0 host 1162850 age 33.123 sick_leave 1 infector 1162852 inf_age 32.825 inf_sympt 1 inf_sick_leave 1 at H place 277881 size 5  
+day 0 dis 0 host 131318 age 53.860 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 522463 age 26.263 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 760218 age 19.241 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 287006 age 5.827 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 331069 age 47.227 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 420800 age 53.375 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 50258 age 56.723 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 239779 age 49.781 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 133649 age 69.101 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 393599 age 44.921 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 705816 age 63.496 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1014479 age 27.926 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 153815 age 22.745 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 567299 age 51.578 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 737084 age 31.058 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 775044 age 73.477 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 627237 age 76.375 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 210939 age 17.699 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 518039 age 69.685 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 490348 age 72.181 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 850808 age 39.321 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 344773 age 19.940 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 683378 age 49.888 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1114355 age 68.723 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 168270 age 31.085 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 710425 age 35.658 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1062014 age 15.367 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 464092 age 52.378 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 580002 age 8.104 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 545001 age 74.433 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1085208 age 82.258 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 699486 age 30.674 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 611002 age 67.282 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 627741 age 2.797 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 642860 age 9.101 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 882575 age 72.099 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 694353 age 74.271 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 605174 age 60.748 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 737345 age 44.490 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 95747 age 48.112 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 46708 age 14.342 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 278148 age 82.296 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 717362 age 74.449 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1140996 age 76.923 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 225461 age 4.260 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 793019 age 17.786 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 227467 age 85.973 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1049914 age 48.323 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1093547 age 21.658 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1037950 age 62.890 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 446270 age 43.488 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 605453 age 24.115 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 591405 age 49.507 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 470233 age 59.951 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 21938 age 51.852 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1056440 age 33.340 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 139826 age 19.718 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1114170 age 18.397 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 359222 age 9.085 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 472468 age 44.655 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 571624 age 44.559 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 255393 age 25.463 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 772975 age 62.279 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 618288 age 24.866 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 892565 age 25.775 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 1 
+day 0 dis 0 host 464743 age 1.668 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 799469 age 53.041 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 229440 age 23.386 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 536813 age 24.055 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 87224 age 57.545 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 545705 age 22.937 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 503218 age 40.608 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 36074 age 70.033 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1038927 age 52.460 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 160759 age 21.666 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 604520 age 31.134 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 587972 age 28.666 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 459478 age 77.189 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 154584 age 75.205 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1119113 age 25.022 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 129711 age 48.496 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 963828 age 47.655 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 272660 age 61.071 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 905594 age 22.690 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 638354 age 16.192 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 749197 age 64.167 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 820526 age 59.247 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 1235 age 35.888 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 880023 age 57.263 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 163723 age 2.293 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 455535 age 88.400 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 222964 age 6.455 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 630572 age 49.589 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 239620 age 26.277 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 427007 age 71.348 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 142163 age 1.003 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 267002 age 44.307 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 975344 age 5.000 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 564768 age 26.077 sick_leave 0 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 0 dis 0 host 353501 age 52.290 sick_leave 1 infector -1 inf_age -1.000 inf_sympt -1 inf_sick_leave -1 at X place -1 size -1 is_teacher 0 
+day 1 dis 0 host 72627 age 16.373 sick_leave 0 infector 638354 inf_age 16.195 inf_sympt 0 inf_sick_leave 0 at S place 525074 size 1225 is_teacher 0 
+day 1 dis 0 host 761218 age 17.764 sick_leave 0 infector 793019 inf_age 17.789 inf_sympt 1 inf_sick_leave 1 at S place 524632 size 1055 is_teacher 0 
+day 1 dis 0 host 343830 age 15.477 sick_leave 0 infector 1062014 inf_age 15.370 inf_sympt 0 inf_sick_leave 0 at S place 524731 size 1294 is_teacher 0 
+day 1 dis 0 host 10712 age 38.474 sick_leave 1 infector 1062014 inf_age 15.370 inf_sympt 0 inf_sick_leave 0 at S place 524731 size 1294 is_teacher 1 
+day 1 dis 0 host 52922 age 9.334 sick_leave 0 infector 359222 inf_age 9.088 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 1 dis 0 host 339083 age 9.603 sick_leave 0 infector 359222 inf_age 9.088 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 1 dis 0 host 838728 age 17.112 sick_leave 0 infector 793019 inf_age 17.789 inf_sympt 1 inf_sick_leave 1 at C place 580787 size 1055 is_teacher 0 
+day 1 dis 0 host 493271 age 4.153 sick_leave 0 infector 975344 inf_age 5.003 inf_sympt 0 inf_sick_leave 0 at C place 583578 size 72 is_teacher 0 
+day 1 dis 0 host 708461 age 15.718 sick_leave 0 infector 1062014 inf_age 15.370 inf_sympt 0 inf_sick_leave 0 at C place 582431 size 1294 is_teacher 0 
+day 1 dis 0 host 212050 age 47.811 sick_leave 0 infector 21938 inf_age 51.855 inf_sympt 1 inf_sick_leave 1 at W place 550373 size 11 is_teacher 0 
+day 1 dis 0 host 961480 age 45.753 sick_leave 1 infector 153815 inf_age 22.748 inf_sympt 1 inf_sick_leave 1 at O place 631237 size 189 is_teacher 0 
+day 1 dis 0 host 204997 age 56.899 sick_leave 0 infector 571624 inf_age 44.562 inf_sympt 1 inf_sick_leave 1 at O place 630421 size 5 is_teacher 0 
+day 1 dis 0 host 107271 age 24.216 sick_leave 1 infector 604520 inf_age 31.137 inf_sympt 0 inf_sick_leave 1 at O place 615975 size 2476 is_teacher 0 
+day 1 dis 0 host 629303 age 51.567 sick_leave 1 infector 793019 inf_age 17.789 inf_sympt 1 inf_sick_leave 1 at O place 611344 size 1346 is_teacher 0 
+day 1 dis 0 host 609952 age 26.134 sick_leave 1 infector 793019 inf_age 17.789 inf_sympt 1 inf_sick_leave 1 at O place 611344 size 1346 is_teacher 0 
+day 1 dis 0 host 42972 age 39.841 sick_leave 0 infector 1049914 inf_age 48.326 inf_sympt 1 inf_sick_leave 0 at O place 598203 size 192 is_teacher 0 
+day 1 dis 0 host 718202 age 42.351 sick_leave 0 infector 133649 inf_age 69.104 inf_sympt 1 inf_sick_leave 1 at N place 576036 size 3248 is_teacher 0 
+day 1 dis 0 host 263637 age 40.044 sick_leave 0 infector 255393 inf_age 25.466 inf_sympt 1 inf_sick_leave 1 at N place 575232 size 78 is_teacher 0 
+day 1 dis 0 host 621004 age 42.447 sick_leave 0 infector 638354 inf_age 16.195 inf_sympt 0 inf_sick_leave 0 at N place 578270 size 71 is_teacher 0 
+day 1 dis 0 host 703655 age 8.825 sick_leave 0 infector 1049914 inf_age 48.326 inf_sympt 1 inf_sick_leave 0 at N place 575614 size 0 is_teacher 0 
+day 1 dis 0 host 133650 age 57.597 sick_leave 1 infector 133649 inf_age 69.104 inf_sympt 1 inf_sick_leave 1 at H place 50530 size 2 is_teacher 0 
+day 1 dis 0 host 287007 age 31.822 sick_leave 0 infector 287006 inf_age 5.830 inf_sympt 1 inf_sick_leave 0 at H place 180889 size 4 is_teacher 0 
+day 1 dis 0 host 536814 age 24.499 sick_leave 1 infector 536813 inf_age 24.058 inf_sympt 0 inf_sick_leave 1 at H place 56358 size 2 is_teacher 1 
+day 1 dis 0 host 1049913 age 1.238 sick_leave 0 infector 1049914 inf_age 48.326 inf_sympt 1 inf_sick_leave 0 at H place 19097 size 4 is_teacher 0 
+day 2 dis 0 host 477926 age 15.633 sick_leave 0 infector 708461 inf_age 15.721 inf_sympt 1 inf_sick_leave 0 at S place 524731 size 1294 is_teacher 0 
+day 2 dis 0 host 550209 age 16.211 sick_leave 0 infector 793019 inf_age 17.792 inf_sympt 1 inf_sick_leave 1 at S place 524632 size 1055 is_teacher 0 
+day 2 dis 0 host 180378 age 9.847 sick_leave 0 infector 339083 inf_age 9.605 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 2 dis 0 host 629889 age 9.893 sick_leave 0 infector 339083 inf_age 9.605 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 2 dis 0 host 616662 age 9.219 sick_leave 0 infector 339083 inf_age 9.605 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 2 dis 0 host 359369 age 9.134 sick_leave 0 infector 359222 inf_age 9.090 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 2 dis 0 host 291730 age 9.477 sick_leave 0 infector 52922 inf_age 9.337 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 2 dis 0 host 433637 age 4.918 sick_leave 0 infector 493271 inf_age 4.156 inf_sympt 0 inf_sick_leave 0 at C place 583578 size 72 is_teacher 0 
+day 2 dis 0 host 1119913 age 4.934 sick_leave 0 infector 493271 inf_age 4.156 inf_sympt 0 inf_sick_leave 0 at C place 583578 size 72 is_teacher 0 
+day 2 dis 0 host 294271 age 4.337 sick_leave 0 infector 975344 inf_age 5.005 inf_sympt 0 inf_sick_leave 0 at C place 583578 size 72 is_teacher 0 
+day 2 dis 0 host 466219 age 9.030 sick_leave 0 infector 642860 inf_age 9.107 inf_sympt 0 inf_sick_leave 0 at C place 585562 size 198 is_teacher 0 
+day 2 dis 0 host 600104 age 15.132 sick_leave 0 infector 708461 inf_age 15.721 inf_sympt 1 inf_sick_leave 0 at C place 582431 size 1294 is_teacher 0 
+day 2 dis 0 host 478166 age 15.466 sick_leave 0 infector 708461 inf_age 15.721 inf_sympt 1 inf_sick_leave 0 at C place 582431 size 1294 is_teacher 0 
+day 2 dis 0 host 695663 age 15.463 sick_leave 0 infector 708461 inf_age 15.721 inf_sympt 1 inf_sick_leave 0 at C place 582431 size 1294 is_teacher 0 
+day 2 dis 0 host 1111058 age 17.841 sick_leave 1 infector 838728 inf_age 17.115 inf_sympt 1 inf_sick_leave 0 at C place 580787 size 1055 is_teacher 0 
+day 2 dis 0 host 401081 age 39.022 sick_leave 1 infector 737345 inf_age 44.496 inf_sympt 1 inf_sick_leave 1 at W place 546553 size 149 is_teacher 0 
+day 2 dis 0 host 731523 age 26.266 sick_leave 1 infector 1056440 inf_age 33.345 inf_sympt 0 inf_sick_leave 1 at W place 540315 size 58 is_teacher 0 
+day 2 dis 0 host 997840 age 62.493 sick_leave 0 infector 129711 inf_age 48.501 inf_sympt 1 inf_sick_leave 1 at O place 621308 size 3 is_teacher 0 
+day 2 dis 0 host 1047788 age 64.953 sick_leave 1 infector 522463 inf_age 26.268 inf_sympt 0 inf_sick_leave 0 at O place 617087 size 65 is_teacher 0 
+day 2 dis 0 host 791561 age 45.181 sick_leave 1 infector 1038927 inf_age 52.466 inf_sympt 1 inf_sick_leave 1 at O place 629368 size 3 is_teacher 0 
+day 2 dis 0 host 1126764 age 18.775 sick_leave 0 infector 21938 inf_age 51.858 inf_sympt 1 inf_sick_leave 1 at N place 577151 size 2425 is_teacher 0 
+day 2 dis 0 host 645597 age 89.027 sick_leave 0 infector 36074 inf_age 70.038 inf_sympt 1 inf_sick_leave 0 at N place 576192 size 461 is_teacher 0 
+day 2 dis 0 host 14139 age 73.093 sick_leave 0 infector 129711 inf_age 48.501 inf_sympt 1 inf_sick_leave 1 at N place 577134 size 303 is_teacher 0 
+day 2 dis 0 host 593243 age 42.970 sick_leave 0 infector 718202 inf_age 42.353 inf_sympt 1 inf_sick_leave 0 at N place 576036 size 3248 is_teacher 0 
+day 2 dis 0 host 638579 age 1.795 sick_leave 0 infector 239779 inf_age 49.786 inf_sympt 1 inf_sick_leave 1 at N place 577383 size 186 is_teacher 0 
+day 2 dis 0 host 1108031 age 84.975 sick_leave 0 infector 255393 inf_age 25.468 inf_sympt 1 inf_sick_leave 1 at N place 575153 size 35 is_teacher 0 
+day 2 dis 0 host 949441 age 69.282 sick_leave 1 infector 344773 inf_age 19.945 inf_sympt 1 inf_sick_leave 0 at N place 576113 size 784 is_teacher 0 
+day 2 dis 0 host 841953 age 26.586 sick_leave 1 infector 605453 inf_age 24.121 inf_sympt 0 inf_sick_leave 0 at N place 577146 size 2156 is_teacher 0 
+day 2 dis 0 host 779437 age 13.370 sick_leave 0 infector 699486 inf_age 30.679 inf_sympt 0 inf_sick_leave 1 at N place 576905 size 2488 is_teacher 0 
+day 2 dis 0 host 153348 age 80.825 sick_leave 0 infector 708461 inf_age 15.721 inf_sympt 1 inf_sick_leave 0 at N place 576114 size 1342 is_teacher 0 
+day 2 dis 0 host 488267 age 38.499 sick_leave 1 infector 961480 inf_age 45.756 inf_sympt 1 inf_sick_leave 1 at N place 576200 size 129 is_teacher 0 
+day 2 dis 0 host 72626 age 33.499 sick_leave 1 infector 72627 inf_age 16.375 inf_sympt 0 inf_sick_leave 0 at H place 480163 size 5 is_teacher 0 
+day 2 dis 0 host 107270 age 25.277 sick_leave 0 infector 107271 inf_age 24.219 inf_sympt 1 inf_sick_leave 1 at H place 227819 size 3 is_teacher 0 
+day 2 dis 0 host 225464 age 2.340 sick_leave 0 infector 225461 inf_age 4.266 inf_sympt 0 inf_sick_leave 0 at H place 228025 size 5 is_teacher 0 
+day 2 dis 0 host 267004 age 7.575 sick_leave 0 infector 267002 inf_age 44.312 inf_sympt 1 inf_sick_leave 1 at H place 200838 size 3 is_teacher 0 
+day 2 dis 0 host 287004 age 2.978 sick_leave 0 infector 287006 inf_age 5.833 inf_sympt 1 inf_sick_leave 0 at H place 180889 size 4 is_teacher 0 
+day 2 dis 0 host 464742 age 7.047 sick_leave 0 infector 464743 inf_age 1.674 inf_sympt 1 inf_sick_leave 0 at H place 452229 size 4 is_teacher 0 
+day 2 dis 0 host 493270 age 10.222 sick_leave 0 infector 493271 inf_age 4.156 inf_sympt 0 inf_sick_leave 0 at H place 513654 size 3 is_teacher 0 
+day 2 dis 0 host 567298 age 55.690 sick_leave 1 infector 567299 inf_age 51.584 inf_sympt 1 inf_sick_leave 0 at H place 86075 size 3 is_teacher 0 
+day 2 dis 0 host 587973 age 3.633 sick_leave 0 infector 587972 inf_age 28.671 inf_sympt 1 inf_sick_leave 1 at H place 59199 size 4 is_teacher 0 
+day 2 dis 0 host 611003 age 41.685 sick_leave 0 infector 611002 inf_age 67.288 inf_sympt 0 inf_sick_leave 0 at H place 472407 size 4 is_teacher 0 
+day 2 dis 0 host 630574 age 15.499 sick_leave 0 infector 630572 inf_age 49.595 inf_sympt 1 inf_sick_leave 1 at H place 187890 size 5 is_teacher 0 
+day 2 dis 0 host 683377 age 56.337 sick_leave 0 infector 683378 inf_age 49.893 inf_sympt 1 inf_sick_leave 0 at H place 473814 size 3 is_teacher 0 
+day 2 dis 0 host 710429 age 5.696 sick_leave 0 infector 710425 inf_age 35.663 inf_sympt 1 inf_sick_leave 1 at H place 213205 size 6 is_teacher 0 
+day 2 dis 0 host 760219 age 7.411 sick_leave 0 infector 760218 inf_age 19.247 inf_sympt 0 inf_sick_leave 0 at H place 397860 size 5 is_teacher 0 
+day 2 dis 0 host 761217 age 48.515 sick_leave 0 infector 761218 inf_age 17.767 inf_sympt 0 inf_sick_leave 0 at H place 160667 size 3 is_teacher 0 
+day 2 dis 0 host 799470 age 55.523 sick_leave 0 infector 799469 inf_age 53.047 inf_sympt 1 inf_sick_leave 1 at H place 129496 size 2 is_teacher 0 
+day 2 dis 0 host 963829 age 14.805 sick_leave 0 infector 963828 inf_age 47.660 inf_sympt 1 inf_sick_leave 0 at H place 522027 size 3 is_teacher 0 
+day 2 dis 0 host 1114171 age 3.800 sick_leave 0 infector 1114170 inf_age 18.403 inf_sympt 1 inf_sick_leave 1 at H place 231714 size 6 is_teacher 0 
+day 2 dis 0 host 1140995 age 71.710 sick_leave 0 infector 1140996 inf_age 76.929 inf_sympt 1 inf_sick_leave 0 at H place 272566 size 2 is_teacher 0 
+day 3 dis 0 host 897604 age 14.203 sick_leave 0 infector 46708 inf_age 14.351 inf_sympt 0 inf_sick_leave 0 at S place 525076 size 822 is_teacher 0 
+day 3 dis 0 host 1060210 age 7.334 sick_leave 0 infector 339083 inf_age 9.608 inf_sympt 1 inf_sick_leave 0 at S place 524825 size 238 is_teacher 0 
+day 3 dis 0 host 649345 age 6.910 sick_leave 0 infector 52922 inf_age 9.340 inf_sympt 1 inf_sick_leave 0 at S place 524825 size 238 is_teacher 0 
+day 3 dis 0 host 1043431 age 8.441 sick_leave 0 infector 616662 inf_age 9.222 inf_sympt 1 inf_sick_leave 0 at S place 524825 size 238 is_teacher 0 
+day 3 dis 0 host 215387 age 22.022 sick_leave 1 infector 616662 inf_age 9.222 inf_sympt 1 inf_sick_leave 0 at S place 524825 size 238 is_teacher 1 
+day 3 dis 0 host 359288 age 9.978 sick_leave 0 infector 616662 inf_age 9.222 inf_sympt 1 inf_sick_leave 0 at S place 524825 size 238 is_teacher 0 
+day 3 dis 0 host 504112 age 7.918 sick_leave 0 infector 359222 inf_age 9.093 inf_sympt 1 inf_sick_leave 0 at S place 524825 size 238 is_teacher 0 
+day 3 dis 0 host 87059 age 14.551 sick_leave 0 infector 600104 inf_age 15.134 inf_sympt 0 inf_sick_leave 0 at S place 524731 size 1294 is_teacher 0 
+day 3 dis 0 host 245995 age 41.173 sick_leave 1 infector 708461 inf_age 15.723 inf_sympt 1 inf_sick_leave 0 at S place 524731 size 1294 is_teacher 1 
+day 3 dis 0 host 549823 age 14.258 sick_leave 0 infector 695663 inf_age 15.466 inf_sympt 1 inf_sick_leave 0 at S place 524731 size 1294 is_teacher 0 
+day 3 dis 0 host 444445 age 3.964 sick_leave 0 infector 433637 inf_age 4.921 inf_sympt 1 inf_sick_leave 0 at S place 524809 size 72 is_teacher 0 
+day 3 dis 0 host 1111962 age 5.332 sick_leave 0 infector 493271 inf_age 4.159 inf_sympt 0 inf_sick_leave 0 at S place 524809 size 72 is_teacher 0 
+day 3 dis 0 host 75167 age 16.200 sick_leave 0 infector 793019 inf_age 17.795 inf_sympt 1 inf_sick_leave 1 at S place 524632 size 1055 is_teacher 0 
+day 3 dis 0 host 263478 age 10.288 sick_leave 0 infector 710429 inf_age 5.699 inf_sympt 1 inf_sick_leave 0 at S place 524805 size 231 is_teacher 0 
+day 3 dis 0 host 621594 age 17.584 sick_leave 0 infector 1126764 inf_age 18.778 inf_sympt 1 inf_sick_leave 0 at S place 524905 size 480 is_teacher 0 
+day 3 dis 0 host 739201 age 14.795 sick_leave 0 infector 46708 inf_age 14.351 inf_sympt 0 inf_sick_leave 0 at C place 587552 size 822 is_teacher 0 
+day 3 dis 0 host 180458 age 9.997 sick_leave 0 infector 359222 inf_age 9.093 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 3 dis 0 host 1112324 age 7.282 sick_leave 0 infector 267004 inf_age 7.578 inf_sympt 1 inf_sick_leave 0 at C place 583289 size 572 is_teacher 0 
+day 3 dis 0 host 414266 age 4.926 sick_leave 0 infector 1119913 inf_age 4.937 inf_sympt 1 inf_sick_leave 0 at C place 583578 size 72 is_teacher 0 
+day 3 dis 0 host 433717 age 4.556 sick_leave 0 infector 1119913 inf_age 4.937 inf_sympt 1 inf_sick_leave 0 at C place 583578 size 72 is_teacher 0 
+day 3 dis 0 host 28316 age 4.800 sick_leave 0 infector 1119913 inf_age 4.937 inf_sympt 1 inf_sick_leave 0 at C place 583578 size 72 is_teacher 0 
+day 3 dis 0 host 62801 age 15.559 sick_leave 0 infector 478166 inf_age 15.468 inf_sympt 0 inf_sick_leave 0 at C place 582431 size 1294 is_teacher 0 
+day 3 dis 0 host 718278 age 15.293 sick_leave 0 infector 1062014 inf_age 15.375 inf_sympt 0 inf_sick_leave 0 at C place 582431 size 1294 is_teacher 0 
+day 3 dis 0 host 62999 age 15.578 sick_leave 0 infector 708461 inf_age 15.723 inf_sympt 1 inf_sick_leave 0 at C place 582431 size 1294 is_teacher 0 
+day 3 dis 0 host 1062092 age 15.400 sick_leave 0 infector 630574 inf_age 15.501 inf_sympt 1 inf_sick_leave 0 at C place 580496 size 455 is_teacher 0 
+day 3 dis 0 host 488971 age 15.241 sick_leave 0 infector 630574 inf_age 15.501 inf_sympt 1 inf_sick_leave 0 at C place 580496 size 455 is_teacher 0 
+day 3 dis 0 host 203534 age 15.205 sick_leave 0 infector 630574 inf_age 15.501 inf_sympt 1 inf_sick_leave 0 at C place 580496 size 455 is_teacher 0 
+day 3 dis 0 host 114555 age 15.819 sick_leave 0 infector 630574 inf_age 15.501 inf_sympt 1 inf_sick_leave 0 at C place 580496 size 455 is_teacher 0 
+day 3 dis 0 host 563231 age 17.948 sick_leave 0 infector 761218 inf_age 17.770 inf_sympt 0 inf_sick_leave 0 at C place 580783 size 1055 is_teacher 0 
+day 3 dis 0 host 1042533 age 18.000 sick_leave 0 infector 793019 inf_age 17.795 inf_sympt 1 inf_sick_leave 1 at C place 580787 size 1055 is_teacher 0 
+day 3 dis 0 host 843945 age 17.734 sick_leave 1 infector 838728 inf_age 17.118 inf_sympt 1 inf_sick_leave 0 at C place 580787 size 1055 is_teacher 0 
+day 3 dis 0 host 212547 age 17.882 sick_leave 0 infector 838728 inf_age 17.118 inf_sympt 1 inf_sick_leave 0 at C place 580787 size 1055 is_teacher 0 
+day 3 dis 0 host 980418 age 40.419 sick_leave 1 infector 95747 inf_age 48.121 inf_sympt 1 inf_sick_leave 1 at W place 552124 size 100 is_teacher 0 
+day 3 dis 0 host 913001 age 57.156 sick_leave 1 infector 153815 inf_age 22.753 inf_sympt 1 inf_sick_leave 1 at W place 563326 size 189 is_teacher 0 
+day 3 dis 0 host 1111038 age 17.677 sick_leave 1 infector 567299 inf_age 51.586 inf_sympt 1 inf_sick_leave 0 at O place 603144 size 4 is_teacher 0 
+day 3 dis 0 host 54962 age 24.953 sick_leave 1 infector 42972 inf_age 39.847 inf_sympt 1 inf_sick_leave 0 at N place 576016 size 476 is_teacher 0 
+day 3 dis 0 host 201329 age 49.140 sick_leave 0 infector 52922 inf_age 9.340 inf_sympt 1 inf_sick_leave 0 at N place 576922 size 603 is_teacher 0 
+day 3 dis 0 host 148653 age 33.762 sick_leave 1 infector 710429 inf_age 5.699 inf_sympt 1 inf_sick_leave 0 at N place 576747 size 4041 is_teacher 0 
+day 3 dis 0 host 929228 age 12.581 sick_leave 0 infector 154584 inf_age 75.214 inf_sympt 1 inf_sick_leave 0 at N place 576924 size 1286 is_teacher 0 
+day 3 dis 0 host 972898 age 26.548 sick_leave 1 infector 168270 inf_age 31.093 inf_sympt 0 inf_sick_leave 0 at N place 576986 size 5505 is_teacher 0 
+day 3 dis 0 host 1131273 age 16.564 sick_leave 0 infector 567298 inf_age 55.693 inf_sympt 1 inf_sick_leave 1 at N place 576185 size 1797 is_teacher 0 
+day 3 dis 0 host 160400 age 60.592 sick_leave 0 infector 567299 inf_age 51.586 inf_sympt 1 inf_sick_leave 0 at N place 576185 size 1797 is_teacher 0 
+day 3 dis 0 host 532002 age 9.077 sick_leave 0 infector 609952 inf_age 26.140 inf_sympt 0 inf_sick_leave 1 at N place 576597 size 1569 is_teacher 0 
+day 3 dis 0 host 449489 age 60.649 sick_leave 0 infector 611002 inf_age 67.290 inf_sympt 0 inf_sick_leave 0 at N place 577765 size 1032 is_teacher 0 
+day 3 dis 0 host 164384 age 76.748 sick_leave 0 infector 629303 inf_age 51.573 inf_sympt 1 inf_sick_leave 1 at N place 575867 size 232 is_teacher 0 
+day 3 dis 0 host 536121 age 9.279 sick_leave 0 infector 705816 inf_age 63.504 inf_sympt 1 inf_sick_leave 0 at N place 576996 size 1379 is_teacher 0 
+day 3 dis 0 host 1115272 age 8.600 sick_leave 0 infector 1014479 inf_age 27.934 inf_sympt 1 inf_sick_leave 0 at N place 576429 size 1841 is_teacher 0 
+day 3 dis 0 host 815058 age 56.005 sick_leave 1 infector 1014479 inf_age 27.934 inf_sympt 1 inf_sick_leave 0 at N place 576429 size 1841 is_teacher 0 
+day 3 dis 0 host 72625 age 35.910 sick_leave 0 infector 72626 inf_age 33.501 inf_sympt 1 inf_sick_leave 1 at H place 480163 size 5 is_teacher 0 
+day 3 dis 0 host 142165 age 3.293 sick_leave 0 infector 142163 inf_age 1.011 inf_sympt 1 inf_sick_leave 0 at H place 280050 size 3 is_teacher 0 
+day 3 dis 0 host 153813 age 22.753 sick_leave 0 infector 153815 inf_age 22.753 inf_sympt 1 inf_sick_leave 1 at H place 290233 size 4 is_teacher 0 
+day 3 dis 0 host 160758 age 56.655 sick_leave 0 infector 160759 inf_age 21.674 inf_sympt 1 inf_sick_leave 1 at H place 473206 size 4 is_teacher 0 
+day 3 dis 0 host 470234 age 30.052 sick_leave 1 infector 470233 inf_age 59.959 inf_sympt 0 inf_sick_leave 1 at H place 149629 size 3 is_teacher 0 
+day 3 dis 0 host 571625 age 5.597 sick_leave 0 infector 571624 inf_age 44.567 inf_sympt 1 inf_sick_leave 1 at H place 488461 size 4 is_teacher 0 
+day 3 dis 0 host 600105 age 14.819 sick_leave 0 infector 600104 inf_age 15.134 inf_sympt 0 inf_sick_leave 0 at H place 70952 size 5 is_teacher 0 
+day 3 dis 0 host 694351 age 64.860 sick_leave 0 infector 694353 inf_age 74.279 inf_sympt 0 inf_sick_leave 0 at H place 27097 size 3 is_teacher 0 
+day 3 dis 0 host 710427 age 9.811 sick_leave 0 infector 710429 inf_age 5.699 inf_sympt 1 inf_sick_leave 0 at H place 213205 size 6 is_teacher 0 
+day 3 dis 0 host 749198 age 61.184 sick_leave 0 infector 749197 inf_age 64.175 inf_sympt 0 inf_sick_leave 0 at H place 14479 size 2 is_teacher 0 
+day 3 dis 0 host 838729 age 2.400 sick_leave 0 infector 838728 inf_age 17.118 inf_sympt 1 inf_sick_leave 0 at H place 18132 size 6 is_teacher 0 
+day 3 dis 0 host 880022 age 61.230 sick_leave 1 infector 880023 inf_age 57.271 inf_sympt 0 inf_sick_leave 0 at H place 422298 size 2 is_teacher 0 
+day 3 dis 0 host 961481 age 40.200 sick_leave 0 infector 961480 inf_age 45.759 inf_sympt 1 inf_sick_leave 1 at H place 190263 size 3 is_teacher 0 
+day 4 dis 0 host 280626 age 6.753 sick_leave 0 infector 359369 inf_age 9.140 inf_sympt 1 inf_sick_leave 0 at S place 524825 size 238 is_teacher 0 
+day 4 dis 0 host 343243 age 9.866 sick_leave 0 infector 52922 inf_age 9.342 inf_sympt 1 inf_sick_leave 0 at S place 524825 size 238 is_teacher 0 
+day 4 dis 0 host 917382 age 7.244 sick_leave 0 infector 616662 inf_age 9.225 inf_sympt 1 inf_sick_leave 0 at S place 524825 size 238 is_teacher 0 
+day 4 dis 0 host 687948 age 15.337 sick_leave 0 infector 478166 inf_age 15.471 inf_sympt 0 inf_sick_leave 0 at S place 524731 size 1294 is_teacher 0 
+day 4 dis 0 host 97438 age 13.723 sick_leave 0 infector 718278 inf_age 15.296 inf_sympt 1 inf_sick_leave 0 at S place 524731 size 1294 is_teacher 0 
+day 4 dis 0 host 12740 age 17.312 sick_leave 0 infector 550209 inf_age 16.216 inf_sympt 0 inf_sick_leave 0 at S place 524632 size 1055 is_teacher 0 
+day 4 dis 0 host 630679 age 15.441 sick_leave 0 infector 114555 inf_age 15.822 inf_sympt 1 inf_sick_leave 0 at S place 524611 size 455 is_teacher 0 
+day 4 dis 0 host 812132 age 5.447 sick_leave 0 infector 267004 inf_age 7.581 inf_sympt 1 inf_sick_leave 0 at S place 524788 size 572 is_teacher 0 
+day 4 dis 0 host 479328 age 3.638 sick_leave 0 infector 1119913 inf_age 4.940 inf_sympt 1 inf_sick_leave 0 at S place 524809 size 72 is_teacher 0 
+day 4 dis 0 host 444473 age 3.244 sick_leave 0 infector 1119913 inf_age 4.940 inf_sympt 1 inf_sick_leave 0 at S place 524809 size 72 is_teacher 0 
+day 4 dis 0 host 888091 age 5.077 sick_leave 0 infector 433637 inf_age 4.923 inf_sympt 1 inf_sick_leave 0 at S place 524809 size 72 is_teacher 0 
+day 4 dis 0 host 1077213 age 5.532 sick_leave 0 infector 493271 inf_age 4.162 inf_sympt 0 inf_sick_leave 0 at S place 524809 size 72 is_teacher 0 
+day 4 dis 0 host 501026 age 7.860 sick_leave 0 infector 532002 inf_age 9.079 inf_sympt 1 inf_sick_leave 0 at S place 524715 size 434 is_teacher 0 
+day 4 dis 0 host 318093 age 14.907 sick_leave 0 infector 739201 inf_age 14.797 inf_sympt 1 inf_sick_leave 0 at C place 587552 size 822 is_teacher 0 
+day 4 dis 0 host 531996 age 9.318 sick_leave 0 infector 359369 inf_age 9.140 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 4 dis 0 host 162495 age 9.658 sick_leave 0 infector 359369 inf_age 9.140 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 4 dis 0 host 305953 age 9.315 sick_leave 0 infector 52922 inf_age 9.342 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 4 dis 0 host 758325 age 9.934 sick_leave 0 infector 359222 inf_age 9.096 inf_sympt 1 inf_sick_leave 0 at C place 583851 size 238 is_teacher 0 
+day 4 dis 0 host 852594 age 15.852 sick_leave 0 infector 62999 inf_age 15.581 inf_sympt 1 inf_sick_leave 0 at C place 582431 size 1294 is_teacher 0 
+day 4 dis 0 host 89590 age 15.537 sick_leave 0 infector 718278 inf_age 15.296 inf_sympt 1 inf_sick_leave 0 at C place 582431 size 1294 is_teacher 0 
+day 4 dis 0 host 191324 age 15.559 sick_leave 0 infector 718278 inf_age 15.296 inf_sympt 1 inf_sick_leave 0 at C place 582431 size 1294 is_teacher 0 
+day 4 dis 0 host 989914 age 15.384 sick_leave 0 infector 708461 inf_age 15.726 inf_sympt 1 inf_sick_leave 0 at C place 582431 size 1294 is_teacher 0 
+day 4 dis 0 host 976439 age 16.482 sick_leave 0 infector 75167 inf_age 16.203 inf_sympt 1 inf_sick_leave 0 at C place 580782 size 1055 is_teacher 0 
+day 4 dis 0 host 70849 age 14.858 sick_leave 0 infector 87059 inf_age 14.553 inf_sympt 1 inf_sick_leave 0 at C place 582426 size 1294 is_teacher 0 
+day 4 dis 0 host 1024548 age 15.211 sick_leave 0 infector 114555 inf_age 15.822 inf_sympt 1 inf_sick_leave 0 at C place 580496 size 455 is_teacher 0 
+day 4 dis 0 host 1108351 age 15.800 sick_leave 0 infector 630574 inf_age 15.504 inf_sympt 1 inf_sick_leave 0 at C place 580496 size 455 is_teacher 0 
+day 4 dis 0 host 147599 age 17.173 sick_leave 0 infector 1111058 inf_age 17.847 inf_sympt 1 inf_sick_leave 1 at C place 580787 size 1055 is_teacher 0 
+day 4 dis 0 host 1119014 age 4.104 sick_leave 0 infector 433637 inf_age 4.923 inf_sympt 1 inf_sick_leave 0 at C place 583578 size 72 is_teacher 0 
+day 4 dis 0 host 1119943 age 4.959 sick_leave 0 infector 433637 inf_age 4.923 inf_sympt 1 inf_sick_leave 0 at C place 583578 size 72 is_teacher 0 
+day 4 dis 0 host 1094218 age 3.879 sick_leave 0 infector 444445 inf_age 3.967 inf_sympt 0 inf_sick_leave 0 at C place 583577 size 72 is_teacher 0 
+day 4 dis 0 host 346105 age 7.953 sick_leave 0 infector 464742 inf_age 7.052 inf_sympt 1 inf_sick_leave 0 at C place 587042 size 601 is_teacher 0 
+day 4 dis 0 host 362089 age 7.151 sick_leave 0 infector 464742 inf_age 7.052 inf_sympt 1 inf_sick_leave 0 at C place 587042 size 601 is_teacher 0 
+day 4 dis 0 host 705309 age 15.463 sick_leave 0 infector 477926 inf_age 15.638 inf_sympt 0 inf_sick_leave 0 at C place 582434 size 1294 is_teacher 0 
+day 4 dis 0 host 478230 age 15.493 sick_leave 0 infector 477926 inf_age 15.638 inf_sympt 0 inf_sick_leave 0 at C place 582434 size 1294 is_teacher 0 
+day 4 dis 0 host 261773 age 7.397 sick_leave 0 infector 504112 inf_age 7.921 inf_sympt 0 inf_sick_leave 0 at C place 583846 size 238 is_teacher 0 
+day 4 dis 0 host 948995 age 17.874 sick_leave 0 infector 563231 inf_age 17.951 inf_sympt 1 inf_sick_leave 0 at C place 580783 size 1055 is_teacher 0 
+day 4 dis 0 host 480539 age 5.405 sick_leave 0 infector 571625 inf_age 5.600 inf_sympt 1 inf_sick_leave 0 at C place 587367 size 80 is_teacher 0 
+day 4 dis 0 host 273053 age 16.288 sick_leave 0 infector 638354 inf_age 16.203 inf_sympt 0 inf_sick_leave 0 at C place 587508 size 1225 is_teacher 0 
+day 4 dis 0 host 705932 age 16.945 sick_leave 0 infector 638354 inf_age 16.203 inf_sympt 0 inf_sick_leave 0 at C place 587508 size 1225 is_teacher 0 
+day 4 dis 0 host 280581 age 6.323 sick_leave 0 infector 649345 inf_age 6.912 inf_sympt 0 inf_sick_leave 0 at C place 583845 size 238 is_teacher 0 
+day 4 dis 0 host 175056 age 5.753 sick_leave 0 infector 710429 inf_age 5.701 inf_sympt 1 inf_sick_leave 0 at C place 583529 size 231 is_teacher 0 
+day 4 dis 0 host 710387 age 5.140 sick_leave 0 infector 710429 inf_age 5.701 inf_sympt 1 inf_sick_leave 0 at C place 583529 size 231 is_teacher 0 
+day 4 dis 0 host 779581 age 13.545 sick_leave 0 infector 779437 inf_age 13.375 inf_sympt 1 inf_sick_leave 0 at C place 584301 size 365 is_teacher 0 
+day 4 dis 0 host 909930 age 8.816 sick_leave 0 infector 1043431 inf_age 8.444 inf_sympt 1 inf_sick_leave 0 at C place 583849 size 238 is_teacher 0 
+day 4 dis 0 host 44803 age 8.548 sick_leave 0 infector 1043431 inf_age 8.444 inf_sympt 1 inf_sick_leave 0 at C place 583849 size 238 is_teacher 0 
+day 4 dis 0 host 510759 age 8.934 sick_leave 0 infector 1043431 inf_age 8.444 inf_sympt 1 inf_sick_leave 0 at C place 583849 size 238 is_teacher 0 
+day 4 dis 0 host 852307 age 8.044 sick_leave 0 infector 1043431 inf_age 8.444 inf_sympt 1 inf_sick_leave 0 at C place 583849 size 238 is_teacher 0 
+day 4 dis 0 host 12716 age 17.685 sick_leave 0 infector 1111038 inf_age 17.679 inf_sympt 1 inf_sick_leave 1 at C place 582449 size 1294 is_teacher 0 
+day 4 dis 0 host 866992 age 18.134 sick_leave 0 infector 1126764 inf_age 18.781 inf_sympt 1 inf_sick_leave 0 at C place 584951 size 480 is_teacher 0 
+day 4 dis 0 host 435332 age 54.877 sick_leave 1 infector 133649 inf_age 69.112 inf_sympt 1 inf_sick_leave 1 at W place 551415 size 104 is_teacher 0 
+day 4 dis 0 host 94169 age 43.830 sick_leave 0 infector 148653 inf_age 33.764 inf_sympt 1 inf_sick_leave 1 at W place 547513 size 163 is_teacher 0 
+day 4 dis 0 host 185263 age 55.608 sick_leave 0 infector 401081 inf_age 39.027 inf_sympt 0 inf_sick_leave 1 at W place 546553 size 149 is_teacher 0 
+day 4 dis 0 host 172414 age 58.244 sick_leave 1 infector 160400 inf_age 60.595 inf_sympt 1 inf_sick_leave 0 at O place 599220 size 11 is_teacher 0 
+day 4 dis 0 host 1082635 age 62.699 sick_leave 0 infector 267002 inf_age 44.318 inf_sympt 1 inf_sick_leave 1 at O place 622550 size 403 is_teacher 0 
+day 4 dis 0 host 995056 age 59.762 sick_leave 1 infector 522463 inf_age 26.274 inf_sympt 0 inf_sick_leave 0 at O place 617087 size 65 is_teacher 0 
+day 4 dis 0 host 720320 age 22.989 sick_leave 1 infector 545705 inf_age 22.948 inf_sympt 0 inf_sick_leave 0 at O place 600129 size 9 is_teacher 0 
+day 4 dis 0 host 855937 age 32.342 sick_leave 1 infector 1111038 inf_age 17.679 inf_sympt 1 inf_sick_leave 1 at O place 603144 size 4 is_teacher 0 
+day 4 dis 0 host 984382 age 35.627 sick_leave 1 infector 731523 inf_age 26.271 inf_sympt 1 inf_sick_leave 1 at O place 603805 size 58 is_teacher 0 
+day 4 dis 0 host 302951 age 34.542 sick_leave 1 infector 731523 inf_age 26.271 inf_sympt 1 inf_sick_leave 1 at O place 603805 size 58 is_teacher 0 
+day 4 dis 0 host 468865 age 60.077 sick_leave 1 infector 749197 inf_age 64.178 inf_sympt 0 inf_sick_leave 0 at O place 613204 size 428 is_teacher 0 
+day 4 dis 0 host 348733 age 50.496 sick_leave 1 infector 50258 inf_age 56.734 inf_sympt 0 inf_sick_leave 1 at N place 576836 size 819 is_teacher 0 
+day 4 dis 0 host 323476 age 26.362 sick_leave 1 infector 75167 inf_age 16.203 inf_sympt 1 inf_sick_leave 0 at N place 575788 size 379 is_teacher 0 
+day 4 dis 0 host 622016 age 87.230 sick_leave 0 infector 87059 inf_age 14.553 inf_sympt 1 inf_sick_leave 0 at N place 577779 size 1283 is_teacher 0 
+day 4 dis 0 host 60737 age 79.274 sick_leave 0 infector 133649 inf_age 69.112 inf_sympt 1 inf_sick_leave 1 at N place 576117 size 2326 is_teacher 0 
+day 4 dis 0 host 40403 age 63.753 sick_leave 0 infector 212050 inf_age 47.819 inf_sympt 1 inf_sick_leave 0 at N place 576984 size 1321 is_teacher 0 
+day 4 dis 0 host 696739 age 54.641 sick_leave 1 infector 212547 inf_age 17.885 inf_sympt 0 inf_sick_leave 0 at N place 575945 size 1808 is_teacher 0 
+day 4 dis 0 host 925960 age 27.975 sick_leave 1 infector 227467 inf_age 85.984 inf_sympt 1 inf_sick_leave 0 at N place 576743 size 3403 is_teacher 0 
+day 4 dis 0 host 244665 age 60.559 sick_leave 1 infector 464742 inf_age 7.052 inf_sympt 1 inf_sick_leave 0 at N place 577678 size 373 is_teacher 0 
+day 4 dis 0 host 434158 age 79.915 sick_leave 0 infector 532002 inf_age 9.079 inf_sympt 1 inf_sick_leave 0 at N place 576757 size 635 is_teacher 0 
+day 4 dis 0 host 184252 age 2.296 sick_leave 0 infector 563231 inf_age 17.951 inf_sympt 1 inf_sick_leave 0 at N place 575865 size 1279 is_teacher 0 
+day 4 dis 0 host 105172 age 8.770 sick_leave 0 infector 567299 inf_age 51.589 inf_sympt 1 inf_sick_leave 0 at N place 576184 size 1686 is_teacher 0 
+day 4 dis 0 host 521793 age 81.079 sick_leave 1 infector 1014479 inf_age 27.937 inf_sympt 1 inf_sick_leave 0 at N place 576509 size 933 is_teacher 0 
+day 4 dis 0 host 560569 age 29.852 sick_leave 1 infector 708461 inf_age 15.726 inf_sympt 1 inf_sick_leave 0 at N place 576274 size 1768 is_teacher 0 
+day 4 dis 0 host 641131 age 16.049 sick_leave 0 infector 880022 inf_age 61.233 inf_sympt 1 inf_sick_leave 1 at N place 577525 size 471 is_teacher 0 
+day 4 dis 0 host 477863 age 23.855 sick_leave 1 infector 1038927 inf_age 52.471 inf_sympt 1 inf_sick_leave 1 at N place 577066 size 3720 is_teacher 0 
+day 4 dis 0 host 887700 age 27.973 sick_leave 1 infector 1047788 inf_age 64.959 inf_sympt 1 inf_sick_leave 1 at N place 576829 size 3782 is_teacher 0 
+day 4 dis 0 host 133253 age 54.989 sick_leave 1 infector 1047788 inf_age 64.959 inf_sympt 1 inf_sick_leave 1 at N place 576829 size 3782 is_teacher 0 
+day 4 dis 0 host 227780 age 22.803 sick_leave 1 infector 1062014 inf_age 15.378 inf_sympt 0 inf_sick_leave 0 at N place 576189 size 83 is_teacher 0 
+day 4 dis 0 host 815231 age 29.005 sick_leave 0 infector 1114355 inf_age 68.734 inf_sympt 0 inf_sick_leave 0 at N place 577943 size 862 is_teacher 0 
+day 4 dis 0 host 784945 age 13.764 sick_leave 0 infector 1126764 inf_age 18.781 inf_sympt 1 inf_sick_leave 0 at N place 577151 size 2425 is_teacher 0 
+day 4 dis 0 host 62802 age 12.956 sick_leave 0 infector 62801 inf_age 15.562 inf_sympt 1 inf_sick_leave 0 at H place 92994 size 6 is_teacher 0 
+day 4 dis 0 host 62803 age 11.860 sick_leave 0 infector 62801 inf_age 15.562 inf_sympt 1 inf_sick_leave 0 at H place 92994 size 6 is_teacher 0 
+day 4 dis 0 host 72624 age 6.732 sick_leave 0 infector 72627 inf_age 16.381 inf_sympt 0 inf_sick_leave 0 at H place 480163 size 5 is_teacher 0 
+day 4 dis 0 host 75164 age 50.493 sick_leave 0 infector 75167 inf_age 16.203 inf_sympt 1 inf_sick_leave 0 at H place 16999 size 4 is_teacher 0 
+day 4 dis 0 host 148655 age 13.458 sick_leave 0 infector 148653 inf_age 33.764 inf_sympt 1 inf_sick_leave 1 at H place 224092 size 4 is_teacher 0 
+day 4 dis 0 host 160757 age 52.586 sick_leave 1 infector 160758 inf_age 56.658 inf_sympt 1 inf_sick_leave 0 at H place 473206 size 4 is_teacher 0 
+day 4 dis 0 host 180379 age 7.003 sick_leave 0 infector 180378 inf_age 9.852 inf_sympt 1 inf_sick_leave 0 at H place 225318 size 4 is_teacher 0 
+day 4 dis 0 host 263476 age 43.879 sick_leave 1 infector 263478 inf_age 10.290 inf_sympt 1 inf_sick_leave 0 at H place 205386 size 4 is_teacher 0 
+day 4 dis 0 host 263641 age 9.312 sick_leave 0 infector 263637 inf_age 40.052 inf_sympt 0 inf_sick_leave 0 at H place 131093 size 5 is_teacher 0 
+day 4 dis 0 host 339082 age 11.896 sick_leave 0 infector 339083 inf_age 9.611 inf_sympt 1 inf_sick_leave 0 at H place 193987 size 4 is_teacher 0 
+day 4 dis 0 host 344774 age 15.392 sick_leave 0 infector 344773 inf_age 19.951 inf_sympt 1 inf_sick_leave 0 at H place 62696 size 7 is_teacher 0 
+day 4 dis 0 host 414263 age 43.164 sick_leave 0 infector 414266 inf_age 4.929 inf_sympt 1 inf_sick_leave 0 at H place 388752 size 4 is_teacher 0 
+day 4 dis 0 host 532003 age 4.090 sick_leave 0 infector 532002 inf_age 9.079 inf_sympt 1 inf_sick_leave 0 at H place 188743 size 3 is_teacher 0 
+day 4 dis 0 host 549822 age 37.312 sick_leave 0 infector 549823 inf_age 14.260 inf_sympt 1 inf_sick_leave 0 at H place 116001 size 5 is_teacher 0 
+day 4 dis 0 host 567300 age 24.164 sick_leave 0 infector 567298 inf_age 55.696 inf_sympt 1 inf_sick_leave 1 at H place 86075 size 3 is_teacher 0 
+day 4 dis 0 host 621006 age 13.660 sick_leave 0 infector 621004 inf_age 42.455 inf_sympt 1 inf_sick_leave 0 at H place 497966 size 3 is_teacher 0 
+day 4 dis 0 host 627238 age 63.984 sick_leave 1 infector 627237 inf_age 76.386 inf_sympt 1 inf_sick_leave 0 at H place 440562 size 2 is_teacher 0 
+day 4 dis 0 host 630571 age 11.668 sick_leave 0 infector 630574 inf_age 15.504 inf_sympt 1 inf_sick_leave 0 at H place 187890 size 5 is_teacher 0 
+day 4 dis 0 host 703652 age 39.016 sick_leave 0 infector 703655 inf_age 8.833 inf_sympt 0 inf_sick_leave 0 at H place 19591 size 4 is_teacher 0 
+day 4 dis 0 host 710426 age 34.452 sick_leave 1 infector 710429 inf_age 5.701 inf_sympt 1 inf_sick_leave 0 at H place 213205 size 6 is_teacher 0 
+day 4 dis 0 host 718203 age 15.395 sick_leave 0 infector 718202 inf_age 42.359 inf_sympt 1 inf_sick_leave 0 at H place 55045 size 3 is_teacher 0 
+day 4 dis 0 host 739202 age 8.499 sick_leave 0 infector 739201 inf_age 14.797 inf_sympt 1 inf_sick_leave 0 at H place 511563 size 6 is_teacher 0 
+day 4 dis 0 host 913002 age 86.882 sick_leave 0 infector 913001 inf_age 57.159 inf_sympt 1 inf_sick_leave 1 at H place 324381 size 4 is_teacher 0 
+day 4 dis 0 host 929229 age 5.033 sick_leave 0 infector 929228 inf_age 12.584 inf_sympt 1 inf_sick_leave 0 at H place 264037 size 7 is_teacher 0 
+day 4 dis 0 host 1042532 age 14.663 sick_leave 0 infector 1042533 inf_age 18.003 inf_sympt 0 inf_sick_leave 0 at H place 171769 size 6 is_teacher 0 
+day 4 dis 0 host 1060206 age 7.942 sick_leave 0 infector 1060210 inf_age 7.337 inf_sympt 1 inf_sick_leave 0 at H place 222297 size 6 is_teacher 0 
+day 4 dis 0 host 1060207 age 46.060 sick_leave 0 infector 1060210 inf_age 7.337 inf_sympt 1 inf_sick_leave 0 at H place 222297 size 6 is_teacher 0 
+day 4 dis 0 host 1111036 age 50.348 sick_leave 1 infector 1111038 inf_age 17.679 inf_sympt 1 inf_sick_leave 1 at H place 175305 size 4 is_teacher 0 
+day 4 dis 0 host 1111039 age 48.019 sick_leave 0 infector 1111038 inf_age 17.679 inf_sympt 1 inf_sick_leave 1 at H place 175305 size 4 is_teacher 0 
+day 4 dis 0 host 1114354 age 71.529 sick_leave 0 infector 1114355 inf_age 68.734 inf_sympt 0 inf_sick_leave 0 at H place 477503 size 2 is_teacher 0 
