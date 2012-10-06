@@ -65,9 +65,9 @@ min_travel_distance = 100.0
 # trips per day assuming entire US population
 max_trips_per_day = 1000000
 # file containing list of sample trips
-tripfile = $FRED_HOME/region/trips.txt
+tripfile = $FRED_HOME/input_files/trips.txt
 # file with population estimate for each large cell
-cell_popfile = $FRED_HOME/region/cell_pop.txt
+cell_popfile = $FRED_HOME/input_files/cell_pop.txt
 
 # Parameters to allow for output of Population at scheduled times
 # Only done if output_population != 0
