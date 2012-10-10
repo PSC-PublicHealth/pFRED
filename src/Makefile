@@ -143,7 +143,8 @@ VER = 1.0.7
 release:
 	make clean
 	(cd ../..; tar cvzf FRED-V${VER}-`date +"%Y-%m-%d"`.tgz --exclude CVS \
-	FRED/Makefile FRED/LICENSE FRED/bin FRED/doc FRED/input_files FRED/populations/ \
+	FRED/Makefile FRED/LICENSE FRED/bin FRED/doc FRED/input_files \
+	FRED/populations/2005_2009_ver2_42003.zip FRED/populations/Makefile \
 	FRED/src/Makefile FRED/src/*.h  FRED/src/*.cc FRED/src/mt*.c \
 	FRED/tests FRED/src/PRNG__Mersenne_Twister)
 
