@@ -1,0 +1,22 @@
+#########################################
+#
+# File: README_params.txt
+#
+# These parameters have been calibrated for the
+# Allegheny County synthetic population (V2).
+#
+days = 120
+synthetic_population_directory = $FRED_HOME/populations
+synthetic_population_id = 2005_2009_ver2_42003
+
+###  CALIBRATION PHASE II STEP 6 at Thu Oct  4 14:03:54 2012
+###  runs = 50  cores = 10
+household_contacts[0] = 0.198359
+neighborhood_contacts[0] = 40.971750
+school_contacts[0] = 14.558688
+workplace_contacts[0] = 1.577417
+classroom_contacts[0] = -1
+office_contacts[0] = -1
+
+R0_a = 0.0523213
+R0_b = 0.599227

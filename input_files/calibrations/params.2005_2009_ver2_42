@@ -1,0 +1,23 @@
+#########################################
+#
+# File: README_params.txt
+#
+# These parameters have been calibrated for the
+# Pennsylvania synthetic population.
+#
+days = 120
+synthetic_population_directory = $FRED_HOME/populations
+synthetic_population_id = 2005_2009_ver2_42
+
+R0_a = 0.0425582
+R0_b = 0.652039
+
+###  CALIBRATION PHASE II STEP 11 at Fri Oct  5 11:23:16 2012
+###  runs = 20  cores = 4
+household_contacts[0] = 0.171616
+neighborhood_contacts[0] = 40.891628
+school_contacts[0] = 12.331173
+workplace_contacts[0] = 1.587351
+classroom_contacts[0] = -1
+office_contacts[0] = -1
+
