@@ -177,7 +177,8 @@ if ($normalize) {
 for my $v (@varlist) {
  if ($v eq "AR" or $v eq "CAR") {  
    print FH "set ylabel 'Percent Infected' offset 1.2,0\n";
-   print FH "set yrange [0:100]\n";
+   $ymax = 100 if $ymax eq "*";
+   print FH "set yrange [0:$ymax]\n";
  }
 }
 
