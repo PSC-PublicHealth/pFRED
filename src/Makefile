@@ -37,7 +37,7 @@ DSFMT_HDR = $(DSFMT_DIR)/dSFMT.h $(DSFMT_DIR)/dSFMT-params19937.h
 INCLUDE_DIRS = -I$(DSFMT_DIR)
 
 # use this for development:
-#CPPFLAGS = -g -m64 -O2 $(LOGGING_PRESET_3) -Wall
+## CPPFLAGS = -g -m64 -O2 $(LOGGING_PRESET_3) -Wall
 
 # use one of these for profiling
 # CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) # -DNDEBUG
@@ -46,9 +46,9 @@ INCLUDE_DIRS = -I$(DSFMT_DIR)
 
 # Use one of these for production:
 ## Use this to run with multiple threads
-# CPPFLAGS = -g -m64 -O3 -fopenmp $(LOGGING_PRESET_3) -DNDEBUG -DNCPU=$(NCPU)
+## CPPFLAGS = -g -m64 -O3 -fopenmp $(LOGGING_PRESET_3) -DNDEBUG -DNCPU=4
 ## Use this to make reproducible serial runs
-CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) -DNCPU=1 #-fast #-Wall
+CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) -DNDEBUG -DNCPU=1 -fast #-Wall
 
 CPPFLAGS += $(INCLUDE_DIRS)
 
@@ -138,13 +138,14 @@ dist:
 	FRED/bin/* FRED/src/OUT.RT/* ; cd FRED/src)
 	make
 
-VER = 1.0.1
+VER = 1.0.7
 
 release:
 	make clean
 	(cd ../..; tar cvzf FRED-V${VER}-`date +"%Y-%m-%d"`.tgz --exclude CVS \
-	FRED/Makefile FRED/LICENSE FRED/bin FRED/doc FRED/input_files FRED/region/ \
-	FRED/src/Makefile FRED/src/*.h  FRED/src/*.cc FRED/src/mt*.c FRED/tests)
+	FRED/Makefile FRED/LICENSE FRED/bin FRED/doc FRED/input_files FRED/populations/ \
+	FRED/src/Makefile FRED/src/*.h  FRED/src/*.cc FRED/src/mt*.c \
+	FRED/tests FRED/src/PRNG__Mersenne_Twister)
 
 tags:
 	find . -name \*.[ch]* | xargs etags
