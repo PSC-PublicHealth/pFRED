@@ -124,29 +124,6 @@ print:
 
 clean:
 	rm -f gmock.a gmock_main.a *.o FRED ../bin/FRED *~
-	(cd ../region; make clean)
-	(cd ../tests; make clean)
-
-tar: clean
-	cd ..
-	tar cvf FRED-`date +"%Y-%m-%d"`.tar FRED
-
-dist:
-	make clean
-	(cd ../..; tar cvf FRED-`date +"%Y-%m-%d"`.tar FRED/src/Makefile \
-	FRED/src/*.txt FRED/src/*.cc FRED/src/*.h FRED/src/params* \
-	FRED/bin/* FRED/src/OUT.RT/* ; cd FRED/src)
-	make
-
-VER = 1.0.7
-
-release:
-	make clean
-	(cd ../..; tar cvzf FRED-V${VER}-`date +"%Y-%m-%d"`.tgz --exclude CVS \
-	FRED/Makefile FRED/LICENSE FRED/bin FRED/doc FRED/input_files \
-	FRED/populations/2005_2009_ver2_42003.zip FRED/populations/Makefile \
-	FRED/src/Makefile FRED/src/*.h  FRED/src/*.cc FRED/src/mt*.c \
-	FRED/tests FRED/src/PRNG__Mersenne_Twister)
 
 tags:
 	find . -name \*.[ch]* | xargs etags
