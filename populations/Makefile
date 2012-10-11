@@ -1,34 +1,29 @@
 ##################### FRED Populations Makefile ###########################
+#
+#
+# The following synthetic population are available:
+#
+# 2000_ver1_42003 = ALLEGHENY_COUNTY_V1
+# 2005_2009_ver2_42003 = ALLEGHENY_COUNTY_V2
+# 2005_2009_ver2_42 = PENNSYLVANIA_V2
+#
 
-POPS = 2005_2009_ver2_42003 2000_ver1_42003 # tw
+POPS = 2005_2009_ver2_42003 # 2005_2009_ver2_42 2000_ver1_42003
 
-# use these for file download from the RTI web site
-2005_2009_ver2_42003:
-	unzip 2005_2009_ver2_42003.zip -d 2005_2009_ver2_42003 
+all: $(POPS)
 
-2005_2009_ver2_42003.zip: 2005_2009_ver2_42003
-	rm -f 2005_2009_ver2_42003/*~
-	zip -r tw tw/tw* tw/README*
-	zip -r 2005_2009_ver2_42003 2005_2009_ver2_42003/2005_2009_ver2_42003* 2005_2009_ver2_42003/README*
+# To create a population directory, run "make X"
+% :: %.zip
+	unzip $< -d $@
+	touch $@
 
-# these are for population directories created at Pitt
-2000_ver1_42003:
-	unzip 2000_ver1_42003.zip
-
-2000_ver1_42003.zip: 2000_ver1_42003
-	rm -f 2000_ver1_42003/*~
-	zip -r tw tw/tw* tw/README*
-	zip -r 2000_ver1_42003 2000_ver1_42003/2000_ver1_42003* 2000_ver1_42003/README*
-
-tw:
-	unzip tw.zip
-
-tw.zip: tw
-	rm -f tw/*~
-	zip -r tw tw/tw* tw/README*
+# To create a zip file, run "make X.zip"
+%.zip: $(basename %)
+	zip -rj $@ $<
 
 clean:
-	rm -rf 2005_2009_ver2_42003 2000_ver1_42003
+	rm -rf $(POPS)
+
 
 
 
