@@ -4,7 +4,8 @@
 #
 
 all:
-	gunzip trips.txt.gz
+	
 
 clean:
-	gzip trips.txt
+	
+
