@@ -22,8 +22,7 @@ release:
 	--exclude CVS --exclude '*~' --exclude '\.*' \
 	FRED/Makefile FRED/LICENSE FRED/bin FRED/doc FRED/input_files \
 	FRED/populations/2005_2009_ver2_42003.zip FRED/populations/Makefile \
-	FRED/src/Makefile FRED/src/*.h  FRED/src/*.cc FRED/src/mt*.c \
-	FRED/src/PRNG__Mersenne_Twister FRED/tests)
+	FRED/src FRED/tests)
 
 tar: clean
 	cd ..
