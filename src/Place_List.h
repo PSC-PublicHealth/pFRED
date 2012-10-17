@@ -69,6 +69,7 @@ public:
   void assign_teachers();
   void setup_offices();
   Place * get_random_workplace();
+  void print_household_size_distribution(char * dir, char * date_string, int run);
   void end_of_run();
 
 private:

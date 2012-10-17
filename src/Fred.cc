@@ -225,10 +225,11 @@ int main(int argc, char* argv[]) {
 
     if (Date::match_pattern(Global::Sim_Current_Date, "01-01-*")) {
       if (Global::Track_age_distribution) {
-      Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+	Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+	Global::Places.print_household_size_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
       }
       if (Global::Track_household_distribution) {
-      Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+	Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
       }
     }
 

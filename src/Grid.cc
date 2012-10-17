@@ -424,7 +424,7 @@ void Grid::print_household_distribution(char * dir, char * date_string, int run)
       targ = cell->get_target_households();
       if (targ > 0) pct = (100.0*count)/targ;
       else pct = 0.0;
-      fprintf(fp, "%d %d %d %d %f\n", i, j, targ, count, pct);
+      fprintf(fp, "Cell %d %d target %d actual %d pct %f\n", i, j, targ, count, pct);
     }
   }
   fclose(fp);

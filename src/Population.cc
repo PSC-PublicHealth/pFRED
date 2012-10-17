@@ -987,19 +987,20 @@ void Population::get_network_stats(char *directory) {
 
 void Population::report_birth(int day, Person *per) const {
   if (Global::Birthfp == NULL) return;
-  fprintf(Global::Birthfp, "day %d mother %d age %d\n",
-      day,
-      per->get_id(),
-      per->get_age());
+  int year = Global::Sim_Start_Date->get_year(day);
+  fprintf(Global::Birthfp, "year %d day %d mother %d age %d\n",
+	  year, day,
+	  per->get_id(),
+	  per->get_age());
   fflush(Global::Birthfp);
 }
 
 void Population::report_death(int day, Person *per) const {
   if (Global::Deathfp == NULL) return;
   fprintf(Global::Deathfp, "day %d person %d age %d\n",
-      day,
-      per->get_id(),
-      per->get_age());
+	  day,
+	  per->get_id(),
+	  per->get_age());
   fflush(Global::Deathfp);
 }
 
@@ -1007,27 +1008,28 @@ char * Population::get_pstring(int id) {
   return pstring[id];
 }
 
+#define MAX_AGE 100
+
 void Population::print_age_distribution(char * dir, char * date_string, int run) {
   FILE *fp;
-  int count[21];
-  double pct[21];
+  int count[MAX_AGE+1];
+  double pct[MAX_AGE+1];
   char filename[256];
   sprintf(filename, "%s/age_dist_%s.%02d", dir, date_string, run);
   printf("print_age_dist entered, filename = %s\n", filename); fflush(stdout);
-  for (int i = 0; i < 21; i++) {
+  for (int i = 0; i <= MAX_AGE; i++) {
     count[i] = 0;
   }
   for (int p = 0; p < pop_size; p++){
     Person & pop_i = blq.get_item_by_index( p );
     int age = pop_i.get_age();
-    int bin = age/5;
-    if (-1 < bin && bin < 21) count[bin]++;
-    if (-1 < bin && bin > 20) count[20]++;
+    if (0 <= age && age <= MAX_AGE) count[age]++;
+    if (age > MAX_AGE) count[MAX_AGE]++;
   }
   fp = fopen(filename, "w");
-  for (int i = 0; i < 21; i++) {
-    pct[i] = 100.0*count[i]/pop_size;
-    fprintf(fp, "%d  %d %f\n", i*5, count[i], pct[i]);
+  for (int i = 0; i <= MAX_AGE; i++) {
+    pct[i] = (1.0*MAX_AGE*count[i])/pop_size;
+    fprintf(fp, "age %d  count %d pct %f\n", i, count[i], pct[i]);
   }
   fclose(fp);
 }

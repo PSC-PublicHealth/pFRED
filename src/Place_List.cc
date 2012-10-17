@@ -573,6 +573,34 @@ Place * Place_List::get_random_workplace() {
     return NULL;
 }
 
+void Place_List::print_household_size_distribution(char * dir, char * date_string, int run) {
+  FILE *fp;
+  int count[11];
+  double pct[11];
+  char filename[256];
+  sprintf(filename, "%s/household_size_dist_%s.%02d", dir, date_string, run);
+  printf("print_household_size_dist entered, filename = %s\n", filename); fflush(stdout);
+  for (int i = 0; i < 11; i++) {
+    count[i] = 0;
+  }
+  int total = 0;
+  int number_places = (int) places.size();
+  for (int p = 0; p < number_places; p++) {
+    if (places[p]->get_type() == HOUSEHOLD) {
+      int n = places[p]->get_size();
+      if (n < 11) { count[n]++; }
+      else { count[10]++; }
+      total++;
+    }
+  }
+  fp = fopen(filename, "w");
+  for (int i = 0; i < 11; i++) {
+    pct[i] = (100.0*count[i])/number_places;
+    fprintf(fp, "size %d count %d pct %f\n", i*5, count[i], pct[i]);
+  }
+  fclose(fp);
+}
+
 void Place_List::end_of_run() {
   if (Global::Verbose > 1) {
     int number_places = places.size();
