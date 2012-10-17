@@ -512,7 +512,7 @@ void Population::update(int day) {
   // All birthdays except Feb. 29 ( unless in leap year ) 
   if ( day_of_year != 60 || is_leap ) {
     for (size_t p = 0; p < birthday_vecs[ day_of_year ].size(); p++) {
-      birthday_vecs[ day_of_year ][ p ]->birthday( day );
+      birthday_vecs[ day_of_year ][ p ]->get_demographics()->birthday( day );
       bd_count++;
     }
   }
@@ -520,7 +520,7 @@ void Population::update(int day) {
   //If we are NOT in a leap year, then we need to do all of the day 60 (feb 29) birthdays on day 61
   if ( !is_leap && day_of_year == 61 ) {
     for (size_t p = 0; p < birthday_vecs[60].size(); p++) {
-      birthday_vecs[ 60 ][ p ]->birthday( day );
+      birthday_vecs[ 60 ][ p ]->get_demographics()->birthday( day );
       bd_count++;
     }
   }
