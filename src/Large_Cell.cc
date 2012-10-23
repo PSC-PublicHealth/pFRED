@@ -124,7 +124,7 @@ Place * Large_Cell::get_closest_workplace(double x, double y, int min_size, int 
       double x2 = Geo_Utils::get_x(workplace->get_longitude());
       double y2 = Geo_Utils::get_y(workplace->get_latitude());
       double dist = sqrt((x-x2)*(x-x2)+(y-y2)*(y-y2));
-      if (dist < *min_dist) {
+      if (dist < 20.0 && dist < *min_dist) {
 	*min_dist = dist;
 	closest_workplace = workplace;
 	// printf("closer = %s size = %d min_dist = %f\n", closest_workplace->get_label(), size, *min_dist);
