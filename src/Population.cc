@@ -1027,6 +1027,7 @@ void Population::print_age_distribution(char * dir, char * date_string, int run)
     int age = pop_i.get_age();
     if (0 <= age && age <= MAX_AGE) count[age]++;
     if (age > MAX_AGE) count[MAX_AGE]++;
+    assert(age >= 0);
   }
   fp = fopen(filename, "w");
   for (int i = 0; i <= MAX_AGE; i++) {

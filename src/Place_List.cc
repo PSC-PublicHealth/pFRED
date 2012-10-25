@@ -525,10 +525,13 @@ void Place_List::assign_teachers() {
       }
       
       Place * nearby_workplace = large_cell->get_workplace_near_to_school(school);
-      assert(nearby_workplace != NULL);
-
-      // make all the workers in selected workplace teachers at the nearby school
-      nearby_workplace->turn_workers_into_teachers(school);
+      if (nearby_workplace != NULL) {
+	// make all the workers in selected workplace teachers at the nearby school
+	nearby_workplace->turn_workers_into_teachers(school);
+      }
+      else {
+	FRED_VERBOSE(0, "NO NEARBY_WORKPLACE FOUND for school at lat %f lon %f \n", lat, lon);
+      }
     }
   }
   fflush(stdout);

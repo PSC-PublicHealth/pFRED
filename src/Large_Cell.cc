@@ -104,6 +104,7 @@ Place *Large_Cell::get_workplace_near_to_school(Place *school) {
   // find nearest workplace that has right number of employees
   double min_dist = 1e99;
   Place * nearby_workplace = grid->get_nearby_workplace(row,col,x,y,min_staff,max_staff,&min_dist);
+  if (nearby_workplace == NULL) return NULL;
   assert(nearby_workplace != NULL);
   double x2 = Geo_Utils::get_x(nearby_workplace->get_longitude());
   double y2 = Geo_Utils::get_y(nearby_workplace->get_latitude());

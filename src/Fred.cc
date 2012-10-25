@@ -203,6 +203,16 @@ int main(int argc, char* argv[]) {
       INIT_RANDOM(new_seed + run - 1);
     }
 
+    if (Date::match_pattern(Global::Sim_Current_Date, "01-01-*")) {
+      if (Global::Track_age_distribution) {
+	Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+	Global::Places.print_household_size_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+      }
+      if (Global::Track_household_distribution) {
+	Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+      }
+    }
+
     Global::Places.update(day);
     Utils::fred_print_lap_time("day %d update places", day);
 
@@ -221,16 +231,6 @@ int main(int argc, char* argv[]) {
     
     if (Global::Enable_Aging && Global::Verbose && Date::match_pattern(Global::Sim_Current_Date, "12-31-*")) {
       Global::Pop.quality_control();
-    }
-
-    if (Date::match_pattern(Global::Sim_Current_Date, "01-01-*")) {
-      if (Global::Track_age_distribution) {
-	Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
-	Global::Places.print_household_size_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
-      }
-      if (Global::Track_household_distribution) {
-	Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
-      }
     }
 
     // incremental trace
