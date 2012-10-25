@@ -15,11 +15,10 @@ all: $(POPS)
 # To create a population directory, run "make X"
 % :: %.zip
 	unzip $< -d $@
-	touch $@
 
 # To create a zip file, run "make X.zip"
 %.zip: $(basename %)
-	zip -rj $@ $<
+	(cd $< ; zip -rj $@ *.txt ; mv $@ .. ; cd ..)
 
 clean:
 	rm -rf $(POPS)
