@@ -43,10 +43,11 @@ class Place;
 #define RETIRED_PROFILE 'R'
 #define PRISON_PROFILE 'J'
 #define MILITARY_PROFILE 'M'
+#define UNDEFINED_PROFILE 'X'
 
 class Activities {
 public:
-  Activities (Person *person, Place *house, Place *school, Place *work);
+  Activities (Person * self, Place *house, Place *school, Place *work);
 
   /**
    * Setup activities at start of run
@@ -61,34 +62,28 @@ public:
   /**
    * Assigns an activity profile to the agent
    */
-  void assign_profile();
+  void assign_profile( Person * self );
 
   /**
    * Perform the daily update for an infectious agent
    *
    * @param day the simulation day
    */
-  void update_infectious_activities(int day, int dis);
+  void update_infectious_activities( Person * self, int day, int dis );
 
   /**
    * Perform the daily update for a susceptible agent
    *
    * @param day the simulation day
    */
-  void update_susceptible_activities(int day, int dis);
-
-  /*
-   * Appends disease-place-person items to vector passed in as reference
-   */
-  void get_susceptible_places_to_visit( int day, int disease_id,
-      Epidemic::Place_Person_List & list, int thread_id );
+  void update_susceptible_activities( Person * self, int day, int dis );
 
   /**
    * Perform the daily update to the schedule
    *
    * @param day the simulation day
    */
-  void update_schedule(int day);
+  void update_schedule( Person * self, int day );
 
   /**
    * Decide whether to stay home if symptomatic.
@@ -96,7 +91,7 @@ public:
    *
    * @param day the simulation day
    */
-  void decide_whether_to_stay_home(int day);
+  void decide_whether_to_stay_home( Person * self, int day );
 
   /**
    * Decide whether to stay home if symptomatic.
@@ -108,12 +103,12 @@ public:
   /**
    * Print the Activity schedule
    */
-  void print_schedule(int day);
+  void print_schedule( Person * self, int day );
 
   /**
    * Print out information about this object
    */
-  void print();
+  void print( Person * self );
 
   /**
    * @return a pointer to this agent's Household
@@ -148,38 +143,38 @@ public:
   /**
    * Assign the agent to a School
    */
-  void assign_school();
+  void assign_school( Person * self );
 
   /**
    * Assign the agent to a Classroom
    */
-  void assign_classroom();
+  void assign_classroom( Person * self );
 
   /**
    * Assign the agent to a Workplace
    */
-  void assign_workplace();
+  void assign_workplace( Person * self );
 
   /**
    * Assign the agent to an Office
    */
-  void assign_office();
+  void assign_office( Person * self );
 
   /**
    * Update the agent's profile
    */
-  void update_profile();
+  void update_profile( Person * self );
 
   /**
    * Update the household mobility of the agent</br>
    * Note: this is not used unless <code>Global::Enable_Mobility</code> is set to <code>true</code>
    */
-  void update_household_mobility();
+  void update_household_mobility( Person * self );
 
   /**
    * Unenroll from all the favorite places
    */
-  void terminate();
+  void terminate( Person * self );
 
   /**
    * Increments the incidence count for a given disease and its strains for all of the agent's favorite places
@@ -198,20 +193,20 @@ public:
    * @param visited a pointer to the Person object being visited
    * @see Activities::store_favorite_places()
    */
-  void start_traveling(Person *visited);
+  void start_traveling( Person * self, Person * visited );
 
   /**
    * The agent stops traveling and returns to its original favorite places
    * @see Activities::restore_favorite_places()
    */
-  void stop_traveling();
+  void stop_traveling( Person * self );
 
   /**
    * @return <code>true</code> if the agent is traveling, <code>false</code> otherwise
    */
   bool get_travel_status() { return travel_status; }
   
-  bool become_a_teacher(Place *school);
+  bool become_a_teacher(Person *self, Place *school);
 
   /**
    * Return the number of other agents in an agent's neighborhood, school,
@@ -231,7 +226,7 @@ public:
   bool is_student() { return profile == STUDENT_PROFILE; }
 
 private:
-  Person * self;	     // pointer to person having this activities
+
   Place * favorite_place[FAVORITE_PLACES];    // list of expected places
   Place ** tmp_favorite_place; // list of favorite places, stored while traveling
   std::bitset< FAVORITE_PLACES > on_schedule; // true iff favorite place is on schedule
@@ -241,9 +236,9 @@ private:
   char profile;				      // activities profile type
 
   // individual sick day variables
-  int my_sick_days_absent;
-  int my_sick_days_present;
-  double sick_days_remaining;
+  short int my_sick_days_absent;
+  short int my_sick_days_present;
+  float sick_days_remaining;
   bool sick_leave_available;
   bool my_sick_leave_decision_has_been_made;
   bool my_sick_leave_decision;

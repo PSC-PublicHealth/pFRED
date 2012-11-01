@@ -15,7 +15,7 @@
 #include "Place.h"
 #include "Person.h"
 #include "Cell.h"
-
+#include "Random.h"
 
 /**
  * This class represents a household location in the FRED application. It inherits from <code>Place</code>.
@@ -177,11 +177,11 @@ private:
   int household_income;				// household income
 
   vector <Person *> housemate;
-  int children;
-  int adults;
+  short int children;
+  short int adults;
 
   // profile of original housemates
-  vector <int> ages;
+  vector < unsigned char > ages;
   vector <int> ids;
 };
 

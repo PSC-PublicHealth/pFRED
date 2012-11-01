@@ -30,7 +30,6 @@ class Transmission;
 #include "Behavior.h"
 #include "Activities.h"
 
-
 class Person {
 public:
 
@@ -60,7 +59,7 @@ public:
    * @param disease the disease to reference
    */
   void become_unsusceptible(Disease *disease) {
-    health.become_unsusceptible(disease);
+    health.become_unsusceptible( this, disease );
   }
 
   /**
@@ -68,8 +67,8 @@ public:
    * @param disease the disease to reference
    * @param transmission the transmission event
    */
-  void become_exposed(Disease *disease, Transmission *transmission) {
-    health.become_exposed(disease, transmission);
+  void become_exposed(Disease *disease, Transmission & transmission) {
+    health.become_exposed( this, disease, transmission);
   }
 
   /**
@@ -87,13 +86,6 @@ public:
   void print(FILE *fp, int disease);
 
   /**
-   * @param disease the disease in question
-   * @return
-   * @see Health::add_infectee(int disease)
-   */
-  int add_infectee(int disease);
-
-  /**
    * @param day the simulation day
    * @param disease the disease to check
    * @return <code>true</code> if the exposure day to the disease = day, <code>false</code> otherwise
@@ -104,9 +96,7 @@ public:
 
   int addInfected(int disease, vector<int> strains);
   
-  void infect(Person *infectee, int disease, Transmission *transmission);
-  void addIncidence(int disease, vector<int> strains);
-  void addPrevalence(int disease, vector<int> strains);
+  void infect(Person *infectee, int disease, Transmission & transmission);
   
   /**
    * Notify the population that this Person has changed
@@ -123,14 +113,15 @@ public:
    * @param day the simulation day
    * @see Health::update(int day)
    */
-  void update_health(int day) { health.update(day); }
-  void update_health_interventions(int day) { health.update_interventions(day); }
+  void update_health(int day) { health.update( this, day ); }
+  
+  void update_health_interventions(int day) { health.update_interventions( this, day ); }
 
   /**
    * @param day the simulation day
    * @see Behavior::update(int day)
    */
-  void update_behavior(int day) { behavior.update(day); }
+  void update_behavior(int day) { behavior.update( this, day ); }
 
   /**
    * @Activities::prepare()
@@ -140,36 +131,36 @@ public:
   /**
    * @Activities::update_profile()
    */
-  void update_activity_profile() { activities.update_profile(); }
+  void update_activity_profile() { activities.update_profile( this ); }
 
   /**
    * @see Activities::update_household_mobility()
    */
-  void update_household_mobility() { activities.update_household_mobility(); }
+  void update_household_mobility() { activities.update_household_mobility( this ); }
 
   /**
    * This agent will become susceptible to the disease
    * @param disease the disease
    */
-  void become_susceptible(Disease * disease) { health.become_susceptible(disease); }
+  void become_susceptible( Disease * disease ) { health.become_susceptible( this, disease ); }
 
   /**
    * This agent will become infectious with the disease
    * @param disease a pointer to the Disease
    */
-  void become_infectious(Disease * disease) { health.become_infectious(disease); }
+  void become_infectious(Disease * disease) { health.become_infectious( this, disease ); }
 
   /**
    * This agent will become symptomatic with the disease
    * @param disease a pointer to the Disease
    */
-  void become_symptomatic(Disease *disease) { health.become_symptomatic(disease); }
+  void become_symptomatic(Disease *disease) { health.become_symptomatic( this, disease ); }
 
   /**
    * This agent will recover from the disease
    * @param disease a pointer to the Disease
    */
-  void recover(Disease * disease) { health.recover(disease); }
+  void recover(Disease * disease) { health.recover( this, disease ); }
 
   /**
    * This agent creates a new agent
@@ -181,13 +172,13 @@ public:
    * Assign the agent to a Classroom
    * @see Activities::assign_classroom()
    */
-  void assign_classroom() { activities.assign_classroom(); }
+  void assign_classroom() { activities.assign_classroom( this ); }
 
   /**
    * Assign the agent to an Office
    * @see Activities::assign_office()
    */
-  void assign_office() { activities.assign_office(); }
+  void assign_office() { activities.assign_office( this ); }
 
   /**
    * Will print out a person in a format similar to that read from population file
@@ -214,6 +205,10 @@ public:
    * @see Demographics::get_age()
    */
   int get_age() { return demographics.get_age(); }
+
+  int get_birth_year() { return demographics.get_birth_year(); }
+
+  int get_birth_day_of_year() { return demographics.get_birth_day_of_year(); }
 
   /**
    * @return the Person's initial age
@@ -406,13 +401,13 @@ public:
    * @param visited the Person this agent will visit
    * @see Activities::start_traveling(Person *visited)
    */
-  void start_traveling(Person *visited){ activities.start_traveling(visited); }
+  void start_traveling(Person *visited){ activities.start_traveling( this, visited ); }
 
   /**
    * Have this Person stop traveling
    * @see Activities::stop_traveling()
    */
-  void stop_traveling(){ activities.stop_traveling(); }
+  void stop_traveling(){ activities.stop_traveling( this ); }
 
   /**
    * @return <code>true</code> if the Person is traveling, <code>false</code> if not
@@ -429,8 +424,12 @@ public:
   void clear_past_infections(int disease) { health.clear_past_infections(disease); }
 
   //void add_past_infection(int d, Past_Infection *pi){ health.add_past_infection(d, pi); }  
-  void add_past_infection( vector<int> &strains, int recovery_date, int age_at_exposure, Disease * dis, Person * host ) {
-    health.add_past_infection( strains, recovery_date, age_at_exposure, dis, host ); 
+  void add_past_infection( vector< int > & strains, int recovery_date, int age_at_exposure, Disease * dis ) {
+    health.add_past_infection( strains, recovery_date, age_at_exposure, dis ); 
+  }
+
+  void take_vaccine( Vaccine *vacc, int day, Vaccine_Manager* vm ) {
+    health.take_vaccine( this, vacc, day, vm );
   }
 
   /**
@@ -438,12 +437,19 @@ public:
    */
   Behavior * get_behavior() { return &behavior; }
 
-  void select_adult_decision_maker(Person * old_adult){ behavior.select_adult_decision_maker(old_adult); }
+  void select_adult_decision_maker( Person * old_adult ) {
+    behavior.select_adult_decision_maker( this, old_adult );
+  }
   Person * get_adult_decision_maker() { return behavior.get_adult_decision_maker(); }
-  bool adult_is_staying_home(int day) { return behavior.adult_is_staying_home(day); }
-  bool child_is_staying_home(int day) { return behavior.child_is_staying_home(day); }
-  bool acceptance_of_vaccine() { return behavior.acceptance_of_vaccine(); }
-  bool acceptance_of_another_vaccine_dose() { return behavior.acceptance_of_another_vaccine_dose(); }
+  bool adult_is_staying_home(int day) { return behavior.adult_is_staying_home( this, day ); }
+  bool child_is_staying_home(int day) { return behavior.child_is_staying_home( this, day ); }
+  bool acceptance_of_vaccine() { return behavior.acceptance_of_vaccine( this ); }
+  bool acceptance_of_another_vaccine_dose() { return behavior.acceptance_of_another_vaccine_dose( this ); }
+  bool child_acceptance_of_vaccine() { return behavior.child_acceptance_of_vaccine( this ); }
+  bool child_acceptance_of_another_vaccine_dose() {
+    return behavior.child_acceptance_of_another_vaccine_dose( this );
+  }
+
   void become_an_adult_decision_maker() { behavior.initialize_adult_behavior(this); }
   bool is_sick_leave_available() { return activities.is_sick_leave_available(); }
 
@@ -455,7 +461,13 @@ public:
 
   int get_pop_index() { return index; }
 
-  bool become_a_teacher(Place *school) { return activities.become_a_teacher(school); }
+  void birthday( int day ) { demographics.birthday( this, day ); }
+
+  void update_births( int day ) { demographics.update_births( this, day ); }
+
+  void update_deaths( int day ) { demographics.update_deaths( this, day ); }
+
+  bool become_a_teacher(Place *school) { return activities.become_a_teacher(this, school); }
   bool is_teacher() { return activities.is_teacher(); }
   bool is_student() { return activities.is_student(); }
 
@@ -466,8 +478,8 @@ private:
   // but can be reused over the course of the simulation for different people (after death/removal)
   int index; 
   friend class Population;
-  Demographics demographics;
   Health health;
+  Demographics demographics;
   Activities activities;
   Behavior behavior;
 };

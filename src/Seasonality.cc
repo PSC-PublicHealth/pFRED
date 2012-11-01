@@ -54,7 +54,9 @@ void Seasonality::update_seasonality_multiplier() {
           seasonality_multiplier[d][r][c] = disease->calculate_climate_multiplier(seasonality_values[r][c]);
         }
       }
-    } else { // just use seasonality values as they are
+    }
+    // TODO Optionally add jitter to seasonality values
+    else { // just use seasonality values as they are
       seasonality_multiplier[d] = seasonality_values;
     }
   }

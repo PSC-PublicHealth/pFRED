@@ -8,6 +8,7 @@
 //
 // File: Large_Cell.cc
 //
+#include <algorithm>
 
 #include "Global.h"
 #include "Large_Cell.h"
@@ -15,6 +16,8 @@
 #include "Geo_Utils.h"
 #include "Random.h"
 #include "Utils.h"
+
+int Large_Cell::next_cell_id = 0;
 
 void Large_Cell::setup(Large_Grid * grd, int i, int j) {
   grid = grd;
@@ -34,7 +37,17 @@ void Large_Cell::setup(Large_Grid * grd, int i, int j) {
   pop_density = 0;
   person.clear();
   workplaces.clear();
+  id = next_cell_id++;
 }
+
+//void Large_Cell::print() {
+//  printf("Large_Cell %d %d: %f, %f, %f, %f\n",row,col,min_x,max_x,min_y,max_y);
+//  for (int i = 0; i < 9; i++) {
+//    if (neighbors[i] == NULL) { printf("NULL ");}
+//    else {neighbors[i]->print_coord();}
+//    printf("\n");
+//  }
+//}
 
 void Large_Cell::quality_control() {
   return;
@@ -78,6 +91,9 @@ void Large_Cell::set_max_popsize(int n) {
 }
 
 void Large_Cell::unenroll(Person *per) {
+  // <-------------------------------------------------------------- Mutex
+  fred::Scoped_Lock lock( mutex );
+  /* Why look by id and not just find and remove the pointer using std algorithms?
   int id = per->get_id();
   vector<Person *>::iterator it;
   for(it = person.begin(); it != person.end(); it++) {
@@ -86,6 +102,25 @@ void Large_Cell::unenroll(Person *per) {
   if(it != person.end()) {
     person.erase(it);
   }
+  */
+  if ( person.size() > 1 ) {
+    std::vector< Person * >::iterator iter;
+    iter = std::find( person.begin(), person.end(), per );
+    if ( iter != person.end() ) {
+      std::swap( (*iter), person.back() );
+      person.erase( person.end() - 1 );
+    }
+    assert( std::find( person.begin(), person.end(), per ) == person.end() );
+  }
+  else {
+    person.clear();
+  }
+}
+
+Transaction * Large_Cell::collect_cell_stats( int day, int disease_id ) {
+  Cell_Report * report = new Cell_Report( day, id, disease_id );
+  report->collect( person );
+  return report;
 }
 
 Place *Large_Cell::get_workplace_near_to_school(Place *school) {
@@ -142,3 +177,4 @@ void Large_Cell::add_workplace(Place *workplace) {
   // double y = Geo_Utils::get_y(workplace->get_latitude());
   // printf("ADD WORK: to large cell (%d, %d) %s %f %f\n", row,col,workplace->get_label(),x,y); fflush(stdout);
 }
+//>>>>>>> 1.8

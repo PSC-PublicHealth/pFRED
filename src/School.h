@@ -12,10 +12,14 @@
 #ifndef _FRED_SCHOOL_H
 #define _FRED_SCHOOL_H
 
-#include "Place.h"
 #include <vector>
 
+#include "Place.h"
+#include "Random.h"
+
+
 #define GRADES 20
+
 class Classroom;
 
 class School : public Place {

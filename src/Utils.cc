@@ -144,24 +144,6 @@ void Utils::fred_open_output_files(char * directory, int run){
       Utils::fred_abort("Can't open %s\n", filename);
     }
   }
-  Global::Prevfp = NULL;
-  if (strcmp(Global::Prevfilebase, "none") != 0) {
-    sprintf(filename, "%s/prev%d.txt", directory, run);
-    Global::Prevfp = fopen(filename, "w");
-    if (Global::Prevfp == NULL) {
-      Utils::fred_abort("Can't open %s\n", filename);
-    }
-    Global::Report_Prevalence = true;
-  }
-  Global::Incfp = NULL;
-  if (strcmp(Global::Incfilebase, "none") != 0) {
-    sprintf(filename, "%s/inc%d.txt", directory, run);
-    Global::Incfp = fopen(filename, "w");
-    if (Global::Incfp == NULL) {
-      Utils::fred_abort("Help! Can't open %s\n", filename);
-    }
-    Global::Report_Incidence = true;
-  }
   Global::Immunityfp = NULL;
   if (strcmp(Global::Immunityfilebase, "none") != 0) {
     sprintf(filename, "%s/immunity%d.txt", directory, run);
@@ -170,24 +152,6 @@ void Utils::fred_open_output_files(char * directory, int run){
       Utils::fred_abort("Help! Can't open %s\n", filename);
     }
     Global::Report_Immunity = true;
-  }
-  Global::Transmissionsfp = NULL;
-  if (strcmp(Global::Transmissionsfilebase, "none") != 0) {
-    sprintf(filename, "%s/transmissions%d.txt", directory, run);
-    Global::Transmissionsfp = fopen(filename, "w");
-    if (Global::Transmissionsfp == NULL) {
-      Utils::fred_abort("Help! Can't open %s\n", filename);
-    }
-    Global::Report_Transmissions = true;
-  }
-  Global::Strainsfp = NULL;
-  if (strcmp(Global::Strainsfilebase, "none") != 0) {
-    sprintf(filename, "%s/strains%d.txt", directory, run);
-    Global::Strainsfp = fopen(filename, "w");
-    if (Global::Strainsfp == NULL) {
-      Utils::fred_abort("Help! Can't open %s\n", filename);
-    }
-    Global::Report_Strains = true;
   }
   Global::Householdfp = NULL;
   if (Global::Print_Household_Locations) {

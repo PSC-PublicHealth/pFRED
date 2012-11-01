@@ -35,6 +35,8 @@
 #define NCPU 1
 #endif
 
+class DB;
+
 class Population;
 class Place_List;
 class Grid;
@@ -63,7 +65,7 @@ class Global {
     // MAX_NUM_DISEASES sets the size of stl::bitsets and static arrays used throughout FRED
     // to store disease-specific flags and pointers; set to the smallest possible value 
     // for optimal performance and memory usage
-    static const int MAX_NUM_DISEASES = 4;
+    static const int MAX_NUM_DISEASES = 1;
     // Change this constant and recompile to allow more threads.  For efficiency should be
     // equal to OMP_NUM_THREADS value that will be used.  If OMP_NUM_THREADS greater than
     // MAX_NUM_THREADS is used, FRED will abort the run.
@@ -140,16 +142,15 @@ class Global {
     static char Prevfilebase[];
     static char Incfilebase[];
     static char Immunityfilebase[];
-    static char Transmissionsfilebase[];
-    static char Strainsfilebase[];
+
+    static char DBfile[];
+
     static char ErrorLogbase[];
     static int Enable_Behaviors;
-    static int Enable_Protection;
     static int Track_infection_events;
     static int Track_age_distribution;
     static int Track_household_distribution;
     static int Track_network_stats;
-    static int Track_Multi_Strain_Stats;
     static int Track_Residual_Immunity;
     static int Verbose;
     static int Debug;
@@ -178,11 +179,7 @@ class Global {
     static bool Enable_Seasonality;
     static bool Enable_Climate;
     static bool Seed_by_age;
-    static bool Report_Prevalence;
-    static bool Report_Incidence;
     static bool Report_Immunity;
-    static bool Report_Transmissions;
-    static bool Report_Strains;
     static bool Enable_Vaccination;
     static bool Enable_Antivirals;
     static bool Use_Mean_Latitude;
@@ -203,6 +200,8 @@ class Global {
     static Evolution *Evol;
     static Seasonality *Clim;
 
+    static DB db;
+
     // global file pointers
     static FILE *Statusfp;
     static FILE *Outfp;
@@ -215,8 +214,6 @@ class Global {
     static FILE *Incfp;
     static FILE *ErrorLogfp;
     static FILE *Immunityfp;
-    static FILE *Transmissionsfp;
-    static FILE *Strainsfp;
     static FILE *Householdfp;
 
     /**
@@ -230,6 +227,46 @@ class Global {
  */
 
 namespace fred {
+
+  /*
+   * This is a space optimization for small bitsets (uses 1 byte rather than 8)
+   * Most methods from std::bitset are implemented, however, notably, operator[] is not,
+   * nor are operator&, operator*
+   */
+  template< int n_bits >
+  struct tiny_bitset {
+    typedef unsigned char BitType;
+    BitType bits;
+
+    tiny_bitset() {
+      if ( n_bits > sizeof( BitType ) ) {
+        fprintf( stderr, "This specialized bitset is limited to %zu bits.  If a larger bitset is needed, use std::bitset\n", sizeof( BitType ) );
+
+      }
+      assert( n_bits <= sizeof( BitType ) );
+      reset();
+    }
+    void reset() { bits = 0; }
+    void reset( int pos ) { bits  &= ~( (BitType) 1 << pos ); }
+    void set() { bits = ~0; }
+    void set( int pos ) { bits |= ( (BitType) 1 << pos ); }
+    int size() {
+      // Published in 1988, the C Programming Language 2nd Ed. (by Brian W. Kernighan and Dennis M. Ritchie) mentions this in exercise 2-9.
+      // Don Knuth pointed out that this method "was first published by Peter Wegner in CACM 3 (1960), 322.
+      // Also discovered independently by Derrick Lehmer and published in 1964 in a book edited by Beckenbach.)"
+      BitType c; // c accumulates the total bits set in v
+      for (c = 0; bits; c++) {
+        bits &= bits - 1; // clear the least significant bit set
+      }
+      return c;
+    }
+    bool any() const { return bits > 0; }
+    bool none() const { return bits == 0; }
+    bool test( int pos ) const { return bits & ( (BitType) 1 << pos ); } 
+  };
+
+
+
   /* 
    * bitset big enough to store flags for MAX_NUM_DISEASES
    * Global::MAX_NUM_DISEASES should be equal to Global::Diseases
@@ -240,15 +277,16 @@ namespace fred {
    * unintended setting/resetting flags for non-existent diseases.
    *
    */
-  typedef std::bitset<Global::MAX_NUM_DISEASES> disease_bitset;
+  typedef tiny_bitset<Global::MAX_NUM_DISEASES> disease_bitset;
 
   typedef float geo;
 
   enum Population_Masks {
     Infectious = 'I',
     Susceptible = 'S',
-    Update_Demographics,
-    Update_Health
+    Update_Deaths = 'D',
+    Update_Births = 'B',
+    Update_Health = 'H'
   };
 
   ////////////////////// OpenMP Utilities
@@ -288,7 +326,8 @@ namespace fred {
     return 0;
   }
   #endif
- 
+
+
   struct Scoped_Lock {
     explicit Scoped_Lock( Mutex & m ) : mut( m ), locked( true ) { mut.Lock(); }
     ~Scoped_Lock() { Unlock(); }
@@ -301,6 +340,63 @@ namespace fred {
     Scoped_Lock( const Scoped_Lock & );
   };
 
+  // compare and swap currently only available using GCC atomic builtin
+  // need to define behavior for other compilers 
+  #ifdef __GNUC__
+  template < typename T >
+  inline static T compare_and_swap( T * p, T a, T b ) {
+    return __sync_bool_compare_and_swap( p, a, b );
+  }
+  // Spin_Lock/Spin_Mutex:
+  // This is a much lighter weight mutex.  The omp mutex defined above
+  // requires 64 bytes of memory.  This spin mutex requires only 1.
+  // The spin mutex will also perform better under some circumstances,
+  // especially when wait time for acquisition of the lock is small.
+  struct Spin_Mutex {
+    bool locked;
+    Spin_Mutex()  { locked = false; }
+    void Lock()   { locked = true;  }
+    void Unlock() { locked = false; }
+  };
+  // since we don't have compare and swap without the gcc builtin, other
+  // compilers default back to the omp locks.  Until compare and swap is
+  // available for other compilers, gcc should be preferred.
+  struct Spin_Lock {
+    Spin_Mutex & m;
+    explicit Spin_Lock( Spin_Mutex & _m ) : m( _m ) {
+      while ( !( compare_and_swap( &m.locked, false, true ) ) ) { }
+    }
+    ~Spin_Lock() {
+      #pragma omp atomic
+      m.locked &= false;
+    }
+  };
+  #else
+  // no gcc atomic builtins available, so just typedef the omp scoped lock/mutex
+  typedef Mutex Spin_Mutex;
+  typedef Scoped_Lock Spin_Lock;
+  #endif
+
+
 }
 
 #endif // _FRED_GLOBAL_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

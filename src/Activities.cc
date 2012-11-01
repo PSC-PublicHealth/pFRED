@@ -54,14 +54,12 @@ int Activities::Sick_days_absent = 0;
 int Activities::School_sick_days_present = 0;
 int Activities::School_sick_days_absent = 0;
 
-Activities::Activities (Person *person, Place *house, Place *school, Place *work) {
+Activities::Activities (Person * self, Place *house, Place *school, Place *work) {
   //Create the static arrays one time
   if (!Activities::is_initialized) {
     read_init_files();
     Activities::is_initialized = true;
   }
-  self = person;
-
   for (int i = 0; i < FAVORITE_PLACES; i++) {
     favorite_place[i] = NULL;
   }
@@ -78,7 +76,7 @@ Activities::Activities (Person *person, Place *house, Place *school, Place *work
         self->get_id(), get_household()->get_id());
   }
   assert(get_neighborhood() != NULL);
-  assign_profile();
+  assign_profile( self );
 
   // enroll in all the favorite places
   for (int i = 0; i < FAVORITE_PLACES; i++) {
@@ -207,7 +205,8 @@ void Activities::before_run() {
   }
 }
 
-void Activities::assign_profile() {
+void Activities::assign_profile( Person * self ) {
+  profile = UNDEFINED_PROFILE;
   int age = self->get_age();
   if (age < Global::SCHOOL_AGE && get_school() == NULL)
     profile = PRESCHOOL_PROFILE;    // child at home
@@ -255,17 +254,17 @@ void Activities::update(int day) {
 }
 
 
-void Activities::update_infectious_activities(int day, int dis) {
+void Activities::update_infectious_activities( Person * self, int day, int dis ) {
   // skip scheduled activities if traveling abroad
   if (traveling_outside)
     return;
 
   // get list of places to visit today
-  update_schedule(day);
+  update_schedule( self, day );
 
   // if symptomatic, decide whether or not to stay home
   if (self->is_symptomatic()) {
-    decide_whether_to_stay_home(day);
+    decide_whether_to_stay_home( self, day );
   }
 
   for (int i = 0; i < FAVORITE_PLACES; i++) {
@@ -277,25 +276,27 @@ void Activities::update_infectious_activities(int day, int dis) {
 }
 
 
-void Activities::update_susceptible_activities(int day, int dis) {
+void Activities::update_susceptible_activities( Person * self, int day, int dis ) {
   // skip scheduled activities if traveling abroad
   if (traveling_outside)
     return;
 
   // get list of places to visit today
-  update_schedule(day);
+  update_schedule( self, day );
 
-  for (int i = 0; i < FAVORITE_PLACES; i++) {
-    if (on_schedule[i]) {
-      assert(favorite_place[i] != NULL);
-      if (favorite_place[i]->is_infectious(dis)) {
-        favorite_place[i]->add_susceptible(dis, self);
+  if ( on_schedule.any() ) {
+    for (int i = 0; i < FAVORITE_PLACES; i++) {
+      if (on_schedule[i]) {
+        assert(favorite_place[i] != NULL);
+        if (favorite_place[i]->is_infectious(dis)) {
+          favorite_place[i]->add_susceptible(dis, self);
+        }
       }
     }
   }
 }
 
-void Activities::update_schedule(int day) {
+void Activities::update_schedule( Person * self, int day ) {
   // update this schedule only once per day
   if (day <= schedule_updated)
     return;
@@ -367,12 +368,12 @@ void Activities::update_schedule(int day) {
 
   if (Global::Verbose > 1) {
     fprintf(Global::Statusfp, "update_schedule on day %d\n", day);
-    print_schedule(day);
+    print_schedule( self, day );
     fflush(Global::Statusfp);
   }
 }
 
-void Activities::decide_whether_to_stay_home(int day) {
+void Activities::decide_whether_to_stay_home( Person * self, int day ) {
   assert (self->is_symptomatic());
   bool stay_home = false;
   bool it_is_a_workday = (on_schedule[WORKPLACE_INDEX] || (is_teacher() && on_schedule[SCHOOL_INDEX]));
@@ -452,7 +453,7 @@ bool Activities::default_sick_leave_behavior() {
 }
 
 
-void Activities::print_schedule(int day) {
+void Activities::print_schedule( Person * self, int day ) {
   fprintf(Global::Statusfp, "day %d schedule for person %d  ", day, self->get_id());
   for (int p = 0; p < FAVORITE_PLACES; p++) {
     fprintf(Global::Statusfp, on_schedule[p]? "+" : "-");
@@ -466,7 +467,7 @@ void Activities::print_schedule(int day) {
   fflush(Global::Statusfp);
 }
 
-void Activities::print() {
+void Activities::print( Person * self ) {
   fprintf(Global::Statusfp, "Activities for person %d: ", self->get_id());
   for (int p = 0; p < FAVORITE_PLACES; p++) {
     if (favorite_place[p] != NULL)
@@ -479,7 +480,7 @@ void Activities::print() {
   fflush(Global::Statusfp);
 }
 
-void Activities::assign_school() {
+void Activities::assign_school( Person * self ) {
   int age = self->get_age();
   // if (age < Global::SCHOOL_AGE || Global::ADULT_AGE <= age) return;
   Cell *grid_cell = favorite_place[HOUSEHOLD_INDEX]->get_grid_cell();
@@ -488,7 +489,7 @@ void Activities::assign_school() {
   if (p != NULL) {
     favorite_place[SCHOOL_INDEX] = p;
     favorite_place[CLASSROOM_INDEX] = NULL;
-    assign_classroom();
+    assign_classroom( self );
     return;
   }
   else {
@@ -534,7 +535,7 @@ void Activities::assign_school() {
         if(p != NULL) {
           favorite_place[SCHOOL_INDEX] = p;
           favorite_place[CLASSROOM_INDEX] = NULL;
-          assign_classroom();
+          assign_classroom( self );
           return;
         }
       }
@@ -561,7 +562,7 @@ void Activities::assign_school() {
   //FRED_WARNING("assign_school: can't locate school for person %d\n", self->get_id());
 }
 
-void Activities::assign_classroom() {
+void Activities::assign_classroom( Person * self ) {
   if (favorite_place[SCHOOL_INDEX] != NULL &&
       favorite_place[CLASSROOM_INDEX] == NULL) {
     Place * place =
@@ -571,7 +572,7 @@ void Activities::assign_classroom() {
   }
 }
 
-void Activities::assign_workplace() {
+void Activities::assign_workplace( Person * self ) {
   int age = self->get_age();
   Cell *grid_cell = favorite_place[HOUSEHOLD_INDEX]->get_grid_cell();
   assert(grid_cell != NULL);
@@ -579,7 +580,7 @@ void Activities::assign_workplace() {
   if (p != NULL) {
     favorite_place[WORKPLACE_INDEX] = p;
     favorite_place[OFFICE_INDEX] = NULL;
-    assign_office();
+    assign_office( self );
     return;
   }
   else {
@@ -626,7 +627,7 @@ void Activities::assign_workplace() {
         if(p != NULL) {
           favorite_place[WORKPLACE_INDEX] = p;
           favorite_place[OFFICE_INDEX] = NULL;
-          assign_office();
+          assign_office( self );
           return;
         }
       }
@@ -652,7 +653,7 @@ void Activities::assign_workplace() {
   FRED_WARNING("assign_workplace: can't locate workplace for person %d\n", self->get_id());
 }
 
-void Activities::assign_office() {
+void Activities::assign_office( Person * self ) {
   if (favorite_place[WORKPLACE_INDEX] != NULL &&
       favorite_place[OFFICE_INDEX] == NULL &&
       Workplace::get_max_office_size() > 0) {
@@ -689,19 +690,19 @@ int Activities::get_degree() {
   return degree;
 }
 
-void Activities::update_profile() {
+void Activities::update_profile( Person * self ) {
   int age = self->get_age();
 
   if (profile == PRESCHOOL_PROFILE && Global::SCHOOL_AGE <= age && age < Global::ADULT_AGE) {
     // start school
     profile = STUDENT_PROFILE;
     // select a school based on age and neighborhood
-    assign_school();
+    assign_school( self );
     if (Global::Verbose>1) {
       fprintf(Global::Statusfp,
           "changed behavior profile to STUDENT: id %d age %d sex %c\n",
           self->get_id(), age, self->get_sex());
-      print();
+      print( self );
       fflush(Global::Statusfp);
     }
     return;
@@ -719,14 +720,14 @@ void Activities::update_profile() {
             self->get_id(), age, self->get_sex());
         fprintf(Global::Statusfp, "%s %s | ",
             s->get_label(), c->get_label());
-        print();
+        print( self );
         fflush(Global::Statusfp);
       }
       return;
     } else if (s != NULL && s->classrooms_for_age(age) > 0) {
       // pick a new classrooms in current school
       favorite_place[CLASSROOM_INDEX] = NULL;
-      assign_classroom();
+      assign_classroom( self );
       if (Global::Verbose>1) {
         fprintf(Global::Statusfp,
             "CHANGED CLASSROOM ASSIGNMENT: id %d age %d sex %c ",
@@ -741,12 +742,12 @@ void Activities::update_profile() {
               favorite_place[SCHOOL_INDEX]->get_label(),
               favorite_place[CLASSROOM_INDEX]->get_label());
         }
-        print();
+        print( self );
         fflush(Global::Statusfp);
       }
     } else {
       // pick a new school and classroom
-      assign_school();
+      assign_school( self );
       if (Global::Verbose>1) {
         fprintf(Global::Statusfp,
             "CHANGED SCHOOL ASSIGNMENT: id %d age %d sex %c ",
@@ -762,7 +763,7 @@ void Activities::update_profile() {
               (favorite_place[CLASSROOM_INDEX] == NULL)?
               "NULL" : favorite_place[CLASSROOM_INDEX]->get_label());
         }
-        print();
+        print( self );
         fflush(Global::Statusfp);
       }
     }
@@ -775,13 +776,13 @@ void Activities::update_profile() {
     favorite_place[CLASSROOM_INDEX] = NULL;
     // get a job
     profile = WORKER_PROFILE;
-    assign_workplace();
+    assign_workplace( self );
     initialize_sick_leave();
     if (Global::Verbose>1) {
       fprintf(Global::Statusfp,
           "changed behavior profile to WORKER: id %d age %d sex %c\n",
           self->get_id(), age, self->get_sex());
-      print();
+      print( self );
       fflush(Global::Statusfp);
     }
     return;
@@ -798,7 +799,7 @@ void Activities::update_profile() {
         fprintf(Global::Statusfp,
             "changed behavior profile to RETIRED: age %d age %d sex %c\n",
             self->get_id(), age, self->get_sex());
-        print();
+        print( self );
         fflush(Global::Statusfp);
       }
     }
@@ -810,7 +811,7 @@ static int mobility_count[MAX_MOBILITY_AGE + 1];
 static int mobility_moved[MAX_MOBILITY_AGE + 1];
 static int mcount = 0;
 
-void Activities::update_household_mobility() {
+void Activities::update_household_mobility( Person * self ) {
   if (!Global::Enable_Mobility) return;
   if (Global::Verbose>1) {
     fprintf(Global::Statusfp, "update_household_mobility entered with mcount = %d\n", mcount);
@@ -851,21 +852,6 @@ void Activities::update_household_mobility() {
     fclose(fp);
   }
 }
-
-void Activities::addIncidence(int disease, vector<int> strains) {
-  for (int i = 0; i < FAVORITE_PLACES; i++) {
-    if(favorite_place[i] == NULL) continue;
-    favorite_place[i]->modify_incidence_count(disease, strains, 1);
-  }
-}
-
-void Activities::addPrevalence(int disease, vector<int> strains) {
-  for (int i = 0; i < FAVORITE_PLACES; i++) {
-    if(favorite_place[i] == NULL) continue;
-    favorite_place[i]->modify_prevalence_count(disease, strains, 1);
-  }
-}
-
 
 void Activities::read_init_files() {
   Params::get_param_from_string("community_distance", &Activities::Community_distance);
@@ -927,7 +913,7 @@ void Activities::restore_favorite_places() {
   delete[] tmp_favorite_place;
 }
 
-void Activities::start_traveling(Person * visited) {
+void Activities::start_traveling( Person * self, Person * visited ) {
   if (visited == NULL) {
     traveling_outside = true;
   }
@@ -946,29 +932,23 @@ void Activities::start_traveling(Person * visited) {
     //Anuroop: Should this person enroll in visited's favorite places??
   }
   travel_status = true;
-  if (Global::Verbose > 1) {
-    fprintf(Global::Statusfp, "start traveling: id = %d\n", self->get_id());
-    fflush(Global::Statusfp);
-  }
+  FRED_STATUS( 1, "start traveling: id = %d\n", self->get_id() );
 }
 
-void Activities::stop_traveling() {
+void Activities::stop_traveling( Person * self ) {
   if (!traveling_outside) {
     restore_favorite_places();
   }
   travel_status = false;
   traveling_outside = false;
-  if (Global::Verbose > 1) {
-    fprintf(Global::Statusfp, "stop traveling: id = %d\n", self->get_id());
-    fflush(Global::Statusfp);
-  }
+  FRED_STATUS( 1, "stop traveling: id = %d\n", self->get_id() );
 }
 
-bool Activities::become_a_teacher(Place *school) {
+bool Activities::become_a_teacher( Person * self, Place *school) {
   bool success = false;
   if (favorite_place[SCHOOL_INDEX] != NULL) {
     if (Global::Verbose > 1) {
-      Utils::fred_warning("become_a_teacher: person %d already goes to school %d age %d\n",
+      FRED_WARNING("become_a_teacher: person %d already goes to school %d age %d\n",
 			  self->get_id(), favorite_place[SCHOOL_INDEX]->get_id(), self->get_age());
     }
     profile = STUDENT_PROFILE;
@@ -994,7 +974,7 @@ bool Activities::become_a_teacher(Place *school) {
   return success;
 }
 
-void Activities::terminate() {
+void Activities::terminate( Person * self ) {
   // Person was enrolled in only his original 
   // favorite places, not his host's places while travelling
   if(travel_status && ! traveling_outside) 

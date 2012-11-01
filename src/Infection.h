@@ -30,9 +30,12 @@ class Past_Infection;
 #define BIFURCATING 0
 #define SEQUENTIAL 1
 
-extern int Infection_model;
-
 class Infection {
+
+  // thresholds used by determine_transition_dates()
+  double trajectory_infectivity_threshold;
+  double trajectory_symptomaticity_threshold;
+
 public:
   // if primary infection, infector and place are null.
   // if mutation, place is null.
@@ -91,24 +94,24 @@ public:
   int get_exposure_date() const { return exposure_date; }
 
   /**
-   * @return the infectious_date - offset
+   * @return the infectious_date
    */
-  int get_infectious_date() const { return infectious_date - offset; }
+  int get_infectious_date() const { return infectious_date; }
 
   /**
-   * @return the symptomatic_date - offset
+   * @return the symptomatic_date
    */
-  int get_symptomatic_date() const { return symptomatic_date - offset; }
+  int get_symptomatic_date() const { return symptomatic_date; }
 
   /**
-   * @return the asymptomatic_date - offset
+   * @return the asymptomatic_date
    */
-  int get_asymptomatic_date() const { return asymptomatic_date - offset; }
+  int get_asymptomatic_date() const { return asymptomatic_date; }
 
   /**
-   * @return the recovery_date - offset
+   * @return the recovery_date
    */
-  int get_recovery_date() const { return recovery_date - offset; }
+  int get_recovery_date() const { return recovery_date; }
 
   /**
    * @return the recovery_date + the recovery_period
@@ -195,7 +198,7 @@ public:
    * @return the infectivity of this infection for a given day
    */
   double get_infectivity(int day) const {
-    day = day - exposure_date + offset;
+    day = day - exposure_date;
     Trajectory::point point = trajectory->get_data_point(day);
     return point.infectivity * infectivity_multp;
   }
@@ -204,7 +207,7 @@ public:
    * @param infectee agent that this agent should try to infect
    * @param transmission
    */
-  void transmit(Person *infectee, Transmission *transmission);
+  void transmit(Person *infectee, Transmission & transmission);
 
   /**
    * @param transmission a Transmission to add
@@ -215,15 +218,6 @@ public:
    * @param trajectory the new Trajectory of this Infection
    */
   void setTrajectory(Trajectory *trajectory);
-
-  //
-  /**
-   * @param s the disease we are trying to infect a person with
-   * @param host the host Person
-   * @param day the simulation day
-   * @returns an infection for the given host and disease with exposed date and recovered date both equal to day (instant resistance to the given disease);
-   */
-  static Infection * get_dummy_infection(Disease *s, Person *host, int day);
 
   /**
    * @return a pointer to this Infection's trajectory attribute
@@ -251,17 +245,19 @@ public:
 private:
   // associated disease
   Disease *disease;
-  int id;
-  bool isSusceptible;
 
-  // chrono data
-  int exposure_date;
+  bool is_susceptible;
+  bool immune_response;
+  bool will_be_symptomatic;
 
-  int latent_period;
-  int asymptomatic_period;
-  int symptomatic_period;
-  int recovery_period;
-  int susceptibility_period;
+  short int latent_period;
+  short int asymptomatic_period;
+  short int symptomatic_period;
+  short int recovery_period;
+  short int susceptibility_period;
+  short int incubation_period;
+
+  short int age_at_exposure;
 
   // people involved
   Person *infector;
@@ -274,20 +270,16 @@ private:
   int infectee_count;
 
   // parameters
-  bool will_be_symptomatic;
   double susceptibility;
   double infectivity;
   double infectivity_multp;
   double symptoms;
-  int infection_model;
 
   // trajectory contains vectors that describe the (tentative) infection course
   Trajectory * trajectory;
-  // thresholds used by determine_transition_dates()
-  double trajectory_infectivity_threshold;
-  double trajectory_symptomaticity_threshold;
 
-  int incubation_period;
+  // chrono data
+  int exposure_date;
   // the transition dates are set in the constructor by determine_transition_dates()
   int infectious_date;
   int symptomatic_date;
@@ -297,16 +289,6 @@ private:
 
   void determine_transition_dates();
 
-  // offset is used for dummy infections to advance to the first infectious day
-  // this offset is applied in the get_*_date() methods defined in the header
-  // as well as in the update() method when evaluating the trajectory
-  bool dummy;
-  int offset;
-
-  bool immune_response;
-  int age_at_exposure;
-
-  std::vector <Transmission *> transmissions;
 
 protected:
   // for mocks

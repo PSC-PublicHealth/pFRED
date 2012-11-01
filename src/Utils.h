@@ -79,6 +79,19 @@
 
 #endif
 
+// FRED_DEBUG prints to Global::Statusfp using Utils::fred_verbose_statusfp
+#ifdef FREDDEBUG
+#define FRED_DEBUG(verbosity, format, ...){\
+  if ( Global::Debug >= verbosity ) {\
+    Utils::fred_verbose_statusfp(verbosity, "FRED_DEBUG: <%s, LINE:%d> " format, __FILE__, __LINE__, ## __VA_ARGS__);\
+  }\
+}
+
+#else
+#define FRED_DEBUG(verbosity, format, ...){}\
+
+#endif
+
 // FRED_WARNING and FRED_CONDITIONAL_WARNING print to both stdout and the Global::ErrorLogfp using Utils::fred_warning
 #ifdef FREDWARNING
 #define FRED_WARNING(format, ...){\

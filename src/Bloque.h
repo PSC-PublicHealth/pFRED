@@ -194,10 +194,9 @@ private:
   itemPosition firstItemPosition, lastItemPosition;
   size_t firstItemIndex, lastItemIndex;
 
-/* **************************************************************************
- * public constructors, get/set methods *************************************
- * **************************************************************************
- */
+// *****************************************************************************
+// ** public constructors, get/set methods *************************************
+// *****************************************************************************
 
 public:
 
@@ -233,22 +232,27 @@ public:
   }
 
   int get_free_index() {
-    if ( freeSlots.empty() ) {
-      addBlock();
-    }
-    itemPosition freePosition = freeSlots.front();    // <---------------------------------- TODO: protect with mutex!
-    if ( numItems == 0 ) {
-      firstItemPosition = itemPosition();
-      lastItemPosition = itemPosition();
-    }
-    if ( freePosition < firstItemPosition ) {
-      firstItemPosition = freePosition;
-    }
-    if ( freePosition > lastItemPosition ) {
-      lastItemPosition = freePosition;
-    }
-    freeSlots.pop_front();                            // <---------------------------------- TODO: protect with mutex!
-    return freePosition.asIndex();
+    int free_index;
+    #pragma omp critical(BLOQUE_RESIZE_LOCK)
+    {
+      if ( freeSlots.empty() ) {
+        addBlock();
+      }
+      itemPosition freePosition = freeSlots.front();
+      if ( numItems == 0 ) {
+        firstItemPosition = itemPosition();
+        lastItemPosition = itemPosition();
+      }
+      if ( freePosition < firstItemPosition ) {
+        firstItemPosition = freePosition;
+      }
+      if ( freePosition > lastItemPosition ) {
+        lastItemPosition = freePosition;
+      }
+      freeSlots.pop_front();
+      free_index = freePosition.asIndex(); 
+    } // end critical(BLOQUE_RESIZE_LOCK)
+    return free_index;
   }
  
   ObjectType * get_free_pointer( int itemIndex ) {
@@ -426,6 +430,31 @@ public:
       }
     }
   }
+
+  /*
+   * Generic, parallel 'not masked apply' method for all items in container
+   *
+   * Applies to all item that do NOT have the given mask set
+   *
+   */
+  template < typename Functor > 
+  void parallel_not_masked_apply( MaskType m, Functor & f ) {
+    mask & userMask = userMasks[ m ]; 
+    #pragma omp parallel for
+    for ( int i = 0; i < blockVector.size(); ++i ) {
+      for ( int j = 0; j < registersPerBlock; ++j ) {
+        BitType reg = ( defaultMask[ i ][ j ] ) & ( ~( userMask[ i ][ j ] ) );  
+        if ( reg > ( (BitType) 0 ) ) {
+          for ( int k = 0; k < registerWidth; ++k ) {
+            if ( ( reg ) & ( (BitType) 1 << ( k ) ) ) {
+              f( blockVector[ i ][ ( j * registerWidth ) + k ] );
+            }
+          }
+        }
+      }
+    }
+  }
+
 
   template < typename Functor > 
   void parallel_masked_apply_to_labeled_range( char label, MaskType m, Functor & f ) {

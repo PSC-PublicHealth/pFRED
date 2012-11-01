@@ -25,13 +25,92 @@
 #include <vector>
 #include <deque>
 #include <map>
+
 using namespace std;
 
 #include "Population.h"
+#include "Random.h"
 #include "Global.h"
+#include "State.h"
 #include "Geo_Utils.h"
+
 class Cell;
 class Person;
+
+
+struct Place_State {
+
+  fred::Spin_Mutex mutex;
+  std::vector< Person * > susceptibles;
+  std::vector< Person * > infectious;
+
+  void add_susceptible( Person * p ) {
+    fred::Spin_Lock lock( mutex );
+    susceptibles.push_back( p );
+  }
+
+  void clear_susceptibles() {
+    fred::Spin_Lock lock( mutex );
+    susceptibles.clear();
+  }
+
+  size_t susceptibles_size() {
+    fred::Spin_Lock lock( mutex );
+    return susceptibles.size();
+  }
+
+  std::vector< Person * > & get_susceptible_vector() {
+    return susceptibles;
+  }
+
+  void add_infectious( Person * p ) {
+    fred::Spin_Lock lock( mutex );
+    infectious.push_back( p );
+  }
+
+  void clear_infectious() {
+    fred::Spin_Lock lock( mutex );
+    infectious.clear();
+  }
+
+  size_t infectious_size() {
+    fred::Spin_Lock lock( mutex );
+    return infectious.size();
+  }
+
+  std::vector< Person * > & get_infectious_vector() {
+    return infectious;
+  }
+
+  void clear() {
+    susceptibles.clear();
+    infectious.clear();
+  }
+
+  void reset() {
+    if ( susceptibles.size() > 0 ) {
+      susceptibles = std::vector< Person * >();
+    }
+    if ( infectious.size() > 0 ) {
+      infectious = std::vector< Person * >();
+    }
+  }
+
+};
+
+struct Place_State_Merge : Place_State {
+
+  void operator() ( const Place_State & state ) {
+    fred::Spin_Lock lock( mutex );
+    susceptibles.insert( susceptibles.end(), state.susceptibles.begin(), state.susceptibles.end() );
+    infectious.insert( infectious.end(), state.infectious.begin(), state.infectious.end() );
+  }
+
+};
+
+
+
+
 
 class Place {
 public:
@@ -94,19 +173,6 @@ public:
   void add_susceptible(int disease_id, Person * per);
 
   /**
-   * Adds multiple susceptible persons to the place. Adds the persons contained in the
-   * temporary _susceptibles vector to the place's susceptibles vector and
-   * increments the number of susceptibles in the place (S).
-   *
-   * @param disease_id an integer representation of the disease
-   * @param _susceptibles reference to vector of Person objects that will be added
-   * to the place's susceptibles vector for a given diease
-   */
-  void add_susceptibles( int disease_id, std::vector< Person * > & _susceptibles );
-
-
-
-  /**
    * Add a infectious person to the place. This method adds the person to the infectious vector and
    * increments the number of infectious in the place (I).
    *
@@ -150,25 +216,7 @@ public:
    *
    * @return <code>true</code> if any infectious people are here; <code>false</code> if not
    */
-  bool is_infectious(int disease_id) { return I[disease_id] > 0; }
-
-  /**
-   * Allow update of incidence vector.
-   *
-   * @param disease_id an integer representation of the disease
-   * @@param strain a vector of integers representing strains
-   * @param incr is unused at this time
-   */
-  void modify_incidence_count(int disease_id, vector<int> strain, int incr);
-
-  /**
-   * Allow update of prevalence vector.
-   *
-   * @param disease_id an integer representation of the disease
-   * @@param strain a vector of integers representing strains
-   * @param incr is unused at this time
-   */
-  void modify_prevalence_count(int disease_id, vector<int> strain, int incr);
+  bool is_infectious(int disease_id) { return infectious_bitset.test( disease_id ); }
 
   /**
    * <bold>Deprecated.</bold>
@@ -253,22 +301,6 @@ public:
    * @return the longitude
    */
   fred::geo get_longitude() { return longitude; }
-
-  /**
-   * Get the count of (S)usceptibles for a given diease in this place.
-   *
-   * @param disease_id an integer representation of the disease
-   * @return the suceptible count for the given diease
-   */
-  int get_S(int disease_id) { return S[disease_id]; }
-
-  /**
-   * Get the count of (I)nfectious for a given diease in this place.
-   *
-   * @param disease_id an integer representation of the disease
-   * @return the infectious count for the given diease
-   */
-  int get_I(int disease_id) { return (int) (infectious[disease_id].size()); }
 
   /**
    * Get the count of (S)ymptomatics for a given diease in this place.
@@ -419,16 +451,6 @@ public:
   Place * get_container() { return container; }
 
   /**
-   * Increment the cases count. Note that the cases variable will be reset when <code>update()</code> is called
-   */
-  void add_case() { cases++; }
-
-  /**
-   * Increment the deaths count. Note that the deaths variable will be reset when <code>update()</code> is called
-   */
-  void add_deaths() { deaths++; }
-
-  /**
    * Get the grid_cell where this place is.
    *
    * @return a pointer to the grid_cell where this place is
@@ -454,37 +476,42 @@ public:
   double get_y() { return Geo_Utils::get_y(latitude); }
 
 protected:
-  int id;                 // place id
+  // state array contains:
+  //  - list of susceptible visitors (per disease); size of which gives the susceptibles count
+  //  - list of infectious visitors (per disease); size of which gives the infectious count
+  State< Place_State > place_state[ Global::MAX_NUM_DISEASES ];
+  // track whether or not place is infectious with each disease
+  fred::disease_bitset infectious_bitset; 
+
   char label[32];         // external id
   char type;              // HOME, WORK, SCHOOL, COMMUNITY
+  int id;                 // place id
   Place *container;       // container place
   fred::geo latitude;     // geo location
   fred::geo longitude;    // geo location
-  int N;                  // total number of potential visitors
   vector <Person *> enrollees;
   vector <Person *> *susceptibles;    // list of susceptible visitors
   vector <Person *> *infectious;      // list of infectious visitors
-  int *S;                 // susceptible count
-  int *I;                 // infectious count
-  int *Sympt;             // symptomatics count
   int close_date;         // this place will be closed during:
   int open_date;          //   [close_date, open_date)
-  int * cases;            // symptomatic cases today
-  int * deaths;           // deaths today
-  int * total_cases;      // total symptomatic cases
-  int * total_deaths;     // total deaths
-  Population *population;
+  int N;                  // total number of potential visitors
+
+
+  int Sympt[ Global::MAX_NUM_DISEASES ];            // symptomatics count
+  int cases[ Global::MAX_NUM_DISEASES ];            // symptomatic cases today
+  int deaths[ Global::MAX_NUM_DISEASES ];           // deaths today
+  int total_cases[ Global::MAX_NUM_DISEASES ];      // total symptomatic cases
+  int total_deaths[ Global::MAX_NUM_DISEASES ];     // total deaths
+
+  Population * population;
   Cell * grid_cell;       // geo grid_cell for this place
-  vector< map<int, int> > incidence;
-  vector< map<int, int> > prevalence;
+  
   int days_infectious;
   int total_infections;
 
   double get_contact_rate(int day, int disease_id);
   int get_contact_count(Person * infector, int disease_id, int day, double contact_rate);
   void attempt_transmission(double transmission_prob, Person * infector, Person * infectee, int disease_id, int day);
-
-  fred::Mutex mutex;
 
   // Place_List, Grid and Cell are friends so that they can access
   // the Place Allocator.  
@@ -501,7 +528,6 @@ protected:
   // with placement new
   template< typename Place_Type >
   struct Allocator {
-
     Place_Type * allocation_array;
     int current_allocation_size, current_allocation_index;
     int number_of_contiguous_blocks_allocated, remaining_allocations;
@@ -555,7 +581,9 @@ protected:
     int size() {
       return allocations_made;
     }
-  };
+  }; // end Place Allocator
 
 };
+
+
 #endif // _FRED_PLACE_H

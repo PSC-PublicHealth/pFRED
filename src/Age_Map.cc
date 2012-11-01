@@ -36,7 +36,6 @@ void Age_Map::read_from_input(string Input, int i, int j){
   this->read_from_input(Input_string.str());
 }
 
-
 // will leave this interface in, as it will automatically determine whether the 
 // input variable is indexed or not.
 void Age_Map::read_from_input(string Input) {

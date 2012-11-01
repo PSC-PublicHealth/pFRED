@@ -26,13 +26,14 @@
 #include "Epidemic.h"
 #include "Seasonality.h"
 #include "Past_Infection.h"
+#include "DB.h"
+
 #include "execinfo.h"
 #include <csignal>
 #include <cstdlib>
 #include <cxxabi.h>
 
 int main(int argc, char* argv[]) {
-
 
   int run;          // number of current run
   unsigned long new_seed;
@@ -69,6 +70,8 @@ int main(int argc, char* argv[]) {
   // get runtime parameters
   Params::read_parameters(paramfile);
   Global::get_global_parameters();
+
+  Global::db.open_database( Global::DBfile );
 
   // get runtime population parameters
   Global::Pop.get_parameters();
@@ -189,6 +192,13 @@ int main(int argc, char* argv[]) {
     Global::Clim->print_summary();
   }
 
+  //if ( Global::Enable_Large_Grid ) {
+    for (int d = 0; d < Global::Diseases; d++) {
+      Disease * disease = Global::Pop.get_disease(d);
+      disease->initialize_evolution_reporting_grid( Global::Large_Cells );
+    }
+  //}
+
   Utils::fred_print_lap_time("FRED initialization");
   Utils::fred_print_wall_time("FRED initialization complete");
 
@@ -233,6 +243,16 @@ int main(int argc, char* argv[]) {
       Global::Pop.quality_control();
     }
 
+    if (Date::match_pattern(Global::Sim_Current_Date, "01-01-*")) {
+      if (Global::Track_age_distribution) {
+        Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+        Global::Places.print_household_size_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+      }
+      if (Global::Track_household_distribution) {
+	      Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+      }
+    }
+
     // incremental trace
     if (Global::Incremental_Trace && day && !(day%Global::Incremental_Trace))
       Global::Pop.print(1, day);
@@ -249,8 +269,12 @@ int main(int argc, char* argv[]) {
         // flush infections file buffer
         fflush(Global::Infectionfp);
       }
+      #pragma omp section
+      {
+        Global::db.process_transactions();
+      }
     }
-
+ 
     Utils::fred_print_wall_time("day %d finished", day);
 
     Utils::fred_print_day_timer(day);
@@ -259,6 +283,8 @@ int main(int argc, char* argv[]) {
     Global::Sim_Current_Date->advance();
   }
  
+  Global::db.close_database();
+
   fflush(Global::Infectionfp);
 
   Utils::fred_print_lap_time( &simulation_start_time, "\nFRED simulation complete. Excluding initialization, %d days", Global::Days);

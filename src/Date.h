@@ -194,9 +194,9 @@ private:
   static const int EPOCH_START_YEAR = 1800;
   static const int day_table[2][13];
   static const int doomsday_month_val[2][13];
-  static vector<int> *day_of_month_vec;
-  static vector<int> *month_vec;
-  static vector<int> *year_vec;
+  static vector<int> day_of_month_vec;
+  static vector<int> month_vec;
+  static vector<int> year_vec;
   static bool is_initialized;
   int days_since_jan_1_epoch_year;
 

@@ -3,18 +3,20 @@
 
 #include <map>
 
+#include "Transmission.h"
+
 class Infection;
-class Transmission;
 class AV_Health;
 class Antiviral;
 class Infection;
 class Health;
 class Disease;
 class Person;
+class Large_Grid;
 
 class Evolution {
 public:
-  virtual void setup(Disease *disease);
+  virtual void setup( Disease * disease );
 
   /**
    * Put this object back to its original state
@@ -27,7 +29,7 @@ public:
    * @param infection a pointer to an Infection object
    * @param loads a pointer to a map of viral loads
    */
-  virtual Infection *transmit(Infection *infection, Transmission *transmission, Person *infectee);
+  virtual Infection *transmit(Infection *infection, Transmission & transmission, Person *infectee);
 
   /**
    * @param av a pointer to an Antiviral object
@@ -42,21 +44,21 @@ public:
    * @param the simulation day
    * @return a pointer to a map of Primary Loads for a given day
    */
-  virtual std::map<int, double> * get_primary_loads(int day);
+  virtual Transmission::Loads * get_primary_loads(int day);
 
   /**
    * @param the simulation day
    * @param the particular strain of the disease
    * @return a pointer to a map of Primary Loads for a particular strain of the disease on a given day
    */
-  virtual std::map<int, double> * get_primary_loads(int day, int strain);
+  virtual Transmission::Loads * get_primary_loads(int day, int strain);
 
   /**
    * Print out information about this object
    */
   virtual void print();
   
-  virtual void print_stats(int day) { }
+  virtual void update( int day ) { }
 
   virtual double antigenic_distance(int strain1, int strain2) { 
     if(strain1 == strain2) return 0;
@@ -66,6 +68,8 @@ public:
   virtual double antigenic_diversity(Person *p1, Person *p2);
 
   virtual void terminate_person(Person *p) {} 
+
+  virtual void initialize_reporting_grid( Large_Grid * grid ) { };
 
 protected:
   Disease *disease;

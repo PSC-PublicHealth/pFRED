@@ -70,6 +70,7 @@ Grid::Grid(Large_Grid * lgrid) {
 }
 
 void Grid::setup( Place::Allocator< Neighborhood > & neighborhood_allocator ) { 
+  // fill grid with cells; create one neighborhood per cell
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       grid[i][j].setup(this,i,j);
@@ -225,13 +226,23 @@ void Grid::quality_control(char * directory, double min_x, double min_y) {
 // Specific to Cell Grid:
 
 void Grid::record_favorite_places() {
-  for (int row = 0; row < rows; row++) {
-    for (int col = 0; col < cols; col++) {
-      Cell * cell = (Cell *) &grid[row][col];
-      cell->record_favorite_places();
-      target_popsize += cell->get_neighborhood()->get_size();
-      target_households += cell->get_houses();
+  #pragma omp parallel
+  {
+    int partial_target_popsize = 0;
+    int partial_target_households = 0;
+    #pragma omp for
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols; col++) {
+        Cell * cell = (Cell *) &grid[row][col];
+        cell->record_favorite_places();
+        partial_target_popsize += cell->get_neighborhood()->get_size();
+        partial_target_households += cell->get_houses();
+      }
     }
+    #pragma omp atomic
+    target_popsize += partial_target_popsize;
+    #pragma omp atomic
+    target_households += partial_target_households;
   }
 }
 
@@ -348,6 +359,19 @@ void Grid::select_emigrants(int day) {
 }
 
 void Grid::select_immigrants(int day) {
+  
+   // NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE //
+   //                                                                                                                         //
+   // This is not currently used anywhere.  Some of the machinery that this function depends on is missing,                   //
+   // and has been for some time (namely, the pstring array in Population, missing since as early as revision 1.100).         //
+   // select_immigrants, as it is written below, relies on the place_label_map, which is now cleared after the                //
+   // read_population is finished.  There is an alternative way to do this... please talk to Jay if interested                //
+   // in resurrecting this function.                                                                                          //  
+   //                                                                                                                         //
+   // NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE //
+   
+
+  /*
   int current_year = Global::Sim_Current_Date->get_year();
   int current_popsize = Global::Pop.get_pop_size();
   printf("IMM curr = %d target = %d ", current_popsize, target_popsize);
@@ -373,8 +397,12 @@ void Grid::select_immigrants(int day) {
       char pstring[256];
       strcpy(pstring, Global::Pop.get_pstring(idx));
 
+//<<<<<<< Grid.cc
+      int age, married, rel, occ;
+//=======
       int next_id = Global::Pop.get_next_id();
       int age, race, rel;
+//>>>>>>> 1.30
       char label[32], house_label[32], school_label[32], work_label[32];
       char sex;
       sscanf(pstring, "%s %d %c %d %d %s %s %s",
@@ -392,9 +420,16 @@ void Grid::select_immigrants(int day) {
       Place * work = Global::Places.get_place_from_label(work_label);
       Place * school = Global::Places.get_place_from_label(school_label);
       bool today_is_birthday = false;
+//<<<<<<< Grid.cc
+      // create and add to the population; unique id is automatically assigned
+      // in Population::add_person
+      Person * clone = Global::Pop.add_person( age, sex, married, rel,
+          occ, house, school, work, day, today_is_birthday );
+//=======
       // create and add to the population
       Person * clone = Global::Pop.add_person( next_id, age, sex, race, rel,
           house, school, work, day, today_is_birthday );
+//>>>>>>> 1.30
 
       clone->print(stdout,0);
       current_popsize++;
@@ -406,6 +441,7 @@ void Grid::select_immigrants(int day) {
         houses_filled, n, current_popsize, Global::Pop.get_pop_size());
     fflush(stdout);
   }
+  */
 }
 
 void Grid::print_household_distribution(char * dir, char * date_string, int run) {

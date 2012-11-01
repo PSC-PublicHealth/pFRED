@@ -7,6 +7,7 @@
 #include "IntraHost.h"
 #include "Infection.h"
 #include "Trajectory.h"
+#include "Transmission.h"
 
 class Infection;
 class Trajectory;
@@ -24,7 +25,7 @@ class DefaultIntraHost : public IntraHost {
      * @param loads
      * @return a pointer to a Trajectory object
      */
-    Trajectory * get_trajectory(Infection *infection, std :: map<int, double> *loads);
+    Trajectory * get_trajectory( Infection * infection, Transmission::Loads * loads );
 
     /**
      * Set the attributes for the IntraHost

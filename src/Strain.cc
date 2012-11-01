@@ -9,7 +9,6 @@
 // File: Strain.cc
 //
 
-#include "Strain.h"
 
 #include <iostream>
 #include <stdio.h>
@@ -17,9 +16,11 @@
 #include <string>
 #include <sstream>
 #include <cstdlib>
+#include <iomanip>
 
 using namespace std;
 
+#include "Strain.h"
 #include "Global.h"
 #include "Params.h"
 #include "Population.h"
@@ -29,90 +30,50 @@ using namespace std;
 #include "Timestep_Map.h"
 #include "Disease.h"
 
-Strain::Strain() {
+Strain::Strain( int num_elements ) : strain_data( num_elements ) {
   transmissibility = -1.0;
   disease = NULL;
-  strain_data = NULL;
+}
+
+Strain::Strain( const Strain & other ) : strain_data( other.strain_data ) { 
+  transmissibility = other.transmissibility;
+  disease = other.disease;
 }
 
 Strain::~Strain() {
-  if(strain_data != NULL) delete strain_data;
 }
 
-void Strain::setup(int strain, Disease *disease, vector<int> *data, double trans, Strain *parent) {
-  id = strain;
-  this->disease = disease;
-  strain_data = data;
-  transmissibility = trans;
-  //if(Global::Verbose > 0) print();
-  this->parent = parent;
-  if(parent == NULL) substitutions = 0;
-  else { 
-    substitutions = parent->get_substitutions() + 1;
-  }
-}
-
-void Strain::setup(int strain, Disease *disease) {
-  vector<int> *data = new vector<int>;
-  int numAminoAcids;
-  Params::get_param((char *) "num_amino_acids", &numAminoAcids);
-  // HACK
-  int ns;
-
-  int distance = 3;
-
-  Params::get_param((char *) "num_strains[0]", &ns);
-  for(int i=0; i<numAminoAcids; ++i){
-    int aacid = IRAND(0,63);
-    if(strain == 0){
-      aacid = 0;
-    }
-    else if(strain == 1){
-      if(i < distance) aacid = 1;
-      else aacid = 0;
-    }
-    data->push_back(aacid);
-  }
-  double trans;
-  //Params::get_double_indexed_param("transmissibility", disease->get_id(), strain, &trans);
-  trans = 1.0;
-
-  setup(strain, disease, data, trans, NULL);
-
-  printf("Strain setup finished\n");
-  fflush(stdout);
-
-  //if (Global::Verbose > 0) print();
+void Strain::setup( int _strain_id, Disease * _disease, double _transmissibility, Strain * _parent ) {
+  id = _strain_id;
+  disease = _disease;
+  transmissibility = _transmissibility;
+  parent = _parent;
 }
 
 void Strain::print_alternate(stringstream &out) {
-  //out << "ID: " << id << " Ntide Sequence: ";
   int pid = -1;
-  if(parent) pid = parent->get_id();
+  if ( parent ) {
+    pid = parent->get_id();
+  }
   out << id << " : " << pid << " : ";
-  for(unsigned int i=0; i < strain_data->size(); ++i){
-    out << strain_data->at(i) << " ";
+  for ( int i = 0; i < strain_data.size(); ++i ) {
+    out << strain_data[ i ] << " ";
   }
 }
 
 void Strain::print() {
   cout << "New Strain: " << id << " Trans: " << transmissibility << " Data: ";
-  for(unsigned int i=0; i < strain_data->size(); ++i){
-    cout << strain_data->at(i) << " ";
-  } cout << endl;
+  for ( int i = 0; i < strain_data.size(); ++i ) {
+    cout << strain_data[ i ]<< " ";
+  } 
+  cout << endl;
 }
 
-int Strain::get_num_data_elements()
-{
-  return strain_data->size();
+std::string Strain::to_string() {
+  std::stringstream ss;
+  for ( int i = 0; i < strain_data.size(); ++i ) { 
+    ss << setw( 3 ) << setfill( ' ' ) << strain_data[ i ] ;  
+  }
+  return ss.str();
 }
 
-int Strain::get_data_element(int i)
-{
-  return strain_data->at(i);
-}
-
-int Strain::get_substitutions()
-{
-  return substitutions;
-}

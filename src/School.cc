@@ -56,20 +56,8 @@ School::School( const char *lab, double lon, double lat, Place* container, Popul
 }
 
 void School::prepare() {
-  int diseases = Global::Diseases;
-  for (int s = 0; s < diseases; s++) {
-    susceptibles[s].clear();
-    infectious[s].clear();
-    Sympt[s] = S[s] = I[s] = 0;
-    total_cases[s] = total_deaths[s] = 0;
-  }
-  close_date = 0;
-  open_date = 0;
-  if (Global::Verbose > 2) {
-    printf("prepare place: %d\n", id);
-    print(0);
-    fflush(stdout);
-  }
+  // now call base class function to perform preparations common to all Places 
+  Place::prepare();
 }
 
 
@@ -299,8 +287,13 @@ void School::unenroll(Person * per) {
 }
 
 void School::print(int disease_id) {
+  Place_State_Merge place_state_merge = Place_State_Merge();
+  place_state[ disease_id ].apply( place_state_merge );
+  std::vector< Person * > & susceptibles = place_state_merge.get_susceptible_vector();
+  std::vector< Person * > & infectious = place_state_merge.get_infectious_vector();
+
   fprintf(Global::Statusfp, "Place %d label %s type %c ", id, label, type);
-  fprintf(Global::Statusfp, "S %d I %d N %d\n", S[disease_id], I[disease_id], N);
+  fprintf(Global::Statusfp, "S %zu I %zu N %d\n", susceptibles.size(), infectious.size(), N);
   for (int g = 0; g < GRADES; g++) {
     fprintf(Global::Statusfp, "%d students with age %d | ", students_with_age[g], g);
   }

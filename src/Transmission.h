@@ -11,14 +11,23 @@
 #ifndef _FRED_TRANSMISSION_H
 #define _FRED_TRANSMISSION_H
 
-#include "Global.h"
 #include <map>
+
+#include "Global.h"
 
 class Person;
 class Place;
 
+
 class Transmission {
   public:
+
+    // used to initialize trajectories, be careful!
+    // will be deleted on destruction of Transmission
+    // TODO this is not a good way to handle this.  Need to
+    // look over Anuroop's code and come up with a better way
+    typedef std::map< int, double > Loads; 
+
     // if primary transmission, infector and place are null.
     // if mutation, place is null.
     Transmission(Person *infector, Place *place, int day) : infector(infector), place(place), exposure_date(day) { 
@@ -47,14 +56,14 @@ class Transmission {
     /**
      * @param initialLoads the new initialLoads
      */
-    void set_initial_loads(std::map<int, double> * _initialLoads) {
+    void set_initial_loads( Loads *  _initialLoads) {
       initialLoads = _initialLoads;
     }
 
     /**
      * @return the map of initial loads for this Transmission
      */
-    std::map<int, double> * get_initial_loads() {
+    Loads * get_initial_loads() {
       return initialLoads;
     }
 
@@ -85,7 +94,7 @@ class Transmission {
     int exposure_date;
     bool force_success;
 
-    std::map<int, double> *initialLoads;
+    Loads * initialLoads;
   };
 
 #endif // _FRED_TRANSMISSION_H

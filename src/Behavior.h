@@ -22,6 +22,7 @@ class Household;
 enum Behavior_strategy {REFUSE, ACCEPT, FLIP, IMITATE_PREVALENCE, IMITATE_CONSENSUS, IMITATE_COUNT, HBM};
 #define BEHAVIOR_STRATEGIES 7
 #define NUMBER_WEIGHTS 7
+#define UNDEFINED_ATTITUDE -1
 
 typedef struct {
   // COMMON
@@ -91,31 +92,30 @@ public:
    */
   Behavior(Person *p);
   ~Behavior();
-  void initialize_adult_behavior(Person * person);
+  void initialize_adult_behavior( Person * self );
 
   /**
     * Perform the daily update for this object
     *
     * @param day the simulation day
     */
-  void update(int day);
+  void update( Person * self, int day );
 
-  bool adult_is_staying_home(int day);
-  bool adult_is_taking_sick_leave(int day);
-  bool child_is_staying_home(int day);
-  bool acceptance_of_vaccine();
-  bool acceptance_of_another_vaccine_dose();
-  bool child_acceptance_of_vaccine();
-  bool child_acceptance_of_another_vaccine_dose();
+  bool adult_is_staying_home( Person * self, int day );
+  bool adult_is_taking_sick_leave( Person * self, int day );
+  bool child_is_staying_home( Person * self, int day );
+  bool acceptance_of_vaccine( Person * self );
+  bool acceptance_of_another_vaccine_dose( Person * self );
+  bool child_acceptance_of_vaccine( Person * self );
+  bool child_acceptance_of_another_vaccine_dose( Person * self );
   void set_adult_decision_maker(Person * person) { adult_decision_maker = person; }
   Person * get_adult_decision_maker() { return adult_decision_maker; }
-  void select_adult_decision_maker(Person *unavailable_person);
-  void terminate();
+  void select_adult_decision_maker( Person * self, Person *unavailable_person );
+  void terminate( Person * self );
   //void set_dependent(Person *person) { dependent_children.insert(person); }
   //void remove_dependent(Person *person) { dependent_children.erase(person); }
 
 private:
-  Person * self;
   Person * adult_decision_maker;
   //set<Person *> dependent_children;
   void get_parameters();
@@ -123,15 +123,17 @@ private:
   Attitude * setup(Person * self, Behavior_params * params, Behavior_survey * survey);
   void report_distribution(Behavior_params * params);
   Person * select_adult(Household *h, int relationship, Person * unavailable_person);
-  
-  Attitude * take_sick_leave;
-  Attitude * stay_home_when_sick;
-  Attitude * keep_child_home_when_sick;
-  Attitude * accept_vaccine;
-  Attitude * accept_vaccine_dose;
-  Attitude * accept_vaccine_for_child;
-  Attitude * accept_vaccine_dose_for_child;
+ 
+  char take_sick_leave;
+  char stay_home_when_sick;
+  char keep_child_home_when_sick;
+  char accept_vaccine;
+  char accept_vaccine_dose;
+  char accept_vaccine_for_child;
+  char accept_vaccine_dose_for_child;
 
+  Attitude ** attitudes;
+ 
   static bool parameters_are_set;
   static int number_of_vaccines;
 

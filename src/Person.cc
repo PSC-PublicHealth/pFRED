@@ -46,7 +46,7 @@ Person::Person(int _index, int _id, int age, char sex,
 
   index = _index;
   id = _id;
-  demographics = Demographics(this, age, sex, race, rel, day, today_is_birthday);
+  demographics = Demographics(_index, age, sex, race, rel, day, today_is_birthday);
   health = Health( this );
   activities = Activities( this, house, school, work );
   behavior = Behavior( this );
@@ -98,7 +98,7 @@ void Person::print(FILE *fp, int disease) {
 void Person::become_immune(Disease* disease) {
   int disease_id = disease->get_id();
   if(health.is_susceptible(disease_id)){
-    health.become_immune(disease);
+    health.become_immune( this, disease );
   }
 }
 
@@ -106,12 +106,11 @@ void Person::set_changed(){
   Global::Pop.set_changed(this);
 }
 
-void Person::infect(Person *infectee, int disease, Transmission *transmission) {
-  health.infect( infectee, disease, transmission );
+void Person::infect(Person *infectee, int disease, Transmission & transmission) {
+  health.infect( this, infectee, disease, transmission );
 }
 
 Person * Person::give_birth(int day) {
-  int id = Global::Pop.get_next_id();
   int age = 0;
   char sex = (URAND(0.0, 1.0) < 0.5 ? 'M' : 'F');
   int race = get_race();
@@ -120,17 +119,9 @@ Person * Person::give_birth(int day) {
   Place * school = NULL;
   Place * work = NULL;
   bool today_is_birthday = true;
-  Person * baby = Global::Pop.add_person( id, age, sex, race, rel,
+  Person * baby = Global::Pop.add_person( age, sex, race, rel,
            house, school, work, day, today_is_birthday );
   return baby;
-}
-
-void Person::addIncidence(int disease, vector<int> strains) {
-  activities.addIncidence(disease, strains);
-}
-
-void Person::addPrevalence(int disease, vector<int> strains) {
-  activities.addPrevalence(disease, strains);
 }
 
 string Person::to_string() {
@@ -175,10 +166,10 @@ string Person::to_string() {
 }
 
 void Person::terminate() {
-  Utils::fred_verbose(1, "terminating person %d\n", id);
-  behavior.terminate();
-  activities.terminate();
-  health.terminate();
-  demographics.terminate();
+  FRED_VERBOSE(1, "terminating person %d\n", id);
+  behavior.terminate( this );
+  activities.terminate( this );
+  health.terminate( this );
+  demographics.terminate( this );
 }
 

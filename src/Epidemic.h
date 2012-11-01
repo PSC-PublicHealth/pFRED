@@ -60,31 +60,17 @@ public:
   double get_attack_rate() { return attack_rate; }
 
   void get_primary_infections(int day);
+
   void transmit(int day);
 
-  /**
-   * @return the clinical_incidents
-   */
   int get_clinical_incidents() { return clinical_incidents; }
 
-  /**
-   * @return the clinical_incidents
-   */
   int get_total_clinical_incidents() { return total_clinical_incidents; }
 
-  /**
-   * @return the clinical_attack_rate
-   */
   double get_clinical_attack_rate() { return clinical_attack_rate; }
 
-  /**
-   * @return the incident_infections
-   */
   int get_incident_infections() { return incident_infections; }
 
-  /**
-   * @return the total_incidents
-   */
   int get_total_incidents() { return total_incidents; }
 
   void become_susceptible(Person *person);
@@ -112,24 +98,6 @@ public:
   static void transmit_infection(int day);
   static void get_visitors_to_infectious_places(int day);
 
-  struct Place_Person {
-    Place * place;
-    Person * person;
-    long int key;
-    
-    Place_Person( Place * _place, Person * _person, int _key ):
-      place( _place ), person( _person ), key( (long) _key ) {
-        key = ( (long) place ) ^ ( key << _key );
-        key = ( _key % 2 == 0 ) ? key : ( key * -1 );
-      };
-
-    bool operator< ( const Place_Person & other ) const {
-      return key < other.key;
-    }
-  };
-
-  typedef std::vector< Place_Person > Place_Person_List;
-
 private:
   Disease * disease;
   int id;
@@ -138,9 +106,7 @@ private:
   
   Timestep_Map* primary_cases_map;
   // lists of susceptible and infectious Persons now kept as
-  // bit maskes in Population
-  // set <person_pair, person_pair_comparator> susceptible_list;
-  // set <person_pair, person_pair_comparator> infectious_list;
+  // bit maskes in Population "Bloque"
 
   vector <Person *> daily_infections_list;
 
@@ -166,13 +132,15 @@ private:
   int removed_count;
   int immune_count;
 
-  fred::Mutex mutex;
-  fred::Mutex neighborhood_mutex;
-  fred::Mutex household_mutex;
-  fred::Mutex workplace_mutex;
-  fred::Mutex office_mutex;
-  fred::Mutex school_mutex;
-  fred::Mutex classroom_mutex;
+  //fred::Mutex mutex;
+  fred::Spin_Mutex neighborhood_mutex;
+  fred::Spin_Mutex household_mutex;
+  fred::Spin_Mutex workplace_mutex;
+  fred::Spin_Mutex office_mutex;
+  fred::Spin_Mutex school_mutex;
+  fred::Spin_Mutex classroom_mutex;
+
+  fred::Spin_Mutex spin_mutex;
 
   size_t place_person_list_reserve_size;
 

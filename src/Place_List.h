@@ -17,6 +17,8 @@
 //TODO test performance of unordered_map for lookup by label
 //#include <tr1/unordered_map>
 #include <cstring>
+#include <iostream>
+#include <fstream>
 
 #include "Global.h"
 #include "Place.h"
@@ -32,15 +34,21 @@ class Hospital;
 class Classroom;
 class Workplace;
 
+#include <tr1/unordered_map>
+typedef std::tr1::unordered_map< string, int > Place_Label_Map;
+
 class Place_List {
 public:
   
   Place_List() {
+    place_label_map = new Place_Label_Map();
     places.clear();
     workplaces.clear();
     next_place_id = 0;
     init_place_type_name_lookup_map();
   }
+
+  ~Place_List();
 
   void read_places();
   void prepare();
@@ -74,6 +82,12 @@ public:
 
 private:
 
+  void delete_place_label_map();
+
+  class Place_Init_Data;
+  void parse_lines_from_stream( std::istream & stream,
+    std::vector< Place_Init_Data > & pidv );
+  
   std::map< char, string > place_type_name_lookup_map;
 
   void init_place_type_name_lookup_map() {
@@ -149,10 +163,8 @@ private:
   vector <Place *> places;
   vector <Place *> workplaces;
 
-  map<int, int> place_map;
-  map<string, int> place_label_map;
+  Place_Label_Map * place_label_map;
 
-  //int max_id;
 };
 
 

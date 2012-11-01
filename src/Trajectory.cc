@@ -93,6 +93,7 @@ Trajectory::point Trajectory::get_data_point(int t) {
   return Trajectory::point(point_infectivity, point_symptomaticity);
 }
 
+/*
 void Trajectory::calculate_aggregate_infectivity() {
   // not currently used anywhere, could be used in the trajectory iterator
   aggregate_infectivity.assign(duration,0.0);
@@ -109,6 +110,7 @@ void Trajectory::calculate_aggregate_infectivity() {
     }
   }
 }
+*/
 
 string Trajectory::to_string() {
   ostringstream os;

@@ -19,14 +19,14 @@ void Evolution :: setup(Disease *disease) {
   this->disease = disease;
 }
 
-Infection *Evolution::transmit(Infection *infection, Transmission *transmission, Person *infectee) {
+Infection *Evolution::transmit(Infection *infection, Transmission & transmission, Person *infectee) {
   if(infection == NULL){
-    infection = new Infection(disease, transmission->get_infector(), infectee,
-           transmission->get_infected_place(), transmission->get_exposure_date());
-    Trajectory *trajectory = disease->get_trajectory(infection, transmission->get_initial_loads() );
+    infection = new Infection(disease, transmission.get_infector(), infectee,
+           transmission.get_infected_place(), transmission.get_exposure_date());
+    Trajectory * trajectory = disease->get_trajectory( infection, transmission.get_initial_loads() );
     infection->setTrajectory(trajectory);
     infection->set_susceptibility_period(0);
-    infection->report_infection(transmission->get_exposure_date());
+    infection->report_infection(transmission.get_exposure_date());
   }
   else{
     // Fail repeated infections by default??
@@ -37,7 +37,7 @@ Infection *Evolution::transmit(Infection *infection, Transmission *transmission,
 }
 
 inline double Evolution::residual_immunity(Person *person, int challenge_strain, int day) {
-  return double(! person->get_health()->is_susceptible(disease->get_id()));
+  return double( !( person->get_health()->is_susceptible( disease->get_id() ) ) );
 }
 
 void Evolution::avEffect(Antiviral *av, Health *health, int disease, int cur_day, AV_Health *av_health) {
@@ -79,14 +79,14 @@ void Evolution::avEffect(Antiviral *av, Health *health, int disease, int cur_day
 void Evolution::print() {}
 void Evolution::reset(int run) {}
 
-map<int, double> * Evolution::get_primary_loads(int day) {
-  map<int, double> *loads = new map<int, double>;
+Transmission::Loads * Evolution::get_primary_loads(int day) {
+  Transmission::Loads *loads = new Transmission::Loads;
   loads->insert( pair<int, double> (1, 1) );
   return loads;
 }
 
-map<int, double> * Evolution::get_primary_loads(int day, int strain) {
-  map<int, double> *loads = new map<int, double>;
+Transmission::Loads * Evolution::get_primary_loads(int day, int strain) {
+  Transmission::Loads *loads = new Transmission::Loads;
   loads->insert( pair<int, double> (strain, 1) );
   return loads;
 }

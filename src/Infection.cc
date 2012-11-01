@@ -10,6 +10,9 @@
 
 #include <stdexcept>
 #include "limits.h"
+#include <map>
+#include <vector>
+#include <float.h>
 
 #include "Infection.h"
 #include "Evolution.h"
@@ -23,21 +26,20 @@
 #include "Health.h"
 #include "IntraHost.h"
 #include "Activities.h"
-#include <map>
-#include <vector>
-#include <float.h>
 #include "Utils.h"
 
 using std::out_of_range;
 
 Infection::Infection(Disease *disease, Person* infector, Person* host, Place* place, int day) {
-  
+ 
+  double trajectory_infectivity_threshold = 0.0;
+  double trajectory_symptomaticity_threshold = 0.0;
+
   // flag for health updates
   Global::Pop.set_mask_by_index( fred::Update_Health, host->get_pop_index() );
 
   // general
   this->disease = disease;
-  this->id = disease->get_id();
   this->infector = infector;
   this->host = host;
   this->place = place;
@@ -45,9 +47,9 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
   infectee_count = 0;
   age_at_exposure = host->get_age();
 
-  isSusceptible = true;
-  trajectory_infectivity_threshold = 0;
-  trajectory_symptomaticity_threshold = 0;
+  is_susceptible = true;
+  trajectory_infectivity_threshold = disease->get_infectivity_threshold();
+  trajectory_symptomaticity_threshold = disease->get_symptomaticity_threshold();
 
   // parameters
   infectivity_multp = 1.0;
@@ -59,8 +61,6 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
   exposure_date = day;
   recovery_period = disease->get_days_recovered();
 
-  offset = 0;
-
   if (symptomatic_date != -1) {
     will_be_symptomatic = true;
   } else {
@@ -68,20 +68,11 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
   }
 
   // Determine if this infection produces an immune response
-  immune_response = disease->gen_immunity_infection(host->get_age());
-  //assert(immune_response == true);
-
-  // report_infection(day);
-  // print();
-  // host->set_changed();
+  immune_response = disease->gen_immunity_infection( host->get_age() );
 }
 
 Infection::~Infection() {
   delete trajectory;
-
-  for (std::vector< Transmission * >::iterator itr = transmissions.begin(); itr != transmissions.end(); ++itr) {
-    delete (*itr);
-  }
 }
 
 void Infection::determine_transition_dates() {
@@ -137,8 +128,7 @@ void Infection::determine_transition_dates() {
 void Infection::update(int today) {
   if(trajectory == NULL) return;
 
-  // offset used for dummy infections only
-  int days_post_exposure = today - exposure_date + offset;
+  int days_post_exposure = today - exposure_date;
 
   Trajectory::point trajectory_point = trajectory->get_data_point(days_post_exposure);
   infectivity = trajectory_point.infectivity;
@@ -158,15 +148,12 @@ void Infection::update(int today) {
  
   if (today == get_unsusceptible_date()) {
     host->become_unsusceptible(disease);
-    isSusceptible = false;
+    is_susceptible = false;
   }
   
   if(today != get_recovery_date()) {
     vector<int> strains;
     trajectory->get_all_strains(strains);
-    if ( Global::Report_Prevalence ) {
-      host->addPrevalence(disease->get_id(), strains);
-    }
   }
 }
 
@@ -191,7 +178,7 @@ void Infection::modify_symptomatic_period(double multp, int today) {
     //int days_into = today - get_symptomatic_date();
     int days_left = get_recovery_date() - today;
     days_left *= multp;
-    trajectory->modify_symp_period(today - exposure_date + offset, days_left);
+    trajectory->modify_symp_period(today - exposure_date, days_left);
     determine_transition_dates();
   }
 }
@@ -264,24 +251,16 @@ void Infection::print() const {
          symptoms);
 }
 
-// static
-Infection *Infection::get_dummy_infection(Disease *s, Person* host, int day) {
-  Infection* i = new Infection(s, NULL, host, NULL, day);
-  i->dummy = true;
-  i->offset = i->infectious_date - day;
-  return i;
-}
-
-void Infection::transmit(Person *infectee, Transmission *transmission) {
-  int day = transmission->get_exposure_date() - exposure_date + offset;
-  map< int, double > * loads = trajectory->getInoculum( day );
-  transmission->set_initial_loads( loads );
+void Infection::transmit(Person *infectee, Transmission & transmission) {
+  int day = transmission.get_exposure_date() - exposure_date;
+  Transmission::Loads * loads = trajectory->getInoculum( day );
+  transmission.set_initial_loads( loads );
   infectee->become_exposed( this->disease, transmission );
 }
 
-void Infection::setTrajectory(Trajectory *trajectory) {
-  this->trajectory = trajectory;
-  this->determine_transition_dates();
+void Infection::setTrajectory( Trajectory * _trajectory ) {
+  trajectory = _trajectory;
+  determine_transition_dates();
 }
 
 void Infection::report_infection(int day) const {
@@ -297,7 +276,7 @@ void Infection::report_infection(int day) const {
 
   fprintf(Global::Infectionfp, "day %d dis %d host %d age %.3f sick_leave %d"
           " infector %d inf_age %.3f inf_sympt %d inf_sick_leave %d at %c place %d size %d is_teacher %d ",
-          day, id,
+          day, disease->get_id(),
           host->get_id(),
           host->get_real_age(),
           host->is_sick_leave_available(),
@@ -341,12 +320,12 @@ void Infection::report_infection(int day) const {
 
 int Infection::get_num_past_infections()
 { 
-  return host->get_num_past_infections(id); 
+  return host->get_num_past_infections( disease->get_id() ); 
 }
   
 Past_Infection *Infection::get_past_infection(int i)
 { 
-  return host->get_past_infection(id, i); 
+  return host->get_past_infection( disease->get_id(), i); 
 }
 
 

@@ -21,6 +21,7 @@
 
 class Vaccine;
 class Vaccine_Dose;
+class Person;
 class Health;
 class Vaccine_Manager;
 
@@ -29,7 +30,7 @@ public:
   //Creation Operations
   Vaccine_Health();
   Vaccine_Health(int _vaccination_day, Vaccine* _vaccine, int _age, 
-     Health* _health, Vaccine_Manager* _vaccine_manager);
+     Person * _person, Vaccine_Manager* _vaccine_manager);
   
   // Access Members
   int get_vaccination_day()              const { return vaccination_day; }
@@ -38,7 +39,6 @@ public:
   Vaccine* get_vaccine()                 const { return vaccine; }
   int get_current_dose()                 const { return current_dose; }
   int get_days_to_next_dose()            const { return days_to_next_dose; }
-  Health* get_health()                   const { return health; }
   Vaccine_Manager* get_vaccine_manager() const { return vaccine_manager; }
   // Modifiers
   void set_vaccination_day(int day) { 
@@ -59,12 +59,12 @@ public:
   void update_for_next_dose(int day, int age);
   
 private:
-  int vaccination_day;             // On which day did you get the vaccine
-  int vaccination_effective_day;   // On which day is the vaccine effective
-  Vaccine* vaccine;                // Which vaccine did you take
-  int current_dose;                // Current Dose that the agent is on
-  int days_to_next_dose;           // How long between doses
-  Health* health;                  // The health object this belongs to.
+  int vaccination_day;              // On which day did you get the vaccine
+  int vaccination_effective_day;    // On which day is the vaccine effective
+  Vaccine* vaccine;                 // Which vaccine did you take
+  int current_dose;                 // Current Dose that the agent is on
+  int days_to_next_dose;            // How long between doses
+  Person * person;                  // The person object this belongs to.
   Vaccine_Manager* vaccine_manager; // Which manager did the vaccine come from?
   bool effective;
 };

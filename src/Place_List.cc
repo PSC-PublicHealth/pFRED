@@ -42,6 +42,10 @@
 // include from separate .cc file:
 #include "Place_List_Quality_Control.cc"
 
+Place_List::~Place_List() {
+  delete_place_label_map();
+}
+
 void Place_List::get_parameters() {
 }
 
@@ -386,6 +390,9 @@ void Place_List::prepare() {
     places[p]->prepare();
   }
 
+  FRED_STATUS( 0, "deleting place_label_map\n","" );
+  delete_place_label_map();
+
   FRED_STATUS(0, "prepare places finished\n","");
 
 }
@@ -410,8 +417,8 @@ Place * Place_List::get_place_from_label(char *s) {
   if (strcmp(s, "-1") == 0) return NULL;
   string str;
   str.assign(s);
-  if (place_label_map.find(s) != place_label_map.end())
-    return places[place_label_map[s]];
+  if (place_label_map->find(s) != place_label_map->end())
+    return places[ (*place_label_map)[s] ];
   else {
     FRED_VERBOSE(1, "Help!  can't find place with label = %s\n", s);
     return NULL;
@@ -430,16 +437,13 @@ int Place_List::add_place( Place * p ) {
     string str;
     str.assign( p->get_label() );
 
-    if ( place_label_map.find(str) == place_label_map.end() ) {
+    if ( place_label_map->find(str) == place_label_map->end() ) {
  
       p->set_id( get_new_place_id() );
      
       places.push_back(p);
 
-      place_map[ p->get_id() ] = places.size() - 1;
-
-      place_label_map[ str ] = places.size() - 1;
-
+      (*place_label_map)[ str ] = places.size() - 1;
 
       // printf("places now = %d\n", (int)(places.size())); fflush(stdout);
      
@@ -617,4 +621,9 @@ void Place_List::end_of_run() {
 }
 
 
-
+ void Place_List::delete_place_label_map() {
+   if ( place_label_map ) {
+     delete place_label_map;
+     place_label_map = NULL;
+   }
+ }

@@ -12,10 +12,12 @@
 #ifndef _FRED_Disease_H
 #define _FRED_Disease_H
 
-#include "Global.h"
-#include "Epidemic.h"
 #include <map>
 #include <fstream>
+
+#include "Global.h"
+#include "Epidemic.h"
+#include "Transmission.h"
 
 using namespace std;
 
@@ -23,9 +25,11 @@ class Person;
 class Population;
 class Age_Map;
 class StrainTable;
+class Strain;
 class IntraHost;
 class Trajectory;
 class Infection;
+class Strain_Data;
 
 class Disease {
 public:
@@ -49,9 +53,6 @@ public:
    * Print out information about this object
    */
   void print();
-
-  // The methods draw from the underlying distributions to randomly determine some aspect of the infection
-  // have been moved to the DefaultIntraHost class
 
   /**
    * @return the intrahost model's days symptomatic
@@ -89,13 +90,13 @@ public:
    * @param strain the strain of the disease
    * @return the strain's transmissibility
    */
-  double get_transmissibility(int strain);
+  double get_transmissibility( int strain );
 
   /**
    * @param seasonality_value meterological condition (eg specific humidity in kg/kg)
    * @return the multiplier calculated from the seasonality condition; attenuates transmissibility
    */
-  double calculate_climate_multiplier(double seasonality_value);
+  double calculate_climate_multiplier( double seasonality_value );
 
   /**
    * @return the Epidemic's attack rate
@@ -124,7 +125,7 @@ public:
    * @return a pointer to a map of Primary Loads for a given day
    * @see Evolution::get_primary_loads(int day)
    */
-  map<int, double> * get_primary_loads(int day);
+  Transmission::Loads * get_primary_loads(int day);
 
   /**
    * @param the simulation day
@@ -132,7 +133,7 @@ public:
    * @return a pointer to a map of Primary Loads for a particular strain of the disease on a given day
    * @see Evolution::get_primary_loads(int day, int strain)
    */
-  map<int, double> * get_primary_loads(int day, int strain);
+  Transmission::Loads * get_primary_loads(int day, int strain);
 
   /**
    * @return a pointer to this Disease's Evolution attribute
@@ -145,7 +146,7 @@ public:
    * @return a pointer to a Trajectory object
    * @see return Trajectory::get_trajectory(Infection *infection, map<int, double> *loads)
    */
-  Trajectory * get_trajectory(Infection *infection, map<int, double> *loads);
+  Trajectory * get_trajectory( Infection *infection, Transmission::Loads * loads );
 
   /**
    * Draws from this Disease's mutation probability distribution
@@ -187,39 +188,53 @@ public:
   /**
    * @param the new probability that agent's will stay home
    */
-  static void set_prob_stay_home(double);
+  static void set_prob_stay_home( double );
 
   int get_num_strains();
-  int get_num_strain_data_elements(int strain);
-  int get_strain_data_element(int strain, int i);
+  int get_num_strain_data_elements( int strain );
+  int get_strain_data_element( int strain, int i );
+  const Strain_Data & get_strain_data( int strain );
+  const Strain & get_strain( int strain_id );
 
   static void get_disease_parameters();
 
-  void become_susceptible(Person *person) { epidemic->become_susceptible(person); }
-  void become_unsusceptible(Person *person) { epidemic->become_unsusceptible(person); }
-  void become_exposed(Person *person) { epidemic->become_exposed(person); }
-  void become_infectious(Person *person) { epidemic->become_infectious(person); }
-  void become_uninfectious(Person *person) { epidemic->become_uninfectious(person); }
-  void become_symptomatic(Person *person) {epidemic->become_symptomatic(person);}
-  void become_removed(Person *person, bool susceptible, bool infectious, bool symptomatic) {
-    epidemic->become_removed(person,susceptible,infectious,symptomatic);
+  void become_susceptible( Person * person ) { epidemic->become_susceptible( person ); }
+  void become_unsusceptible( Person * person ) { epidemic->become_unsusceptible( person ); }
+  void become_exposed( Person * person ) { epidemic->become_exposed( person ); }
+  void become_infectious( Person * person ) { epidemic->become_infectious( person ); }
+  void become_uninfectious( Person * person ) { epidemic->become_uninfectious( person ); }
+  void become_symptomatic( Person * person ) { epidemic->become_symptomatic( person ); }
+  void become_removed( Person * person, bool susceptible, bool infectious, bool symptomatic ) {
+    epidemic->become_removed( person, susceptible, infectious, symptomatic );
   }
-  void become_immune(Person *person, bool susceptible, bool infectious, bool symptomatic) {
-    epidemic->become_immune(person,susceptible,infectious,symptomatic);
+  void become_immune( Person * person, bool susceptible, bool infectious, bool symptomatic ) {
+    epidemic->become_immune( person, susceptible, infectious, symptomatic );
   }
 
-  void increment_infectee_count(int day) { epidemic->increment_infectee_count(day); }
+  void increment_infectee_count( int day ) { epidemic->increment_infectee_count( day ); }
  
-  bool gen_immunity_infection(int age);
-  bool gen_immunity_vaccination(int age);
+  bool gen_immunity_infection( int age );
+  bool gen_immunity_vaccination( int age );
 
-  int addStrain(vector<int> strain_data, double transmissibility, int parent);
-  void printStrain(int strain_id, stringstream &out);
-  int getStrainSubstitutions(int strain);
+  int add_strain( Strain * child_strain, double transmissibility, int parent_strain_id );
+  void add_root_strain( int num_elements );
+  void printStrain( int strain_id, stringstream &out );
+  std::string get_strain_data_string( int strain_id );
+  void initialize_evolution_reporting_grid( Large_Grid * grid );
+  
+  double get_infectivity_threshold() { return infectivity_threshold; }
+  double get_symptomaticity_threshold() {return symptomaticity_threshold; }
 
 private:
   int id;
   double transmissibility;
+
+  // infectivity and symptomaticity thresholds used in Infection class to
+  // determine if an agent is infectious/symptomatic at a given point in the
+  // trajectory
+  double infectivity_threshold;
+  double symptomaticity_threshold;
+
   double seasonality_max, seasonality_min;
   double seasonality_Ka, seasonality_Kb;
 
@@ -231,7 +246,7 @@ private:
   Age_Map *at_risk;
   Age_Map *infection_immunity_prob;
   Age_Map *vaccination_immunity_prob;
-  StrainTable *strainTable;
+  StrainTable *strain_table;
   IntraHost *ihm;
   Evolution *evol;
 

@@ -33,13 +33,13 @@ public:
 
   /**
    * Constructor that sets all of the attributes of a Demographics object
-   * @param _self the Person object with which this Demographics object is associated
+   * @param self_index the index Person object with which this Demographics object is associated
    * @param _age
    * @param _sex (M or F)
    * @param day the simulation day
    * @param is_newborn needed to know how to set the date of birth
    */
-  Demographics(Person* _self, short int _age, char _sex, short int _race,
+  Demographics(int self_index, short int _age, char _sex, short int _race,
 	       short int rel, int day, bool is_newborn = false);
 
   ~Demographics();
@@ -53,9 +53,9 @@ public:
    */
   void update(int day);
 
-  void update_births( int day );
+  void update_births( Person * self, int day );
 
-  void update_deaths( int day );
+  void update_deaths( Person * self, int day );
 
   /**
    * @return the number of days the agent has been alive / 365.0
@@ -90,7 +90,7 @@ public:
   /**
    * @return the agent's init_age
    */
-  short int get_init_age() const           { return init_age; }
+  short int get_init_age() const { return init_age; }
 
   /**
    * @return the agent's race
@@ -109,7 +109,7 @@ public:
   /**
    * Perform the necessary changes to the demographics on an agent's birthday
    */
-  void birthday(int day);
+  void birthday( Person * self, int day );
 
   /**
    * @return the agent's birth_day_of_year
@@ -121,7 +121,7 @@ public:
    */
   short int get_birth_year() { return this->birth_year; }
   
-  void terminate(){}
+  void terminate( Person * self ) { }
 
   /**
    * This method is only used one time during initialization to load the birth rate and mortality rate arrays from files
@@ -129,8 +129,8 @@ public:
   static void read_init_files();
 
 private:
-  Person *self;			  // Pointer to the person class belongs
-  short int init_age;		  // Initial age of the agent
+
+  short int init_age;                // Initial age of the agent
   short int birth_day_of_year;
   short int birth_year;
   short int deceased_sim_day;        // When the agent (will die) / (died)

@@ -50,6 +50,7 @@ void Household::get_parameters(int diseases) {
     Params::get_param((char *) param_str, &Household::Household_contacts_per_day[s]);
     sprintf(param_str, "household_prob[%d]", s);
     n = Params::get_param_matrix(param_str, &Household::Household_contact_prob[s]);
+    // verbose status...
     if (Global::Verbose > 1) {
       printf("\nHousehold_contact_prob:\n");
       for (int i  = 0; i < n; i++)  {
@@ -161,52 +162,34 @@ void Household::record_profile() {
 
 void Household::spread_infection(int day, int disease_id) {
 
-  if (Global::Verbose > 1) {
-    fprintf(Global::Statusfp,"spread_infection: Disease %d day %d place %d type %c\n",
-        disease_id, day, id, type);
-    fflush(Global::Statusfp);
-  }
+  Place_State_Merge place_state_merge = Place_State_Merge();
+  place_state[ disease_id ].apply( place_state_merge );
+  std::vector< Person * > & susceptibles = place_state_merge.get_susceptible_vector();
+  std::vector< Person * > & infectious = place_state_merge.get_infectious_vector();
+  // need at least one susceptible, return otherwise
+  if ( susceptibles.size() == 0 ) return;
 
-  vector<Person *>::iterator itr;
-  double contact_prob = get_contact_rate(day,disease_id);
+  double contact_prob = get_contact_rate( day, disease_id );
 
   // randomize the order of the infectious list
-  FYShuffle<Person *>(infectious[disease_id]);
+  FYShuffle<Person *>( infectious );
 
-  for (itr = infectious[disease_id].begin(); itr != infectious[disease_id].end(); itr++) {
+  for ( int infector_pos = 0; infector_pos < infectious.size(); ++infector_pos ) {
+    Person * infector = infectious[ infector_pos ];      // infectious individual
+    assert( infector->get_health()->is_infectious( disease_id ) );
 
-    Person * infector = *itr;      // infectious indiv
-    assert(infector->get_health()->is_infectious(disease_id));
-
-    for (int pos = 0; pos < S[disease_id]; pos++) {
-      Person * infectee = susceptibles[disease_id][pos];
-
-      if (Global::Verbose > 1) {
-        fprintf(Global::Statusfp,"possible infectee = %d  pos = %d  S[%d] = %d\n",
-            infectee->get_id(), pos, disease_id, S[disease_id]);
-        fflush(Global::Statusfp);
-      }
-
-      // is the target still susceptible?
-      if (infectee->is_susceptible(disease_id)) {
-
+    for (int pos = 0; pos < susceptibles.size(); ++pos) {
+      Person * infectee = susceptibles[ pos ];
+      // if a non-infectious person is selected, pick from non_infectious vector
+      // only proceed if person is susceptible
+      if ( infectee->is_susceptible( disease_id ) ) {
         // get the transmission probs for this infector/infectee pair
-        double transmission_prob = get_transmission_prob(disease_id, infector, infectee);
-
-        if (Global::Verbose > 1) {
-          fprintf(Global::Statusfp,"infectee is susceptible\n");
-          fprintf(Global::Statusfp,"trans_prob = %f\n", transmission_prob);
-          fflush(Global::Statusfp);
-        }
-
-        double infectivity = infector->get_infectivity(disease_id,day);
-
+        double transmission_prob = get_transmission_prob( disease_id, infector, infectee );
+        double infectivity = infector->get_infectivity( disease_id, day );
         // scale transmission prob by infectivity and contact prob
         transmission_prob *= infectivity * contact_prob;     
-
-        attempt_transmission(transmission_prob, infector, infectee, disease_id, day);
-
-      } // end of susceptible infectee
+        attempt_transmission( transmission_prob, infector, infectee, disease_id, day );
+      }
     } // end contact loop
   } // end infectious list loop
 }

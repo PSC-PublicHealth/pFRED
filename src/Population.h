@@ -12,9 +12,15 @@
 #ifndef _FRED_POPULATION_H
 #define _FRED_POPULATION_H
 
+#include <iostream>
+#include <fstream>
+#include <map>
+#include <vector>
+
 #include "Global.h"
 #include "Demographics.h"
 #include "Bloque.h"
+#include "Compression.h"
 
 class Person;
 class Disease;
@@ -24,8 +30,7 @@ class Vaccine_Manager;
 class Place;
 
 using namespace std;
-#include <map>
-#include <vector>
+
 typedef map <Person*, bool> ChangeMap;  
 
 class Population {
@@ -108,8 +113,8 @@ public:
    *
    * @return pointer to the person created and added
    */
-  Person * add_person( int id, int age, char sex, int race, int rel, Place *house,
-   Place *school, Place *work, int day, bool today_is_birthday );
+  Person * add_person( int age, char sex, int race, int rel, Place *house,
+      Place *school, Place *work, int day, bool today_is_birthday );
 
   /**
    * @param per a pointer to the Person to remove from the Population
@@ -119,16 +124,16 @@ public:
   /**
    * Perform the necessary steps for an agent's death
    * @param day the simulation day
-   * @param per the agent who will die
+   * @param person_index the population index of the agent who will die
    */
-  void prepare_to_die(int day, Person *per);
+  void prepare_to_die( int day, int person_index );
 
   /**
    * Perform the necessary steps for an agent to give birth
    * @param day the simulation day
-   * @param per the agent who will give birth
+   * @param person_index the population index of the agent who will give birth
    */
-  void prepare_to_give_birth(int day, Person *per);
+  void prepare_to_give_birth( int day, int person_index );
   
   /**
    * @param index the index of the Person
@@ -211,12 +216,6 @@ public:
    */
   Person * select_random_person_by_age(int min_age, int max_age);
 
-  /**
-   * Static function to get and increment the next_id
-   * @return the next id value
-   */
-  static int get_next_id();
-
   /*
    * Set the mask bit for the person_index
    *
@@ -257,7 +256,10 @@ public:
   void parallel_apply( Functor & f ) { blq.parallel_apply( f ); }
 
   template< typename Functor >
-  void parallel_apply( fred::Population_Masks m, Functor & f ) { blq.parallel_masked_apply( m, f ); }
+  void parallel_masked_apply( fred::Population_Masks m, Functor & f ) { blq.parallel_masked_apply( m, f ); }
+
+  template< typename Functor >
+  void parallel_not_masked_apply( fred::Population_Masks m, Functor & f ) { blq.parallel_not_masked_apply( m, f ); }
 
   template< typename Functor >
   void parallel_apply_with_thread_id( fred::Population_Masks m, Functor & f ) {
@@ -277,25 +279,46 @@ public:
   */
 
 private:
+
+  struct Person_Init_Data {
+    int age, race, relationship;
+    char sex;
+    bool today_is_birthday;
+    int day;
+    Place * house;
+    Place * work;
+    Place * school;
+    
+    Person_Init_Data( int _age, int _race, int _relationship,
+        char _sex, bool _today_is_birthday, int _day ) {
+
+      age = _age;
+      race = _race;
+      relationship = _relationship;
+      sex = _sex;
+      today_is_birthday = _today_is_birthday;
+      day = _day;
+    }
+  };
+
+  void parse_lines_from_stream( std::istream & stream );
+
   bloque< Person, fred::Population_Masks > blq;   // all Persons in the population
-  std::map< int, int > id_to_index;
-  vector <Person *> graveyard;      // list of all dead agents
-  vector <Person *> death_list;     // list agents to die today
-  vector <Person *> maternity_list; // list agents to give birth today
+  //std::map< int, int > id_to_index;
+  vector <Person * > death_list;     // list agents to die today
+  vector <Person * > maternity_list; // list agents to give birth today
   int pop_size;
   Disease *disease;
 
   vector <Person *> birthday_vecs[367]; //0 won't be used | day 1 - 366
-  map<Person *, int> birthday_map;
+  map<Person *, int > birthday_map;
 
   double **mutation_prob;
-  map<Person *,int> pop_map;
   ChangeMap incremental_changes;  // incremental "list" (actually a C++ map)
                                   // of those agents whose stats
                                   // have changed since the last history dump
   ChangeMap never_changed;        // agents who have *never* changed
 
-  static char popfile[256];
   static char profilefile[256];
   static char pop_outfile[256];
   static char output_population_date_match[256];
@@ -319,17 +342,20 @@ private:
    * @param day the simulation day
    */
   void write_population_output_file(int day);
-
-  struct update_population_demographics {
+  
+  // functors for demographics updates 
+  struct update_population_births {
     int day;
-    bool update_births, update_deaths;
-    update_population_demographics( int _day ) : day( _day ) {
-        update_births = false;
-        update_deaths = false;
-      }
+    update_population_births( int _day ) : day( _day ) { }
+    void operator() ( Person & p );
+  };
+  struct update_population_deaths {
+    int day;
+    update_population_deaths( int _day ) : day( _day ) { }
     void operator() ( Person & p );
   };
 
+  // functor for health update
   struct update_population_health {
     int day;
     update_population_health( int d ) : day( d ) { };
@@ -337,6 +363,9 @@ private:
   };
 
   fred::Mutex mutex;
+  fred::Mutex add_person_mutex;
+  fred::Mutex batch_add_person_mutex;
+
 };
 
 #endif // _FRED_POPULATION_H

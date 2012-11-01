@@ -99,23 +99,8 @@ void Workplace::prepare() {
   }
   Workplace::total_workers += N;
 
-  // reserve memory for place-specific agent lists
-  for (int s = 0; s < Global::Diseases; s++) {
-    //susceptibles[s].reserve(N);
-    infectious[s].reserve(N);
-    total_cases[s] = total_deaths[s] = 0;
-  }
-  open_date = 0;
-  close_date = INT_MAX;
-  next_office = 0;
-  update(0);
-
-  if (Global::Verbose > 2) {
-    printf("prepare place: %d\n", id);
-    print(0);
-    fflush(stdout);
-  }
-
+  // now call base class function to perform preparations common to all Places 
+  Place::prepare();
 }
 
 double Workplace::get_transmission_prob(int disease, Person * i, Person * s) {

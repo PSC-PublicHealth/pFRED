@@ -157,8 +157,6 @@ protected:
   int target_households;
   int target_popsize;
   int occupied_houses;
-
-  fred::Mutex mutex;
 };
 
 #endif // _FRED_CELL_H

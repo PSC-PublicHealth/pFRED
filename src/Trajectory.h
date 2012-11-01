@@ -9,6 +9,8 @@
 #include <string>
 #include <fstream>
 
+#include "Transmission.h"
+
 typedef std::vector<double> trajectory_t;
 
 class Trajectory {
@@ -37,11 +39,11 @@ class Trajectory {
     void set_infectivity_trajectory(int strain, trajectory_t vlt);
     void set_infectivities(std::map<int, trajectory_t > inf);
 
-    std::map<int, double> *get_current_loads(int day);
+    Transmission::Loads * get_current_loads( int day );
 
     int get_duration() {
       return duration;
-      }
+    }
 
     struct point {
       double infectivity;
@@ -85,8 +87,8 @@ class Trajectory {
     };
 
 
-    void calculate_aggregate_infectivity();
-    std::map<int, double> *getInoculum(int day);
+    //void calculate_aggregate_infectivity();
+    std::map<int, double> * getInoculum(int day);
     void modify_symp_period(int startDate, int days_left);
     void modify_asymp_period(int startDate, int days_left, int sympDate);
     void modify_develops_symp(int sympDate, int sympPeriod);
@@ -102,7 +104,7 @@ class Trajectory {
     std::map< int, trajectory_t > infectivity;
     trajectory_t symptomaticity;
 
-    trajectory_t aggregate_infectivity;
+    //trajectory_t aggregate_infectivity;
   };
 
 #endif

@@ -9,104 +9,99 @@
 // File: StrainTable.cc
 //
 
+#include <vector>
+#include <map>
+
 #include "StrainTable.h"
 #include "Params.h"
 #include "Disease.h"
 #include "Strain.h"
 #include "Global.h"
-#include <vector>
-#include <map>
+#include "Utils.h"
 
 using namespace std;
 
 StrainTable::StrainTable() {
-  strains = NULL;
-  originalStrains = 1;
+  strains.clear();
 }
 
-StrainTable::~StrainTable() {
-  delete strains;
-}
+StrainTable::~StrainTable() { }
 
-void StrainTable::setup(Disease *d) {
+void StrainTable::setup( Disease * d ) {
   disease = d;
   int diseaseId = disease->get_id();
+  strains.clear();
+}
 
-  int numStrains = 1;
-  Params::get_indexed_param((char *) "num_strains", diseaseId, &numStrains);
-  originalStrains = numStrains;
-
-  if(Global::Verbose > 0) printf("Reading %d strains for disease %d\n", numStrains, diseaseId);
-
-  strains = new vector<Strain *>();
-
-  for(int is = 0; is < numStrains; is++) {
-    Strain *s = new Strain();
-    s->setup(is, disease);
-    strains->push_back(s);
-  }
+void StrainTable::add_root_strain( int num_elements ) {
+  assert( strains.size() == 0 );
+  Strain * new_strain = new Strain( num_elements );
+  new_strain->setup( 0, disease, disease->get_transmissibility(), NULL );
+  strains.push_back( new_strain );
 }
 
 void StrainTable::reset() {
-  strains->clear();
-  setup(disease);
+  strains.clear();
+  setup( disease );
 }
 
-void StrainTable::add(Strain *s) {
-  strains->push_back(s);
+void StrainTable::add( Strain * strain ) {
+  strains.push_back( strain );
 }
 
-int StrainTable::add(vector<int> &strain_data, double transmissibility, int parent) {
-  // TODO Hash it!!
+int StrainTable::add( Strain * child_strain, double transmissibility, int parent_strain_id ) {
 
-  int n = strain_data.size();
-  for(int s=0; s<strains->size(); s++) {
-    Strain *str = strains->at(s);
-    if(str->get_num_data_elements() != n) continue;
-    bool matched = true;
-    for(int i=0; i<n; i++){
-      if(str->get_data_element(i) != strain_data.at(i)) {
-        matched = false; break;
-      }
-    }
-    if(matched) return s;
+  fred::Spin_Lock lock( mutex );
+ 
+  int child_strain_id = parent_strain_id;
+  Strain * parent_strain = strains[ parent_strain_id ];
+  // if no change, return the parent strain id
+  if ( child_strain->get_data() == parent_strain->get_data() ) {
+    return child_strain_id;
   }
-
-  Strain *s = new Strain();
-  n = strains->size();
-  vector<int> *data = new vector<int>;
-  for(unsigned int i=0; i<strain_data.size(); ++i){
-    data->push_back(strain_data[i]);
+  // if this genotype has been seen already, re-use existing id
+  std::string child_geno_string = child_strain->to_string(); 
+  if ( strain_genotype_map.find( child_geno_string ) == strain_genotype_map.end() ) {
+    child_strain_id = strain_genotype_map[ child_geno_string ];
   }
-  s->setup(n, disease, data, transmissibility, strains->at(parent));
-  add(s);
-  return n;
+  else {
+    // child strain id is next available id from strain table
+    child_strain_id = strains.size();
+    strain_genotype_map[ child_geno_string ] = child_strain_id;
+    // set the child strain's id, disease pointer, transmissibility, and parent strain pointer
+    child_strain->setup( child_strain_id, disease, transmissibility, parent_strain );
+    // Add the new child to the strain table
+    add( child_strain );
+  }
+  // return the newly created id
+  return child_strain_id;
 }
 
-double StrainTable::get_transmissibility(int id) {
-  return strains->at(id)->get_transmissibility();
+double StrainTable::get_transmissibility( int id ) {
+  return strains[ id ]->get_transmissibility();
 }
 
-int StrainTable :: get_num_strain_data_elements(int strain)    
-{
-  //if(strain >= strains->size()) return 0;
-  return strains->at(strain)->get_num_data_elements();
+int StrainTable :: get_num_strain_data_elements(int strain) {
+  //if(strain >= strains.size()) return 0;
+  return strains[ strain ]->get_num_data_elements();
 }
 
-int StrainTable :: get_strain_data_element(int strain, int i)
-{
-  //if(strain >= strains->size()) return -1;
-  return strains->at(strain)->get_data_element(i);
+const Strain_Data & StrainTable::get_strain_data( int strain ) {
+  return strains[ strain ]->get_strain_data();
+}
+
+int StrainTable :: get_strain_data_element(int strain, int i) {
+  fred::Spin_Lock lock( mutex );
+  //if(strain >= strains.size()) return -1;
+  return strains[ strain ]->get_data_element(i);
 }
     
 void StrainTable :: printStrain(int strain_id, stringstream &out)
 {
-  if(strain_id >= strains->size()) return;
-  strains->at(strain_id)->print_alternate(out);
+  if(strain_id >= strains.size()) return;
+  strains[ strain_id ]->print_alternate(out);
 }
 
-int StrainTable :: get_substitutions(int strain_id) {
-  if(strain_id >= strains->size()) return -1;
-  return strains->at(strain_id)->get_substitutions();
+std::string StrainTable::get_strain_data_string( int strain_id ) {
+  return strains[ strain_id ]->to_string();
 }
-

@@ -12,7 +12,6 @@
 #include "Place.h"
 #include "Global.h"
 #include "Params.h"
-#include "Random.h"
 #include "Person.h"
 #include "Disease.h"
 #include "Infection.h"
@@ -25,6 +24,9 @@
 #include "Large_Grid.h"
 #include "Large_Cell.h"
 
+
+    
+
 void Place::setup( const char *lab, fred::geo lon, fred::geo lat, Place* cont, Population *pop ) {
   population = pop;
   // actual id assigned in Place_List::add_place
@@ -34,75 +36,42 @@ void Place::setup( const char *lab, fred::geo lon, fred::geo lat, Place* cont, P
   longitude = lon;
   latitude = lat;
   
-  // allocate disease-related memory
-  susceptibles = new (nothrow) vector<Person *> [Global::Diseases];
-  assert (susceptibles != NULL);
-  infectious = new (nothrow) vector<Person *> [Global::Diseases];
-  assert (infectious != NULL);
-  S = new (nothrow) int [Global::Diseases];
-  assert (S != NULL);
-  I = new (nothrow) int [Global::Diseases];
-  assert (I != NULL);
-  Sympt = new (nothrow) int [Global::Diseases];
-  assert (Sympt != NULL);
-  cases = new (nothrow) int [Global::Diseases];
-  assert (cases != NULL);
-  total_cases = new (nothrow) int [Global::Diseases];
-  assert (total_cases != NULL);
-  deaths = new (nothrow) int [Global::Diseases];
-  assert (deaths != NULL);
-  total_deaths = new (nothrow) int [Global::Diseases];
-  assert (total_deaths != NULL);
-  if ( Global::Report_Incidence ) {
-    incidence.resize(Global::Diseases);
+  // zero out all disease-specific counts
+  for ( int d = 0; d < Global::MAX_NUM_DISEASES; ++d ) {
+    Sympt[ d ] = 0;
+    cases[ d ] = 0;
+    deaths[ d ] = 0;
+    total_cases[ d ] = 0;
+    total_deaths[ d ] = 0;
   }
-  if ( Global::Report_Prevalence ) {
-    prevalence.resize(Global::Diseases);
-  }
+
   enrollees.clear();
+
   N = 0;
   days_infectious = 0;
   total_infections = 0;
 }
 
-void Place::print_stats(int day, int disease_id) {
-  /*
-   * The output format for this needs to be changed and 
-   * it produces an insane amount of output in the current format
-   *
-
-   // print out incidence and prevalence values
-   map<int, int> :: iterator it;
-   fprintf(Incfp, "%d %s ", day, label);
-   int tot = 0;
-   for(it = incidence[disease_id].begin(); it != incidence[disease_id].end(); it++){
-   tot += it->second;
-   }
-   fprintf(Incfp, "%d ", tot);
-
-   for(it = incidence[disease_id].begin(); it != incidence[disease_id].end(); it++){
-   fprintf(Incfp, " %d %d ", it->first, it->second);
-   }
-   fprintf(Incfp, "\n");
-
-   fprintf(Prevfp, "%d %s ", day, label);
-   for(it = incidence[disease_id].begin(); it != incidence[disease_id].end(); it++){
-   tot += it->second;
-   }
-   fprintf(Prevfp, "%d ", tot);
-
-   for(it = prevalence[disease_id].begin(); it != prevalence[disease_id].end(); it++){
-   fprintf(Prevfp, "%d %d ", it->first, it->second);
-   }
-   fprintf(Prevfp, "\n");
-  */
-}
+void Place::print_stats(int day, int disease_id) { }
 
 
 void Place::prepare() {
   for (int d = 0; d < Global::Diseases; d++) {
-    susceptibles[d].reserve(N);
-    infectious[d].reserve(N);
+    // Following aritmetic estimates the optimal number of thread-safe states
+    // to be allocated for this place, for each disease.  The number of states
+    // should always be 1 <= dim <= max_num_threads.  Each state is thread-safe,
+    // but increasing the number of states reduces lock-contention.  Minimizing
+    // the number of states saves memory.  The values used here must be determined
+    // through experimentation.  Optimal values will vary based on the particular
+    // cpu, number of threads, calibrated attack rate, population density, etc...
+    unsigned int dim = ( N / 1000 ) * ( fred::omp_get_max_threads() / 2 );
+    dim = dim == 0 ? 1 : dim;
+    dim = dim <= fred::omp_get_max_threads() ? dim : fred::omp_get_max_threads();
+    // Initialize specified number of states for this disease
+    place_state[ d ] = State< Place_State >( dim );
+    // Clear the states for use
+    place_state[ d ].clear();
+    // initialize totals
     total_cases[d] = total_deaths[d] = 0;
   }
   update(0);
@@ -117,22 +86,23 @@ void Place::prepare() {
 
 void Place::update(int day) {
   for (int d = 0; d < Global::Diseases; d++) {
-    // if(day > 0) print_stats(day, d);
-    cases[d] = deaths[d] = 0;
-    susceptibles[d].clear();
-    infectious[d].clear();
-    Sympt[d] = S[d] = I[d] = 0;
-    if ( Global::Report_Incidence ) 
-      incidence[d].clear();
-    if ( Global::Report_Prevalence )
-      prevalence[d].clear();
+    //if(day > 0) print_susceptibles(d);
+    cases[d] = deaths[d] = Sympt[ d ] = 0;
+    if ( infectious_bitset.test( d ) ) {
+      place_state[ d ].clear(); 
+    }
+    else {
+      place_state[ d ].reset();
+    }
+    infectious_bitset.reset();
   }
 }
 
 void Place::print(int disease_id) {
-  printf("Place %d label %s type %c ", id, label, type);
-  printf("S %d I %d N %d\n", S[disease_id], I[disease_id], N);
-  fflush(stdout);
+  //printf("Place %d label %s type %c ", id, label, type);
+  //printf("S %zu I %zu N %d\n", susceptibles[disease_id].size(),
+  //    infectious[disease_id].size(), N);
+  //fflush(stdout);
 }
 
 void Place::enroll(Person * per) {
@@ -145,40 +115,19 @@ void Place::unenroll(Person * per) {
 }
 
 void Place::add_susceptible(int disease_id, Person * per) {
-  // Protect from concurrent writes
-  fred::Scoped_Lock lock( mutex ); 
-  // push person onto susceptible container for this place
-  susceptibles[disease_id].push_back(per);
-  S[disease_id]++;
-  assert (S[disease_id] == static_cast <int> (susceptibles[disease_id].size()));
-}
 
-void Place::add_susceptibles( int disease_id,
-    std::vector< Person * > & _susceptibles ) {
+  place_state[ disease_id ]().add_susceptible( per );
 
-  // Protect from concurrent writes
-  fred::Scoped_Lock lock( mutex ); 
-  // push person onto susceptible container for this place
-  susceptibles[ disease_id ].insert( susceptibles[ disease_id ].end(),
-     _susceptibles.begin(), _susceptibles.end() );
-
-  S[ disease_id ] += _susceptibles.size(); 
-  assert ( S[ disease_id ] == static_cast < int > ( susceptibles[ disease_id ].size() ) );
 }
 
 void Place::add_infectious(int disease_id, Person * per) {
+ 
+  place_state[ disease_id ]().add_infectious( per );
   
-  // Protect from concurrent writes
-  fred::Scoped_Lock lock( mutex );
-  // push person onto infectious container for this place
-  infectious[disease_id].push_back(per);
-  I[disease_id]++;
-  assert(I[disease_id] == static_cast <int> (infectious[disease_id].size()));
-
-  
-  if ( I[ disease_id ] == 1 ) {
-    Disease * dis = population->get_disease(disease_id);
-    dis->add_infectious_place(this, type);
+  if ( !( infectious_bitset.test( disease_id ) ) ) {
+    Disease * dis = population->get_disease( disease_id );
+    dis->add_infectious_place( this, type );
+    infectious_bitset.set( disease_id );
   }
 
   if (per->get_health()->is_symptomatic()) {
@@ -192,21 +141,28 @@ void Place::add_infectious(int disease_id, Person * per) {
 }
 
 void Place::print_susceptibles(int disease_id) {
+ 
+  Place_State_Merge place_state_merge = Place_State_Merge();
+
+  place_state[ disease_id ].apply( place_state_merge );
+
+  std::vector< Person * > susceptibles = place_state_merge.get_susceptible_vector();
+
   vector<Person *>::iterator itr;
-  for (itr = susceptibles[disease_id].begin();
-       itr != susceptibles[disease_id].end(); itr++) {
+  for (itr = susceptibles.begin();
+       itr != susceptibles.end(); itr++) {
     printf(" %d", (*itr)->get_id());
   }
   printf("\n");
 }
 
 void Place::print_infectious(int disease_id) {
-  vector<Person *>::iterator itr;
-  for (itr = infectious[disease_id].begin();
-       itr != infectious[disease_id].end(); itr++) {
-    printf(" %d", (*itr)->get_id());
-  }
-  printf("\n");
+  //vector<Person *>::iterator itr;
+  //for (itr = infectious[disease_id].begin();
+  //     itr != infectious[disease_id].end(); itr++) {
+  //  printf(" %d", (*itr)->get_id());
+  //}
+  //printf("\n");
 }
 
 bool Place::is_open(int day) {
@@ -221,7 +177,7 @@ double Place::get_contact_rate(int day, int disease_id) {
   
   Disease * disease = population->get_disease(disease_id);
   // expected number of susceptible contacts for each infectious person
-  // OLD: double contacts = get_contacts_per_day(s) * ((double) S[s]) / ((double) (N-1));
+  // OLD: double contacts = get_contacts_per_day(disease_id) * ((double) susceptibles[disease_id].size()) / ((double) (N-1));
   double contacts = get_contacts_per_day(disease_id) * disease->get_transmissibility();
   if (Global::Enable_Seasonality) {
 
@@ -241,7 +197,7 @@ double Place::get_contact_rate(int day, int disease_id) {
       contacts = Neighborhood::get_weekend_contact_rate(disease_id) * contacts;
     }
   }
-  // Utils::fred_verbose(1,"Disease %d, expected contacts = %f\n", disease_id, contacts);
+  // FRED_VERBOSE(1,"Disease %d, expected contacts = %f\n", disease_id, contacts);
   return contacts;
 }
 
@@ -266,6 +222,10 @@ int Place::get_contact_count(Person * infector, int disease_id, int day, double 
 void Place::attempt_transmission(double transmission_prob, Person * infector, 
                                         Person * infectee, int disease_id, int day) {
 
+  assert( infectee->is_susceptible( disease_id ) );
+
+  FRED_STATUS(1,"infectee is susceptible\n","");
+
   double susceptibility = infectee->get_susceptibility(disease_id);
   
   FRED_VERBOSE( 2, "susceptibility = %f\n", susceptibility );
@@ -279,7 +239,7 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
   if (r < infection_prob) {
     // successful transmission; create a new infection in infectee
     // TODO this should be a const reference instead of new allocation???
-    Transmission *transmission = new Transmission(infector, this, day);
+    Transmission transmission = Transmission(infector, this, day);
     infector->infect( infectee, disease_id, transmission );
 
     if (disease_id == 0) {
@@ -301,89 +261,70 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
 void Place::spread_infection(int day, int disease_id) {
   // Place::spread_infection is used for all derived places except for Households
 
-  // the number of possible infectees per infector is max of (N-1) and S[s]
-  // where N is the capacity of this place and S[s] is the number of current susceptibles
-  // visiting this place.  S[s] might exceed N if we have some ad hoc visitors,
-  // since N is estimated only at startup.
-  int number_targets = (N-1 > S[disease_id]? N-1 : S[disease_id]);
-
-  FRED_STATUS(1,"spread_infection: Disease %d day %d place %d type %c\n",
-      disease_id, day, id, type);
-
-  if ( disease_id == 0 ) days_infectious++;
-  if ( number_targets == 0 ) return;
+  if ( disease_id == 0 ) days_infectious++; // TODO Why only disease 0 ????
   if ( is_open( day ) == false ) return;
   if ( should_be_open( day, disease_id ) == false ) return;
 
-  vector<Person *>::iterator itr;
+  Place_State_Merge place_state_merge = Place_State_Merge();
+  place_state[ disease_id ].apply( place_state_merge );
+  std::vector< Person * > & susceptibles = place_state_merge.get_susceptible_vector();
+  std::vector< Person * > & infectious = place_state_merge.get_infectious_vector();
+  // need at least one susceptible
+  if ( susceptibles.size() == 0 ) { return; }
+  // the number of possible infectees per infector is max of (N-1) and S[s]
+  // where N is the capacity of this place and S[s] is the number of current susceptibles
+  // visiting this place. S[s] might exceed N if we have some ad hoc visitors,
+  // since N is estimated only at startup.
+  int number_targets = ( N - 1 > susceptibles.size() ? N - 1 : susceptibles.size() );
+
   // contact_rate is contacts_per_day with weeked and seasonality modulation (if applicable)
   double contact_rate = get_contact_rate(day,disease_id);
 
   // randomize the order of the infectious list
-  FYShuffle<Person *>(infectious[disease_id]);
+  FYShuffle<Person *>( infectious );
 
-  for (itr = infectious[disease_id].begin(); itr != infectious[disease_id].end(); ++itr) {
-    Person * infector = *itr;      // infectious indiv
-    assert(infector->get_health()->is_infectious(disease_id));
+  for ( int infector_pos = 0; infector_pos < infectious.size(); ++infector_pos ) {
+    // infectious visitor
+    Person * infector = infectious[ infector_pos ];
+    assert( infector->get_health()->is_infectious( disease_id ) );
     
     // get the actual number of contacts to attempt to infect
-    int contact_count = get_contact_count(infector,disease_id,day,contact_rate);
+    int contact_count = get_contact_count( infector, disease_id, day, contact_rate );
     
-    // report saturation in this place
-    FRED_CONDITIONAL_VERBOSE(3, contact_count > number_targets, 
-        "frustration! making %d attempts to infect %d targets\n",
-        contact_count,number_targets);
-
+    std::map< int, int > sampling_map;
     // get a susceptible target for each contact resulting in infection
     for (int c = 0; c < contact_count; ++c) {
-      // select a target infectee with replacement, including all possible visitors
-      int pos = IRAND(0,number_targets-1);
-      if (pos > S[disease_id]-1) continue; // target is not one of the susceptibles present
-      // at this point we have a susceptible target
-      // make sure that we aren't out of range
-      FRED_CONDITIONAL_WARNING( pos < 0 || pos >= susceptibles[ disease_id ].size(),
-          " susceptibles.size() = %d pos = %d\n",
-          (int) susceptibles[ disease_id ].size(),
-          pos );
-      assert( pos >= 0 && pos < susceptibles[ disease_id ].size() );
-      Person * infectee = susceptibles[ disease_id ][ pos ];
+      // select a target infectee from among susceptibles with replacement
+      int pos = IRAND( 0, number_targets - 1 );
+      if ( pos < susceptibles.size() ) {
+        if ( infector == susceptibles[ pos ] ) {
+          if ( susceptibles.size() > 1 ) {
+            --( c ); // redo
+            continue;
+          }
+          else {
+            break; // give up
+          }
+        }
+        sampling_map[ pos ]++;
+      }
+    }
 
-      FRED_VERBOSE( 1, "possible infectee = %d  pos = %d  S[%d] = %d\n",
-            infectee->get_id(), pos, disease_id, S[disease_id] );
-
-      // is the target still susceptible?
-      if ( infectee->is_susceptible( disease_id ) ) {
-        // get the transmission probs for this infector/infectee pair
-        double transmission_prob = get_transmission_prob(disease_id, infector, infectee);
-        
-        FRED_STATUS(1,"infectee is susceptible\n","");
-        FRED_STATUS(1,"trans_prob = %f\n", transmission_prob);
-        
-        attempt_transmission( transmission_prob, infector, infectee, disease_id, day );
-
-      } // end of susceptible infectee
+    std::map< int, int >::iterator i;
+    for ( i = sampling_map.begin(); i != sampling_map.end(); ++i ) {
+      int pos = (*i).first;
+      int times_drawn = (*i).second;
+      Person * infectee = susceptibles[ pos ];
+      // get the transmission probs for this infector/infectee pair
+      double transmission_prob = get_transmission_prob(disease_id, infector, infectee);
+      for ( int draw = 0; draw < times_drawn; ++draw ) {
+        // only proceed if person is susceptible
+        if ( infectee->is_susceptible( disease_id ) ) {
+          attempt_transmission( transmission_prob, infector, infectee, disease_id, day );
+        }
+      }
     } // end contact loop
   } // end infectious list loop
-}
-
-void Place::modify_incidence_count(int disease_id, vector<int> strains, int incr) {
-  if ( Global::Report_Incidence ) {
-    map<int, int>& inc = incidence[disease_id];
-    for(int s=0; s < (int) strains.size(); s++) {
-      if(inc.find(strains[s]) == inc.end()) inc[strains[s]] = 0;
-      inc[strains[s]] = inc[strains[s]] + 1;
-    }
-  }
-}
-
-void Place::modify_prevalence_count(int disease_id, vector<int> strains, int incr) {
-  if ( Global::Report_Prevalence ) {
-    map<int, int>& prev = prevalence[disease_id];
-    for(int s=0; s < (int) strains.size(); s++) {
-      if(prev.find(strains[s]) == prev.end()) prev[strains[s]] = 0; 
-      prev[strains[s]] += 1;
-    }
-  }
 }
 
 Place * Place::select_neighborhood(double community_prob, double community_distance, double local_prob) {

@@ -16,6 +16,9 @@
 #include <map>
 #include <fstream>
 
+#include "Global.h"
+#include "Strain.h"
+
 class Strain;
 class Disease;
 
@@ -29,24 +32,36 @@ class StrainTable {
     StrainTable();
     ~StrainTable();
 
-    void setup(Disease *d); // Initial strains
+    void setup( Disease * d ); // Initial strains
     void reset();
 
-    void add(Strain *s);
-    int add(vector<int> &strain_data, double transmissibility, int parent);
-    double get_transmissibility(int id);
+    void add_root_strain( int num_elements );
+    
+    void add( Strain * s );
 
-    int get_num_strains() { return strains->size(); }
+    int add( Strain * child_strain, double transmissibility, int parent_strain_id );
+    
+    double get_transmissibility( int id );
 
-    int get_num_strain_data_elements(int strain);
-    int get_strain_data_element(int strain, int i);
+    int get_num_strains() {
+      fred::Spin_Lock lock( mutex );
+      return strains.size();
+    }
+
+    int get_num_strain_data_elements( int strain );
+    int get_strain_data_element( int strain, int i );
+    const Strain_Data & get_strain_data( int strain );
+
+    const Strain & get_strain( int strain_id ) { return * strains[ strain_id ]; }
+
     void printStrain(int strain_id, stringstream &out);
-  
-    int get_substitutions(int strain_id);
+    std::string get_strain_data_string( int strain_id );
+
   private:
-    Disease *disease;
-    vector<Strain *> *strains;
-    int originalStrains;
+    fred::Spin_Mutex mutex;
+    Disease * disease;
+    std::vector < Strain * > strains;
+    std::map< std::string, int > strain_genotype_map;
   };
 
 #endif // _FRED_StrainTable_H

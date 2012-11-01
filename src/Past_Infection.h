@@ -12,10 +12,11 @@
 #ifndef _FRED_PAST_INFECTION_H
 #define _FRED_PAST_INFECTION_H
 
-#include "Global.h"
 #include <stdio.h>
 #include <vector>
 #include <iostream>
+
+#include "Global.h"
 
 class Disease;
 class Person;
@@ -24,22 +25,22 @@ class Infection;
 using namespace std;
 
 class Past_Infection {
+
 public:
   Past_Infection();
-  Past_Infection(Infection *infection);
-  Past_Infection(vector<int> &_strains, int _recovery_date, int _age_at_exposure, Disease *_disease, Person *_host);
-  void get_strains(vector<int> &strains);
+  Past_Infection( Infection * infection );
+  Past_Infection( vector< int > & _strains, int _recovery_date, int _age_at_exposure );
+
+  void get_strains( vector < int > & strains );
   int get_recovery_date() { return recovery_date; }
   int get_age_at_exposure() { return age_at_exposure; }
   void report();
   static string format_header();
 
 private:
-  Person *host;
-  Disease *disease;
-  vector<int> strains;
-  int recovery_date;
-  int age_at_exposure;
+  vector< int > strains;
+  short int recovery_date;
+  short int age_at_exposure;
 };
 
 #endif

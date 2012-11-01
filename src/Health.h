@@ -54,57 +54,58 @@ public:
    *
    * @param day the simulation day
    */
-  void update(int day);
+  void update( Person * self, int day );
 
   /*
    * Separating the updates for vaccine & antivirals from the
    * infection update gives improvement for the base.  
-   *
    */
-  void update_interventions(int day);
+  void update_interventions( Person * self, int day );
 
   /**
    * Agent is susceptible to the disease
    *
    * @param disease which disease
    */
-  void become_susceptible(int disease_id);
-  void become_susceptible(Disease * disease);
+  void become_susceptible( Person * self, int disease_id );
+
+  void become_susceptible( Person * self, Disease * disease );
 
   /**
    * Agent is unsusceptible to the disease
    *
    * @param disease which disease
    */
-  void become_unsusceptible(Disease * disease);
+  void become_unsusceptible( Person * self, Disease * disease );
 
   /**
    * Agent is infectious
    *
    * @param disease pointer to the Disease object
    */
-  void become_infectious(Disease * disease);
+  void become_infectious( Person * self, Disease * disease );
 
   /**
    * Agent is symptomatic
    *
    * @param disease pointer to the Disease object
    */
-  void become_symptomatic(Disease *disease);
+  void become_symptomatic( Person * self, Disease * disease );
 
   /**
    * Agent is immune to the disease
    *
    * @param disease pointer to the Disease object
    */
-  void become_immune(Disease* disease);
+  void become_immune( Person * self, Disease* disease );
 
   /**
-   * Agent is removed from the susceptible population to a given disease
+   * Agent is removed from the susceptible population that is
+   * available to a given disease
    *
    * @param disease which disease
    */
-  void become_removed(int disease_id);
+  void become_removed( Person * self, int disease_id);
 
   /**
    * Agent is 'At Risk' to a given Disease
@@ -118,7 +119,7 @@ public:
    *
    * @param disease pointer to the Disease object
    */
-  void recover(Disease * disease);
+  void recover( Person * self, Disease * disease );
 
   /**
    * Is the agent susceptible to a given disease
@@ -126,7 +127,7 @@ public:
    * @param disease which disease
    * @return <code>true</code> if the agent is susceptible, <code>false</code> otherwise
    */
-  bool is_susceptible (int disease_id) const {return susceptible[disease_id];}
+  bool is_susceptible (int disease_id) const {return susceptible.test( disease_id );}
 
   /**
    * Is the agent infectious for a given disease
@@ -134,7 +135,7 @@ public:
    * @param disease which disease
    * @return <code>true</code> if the agent is infectious, <code>false</code> otherwise
    */
-  bool is_infectious(int disease_id) const { return (infectious[disease_id]); }
+  bool is_infectious(int disease_id) const { return (infectious.test( disease_id ) ); }
 
   /**
    * Is the agent symptomatic - note that this is independent of disease
@@ -142,7 +143,7 @@ public:
    * @return <code>true</code> if the agent is symptomatic, <code>false</code> otherwise
    */
   bool is_symptomatic() const { return symptomatic.any(); }
-  bool is_symptomatic(int disease_id) { return symptomatic[disease_id]; }
+  bool is_symptomatic(int disease_id) { return symptomatic.test( disease_id ); }
 
   /**
    * Is the agent immune to a given disease
@@ -151,7 +152,7 @@ public:
    * @return <code>true</code> if the agent is immune, <code>false</code> otherwise
    */
   bool is_immune(Disease* disease) const {
-    return immunity[disease->get_id()];
+    return immunity.test( disease->get_id() );
   }
 
   /**
@@ -161,7 +162,7 @@ public:
    * @return <code>true</code> if the agent is at risk, <code>false</code> otherwise
    */
   bool is_at_risk(Disease* disease) const {
-    return at_risk[disease->get_id()];
+    return at_risk.test( disease->get_id() );
   }
 
   /**
@@ -171,20 +172,8 @@ public:
    * @return <code>true</code> if the agent is at risk, <code>false</code> otherwise
    */
   bool is_at_risk(int disease_id) const {
-    return at_risk[disease_id];
+    return at_risk.test( disease_id );
   }
-
-  /**
-   * Get the Person object with which this Health object is associated
-   *
-   * @return a pointer to a Person object
-   */
-  Person* get_self();
-
-  /*
-   * Gets the Person's id from the population
-   */
-  int get_person_id();
 
   /**
    * @param disease
@@ -277,13 +266,13 @@ public:
    * @param disease the disease with which to infect the Person
    * @param transmission a pointer to a Transmission object
    */
-  void infect(Person *infectee, int disease_id, Transmission *transmission);
+  void infect( Person * self, Person *infectee, int disease_id, Transmission & transmission);
 
   /**
    * @param disease pointer to a Disease object
    * @param transmission pointer to a Transmission object
    */
-  void become_exposed(Disease *disease, Transmission *transmission);
+  void become_exposed( Person * self, Disease *disease, Transmission & transmission );
 
   //Medication operators
   /**
@@ -292,7 +281,7 @@ public:
    * @param day the simulation day
    * @param vm a pointer to the Manager of the Vaccinations
    */
-  void take(Vaccine *vacc, int day, Vaccine_Manager* vm);
+  void take_vaccine( Person * self, Vaccine *vacc, int day, Vaccine_Manager* vm );
 
   /**
    * Agent will take an antiviral
@@ -304,16 +293,22 @@ public:
   /**
    * @return a count of the antivirals this agent has already taken
    */
-  int get_number_av_taken()             const {
-    return av_health.size();
+  int get_number_av_taken() const {
+    if ( av_health ) {
+      return av_health->size();
+    }
+    else {
+      return 0;
+    }
   }
 
   /**
    * @param s the index of the av to check
    * @return the checked_for_av with the given index
    */
-  int get_checked_for_av(int s)             const {
-    return checked_for_av[s];
+  int get_checked_for_av(int s) const {
+    assert( checked_for_av != NULL );
+    return (*checked_for_av)[ s ];
   }
 
   /**
@@ -321,35 +316,52 @@ public:
    * @param s the index of the av to set
    */
   void flip_checked_for_av(int s) {
-    checked_for_av[s] = 1;
+    assert( checked_for_av != NULL );
+    (*checked_for_av)[ s ] = 1;
   }
 
   /**
    * @return <code>true</code> if the agent is vaccinated, <code>false</code> if not
    */
   bool is_vaccinated() const {
-    return vaccine_health.size();
+    if ( vaccine_health ) {
+      return vaccine_health->size();
+    }
+    else {
+      return 0;
+    }
   }
 
   /**
    * @return the number of vaccines this agent has taken
    */
-  int get_number_vaccines_taken()        const {
-    return vaccine_health.size();
+  int get_number_vaccines_taken() const {
+    if ( vaccine_health ) {
+      return vaccine_health->size();
+    }
+    else {
+      return 0;
+    }
   }
 
   /**
    * @return a pointer to this instance's AV_Health object
    */
-  AV_Health * get_av_health(int i)            const {
-    return av_health[i];
+  AV_Health * get_av_health(int i) const {
+    assert( av_health != NULL );
+    return (*av_health)[ i ];
   }
 
   /**
    * @return a pointer to this instance's Vaccine_Health object
    */
-  Vaccine_Health * get_vaccine_health(int i)  const {
-    return vaccine_health[i];
+  Vaccine_Health * get_vaccine_health(int i) const {
+    if ( vaccine_health ) {
+      return (*vaccine_health)[ i ];
+    }
+    else {
+      return NULL;
+    }
   }
 
   //Modifiers
@@ -413,70 +425,79 @@ public:
    */
   void modify_develops_symptoms(int disease_id, bool symptoms, int cur_day);
 
-  void terminate();
+  void terminate( Person * self );
 
-  int get_num_past_infections(int disease){ return past_infections[disease].size(); }
+  int get_num_past_infections( int disease ) { return past_infections[ disease ].size(); }
   
-  Past_Infection *get_past_infection(int disease, int i){ return &( past_infections[disease].at(i) ) ; }
+  Past_Infection * get_past_infection( int disease, int i ) {
+    return &( past_infections[ disease ].at( i ) );
+  }
   
-  void clear_past_infections(int disease) { past_infections[disease].clear(); }
+  void clear_past_infections( int disease ) { past_infections[ disease ].clear(); }
 
   //void add_past_infection(int d, Past_Infection *pi){ past_infections[d].push_back(pi); }  
-  void add_past_infection( vector<int> &strains, int recovery_date, int age_at_exposure, Disease * dis, Person * host ) {
-    past_infections[ dis->get_id() ].push_back( Past_Infection( strains, recovery_date, age_at_exposure, dis, host ) );
+  void add_past_infection( vector< int > & strains, int recovery_date, int age_at_exposure, Disease * dis ) {
+    past_infections[ dis->get_id() ].push_back( Past_Infection( strains, recovery_date, age_at_exposure ) );
   }
 
   void die() { alive = false; }
 
 private:
   
-  int person_index;
-  bool alive;
+  // The index of the person in the Population
+  //int person_index;
 
+  // The alive bool could probably be eliminated
+  bool alive;
+  
   // TODO (JVD): The infection vector & bitset should be combined into a little 
   // helper class to make sure that they're always synched up.
   // There would be just a little overhead in doing this but probably well worth it.
   // Until then make sure that they're always changed together.
   Infection * infection[ Global::MAX_NUM_DISEASES ];
+  // bitset removes need to check each infection in above array to
+  // find out if any are not NULL
   fred::disease_bitset active_infections;
-
   fred::disease_bitset immunity;
   fred::disease_bitset at_risk;  // Agent is/isn't at risk for severe complications
-
-  std::vector< double > susceptibility_multp;
-  
-  vector < bool > checked_for_av;
-  vector < AV_Health * > av_health;
-  typedef vector < AV_Health * >::iterator av_health_itr; 
-  vector < Vaccine_Health * > vaccine_health;
-
-  vector < Past_Infection > *past_infections;
-
-  typedef vector < Vaccine_Health * >::iterator vaccine_health_itr;
-  
-  int infectee_count[ Global::MAX_NUM_DISEASES ];
-  int susceptible_date[ Global::MAX_NUM_DISEASES ];
-
+  // Per-disease health status flags
   fred::disease_bitset susceptible;
   fred::disease_bitset infectious;
-
   fred::disease_bitset symptomatic;
   fred::disease_bitset recovered_today;
   fred::disease_bitset evaluate_susceptibility;
 
-  //bool takes_av;
-  //bool takes_vaccine;
+  // per-disease susceptibility multiplier
+  double susceptibility_multp[ Global::MAX_NUM_DISEASES ];
+ 
+  // Antivirals.  These are all dynamically allocated to save space
+  // when not in use
+  typedef vector < bool > checked_for_av_type; 
+  checked_for_av_type * checked_for_av;
+  typedef vector < AV_Health * > av_health_type;
+  av_health_type * av_health;
+  typedef vector < AV_Health * >::iterator av_health_itr; 
+
+  // Vaccines.  These are all dynamically allocated to save space
+  // when not in use
+  typedef vector < Vaccine_Health * > vaccine_health_type;
+  vaccine_health_type * vaccine_health;
+  typedef vector < Vaccine_Health * >::iterator vaccine_health_itr;
 
   // Define a bitset type to hold health flags
+  // Enumeration corresponding to positions in health
+  // intervention_flags bitset is defined in implementation file
   typedef std::bitset< 2 > intervention_flags_type;
   intervention_flags_type intervention_flags;
-  // Enumerate flags corresponding to positions in bitset
-  enum {
-    takes_vaccine,
-    takes_av
-  };
+
+  // Past_Infections used for reignition
+  vector < Past_Infection > past_infections[ Global::MAX_NUM_DISEASES ];
+  
+  int infectee_count[ Global::MAX_NUM_DISEASES ];
+  int susceptible_date[ Global::MAX_NUM_DISEASES ];
 
 protected:
+  
   friend class Person;
   Health() { }
 };

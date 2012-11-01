@@ -26,6 +26,7 @@ using namespace std;
 #include "Household.h"
 #include "Population.h"
 #include "Date.h"
+#include "DB.h"
 
 Large_Grid::Large_Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fred::geo maxlat) {
   min_lon  = minlon;
@@ -102,6 +103,7 @@ Large_Grid::Large_Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fre
         printf("print grid[%d][%d]:\n",i,j); fflush(stdout);
         grid[i][j].print();
       }
+      //printf( "row = %d col = %d id = %d\n", i, j, grid[i][j].get_id() );
     }
   }
 }
@@ -132,6 +134,13 @@ Large_Cell * Large_Grid::get_grid_cell_with_global_coords(int row, int col) {
   return get_grid_cell(row-global_row_min, col-global_col_min);
 }
 
+Large_Cell * Large_Grid::get_grid_cell_from_id( int id ) {
+  int row = id / cols;
+  int col = id % cols;
+  FRED_VERBOSE( 4, "grid cell lookup for id = %d ... calculated row = %d, col = %d, rows = %d, cols = %d\n", id, row, col, rows, cols );
+  assert( grid[ row ][ col ].get_id() == id );
+  return &( grid[ row ][ col ] );
+}
 
 Large_Cell * Large_Grid::select_random_grid_cell() {
   int row = IRAND(0, rows-1);
@@ -238,6 +247,21 @@ void Large_Grid::read_max_popsize() {
     printf("finished reading %s\n", filename);
   }
 }
+//<<<<<<< Large_Grid.cc
+
+void Large_Grid::report_grid_stats( int day ) {
+  for ( int dis = 0; dis < Global::Diseases; ++dis ) {
+    #pragma omp parallel for schedule(runtime)
+    for ( int r = 0; r < get_rows(); ++r ) {
+      for ( int c = 0; c < get_cols(); ++c ) {
+        Global::db.enqueue_transaction(
+            grid[ r ][ c ].collect_cell_stats( day, dis ) );
+      }
+    }
+  }
+}
+
+//=======
 
 Place *Large_Grid::get_nearby_workplace(int row, int col, double x, double y, int min_staff, int max_staff, double * min_dist) {
   // find nearest workplace that has right number of employees
@@ -258,3 +282,4 @@ Place *Large_Grid::get_nearby_workplace(int row, int col, double x, double y, in
 }
 
 
+//>>>>>>> 1.13

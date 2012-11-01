@@ -31,12 +31,6 @@ double Demographics::age_yearly_birth_rate[Demographics::MAX_PREGNANCY_AGE + 1];
 double Demographics::age_daily_birth_rate[Demographics::MAX_PREGNANCY_AGE + 1];
 
 Demographics::Demographics() {
-  //Create the static arrays one time
-  //if (!Demographics::is_initialized) {
-    //read_init_files();
-    //Demographics::is_initialized = true;
-  //}
-  self = NULL;
   init_age = -1;
   age = -1;
   sex = 'n';
@@ -48,14 +42,8 @@ Demographics::Demographics() {
   deceased = false;
 }
 
-Demographics::Demographics(Person * _self, short int _age, char _sex, 
+Demographics::Demographics(int self_index, short int _age, char _sex, 
 			   short int _race, short int rel, int day, bool is_newborn) {
-
-  //Create the static arrays one time
-  //if (!Demographics::is_initialized) {
-    //read_init_files();
-    //Demographics::is_initialized = true;
-  //}
 
   // adjust age for those over 89 (due to binning in the synthetic pop)
   if (_age > 89) {
@@ -64,7 +52,6 @@ Demographics::Demographics(Person * _self, short int _age, char _sex,
   }
 
   // set demographic variables
-  self                = _self;
   init_age            = _age;
   age                 = init_age;
   sex                 = _sex;
@@ -99,10 +86,9 @@ Demographics::Demographics(Person * _self, short int _age, char _sex,
 
     FRED_CONDITIONAL_VERBOSE(0, birthyear < 1800, "===========================================> \n","");
 
-    Date * tmpDate = new Date(birthyear, (int) ceil(rand_birthday));
-    this->birth_day_of_year = tmpDate->get_day_of_year();
+    Date tmpDate = Date(birthyear, (int) ceil(rand_birthday));
+    this->birth_day_of_year = tmpDate.get_day_of_year();
     this->birth_year = birthyear;
-    delete tmpDate;
 
   } else {
 
@@ -122,7 +108,7 @@ Demographics::Demographics(Person * _self, short int _age, char _sex,
     if ( RANDOM() <= pct_chance_to_die ) {
       //Yes, so set the death day (in simulation days)
       this->deceased_sim_day = (day + IRAND(1,364));
-      Global::Pop.set_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
+      Global::Pop.set_mask_by_index( fred::Update_Deaths, self_index );
     }
   }
 
@@ -132,7 +118,7 @@ Demographics::Demographics(Person * _self, short int _age, char _sex,
       //Yes, so set the due_date (in simulation days)
       this->due_sim_day = ( day + IRAND( 1, 280 ) );
       this->pregnant = true;
-      Global::Pop.set_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
+      Global::Pop.set_mask_by_index( fred::Update_Births, self_index );
       FRED_STATUS( 2, "Birth scheduled during initialization! conception day: %d, delivery day: %d\n",
             conception_sim_day, due_sim_day );
     }
@@ -146,7 +132,7 @@ void Demographics::update(int day) {
   // TODO: this does nothing, leave as stub for future extensions
 }
 
-void Demographics::update_births( int day ) {
+void Demographics::update_births( Person * self, int day ) {
   if (Global::Enable_Births) {
     // Is this your day to give birth? ( previously set in Demographics::birthday )
     if ( pregnant && due_sim_day == day ) {
@@ -154,34 +140,33 @@ void Demographics::update_births( int day ) {
       due_sim_day = -1;
       pregnant = false;
       // don't update this person's demographics anymore
-      Global::Pop.clear_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
+      Global::Pop.clear_mask_by_index( fred::Update_Births, self->get_pop_index() );
       // give birth
-      Global::Pop.prepare_to_give_birth( day, self );
+      Global::Pop.prepare_to_give_birth( day, self->get_pop_index() );
     }
   }
 }
 
-void Demographics::update_deaths( int day ) {
+void Demographics::update_deaths( Person * self, int day ) {
   if ( Global::Enable_Deaths ) {
     //Is this your day to die?
     if ( deceased_sim_day == day ) {
       // don't update this person's demographics anymore
-      Global::Pop.clear_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
+      Global::Pop.clear_mask_by_index( fred::Update_Deaths, self->get_pop_index() );
       deceased = true;
-      Global::Pop.prepare_to_die( day, self );
+      Global::Pop.prepare_to_die( day, self->get_pop_index() );
     }
   }
 }
 
-void Demographics::birthday(int day) {
+void Demographics::birthday( Person * self, int day ) {
   //The age to look up should be an integer between 0 and the MAX_AGE
-  int age_lookup = (this->age <= Demographics::MAX_AGE ? this->age : Demographics::MAX_AGE);
-
+  int age_lookup = ( age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE );
   if (Global::Enable_Aging) {
-    this->age++;
-    if (this->age == Global::ADULT_AGE && this->self != this->self->get_adult_decision_maker()) {
+    age++;
+    if ( age == Global::ADULT_AGE && self != self->get_adult_decision_maker()) {
       // become responsible for adult decisions
-      this->self->become_an_adult_decision_maker();
+      self->become_an_adult_decision_maker();
     }
   }
 
@@ -198,10 +183,10 @@ void Demographics::birthday(int day) {
           this->deceased_sim_day == -1 &&
           RANDOM() <= pct_chance_to_die) {
 
-      //Yes, so set the death day (in simulation days)
+      // Yes, so set the death day (in simulation days)
       this->deceased_sim_day = (day + IRAND(0,364));
       // and flag for daily updates until death
-      Global::Pop.set_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
+      Global::Pop.set_mask_by_index( fred::Update_Deaths, self->get_pop_index() );
     }
   }
 
@@ -221,7 +206,7 @@ void Demographics::birthday(int day) {
               Demographics::MEAN_PREG_DAYS, Demographics::STDDEV_PREG_DAYS) + 0.5 );
         pregnant = true;
         // flag for daily updates
-        Global::Pop.set_mask_by_index( fred::Update_Demographics, self->get_pop_index() );
+        Global::Pop.set_mask_by_index( fred::Update_Births, self->get_pop_index() );
         FRED_STATUS( 2, "Birth scheduled! conception day: %d, delivery day: %d\n",
             conception_sim_day, due_sim_day );
       }
@@ -309,12 +294,11 @@ void Demographics::print() {
 
 double Demographics::get_real_age() const {
   if ( birth_year > Date::get_epoch_start_year() ) {
-    Date * tmp_date = new Date(this->birth_year, this->birth_day_of_year);
-    int days_of_life = Date::days_between(Global::Sim_Current_Date, tmp_date);
+    const Date tmp_date = Date(birth_year, birth_day_of_year);
+    int days_of_life = Date::days_between(Global::Sim_Current_Date, & tmp_date);
     return ((double) days_of_life / 365.0);
   }
-  Utils::fred_warning("WARNING: Birth year (%d) before start of epoch (Date::EPOCH_START_YEAR == %d)!\n", birth_year, Date::get_epoch_start_year());
+  FRED_WARNING("WARNING: Birth year (%d) before start of epoch (Date::EPOCH_START_YEAR == %d)!\n", birth_year, Date::get_epoch_start_year());
   return -1;
 }
-
 

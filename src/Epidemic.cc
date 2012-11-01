@@ -100,12 +100,12 @@ void Epidemic::become_exposed(Person *person) {
   // TODO the daily infections list may end up containing defunct pointers if
   // enable_deaths is in effect (whether or not we are running in parallel mode).
   // Make daily reports and purge list after each report to fix this.
-  fred::Scoped_Lock lock( mutex );
+  fred::Spin_Lock lock( spin_mutex );
   daily_infections_list.push_back(person);
 }
 
 void Epidemic::become_infectious(Person *person) {
-#pragma omp atomic
+  #pragma omp atomic
   exposed_count--;
   // operations on bloque (underlying container for population) are thread-safe
   Global::Pop.set_mask_by_index( fred::Infectious, person->get_pop_index() );
@@ -123,9 +123,9 @@ void Epidemic::become_uninfectious(Person *person) {
 }
 
 void Epidemic::become_symptomatic(Person *person) {
-#pragma omp atomic
+  #pragma omp atomic
   ++symptomatic_count;
-#pragma omp atomic
+  #pragma omp atomic
   ++clinical_incidents;
 }
 
@@ -154,10 +154,10 @@ void Epidemic::become_removed(Person *person, bool susceptible, bool infectious,
     }
   }
   if (symptomatic) {
-#pragma omp atomic
+    #pragma omp atomic
     --( symptomatic_count );
   }
-#pragma omp atomic
+  #pragma omp atomic
   ++( removed_count );
 }
 
@@ -250,10 +250,6 @@ void Epidemic::print_stats(int day) {
     fprintf(Global::Outfp, " SM %2.4f", average_seasonality_multiplier);
     FRED_STATUS(0, " SM %2.4f", average_seasonality_multiplier);
   } 
-
-  if (Global::Track_Multi_Strain_Stats) {
-    disease->get_evolution()->print_stats(day);
-  }
 
   // Print Residual Immunuties
   if (Global::Track_Residual_Immunity) {
@@ -440,87 +436,47 @@ void Epidemic::add_infectious_place( Place *place, char type ) {
   switch (type) {
     case HOUSEHOLD:
       {
-        fred::Scoped_Lock lock( household_mutex );
+        fred::Spin_Lock lock( household_mutex );
         inf_households.push_back(place);
       }
       break;
 
     case NEIGHBORHOOD:
       {
-        fred::Scoped_Lock lock( neighborhood_mutex );
+        fred::Spin_Lock lock( neighborhood_mutex );
         inf_neighborhoods.push_back(place);
       }
       break;
 
     case CLASSROOM:
       {
-        fred::Scoped_Lock lock( classroom_mutex );
+        fred::Spin_Lock lock( classroom_mutex );
         inf_classrooms.push_back(place);
       }
       break;
 
     case SCHOOL:
       {
-        fred::Scoped_Lock lock( school_mutex );
+        fred::Spin_Lock lock( school_mutex );
         inf_schools.push_back(place);
       }
       break;
 
     case WORKPLACE:
       {
-        fred::Scoped_Lock lock( workplace_mutex );
+        fred::Spin_Lock lock( workplace_mutex );
         inf_workplaces.push_back(place);
       }
       break;
 
     case OFFICE:
       {
-        fred::Scoped_Lock lock( office_mutex );
+        fred::Spin_Lock lock( office_mutex );
         inf_offices.push_back(place);
       }
       break;
   }
 }
-
-/* NOT CURRENTLY USED...
- * 
-void Epidemic::get_infectious_places(int day) {
-  vector<Person *>::iterator itr;
-  vector<Place *>::iterator it;
-
-  int places = Global::Places.get_number_of_places();
-  for (int p = 0; p < places; p++) {
-    Place * place = Global::Places.get_place_at_position(p);
-    if (place->is_open(day) && place->should_be_open(day, id)) {
-      switch (place->get_type()) {
-        case HOUSEHOLD:
-          inf_households.push_back(place);
-          break;
-
-        case NEIGHBORHOOD:
-          inf_neighborhoods.push_back(place);
-          break;
-
-        case CLASSROOM:
-          inf_classrooms.push_back(place);
-          break;
-
-        case SCHOOL:
-          inf_schools.push_back(place);
-          break;
-
-        case WORKPLACE:
-          inf_workplaces.push_back(place);
-          break;
-
-        case OFFICE:
-          inf_offices.push_back(place);
-          break;
-      }
-    }
-  }
-}
-*/
 
 void Epidemic::get_primary_infections(int day){
   Population *pop = disease->get_population();
@@ -570,14 +526,14 @@ void Epidemic::get_primary_infections(int day){
         }
 
         if (person == NULL) { // nobody home
-          Utils::fred_warning("Person selected for seeding in Epidemic update is NULL.\n");
+          FRED_WARNING("Person selected for seeding in Epidemic update is NULL.\n");
           continue;
         }
 
-        if (person->get_health()->is_susceptible(id)) {
-          Transmission *transmission = new Transmission(NULL, NULL, day);
-          transmission->set_initial_loads(disease->get_primary_loads(day));
-          person->become_exposed(this->disease, transmission);
+        if ( person->get_health()->is_susceptible( id ) ) {
+          Transmission transmission = Transmission( NULL, NULL, day );
+          transmission.set_initial_loads( disease->get_primary_loads( day ) );
+          person->become_exposed( disease, transmission );
           successes++;
         }
 
@@ -588,8 +544,7 @@ void Epidemic::get_primary_infections(int day){
       }
 
       if (successes < mst->get_min_successes()) {
-        Utils::fred_warning(
-            "A minimum of %d successes was specified, but only %d successful transmissions occurred.",
+        FRED_WARNING("A minimum of %d successes was specified, but only %d successful transmissions occurred.",
             mst->get_min_successes(),successes);
       }
     }
@@ -671,11 +626,12 @@ void Epidemic::update(int day) {
     epidemic->find_infectious_places(day, d);
     epidemic->add_susceptibles_to_infectious_places(day, d);
     epidemic->transmit(day);
+    disease->get_evolution()->update( day );
   }
 }
 
 void Epidemic::update_infectious_activities::operator() ( Person & person ) {
-  person.get_activities()->update_infectious_activities( day, disease_id );
+  person.get_activities()->update_infectious_activities( & person, day, disease_id );
 }
 
 void Epidemic::find_infectious_places( int day, int disease_id ) {
@@ -688,14 +644,14 @@ void Epidemic::find_infectious_places( int day, int disease_id ) {
 }
 
 void Epidemic::update_susceptible_activities::operator() ( Person & person ) {
-  person.get_activities()->update_susceptible_activities( day, disease_id );
+  person.get_activities()->update_susceptible_activities( & person, day, disease_id );
 }
 
 void Epidemic::add_susceptibles_to_infectious_places(int day, int disease_id) {
   FRED_STATUS(1, "add_susceptibles_to_infectious_places entered\n");
 
   update_susceptible_activities update_functor( day, disease_id );
-  Global::Pop.parallel_apply( fred::Susceptible, update_functor );
+  Global::Pop.parallel_masked_apply( fred::Susceptible, update_functor );
 
   FRED_STATUS(1, "add_susceptibles_to_infectious_places finished\n");
 }
@@ -714,7 +670,7 @@ void Epidemic::get_infectious_samples(vector<Person *> &samples, double prob = 1
   infectious_sampler sampler;
   sampler.samples = &samples;
   sampler.prob = prob;
-  Global::Pop.parallel_apply( fred::Infectious, sampler );
+  Global::Pop.parallel_masked_apply( fred::Infectious, sampler );
 }
 
 int Epidemic::get_num_infectious() {

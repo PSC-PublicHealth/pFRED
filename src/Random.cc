@@ -8,8 +8,9 @@
 //
 // File: Random.cc
 //
-
+#include <limits>
 #include <vector>
+#include <bitset>
 #include <stdio.h>
 
 #include "Random.h"
@@ -135,14 +136,68 @@ int draw_poisson(double lambda) {
   }
 }
 
+double binomial_coefficient( int n, int k ) {
+  if ( k < 0 ||  k > n ) return 0;
+  if ( k > n - k ) k = n - k;
+  double c = 1;
+  for ( int i = 0; i < k; ++i ) {
+    c = c * ( n - ( k - ( i + 1 ) ) );
+    c = c / ( i + 1 );
+  }
+  return c;
+}
+
+void build_binomial_cdf( double p, int n, std::vector< double > & cdf ) {
+  for ( int i = 0; i <= n; ++i ) {
+    double prob = 0.0;
+    for ( int j = 0; j <= i; ++j ) {
+      prob += binomial_coefficient( n, i ) 
+        * pow( 10, ( ( i * log10( p ) ) + ( ( n - 1 ) * log10( 1 - p ) ) ) );
+    }
+    if ( i > 0 ) {
+      prob += cdf.back();
+    }
+    if ( prob < 1 ) {
+      cdf.push_back( prob );
+    }
+    else {
+      cdf.push_back( 1.0 );
+      break;
+    }
+  }
+  cdf.back() = 1.0;
+}
+
+void sample_range_without_replacement( int N, int s, int * result ) {
+  std::vector< bool > selected( N, false );
+  for ( int n = 0; n < s; ++n ) {
+    int i = IRAND( 0, N - 1 );
+    if ( selected[ i ] ) {
+      if ( i < N - 1 && !( selected[ i + 1 ] ) ) {
+        ++i;
+      }
+      else if ( i > 0 && !( selected[ i - 1 ] ) ) {
+        --i;
+      }
+      else {
+        --n;
+        continue;
+      }
+    }
+    selected[ i ] = true;
+    result[ n ] = i;
+  }
+}
+
+
 /////////////////////////////////////////////////////////////////
 
-RNG_State< 8192, 1024 > rng_state[ Global::MAX_NUM_THREADS ];
+RNG_State< 8192, 1024, 1024, 2048 > rng_state[ Global::MAX_NUM_THREADS ];
 
 void RNG::init( int seed ) {
   dsfmt_gv_init_gen_rand( seed );
   for (int i = 0; i < Global::MAX_NUM_THREADS; ++i) {
-    rng_state[ i ] = RNG_State< 8192, 1024 >();
+    rng_state[ i ] = RNG_State< 8192, 1024, 1024, 2048 >();
     rng_state[ i ].init( dsfmt_gv_genrand_uint32() );
   }
 }

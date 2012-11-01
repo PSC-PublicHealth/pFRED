@@ -40,9 +40,9 @@ const string Date::DDMMYY = string("DD/MM/YY");
 const string Date::YYYYMMDD = string("YYYY-MM-DD");
 
 bool Date::is_initialized = false;
-vector<int> * Date::day_of_month_vec = NULL;
-vector<int> * Date::month_vec = NULL;
-vector<int> * Date::year_vec = NULL;
+vector<int> Date::day_of_month_vec;
+vector<int> Date::month_vec;
+vector<int> Date::year_vec;
 
 Date::Date() {
 
@@ -209,9 +209,9 @@ void Date::set_date(int year, int month, int day_of_month) {
 void Date::advance() {
   this->days_since_jan_1_epoch_year++;
 
-  this->year = Date::year_vec->at(this->days_since_jan_1_epoch_year);
-  this->month = Date::month_vec->at(this->days_since_jan_1_epoch_year);
-  this->day_of_month = Date::day_of_month_vec->at(this->days_since_jan_1_epoch_year);
+  this->year = Date::year_vec.at(this->days_since_jan_1_epoch_year);
+  this->month = Date::month_vec.at(this->days_since_jan_1_epoch_year);
+  this->day_of_month = Date::day_of_month_vec.at(this->days_since_jan_1_epoch_year);
 
   this->day_of_year = Date::get_day_of_year(this->year, this->month, this->day_of_month);
   if(this->day_of_week == Date::SATURDAY) {
@@ -230,16 +230,16 @@ void Date::advance(int days){
 
 int Date::get_year(int t) {
 
-  if(t == 0) {
+  if (t == 0) {
   return this->year;
   } else {
-  if(Date::year_vec != NULL && (this->days_since_jan_1_epoch_year + t) < (int)Date::year_vec->size()) {
-      int * temp = & Date::year_vec->at(this->days_since_jan_1_epoch_year + t);
+  if ( (this->days_since_jan_1_epoch_year + t) < (int)Date::year_vec.size() ) {
+      int * temp = & Date::year_vec.at(this->days_since_jan_1_epoch_year + t);
       return * temp;
     } else {
       Date::add_to_vectors(this->days_since_jan_1_epoch_year + t);
 
-      int * temp = & Date::year_vec->at(this->days_since_jan_1_epoch_year + t);
+      int * temp = & Date::year_vec.at(this->days_since_jan_1_epoch_year + t);
       return * temp;
     }
   }
@@ -251,13 +251,13 @@ int Date::get_month(int t) {
   if (t == 0) {
   return this->month;
   } else{
-  if(Date::month_vec != NULL && (this->days_since_jan_1_epoch_year + t) < (int)Date::month_vec->size()) {
-    int * temp = & Date::month_vec->at(this->days_since_jan_1_epoch_year + t);
+  if ( (this->days_since_jan_1_epoch_year + t) < (int)Date::month_vec.size() ) {
+    int * temp = & Date::month_vec.at(this->days_since_jan_1_epoch_year + t);
     return * temp;
   } else {
     Date::add_to_vectors(this->days_since_jan_1_epoch_year + t);
 
-    int * temp = & Date::month_vec->at(this->days_since_jan_1_epoch_year + t);
+    int * temp = & Date::month_vec.at(this->days_since_jan_1_epoch_year + t);
     return * temp;
   }
   }
@@ -338,13 +338,13 @@ int Date::get_day_of_month(int t) {
   if(t == 0) {
   return this->day_of_month;
   } else {
-    if(Date::day_of_month_vec != NULL && (this->days_since_jan_1_epoch_year + t) < (int)Date::day_of_month_vec->size()) {
-      int * temp = & Date::day_of_month_vec->at(this->days_since_jan_1_epoch_year + t);
+    if ( (this->days_since_jan_1_epoch_year + t) < (int)Date::day_of_month_vec.size() ) {
+      int * temp = & Date::day_of_month_vec.at(this->days_since_jan_1_epoch_year + t);
       return * temp;
     } else {
       Date::add_to_vectors(this->days_since_jan_1_epoch_year + t);
 
-      int * temp = & Date::day_of_month_vec->at(this->days_since_jan_1_epoch_year + t);
+      int * temp = & Date::day_of_month_vec.at(this->days_since_jan_1_epoch_year + t);
       return * temp;
     }
   }
@@ -456,10 +456,8 @@ int Date::get_epi_week(int t) {
       epi_week--;
       if (epi_week < 1) {
         //Create a new date that represents the last day of the previous year
-        Date * tmp_date = new Date(future_year - 1, Date::DECEMBER, 31);
-        epi_week = tmp_date->get_epi_week();
-        delete tmp_date;
-
+        Date tmp_date = Date(future_year - 1, Date::DECEMBER, 31);
+        epi_week = tmp_date.get_epi_week();
         return epi_week;
       }
     }
@@ -823,7 +821,7 @@ void Date::initialize_vectors() {
    * tm_year years since 1900
    */
   cur_year = curr_time->tm_year + 1900;
-  min_days_to_reserve = abs(cur_year - Date::EPOCH_START_YEAR + 10) * 366;
+  min_days_to_reserve = abs(cur_year - Date::EPOCH_START_YEAR + 100) * 366;
 
 
   Date::add_to_vectors(min_days_to_reserve);
@@ -835,24 +833,8 @@ void Date::add_to_vectors(int _days_since_jan_1_epoch_year) {
 
   size_t vec_size = (size_t) (_days_since_jan_1_epoch_year + 1);
 
-  //If the vectors do not exist, create now
-  if (Date::year_vec == NULL) {
-    Date::year_vec = new vector<int>;
-    Date::year_vec->reserve(vec_size);
-  }
-
-  if (Date::month_vec == NULL) {
-    Date::month_vec = new vector<int>;
-    Date::month_vec->reserve(vec_size);
-  }
-
-  if (Date::day_of_month_vec == NULL) {
-    Date::day_of_month_vec = new vector<int>;
-    Date::day_of_month_vec->reserve(vec_size);
-  }
-
   //Check to see if the vector is empty
-  size_t current_vec_size = Date::day_of_month_vec->size();
+  size_t current_vec_size = Date::day_of_month_vec.size();
   if (current_vec_size == 0) {
     int current_year = Date::EPOCH_START_YEAR;
     int current_month = Date::JANUARY;
@@ -860,9 +842,9 @@ void Date::add_to_vectors(int _days_since_jan_1_epoch_year) {
 
     for (int i = 0; i <= _days_since_jan_1_epoch_year; i++) {
 
-      Date::year_vec->push_back(current_year);
-      Date::month_vec->push_back(current_month);
-      Date::day_of_month_vec->push_back(current_day_of_month);
+      Date::year_vec.push_back(current_year);
+      Date::month_vec.push_back(current_month);
+      Date::day_of_month_vec.push_back(current_day_of_month);
 
       if (++current_day_of_month >
         Date::day_table[(Date::is_leap_year(current_year) ? 1 : 0)][current_month]) {
@@ -875,9 +857,9 @@ void Date::add_to_vectors(int _days_since_jan_1_epoch_year) {
     }
   } else if (current_vec_size <= (size_t)_days_since_jan_1_epoch_year) {
 
-    int current_year = Date::year_vec->back();
-    int current_month = Date::month_vec->back();
-    int current_day_of_month = Date::day_of_month_vec->back();
+    int current_year = Date::year_vec.back();
+    int current_month = Date::month_vec.back();
+    int current_day_of_month = Date::day_of_month_vec.back();
 
     for (size_t i = 0; i <= ((size_t)_days_since_jan_1_epoch_year - current_vec_size); i++) {
 
@@ -890,9 +872,9 @@ void Date::add_to_vectors(int _days_since_jan_1_epoch_year) {
         }
       }
 
-      Date::year_vec->push_back(current_year);
-      Date::month_vec->push_back(current_month);
-      Date::day_of_month_vec->push_back(current_day_of_month);
+      Date::year_vec.push_back(current_year);
+      Date::month_vec.push_back(current_month);
+      Date::day_of_month_vec.push_back(current_day_of_month);
     }
   }
 

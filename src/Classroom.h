@@ -13,7 +13,7 @@
 #define _FRED_CLASSROOM_H
 
 #include "Place.h"
-
+#include "Random.h"
 /**
  * This class represents a classroom location in the FRED application. It inherits from <code>Place</code>.
  * The class contains many static variables that will be filled with values from the parameter file.
