@@ -1,6 +1,6 @@
 #ifndef lint
 static char Rcs_Id[] =
-    "$Id: fields.c,v 1.2 2012-11-02 19:17:18 depasse Exp $";
+    "$Id: fields.c,v 1.3 2012-11-02 19:32:16 depasse Exp $";
 #endif
 
 /*
