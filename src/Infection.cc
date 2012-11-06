@@ -32,9 +32,6 @@ using std::out_of_range;
 
 Infection::Infection(Disease *disease, Person* infector, Person* host, Place* place, int day) {
  
-  double trajectory_infectivity_threshold = 0.0;
-  double trajectory_symptomaticity_threshold = 0.0;
-
   // flag for health updates
   Global::Pop.set_mask_by_index( fred::Update_Health, host->get_pop_index() );
 
