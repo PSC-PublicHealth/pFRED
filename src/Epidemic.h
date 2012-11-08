@@ -39,6 +39,7 @@ public:
   void print_stats(int day);
 
   void report_age_of_infection(int day);
+  void report_transmission_by_age_group(int day);
   void report_place_of_infection(int day);
   void report_presenteeism(int day);
 

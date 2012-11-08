@@ -304,12 +304,50 @@ void::Epidemic::report_age_of_infection(int day) {
   if (count_infections > 0) { mean_age /= count_infections; }
   Utils::fred_log("\nDay %d INF_AGE: ", day);
   Utils::fred_report(" Age_at_infection %f", mean_age);
-  if (Global::Report_Age_Of_Infection > 1) {
+  if (Global::Report_Age_Of_Infection > 1) { 
+    report_transmission_by_age_group(day); 
+  }
+  if (Global::Report_Age_Of_Infection > 2) {
     for (int i = 0; i <= 20; i++) {
       Utils::fred_report(" A%d %d", i*5, age_count[i]);
     }
   }
   Utils::fred_log("\n");
+}
+
+void::Epidemic::report_transmission_by_age_group(int day) {
+  FILE *fp;
+  char file[1024];
+  sprintf(file, "%s/AGE.%d", Global::Output_directory, day);
+  fp = fopen(file, "w");
+  if (fp == NULL) {
+    Utils::fred_abort("Can't open file to report age transmission matrix\n");
+  }
+  int age_count[100][100];				// age group counts
+  for (int i = 0; i < 100; i++)
+    for (int j = 0; j < 100; j++)
+      age_count[i][j] = 0;
+  int group = 1;
+  int groups = 100 / group;
+  for (int i = 0; i < incident_infections; i++) {
+    Person * infectee = daily_infections_list[i];
+    Person * infector = daily_infections_list[i]->get_infector(0);
+    if (infector == NULL) continue;
+    int a1 = infector->get_age();
+    int a2 = infectee->get_age();
+    if (a1 > 99) a1 = 99;
+    if (a2 > 99) a2 = 99;
+    a1 = a1 / group;
+    a2 = a2 / group;
+    age_count[a1][a2]++;
+  }
+  for (int i = 0; i < groups; i++) {
+    for (int j = 0; j < groups; j++) {
+      fprintf(fp, " %d", age_count[j][i]);
+    }
+    fprintf(fp, "\n");
+  }
+  fclose(fp);
 }
 
 void::Epidemic::report_place_of_infection(int day) {
