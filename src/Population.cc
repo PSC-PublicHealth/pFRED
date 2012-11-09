@@ -409,65 +409,52 @@ void Population::parse_lines_from_stream( std::istream & stream ) {
 void Population::read_population() {
   FRED_STATUS(0, "read population entered\n");
 
-  // read in population
-  char population_file[256];
-  char line[256];
-  bool use_gzip = false;
+  Population::next_id = 0;
 
-  FILE *fp = NULL; 
+  // read in population
+  char population_file[1024];
+  char line[1024];
  
-  sprintf(population_file, "%s/%s/%s_synth_people.txt",
+  // try to open compressed population file
+  sprintf(population_file, "%s/%s/%s_synth_people.txt.fsz",
            Global::Synthetic_population_directory,
            Global::Synthetic_population_id,
            Global::Synthetic_population_id);
-  fp = Utils::fred_open_file(population_file);
 
-  if (fp == NULL) {
-    // try to find the gzipped version
-    char population_file_gz[256];
-    sprintf(population_file_gz, "%s.gz", population_file);
-    if (Utils::fred_open_file(population_file_gz)) {
-      char cmd[256];
-      use_gzip = true;
-      sprintf(cmd, "gunzip -c %s > %s", population_file_gz, population_file);
-      system(cmd);
-      fp = Utils::fred_open_file(population_file);
-    }
-    // gunzip didn't work ...
-    if (fp == NULL) {
-      Utils::fred_abort("population_file %s not found\n", population_file);
-    }
-  }
-  fclose(fp);
-
-  Population::next_id = 0;
-
-  // If it was gzipped, it's now gunzipped...
-  //Utils::get_fred_file_name( population_file );
-  SnappyFileCompression compressor = SnappyFileCompression( population_file );
-  compressor.init_compressed_block_reader();
-  // if we have the magic, then it must be fsz block compressed
-  if ( compressor.check_magic_bytes() ) {
-    // limit to two threads to prevent locking and I/O overhead; also
-    // helps to preserve population order in bloque assignment
-    #pragma omp parallel
-    {
-      std::stringstream stream;
-      while ( compressor.load_next_block_stream( stream ) ) {
-        parse_lines_from_stream( stream );
+  FILE *fp = NULL; 
+  fp = fopen(population_file, "r");
+  if (fp != NULL) {
+    fclose(fp);
+    SnappyFileCompression compressor = SnappyFileCompression( population_file );
+    compressor.init_compressed_block_reader();
+    // if we have the magic, then it must be fsz block compressed
+    if ( compressor.check_magic_bytes() ) {
+      // limit to two threads to prevent locking and I/O overhead; also
+      // helps to preserve population order in bloque assignment
+      #pragma omp parallel
+      {
+	std::stringstream stream;
+	while ( compressor.load_next_block_stream( stream ) ) {
+	  parse_lines_from_stream( stream );
+	}
       }
     }
   }
-  // no magic, must not be fsz compressed, treat as plain text
   else {
+    // try to find the uncompressed file
+    sprintf(population_file, "%s/%s/%s_synth_people.txt",
+	    Global::Synthetic_population_directory,
+	    Global::Synthetic_population_id,
+	    Global::Synthetic_population_id);
+    fp = Utils::fred_open_file(population_file);
+    if (fp == NULL) {
+      Utils::fred_abort("population_file %s not found\n", population_file);
+    }
+    fclose(fp);
     std::ifstream stream ( population_file, ifstream::in );
     parse_lines_from_stream( stream );
   }
 
-  // If we used gunzip, then remove the uncompressed file
-  if (use_gzip) {
-    unlink(population_file);
-  }
   // Read past infections
   char past_infections[256];
   int delay;
@@ -497,7 +484,7 @@ void Population::read_population() {
       }
       fscanf(pifp, "\n");
       Disease *dis = get_disease( dis_id );
-      // TODO person id and index not the same thing! The way that Anuroop did this is
+      // TODO person id and index not the same thing! This is
       // problematic: if the id read in from the past infections file belonged
       // to a person who was born during the simulation, then their id will not yet exist.  As a
       // temporary fix, we can get the person by index since id == index for the initial population.
