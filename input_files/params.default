@@ -81,8 +81,8 @@ output_population_date_match = 01-01-*
 primary_cases_file[0] = $FRED_HOME/input_files/primary_case_schedule-0.txt
 trans[0] = 1.0
 R0 = -1.0
-R0_a = 0.0523213
-R0_b = 0.599227
+R0_a = 0.0445658
+R0_b = 0.606832
 symp[0] = 0.67
 mortality_rate[0] = 0.0
 # infection model: BIFURCATING = 0 , SEQUENTIAL = 1
@@ -123,11 +123,11 @@ birth_rate_multiplier = 1
 # using the bifurcating SEIR model (SEiIR = 0)
 #
 ## VERSION 2 Synthetic Pop:
-###  CALIBRATION PHASE II STEP 6 at Thu Oct  4 14:03:54 2012
-household_contacts[0] = 0.198359
-neighborhood_contacts[0] = 40.971750
-school_contacts[0] = 14.558688
-workplace_contacts[0] = 1.577417
+###  CALIBRATION PHASE II STEP 8 at Fri Nov  9 11:38:43 2012
+household_contacts[0] = 0.198226
+neighborhood_contacts[0] = 42.478577
+school_contacts[0] = 14.320478
+workplace_contacts[0] = 1.589467
 classroom_contacts[0] = -1
 office_contacts[0] = -1
 hospital_contacts[0] = 0
