@@ -422,7 +422,7 @@ void Population::read_population() {
            Global::Synthetic_population_id);
 
   FILE *fp = NULL; 
-  fp = fopen(population_file, "r");
+  fp = Utils::fred_open_file(population_file);
   if (fp != NULL) {
     fclose(fp);
     SnappyFileCompression compressor = SnappyFileCompression( population_file );
