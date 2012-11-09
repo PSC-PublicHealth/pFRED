@@ -15,6 +15,7 @@ all: $(POPS)
 # To create a population directory, run "make X"
 % :: %.zip
 	unzip $< -d $@
+	(cd $@; ../../bin/fsz -c $@_synth_people.txt > $@_synth_people.txt.fsz; cd ..)
 
 # To create a zip file, run "make X.zip"
 %.zip: $(basename %)
