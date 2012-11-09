@@ -26,14 +26,9 @@
 
 ///////////// RANDOM NUMBER GENERATOR UTILITIES //////////////////////
 
-/* Using Marseinne Twister MT19937 by T. Nishimura and M. Matsumoto */
-/* See mt19937ar.c for acknowledgements */
-
-//double genrand_real2();
-//void init_genrand( );
-
-//#define INIT_RANDOM(SEED)   init_gen_rand(SEED)
-//#define RANDOM()        genrand_real2()
+// Using  double precision SIMD oriented Fast Mersenne Twister(dSFMT)
+// by M Saito, T. Nishimura and M. Matsumoto.
+// See FRED/src/PRNG__Mersenne_Twister/dSFMT-src-2.2/LICENSE.txt for acknowledgements.
 
 #define INIT_RANDOM(SEED)   RNG::init(SEED)
 #define RANDOM()        RNG::random_double()
