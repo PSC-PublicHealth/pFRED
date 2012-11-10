@@ -184,7 +184,7 @@ sub add_experiment {
     print EXEC "ch $param $value params.$key\n";
   }
   print EXEC "fred_delete -f -k $key\n";
-  print EXEC "fred_job -k $key -p params.$key -n 10 -m 10\n";
+  print EXEC "fred_job -k $key -p params.$key -n 10 -m 10 -t 2\n";
   print NAV "$key\n";
 }
 

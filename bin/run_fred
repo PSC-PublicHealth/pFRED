@@ -25,7 +25,7 @@ my @arg = @ARGV;
 
 # get command line arguments
 my %options = ();
-getopts("d:p:s:n:", \%options);
+getopts("d:p:s:n:t:", \%options);
 
 my $paramsfile = "params";
 $paramsfile = $options{p} if exists $options{p};
@@ -50,10 +50,14 @@ die $usage if $start_run =~ /\D/;
 $end_run = $start_run if $end_run < $start_run;
 die $usage if $end_run =~ /\D/;
 
+my $threads = 1;
+$threads = $options{t} if exists $options{t};
+my $set_threads = "export OMP_NUM_THREADS=$threads";
+
 my $cmd = "'run_fred @arg'";
 system "echo $cmd > $dir/COMMAND_LINE";
 for my $n ($start_run .. $end_run) {
-  $cmd = "FRED $paramsfile $n $dir 2>&1 > $dir/LOG$n";
+  $cmd = "($set_threads ; FRED $paramsfile $n $dir 2>&1 > $dir/LOG$n)";
   print "$cmd\n";
   system $cmd;
 }

@@ -21,7 +21,7 @@ my $cwd = getcwd();
 my $FRED = $ENV{FRED_HOME};
 die "fred_job: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
-my $usage = "usage: $0 [ -h | -k key | -p paramsfile | -s start_run_number | -n end_run_number | -P | -m cores ]\n";
+my $usage = "usage: $0 [ -h | -k key | -p paramsfile | -s start_run_number | -n end_run_number | -P | -m cores | -t threads]\n";
 my $help = "";
 my $cache = "";
 my $cores = "";
@@ -32,6 +32,7 @@ my $zip = "";
 my $parallel = "";
 my $start_run = "";
 my $end_run = "";
+my $threads = 1;
 my $opt_result = GetOptions(
 			    "c" => \$cache,
 			    "f" => \$force,
@@ -42,6 +43,7 @@ my $opt_result = GetOptions(
 			    "p=s" => \$paramsfile,
 			    "P" => \$parallel,
 			    "s=i" => \$start_run,
+			    "t=i" => \$threads,
 			    "z" => \$zip
 );
 die $usage if $help;
@@ -285,7 +287,8 @@ my $logfile = "$meta/LOG";
 my $version = "$meta/VERSION";
 mkdir $version or die "Can't make directory $version\n";
 `cp -p $FRED/src/FRED.tar.gz $version`;
-`ls -l $FRED/region > ${version}/REGION`;
+`ls -l $FRED/populations > ${version}/POPULATIONS`;
+`ls -l $FRED/input_files > ${version}/INPUT_FILES`;
 
 # return to original directory
 chdir $cwd;
@@ -319,8 +322,8 @@ my $params = "$work/$params_base";
 if (not $parallel) {
   # NOTE: the next part of the script runs in the WORK directory
   chdir $work or die "Can't change to FRED directory $work\n";
-  # print "serial mode: $FRED/bin/run_fred -p $params -d $out -s $start_run -n $end_run\n";
-  system "$FRED/bin/run_fred -p $params -d $out -s $start_run -n $end_run";
+  # print "serial mode: $FRED/bin/run_fred -p $params -d $out -s $start_run -n $end_run -t $threads\n";
+  system "$FRED/bin/run_fred -p $params -d $out -s $start_run -n $end_run -t $threads";
 } else {
   # parallel run
 
@@ -364,7 +367,7 @@ if (not $parallel) {
           exec "pbsdsh -n $run_instance /bin/sh -c \"cd $work && $FRED/bin/FRED $params $fred_instance > $logfilep\"\n";
         } else {
           # run on localhost
-          exec "cd $work && $FRED/bin/FRED $params $fred_instance > $logfilep" ;
+          exec "cd $work && (export OMP_NUM_THREADS=$threads; $FRED/bin/FRED $params $fred_instance > $logfilep)" ;
         }
       }
 
