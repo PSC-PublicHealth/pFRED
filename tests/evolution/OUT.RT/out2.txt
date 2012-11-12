@@ -1,0 +1,10 @@
+Day   0 Date 2010-09-01 Wkday Wed Year 2010 Week 35 Str 0 S 1164779 E     100 I       0 I_s       0 R       0 M       0 C     100 CI       0 AR  0.01 CAR  0.00 RR 0.00 N 1164879
+Day   1 Date 2010-09-02 Wkday Thu Year 2010 Week 35 Str 0 S 1164696 E     103 I      80 I_s      53 R       0 M       0 C      83 CI      53 AR  0.02 CAR  0.00 RR 0.00 N 1164879
+Day   2 Date 2010-09-03 Wkday Fri Year 2010 Week 35 Str 0 S 1164479 E     235 I     165 I_s     114 R       0 M       0 C     217 CI      61 AR  0.03 CAR  0.01 RR 0.00 N 1164879
+Day   3 Date 2010-09-04 Wkday Sat Year 2010 Week 35 Str 0 S 1164217 E     309 I     353 I_s     243 R       0 M       0 C     262 CI     129 AR  0.06 CAR  0.02 RR 0.00 N 1164879
+Day   4 Date 2010-09-05 Wkday Sun Year 2010 Week 36 Str 0 S 1163789 E     474 I     586 I_s     395 R      30 M       0 C     428 CI     176 AR  0.09 CAR  0.04 RR 0.00 N 1164879
+Day   5 Date 2010-09-06 Wkday Mon Year 2010 Week 36 Str 0 S 1162647 E    1244 I     913 I_s     615 R      75 M       0 C    1142 CI     246 AR  0.19 CAR  0.06 RR 0.00 N 1164879
+Day   6 Date 2010-09-07 Wkday Tue Year 2010 Week 36 Str 0 S 1160075 E    2803 I    1818 I_s    1212 R     183 M       0 C    2572 CI     670 AR  0.41 CAR  0.11 RR 0.00 N 1164879
+Day   7 Date 2010-09-08 Wkday Wed Year 2010 Week 36 Str 0 S 1153694 E    6890 I    3930 I_s    2614 R     365 M       0 C    6381 CI    1535 AR  0.96 CAR  0.25 RR 0.00 N 1164879
+Day   8 Date 2010-09-09 Wkday Thu Year 2010 Week 36 Str 0 S 1138256 E   16648 I    9369 I_s    6310 R     606 M       0 C   15438 CI    3853 AR  2.29 CAR  0.58 RR 0.00 N 1164879
+Day   9 Date 2010-09-10 Wkday Fri Year 2010 Week 36 Str 0 S 1104984 E   36354 I   22392 I_s   15025 R    1149 M       0 C   33272 CI    9071 AR  5.14 CAR  1.36 RR 0.00 N 1164879
