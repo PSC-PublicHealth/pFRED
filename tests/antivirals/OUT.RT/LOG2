@@ -1,6 +1,6 @@
-FRED started Fri Nov  9 12:45:46 2012
+FRED started Mon Nov 12 12:56:36 2012
 param file = params.test
-fred_open_file: opening file /Users/gref/FRED/input_files/params.default for reading
+fred_open_file: opening file /Users/jay/prj/midas/fred/FRED/input_files/params.default for reading
 fred_open_file: opening file params.test for reading
 PARAMS: debug = 1
 PARAMS: test = 0
@@ -85,11 +85,11 @@ year = 2012, month = 1, day_of_month = 2
 Date = [2012-01-02]
 seed = 12345601
 
-FRED run 2 started Fri Nov  9 12:45:46 2012
+FRED run 2 started Mon Nov 12 12:56:36 2012
 read places entered
-fred_open_file: opening file /Users/gref/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_households.txt for reading
-fred_open_file: opening file /Users/gref/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_workplaces.txt for reading
-fred_open_file: opening file /Users/gref/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt for reading
+fred_open_file: opening file /Users/jay/prj/midas/fred/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_households.txt for reading
+fred_open_file: opening file /Users/jay/prj/midas/fred/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_workplaces.txt for reading
+fred_open_file: opening file /Users/jay/prj/midas/fred/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt for reading
 FRED_VERBOSE: <Place_List.cc, LINE:218> READ_SCHOOL: S421917000400 S 40.424461 -79.992722 name |GRANDVIEW EL SCH|
 FRED_VERBOSE: <Place_List.cc, LINE:218> READ_SCHOOL: S01905916 S 40.343613 -80.033813 name |HILLCREST CHRISTIAN ACADEMY|
 FRED_VERBOSE: <Place_List.cc, LINE:218> READ_SCHOOL: S01194139 S 40.287746 -80.025528 name |ST JOAN OF ARC SCHOOL|
@@ -622,10 +622,10 @@ FRED_VERBOSE: <Place_List.cc, LINE:218> READ_SCHOOL: S421188000191 S 40.603786 -
 FRED_VERBOSE: <Place_List.cc, LINE:218> READ_SCHOOL: S422520000509 S 40.448895 -80.239716 name |WEST ALLEGHENY SHS|
 FRED_VERBOSE: <Place_List.cc, LINE:218> READ_SCHOOL: SA0502991 S 40.458458 -80.026016 name |GREATER ALLEN CHRISTIAN ACADEMY|
 FRED_VERBOSE: <Place_List.cc, LINE:218> READ_SCHOOL: S421917006080 S 40.468739 -79.931709 name |ROGERS CTR CREAT & PER ARTS|
-PARAMS: household_contacts[0] = 0.198226
+PARAMS: household_contacts[0] = 0.198359
 PARAMS: household_prob[0] = 4
 PARAMS: household_prob[0] = 4 0.6 0.3 0.3 0.4
-PARAMS: school_contacts[0] = 14.320478
+PARAMS: school_contacts[0] = 14.558688
 PARAMS: school_prob[0] = 16
 PARAMS: school_prob[0] = 16 0.0435 0 0 0.0435 0 0.0375 0 0.0375 0 0 0.0315 0.0315 0.0435 0.0375 0.0315 0.0575
 PARAMS: school_classroom_size = 40
@@ -645,7 +645,7 @@ PARAMS: office_size = 50
 PARAMS: small_workplace_size = 50
 PARAMS: medium_workplace_size = 100
 PARAMS: large_workplace_size = 500
-PARAMS: workplace_contacts[0] = 1.589467
+PARAMS: workplace_contacts[0] = 1.577417
 PARAMS: workplace_prob[0] = 1
 PARAMS: workplace_prob[0] = 1 0.0575
 Added  524584        HOUSEHOLD places to Place_List
@@ -677,7 +677,7 @@ Grid min_x = 8740.000000  min_y = 14440.000000
 Grid max_x = 8820.000000  max_y = 14520.000000
 Allocated space for    6400 neighborhoods
 PARAMS: weekend_contact_rate[0] = 1.500000
-PARAMS: neighborhood_contacts[0] = 42.478577
+PARAMS: neighborhood_contacts[0] = 40.971750
 PARAMS: neighborhood_prob[0] = 4
 PARAMS: neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 Added    6400     NEIGHBORHOOD places to Place_List
@@ -759,8 +759,10 @@ Antiviral #0
 		         1 
 
 
+
+AV reduce_infectious_period invalid, must be between 0 and 1.0; is equal to: 3.99371e+252
 read population entered
-fred_open_file: opening file /Users/gref/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt for reading
+fred_open_file: opening file /Users/jay/prj/midas/fred/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt for reading
 PARAMS: number_antivirals = 1
 PARAMS: community_distance = 20.000000
 PARAMS: community_prob = 0.100000
@@ -992,10 +994,10 @@ FRED_VERBOSE: <Behavior.cc, LINE:567> set_adult_decision_maker: No adult is avai
 FRED_VERBOSE: <Behavior.cc, LINE:567> set_adult_decision_maker: No adult is available for child 849409 age 1 FRED_VERBOSE: <Behavior.cc, LINE:569> so new decision maker is agent 849408 age 17
 FRED_VERBOSE: <Behavior.cc, LINE:567> set_adult_decision_maker: No adult is available for child 849410 age 17 FRED_VERBOSE: <Behavior.cc, LINE:569> so new decision maker is agent 849410 age 17
 FRED_VERBOSE: <Behavior.cc, LINE:567> set_adult_decision_maker: No adult is available for child 849411 age 1 FRED_VERBOSE: <Behavior.cc, LINE:569> so new decision maker is agent 849410 age 17
-FRED_VERBOSE: <Population.cc, LINE:507> finished reading population, pop_size = 1164879
+FRED_VERBOSE: <Population.cc, LINE:520> finished reading population, pop_size = 1164879
 number of residually immune people = 0
 population setup finished
-Pop.setup took 4 seconds
+Pop.setup took 5 seconds
 setup classrooms entered
 Allocating space for 7915 classrooms in 532 schools (out of 580219 total places)
 PARAMS: classroom_contacts[0] = -1.000000
@@ -2568,14 +2570,14 @@ Added   53773           OFFICE places to Place_List
 setup offices finished
 assign offices entered
 assign offices finished
-assign offices took 0 seconds
+assign offices took 1 seconds
 prepare places entered
 deleting place_label_map
 prepare places finished
 place prep took 1 seconds
 FRED initialization took 0 seconds
-FRED initialization complete Fri Nov  9 12:45:54 2012
-day 0 update places took 1 seconds
+FRED initialization complete Mon Nov 12 12:56:46 2012
+day 0 update places took 0 seconds
 day 0 update population took 0 seconds
 Number of infectious places        =>         0
 Number of infectious households    =>         0
@@ -2587,9 +2589,9 @@ Number of infectious offices       =>         0
 day 0 update epidemics took 0 seconds
 Day   0 Date 2012-01-02 Wkday Mon Year 2012 Week  1 Str 0 S 1164779 E     100 I       0 I_s       0 R       0 M       0 C     100 CI       0 AR  0.01 CAR  0.00 RR 0.00 N 1164879
 day 0 report population took 0 seconds
-day 0 finished Fri Nov  9 12:45:55 2012
-day 0 took 1 seconds
-day 0 maxrss 840773632
+day 0 finished Mon Nov 12 12:56:46 2012
+day 0 took 0 seconds
+day 0 maxrss 813998080
 day 1 update places took 0 seconds
 day 1 update population took 0 seconds
 DAY 0 ABSENTEEISM: work absent 0 present 0 0.00  school absent 0 present 0 0.00
@@ -2600,4 +2602,301 @@ Number of infectious schools       =>         9
 Number of infectious classrooms    =>         9
 Number of infectious workplaces    =>        26
 Number of infectious offices       =>        27
-day 1 update epidemics took 0 seconds
+day 1 update epidemics took 1 seconds
+Day   1 Date 2012-01-03 Wkday Tue Year 2012 Week  1 Str 0 S 1164744 E      50 I      85 I_s      53 R       0 M       0 C      35 CI      53 AR  0.01 CAR  0.00 RR 0.00 N 1164879
+day 1 report population took 0 seconds
+day 1 finished Mon Nov 12 12:56:47 2012
+day 1 took 1 seconds
+day 1 maxrss 815333376
+day 2 update places took 0 seconds
+day 2 update population took 0 seconds
+DAY 1 ABSENTEEISM: work absent 12 present 13 0.46  school absent 6 present 3 0.60
+Number of infectious places        =>       296
+Number of infectious households    =>       121
+Number of infectious neighborhoods =>        82
+Number of infectious schools       =>        11
+Number of infectious classrooms    =>        11
+Number of infectious workplaces    =>        33
+Number of infectious offices       =>        38
+day 2 update epidemics took 0 seconds
+Day   2 Date 2012-01-04 Wkday Wed Year 2012 Week  1 Str 0 S 1164704 E      49 I     126 I_s      82 R       0 M       0 C      40 CI      29 AR  0.02 CAR  0.01 RR 0.00 N 1164879
+day 2 report population took 0 seconds
+day 2 finished Mon Nov 12 12:56:47 2012
+day 2 took 0 seconds
+day 2 maxrss 816197632
+day 3 update places took 0 seconds
+day 3 update population took 0 seconds
+DAY 2 ABSENTEEISM: work absent 22 present 22 0.49  school absent 8 present 6 0.53
+Number of infectious places        =>       367
+Number of infectious households    =>       154
+Number of infectious neighborhoods =>       109
+Number of infectious schools       =>        12
+Number of infectious classrooms    =>        13
+Number of infectious workplaces    =>        37
+Number of infectious offices       =>        42
+day 3 update epidemics took 1 seconds
+Day   3 Date 2012-01-05 Wkday Thu Year 2012 Week  1 Str 0 S 1164647 E      62 I     170 I_s     114 R       0 M       0 C      57 CI      32 AR  0.02 CAR  0.01 RR 0.00 N 1164879
+day 3 report population took 0 seconds
+day 3 finished Mon Nov 12 12:56:48 2012
+day 3 took 1 seconds
+day 3 maxrss 817078272
+day 4 update places took 0 seconds
+day 4 update population took 0 seconds
+DAY 3 ABSENTEEISM: work absent 27 present 26 0.50  school absent 17 present 16 0.50
+Number of infectious places        =>       419
+Number of infectious households    =>       179
+Number of infectious neighborhoods =>       117
+Number of infectious schools       =>        16
+Number of infectious classrooms    =>        25
+Number of infectious workplaces    =>        38
+Number of infectious offices       =>        44
+day 4 update epidemics took 0 seconds
+Day   4 Date 2012-01-06 Wkday Fri Year 2012 Week  1 Str 0 S 1164582 E      75 I     202 I_s     133 R      20 M       0 C      65 CI      32 AR  0.03 CAR  0.01 RR 0.00 N 1164879
+day 4 report population took 0 seconds
+day 4 finished Mon Nov 12 12:56:48 2012
+day 4 took 0 seconds
+day 4 maxrss 817803264
+day 5 update places took 0 seconds
+day 5 update population took 0 seconds
+DAY 4 ABSENTEEISM: work absent 29 present 27 0.51  school absent 28 present 25 0.52
+Number of infectious places        =>       308
+Number of infectious households    =>       177
+Number of infectious neighborhoods =>       115
+Number of infectious schools       =>         0
+Number of infectious classrooms    =>         0
+Number of infectious workplaces    =>         8
+Number of infectious offices       =>         8
+day 5 update epidemics took 1 seconds
+Day   5 Date 2012-01-07 Wkday Sat Year 2012 Week  1 Str 0 S 1164519 E      77 I     202 I_s     137 R      81 M       0 C      63 CI      43 AR  0.03 CAR  0.02 RR 0.00 N 1164879
+day 5 report population took 0 seconds
+day 5 finished Mon Nov 12 12:56:49 2012
+day 5 took 1 seconds
+day 5 maxrss 818356224
+day 6 update places took 0 seconds
+day 6 update population took 0 seconds
+DAY 5 ABSENTEEISM: work absent 6 present 4 0.55  school absent 0 present 0 0.00
+Number of infectious places        =>       325
+Number of infectious households    =>       179
+Number of infectious neighborhoods =>       122
+Number of infectious schools       =>         0
+Number of infectious classrooms    =>         0
+Number of infectious workplaces    =>        12
+Number of infectious offices       =>        12
+day 6 update epidemics took 0 seconds
+Day   6 Date 2012-01-08 Wkday Sun Year 2012 Week  2 Str 0 S 1164464 E      70 I     224 I_s     145 R     121 M       0 C      55 CI      38 AR  0.04 CAR  0.02 RR 0.00 N 1164879
+day 6 report population took 0 seconds
+day 6 finished Mon Nov 12 12:56:49 2012
+day 6 took 0 seconds
+day 6 maxrss 818573312
+day 7 update places took 0 seconds
+day 7 update population took 0 seconds
+DAY 6 ABSENTEEISM: work absent 5 present 7 0.38  school absent 0 present 0 0.00
+Number of infectious places        =>       473
+Number of infectious households    =>       170
+Number of infectious neighborhoods =>       117
+Number of infectious schools       =>        35
+Number of infectious classrooms    =>        59
+Number of infectious workplaces    =>        44
+Number of infectious offices       =>        48
+day 7 update epidemics took 1 seconds
+Day   7 Date 2012-01-09 Wkday Mon Year 2012 Week  2 Str 0 S 1164357 E     120 I     236 I_s     154 R     166 M       0 C     107 CI      34 AR  0.04 CAR  0.02 RR 0.00 N 1164879
+day 7 report population took 0 seconds
+day 7 finished Mon Nov 12 12:56:50 2012
+day 7 took 1 seconds
+day 7 maxrss 819224576
+day 8 update places took 0 seconds
+day 8 update population took 0 seconds
+DAY 7 ABSENTEEISM: work absent 15 present 30 0.33  school absent 43 present 42 0.50
+Number of infectious places        =>       579
+Number of infectious households    =>       215
+Number of infectious neighborhoods =>       136
+Number of infectious schools       =>        41
+Number of infectious classrooms    =>        68
+Number of infectious workplaces    =>        58
+Number of infectious offices       =>        61
+day 8 update epidemics took 0 seconds
+Day   8 Date 2012-01-10 Wkday Tue Year 2012 Week  2 Str 0 S 1164200 E     180 I     284 I_s     188 R     215 M       0 C     157 CI      67 AR  0.06 CAR  0.03 RR 0.00 N 1164879
+day 8 report population took 0 seconds
+day 8 finished Mon Nov 12 12:56:50 2012
+day 8 took 0 seconds
+day 8 maxrss 819822592
+day 9 update places took 0 seconds
+day 9 update population took 0 seconds
+DAY 8 ABSENTEEISM: work absent 25 present 38 0.39  school absent 47 present 56 0.45
+Number of infectious places        =>       686
+Number of infectious households    =>       278
+Number of infectious neighborhoods =>       169
+Number of infectious schools       =>        42
+Number of infectious classrooms    =>        78
+Number of infectious workplaces    =>        58
+Number of infectious offices       =>        61
+day 9 update epidemics took 1 seconds
+Day   9 Date 2012-01-11 Wkday Wed Year 2012 Week  2 Str 0 S 1163980 E     263 I     348 I_s     240 R     288 M       0 C     220 CI     104 AR  0.08 CAR  0.04 RR 0.00 N 1164879
+day 9 report population took 0 seconds
+day 9 finished Mon Nov 12 12:56:51 2012
+day 9 took 1 seconds
+day 9 maxrss 820322304
+day 10 update places took 0 seconds
+day 10 update population took 0 seconds
+DAY 9 ABSENTEEISM: work absent 29 present 33 0.46  school absent 70 present 80 0.46
+Number of infectious places        =>       951
+Number of infectious households    =>       419
+Number of infectious neighborhoods =>       232
+Number of infectious schools       =>        50
+Number of infectious classrooms    =>       111
+Number of infectious workplaces    =>        68
+Number of infectious offices       =>        71
+day 10 update epidemics took 0 seconds
+Day  10 Date 2012-01-12 Wkday Thu Year 2012 Week  2 Str 0 S 1163677 E     351 I     500 I_s     335 R     351 M       0 C     303 CI     133 AR  0.10 CAR  0.05 RR 0.94 N 1164879
+day 10 report population took 0 seconds
+day 10 finished Mon Nov 12 12:56:51 2012
+day 10 took 0 seconds
+day 10 maxrss 821264384
+day 11 update places took 0 seconds
+day 11 update population took 0 seconds
+DAY 10 ABSENTEEISM: work absent 39 present 39 0.49  school absent 107 present 115 0.48
+Number of infectious places        =>      1294
+Number of infectious households    =>       588
+Number of infectious neighborhoods =>       314
+Number of infectious schools       =>        64
+Number of infectious classrooms    =>       145
+Number of infectious workplaces    =>        89
+Number of infectious offices       =>        94
+day 11 update epidemics took 1 seconds
+Day  11 Date 2012-01-13 Wkday Fri Year 2012 Week  2 Str 0 S 1163275 E     476 I     716 I_s     475 R     412 M       0 C     402 CI     182 AR  0.14 CAR  0.06 RR 1.20 N 1164879
+day 11 report population took 0 seconds
+day 11 finished Mon Nov 12 12:56:52 2012
+day 11 took 1 seconds
+day 11 maxrss 822083584
+day 12 update places took 0 seconds
+day 12 update population took 0 seconds
+DAY 11 ABSENTEEISM: work absent 51 present 57 0.47  school absent 160 present 164 0.49
+Number of infectious places        =>      1329
+Number of infectious households    =>       841
+Number of infectious neighborhoods =>       419
+Number of infectious schools       =>         0
+Number of infectious classrooms    =>         0
+Number of infectious workplaces    =>        34
+Number of infectious offices       =>        35
+day 12 update epidemics took 0 seconds
+Day  12 Date 2012-01-14 Wkday Sat Year 2012 Week  2 Str 0 S 1163007 E     341 I    1031 I_s     687 R     500 M       0 C     268 CI     273 AR  0.16 CAR  0.09 RR 1.80 N 1164879
+day 12 report population took 0 seconds
+day 12 finished Mon Nov 12 12:56:52 2012
+day 12 took 0 seconds
+day 12 maxrss 822870016
+day 13 update places took 0 seconds
+day 13 update population took 0 seconds
+DAY 12 ABSENTEEISM: work absent 17 present 19 0.46  school absent 0 present 0 0.00
+Number of infectious places        =>      1419
+Number of infectious households    =>       883
+Number of infectious neighborhoods =>       445
+Number of infectious schools       =>         0
+Number of infectious classrooms    =>         0
+Number of infectious workplaces    =>        45
+Number of infectious offices       =>        46
+day 13 update epidemics took 1 seconds
+Day  13 Date 2012-01-15 Wkday Sun Year 2012 Week  3 Str 0 S 1162753 E     305 I    1171 I_s     779 R     650 M       0 C     254 CI     189 AR  0.18 CAR  0.10 RR 1.49 N 1164879
+day 13 report population took 0 seconds
+day 13 finished Mon Nov 12 12:56:53 2012
+day 13 took 1 seconds
+day 13 maxrss 823660544
+day 14 update places took 0 seconds
+day 14 update population took 0 seconds
+DAY 13 ABSENTEEISM: work absent 25 present 26 0.48  school absent 0 present 0 0.00
+Number of infectious places        =>      2168
+Number of infectious households    =>       888
+Number of infectious neighborhoods =>       453
+Number of infectious schools       =>       120
+Number of infectious classrooms    =>       285
+Number of infectious workplaces    =>       202
+Number of infectious offices       =>       220
+day 14 update epidemics took 0 seconds
+Day  14 Date 2012-01-16 Wkday Mon Year 2012 Week  3 Str 0 S 1162214 E     584 I    1230 I_s     805 R     851 M       0 C     539 CI     158 AR  0.23 CAR  0.12 RR 1.51 N 1164879
+day 14 report population took 0 seconds
+day 14 finished Mon Nov 12 12:56:53 2012
+day 14 took 0 seconds
+day 14 maxrss 824991744
+day 15 update places took 0 seconds
+day 15 update population took 0 seconds
+DAY 14 ABSENTEEISM: work absent 104 present 118 0.47  school absent 221 present 229 0.49
+Number of infectious places        =>      2558
+Number of infectious households    =>      1105
+Number of infectious neighborhoods =>       507
+Number of infectious schools       =>       131
+Number of infectious classrooms    =>       331
+Number of infectious workplaces    =>       230
+Number of infectious offices       =>       254
+day 15 update epidemics took 1 seconds
+Day  15 Date 2012-01-17 Wkday Tue Year 2012 Week  3 Str 0 S 1161397 E     917 I    1431 I_s     921 R    1134 M       0 C     817 CI     314 AR  0.30 CAR  0.14 RR 1.27 N 1164879
+day 15 report population took 0 seconds
+day 15 finished Mon Nov 12 12:56:54 2012
+day 15 took 1 seconds
+day 15 maxrss 825683968
+day 16 update places took 0 seconds
+day 16 update population took 0 seconds
+DAY 15 ABSENTEEISM: work absent 130 present 147 0.47  school absent 250 present 260 0.49
+Number of infectious places        =>      3255
+Number of infectious households    =>      1503
+Number of infectious neighborhoods =>       648
+Number of infectious schools       =>       147
+Number of infectious classrooms    =>       401
+Number of infectious workplaces    =>       262
+Number of infectious offices       =>       294
+day 16 update epidemics took 0 seconds
+Day  16 Date 2012-01-18 Wkday Wed Year 2012 Week  3 Str 0 S 1160218 E    1358 I    1849 I_s    1216 R    1454 M       0 C    1179 CI     497 AR  0.40 CAR  0.19 RR 2.18 N 1164879
+day 16 report population took 0 seconds
+day 16 finished Mon Nov 12 12:56:54 2012
+day 16 took 0 seconds
+day 16 maxrss 826580992
+day 17 update places took 0 seconds
+day 17 update population took 0 seconds
+DAY 16 ABSENTEEISM: work absent 158 present 178 0.47  school absent 353 present 384 0.48
+Number of infectious places        =>      4447
+Number of infectious households    =>      2196
+Number of infectious neighborhoods =>       812
+Number of infectious schools       =>       184
+Number of infectious classrooms    =>       556
+Number of infectious workplaces    =>       327
+Number of infectious offices       =>       372
+day 17 update epidemics took 1 seconds
+Day  17 Date 2012-01-19 Wkday Thu Year 2012 Week  3 Str 0 S 1158334 E    2093 I    2702 I_s    1770 R    1750 M       0 C    1884 CI     752 AR  0.56 CAR  0.25 RR 2.19 N 1164879
+day 17 report population took 0 seconds
+day 17 finished Mon Nov 12 12:56:55 2012
+day 17 took 1 seconds
+day 17 maxrss 827604992
+day 18 update places took 0 seconds
+day 18 update population took 0 seconds
+DAY 17 ABSENTEEISM: work absent 236 present 212 0.53  school absent 552 present 610 0.47
+Number of infectious places        =>      6350
+Number of infectious households    =>      3354
+Number of infectious neighborhoods =>      1052
+Number of infectious schools       =>       218
+Number of infectious classrooms    =>       782
+Number of infectious workplaces    =>       436
+Number of infectious offices       =>       508
+day 18 update epidemics took 0 seconds
+Day  18 Date 2012-01-20 Wkday Fri Year 2012 Week  3 Str 0 S 1155469 E    3186 I    4097 I_s    2742 R    2127 M       0 C    2865 CI    1206 AR  0.81 CAR  0.36 RR 1.86 N 1164879
+day 18 report population took 0 seconds
+day 18 finished Mon Nov 12 12:56:55 2012
+day 18 took 0 seconds
+day 18 maxrss 828514304
+day 19 update places took 0 seconds
+day 19 update population took 0 seconds
+DAY 18 ABSENTEEISM: work absent 353 present 305 0.54  school absent 910 present 985 0.48
+Number of infectious places        =>      6670
+Number of infectious households    =>      5009
+Number of infectious neighborhoods =>      1239
+Number of infectious schools       =>         0
+Number of infectious classrooms    =>         0
+Number of infectious workplaces    =>       200
+Number of infectious offices       =>       222
+day 19 update epidemics took 1 seconds
+Day  19 Date 2012-01-21 Wkday Sat Year 2012 Week  3 Str 0 S 1153696 E    2362 I    6178 I_s    4164 R    2643 M       0 C    1773 CI    1760 AR  0.96 CAR  0.51 RR 1.79 N 1164879
+day 19 report population took 0 seconds
+day 19 finished Mon Nov 12 12:56:56 2012
+day 19 took 1 seconds
+day 19 maxrss 828923904
+
+FRED simulation complete. Excluding initialization, 20 days took 10 seconds
+FRED finished Mon Nov 12 12:56:56 2012
+FRED took 20 seconds
