@@ -32,7 +32,7 @@
 #include "Past_Infection.h"
 #include "Utils.h"
 
-int nantivirals = -1; 
+int Health::nantivirals = -1; 
 char dummy_label[8];
 
 // Enumerate flags corresponding to positions in
@@ -72,13 +72,13 @@ Health::Health (Person * person) {
     }
   }
 
-  if(nantivirals == -1) {
-    Params::get_param_from_string("number_antivirals",&nantivirals);
-  }
-
   vaccine_health = NULL;
   av_health = NULL;
   checked_for_av = NULL;
+
+  if ( Health::nantivirals == -1 ) {
+    Params::get_param_from_string("number_antivirals", &Health::nantivirals );
+  }
 }
 
 Health::~Health() {
@@ -440,9 +440,11 @@ void Health::take_vaccine( Person * self, Vaccine* vaccine, int day, Vaccine_Man
 }
 
 void Health::take(Antiviral* av, int day) {
-  if ( checked_for_av == NULL || av_health == NULL ) {
+  if ( checked_for_av == NULL ) {
     checked_for_av = new checked_for_av_type();
     checked_for_av->assign( nantivirals, false );
+  }
+  if ( av_health == NULL ) {
     av_health = new av_health_type();
   }
   av_health->push_back(new AV_Health(day,av,this));

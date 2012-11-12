@@ -34,6 +34,9 @@ class Vaccine_Manager;
 //class Past_Infection;
 
 class Health {
+
+  static int nantivirals;
+
 public:
 
   /**
@@ -316,7 +319,10 @@ public:
    * @param s the index of the av to set
    */
   void flip_checked_for_av(int s) {
-    assert( checked_for_av != NULL );
+    if ( checked_for_av == NULL ) {
+      checked_for_av = new checked_for_av_type();
+      checked_for_av->assign( nantivirals, false ); 
+    }
     (*checked_for_av)[ s ] = 1;
   }
 
