@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>FRED: Vaccine_Manager.h File Reference</title>
+<title>Vaccine_Manager.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -17,6 +17,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li id="searchli">
@@ -54,21 +55,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <code>#include &lt;list&gt;</code><br/>
 <code>#include &lt;vector&gt;</code><br/>
+<code>#include &lt;string&gt;</code><br/>
 <code>#include &quot;<a class="el" href="_manager_8h_source.html">Manager.h</a>&quot;</code><br/>
-<div class="dynheader">
-Include dependency graph for Vaccine_Manager.h:</div>
-<div class="dyncontent">
-<div class="center"><img src="_vaccine___manager_8h__incl.png" border="0" usemap="#_vaccine___manager_8h" alt=""/></div>
-<map name="_vaccine___manager_8h" id="_vaccine___manager_8h">
-<area shape="rect" href="_manager_8h.html" title="Manager.h" alt="" coords="124,84,223,111"/></map>
-</div>
-<div class="dynheader">
-This graph shows which files directly or indirectly include this file:</div>
-<div class="dyncontent">
-<div class="center"><img src="_vaccine___manager_8h__dep__incl.png" border="0" usemap="#_vaccine___manager_8hdep" alt=""/></div>
-<map name="_vaccine___manager_8hdep" id="_vaccine___manager_8hdep">
-<area shape="rect" href="_behavior_8cc.html" title="Behavior.cc" alt="" coords="5,84,109,111"/><area shape="rect" href="_fred_8cc.html" title="Fred.cc" alt="" coords="133,84,205,111"/><area shape="rect" href="_population_8cc.html" title="Population.cc" alt="" coords="229,84,347,111"/><area shape="rect" href="_vaccine___manager_8cc.html" title="Vaccine_Manager.cc" alt="" coords="371,84,539,111"/><area shape="rect" href="_vaccine___priority___decisions_8cc.html" title="Vaccine_Priority_Decisions.cc" alt="" coords="563,84,792,111"/><area shape="rect" href="_vaccine___priority___policies_8cc.html" title="Vaccine_Priority_Policies.cc" alt="" coords="816,84,1029,111"/></map>
-</div>
 
 <p><a href="_vaccine___manager_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -79,14 +67,84 @@ Classes</h2></td></tr>
 Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_vaccine___manager_8h.html#ac32b8bffff30885595942f810b0fa735">VACC_NO_PRIORITY</a>&nbsp;&nbsp;&nbsp;0</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_vaccine___manager_8h.html#ab9603d540d33e8637e834213bec1592f">VACC_AGE_PRIORITY</a>&nbsp;&nbsp;&nbsp;1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_vaccine___manager_8h.html#aa9a354d6ad9cf9a70d7918fa3fc18277">VACC_ACIP_PRIORITY</a>&nbsp;&nbsp;&nbsp;2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_vaccine___manager_8h.html#ad26a8564ae36354ac7d3cce6683d4964">VACC_DOSE_NO_PRIORITY</a>&nbsp;&nbsp;&nbsp;0</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_vaccine___manager_8h.html#a8bce6f980bc4fa539a6b7fefdb39f0bd">VACC_DOSE_FIRST_PRIORITY</a>&nbsp;&nbsp;&nbsp;1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_vaccine___manager_8h.html#a5cc30c2cdd41661f054129d55356382d">VACC_DOSE_RAND_PRIORITY</a>&nbsp;&nbsp;&nbsp;2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_vaccine___manager_8h.html#ac21d0c814deffbad17e64d040304e6f7">VACC_DOSE_LAST_PRIORITY</a>&nbsp;&nbsp;&nbsp;3</td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
+<a class="anchor" id="aa9a354d6ad9cf9a70d7918fa3fc18277"></a><!-- doxytag: member="Vaccine_Manager.h::VACC_ACIP_PRIORITY" ref="aa9a354d6ad9cf9a70d7918fa3fc18277" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VACC_ACIP_PRIORITY&nbsp;&nbsp;&nbsp;2</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="ab9603d540d33e8637e834213bec1592f"></a><!-- doxytag: member="Vaccine_Manager.h::VACC_AGE_PRIORITY" ref="ab9603d540d33e8637e834213bec1592f" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">#define VACC_AGE_PRIORITY&nbsp;&nbsp;&nbsp;1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a8bce6f980bc4fa539a6b7fefdb39f0bd"></a><!-- doxytag: member="Vaccine_Manager.h::VACC_DOSE_FIRST_PRIORITY" ref="a8bce6f980bc4fa539a6b7fefdb39f0bd" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VACC_DOSE_FIRST_PRIORITY&nbsp;&nbsp;&nbsp;1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ac21d0c814deffbad17e64d040304e6f7"></a><!-- doxytag: member="Vaccine_Manager.h::VACC_DOSE_LAST_PRIORITY" ref="ac21d0c814deffbad17e64d040304e6f7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VACC_DOSE_LAST_PRIORITY&nbsp;&nbsp;&nbsp;3</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ad26a8564ae36354ac7d3cce6683d4964"></a><!-- doxytag: member="Vaccine_Manager.h::VACC_DOSE_NO_PRIORITY" ref="ad26a8564ae36354ac7d3cce6683d4964" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VACC_DOSE_NO_PRIORITY&nbsp;&nbsp;&nbsp;0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a5cc30c2cdd41661f054129d55356382d"></a><!-- doxytag: member="Vaccine_Manager.h::VACC_DOSE_RAND_PRIORITY" ref="a5cc30c2cdd41661f054129d55356382d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VACC_DOSE_RAND_PRIORITY&nbsp;&nbsp;&nbsp;2</td>
         </tr>
       </table>
 </div>
@@ -113,7 +171,7 @@ Defines</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&nbsp;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -122,7 +180,7 @@ Defines</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Sep 16 2010 15:00:23 for FRED by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Nov 13 2012 10:25:05 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>

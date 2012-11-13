@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>FRED: Population.cc File Reference</title>
+<title>Population.cc File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -17,6 +17,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li id="searchli">
@@ -55,12 +56,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <code>#include &lt;new&gt;</code><br/>
 <code>#include &lt;string&gt;</code><br/>
 <code>#include &lt;sstream&gt;</code><br/>
+<code>#include &lt;fstream&gt;</code><br/>
 <code>#include &quot;<a class="el" href="_population_8h_source.html">Population.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_params_8h_source.html">Params.h</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="_profile_8h_source.html">Profile.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_global_8h_source.html">Global.h</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="_locations_8h_source.html">Locations.h</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="_strain_8h_source.html">Strain.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_place___list_8h_source.html">Place_List.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_household_8h_source.html">Household.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_disease_8h_source.html">Disease.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_person_8h_source.html">Person.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_demographics_8h_source.html">Demographics.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_manager_8h_source.html">Manager.h</a>&quot;</code><br/>
@@ -68,26 +70,30 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <code>#include &quot;<a class="el" href="_vaccine___manager_8h_source.html">Vaccine_Manager.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_age___map_8h_source.html">Age_Map.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_random_8h_source.html">Random.h</a>&quot;</code><br/>
-<div class="dynheader">
-Include dependency graph for Population.cc:</div>
-<div class="dyncontent">
-<div class="center"><img src="_population_8cc__incl.png" border="0" usemap="#_population_8cc" alt=""/></div>
-<map name="_population_8cc" id="_population_8cc">
-<area shape="rect" href="_population_8h.html" title="Population.h" alt="" coords="421,316,533,343"/><area shape="rect" href="_global_8h.html" title="Global.h" alt="" coords="168,393,248,420"/><area shape="rect" href="_params_8h.html" title="Params.h" alt="" coords="884,316,972,343"/><area shape="rect" href="_profile_8h.html" title="Profile.h" alt="" coords="709,84,789,111"/><area shape="rect" href="_locations_8h.html" title="Locations.h" alt="" coords="813,84,917,111"/><area shape="rect" href="_strain_8h.html" title="Strain.h" alt="" coords="185,239,263,265"/><area shape="rect" href="_person_8h.html" title="Person.h" alt="" coords="501,84,584,111"/><area shape="rect" href="_demographics_8h.html" title="Demographics.h" alt="" coords="1043,84,1181,111"/><area shape="rect" href="_manager_8h.html" title="Manager.h" alt="" coords="1369,316,1468,343"/><area shape="rect" href="_a_v___manager_8h.html" title="AV_Manager.h" alt="" coords="1497,239,1620,265"/><area shape="rect" href="_vaccine___manager_8h.html" title="Vaccine_Manager.h" alt="" coords="1132,239,1295,265"/><area shape="rect" href="_age___map_8h.html" title="Age_Map.h" alt="" coords="776,239,875,265"/><area shape="rect" href="_random_8h.html" title="Random.h" alt="" coords="1307,84,1403,111"/><area shape="rect" href="_epidemic_8h.html" title="Epidemic.h" alt="" coords="296,316,397,343"/><area shape="rect" href="_behavior_8h.html" title="Behavior.h" alt="" coords="276,161,375,188"/><area shape="rect" href="_health_8h.html" title="Health.h" alt="" coords="419,161,501,188"/><area shape="rect" href="_infection_8h.html" title="Infection.h" alt="" coords="367,239,465,265"/><area shape="rect" href="_antivirals_8h.html" title="Antivirals.h" alt="" coords="1497,316,1596,343"/></map>
-</div>
+<code>#include &quot;<a class="el" href="_date_8h_source.html">Date.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_travel_8h_source.html">Travel.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_utils_8h_source.html">Utils.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_past___infection_8h_source.html">Past_Infection.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_evolution_8h_source.html">Evolution.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_activities_8h_source.html">Activities.h</a>&quot;</code><br/>
+<code>#include &lt;snappy.h&gt;</code><br/>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_population.html">Population</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_population_8cc.html#a0556c62769c0b2c1b70a928e34c9bd00">Pop</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_population_8cc.html#a31993e1b0a2adeb2e6d245d4f2ef7851">V_count</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">char **&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_population_8cc.html#a81d2f1d85b82557c46914d24e42d87e7">pstring</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_population_8cc.html#ac82de3536218b1e84cab21dbaddbb5bf">age_count_male</a> [<a class="el" href="class_demographics.html#a0ff44051ac41aa8c512cbca91857ce1d">Demographics::MAX_AGE</a>+1]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_population_8cc.html#a40c1888e1d2744d3ea42162214d51f99">age_count_female</a> [<a class="el" href="class_demographics.html#a0ff44051ac41aa8c512cbca91857ce1d">Demographics::MAX_AGE</a>+1]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_population_8cc.html#a88efeee1b3ef971b5660c88a5c4d8a1e">birth_count</a> [<a class="el" href="class_demographics.html#a0ff44051ac41aa8c512cbca91857ce1d">Demographics::MAX_AGE</a>+1]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_population_8cc.html#a60921f56671f3664fdae6188a26315ae">death_count_male</a> [<a class="el" href="class_demographics.html#a0ff44051ac41aa8c512cbca91857ce1d">Demographics::MAX_AGE</a>+1]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_population_8cc.html#a40683736a02abed555c94f9595af9ae4">death_count_female</a> [<a class="el" href="class_demographics.html#a0ff44051ac41aa8c512cbca91857ce1d">Demographics::MAX_AGE</a>+1]</td></tr>
 </table>
 <hr/><h2>Variable Documentation</h2>
-<a class="anchor" id="a0556c62769c0b2c1b70a928e34c9bd00"></a><!-- doxytag: member="Population.cc::Pop" ref="a0556c62769c0b2c1b70a928e34c9bd00" args="" -->
+<a class="anchor" id="a40c1888e1d2744d3ea42162214d51f99"></a><!-- doxytag: member="Population.cc::age_count_female" ref="a40c1888e1d2744d3ea42162214d51f99" args="[Demographics::MAX_AGE+1]" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_population.html">Population</a> <a class="el" href="_population_8cc.html#a0556c62769c0b2c1b70a928e34c9bd00">Pop</a></td>
+          <td class="memname">int <a class="el" href="_population_8cc.html#a40c1888e1d2744d3ea42162214d51f99">age_count_female</a>[<a class="el" href="class_demographics.html#a0ff44051ac41aa8c512cbca91857ce1d">Demographics::MAX_AGE</a>+1]</td>
         </tr>
       </table>
 </div>
@@ -95,12 +101,64 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a31993e1b0a2adeb2e6d245d4f2ef7851"></a><!-- doxytag: member="Population.cc::V_count" ref="a31993e1b0a2adeb2e6d245d4f2ef7851" args="" -->
+<a class="anchor" id="ac82de3536218b1e84cab21dbaddbb5bf"></a><!-- doxytag: member="Population.cc::age_count_male" ref="ac82de3536218b1e84cab21dbaddbb5bf" args="[Demographics::MAX_AGE+1]" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int <a class="el" href="_population_8cc.html#a31993e1b0a2adeb2e6d245d4f2ef7851">V_count</a></td>
+          <td class="memname">int <a class="el" href="_population_8cc.html#ac82de3536218b1e84cab21dbaddbb5bf">age_count_male</a>[<a class="el" href="class_demographics.html#a0ff44051ac41aa8c512cbca91857ce1d">Demographics::MAX_AGE</a>+1]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a88efeee1b3ef971b5660c88a5c4d8a1e"></a><!-- doxytag: member="Population.cc::birth_count" ref="a88efeee1b3ef971b5660c88a5c4d8a1e" args="[Demographics::MAX_AGE+1]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="_population_8cc.html#a88efeee1b3ef971b5660c88a5c4d8a1e">birth_count</a>[<a class="el" href="class_demographics.html#a0ff44051ac41aa8c512cbca91857ce1d">Demographics::MAX_AGE</a>+1]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a40683736a02abed555c94f9595af9ae4"></a><!-- doxytag: member="Population.cc::death_count_female" ref="a40683736a02abed555c94f9595af9ae4" args="[Demographics::MAX_AGE+1]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="_population_8cc.html#a40683736a02abed555c94f9595af9ae4">death_count_female</a>[<a class="el" href="class_demographics.html#a0ff44051ac41aa8c512cbca91857ce1d">Demographics::MAX_AGE</a>+1]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a60921f56671f3664fdae6188a26315ae"></a><!-- doxytag: member="Population.cc::death_count_male" ref="a60921f56671f3664fdae6188a26315ae" args="[Demographics::MAX_AGE+1]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="_population_8cc.html#a60921f56671f3664fdae6188a26315ae">death_count_male</a>[<a class="el" href="class_demographics.html#a0ff44051ac41aa8c512cbca91857ce1d">Demographics::MAX_AGE</a>+1]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a81d2f1d85b82557c46914d24e42d87e7"></a><!-- doxytag: member="Population.cc::pstring" ref="a81d2f1d85b82557c46914d24e42d87e7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char** <a class="el" href="_population_8cc.html#a81d2f1d85b82557c46914d24e42d87e7">pstring</a></td>
         </tr>
       </table>
 </div>
@@ -114,7 +172,7 @@ Variables</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&nbsp;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -123,7 +181,7 @@ Variables</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Sep 16 2010 15:00:22 for FRED by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Nov 13 2012 10:25:05 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>

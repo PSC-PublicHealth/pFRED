@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>FRED: Infection.cc File Reference</title>
+<title>Infection.cc File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -17,6 +17,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li id="searchli">
@@ -51,20 +52,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <code>#include &lt;stdexcept&gt;</code><br/>
 <code>#include &quot;limits.h&quot;</code><br/>
+<code>#include &lt;map&gt;</code><br/>
+<code>#include &lt;vector&gt;</code><br/>
+<code>#include &lt;float.h&gt;</code><br/>
 <code>#include &quot;<a class="el" href="_infection_8h_source.html">Infection.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_evolution_8h_source.html">Evolution.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_transmission_8h_source.html">Transmission.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_global_8h_source.html">Global.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_person_8h_source.html">Person.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_place_8h_source.html">Place.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_workplace_8h_source.html">Workplace.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_random_8h_source.html">Random.h</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="_strain_8h_source.html">Strain.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_disease_8h_source.html">Disease.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_health_8h_source.html">Health.h</a>&quot;</code><br/>
-<div class="dynheader">
-Include dependency graph for Infection.cc:</div>
-<div class="dyncontent">
-<div class="center"><img src="_infection_8cc__incl.png" border="0" usemap="#_infection_8cc" alt=""/></div>
-<map name="_infection_8cc" id="_infection_8cc">
-<area shape="rect" href="_infection_8h.html" title="Infection.h" alt="" coords="1308,239,1407,265"/><area shape="rect" href="_global_8h.html" title="Global.h" alt="" coords="1143,393,1223,420"/><area shape="rect" href="_person_8h.html" title="Person.h" alt="" coords="963,84,1045,111"/><area shape="rect" href="_health_8h.html" title="Health.h" alt="" coords="1135,161,1217,188"/><area shape="rect" href="_strain_8h.html" title="Strain.h" alt="" coords="1207,239,1284,265"/><area shape="rect" href="_place_8h.html" title="Place.h" alt="" coords="604,239,676,265"/><area shape="rect" href="_random_8h.html" title="Random.h" alt="" coords="232,84,328,111"/><area shape="rect" href="_behavior_8h.html" title="Behavior.h" alt="" coords="1084,239,1183,265"/><area shape="rect" href="_epidemic_8h.html" title="Epidemic.h" alt="" coords="904,316,1005,343"/><area shape="rect" href="_population_8h.html" title="Population.h" alt="" coords="717,316,829,343"/></map>
-</div>
+<code>#include &quot;<a class="el" href="_intra_host_8h_source.html">IntraHost.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_activities_8h_source.html">Activities.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_utils_8h_source.html">Utils.h</a>&quot;</code><br/>
 <table class="memberdecls">
 </table>
 </div>
@@ -73,7 +76,7 @@ Include dependency graph for Infection.cc:</div>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&nbsp;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -82,7 +85,7 @@ Include dependency graph for Infection.cc:</div>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Sep 16 2010 15:00:22 for FRED by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Nov 13 2012 10:25:05 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>

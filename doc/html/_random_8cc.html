@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>FRED: Random.cc File Reference</title>
+<title>Random.cc File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -17,6 +17,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li id="searchli">
@@ -47,99 +48,38 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#define-members">Defines</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <h1>Random.cc File Reference</h1>  </div>
 </div>
 <div class="contents">
+<code>#include &lt;limits&gt;</code><br/>
 <code>#include &lt;vector&gt;</code><br/>
-<code>#include &quot;<a class="el" href="_random_8h_source.html">Random.h</a>&quot;</code><br/>
+<code>#include &lt;bitset&gt;</code><br/>
 <code>#include &lt;stdio.h&gt;</code><br/>
-<div class="dynheader">
-Include dependency graph for Random.cc:</div>
-<div class="dyncontent">
-<div class="center"><img src="_random_8cc__incl.png" border="0" usemap="#_random_8cc" alt=""/></div>
-<map name="_random_8cc" id="_random_8cc">
-<area shape="rect" href="_random_8h.html" title="Random.h" alt="" coords="76,84,172,111"/></map>
-</div>
+<code>#include &quot;<a class="el" href="_random_8h_source.html">Random.h</a>&quot;</code><br/>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="define-members"></a>
 Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a4912c64aec0c943b7985db6cb61ff83a">TWOPI</a>&nbsp;&nbsp;&nbsp;(2.0*3.141592653589)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a0240ac851181b84ac374872dc5434ee4">N</a>&nbsp;&nbsp;&nbsp;624</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a52037c938e3c1b126c6277da5ca689d0">M</a>&nbsp;&nbsp;&nbsp;397</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a376c3581bae3c2367fc9ce694e5a8949">MATRIX_A</a>&nbsp;&nbsp;&nbsp;0x9908b0dfUL</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a39bc458849360f8f371b54c4365d397f">UPPER_MASK</a>&nbsp;&nbsp;&nbsp;0x80000000UL</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a4ddd8cab3564b7a86a4b0e52ba08f70e">LOWER_MASK</a>&nbsp;&nbsp;&nbsp;0x7fffffffUL</td></tr>
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a09e9dfa3d19d114567ccd0406e5ddb7e">draw_from_distribution</a> (int n, double *dist)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#afac44fbdfd530f3a8504d8a8a786c6b3">draw_exponential</a> (double lambda)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a425c19150de3b08ff3b8f619ee6a34aa">draw_standard_normal</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a4c010ed81ca4123d5465861b00e3de6e">draw_normal</a> (double mu, double sigma)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a3c4cb47efe8742a82b6783e9b25408e7">draw_from_cdf</a> (double *v, int size)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a5a2ebe136269f850e484070dbf8d2961">draw_from_cdf_vector</a> (const vector&lt; double &gt; &amp;v)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#ad72573ecd7d8489d92b88a6a66468d6f">draw_poisson</a> (double lambda)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a57af1d02a3fb56a949fb4c258f0bc066">init_genrand</a> (unsigned long s)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#ac1283f9b1ed571332f5ffe53545ffc16">init_by_array</a> (unsigned long init_key[], int key_length)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">unsigned long&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a9e07396fdf9152bab4f208a03b5d6498">genrand_int32</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">long&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a916053356793b62143a269f47909a448">genrand_int31</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a47436480d62d1fe817856e99d2abf889">genrand_real1</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#aba62640e476eb86ecd383e1519e9b310">genrand_real2</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a0116b0187e1c06a9dfd139b7a57d831d">genrand_real3</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a804b7f38a79bc767f01d1d34c1e4ba5c">genrand_res53</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#ae5557f74a3cfb028b4d303d9285e338e">binomial_coefficient</a> (int n, int k)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#aa8a8f451a3db8ef17608d9772b5d9a8f">build_binomial_cdf</a> (double p, int n, std::vector&lt; double &gt; &amp;cdf)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a00bafdabc3e35ba78a0bd4a3cf2722ce">sample_range_without_replacement</a> (int N, int s, int *result)</td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_r_n_g___state.html">RNG_State</a>&lt; 8192, 1024, 1024, 2048 &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_random_8cc.html#a1b790ba6935fd711064348bd1957c4bb">rng_state</a> [<a class="el" href="class_global.html#a792b245c29921243482df9c9e2a1b7ad">Global::MAX_NUM_THREADS</a>]</td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
-<a class="anchor" id="a4ddd8cab3564b7a86a4b0e52ba08f70e"></a><!-- doxytag: member="Random.cc::LOWER_MASK" ref="a4ddd8cab3564b7a86a4b0e52ba08f70e" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define LOWER_MASK&nbsp;&nbsp;&nbsp;0x7fffffffUL</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a52037c938e3c1b126c6277da5ca689d0"></a><!-- doxytag: member="Random.cc::M" ref="a52037c938e3c1b126c6277da5ca689d0" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define M&nbsp;&nbsp;&nbsp;397</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a376c3581bae3c2367fc9ce694e5a8949"></a><!-- doxytag: member="Random.cc::MATRIX_A" ref="a376c3581bae3c2367fc9ce694e5a8949" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MATRIX_A&nbsp;&nbsp;&nbsp;0x9908b0dfUL</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a0240ac851181b84ac374872dc5434ee4"></a><!-- doxytag: member="Random.cc::N" ref="a0240ac851181b84ac374872dc5434ee4" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define N&nbsp;&nbsp;&nbsp;624</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
 <a class="anchor" id="a4912c64aec0c943b7985db6cb61ff83a"></a><!-- doxytag: member="Random.cc::TWOPI" ref="a4912c64aec0c943b7985db6cb61ff83a" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -153,12 +93,27 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a39bc458849360f8f371b54c4365d397f"></a><!-- doxytag: member="Random.cc::UPPER_MASK" ref="a39bc458849360f8f371b54c4365d397f" args="" -->
+<hr/><h2>Function Documentation</h2>
+<a class="anchor" id="ae5557f74a3cfb028b4d303d9285e338e"></a><!-- doxytag: member="Random.cc::binomial_coefficient" ref="ae5557f74a3cfb028b4d303d9285e338e" args="(int n, int k)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define UPPER_MASK&nbsp;&nbsp;&nbsp;0x80000000UL</td>
+          <td class="memname">double binomial_coefficient </td>
+          <td>(</td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>k</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
         </tr>
       </table>
 </div>
@@ -166,7 +121,39 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<hr/><h2>Function Documentation</h2>
+<a class="anchor" id="aa8a8f451a3db8ef17608d9772b5d9a8f"></a><!-- doxytag: member="Random.cc::build_binomial_cdf" ref="aa8a8f451a3db8ef17608d9772b5d9a8f" args="(double p, int n, std::vector&lt; double &gt; &amp;cdf)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void build_binomial_cdf </td>
+          <td>(</td>
+          <td class="paramtype">double&nbsp;</td>
+          <td class="paramname"> <em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>cdf</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="afac44fbdfd530f3a8504d8a8a786c6b3"></a><!-- doxytag: member="Random.cc::draw_exponential" ref="afac44fbdfd530f3a8504d8a8a786c6b3" args="(double lambda)" -->
 <div class="memitem">
 <div class="memproto">
@@ -176,6 +163,51 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">double&nbsp;</td>
           <td class="paramname"> <em>lambda</em></td>
+          <td>&nbsp;)&nbsp;</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a3c4cb47efe8742a82b6783e9b25408e7"></a><!-- doxytag: member="Random.cc::draw_from_cdf" ref="a3c4cb47efe8742a82b6783e9b25408e7" args="(double *v, int size)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int draw_from_cdf </td>
+          <td>(</td>
+          <td class="paramtype">double *&nbsp;</td>
+          <td class="paramname"> <em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>size</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a5a2ebe136269f850e484070dbf8d2961"></a><!-- doxytag: member="Random.cc::draw_from_cdf_vector" ref="a5a2ebe136269f850e484070dbf8d2961" args="(const vector&lt; double &gt; &amp;v)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int draw_from_cdf_vector </td>
+          <td>(</td>
+          <td class="paramtype">const vector&lt; double &gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>v</em></td>
           <td>&nbsp;)&nbsp;</td>
           <td></td>
         </tr>
@@ -274,129 +306,27 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a916053356793b62143a269f47909a448"></a><!-- doxytag: member="Random.cc::genrand_int31" ref="a916053356793b62143a269f47909a448" args="()" -->
+<a class="anchor" id="a00bafdabc3e35ba78a0bd4a3cf2722ce"></a><!-- doxytag: member="Random.cc::sample_range_without_replacement" ref="a00bafdabc3e35ba78a0bd4a3cf2722ce" args="(int N, int s, int *result)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">long genrand_int31 </td>
+          <td class="memname">void sample_range_without_replacement </td>
           <td>(</td>
-          <td class="paramtype">void&nbsp;</td>
-          <td class="paramname"></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a9e07396fdf9152bab4f208a03b5d6498"></a><!-- doxytag: member="Random.cc::genrand_int32" ref="a9e07396fdf9152bab4f208a03b5d6498" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">unsigned long genrand_int32 </td>
-          <td>(</td>
-          <td class="paramtype">void&nbsp;</td>
-          <td class="paramname"></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a47436480d62d1fe817856e99d2abf889"></a><!-- doxytag: member="Random.cc::genrand_real1" ref="a47436480d62d1fe817856e99d2abf889" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double genrand_real1 </td>
-          <td>(</td>
-          <td class="paramtype">void&nbsp;</td>
-          <td class="paramname"></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="aba62640e476eb86ecd383e1519e9b310"></a><!-- doxytag: member="Random.cc::genrand_real2" ref="aba62640e476eb86ecd383e1519e9b310" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double genrand_real2 </td>
-          <td>(</td>
-          <td class="paramtype">void&nbsp;</td>
-          <td class="paramname"></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a0116b0187e1c06a9dfd139b7a57d831d"></a><!-- doxytag: member="Random.cc::genrand_real3" ref="a0116b0187e1c06a9dfd139b7a57d831d" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double genrand_real3 </td>
-          <td>(</td>
-          <td class="paramtype">void&nbsp;</td>
-          <td class="paramname"></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a804b7f38a79bc767f01d1d34c1e4ba5c"></a><!-- doxytag: member="Random.cc::genrand_res53" ref="a804b7f38a79bc767f01d1d34c1e4ba5c" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double genrand_res53 </td>
-          <td>(</td>
-          <td class="paramtype">void&nbsp;</td>
-          <td class="paramname"></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="ac1283f9b1ed571332f5ffe53545ffc16"></a><!-- doxytag: member="Random.cc::init_by_array" ref="ac1283f9b1ed571332f5ffe53545ffc16" args="(unsigned long init_key[], int key_length)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void init_by_array </td>
-          <td>(</td>
-          <td class="paramtype">unsigned long&nbsp;</td>
-          <td class="paramname"> <em>init_key</em>[], </td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>N</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>key_length</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&nbsp;</td>
+          <td class="paramname"> <em>result</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -409,17 +339,13 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a57af1d02a3fb56a949fb4c258f0bc066"></a><!-- doxytag: member="Random.cc::init_genrand" ref="a57af1d02a3fb56a949fb4c258f0bc066" args="(unsigned long s)" -->
+<hr/><h2>Variable Documentation</h2>
+<a class="anchor" id="a1b790ba6935fd711064348bd1957c4bb"></a><!-- doxytag: member="Random.cc::rng_state" ref="a1b790ba6935fd711064348bd1957c4bb" args="[Global::MAX_NUM_THREADS]" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void init_genrand </td>
-          <td>(</td>
-          <td class="paramtype">unsigned long&nbsp;</td>
-          <td class="paramname"> <em>s</em></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td class="memname"><a class="el" href="struct_r_n_g___state.html">RNG_State</a>&lt; 8192, 1024, 1024, 2048 &gt; <a class="el" href="_random_8cc.html#a1b790ba6935fd711064348bd1957c4bb">rng_state</a>[<a class="el" href="class_global.html#a792b245c29921243482df9c9e2a1b7ad">Global::MAX_NUM_THREADS</a>]</td>
         </tr>
       </table>
 </div>
@@ -433,7 +359,7 @@ Functions</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&nbsp;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&nbsp;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&nbsp;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&nbsp;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -442,7 +368,7 @@ Functions</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Sep 16 2010 15:00:22 for FRED by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Nov 13 2012 10:25:05 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>
