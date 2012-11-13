@@ -48,10 +48,10 @@ void Classroom::get_parameters(int diseases) {
     int n;
     sprintf(param_str, "classroom_contacts[%d]", s);
     Params::get_param((char *) param_str, &Classroom::Classroom_contacts_per_day[s]);
-    if (Classroom::Classroom_contacts_per_day[s] == -1) {
-      Classroom::Classroom_contacts_per_day[s] = 2.0 * container->get_contacts_per_day(s);
+    if (Classroom::Classroom_contacts_per_day[s] < 0) {
+      Classroom::Classroom_contacts_per_day[s] = (1.0 - Classroom::Classroom_contacts_per_day[s])
+	* container->get_contacts_per_day(s);
     }
-    
     sprintf(param_str, "classroom_prob[%d]", s);
     n = Params::get_param_matrix(param_str, &Classroom::Classroom_contact_prob[s]);
     if (Global::Verbose > 1) {

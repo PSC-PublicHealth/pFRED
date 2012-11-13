@@ -42,10 +42,10 @@ void Office::get_parameters(int diseases) {
     int n;
     sprintf(param_str, "office_contacts[%d]", s);
     Params::get_param((char *) param_str, &Office::Office_contacts_per_day[s]);
-    if (Office::Office_contacts_per_day[s] == -1) {
-      Office::Office_contacts_per_day[s] = 2.0 * container->get_contacts_per_day(s);
+    if (Office::Office_contacts_per_day[s] < 0) {
+      Office::Office_contacts_per_day[s] = (1.0 - Office::Office_contacts_per_day[s])
+	* container->get_contacts_per_day(s);
     }
-    
     sprintf(param_str, "office_prob[%d]", s);
     n =  Params::get_param_matrix(param_str, &Office::Office_contact_prob[s]);
     if (Global::Verbose > 1) {
