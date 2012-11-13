@@ -81,8 +81,8 @@ output_population_date_match = 01-01-*
 primary_cases_file[0] = $FRED_HOME/input_files/primary_case_schedule-0.txt
 trans[0] = 1.0
 R0 = -1.0
-R0_a = 0.0445658
-R0_b = 0.606832
+R0_a = 0.053589
+R0_b = 0.568486
 symp[0] = 0.67
 mortality_rate[0] = 0.0
 # infection model: BIFURCATING = 0 , SEQUENTIAL = 1
