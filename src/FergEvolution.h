@@ -594,6 +594,15 @@ class FergEvolution : public MSEvolution {
   void reignite_all_cells( int day );
   fred::Mutex reignition_mutex;
 
+  struct Ferg_Evolution_Init_Past_Infections {
+    std::vector< int > strains;
+    Disease * disease;
+    Ferg_Evolution_Init_Past_Infections( Disease * _disease ) : disease( _disease ) {
+      strains.push_back( 0 );
+    }
+    void operator() ( Person & person );
+  };
+
  protected:
   
   int aminoAcids[ 64 ];

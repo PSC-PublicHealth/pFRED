@@ -75,17 +75,8 @@ void FergEvolution :: setup( Disease * disease ) {
   disease->add_root_strain( num_amino_acids ); 
   reignition_threshold = 1;
 
-  vector< int > strains;
-  strains.push_back( 0 );
-  for ( int p = 0; p < Global::Pop.size(); ++p ) {
-    Person * person = Global::Pop.get_person_by_index( p );
-    double age = person->get_real_age();
-    if ( age > 2 && RANDOM() < 0.25 ) {
-      int recovery_date = 0 - IRAND( 0, 365 );
-      int age_at_exp = age - ( (double) recovery_date / 365.0 );
-      person->add_past_infection( strains, recovery_date, age_at_exp, disease );
-    }
-  }   
+  Ferg_Evolution_Init_Past_Infections init_past_infection_functor( disease );
+  Global::Pop.parallel_apply( init_past_infection_functor ); 
 }
 
 void FergEvolution::initialize_reporting_grid( Large_Grid * _grid ) {
@@ -384,3 +375,17 @@ void FergEvolution::reignite_all_cells( int day ) {
     }
   }
 }
+
+
+void FergEvolution::Ferg_Evolution_Init_Past_Infections::operator() ( Person & person ) {
+
+  double age = person.get_real_age();
+
+  if ( age > 2 ) {
+    int recovery_date = 0 - IRAND( 0, 365 );
+    int age_at_exp = age - ( (double) recovery_date / 365.0 );
+    person.add_past_infection( strains, recovery_date, age_at_exp, disease );
+  }
+
+}
+
