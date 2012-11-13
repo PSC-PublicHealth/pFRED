@@ -796,10 +796,14 @@ void Activities::update_profile( Person * self ) {
   if (profile != RETIRED_PROFILE && Global::RETIREMENT_AGE <= age) {
     if (RANDOM() < 0.5) {
       // quit working
+      if (is_teacher()) {
+	favorite_place[SCHOOL_INDEX] = NULL;
+	favorite_place[CLASSROOM_INDEX] = NULL;
+      }
       favorite_place[WORKPLACE_INDEX] = NULL;
       favorite_place[OFFICE_INDEX] = NULL;
-      initialize_sick_leave(); // no sick leave available if retired
       profile = RETIRED_PROFILE;
+      initialize_sick_leave(); // no sick leave available if retired
       if (Global::Verbose>1) {
         fprintf(Global::Statusfp,
             "changed behavior profile to RETIRED: age %d age %d sex %c\n",
