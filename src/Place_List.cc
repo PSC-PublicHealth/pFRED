@@ -378,7 +378,7 @@ void Place_List::read_places() {
       int col = Global::Large_Cells->get_col(place->get_longitude());
       Large_Cell * grid_cell = Global::Large_Cells->get_grid_cell(row,col);
       if (grid_cell != NULL) {
-	grid_cell->add_workplace(place);
+        grid_cell->add_workplace(place);
       }
     }
   }
@@ -432,36 +432,34 @@ Place * Place_List::get_place_from_label(char *s) {
 
 int Place_List::add_place( Place * p ) {
   int index = -1;
-  // p->print(0);
-  // assert(place_map.find(p->get_d()) == place_map.end());
-  //
+  
   FRED_CONDITIONAL_WARNING( p->get_id() != -1,
       "Place id (%d) was overwritten!", p->get_id() ); 
   assert( p->get_id() == -1 );
 
-    string str;
-    str.assign( p->get_label() );
+  string str;
+  str.assign( p->get_label() );
 
-    if ( place_label_map->find(str) == place_label_map->end() ) {
+  if ( place_label_map->find(str) == place_label_map->end() ) {
  
-      p->set_id( get_new_place_id() );
+    p->set_id( get_new_place_id() );
      
-      places.push_back(p);
+    places.push_back(p);
 
-      (*place_label_map)[ str ] = places.size() - 1;
+    (*place_label_map)[ str ] = places.size() - 1;
 
-      // printf("places now = %d\n", (int)(places.size())); fflush(stdout);
+    // printf("places now = %d\n", (int)(places.size())); fflush(stdout);
      
-      // TODO workplaces vector won't be needed once all places stored and labeled in bloque
-      if (Global::Enable_Local_Workplace_Assignment && p->is_workplace()) {
-        workplaces.push_back(p);
-      }
+    // TODO workplaces vector won't be needed once all places stored and labeled in bloque
+    if (Global::Enable_Local_Workplace_Assignment && p->is_workplace()) {
+      workplaces.push_back(p);
+    }
 
-    }
-    else {
-      printf("Warning: duplicate place label found: ");
-      p->print(0);
-    }
+  }
+  else {
+    printf("Warning: duplicate place label found: ");
+    p->print(0);
+  }
 
   return index;
 }
@@ -535,11 +533,11 @@ void Place_List::assign_teachers() {
       
       Place * nearby_workplace = large_cell->get_workplace_near_to_school(school);
       if (nearby_workplace != NULL) {
-	// make all the workers in selected workplace teachers at the nearby school
-	nearby_workplace->turn_workers_into_teachers(school);
+	      // make all the workers in selected workplace teachers at the nearby school
+	      nearby_workplace->turn_workers_into_teachers(school);
       }
       else {
-	FRED_VERBOSE(0, "NO NEARBY_WORKPLACE FOUND for school at lat %f lon %f \n", lat, lon);
+	      FRED_VERBOSE(0, "NO NEARBY_WORKPLACE FOUND for school at lat %f lon %f \n", lat, lon);
       }
     }
   }

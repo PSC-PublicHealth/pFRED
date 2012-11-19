@@ -19,8 +19,6 @@
 
 #include <vector>
 #include <map>
-//TODO test performance of unordered_map for lookup by label
-//#include <tr1/unordered_map>
 #include <cstring>
 #include <iostream>
 #include <fstream>
@@ -43,6 +41,7 @@ class Workplace;
 typedef std::tr1::unordered_map< string, int > Place_Label_Map;
 
 class Place_List {
+
 public:
   
   Place_List() {
