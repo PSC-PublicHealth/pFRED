@@ -681,7 +681,7 @@ void Epidemic::find_infectious_places( int day, int disease_id ) {
   FRED_STATUS(1, "find_infectious_places entered\n", "");
 
   update_infectious_activities update_functor( day, disease_id );
-  Global::Pop.apply( fred::Infectious, update_functor );
+  Global::Pop.parallel_masked_apply( fred::Infectious, update_functor );
 
   FRED_STATUS(1, "find_infectious_places finished\n", "");
 }
