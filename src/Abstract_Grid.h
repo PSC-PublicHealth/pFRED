@@ -36,8 +36,21 @@ public:
   int get_col(double x) {return (int) ((x-min_x)/grid_cell_size); }
   int get_row(fred::geo lat) {double y = Geo_Utils::get_y(lat); return (int) ((y-min_y)/grid_cell_size); }
   int get_col(fred::geo lon) {double x = Geo_Utils::get_x(lon); return (int) ((x-min_x)/grid_cell_size); }
-  int getGlobalRow(int row) { return row + global_row_min; }
-  int getGlobalCol(int col) { return col + global_col_min; }
+  int getGlobalRow(int row) { return row + global_row_min; } // ???
+  int getGlobalCol(int col) { return col + global_col_min; } // ???
+
+  int get_global_row_min() {
+    return global_row_min;				// global row coord of S row
+  }
+  int get_global_col_min() {
+    return global_col_min;				// global col coord of W col
+  }
+  int get_global_row_max() {
+    return global_row_max;				// global row coord of N row
+  }
+  int get_global_col_max() {
+    return global_col_max;				// global col coord of E col
+  }
   
 protected:
 

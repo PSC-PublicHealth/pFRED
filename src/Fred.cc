@@ -197,12 +197,11 @@ int main(int argc, char* argv[]) {
     Global::Clim->print_summary();
   }
 
-  //if ( Global::Enable_Large_Grid ) {
-    for (int d = 0; d < Global::Diseases; d++) {
-      Disease * disease = Global::Pop.get_disease(d);
-      disease->initialize_evolution_reporting_grid( Global::Large_Cells );
-    }
-  //}
+  for (int d = 0; d < Global::Diseases; ++d) {
+    Disease * disease = Global::Pop.get_disease( d );
+    disease->init_prior_immunity();
+    disease->initialize_evolution_reporting_grid( Global::Large_Cells );
+  }
 
   Utils::fred_print_lap_time("FRED initialization");
   Utils::fred_print_wall_time("FRED initialization complete");

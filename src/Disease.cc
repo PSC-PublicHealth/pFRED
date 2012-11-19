@@ -300,3 +300,7 @@ void Disease::initialize_evolution_reporting_grid( Large_Grid * grid ) {
   evol->initialize_reporting_grid( grid );
 }
 
+void Disease::init_prior_immunity() {
+  evol->init_prior_immunity( this );
+}
+

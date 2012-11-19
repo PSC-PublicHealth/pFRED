@@ -107,7 +107,7 @@ public:
             sim_day_ranges.push_back( pair <int,int> (simDayStart, simDayEnd) );
           }
           stringstream( tsVec[2] ) >> seasonalityValue;
-          if ( n >= 3 ) {
+          if ( n > 3 ) {
             stringstream( tsVec[3] ) >> lat;
             stringstream( tsVec[4] ) >> lon;
             loc = true;

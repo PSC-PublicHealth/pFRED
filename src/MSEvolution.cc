@@ -32,6 +32,7 @@
 
 using namespace std;
 
+
 MSEvolution::MSEvolution() { 
   halflife_inf = NULL;
   halflife_vac = NULL;
@@ -55,6 +56,9 @@ void MSEvolution::setup( Disease * disease ) {
   
   protection = new Piecewise_Linear;
   protection->setup( "strain_dependent_protection", disease );
+
+  prob_inoc_norm = 1 - exp( -1 );
+ 
 }
 
 MSEvolution::~MSEvolution() {
@@ -73,8 +77,8 @@ inline double MSEvolution::residual_immunity( Person * person, int challenge_str
 }
 
 double MSEvolution::prob_inoc( double quantity ) {
-  static double norm = 1 - exp( -1 );
-  double prob = ( 1.0 - exp( ( 0 - quantity ) / sat_quantity ) ) / norm;
+  //static double norm = 1 - exp( -1 );
+  double prob = ( 1.0 - exp( ( 0 - quantity ) / sat_quantity ) ) / prob_inoc_norm;
   return ( prob < 1.0 ) ? prob : 1.0;
 }
 
@@ -86,6 +90,9 @@ double MSEvolution::antigenic_distance( int strain1, int strain2 ) {
 }
 
 double MSEvolution::prob_inf_blocking( int old_strain, int new_strain, int time, int age ) {
+  FRED_VERBOSE( 3, "Prob Blocking %f old strain %d new strain %d time %d halflife %f age %d init prot inf %f\n",
+      prob_blocking( old_strain, new_strain, time, halflife_inf->find_value( age ), init_prot_inf ),
+       old_strain, new_strain, time, halflife_inf->find_value( age ), age, init_prot_inf );
   return prob_blocking( old_strain, new_strain, time, halflife_inf->find_value( age ), init_prot_inf ); 
 }
 

@@ -579,6 +579,8 @@ class FergEvolution : public MSEvolution {
   
   void terminate_person(Person *p);
 
+  void init_prior_immunity( Disease * disease );
+
  private:
   
   bool reignite( Person * person, int strain_id, int day);

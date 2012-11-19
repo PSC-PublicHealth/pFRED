@@ -72,6 +72,7 @@ class MSEvolution : public Evolution {
  private:
   Age_Map * halflife_inf;
   Age_Map * halflife_vac;
+  double prob_inoc_norm;
   double init_prot_inf;
   double init_prot_vac;
   double sat_quantity;

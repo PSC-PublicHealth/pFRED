@@ -82,6 +82,8 @@ public:
 
   virtual void initialize_reporting_grid( Large_Grid * grid ) { };
 
+  virtual void init_prior_immunity( Disease * disease ) { };
+
 protected:
   Disease *disease;
 };

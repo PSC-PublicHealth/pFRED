@@ -230,6 +230,8 @@ public:
   double get_infectivity_threshold() { return infectivity_threshold; }
   double get_symptomaticity_threshold() {return symptomaticity_threshold; }
 
+  void init_prior_immunity();
+
 private:
   int id;
   double transmissibility;

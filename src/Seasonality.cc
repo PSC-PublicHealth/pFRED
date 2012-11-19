@@ -44,8 +44,12 @@ void Seasonality::update(int day) {
   while (it != seasonality_timestep_map->end()) {
     Seasonality_Timestep_Map::Seasonality_Timestep * cts = *it; 
     if (cts->is_applicable(day, Global::Epidemic_offset)) {
-      int row = grid->get_row(cts->get_lat());
-      int col = grid->get_col(cts->get_lon());
+      int row = 0;
+      int col = 0;
+      if ( cts->has_location() ) {
+        row = grid->get_row(cts->get_lat());
+        col = grid->get_col(cts->get_lon());
+      }
       points.push_back(point(row,col,cts->get_seasonality_value()));
     }
     it++;
@@ -75,7 +79,7 @@ void Seasonality::update_seasonality_multiplier() {
 
 double Seasonality::get_seasonality_multiplier_by_lat_lon(fred::geo lat, fred::geo lon, int disease_id) {
   int row = grid->get_row(lat);
-  int col = grid->get_row(lon);
+  int col = grid->get_col(lon);
   return get_seasonality_multiplier(row, col, disease_id);
 }
 
