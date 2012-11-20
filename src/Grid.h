@@ -131,6 +131,8 @@ public:
    */
   void print_household_distribution(char * dir, char * date_string, int run);
 
+  int get_number_of_neighborhoods();
+
 protected:
   Cell ** grid;			      // Rectangular array of grid_cells
   Large_Grid * large_grid;	    // Pointer to surrounding large grid

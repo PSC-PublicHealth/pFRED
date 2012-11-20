@@ -71,15 +71,19 @@ Grid::Grid(Large_Grid * lgrid) {
   grid = new Cell * [rows];
   for (int i = 0; i < rows; i++) {
     grid[i] = new Cell[cols];
+    for (int j = 0; j < cols; j++) {
+      grid[i][j].setup(this,i,j);
+    }
   }
+
 }
 
 void Grid::setup( Place::Allocator< Neighborhood > & neighborhood_allocator ) { 
   // fill grid with cells; create one neighborhood per cell
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      grid[i][j].setup(this,i,j);
-      grid[i][j].make_neighborhood( neighborhood_allocator );
+      if (grid[i][j].get_houses() > -1)
+	grid[i][j].make_neighborhood( neighborhood_allocator );
     }
   }
 
@@ -230,6 +234,17 @@ void Grid::quality_control(char * directory, double min_x, double min_y) {
 
 // Specific to Cell Grid:
 
+int Grid::get_number_of_neighborhoods() {
+  int n = 0;
+  for (int row = 0; row < rows; row++) {
+    for (int col = 0; col < cols; col++) {
+      if (grid[row][col].get_houses() > -1)
+	n++;
+    }
+  }
+  return n;
+}
+
 void Grid::record_favorite_places() {
   #pragma omp parallel
   {
@@ -239,9 +254,11 @@ void Grid::record_favorite_places() {
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
         Cell * cell = (Cell *) &grid[row][col];
-        cell->record_favorite_places();
-        partial_target_popsize += cell->get_neighborhood()->get_size();
-        partial_target_households += cell->get_houses();
+	if (cell->get_houses() > 0) {
+	  cell->record_favorite_places();
+	  partial_target_popsize += cell->get_neighborhood()->get_size();
+	  partial_target_households += cell->get_houses();
+	}
       }
     }
     #pragma omp atomic
