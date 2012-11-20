@@ -206,7 +206,7 @@ if ($old_id > -1) {
   # remove the old directory
   system "rm -rf $fred_results/JOB/$id";
   # use experiment id unless given command line key
-  $key = $id if not defined $key;
+  $key = $id if $key eq "";
 }
 else {
   # get id for this experiment and update counter
@@ -220,7 +220,7 @@ else {
   print FH "$new_id\n";
   close FH;
   # use experiment id unless given command line key
-  $key = $id if not defined $key;
+  $key = $id if $key eq "";
   # add key-id pair
   `echo $key $id >> $fred_results/KEY`;
 }
