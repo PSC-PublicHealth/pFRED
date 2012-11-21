@@ -1,0 +1,2 @@
+awk '{x += $5; h += $7; n += $9; s += $11 + $13; w += $15 + $17} END {t =  h+n+s+w+x; printf "X %0.2f %d\nH %0.2f %d\nN %0.2f %d\nS %0.2f %d\nW %0.2f %d\nT %d\n", 100.0*x/t, x, 100.0*h/t, h, 100.0*n/t, n, 100.0*s/t, s, 100.0*w/t, w, t}' $1
+
