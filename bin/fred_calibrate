@@ -9,7 +9,7 @@ $| = 1;
 # File: fred_calibrate
 # Author: John Grefenstette
 # 26 Aug 2011
-# Last Revised: Oct 3, 2012
+# Last Revised: Nov 21, 2012
 #
 # Based on targets proposed by Phil Cooley:
 #
@@ -41,6 +41,8 @@ my $opt_result = GetOptions(
 );
 die $usage if $help;
 die $usage if not $oldparams;
+die $usage if not -e $oldparams;
+
 open FH, $oldparams or die "Can't open params file $oldparams\n$usage";
 
 # read original params
@@ -81,7 +83,8 @@ while ($error > 10*$threshold) {
   printf CAL "workplace_contacts[0] = %0.6f\n", $w;
   print CAL "classroom_contacts[0] = -1\n";
   print CAL "office_contacts[0] = -1\n";
-  print CAL "track_infection_events = 1\n";
+  print CAL "track_infection_events = 0\n";
+  print CAL "report_place_of_infection = 1\n";
   close CAL;
 
   system "cp $paramsfile $paramsfinal";
@@ -94,16 +97,27 @@ while ($error > 10*$threshold) {
   printf "workplace_contacts[0] = %0.6f\n", $w;
   print "classroom_contacts[0] = -1\n";
   print "office_contacts[0] = -1\n";
+  print "track_infection_events = 0\n";
+  print "report_place_of_infection = 1\n";
 
   system "fred_delete -f -k $paramsfile >& /dev/null";
   system "fred_job -k $paramsfile -p $paramsfile -n $runs -m $cores";
   my $dir = `fred_cd -k $paramsfile | awk \'{print \$2}\' `;
   chomp $dir;
 
-  system "get_distr $dir";
-  system "cat get_distr.dat";
-  $x = `cat get_distr.dat`;
-  my ($H, $N, $S, $W) = split " ", $x;
+  system "fred_get_places $dir";
+
+  print "\n\ntargets:\n";
+  print "X 0\n";
+  print "H $Htarget\n";
+  print "N $Ntarget\n";
+  print "S+C $Starget\n";
+  print "W+O $Wtarget\n\n";
+
+  system "cat places.dat";
+  $x = `cat places.dat`;
+  chomp $x;
+  my ($HH, $H, $NN, $N, $SS, $S, $WW, $W) = split " ", $x;
 
   my $CAR = `fred_CAR -k $paramsfile | awk \'{print \$1}\'`;
   chomp $CAR;
@@ -158,7 +172,8 @@ while ($error > $threshold) {
   printf CAL "workplace_contacts[0] = %0.6f\n", $w;
   print CAL "classroom_contacts[0] = -1\n";
   print CAL "office_contacts[0] = -1\n";
-  print CAL "track_infection_events = 1\n";
+  print CAL "track_infection_events = 0\n";
+  print CAL "report_place_of_infection = 1\n";
   close CAL;
 
   system "cp $paramsfile $paramsfinal";
@@ -171,16 +186,28 @@ while ($error > $threshold) {
   printf "workplace_contacts[0] = %0.6f\n", $w;
   print "classroom_contacts[0] = -1\n";
   print "office_contacts[0] = -1\n";
+  print "track_infection_events = 0\n";
+  print "report_place_of_infection = 1\n";
 
   system "fred_delete -f -k $paramsfile >& /dev/null";
   system "fred_job -k $paramsfile -p $paramsfile -n $runs -m $cores";
 
   my $dir = `fred_cd -k $paramsfile | awk \'{print \$2}\' `;
   chomp $dir;
-  system "get_distr $dir";
-  system "cat get_distr.dat";
-  $x = `cat get_distr.dat`;
-  my ($H, $N, $S, $W) = split " ", $x;
+
+  system "fred_get_places $dir";
+
+  print "\n\ntargets:\n";
+  print "X 0\n";
+  print "H $Htarget\n";
+  print "N $Ntarget\n";
+  print "S+C $Starget\n";
+  print "W+O $Wtarget\n\n";
+
+  system "cat places.dat";
+  $x = `cat places.dat`;
+  chomp $x;
+  my ($HH, $H, $NN, $N, $SS, $S, $WW, $W) = split " ", $x;
 
   my $CAR = `fred_CAR -k $paramsfile | awk \'{print \$1}\'`;
   chomp $CAR;
