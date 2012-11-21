@@ -82,7 +82,7 @@ void Grid::setup( Place::Allocator< Neighborhood > & neighborhood_allocator ) {
   // fill grid with cells; create one neighborhood per cell
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      if (grid[i][j].get_houses() > -1)
+      if (grid[i][j].get_houses() > 0)
 	grid[i][j].make_neighborhood( neighborhood_allocator );
     }
   }
@@ -238,7 +238,7 @@ int Grid::get_number_of_neighborhoods() {
   int n = 0;
   for (int row = 0; row < rows; row++) {
     for (int col = 0; col < cols; col++) {
-      if (grid[row][col].get_houses() > -1)
+      if (grid[row][col].get_houses() > 0)
 	n++;
     }
   }

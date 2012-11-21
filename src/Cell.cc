@@ -130,7 +130,7 @@ Place * Cell::select_neighborhood(double community_prob,
     // select randomly from among immediate neighbors
     grid_cell = grid->select_random_neighbor(row,col);
   }
-  if (grid_cell == NULL) grid_cell = this; // fall back to local grid_cell
+  if (grid_cell == NULL || grid_cell->get_houses() == 0) grid_cell = this; // fall back to local grid_cell
   return grid_cell->get_neighborhood();
 }
 
