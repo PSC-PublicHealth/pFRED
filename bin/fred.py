@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import sys,os
 import string
 from datetime import datetime,timedelta
@@ -110,15 +112,18 @@ class FRED_RUN:
 
         #self.command = open(self.run_data_out_dir + "/COMMAND_LINE","r").readline().strip()
 
-#
-        self.infections_files = []
+        #This is a dictionary so that I can load specific runs and index them.
+        self.infections_files = {}
         
 #   create load members for large data sets from results so that one has control
 #   to do them when only needed.
 
-    def load_infection_files(self):
+    def load_infection_files(self,run_number=None):
         for i in range(1,self.number_of_runs+1):
-            print i
+            ### Not Specifying a run_number gives you all infections files
+            if run_number is not None and int(run_number) != i:
+                continue
+            #print "loading " + str(i)
             inf_list = []
             infection_file_name = self.run_data_out_dir + "/infections" + str(i) + ".txt"
             print infection_file_name
@@ -128,6 +133,7 @@ class FRED_RUN:
                 self.fred.fred_class_error("Unable to load infection file for run " + str(i) + ".")
                                        
             with open(infection_file_name,"r") as f:
+                #print infection_file_name
                 for line in f:
                     inf_line = string.split(line)
                     inf_list.append(FRED_Infection_Record(inf_line[1],
@@ -137,7 +143,7 @@ class FRED_RUN:
                                                           inf_line[9],
                                                           inf_line[11],
                                                           inf_line[13]))
-            self.infections_files.append(inf_list)
+            self.infections_files[i]=inf_list
             
     def print_meta_summary(self):
         print "----- Summary of Meta Data for FRED Job " + self.key + "------"
@@ -188,36 +194,30 @@ class FRED_Infection_Record:
         self.infector_age = float(infector_age)
         self.infection_place = infection_place
         
- #for i in range(1,self.number_of_runs):
-        #    self.log_file.append(list())
-        #    with open(self.run_meta_dir + "/LOG" + str(i),"r") as f:
-        #        for line in f:
-        #            self.log_file[i].append(line)
-        
-
 class FRED_Location:
-    def __init__(self,_id,loc_type,lat,lon):
+    def __init__(self,_id,lat,lon,size,fips):
         self.id = _id
-        self.loc_type = loc_type
         self.lat = float(lat)
         self.lon = float(lon)
+        self.size = int(size)
+        self.fips = fips
 
     def __str__(self):
         return "<FRED_Location> ID: " + str(self.id)\
-               + " type: " + FRED_Location_Types[self.loc_type]\
                + " lat,lon = " + str(self.lat) + "," + str(self.lon)
 
 
 class FRED_Person:
-    def __init__(self,_id,age,sex,marital_status,occupation,household,school,workplace):
-        self.id = _id
-        self.age = float(age)
-        self.sex = sex
-        self.marital_status = marital_status
-        self.occupation = int(occupation)
-        self.household = household
-        self.school = school
-        self.workplace = workplace
+    def __init__(self,id_,age_,sex_,marital_status_,occupation_,household_,school_,workplace_,fips_):
+        self.id = id_
+        self.age = float(age_)
+        self.sex = sex_
+        self.marital_status = marital_status_
+        self.occupation = int(occupation_)
+        self.household = household_
+        self.school = school_
+        self.workplace = workplace_
+        self.fipscode = fips_
 
     def __str__(self):
         return "<FRED_Person> ID: " + str(self.id)\
@@ -231,17 +231,31 @@ class FRED_Person:
 class FRED_People_Set:
 
     def __init__(self,population_file=None):
-        self.people = list()
+        self.people = []
         if population_file is not None:
             self.population_file = population_file
 
             with open(self.population_file,"r") as f:
-                number_of_people = int(string.split(f.readline(),"=")[1].strip())
+                ### header with column headings
                 header = f.readline()
-                
+
                 for line in f:
-                    recs = string.split(line)
-                    self.people.append(FRED_Person(recs[0],recs[1],recs[2],recs[3],recs[4],recs[5],recs[6],recs[7]))
+                    recs = string.split(line,",")
+                    self.people.append(FRED_Person(recs[0],
+                                                   recs[4],
+                                                   recs[5],0,0,
+                                                   recs[1],
+                                                   recs[9],
+                                                   recs[10],
+                                                   recs[3]))
+            ### Old Style FRED population file
+            #with open(self.population_file,"r") as f:
+                #number_of_people = int(string.split(f.readline(),"=")[1].strip())
+            #    header = f.readline()
+                
+            #    for line in f:
+            #        recs = string.split(line)
+            #        self.people.append(FRED_Person(recs[0],recs[1],recs[2],recs[3],recs[4],recs[5],recs[6],recs[7]))
 
 
     def __len__(self):
@@ -254,9 +268,6 @@ class FRED_People_Set:
         count = 0
         for person in self.people:
             reduced_people_set.people.append(person)
-            ## count = count + 1
-            ## if count == 400:
-            ##     break
         
         ## Filter age
         if filter_age is not None:
@@ -333,38 +344,39 @@ class FRED_Locations_Set:
     
     def __init__(self,location_file,loc_type=None):
         self.location_file = location_file
+        self.location_type = loc_type
         self.locations = dict()
         
         with open(location_file,"r") as f:
-            number_of_locations = int(string.split(f.readline(),"=")[1].strip())
+            #number_of_locations = int(string.split(f.readline(),"=")[1].strip())
             header = f.readline()
             
             #print "|" + str(number_of_locations) + "|"
-
             for line in f:
-                recs = string.split(line)
+                recs = string.split(line,",")
                 if self.locations.has_key(recs[0]):
                     print "FRED_Locations_Set ERROR: Detected a duplicate location number in file "\
                           + location_file + " for the key " + str(recs[0])
-                #tuple = (type, lat, lon)
-                if loc_type == None or loc_type == recs[1]:
-                    self.locations[recs[0]] = FRED_Location(recs[0],recs[1],recs[2],recs[3])
-        
-    def print_location_statistics(self):
-        counts = dict()
+                self.locations[recs[0]] = FRED_Location(recs[0],float(recs[7]),float(recs[8]),int(recs[5]),
+                                                        recs[2])
+
+        self.countyList = []
         for location in self.locations.keys():
-            types = self.locations[location].loc_type
-            if counts.has_key(types) == False:
-                counts[types] = 0
-                
-            counts[types] = counts[types] + 1
+            place = self.locations[location]
+            countyFips = place.fips[0:5]
+            if countyFips not in self.countyList:
+                self.countyList.append(countyFips)
 
-        total = 0
-        for types in counts.keys():
-            print FRED_Location_Types[types] + ": \t" + str(counts[types])
-            total = total + counts[types]
-        print "Total: \t\t" + str(total)
-
+            ### Old style Synthetic populations
+            ## for line in f:
+            ##     recs = string.split(line)
+            ##     if self.locations.has_key(recs[0]):
+            ##         print "FRED_Locations_Set ERROR: Detected a duplicate location number in file "\
+            ##               + location_file + " for the key " + str(recs[0])
+            ##     #tuple = (type, lat, lon)
+            ##     if loc_type == None or loc_type == recs[1]:
+            ##         self.locations[recs[0]] = FRED_Location(recs[0],recs[1],recs[2],recs[3])
+        
     def bounding_box(self):
         maxlat = -9999999
         maxlon = -9999999

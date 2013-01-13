@@ -1,0 +1,61 @@
+file: README.gaia_tools
+Date: 13 Jan. 2013
+
+Requisites: Python 2.x
+
+% fred_gaia_inputs.py [--help][-k key][-r realization][-t vis_type][other options]
+    -k or --key   Fred Key (no default)
+    -r or --run   The run number of vizualize
+                  ave = produce an average result
+                  all = produce an input for all runs
+                  (default: only visualize the first realization)
+    -t or --type  Type of GAIA visualization
+		  pop_density   = Household Density Plot (png)
+                  inc_anim      = incidence animation (mpg)
+                  inc_static    = incidence map (png)
+                  (default: inc_static)
+    -p or --pop   FRED Population file to use (if blank will try to use the one from input)
+    -l or --loc   FRED Location file to use (if blank will try to use the one from input)
+    -g or --grid  Size of grid points to plot (default: 0.002)
+    -w or --time  Turn on profiling (default: off)
+
+
+Running this script will take the information in the $FRED_HOME/RESULTS directory for the particular
+key and calls the GAIA webservice to return visualizations.  This program is meant to be run after 
+a fred_job execution is complete, as post processing.
+
+FRED_HOME must be defined for this script to work, and FRED has to have been run for the particular key.
+
+Once run, the visualizations will appear in the current directory with the name 
+fred_gaia_<key>_<realizaton>.<viz>.
+
+Notes:
+
+Currently, this is not optimal for large simulation runs.  If you are going to run these with large 
+data sets, please make sure that you have a decent amount of memory.  
+
+
+PyPy
+
+	If one would like to improve performance of these scripts significantly (about 10x), 
+	please install pypy.  You can download this software at:
+
+	http://pypy.org/
+
+	If you are on OS X, it is recommended to download the nightly snapshot, as the latest 
+	stable release is defective on Snow Leopard (may work on Lion).
+
+	To install PyPy, just download the program, unzip it some where, and then place the pypy 
+	program before the fred_gaia_inputs.py in the command line.
+
+	So...
+
+	<PyPy location>/bin/pypy fred_gaia_inputs.py [--help][-k key][-r realization][-t vis_type][other options]
+
+
+Animation
+	
+	The animations currently take quite some time to create.  Currenlty the script will only produce
+	an animated visualization for the first realization.  Average animations are currently being
+	developed.  Also, deploying a more powerful GAIA server should improve the performance.
+
