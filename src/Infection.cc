@@ -18,6 +18,8 @@
 #include <map>
 #include <vector>
 #include <float.h>
+#include <string>
+#include <sstream>
 
 #include "Infection.h"
 #include "Evolution.h"
@@ -34,6 +36,7 @@
 #include "Utils.h"
 
 using std::out_of_range;
+
 
 Infection::Infection(Disease *disease, Person* infector, Person* host, Place* place, int day) {
  
@@ -276,46 +279,36 @@ void Infection::report_infection(int day) const {
     place_size = container->get_size();
   }
 
-  fprintf(Global::Infectionfp, "day %d dis %d host %d age %.3f sick_leave %d"
-          " infector %d inf_age %.3f inf_sympt %d inf_sick_leave %d at %c place %d size %d is_teacher %d ",
-          day, disease->get_id(),
-          host->get_id(),
-          host->get_real_age(),
-          host->is_sick_leave_available(),
-          infector == NULL ? -1 : infector->get_id(),
-          infector == NULL ? -1 : infector->get_real_age(),
-          infector == NULL ? -1 : infector->is_symptomatic(),
-          infector == NULL ? -1 : infector->is_sick_leave_available(),
-	  place_type, place_id, place_size, (int) host->is_teacher());
+  std::stringstream infStrS;
+  infStrS.precision(3);
+  infStrS << fixed << "day "<< day << " dis " << disease->get_id() << " host " << host->get_id()
+	  << " age " << host->get_real_age() << " sick_leave " << host->is_sick_leave_available()
+	  << " infector " << (infector == NULL ? -1 : infector->get_id())
+	  << " inf_age " << (infector == NULL ? -1 : infector->get_real_age())
+	  << " inf_sympt " << (infector == NULL ? -1 : infector->is_symptomatic())
+	  << " inf_sick_leave " << (infector == NULL ? -1 : infector->is_sick_leave_available())
+	  << " at " << place_type << " place " << place_id
+	  << " size " << place_size << " is_teacher " << (int) host->is_teacher();
 
   if (Global::Track_infection_events > 1)
-    fprintf(Global::Infectionfp,
-            "| PERIODS  latent %d asymp %d symp %d recovery %d ",
-            latent_period,
-            asymptomatic_period,
-            symptomatic_period,
-            recovery_period);
+    infStrS << "| PERIODS  latent " << latent_period << " asymp " << asymptomatic_period
+	    << " symp " << symptomatic_period << " recovery " << recovery_period;
 
   if (Global::Track_infection_events > 2)
-    fprintf(Global::Infectionfp,
-            "| DATES exp %d inf %d symp %d rec %d sus %d ",
-            exposure_date,
-            get_infectious_date(),
-            get_symptomatic_date(),
-            get_recovery_date(),
-            get_susceptible_date());
+    infStrS << "| DATES exp " << exposure_date << " inf " << get_infectious_date()
+	    << " symp " << get_symptomatic_date() << " rec " << get_recovery_date()
+	    << " sus " << get_susceptible_date();
 
   if (Global::Track_infection_events > 3)
-    fprintf(Global::Infectionfp,
-            "| will_be_symp? %d susc %.3f infect %.3f "
-            "inf_multp %.3f symptms %.3f ",
-            will_be_symptomatic,
-            susceptibility,
-            infectivity,
-            infectivity_multp,
-            symptoms);
+    infStrS << "| will_by_symp? " << will_be_symptomatic 
+	    << " sucs " << susceptibility 
+	    << " infect " << infectivity 
+	    << " inf_multp " << infectivity_multp 
+	    << " sympts " << symptoms;
 
-  fprintf(Global::Infectionfp, "\n");
+  infStrS << "\n";
+
+  fprintf(Global::Infectionfp, "%s", infStrS.str().c_str());
   // flush performed at the end of every day so that it doesn't gum up multithreading
   //fflush(Global::Infectionfp);
 }
