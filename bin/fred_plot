@@ -55,6 +55,8 @@ my $smooth;
 my $xtics;
 my $legend;
 my $help;
+my $xlabel;
+my $ylabel;
 my $opt_result = GetOptions(
 			    "e" => \$errorbars,
 			    "f=s" => \$fontsize,
@@ -90,6 +92,8 @@ my $opt_result = GetOptions(
 			    "ymin=i" => \$ymin,
 			    "ymax=i" => \$ymax,
 			    "Ymax=i" => \$ymax,
+			    "ylabel=s" => \$ylabel,
+			    "xlabel=s" => \$xlabel,
 			   );
 
 # my $usage = "usage: fred_plot -k key [-k key ...] -v var [-v var ...][-a start_year|-e|-f fontsize|-x xmin|-y ymin|-X xmax|-Y ymax|-T title]\n";
@@ -173,6 +177,15 @@ EOF
 if ($normalize) {
   print FH "set ylabel \"Per 100,000\" offset 1.2,0\n";
 }
+
+if ($xlabel) {
+  print FH "set xlabel \"$xlabel\" offset 0,0.5\n";
+}
+
+if ($ylabel) {
+  print FH "set ylabel \"$ylabel\" offset 1.2,0\n";
+}
+
 
 for my $v (@varlist) {
  if ($v eq "AR" or $v eq "CAR") {  
