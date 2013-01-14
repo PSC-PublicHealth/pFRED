@@ -10,7 +10,7 @@ use Getopt::Std;
 
 my $FRED = $ENV{FRED_HOME};
 die "$0: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
-my $usage = "usage: $0 [-f config_file | -h | -s ]\n";
+my $usage = "usage: $0 [-f config_file | -h | -s | -n n | -m m ]\n";
 
 # create RESULTS directory if needed
 my $FREDRESULTS = $ENV{FRED_RESULTS};
@@ -29,7 +29,12 @@ if (not -d $fred_experiment_space_dir) {
 
 # get command line arguments
 my %options = ();
-getopts("hsf:", \%options);
+getopts("hsf:n:m:", \%options);
+my $n = 10;
+my $m = 10;
+if (exists $options{n}) { $n = $options{n}; }
+if (exists $options{m}) { $n = $options{m}; }
+
 if (exists $options{h}) {
   print "$usage";
   print "Try:\n$0 -s\nto get a sample configuration file.\n";
@@ -184,7 +189,7 @@ sub add_experiment {
     print EXEC "ch $param $value params.$key\n";
   }
   print EXEC "fred_delete -f -k $key\n";
-  print EXEC "fred_job -k $key -p params.$key -n 10 -m 10 -t 2\n";
+  print EXEC "fred_job -k $key -p params.$key -n $n -m $m\n";
   print NAV "$key\n";
 }
 
