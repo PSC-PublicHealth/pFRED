@@ -135,6 +135,7 @@ if __name__ == '__main__':
 		  hous_den   = Household Density Plot
                   inc_anim   = incidence animation
                   inc_static = incidence map
+    -T or --title Title for the visualization
     -p or --pop   FRED Population file to use (if blank will try to use the one from input)
     -l or --loc   FRED Location file to use (if blank will try to use the one from input)
     -g or --grid  Size of grid points to plot
@@ -162,6 +163,9 @@ if __name__ == '__main__':
                       default=False)
     parser.add_option("-d","--debug",action="store_true",
                       default=False)
+
+    parser.add_option("-T","--title",type="string",
+                      help="Title to put on the GAIA vizualization",default="")
     
 
     opts,args=parser.parse_args()
@@ -171,6 +175,7 @@ if __name__ == '__main__':
     
     key = opts.key
     run = opts.run
+                     
     try:
         int(run)
     except:
@@ -219,7 +224,16 @@ if __name__ == '__main__':
     fred_locations_households = FRED_Locations_Set(synth_household_filename,"households")
     time2 = time.time()
     if opts.time: print "Time to Read Synthetic Population = %g sec"%(time2-time1)
-    
+
+    ## Parse Title
+    fred_title = opts.title
+    if opts.title == "":
+        if vizType == "inc_static":
+            fred_title = "Incidence Map"
+        elif vizType == "pop_den":
+            fred_title = "Population Density"
+        elif vizType == "inc_anim":
+            fred_title = "Incidence Map per Day of Epidemic"
 ## CREATE the GAIA Input
     gaia_bounding_box = fred_locations_households.bounding_box()
     if vizType == "inc_static":
@@ -238,7 +252,7 @@ if __name__ == '__main__':
         gaia_style_pop_file = "fred_gaia_pop_style_"+ str(fred_run.key) + ".txt"
        
         with open(gaia_style_pop_file,"wb") as f:
-            gaia_grid_pop.writeStyleFile(f,radius=1.0)
+            gaia_grid_pop.writeStyleFile(f,radius=1.5)
                 
         if opts.run == "ave":
             gaia_input_file = "fred_gaia_" + str(fred_run.key) + ".ave.txt" 
@@ -249,19 +263,18 @@ if __name__ == '__main__':
             with open(gaia_input_file,"w") as f:
                 ### Write out the county fips elements
                 for countyFips in fred_locations_households.countyList:
-                    f.write("USFIPS st%2s.ct%3s.tr* -1\n"%(countyFips[0:2],countyFips[2:5]))
+                    f.write("USFIPS st%2s.ct%3s.tr*.bl* -1\n"%(countyFips[0:2],countyFips[2:5]))
                 ### Write the population density grid out
                 gaia_grid_pop.writeToGaiaFile(f)
  
                 ### Write the incidence grid
                 gaia_grid_inc.writeToGaiaFile(f)
-                
                 with open(gaia_style_inc_file,"wb") as f:
                     gaia_grid_inc.writeStyleFile(f,1.0,numbounds=10)
                 
                 plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_pop_file,gaia_style_inc_file],
                                     False,"png",None,None,None,-1.0,-1.0,
-                                    0,1000,False,None,-1.0,-1.0,"255.255.255.255",None,2.0,None,None)
+                                    0,1000,False,None,72.0,-1.0,"255.255.255.255",None,2.0,fred_title,None)
                     
                 time1 = time.time()
                 gaia = GAIA(plotInfo)
@@ -286,17 +299,17 @@ if __name__ == '__main__':
                 with open(gaia_input_file,"w") as f:
                 ### Write out the county fips elements
                     for countyFips in fred_locations_households.countyList:
-                        f.write("USFIPS st%2s.ct%3s.tr* -1\n"%(countyFips[0:2],countyFips[2:5]))
+                        f.write("USFIPS st%2s.ct%3s.tr*.bl* -1\n"%(countyFips[0:2],countyFips[2:5]))
                 ### Write the population density grid out
                     gaia_grid_pop.writeToGaiaFile(f)
                     gaia_grid_inc.writeToGaiaFile(f)
 
                 with open(gaia_style_inc_file,"wb") as f:
-                    gaia_grid_inc.writeStyleFile(f,1.0,numbounds=10)
+                    gaia_grid_inc.writeStyleFile(f,1.5,numbounds=10)
 
                 plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_pop_file,gaia_style_inc_file],
                                     False,"png",None,None,None,-1.0,-1.0,
-                                    0,1000,False,None,-1.0,-1.0,"255.255.255.255",None,2.0,None,None,
+                                    0,1000,False,None,42.0,-1.0,"255.255.255.255",None,2.0,fred_title,None,
                                     opts.debug)
 
                 time1 = time.time()
@@ -316,14 +329,14 @@ if __name__ == '__main__':
         
         with open(gaia_input_file,"w") as f:
             for countyFips in fred_locations_households.countyList:
-                f.write("USFIPS st%2s.ct%3s.tr* -1\n"%(countyFips[0:2],countyFips[2:5]))
-            gaia_grid.writeToGaiaFile(f,3)
+                f.write("USFIPS st%2s.ct%3s.tr*.bl* -1\n"%(countyFips[0:2],countyFips[2:5]))
+            gaia_grid.writeToGaiaFile(f)
             
         ### Compute the Boundaries
         with open(gaia_style_file,"wb") as f:
-            gaia_grid.writeStyleFile(f)
+            gaia_grid.writeStyleFile(f,radius=1.5)
         plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_file],False,"png",None,None,None,-1,-1,
-                            0,5000,False,None,-1.0,128.0,"255.255.255.255",None,1.0,None,None,
+                            0,1000,False,None,42.0,-1.0,"255.255.255.255",None,1.0,fred_title,None,
                             opts.debug)
 
         time1 = time.time()
@@ -361,12 +374,19 @@ if __name__ == '__main__':
     if vizType == "inc_anim":
         ### Get the popoulation density
         ## fill the population density first, as it is constant
+        if opts.debug:
+            print "Creating Population Density Grid"
         gaia_grid_pop = PopDenGrid(gaia_bounding_box,opts.grid,fred_locations_households)
         gaia_style_pop_file = "fred_gaia_pop_style_"+ str(fred_run.key) + ".txt"
         with open(gaia_style_pop_file,"wb") as f:
-            gaia_grid_pop.writeStyleFile(f,radius=0.75)
+            gaia_grid_pop.writeStyleFile(f,radius=1.5)
+        if opts.debug:
+            print "Finished Creating Population Density Grid"
             
         for infections_file_key in fred_run.infections_files.keys():
+            if opts.debug:
+                print "Creating Infections Grid for %s"%(str(infections_file_key))
+                                                         
             infections_file = fred_run.infections_files[infections_file_key]
             #if fred_run.infections_files.index(infections_file) != int(opts.run): continue
         ## First find out how many days one needs to show
@@ -395,8 +415,11 @@ if __name__ == '__main__':
                                     gaia_grids[day].data[grid_coords] + 1
             time2 = time.time()
             if opts.time: print "Time to grid the incidence = %g"%(time2-time1)
-
+            if opts.debug:
+                print "Completed Infections Grid for %s"%(str(infections_file_key))
             time1 = time.time()
+            if opts.debug:
+                print "Creating Gaia Input file for %s"%(str(infections_file_key))
             with open(gaia_input_file,"w") as f:
                 max_inc = -99999
                 peak_day = 0
@@ -409,7 +432,7 @@ if __name__ == '__main__':
                         peak_day = k
 
                     for countyFips in fred_locations_households.countyList:
-                        f.write("USFIPS st%2s.ct%3s.tr* -1 %g\n"%(countyFips[0:2],countyFips[2:5],k))
+                        f.write("USFIPS st%2s.ct%3s.tr*.bl* -1 %g\n"%(countyFips[0:2],countyFips[2:5],k))
                     
                     for i in range(0,gaia_grid_pop.number_lon):
                         for j in range(0,gaia_grid_pop.number_lat):
@@ -437,19 +460,24 @@ if __name__ == '__main__':
                 time1 = time.time()
                 boundaries_inc = computeBoundaries(gaia_grids[peak_day].data,5)
                 colors_inc = computeColors("255.255.0.0","255.0.0.255",len(boundaries_inc))
-
+            
                 with open(gaia_style_inc_file,"wb") as f:
                     f.write('id=3\n')
                     for boundary in boundaries_inc:
-                        f.write('%s 0.75 %g %g\n'%(colors_inc[boundaries_inc.index(boundary)],\
+                        f.write('%s 1.5 %g %g\n'%(colors_inc[boundaries_inc.index(boundary)],\
                                                   boundary[0],boundary[1]))
             
                 time2 = time.time()
                 if opts.time: print "Time to computer inc boudaries = %g"%(time2-time1)
+                if opts.debug:
+                    print "Completed writing GAIA file for %s"%(str(infections_file_key))
+                    print "Creating PlotInfo for %s"%(str(infections_file_key))
                 plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_pop_file,gaia_style_inc_file],False,
                                     "gif","mpg",None,None,-1.0,-1.0,
-                                    0,500,False,None,-1.0,12.0,"255.255.255.255",None,2.0,None,None,opts.debug)
-
+                                    0,1000,False,None,42.0,-1.0,"255.255.255.255",None,2.0,fred_title,None,opts.debug)
+                if opts.debug:
+                    print "Completed PlotInfo for %s"%(str(infections_file_key))
+                    print "Sending to GAIA"
                 time1 = time.time()
                 gaia = GAIA(plotInfo)
                 time2 = time.time()
@@ -458,5 +486,7 @@ if __name__ == '__main__':
                 time1 = time.time()
                 gaia.call()
                 time2 = time.time()
+                if opts.debug:
+                    print "GAIA returned"
                 if opts.time: print "Time for GAIA to produce visualization = %g sec"%(time2 - time1)
 
