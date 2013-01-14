@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# $Id: gaia.py,v 1.1 2013-01-13 13:38:42 stbrown Exp $ #
+# $Id: gaia.py,v 1.2 2013-01-14 18:27:15 stbrown Exp $ #
 
 # Copyright 2009, Pittsburgh Supercomputing Center (PSC).  
 # See the file 'COPYRIGHT.txt' for any restrictions.
@@ -728,20 +728,22 @@ def computeBoundaries(valueList,numOfBins):
     #print "OrgBins = " + str(orgNumBins) + " ChunkLen = " + str(len(chunkList))
     ### Iterate until we get to the proper number of bins
     if orgNumBins != len(chunkList):
-        while orgNumBins != len(chunkList):
-            reducedNumBins = orgNumBins - 1
-            newValueList = []
-            for chunk in chunkList[1:]:
-                for value in chunk:
-                    newValueList.append(value)
+        #while orgNumBins != len(chunkList):
+            ##     while orgNumBins != len(chunkList):
+        reducedNumBins = orgNumBins - 1
+        newValueList = []
+        for chunk in chunkList[1:]:
+            for value in chunk:
+                newValueList.append(value)
 
-            (newNumBins,newChunkList) = chunkUpList(newValueList,reducedNumBins)
+        (newNumBins,newChunkList) = chunkUpList(newValueList,reducedNumBins)
 
-            if newNumBins+1 < orgNumBins: orgNumBins = newNumBins + 1
+        if newNumBins+1 < orgNumBins: orgNumBins = newNumBins + 1
 
-            chunkList = [chunkList[0]]
-            for chunk in newChunkList:
-                chunkList.append(chunk)
+        chunkList = [chunkList[0]]
+        for chunk in newChunkList:
+            chunkList.append(chunk)
+
 
             #print "newNumBins = %d orgNumBins = %d chunkLen = %d"%(newNumBins,orgNumBins,len(chunkList))
     # Create and Return Boundaries (Joel would not approve of the fact that this is multple lines :))

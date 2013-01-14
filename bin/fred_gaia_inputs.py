@@ -51,7 +51,7 @@ class Grid:
     def writeStyleFile(self,file,radius=6.0,startColor="255.255.0.0",
                        endColor="255.0.0.255",numbounds=10,styleID=None):
         boundaries = computeBoundaries(self.data,numbounds)
-        colors = computeColors(startColor,endColor,numbounds)
+        colors = computeColors(startColor,endColor,len(boundaries))
 
         if styleID:
             file.write("id=%d\n"%styleID)
