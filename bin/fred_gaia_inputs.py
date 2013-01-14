@@ -139,6 +139,7 @@ if __name__ == '__main__':
     -l or --loc   FRED Location file to use (if blank will try to use the one from input)
     -g or --grid  Size of grid points to plot
     -w or --time  Turn on profiling
+    -d or --debug Turn on debug printing
     """)
 
     parser.add_option("-k","--key",type="string",
@@ -158,6 +159,8 @@ if __name__ == '__main__':
                       help="The size of grid points",
                       default=0.002)
     parser.add_option("-w","--time",action="store_true",
+                      default=False)
+    parser.add_option("-d","--debug",action="store_true",
                       default=False)
     
 
@@ -293,7 +296,8 @@ if __name__ == '__main__':
 
                 plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_pop_file,gaia_style_inc_file],
                                     False,"png",None,None,None,-1.0,-1.0,
-                                    0,1000,False,None,-1.0,-1.0,"255.255.255.255",None,2.0,None,None)
+                                    0,1000,False,None,-1.0,-1.0,"255.255.255.255",None,2.0,None,None,
+                                    opts.debug)
 
                 time1 = time.time()
                 gaia = GAIA(plotInfo)
@@ -319,7 +323,8 @@ if __name__ == '__main__':
         with open(gaia_style_file,"wb") as f:
             gaia_grid.writeStyleFile(f)
         plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_file],False,"png",None,None,None,-1,-1,
-                            0,5000,False,None,-1.0,128.0,"255.255.255.255",None,1.0,None,None)
+                            0,5000,False,None,-1.0,128.0,"255.255.255.255",None,1.0,None,None,
+                            opts.debug)
 
         time1 = time.time()
         gaia = GAIA(plotInfo)
@@ -443,7 +448,7 @@ if __name__ == '__main__':
                 if opts.time: print "Time to computer inc boudaries = %g"%(time2-time1)
                 plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_pop_file,gaia_style_inc_file],False,
                                     "gif","mpg",None,None,-1.0,-1.0,
-                                    0,500,False,None,-1.0,12.0,"255.255.255.255",None,2.0,None,None)
+                                    0,500,False,None,-1.0,12.0,"255.255.255.255",None,2.0,None,None,opts.debug)
 
                 time1 = time.time()
                 gaia = GAIA(plotInfo)

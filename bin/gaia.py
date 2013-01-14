@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# $Id: gaia.py,v 1.2 2013-01-14 18:27:15 stbrown Exp $ #
+# $Id: gaia.py,v 1.3 2013-01-14 20:00:47 stbrown Exp $ #
 
 # Copyright 2009, Pittsburgh Supercomputing Center (PSC).  
 # See the file 'COPYRIGHT.txt' for any restrictions.
@@ -190,8 +190,10 @@ class PlotInfo:
                  fill_color_ = None,
                  stroke_width_ = 1.0,
                  title_ = None,
-                 legend_ = None):
+                 legend_ = None,
+                 debug_= False):
 
+        self.debug = debug_
         self.input_filename = input_filename_
         if output_filename_ is None:
             self.output_filename = os.path.splitext(self.input_filename)[0]
@@ -238,12 +240,18 @@ class PlotInfo:
         self.styles = []
         for styleFilename in styles_filenames_:
             self.styles.append(self.parseStyles(styleFilename))
+
                    
     def parseWrappers(self):
+        if self.debug:
+            print "Parsing Wrappers"
         wrappers_tmp = []
         lonLatPathRecs = {}
         with open(self.input_filename,"rb") as f:
             for line in f:
+                if self.debug:
+                    print "Line: %s"%line
+                    sys.stdout.flush()
                 elements = line.split()
                 if elements[0][0]== Constants.GAIA_INPUT_COMMENT_FLAG:
                     continue
@@ -282,7 +290,8 @@ class PlotInfo:
                 element = LonLatPath()
                 element.parseRec(lonLatPathRecs[lonLatID])
                 wrappers_tmp.append(element)
-
+        if self.debug:
+            print "Completed Parsing Wrappers"
         return wrappers_tmp
 
     def parseStyles(self,styleFilename):
@@ -308,6 +317,8 @@ class PlotInfo:
         return styles_tmp
 
     def printXMLMessage(self):
+        if self.debug:
+            print "Creating XML message"
         xmlString = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?><gaia>'
         xmlString+= '<output-format>%s</output-format>'%(self.output_format)
         
@@ -378,7 +389,8 @@ class PlotInfo:
         xmlWrapString = ''.join([str(x)+Constants.WRAPPER_RAW_ELEMENT_DELIMITER for x in self.wrappers])   
         xmlString += xmlWrapString[:-1] + '</wrapper-raw>'
         xmlString += '</gaia>'
-
+        if self.debug:
+            print "Completed parsing XML"
         return xmlString
 
 class ConfInfo:
