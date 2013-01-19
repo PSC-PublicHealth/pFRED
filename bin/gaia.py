@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# $Id: gaia.py,v 1.3 2013-01-14 20:00:47 stbrown Exp $ #
+# $Id: gaia.py,v 1.4 2013-01-19 22:18:20 stbrown Exp $ #
 
 # Copyright 2009, Pittsburgh Supercomputing Center (PSC).  
 # See the file 'COPYRIGHT.txt' for any restrictions.
@@ -102,7 +102,7 @@ class Constants:
 
     fileExtensions = {MIME_IMAGE_GIF:'.gif',
                       MIME_IMAGE_PNG:'.png',
-                      MIME_VIDEO_MPG:'.mpg',
+                      MIME_VIDEO_MPG:'.mov',
                       MIME_APP_TAR:'.tgz',
                       MIME_APP_GZIP:'.gz'}
 
