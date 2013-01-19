@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import sys,os
+import sys,os,glob,ntpath
 import string
 from datetime import datetime,timedelta
 
@@ -111,7 +111,54 @@ class FRED_RUN:
         self.run_data_reports_dir = fred.assign_directory(self.run_data_dir + "/REPORTS")
 
         #self.command = open(self.run_data_out_dir + "/COMMAND_LINE","r").readline().strip()
+        ### It is ambiguous as to how the files are named starting from 0 or one
+        ### So we need to do this to get all of the proper file names
+        
+        self.outputFileList = glob.glob(self.run_data_out_dir+"/out*.txt")
+        #print str(self.outputFileList)
+        if len(self.outputFileList) != self.number_of_runs:
+            raise RuntimeError("\nThe number of output files is inconsitent with the RUNS meta data parameter")
+    
+        self.outputs = {}
+        self.outputsAve = []
+        self.outputKeyOrdered = []
+        firstRun = True
+        for outFile in self.outputFileList:
+            outFileKey = ntpath.basename(outFile)[3:-4]
+            #print outFileKey
+            self.outputs[outFileKey] = []
+            with open(outFile,"rb") as f:
+                dayCount = 0
+               
+                #self.outputsAve.append({})
+                for line in f:
+                    #print "i = " + str(i) + " DayCount = " + str(dayCount)
+                    self.outputs[outFileKey].append({})
+                    if firstRun: self.outputsAve.append({})
+                    lineSplit = line.split()
+                    for j in range(0,len(lineSplit),2):
+                        key = lineSplit[j]
+                        if key not in self.outputKeyOrdered:
+                            self.outputKeyOrdered.append(key)
+                        value = lineSplit[j+1]
+                        
+                        self.outputs[outFileKey][dayCount][key] = value
+                        if value.isdigit():
+                            if self.outputsAve[dayCount].has_key(key) is False:
+                                self.outputsAve[dayCount][key] = 0
+                            self.outputsAve[dayCount][key] += float(value)
+                        else:
+                            #print "except: " + str(lineSplit[j]) + ": " + lineSplit[j+1]
+                            self.outputsAve[dayCount][key] = lineSplit[j+1]
+                    dayCount += 1
+            firstRun=False
 
+        for day in self.outputsAve:
+            for key in day.keys():
+                value =  day[key]
+                if isinstance(value,float):
+                    self.outputsAve[self.outputsAve.index(day)][key] = int(value/float(self.number_of_runs))
+                
         #This is a dictionary so that I can load specific runs and index them.
         self.infections_files = {}
         
@@ -152,7 +199,26 @@ class FRED_RUN:
         print "\tRun Time:\t" + str(self.run_time)
         print "\tRun on Machine:\t" + self.where
         print "\tRun by User:\t" + self.user
-        
+
+    def print_outputs(self,run_number):
+        if str(run_number) not in self.outputs.keys():
+            raise RuntimeError("Realization %s does not exist for job %s"%(str(run_number),self.key))
+                               
+        print "------ Outputs for FRED Job " + self.key + " Realization " + str(run_number) + "--------"
+        output = self.outputs[str(run_number)]
+        for day in output:
+            dayString = ""
+            for key in self.outputKeyOrdered:
+                dayString += "%s %s "%(key,day[key])
+            print dayString
+    def print_ave_outputs(self):
+        print "------ Average Outputs from FRED Job " + self.key + "------"
+        print " "
+        for day in self.outputsAve:
+            dayString = ""
+            for key in self.outputKeyOrdered:
+                dayString += "%s %s "%(key,day[key])
+            print dayString
         
     def get_param(self,param_string):
         if self.params_dict.has_key(param_string):
