@@ -74,9 +74,24 @@ output_population_date_match = 01-01-*
 #
 ##########################################################
 
-# Allegheny County Population (Ver 2)
+# defauts to Allegheny County Population (Ver 2)
 synthetic_population_directory = $FRED_HOME/populations
 synthetic_population_id = 2005_2009_ver2_42003
+
+# If a city is named it overrides the synthetic_population_id parameter.
+# The city format is "name state_abbrevation", such as:
+# city = Pittsburgh PA
+city = none
+
+# If a county is named but a city is not, the county overrides the
+# synthetic_population_id parameter.
+# The county format is "name state_abbrevation", such as:
+# county = Allegheny County PA
+county = none
+
+# If a city or county is named, the pop_version_prefix will be prepended
+# to the FIPS code to form the synthetic_population_id
+synthetic_population_version = 2005_2009_ver2
 
 # If set, then all workers who have a workplace outside the location file
 # are assigned a random workplace in the location file.
