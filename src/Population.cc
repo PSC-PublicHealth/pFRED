@@ -463,8 +463,8 @@ void Population::read_population() {
   // Read past infections
   char past_infections[FRED_STRING_SIZE];
   int delay;
-  Params::get_param((char *)"past_infections", past_infections);
-  Params::get_param((char *)"past_infections_delay", &delay);
+  Params::get_param_from_string("past_infections", past_infections);
+  Params::get_param_from_string("past_infections_delay", &delay);
   if ( strcmp(past_infections, "none") != 0) {
     FILE *pifp = fopen(past_infections, "r");
     int person_id, dis_id, rec_date, age_at_exp, num_strains, strain;

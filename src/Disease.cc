@@ -75,9 +75,9 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
     fflush(Global::Statusfp);
   }
 
-  Params::get_param((char *) "R0",&R0);
-  Params::get_param((char *) "R0_a",&R0_a);
-  Params::get_param((char *) "R0_b",&R0_b);
+  Params::get_param_from_string("R0",&R0);
+  Params::get_param_from_string("R0_a",&R0_a);
+  Params::get_param_from_string("R0_b",&R0_b);
 
   Params::get_indexed_param("trans",id,&transmissibility);
   Params::get_indexed_param("mortality_rate",id,&mortality_rate);

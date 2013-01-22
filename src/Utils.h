@@ -145,6 +145,8 @@ namespace Utils{
   void fred_print_resource_usage(int day);
   void replace_csv_missing_data(char *out_str, char* in_str, const char * replacement);
   void get_next_token(char * out_string, char ** input_string);
+  void delete_char(char *s, char c, int maxlen);
+  void normalize_white_space(char *s);
 }
 
 #endif /* UTILS_H_ */

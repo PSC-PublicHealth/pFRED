@@ -52,6 +52,109 @@ Place_List::~Place_List() {
 }
 
 void Place_List::get_parameters() {
+  Params::get_param_from_string("synthetic_population_directory", Global::Synthetic_population_directory);
+  Params::get_param_from_string("synthetic_population_id", Global::Synthetic_population_id);
+  Params::get_param_from_string("synthetic_population_version", Global::Synthetic_population_version);
+  Params::get_param_from_string("city", Global::City);
+  Params::get_param_from_string("county", Global::County);
+  
+  // if the user specifies "city" param, it overrides the
+  // synhetic_population_id
+
+  if (strcmp(Global::City, "none") != 0) {
+    
+    // delete any commas and periods
+    Utils::delete_char(Global::City, ',', FRED_STRING_SIZE);
+    Utils::delete_char(Global::City, '.', FRED_STRING_SIZE);
+
+    // replace white space characters with a single space
+    Utils::normalize_white_space(Global::City);
+
+    // get population_id from city
+    char counties_file[FRED_STRING_SIZE];
+    char city_state[FRED_STRING_SIZE];
+    char line_string[FRED_STRING_SIZE];
+    char *line, *city, *state, *county, *fips;
+    int found = 0;
+    sprintf(counties_file, "$FRED_HOME/input_files/US_counties.txt");
+    FILE *fp = Utils::fred_open_file(counties_file);
+    if (fp == NULL) {
+      Utils::fred_abort("counties file |%s| NOT FOUND\n", counties_file);
+    }
+    while (fgets(line_string, FRED_STRING_SIZE-1, fp) != NULL) {
+      line = line_string;
+      city = strsep(&line, "\t");
+      state = strsep(&line, "\t");
+      county = strsep(&line, "\t");
+      fips = strsep(&line, "\n");
+      // printf("city = |%s| state = |%s| county = |%s| fips = |%s|\n",
+      // city,state,county,fips);
+      sprintf(city_state, "%s %s", city, state);
+      if (strcmp(Global::City, city_state) == 0) {
+	found = 1;
+	break;
+      }
+    }
+    fclose(fp);
+    if (found) {
+      printf("FOUND a county for city = |%s| county = |%s County %s| and fips = |%s|\n",
+	     Global::City, county, state, fips);
+      sprintf(Global::Synthetic_population_id, "%s_%s",
+	      Global::Synthetic_population_version, fips);
+    }
+    else {
+      Utils::fred_abort("Sorry, could not find a county for city = |%s|\n", Global::City);
+    }
+  }
+
+  // if the user specifies a "county" params but not a "city" param, the
+  // county overrides the synhetic_population_id
+
+  if (strcmp(Global::City, "none") == 0 && strcmp(Global::County, "none") != 0) {
+
+    // delete any commas and periods
+    Utils::delete_char(Global::County, ',', FRED_STRING_SIZE);
+    Utils::delete_char(Global::County, '.', FRED_STRING_SIZE);
+
+    // replace white space characters with a single space
+    Utils::normalize_white_space(Global::County);
+
+    // get population_id from county
+    char counties_file[FRED_STRING_SIZE];
+    char county_state[FRED_STRING_SIZE];
+    char line_string[FRED_STRING_SIZE];
+    char *line, *city, *state, *county, *fips;
+    int found = 0;
+    sprintf(counties_file, "$FRED_HOME/input_files/US_counties.txt");
+    FILE *fp = Utils::fred_open_file(counties_file);
+    if (fp == NULL) {
+      Utils::fred_abort("counties file |%s| NOT FOUND\n", counties_file);
+    }
+    while (fgets(line_string, FRED_STRING_SIZE-1, fp) != NULL) {
+      line = line_string;
+      city = strsep(&line, "\t");
+      state = strsep(&line, "\t");
+      county = strsep(&line, "\t");
+      fips = strsep(&line, "\n");
+      // printf("city = |%s| state = |%s| county = |%s| fips = |%s|\n",
+      // city,state,county,fips);
+      sprintf(county_state, "%s County %s", county, state);
+      if (strcmp(Global::County, county_state) == 0) {
+	found = 1;
+	break;
+      }
+    }
+    fclose(fp);
+    if (found) {
+      printf("FOUND county = |%s| fips = |%s|\n",
+	     county_state, fips);
+      sprintf(Global::Synthetic_population_id, "%s_%s",
+	      Global::Synthetic_population_version, fips);
+    }
+    else {
+      Utils::fred_abort("Sorry, could not find county called |%s|\n", Global::County);
+    }
+  }
 }
 
 void Place_List::read_places() {
@@ -63,6 +166,8 @@ void Place_List::read_places() {
   fred::geo min_lat, max_lat, min_lon, max_lon;
   char location_file[FRED_STRING_SIZE];
   FILE *fp = NULL;
+
+  get_parameters();
 
   // vector to hold init data
   std::vector< Place_Init_Data > pidv;

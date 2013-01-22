@@ -425,3 +425,45 @@ void Utils::get_next_token(char * out_string, char ** input_string) {
   return;
 }
 
+// remove non-NULL char c from string s with length at most maxlen
+void Utils::delete_char(char *s, char c, int maxlen) {
+  int len = strnlen(s, maxlen+1);
+
+  // abort if no NULL found
+  if (len == maxlen)
+    return;
+
+  // do not remove NULL characters
+  if ( c == '\0' )
+    return;
+
+  char *new_s = s;
+  while (*s != '\0') {
+    if ( *s != c )
+      *new_s++ = *s;
+    s++;
+  }
+  *new_s = '\0';
+}
+
+// replace multiple white spaces with a single space in string s
+void Utils::normalize_white_space(char *s) {
+  char *new_s = s;
+  // printf("new_s = |%s|\n", new_s); fflush(stdout);
+  int started = 0;
+  char *token;
+  while ((token = strsep(&s, " \t")) != NULL) {
+    if (*token != '\0') {
+      // printf("token = |%s|\n", token); fflush(stdout);
+      char *t = token;
+      if (started) *new_s++ = ' ';
+      while (*t != '\0') *new_s++ = *t++;
+      *new_s = '\0';
+      started = 1;
+      // printf("new_s = |%s|\n", new_s); fflush(stdout);
+    }
+  }
+}
+
+
+

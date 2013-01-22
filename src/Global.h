@@ -137,6 +137,7 @@ class Global {
     // global runtime parameters
     static char Synthetic_population_directory[];
     static char Synthetic_population_id[];
+    static char Synthetic_population_version[];
     static char Population_directory[];
     static char Output_directory[];
     static char Tracefilebase[];
