@@ -42,8 +42,8 @@ int main(int argc, char* argv[]) {
 
   int run;          // number of current run
   unsigned long new_seed;
-  char directory[256];
-  char paramfile[256];
+  char directory[FRED_STRING_SIZE];
+  char paramfile[FRED_STRING_SIZE];
 
   Global::Statusfp = stdout;
   Utils::fred_start_timer();

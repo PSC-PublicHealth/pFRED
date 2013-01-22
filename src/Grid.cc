@@ -162,7 +162,7 @@ void Grid::quality_control(char * directory) {
   }
 
   if (Global::Verbose>1) {
-    char filename [256];
+    char filename [FRED_STRING_SIZE];
     sprintf(filename, "%s/grid.dat", directory);
     FILE *fp = fopen(filename, "w");
     for (int row = 0; row < rows; row++) {
@@ -203,7 +203,7 @@ void Grid::quality_control(char * directory, double min_x, double min_y) {
   }
 
   if (Global::Verbose>1) {
-    char filename [256];
+    char filename [FRED_STRING_SIZE];
     sprintf(filename, "%s/grid.dat", directory);
     FILE *fp = fopen(filename, "w");
     for (int row = 0; row < rows; row++) {
@@ -416,7 +416,7 @@ void Grid::select_immigrants(int day) {
     for (int i = 0; i < size; i++) {
       // clone the ith original housemate
       int idx = clone_house->get_orig_id(i);
-      char pstring[256];
+      char pstring[FRED_STRING_SIZE];
       strcpy(pstring, Global::Pop.get_pstring(idx));
 
 //<<<<<<< Grid.cc
@@ -470,7 +470,7 @@ void Grid::print_household_distribution(char * dir, char * date_string, int run)
   FILE *fp;
   int targ, count;
   double pct;
-  char filename[256];
+  char filename[FRED_STRING_SIZE];
   sprintf(filename, "%s/household_dist_%s.%02d", dir, date_string, run);
   printf("print_household_dist entered, filename = %s\n", filename); fflush(stdout);
 

@@ -263,7 +263,7 @@ void Behavior::get_parameters() {
 }
 
 void Behavior::get_parameters_for_behavior(char * behavior_name, Behavior_params * params) {
-  char param_str[256];
+  char param_str[FRED_STRING_SIZE];
 
   strcpy(params->name, behavior_name);
 

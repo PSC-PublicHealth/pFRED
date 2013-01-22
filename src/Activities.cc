@@ -877,7 +877,7 @@ void Activities::read_init_files() {
   Params::get_param_from_string("flu_days", &Activities::Flu_days);
 
   if (!Global::Enable_Mobility) return;
-  char yearly_mobility_rate_file[256];
+  char yearly_mobility_rate_file[FRED_STRING_SIZE];
   if (Global::Verbose) {
     fprintf(Global::Statusfp, "read activities init files entered\n"); fflush(Global::Statusfp);
   }

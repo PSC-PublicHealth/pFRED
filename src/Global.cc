@@ -26,11 +26,11 @@
 #include "DB.h"
 
 // global runtime parameters
-char Global::Synthetic_population_directory[256];
-char Global::Synthetic_population_id[256];
-char Global::Output_directory[256];
-char Global::Tracefilebase[256];
-char Global::VaccineTracefilebase[256];
+char Global::Synthetic_population_directory[FRED_STRING_SIZE];
+char Global::Synthetic_population_id[FRED_STRING_SIZE];
+char Global::Output_directory[FRED_STRING_SIZE];
+char Global::Tracefilebase[FRED_STRING_SIZE];
+char Global::VaccineTracefilebase[FRED_STRING_SIZE];
 int Global::Incremental_Trace = 0;
 int Global::Trace_Headers = 0;
 int Global::Rotate_start_date = 0;
@@ -38,13 +38,15 @@ int Global::Quality_control = 0;
 int Global::RR_delay = 0;
 int Global::Diseases = 0;
 int Global::StrainEvolution = 0;
-char Global::Prevfilebase[256];
-char Global::Incfilebase[256];
-char Global::Immunityfilebase[256];
+char Global::Prevfilebase[FRED_STRING_SIZE];
+char Global::Incfilebase[FRED_STRING_SIZE];
+char Global::Immunityfilebase[FRED_STRING_SIZE];
+char Global::City[FRED_STRING_SIZE];
+char Global::County[FRED_STRING_SIZE];
 
-char Global::DBfile[256];
+char Global::DBfile[FRED_STRING_SIZE];
 
-char Global::ErrorLogbase[256];
+char Global::ErrorLogbase[FRED_STRING_SIZE];
 int Global::Enable_Behaviors = 0;
 int Global::Track_infection_events = 0;
 int Global::Track_age_distribution = 0;
@@ -58,8 +60,8 @@ int Global::Reseed_day = 0;
 unsigned long Global::Seed = 0;
 int Global::Epidemic_offset = 0;
 int Global::Vaccine_offset = 0;
-char Global::Start_date[256];
-char Global::Seasonality_Timestep[256];
+char Global::Start_date[FRED_STRING_SIZE];
+char Global::Seasonality_Timestep[FRED_STRING_SIZE];
 int Global::Track_Residual_Immunity = 0;
 double Global::Work_absenteeism = 0.0;
 double Global::School_absenteeism = 0.0;

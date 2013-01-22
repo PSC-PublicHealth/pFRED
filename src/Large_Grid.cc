@@ -167,7 +167,7 @@ void Large_Grid::quality_control(char * directory) {
   }
 
   if (Global::Verbose>1) {
-    char filename [256];
+    char filename [FRED_STRING_SIZE];
     sprintf(filename, "%s/large_grid.dat", directory);
     FILE *fp = fopen(filename, "w");
     for (int row = 0; row < rows; row++) {
@@ -213,7 +213,7 @@ void Large_Grid::set_population_size() {
   // print debugging data for large grid
   /*
   FILE *fp;
-  char filename[256];
+  char filename[FRED_STRING_SIZE];
   sprintf(filename, "OUT/largegrid.txt");
   fp = fopen(filename,"w");
   for (int i = 0; i < rows; i++) {
@@ -234,7 +234,7 @@ void Large_Grid::set_population_size() {
 
 void Large_Grid::read_max_popsize() {
   int r,c, n;
-  char filename[256];
+  char filename[FRED_STRING_SIZE];
   if (Global::Enable_Travel) {
     Params::get_param_from_string("cell_popfile", filename);
     FILE *fp = Utils::fred_open_file(filename);

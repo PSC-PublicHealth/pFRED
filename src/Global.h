@@ -41,6 +41,9 @@
 #define NCPU 1
 #endif
 
+// Size of strings (usually file names)
+#define FRED_STRING_SIZE 256
+
 class DB;
 
 class Population;
@@ -148,6 +151,8 @@ class Global {
     static char Prevfilebase[];
     static char Incfilebase[];
     static char Immunityfilebase[];
+    static char City[];
+    static char County[];
 
     static char DBfile[];
 

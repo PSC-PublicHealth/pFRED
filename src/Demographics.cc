@@ -223,8 +223,8 @@ void Demographics::read_init_files() {
 
   if ( Demographics::is_initialized ) { return; }
 
-  char yearly_mortality_rate_file[256];
-  char yearly_birth_rate_file[256];
+  char yearly_mortality_rate_file[FRED_STRING_SIZE];
+  char yearly_birth_rate_file[FRED_STRING_SIZE];
   double birth_rate_multiplier;
   FILE *fp = NULL;
 

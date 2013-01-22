@@ -61,7 +61,7 @@ void Place_List::read_places() {
   char place_type;
   fred::geo lon, lat;
   fred::geo min_lat, max_lat, min_lon, max_lon;
-  char location_file[256];
+  char location_file[FRED_STRING_SIZE];
   FILE *fp = NULL;
 
   // vector to hold init data
@@ -592,7 +592,7 @@ void Place_List::print_household_size_distribution(char * dir, char * date_strin
   FILE *fp;
   int count[11];
   double pct[11];
-  char filename[256];
+  char filename[FRED_STRING_SIZE];
   sprintf(filename, "%s/household_size_dist_%s.%02d", dir, date_string, run);
   printf("print_household_size_dist entered, filename = %s\n", filename); fflush(stdout);
   for (int i = 0; i < 11; i++) {

@@ -48,7 +48,7 @@ static int max_trip_list_size;
 static double active_trip_fraction;
 static int max_trips_per_day;
 static int trips_per_day;
-char tripfile[256];
+char tripfile[FRED_STRING_SIZE];
 
 // runtime parameters
 static double * Travel_Duration_Cdf;    // cdf for trip duration
@@ -173,7 +173,7 @@ void Travel::setup(char * directory) {
 
   // save the active trips for possible later use
   /*
-  char activefilename[256];
+  char activefilename[FRED_STRING_SIZE];
   sprintf(activefilename, "%s/active_trips.txt", directory);
   FILE *outfp = fopen(activefilename,"w");
   for (int i = 0; i < active_trips; i++) {

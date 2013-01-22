@@ -15,7 +15,7 @@ void Place_List::quality_control(char *directory) {
   FRED_STATUS(0, "places quality control check for %d places\n", number_places);
 
   if (Global::Verbose>1) {
-    char filename [256];
+    char filename [FRED_STRING_SIZE];
     sprintf(filename, "%s/houses.dat", directory);
     FILE *fp = fopen(filename, "w");
     for (int p = 0; p < number_places; p++) {

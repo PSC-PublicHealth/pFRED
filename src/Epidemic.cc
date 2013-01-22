@@ -235,7 +235,7 @@ void Epidemic::print_stats(int day) {
     average_seasonality_multiplier = Global::Clim->get_average_seasonality_multiplier(disease->get_id());
   }
 
-  char buffer[ 256 ];
+  char buffer[ FRED_STRING_SIZE ];
   int nchar_used = sprintf(buffer,
 			   "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d I_s %7d R %7d M %7d C %7d CI %7d AR %5.2f CAR %5.2f RR %4.2f N %7d",
 			   day,

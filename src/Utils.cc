@@ -21,7 +21,7 @@
 
 using namespace std;
 static time_t start_timer, stop_timer, fred_timer, day_timer;
-static char ErrorFilename[256];
+static char ErrorFilename[FRED_STRING_SIZE];
 
 void Utils::fred_abort(const char* format, ...){
 
@@ -99,7 +99,7 @@ void Utils::fred_warning(const char* format, ...){
 }
 
 void Utils::fred_open_output_files(char * directory, int run){
-  char filename[256];
+  char filename[FRED_STRING_SIZE];
 
   // ErrorLog file is created at the first warning or error
   Global::ErrorLogfp = NULL;

@@ -108,7 +108,7 @@ void Small_Grid::quality_control(char * directory) {
   }
   
   if (Global::Verbose>1) {
-    char filename [256];
+    char filename [FRED_STRING_SIZE];
     sprintf(filename, "%s/smallgrid.dat", directory);
     FILE *fp = fopen(filename, "w");
     for (int row = 0; row < rows; row++) {

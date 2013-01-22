@@ -82,7 +82,7 @@ void Cell::record_favorite_places() {
   workplace.clear();
   for (int age = 0; age < Global::ADULT_AGE; age++) school[age].clear();
 
-  // char filename[256];
+  // char filename[FRED_STRING_SIZE];
   // sprintf(filename, "PATCHES/Cell-%d-%d-households", row, col);
   // fp = fopen(filename, "w");
   for (int i = 0; i < houses; i++) {

@@ -52,8 +52,8 @@ int birth_count[Demographics::MAX_AGE + 1];
 int death_count_male[Demographics::MAX_AGE + 1];
 int death_count_female[Demographics::MAX_AGE + 1];
 
-char Population::pop_outfile[256];
-char Population::output_population_date_match[256];
+char Population::pop_outfile[FRED_STRING_SIZE];
+char Population::output_population_date_match[FRED_STRING_SIZE];
 int  Population::output_population = 0;
 bool Population::is_initialized = false;
 int  Population::next_id = 0;
@@ -302,8 +302,8 @@ void Population::parse_lines_from_stream( std::istream & stream ) {
   std::vector< Person_Init_Data > pidv;
 
   while ( stream.good() ) {
-    char line[256];
-    stream.getline( line, 256 );
+    char line[FRED_STRING_SIZE];
+    stream.getline( line, FRED_STRING_SIZE );
     // skip empty lines...
     if ( line[ 0 ] == '\0' ) {
       continue;
@@ -461,7 +461,7 @@ void Population::read_population() {
   }
 
   // Read past infections
-  char past_infections[256];
+  char past_infections[FRED_STRING_SIZE];
   int delay;
   Params::get_param((char *)"past_infections", past_infections);
   Params::get_param((char *)"past_infections_delay", &delay);
@@ -470,7 +470,7 @@ void Population::read_population() {
     int person_id, dis_id, rec_date, age_at_exp, num_strains, strain;
     vector<int> strains;
     // Read header line
-    char line[256];
+    char line[FRED_STRING_SIZE];
     fscanf(pifp, "%[^\n]s\n", line);
     int linenum = 0;
     while ( !feof(pifp) ) {
@@ -967,7 +967,7 @@ void Population::get_network_stats(char *directory) {
     fprintf(Global::Statusfp, "get_network_stats entered\n");
     fflush(Global::Statusfp);
   }
-  char filename[256];
+  char filename[FRED_STRING_SIZE];
   sprintf(filename, "%s/degree.csv", directory);
   FILE *fp = fopen(filename, "w");
   fprintf(fp, "id,age,deg,h,n,s,c,w,o\n");
@@ -1017,7 +1017,7 @@ void Population::print_age_distribution(char * dir, char * date_string, int run)
   FILE *fp;
   int count[21];
   double pct[21];
-  char filename[256];
+  char filename[FRED_STRING_SIZE];
   sprintf(filename, "%s/age_dist_%s.%02d", dir, date_string, run);
   printf("print_age_dist entered, filename = %s\n", filename); fflush(stdout);
   for (int i = 0; i < 21; i++) {
@@ -1054,7 +1054,7 @@ Person * Population::select_random_person_by_age(int min_age, int max_age) {
 void Population::write_population_output_file(int day) {
 
   //Loop over the whole population and write the output of each Person's to_string to the file
-  char population_output_file[256];
+  char population_output_file[FRED_STRING_SIZE];
   sprintf(population_output_file, "%s/%s_%s.txt", Global::Output_directory, Population::pop_outfile,
       (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str());
   FILE *fp = fopen(population_output_file, "w");

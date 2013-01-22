@@ -324,9 +324,9 @@ private:
                                   // have changed since the last history dump
   ChangeMap never_changed;        // agents who have *never* changed
 
-  static char profilefile[256];
-  static char pop_outfile[256];
-  static char output_population_date_match[256];
+  static char profilefile[FRED_STRING_SIZE];
+  static char pop_outfile[FRED_STRING_SIZE];
+  static char output_population_date_match[FRED_STRING_SIZE];
   static int output_population;
   static bool is_initialized;
   static int next_id;

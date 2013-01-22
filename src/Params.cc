@@ -291,7 +291,7 @@ int Params::get_param(char *s, char *p) {
 }
 
 int Params::get_param_vector(char *s, vector < int > &p){
-  char str[1024];
+  char str[MAX_PARAM_SIZE];
   int n;
   char *pch;
   int v;
@@ -314,7 +314,7 @@ int Params::get_param_vector(char *s, vector < int > &p){
 }
 
 int Params::get_param_vector(char *s, vector < double > &p){
-  char str[1024];
+  char str[MAX_PARAM_SIZE];
   int n;
   char *pch;
   double v;
@@ -337,7 +337,7 @@ int Params::get_param_vector(char *s, vector < double > &p){
 }
 
 int Params::get_param_vector(char *s, double *p) {
-  char str[1024];
+  char str[MAX_PARAM_SIZE];
   int n;
   char *pch;
   Params::get_param(s, str);
@@ -357,7 +357,7 @@ int Params::get_param_vector(char *s, double *p) {
 }
 
 int Params::get_param_vector(char *s, int *p) {
-  char str[1024];
+  char str[MAX_PARAM_SIZE];
   int n;
   char *pch;
   Params::get_param(s, str);
@@ -405,7 +405,7 @@ int Params::get_param_matrix(char *s, double ***p) {
 
 /*
   int get_param_map(char *s, map<char *, double> *p) {
-  char str[1024];
+  char str[MAX_PARAM_SIZE];
   int n = 0;
   char *pch;
   get_param(s, str);
@@ -440,7 +440,7 @@ int Params::get_param_matrix(char *s, double ***p) {
 
 int Params::get_param_map(char *s, map<string, double> *p) {
   int err = 0;
-  char str[1024];
+  char str[MAX_PARAM_SIZE];
   Params::get_param(s, str);
 
   stringstream pairsStream(str);
