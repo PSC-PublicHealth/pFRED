@@ -1,8 +1,8 @@
 FRED User’s Guide
 =================
 
-John Grefenstette, Shawn Brown, Jay DePasse, David Galloway, Bruce Lee, Yu-Ting Weng
-------------------------------------------------------------------------------------
+John Grefenstette, Jay DePasse, David Galloway, Yu-Ting Weng, Donald Burke
+--------------------------------------------------------------------------
 
 University of Pittsburgh
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -13,8 +13,8 @@ Roni Rosenfeld, Alona Fyshe, Anuroop Sriram, Christopher Tischuk
 Carnegie-Mellon University
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Nathan Stone
-------------
+Shawn Brown, Nathan Stone
+-------------------------
 
 Pittsburgh Supercomputing Center
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,7 +25,7 @@ Phil Cooley, Bill Wheaton
 RTI International
 ~~~~~~~~~~~~~~~~~
 
-19 Jul 2012
+23 Jan 2013
 -----------
 
 Acknowledgments
@@ -97,16 +97,25 @@ specific implementation details.
 Synthetic Population
 ====================
 
-FRED uses the synthetic population developed by RTI, International [#]_.
+For studies of regions within the United States, FRED uses the 2005-2009
+U.S. Synthetic Population Database (Version 2) from RTI International
+(Wheaton, 2012). The RTI Synthetic Population uses an iterative fitting
+method developed in (Beckman et al, 1996) to generate an agent
+population from the US Census Bureau’s Public Use Microdata files (PUMs)
+and aggregated data from the 2005-2009 American Community Survey (ACS)
+5-year sample. The database contains geographically located synthetic
+households and household residents for the United States, as well as
+group quarters locations and residents, schools and assignments of
+students to schools, workplaces and assignments of workers to
+workplaces. Each household, school and workplace is mapped to a specific
+geographic location, reflecting the actual spatial distribution of the
+area and the distance travelled by individuals to work or to school
+(Cajka et al, 2010, Wheaton et al, 2009). Each agent has associated
+demographic information (e.g., age, sex), locations for social
+activities (household, and possibly school or workplace).
 
-.. [#] In summary, RTI used a proportional iterative method developed in
-  (Beckman, et al. 1996) to generate an agent population from the US
-  Census Bureau’s Public Use Microdata files (PUMs) and Census aggregated
-  data.  See (Wheaton, et al. 2009) for a detailed description.  Each
-  agent had a set of socio-demographic characteristics and daily behaviors
-  that included age, sex, employment status, occupation, and household
-  location and membership. (This section is based on the Supplemental
-  Materials from (Cooley et al, 2011).
+The remainder of this section is based on the Supplemental Materials
+from (Cooley et al, 2011).
 
 Assignment of students to Schools
 ---------------------------------
@@ -312,20 +321,13 @@ others.
 Adult Decision-makers for Children
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The synthetic population used by FRED was developed by RTI,
-International using a process described in (Wheaton et al, 2009).
-Household level Public Use Microdata Sample (PUMS) includes the ages,
-sexes, and relationships of all individuals within a household.
-Households from the PUMS are selected with replacement to make up the
-synthetic population, selecting households so that the census counts and
-other statistical distributions are maintained at the census block
-level.  As a result of this process, the FRED synthetic population
-includes information giving the relationship of each member of the
-household to the Householder (typically, the owner of the house or the
-head of the household.)  This information is used to assign an adult in
-the household as the responsible decision-maker for the health-related
-behaviors of each child in the household.  The rules for selecting the
-adult decision-maker for each child are as follows:
+The FRED synthetic population includes information giving the
+relationship of each member of the household to the Householder
+(typically, the owner of the house or the head of the household.)  This
+information is used to assign an adult in the household as the
+responsible decision-maker for the health-related behaviors of each
+child in the household.  The rules for selecting the adult
+decision-maker for each child are as follows:
 
 #. If the Householder is the parent (natural parent, adoptive parent,
    step-parent) of the child, then the Householder is designated the
@@ -449,18 +451,15 @@ Place Model
 
 All infections in FRED are transmitted from one agent to another in some
 particular place. The types of places in FRED include: Households,
-Neighborhoods, School, Classrooms, Workplaces and Offices.
-
-The locations input file specifies the households, school and workplaces
-in the modeled region.  The household for each agent in the population
-file is required to be in the locations file.  The schools and
-workplaces are optional (since an agent may attend a school or workplace
-beyond the limits of the modeled region.)
+Neighborhoods, School, Classrooms, Workplaces and Offices. The synthetic
+population files specify the households, school and workplaces in the
+modeled region. Neighborhoods, classrooms, and office are created by
+FRED using the methods described below.
 
 Neighborhoods are defined on a grid with 1 km square cells.  The agent’s
 home neighborhood is the cell in which its household is located.
-However, an agent may visit another neighborhood in the community
-during a given day. (See Agent Model section.)
+However, an agent may visit another neighborhood in the community during
+a given day. (See Agent Model section.)
 
 Classrooms are small mixing groups with a given school.  Classrooms are
 defined by dividing up all the students who attend a given school into
@@ -470,14 +469,14 @@ the same classroom for the entire school year.  A student also interacts
 (with a separate probability) with all the students attending the same
 school.
 
-School and classrooms are closed on weekends, during scheduled summer
-breaks, and possibly due to school closure policies.
-
 Offices are small mixing groups with a given workplace.  Offices are
 defined by dividing up all the workers in a given workplace groups of up
 to 50 workers.  A worker interacts with the other workers in the same
 office, and, with a separate rate, with all workers in the same
 workplace.
+
+School and classrooms are closed on weekends, during scheduled summer
+breaks, and possibly due to school closure policies.
 
 For further details, see files: ``Place_List.cc``, ``Place.cc``,
 ``Household.cc``, ``Neighborhood.cc``, ``School.cc``, ``Classroom.cc``,
@@ -580,11 +579,15 @@ results in the following default parameters:
 
 ::
 
-  neighborhood_contacts[0] = 42.32
-  school_contacts[0] = 15.83
-  workplace_contacts[0] = 1.66
-  classroom_contacts[0] = 31.66
-  office_contacts[0] = 3.32
+  neighborhood_contacts[0] = 42.478577
+  school_contacts[0] = 14.320478
+  workplace_contacts[0] = 1.589467
+
+By default, the contact rates for classrooms are double those for the
+school in general.  Likewise, the contact rates for office are double
+those for workplaces in general.  These heuristic are based on the idea
+that individuals sustain more contacts within thei smaller mixing groups
+at school and at work.
 
 As in (Cooley et al, 2011) we assumed that 50% of sick individual stay
 at home and do not interact with anyone outside of the household. Note
@@ -603,7 +606,7 @@ within a household make contact each day with a specified probability.
 the 30-70 target distribution.  The resulting contact probability for
 Allegheny County is:
 
-``household_contacts[0] = 0.19``
+``household_contacts[0] = 0.198226``
 
 Interventions
 =============
@@ -611,14 +614,14 @@ Interventions
 Vaccines
 --------
 
-FRED provides a fairly robust capability for
-simulating the use of vaccines during a pandemic.  Multiple vaccines can
-be simulated simultaneously, with differing administration schedules and
-target groups, and with different efficacies.  Each vaccine can also
-have multiple doses and be restricted by age.  It is also possible to
-model varied vaccines schedules by day.   Prioritization by age groups,
-or by ACIP recommendation is available with the capability to vaccinate
-only the priority group.  Currently, vaccines can only be applied to one
+FRED provides a fairly robust capability for simulating the use of
+vaccines during a pandemic.  Multiple vaccines can be simulated
+simultaneously, with differing administration schedules and target
+groups, and with different efficacies.  Each vaccine can also have
+multiple doses and be restricted by age.  It is also possible to model
+varied vaccines schedules by day.   Prioritization by age groups, or by
+ACIP recommendation is available with the capability to vaccinate only
+the priority group.  Currently, vaccines can only be applied to one
 disease.
 
 Vaccines in FRED are currently modeled as so-called “all or nothing”
@@ -644,35 +647,36 @@ younger members.
 Antiviral drugs
 ---------------
 
+TBD.
+
 School closure
 --------------
 
 FRED includes two school closure policies: global and individual.  There
 are two triggers for the global school closure policy
-(``school_closure_policy = global``). First, all schools decide to
-close on the simulation day specified by the parameter
-``school_closure_day``, unless that parameter is negative. Second, all
-schools decide to close if the population attack rate exceeds a
-threshold (``school_closure_threshold``).  With either trigger, school
-closure is delayed by a number of days indicated by parameter
+(``school_closure_policy = global``). First, all schools decide to close
+on the simulation day specified by the parameter ``school_closure_day``,
+unless that parameter is negative. Second, all schools decide to close
+if the population attack rate exceeds a threshold
+(``school_closure_threshold``).  With either trigger, school closure is
+delayed by a number of days indicated by parameter
 ``school_closure_delay``.  Schools reopen after a number of days
 indicated by parameter ``school_closure_period``.
 
 If the individual school closure policy is selected
-(``school_closure_policy = individual``), then each school is closed
-if the attack rate within the school exceeds a threshold
+(``school_closure_policy = individual``), then each school is closed if
+the attack rate within the school exceeds a threshold
 (``school_closure_threshold``).  School closure is delayed by a number
-of days indicated by parameter ``school_closure_delay``.  Schools
-reopen after a number of days indicated by parameter
-``school_closure_period``, but may close again if the school attack
-rate exceeds the threshold.
+of days indicated by parameter ``school_closure_delay``.  Schools reopen
+after a number of days indicated by parameter ``school_closure_period``,
+but may close again if the school attack rate exceeds the threshold.
 
 The default is no school closure policy: ``school_closure_policy =
 none``
 
 School are always closed on weekends.  All schools also close for the
-summer if the parameter ``school_summer_schedule`` is set.  In
-that case, schools are closed between the dates specified by parameters
+summer if the parameter ``school_summer_schedule`` is set.  In that
+case, schools are closed between the dates specified by parameters
 ``school_summer_start`` and ``school_summer_end``, inclusive.
 
 For details, see ``School.cc``.
@@ -760,21 +764,23 @@ Seasonality and Climate
 
 It is possible to alter the transmissibility of diseases througout the
 simulation run.  A time-series profile of seasonality values that are
-used to scale the disease transmissibility is specified with the parameter
-``seasonality_timestep_file``.  This file allows recurring seasonal forcing
-patterns to be given using Month-Day calendar dates or 'simulation days'.  Optionally,
-the seasonality multiplier may be varied over FRED's **Large Grid** layer.
-The format of the ``seasonality_timestep_file`` is similar to that of the
+used to scale the disease transmissibility is specified with the
+parameter ``seasonality_timestep_file``.  This file allows recurring
+seasonal forcing patterns to be given using Month-Day calendar dates or
+'simulation days'.  Optionally, the seasonality multiplier may be varied
+over FRED's **Large Grid** layer.  The format of the
+``seasonality_timestep_file`` is similar to that of the
 ``multistrain_timestep_file`` and is described in detail below.
 
 Seasonality vs. Climate
 -----------------------
 
-The Seasonality feature of FRED has two basic modes of operation: the default in which
-the seasonality values are interpreted simply as direct multipliers to
-transmissibility and another ('**climate mode**') in which the values in the profile are
-interpreted as absolute (specific) humidity and transformed according
-to a Disease-specific function hardcoded in the **Disease** class.
+The Seasonality feature of FRED has two basic modes of operation: the
+default in which the seasonality values are interpreted simply as direct
+multipliers to transmissibility and another ('**climate mode**') in
+which the values in the profile are interpreted as absolute (specific)
+humidity and transformed according to a Disease-specific function
+hardcoded in the **Disease** class.
 
 The default function found in ``Disease.cc`` is:
 
@@ -805,7 +811,7 @@ For example:
 
   days = 100
   diseases = 1
-  popfile = pop_Alleg.txt
+  city = Pittsburgh, PA
 
 Some parameters are vector valued, in which case the format is:
 
@@ -2171,7 +2177,6 @@ Command                               Explanation
 ``fred_delete``                       delete a single job from the results database
 ``fred_jobs``                         show that status of all jobs in the results database
 ``fred_plot``                         plot one or more curves
-``fred_report``                       create statistical summaries of output variables
 ``fred_status``                       report the status of a single job
 ``fred_sweep``                        run a set of simulation changing the value of a variable
 ``fred_tail``                         show the tail of the current output file
@@ -2497,40 +2502,38 @@ Press. <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_
 Appendix: FRED License Agreement
 ================================
 
-A license is hereby granted by University of Pittsburgh Graduate School
-of Public Health (“GSPH”), free of charge, to any person obtaining a
-copy of the software package called FRED and associated documentation
-files (the {}Software{}), to use, copy, modify and merge copies of the
-Software, subject to the following conditions:
+FRED is released under the BSD 3-Clause ("BSD New" or "BSD Simplified")
+license:
 
-1. You acknowledge and agree that the license granted hereunder is
-personal to you, and you will not under any circumstances sell, give,
-disclose, lend, or otherwise distribute the Software to third parties.
-You further agree that you will not use the Software for commercial
-purposes.
+Copyright (c) 2010-2012, University of Pittsburgh, John Grefenstette,
+Shawn Brown, Roni Rosenfield, Alona Fyshe, David Galloway, Nathan Stone,
+Jay DePasse, Anuroop Sriram, and Donald Burke.
 
-2. You acknowledge and agree that GSPH retains all ownership rights,
-including copyright rights in the Software and that by entering into
-this license, you do not acquire any such rights in the Software.
+All rights reserved.
 
-3. You acknowledge and agree that THE SOFTWARE IS PROVIDED AS IS,
-WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
-AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
 
-4. If the Software is used to obtain a result, and that result is
-published in the public literature, then you agree to acknowledge its
-use of the Software in the following citation:
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
 
-Copyright 2011, University of Pittsburgh Graduate School of Public
-Health, John Grefenstette, Shawn Brown, Roni Rosenfield, Alona Fyshe,
-David Galloway, Nathan Stone, Bruce Lee, Phil Cooley, William Wheaton,
-Thomas Abraham, Jay DePasse, Anuroop Sriram, and Donald Burke.
+* Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
 
-5. You agree to indemnify and hold harmless GSPH from and against all
-damages, liabilities, attorney fees, and costs arising out of your use
-of the Software.
+* Neither the name of the University of Pittsburgh nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
