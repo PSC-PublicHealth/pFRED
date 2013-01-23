@@ -97,7 +97,7 @@ void Place_List::get_parameters() {
     }
     fclose(fp);
     if (found) {
-      printf("FOUND a county for city = |%s| county = |%s County %s| and fips = |%s|\n",
+      Utils::fred_log("FOUND a county for city = |%s| county = |%s County %s| and fips = |%s|\n",
 	     Global::City, county, state, fips);
       sprintf(Global::Synthetic_population_id, "%s_%s",
 	      Global::Synthetic_population_version, fips);
@@ -146,7 +146,7 @@ void Place_List::get_parameters() {
     }
     fclose(fp);
     if (found) {
-      printf("FOUND county = |%s| fips = |%s|\n",
+      Utils::fred_log("FOUND county = |%s| fips = |%s|\n",
 	     county_state, fips);
       sprintf(Global::Synthetic_population_id, "%s_%s",
 	      Global::Synthetic_population_version, fips);
@@ -225,6 +225,11 @@ void Place_List::read_places() {
 
   household_labels.clear();
   household_incomes.clear();
+
+  // record the actual synthetic population in the log file
+  Utils::fred_log("POPULATION_FILE: %s/%s\n",
+		  Global::Synthetic_population_directory,
+		  Global::Synthetic_population_id);
 
   // read household locations
   sprintf(location_file, "%s/%s/%s_synth_households.txt", 
@@ -419,11 +424,11 @@ void Place_List::read_places() {
     // Make projection based on the location file.
     fred::geo mean_lat = (min_lat + max_lat) / 2.0;
     Geo_Utils::set_km_per_degree(mean_lat);
-    printf("min_lat: %f  max_lat: %f  mean_lat: %f\n", min_lat, max_lat, mean_lat);
+    Utils::fred_log("min_lat: %f  max_lat: %f  mean_lat: %f\n", min_lat, max_lat, mean_lat);
   }
   else {
     // DEFAULT: Use mean US latitude (see Geo_Utils.cc)
-    printf("min_lat: %f  max_lat: %f\n", min_lat, max_lat);
+    Utils::fred_log("min_lat: %f  max_lat: %f\n", min_lat, max_lat);
   }
 
   // create geographical grids
@@ -567,7 +572,7 @@ int Place_List::add_place( Place * p ) {
 
     }
     else {
-      printf("Warning: duplicate place label found: ");
+      printf("WARNING: duplicate place label found: ");
       p->print(0);
     }
 
@@ -622,8 +627,7 @@ double distance_between_places(Place * p1, Place * p2) {
 
 void Place_List::assign_teachers() {
   int number_places = places.size();
-  printf("assign teachers entered. places = %d\n", number_places);
-  fflush(stdout);
+  Utils::fred_log("assign teachers entered. places = %d\n", number_places);
   for (int p = 0; p < number_places; p++) {
     Place *school = places[p];
     if (school->get_type() == SCHOOL) {
@@ -699,7 +703,7 @@ void Place_List::print_household_size_distribution(char * dir, char * date_strin
   double pct[11];
   char filename[FRED_STRING_SIZE];
   sprintf(filename, "%s/household_size_dist_%s.%02d", dir, date_string, run);
-  printf("print_household_size_dist entered, filename = %s\n", filename); fflush(stdout);
+  Utils::fred_log("print_household_size_dist entered, filename = %s\n", filename);
   for (int i = 0; i < 11; i++) {
     count[i] = 0;
   }
