@@ -1,0 +1,1 @@
+rst2pdf FRED_UserGuide.rst -o FRED_UserGuide.pdf --repeat-table-rows
