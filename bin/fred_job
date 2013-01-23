@@ -380,6 +380,14 @@ if (not $parallel) {
   } #for run_set
 } # if serial
 
+# record the POPULATION file used (in case it was altered by parameters)
+if ($parallel) {
+  `grep POPULATION_FILE $meta/LOG.1 | awk \'{print \$2}\' > $meta/POPULATION`; 
+}
+else {
+  `grep POPULATION_FILE $out/LOG1 | awk \'{print \$2}\' > $meta/POPULATION`; 
+}
+
 # gzip files to save space
 system "gzip $out/inf*.txt" if $zip;
 
