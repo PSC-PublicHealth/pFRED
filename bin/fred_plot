@@ -5,9 +5,9 @@ use Env;
 use Getopt::Long qw(:config no_ignore_case bundling);
 
 my %titles = ( AR => "Attack Rate",
-	       C => "Cases",
+	       C => "Total Infections",
 	       CAR => "Clinical Attack Rate",
-	       CI => "Clinical Incidents",
+	       CI => "Symptomatic Cases",
 	       Cls => "Classroom Transmissions",
 	       E => "Exposed",
 	       H => "Household Transmissions",
