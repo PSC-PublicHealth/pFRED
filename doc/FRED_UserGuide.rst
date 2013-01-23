@@ -847,18 +847,22 @@ Table 5.1: Input File Parameters
 +----------------------------------+----------+---------------------------------------------------------------------------------+
 | Parameter                        | Type     | Definition, Defaults and Notes                                                  |
 +==================================+==========+=================================================================================+
-| ``popfile``                      | string   | *Required file containing one line per person*                                  |
+| ``popfile``                                                                                                                   |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | string   | *Required file containing one line per person*                                  |
 |                                  |          |                                                                                 |
 |                                  |          | **Default**:                                                                    |
 |                                  |          | ``$FRED_HOME/region/loc_Alleg.txt``                                             |
 |                                  |          |                                                                                 |
 |                                  |          | **Format**:                                                                     |
-|                                  |          | ``ID AGE SEX MARRIED OCCUPATION HOUSEHOLD SCHOOL WORKPLACE RELATIONSHIP``       |
+|                                  |          | ``ID AGE SEX MARRIED OCCUPATION`` ``HOUSEHOLD SCHOOL WORKPLACE RELATIONSHIP``   |
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: Since these files are usually large, you may want to store them in a    |
 |                                  |          | centralized location                                                            |
 +----------------------------------+----------+---------------------------------------------------------------------------------+ 
-| ``locfile``                      | string   | *Required file containing one line per location*                                |
+| ``locfile``                                                                                                                   |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | string   | *Required file containing one line per location*                                |
 |                                  |          |                                                                                 |
 |                                  |          | **Default**:                                                                    |
 |                                  |          | ``$FRED_HOME/region/pop_Alleg.txt``                                             |
@@ -871,7 +875,9 @@ Table 5.1: Input File Parameters
 |                                  |          | *Note*: Since these files are usually large, you may want to store them in a    |
 |                                  |          | centralized location                                                            |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``cell_popfile``                 | string   | *Optional file with the initial population per 20km-grid cell*                  |
+| ``cell_popfile``                                                                                                              |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | string   | *Optional file with the initial population per 20km-grid cell*                  |
 |                                  |          |                                                                                 |
 |                                  |          | **Default**: ``$FRED_HOME/region/cell_pop.txt``                                 |
 |                                  |          |                                                                                 |
@@ -879,7 +885,9 @@ Table 5.1: Input File Parameters
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: ``Only used if enable_travel = 1``                                      |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``tripfile``                     | string   | *Optional file containing sample of trips between 20km-grid cells*              |
+| ``tripfile``                                                                                                                  |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | string   | *Optional file containing sample of trips between 20km-grid cells*              |
 |                                  |          |                                                                                 |
 |                                  |          | **Default**: ``$FRED_HOME/region/trips.txt``                                    |
 |                                  |          |                                                                                 |
@@ -887,7 +895,9 @@ Table 5.1: Input File Parameters
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: Only used if ``enable_travel = 1``                                      |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``primary_cases_file[d]``        | string   | *Required files giving the number of primary infections to introduce for each*  |
+| ``primary_cases_file[d]``                                                                                                     | 
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | string   | *Required files giving the number of primary infections to introduce for each*  |
 |                                  |          | *simulation day*                                                                |
 |                                  |          |                                                                                 |
 |                                  |          | **Default**:                                                                    |
@@ -898,7 +908,9 @@ Table 5.1: Input File Parameters
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: *More extensive documentation of the extended format given below*       |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``vaccination_capacity_file``    | string   | *Optional file giving vaccine availability*                                     |
+| ``vaccination_capacity_file``                                                                                                 |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | string   | *Optional file giving vaccine availability*                                     |
 |                                  |          |                                                                                 |
 |                                  |          | **Default**:                                                                    |
 |                                  |          | ``$FRED_HOME/input_files/vaccination_capacity-0.txt`` *(for vaccine 0)*         |
@@ -908,7 +920,9 @@ Table 5.1: Input File Parameters
 |                                  |          | *Note*: The number of doses is added to the system capacity every day until     |
 |                                  |          | the day given on the following line, or until the end of the simulation         |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``yearly_birth_rate_file``       | string   | *Optional file containing age-specific birth rates for females*                 |
+| ``yearly_birth_rate_file``                                                                                                    |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | string   | *Optional file containing age-specific birth rates for females*                 |
 |                                  |          |                                                                                 |
 |                                  |          | **Default**: ``$FRED_HOME/input_files/birth_rate.txt``                          |
 |                                  |          |                                                                                 |
@@ -917,7 +931,9 @@ Table 5.1: Input File Parameters
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: Only used if ``enable_births = 1``                                      | 
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``yearly_mortality_rate_file``   | string   | *Optional file containing age-related mortality rates*                          |
+| ``yearly_mortality_rate_file``                                                                                                |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | string   | *Optional file containing age-related mortality rates*                          |
 |                                  |          |                                                                                 |
 |                                  |          | **Default**: ``$FRED_HOME/input_files/mortality_rate.txt``                      |
 |                                  |          |                                                                                 |
@@ -1036,56 +1052,74 @@ Table 2: Output Parameters
 +----------------------------------+----------+---------------------------------------------------------------------------------+
 | Parameter                        | Type     | Definition, Defaults and Notes                                                  |
 +==================================+==========+=================================================================================+
-| ``outdir``                       | string   | Directory containing the output files.  If the string beings with “/” it is     |
+| ``outdir``                                                                                                                    |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | string   | Directory containing the output files.  If the string beings with “/” it is     |
 |                                  |          | interpreted as an absolute path.  Otherwise, it is relative to the current      |
 |                                  |          | working directory.                                                              |
 |                                  |          |                                                                                 |
 |                                  |          | **Default:** OUT                                                                |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``verbose``                      | int      | If set, print information for monitoring system progress to the standard        |
+| ``verbose``                                                                                                                   |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | int      | If set, print information for monitoring system progress to the standard        |
 |                                  |          | output.  Higher values produce more output.                                     |
 |                                  |          |                                                                                 |
 |                                  |          | **Default:** 1                                                                  |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``debug``                        | int      | If set, print verbose debugging output to stdout. Higher values produce more    |
+| ``debug``                                                                                                                     |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | int      | If set, print verbose debugging output to stdout. Higher values produce more    |
 |                                  |          | output.                                                                         |
 |                                  |          |                                                                                 |
 |                                  |          | **Default:** 0                                                                  |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``track_infection_events``       | int      | If set, then a file called ``infections<n>.txt`` is created for ``run <n>``.    |
+| ``track_infection_events``                                                                                                    |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | int      | If set, then a file called ``infections<n>.txt`` is created for ``run <n>``.    |
 |                                  |          | This file contains one line per disease transmission event, showing the id      |
 |                                  |          | of the infector, the infectee, and various other information.  The format for   |
 |                                  |          | the infections file is:                                                         |
 |                                  |          |                                                                                 |
-|                                  |          | ``DAY DISEASE_ID HOST_ID HOST_AGE INFECTOR_ID INFECTOR_AGE PLACE_ID``           |
+|                                  |          | ``DAY DISEASE_ID HOST_ID HOST_AGE`` ``INFECTOR_ID INFECTOR_AGE PLACE_ID``       |
 |                                  |          |                                                                                 |
 |                                  |          | If ``track_infection_events > 1``, additional data is written on each line.     |
 |                                  |          | For further details, see: ``Infection.cc``.                                     |
 |                                  |          |                                                                                 |
 |                                  |          | **Default:** 1                                                                  |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``quality_control``              | int      | If set, information about the size and age distribution for the various types   |
+| ``quality_control``                                                                                                           |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | int      | If set, information about the size and age distribution for the various types   |
 |                                  |          | of places is printed out in the Log file.                                       |
 |                                  |          |                                                                                 |
 |                                  |          | **Default:** 1                                                                  |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``rr_delay``                     | int      | Identifies the number of days between the definition of a cohort and the        |
+| ``rr_delay``                                                                                                                  |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | int      | Identifies the number of days between the definition of a cohort and the        |
 |                                  |          | reporting of that cohort’s reproductive rate in the output file.  See examples  |
 |                                  |          | below.                                                                          |
 |                                  |          |                                                                                 |
 |                                  |          | **Default:** 20                                                                 |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``output_population``            | int      | If set, a file containing the current population will be output periodically.   |
+| ``output_population``                                                                                                         |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | int      | If set, a file containing the current population will be output periodically.   |
 |                                  |          | See explanation below.                                                          |
 |                                  |          |                                                                                 |
 |                                  |          | **Default:** 0                                                                  |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``output_population_date_match`` | string   | If ``output_population`` is set, dump the population on any date that matches   |
+| ``output_population_date_match``                                                                                              |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | string   | If ``output_population`` is set, dump the population on any date that matches   |
 |                                  |          | this string.  The format is ``DD-MM-YY``, with ``*`` matching any value.        |
 |                                  |          |                                                                                 |
 |                                  |          | **Default:** = ``01-01-*``                                                      |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``pop_outfile``                  | string   | Name of population dump file.                                                   |
+| ``pop_outfile``                                                                                                               |
++----------------------------------+----------+---------------------------------------------------------------------------------+
+|                                  | string   | Name of population dump file.                                                   |
 |                                  |          |                                                                                 |
 |                                  |          | **Default:** ``pop_out``                                                        |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
@@ -1655,6 +1689,7 @@ Timestep files such as this one can be generated easily using the **R**
 programming language.  As an example:
 
 ::
+
   > formatted_dates = format.Date( seq.Date( as.Date("2012-01-01"), as.Date("2012-12-31"), by=1 ), "%m-%d" )
   > modulated_values = ( cos( seq( 0, 2*pi, by=2*pi/365 ) ) + 1 ) / 2
   > latitudes = rep( 40.440788, 366 )
@@ -1669,12 +1704,15 @@ programming language.  As an example:
         ) [,c(1,1:4)],
       file='seasonality-sinewave', row.names=F, col.names=F, quote=F )
 
+
+
 Modification of the above code should allow easy generation of any desired
 seasonality profile.
 
 **Example:**
 
 ::
+
   #
   # ################################################
   # ###### Seasonality Profile #####################
