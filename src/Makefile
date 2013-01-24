@@ -119,7 +119,7 @@ dSFMT.o:
 	$(CPP) $(DSFMT_CPPFLAGS) $(DSFMT_SRC) -c $(DSFMT_HDR) 
 
 sqlite3.o:
-	cd $(SQLITE_DIR); ./configure; make; cp sqlite3.o $(SRC_DIR)
+	cd $(SQLITE_DIR); make distclean; ./configure; make; cp sqlite3.o $(SRC_DIR)
 
 fsz: $(SNAPPY_LIB) Compression.o Global.h fsz.cc
 	$(CPP) -o fsz $(CPPFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) Compression.o $(LFLAGS) fsz.cc
