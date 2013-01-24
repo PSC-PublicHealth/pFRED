@@ -2,31 +2,27 @@ FRED User’s Guide
 =================
 
 John Grefenstette, Jay DePasse, David Galloway, Yu-Ting Weng, Donald Burke
---------------------------------------------------------------------------
 
-University of Pittsburgh
-~~~~~~~~~~~~~~~~~~~~~~~~
+*University of Pittsburgh*
+
 
 Roni Rosenfeld, Alona Fyshe, Anuroop Sriram, Christopher Tischuk
-----------------------------------------------------------------
 
-Carnegie-Mellon University
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+*Carnegie-Mellon University*
+
 
 Shawn Brown, Nathan Stone
--------------------------
 
-Pittsburgh Supercomputing Center
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*Pittsburgh Supercomputing Center*
+
 
 Phil Cooley, Bill Wheaton
--------------------------
 
-RTI International
-~~~~~~~~~~~~~~~~~
+*RTI International*
+
 
 23 Jan 2013
------------
+
 
 Acknowledgments
 ---------------
@@ -36,6 +32,10 @@ Sciences MIDAS grant 1U54GM088491-01, and by the Vaccine Modeling
 Initiative, funded by the Bill and Melinda Gates Foundation. The funders
 had no role in study design, data collection and analysis, decision to
 publish, or preparation of the manuscript.
+
+.. raw:: pdf
+
+    PageBreak
 
 Introduction
 ============
@@ -93,6 +93,10 @@ document for instructions, and some short tutorials.  This document will
 describe FRED on a conceptual level.  Developers will also want to
 consult the code-level documentation and even the code itself for
 specific implementation details.
+
+.. raw:: pdf
+
+    PageBreak
 
 Synthetic Population
 ====================
@@ -175,6 +179,10 @@ to involve longer distances than a typical commute, one might attribute
 the greater than expected number of very long distance commutes to such
 occasional work-related travel.
 
+.. raw:: pdf
+
+    PageBreak
+
 Agent Model
 ===========
 
@@ -198,10 +206,9 @@ among the population.  Since each infection event is recorded, it is
 possible to analyze the course of an infection through the population,
 and to evaluate several possible control measures.          
 
-The main program is contained in Fred.cc [#]_.
-
-.. [#] For further details about the representation of individual agents,
-  see files: ``Person.cc``, ``Population.cc``.
+The main program is contained in ``Fred.cc``. For further details about
+the representation of individual agents, see files: ``Person.cc``,
+``Population.cc``.
 
 Demographics
 ------------
@@ -446,6 +453,10 @@ separately for each behavior.
 See files ``Behavior.cc``, ``Health_Belief_Model.cc`` and
 ``Random_Behavior_Model.cc`` for further details.
 
+.. raw:: pdf
+
+    PageBreak
+
 Place Model
 ===========
 
@@ -481,6 +492,10 @@ breaks, and possibly due to school closure policies.
 For further details, see files: ``Place_List.cc``, ``Place.cc``,
 ``Household.cc``, ``Neighborhood.cc``, ``School.cc``, ``Classroom.cc``,
 ``Workplace.cc``, ``Office.cc``.
+
+.. raw:: pdf
+
+    PageBreak
 
 Disease Model
 =============
@@ -608,6 +623,10 @@ Allegheny County is:
 
 ``household_contacts[0] = 0.198226``
 
+.. raw:: pdf
+
+    PageBreak
+
 Interventions
 =============
 
@@ -689,6 +708,10 @@ quarantine; travel restrictions; environmental interventions (e.g.,
 vector control); behavioral changes; official announcements and
 warnings; and education campaigns.
 
+.. raw:: pdf
+
+    PageBreak
+
 Geography and Travel
 ====================
 
@@ -759,6 +782,10 @@ cell ``i`` is on the border of the model region and happens to contains only
 population, then the probability of any trip to or from cell ``i`` is
 reduced by 50%.
 
+.. raw:: pdf
+
+    PageBreak
+
 Seasonality and Climate
 =======================
 
@@ -788,6 +815,10 @@ The default function found in ``Disease.cc`` is:
 
 The parameters govern the interpretation of the values given in the 
 ``seasonality_timestep_file`` are described in below.
+
+.. raw:: pdf
+
+    PageBreak
 
 Run-time Parameters
 ===================
@@ -2071,6 +2102,10 @@ specific behavior::
   <behavior_name>_benefits_odds_ratio = 1
   <behavior_name>_barriers_odds_ratio = 1
 
+.. raw:: pdf
+
+    PageBreak
+
 Running FRED
 ============
 
@@ -2394,6 +2429,10 @@ Command descriptions:
 
   Run regression test.
 
+.. raw:: pdf
+
+    PageBreak
+
 Notes for Developers
 ====================
 
@@ -2482,6 +2521,10 @@ Test your regression test by running::
   ``rt foo``
   ``rt –p foo``
 
+.. raw:: pdf
+
+    PageBreak
+
 References
 ==========
 
@@ -2536,6 +2579,10 @@ Ganapathi, L., Roberts, D.J., Allpress, J.L. (May 2009). Synthesized
 population databases: A US geospatial database for agent-based models:
 RTI Press Publication No. MR-0010-0905. Research Triangle Park, NC: RTI
 Press. <http://www.rti.org/pubs/mr-0010-0905-wheaton.pdf>`_
+
+.. raw:: pdf
+
+    PageBreak
 
 Appendix: FRED License Agreement
 ================================

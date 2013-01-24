@@ -6,7 +6,7 @@
   # stylesheets with -s
 
   pageSetup:
-    size: A4
+    size: letter
     width: null
     height: null
     margin-top: 2cm
@@ -314,21 +314,22 @@
     heading1:
       parent: heading
       fontName: stdBold
-      fontSize: 175%
+      fontSize: 150%
 
     heading2:
       parent: heading
       fontName: stdBold
-      fontSize: 150%
+      fontSize: 125%
 
     heading3:
       parent: heading
-      fontName: stdBoldItalic
+      fontName: stdFont
       fontSize: 125%
 
     heading4:
       parent: heading
-      fontName: stdBoldItalic
+      fontName: stdItalic
+      fontSize: 100%
 
     heading5:
       parent: heading
