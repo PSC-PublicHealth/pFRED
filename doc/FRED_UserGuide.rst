@@ -5,34 +5,24 @@ John Grefenstette, Jay DePasse, David Galloway, Yu-Ting Weng, Donald Burke
 
 *University of Pittsburgh*
 
-	    
-	    
-
 Roni Rosenfeld, Alona Fyshe, Anuroop Sriram, Christopher Tischuk
 
 *Carnegie-Mellon University*
 		 
-		 
-
-
 Shawn Brown, Nathan Stone
 
 *Pittsburgh Supercomputing Center*
-
-	    
-	    
 
 Phil Cooley, Bill Wheaton
 
 *RTI International*
 
-     
-     
 
-.. center: 23 Jan 2013
 
-   
-   
+**23 Jan 2013**
+
+
+
 
 Acknowledgments
 ---------------
