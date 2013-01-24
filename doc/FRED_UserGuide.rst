@@ -861,9 +861,11 @@ setting takes precedence. If a parameter appears in both
 ``params.default`` and ``params``, the value in ``params`` overrides the
 value in ``params.default``.
 
-Simulation Initialization Parameters
-------------------------------------
+Simulation Setup Parameters
+---------------------------
 
+Table 5.1: Simulation Setup Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 +---------------------------------------+----------+---------------------------------------------------------------------------------+
 | Parameter = <default value>           | Type     | Definition and Notes                                                            |
@@ -927,180 +929,126 @@ Simulation Initialization Parameters
 +---------------------------------------+----------+---------------------------------------------------------------------------------+
 
 
+Synthetic Population Parameters
+-------------------------------
+
+::
+
+	# defaults to Allegheny County Population (Ver 2)
+	synthetic_population_directory = $FRED_HOME/populations
+	synthetic_population_id = 2005_2009_ver2_42003
+	
+	# If a city is named it overrides the synthetic_population_id parameter.
+	# The city format is "name state_abbrevation", such as:
+	# city = Pittsburgh PA
+	city = none
+	
+	# If a county is named but a city is not, the county overrides the
+	# synthetic_population_id parameter.
+	# The county format is "name state_abbrevation", such as:
+	# county = Allegheny County PA
+	county = none
+	
+	# If a city or county is named, the pop_version_prefix will be prepended
+	# to the FIPS code to form the synthetic_population_id
+	synthetic_population_version = 2005_2009_ver2
+	
+	# If set, then all workers who have a workplace outside the location file
+	# are assigned a random workplace in the location file.
+	enable_local_workplace_assignment = 0
+	
+	# Neighborhood Activities
+	community_distance = 20
+	community_prob = 0.1
+	home_neighborhood_prob = 0.5
+	
+	# Aging, Births and Deaths
+	enable_aging = 0
+	enable_births = 0
+	enable_deaths = 0 
+	enable_mobility = 0 
+	enable_migration = 0 
+	yearly_mortality_rate_file = none
+	# yearly_mortality_rate_file = $FRED_HOME/input_files/mortality_rate.txt
+	yearly_mobility_rate_file = none
+	# yearly_mobility_rate_file = $FRED_HOME/input_files/mobility_rate.txt
+	yearly_birth_rate_file = none
+	# yearly_birth_rate_file = $FRED_HOME/input_files/birth_rate.txt
+	birth_rate_multiplier = 1
 
 
 
 Input File Parameters
 ---------------------
 
-FRED requires input files to describe the population of agents and the
-locations they visit.  Another input file specifies the number of new
-cases that are seeded into the population on each simulation day.
+FRED requires several input files to describe the population of agents
+and the locations they visit. Another input file specifies the number of
+new cases that are seeded into the population on each simulation day.
 
 There are several other optional input files that are required only if
-certain features are enabled.  The following table describes the input
+certain features are enabled. The following table describes the input
 file formats and related parameters.
 
-Table 5.1: Input File Parameters
+Table 5.2: Input File Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| Parameter                        | Type     | Definition, Defaults and Notes                                                  |
+| Parameter                        | Type     | Definition and Notes                                                            |
 +==================================+==========+=================================================================================+
-| ``popfile``                                                                                                                   |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-|                                  | string   | *Required file containing one line per person*                                  |
-|                                  |          |                                                                                 |
-|                                  |          | **Default**:                                                                    |
-|                                  |          | ``$FRED_HOME/region/loc_Alleg.txt``                                             |
-|                                  |          |                                                                                 |
-|                                  |          | **Format**:                                                                     |
-|                                  |          | ``ID AGE SEX MARRIED OCCUPATION`` ``HOUSEHOLD SCHOOL WORKPLACE RELATIONSHIP``   |
-|                                  |          |                                                                                 |
-|                                  |          | *Note*: Since these files are usually large, you may want to store them in a    |
-|                                  |          | centralized location                                                            |
-+----------------------------------+----------+---------------------------------------------------------------------------------+ 
-| ``locfile``                                                                                                                   |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-|                                  | string   | *Required file containing one line per location*                                |
-|                                  |          |                                                                                 |
-|                                  |          | **Default**:                                                                    |
-|                                  |          | ``$FRED_HOME/region/pop_Alleg.txt``                                             |
-|                                  |          |                                                                                 |
-|                                  |          | **Format**:                                                                     |
-|                                  |          | ``ID TYPE LAT LON`` where ``ID`` is a unique string; ``TYPE`` is one of         |
-|                                  |          | {``H, S, W, M`` } for *Household*, *School*, *Workplace* or *Hospital*, resp;   |
-|                                  |          | and ``LAT``, ``LON`` is the *latitude* and *longitude*                          |
-|                                  |          |                                                                                 |
-|                                  |          | *Note*: Since these files are usually large, you may want to store them in a    |
-|                                  |          | centralized location                                                            |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``cell_popfile``                                                                                                              |
+| ``cell_popfile = $FRED_HOME/input_files/cell_pop.txt``                                                                        |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
 |                                  | string   | *Optional file with the initial population per 20km-grid cell*                  |
-|                                  |          |                                                                                 |
-|                                  |          | **Default**: ``$FRED_HOME/region/cell_pop.txt``                                 |
 |                                  |          |                                                                                 |
 |                                  |          | **Format**: ``COL ROW POPULATION``                                              |
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: ``Only used if enable_travel = 1``                                      |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``tripfile``                                                                                                                  |
+| ``tripfile = $FRED_HOME/input_files/trips.txt``                                                                               |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
 |                                  | string   | *Optional file containing sample of trips between 20km-grid cells*              |
-|                                  |          |                                                                                 |
-|                                  |          | **Default**: ``$FRED_HOME/region/trips.txt``                                    |
 |                                  |          |                                                                                 |
 |                                  |          | **Format**: ``SRC_COL SRC_ROW DEST_COL DEST_ROW``                               |
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: Only used if ``enable_travel = 1``                                      |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``primary_cases_file[d]``                                                                                                     | 
+| ``primary_cases_file[d] = $FRED_HOME/input_files/primary_cases_schedule_0.txt *(for disease 0)*``                             | 
 +----------------------------------+----------+---------------------------------------------------------------------------------+
 |                                  | string   | *Required files giving the number of primary infections to introduce for each*  |
 |                                  |          | *simulation day*                                                                |
-|                                  |          |                                                                                 |
-|                                  |          | **Default**:                                                                    |
-|                                  |          | ``$FRED_HOME/input_files/primary_cases_schedule_0.txt`` *(for disease 0)*       |
 |                                  |          |                                                                                 |
 |                                  |          | **Format**:                                                                     |
 |                                  |          | time step map *(see text)*                                                      |  
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: *More extensive documentation of the extended format given below*       |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``vaccination_capacity_file``                                                                                                 |
+| ``vaccination_capacity_file = $FRED_HOME/input_files/vaccination_capacity-0.txt *(for vaccine 0)*``                           |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
 |                                  | string   | *Optional file giving vaccine availability*                                     |
-|                                  |          |                                                                                 |
-|                                  |          | **Default**:                                                                    |
-|                                  |          | ``$FRED_HOME/input_files/vaccination_capacity-0.txt`` *(for vaccine 0)*         |
 |                                  |          |                                                                                 |
 |                                  |          | **Format**: ``START_DAY NUMBER_OF_DOSES``                                       |
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: The number of doses is added to the system capacity every day until     |
 |                                  |          | the day given on the following line, or until the end of the simulation         |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``yearly_birth_rate_file``                                                                                                    |
+| ``yearly_birth_rate_file = $FRED_HOME/input_files/birth_rate.txt``                                                            |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
 |                                  | string   | *Optional file containing age-specific birth rates for females*                 |
-|                                  |          |                                                                                 |
-|                                  |          | **Default**: ``$FRED_HOME/input_files/birth_rate.txt``                          |
 |                                  |          |                                                                                 |
 |                                  |          | **Format**: ``AGE BIRTH_RATE`` where the rate is the probability of giving      |
 |                                  |          | birth at the given age in years.                                                |
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: Only used if ``enable_births = 1``                                      | 
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``yearly_mortality_rate_file``                                                                                                |
+| ``yearly_mortality_rate_file = $FRED_HOME/input_files/mortality_rate.txt``                                                    |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
 |                                  | string   | *Optional file containing age-related mortality rates*                          |
-|                                  |          |                                                                                 |
-|                                  |          | **Default**: ``$FRED_HOME/input_files/mortality_rate.txt``                      |
 |                                  |          |                                                                                 |
 |                                  |          | **Format**: ``AGE M_RATE F_RATE`` where the rates are for males and females     |
 |                                  |          | of the given age in years.                                                      |
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: Only used if ``enable_deaths = 1``                                      |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-
-Population file format
-----------------------
-
-The population file containing one line per agent, and each line has the
-following format, where fields are separating by white space:
-
-ID AGE SEX MAR OCC HOUSEHOLD SCHOOL WORK RELATION
-
-Description of fields
----------------------
-
-
-==================  ============================  ===========================================
-FIELD               TYPE                          MEANING
-==================  ============================  ===========================================
-ID                  STRING                        unique agent id
-AGE                 INTEGER                       agent age in years
-SEX                 CHAR (``M``, ``F`` or ``U``)  sex of agent
-MAR                 INTEGER                       marital status
-OCC                 INTEGER                       occupation code (not currently used)
-HOUSEHOLD           STRING                        id of agent’s household
-SCHOOL              STRING                        id of agent’s school
-WORK                STRING                        id of agent’s workplace
-RELATION            INTEGER                       relation to the head of household
-==================  ============================  ===========================================
-
-All fields are required.  The location IDs indicate the agent’s
-*favorite places*, and correspond to IDs in the location file. The ID
-value "-1" indicates that a location type does not apply to the agent.
-
-``RELATION`` represents the relationship between the householder and the
-individual. The possible values are
-
-=============   =================================
-RELATION        MEANING
-=============   =================================
-1               Householder
-2               Husband/wife
-3               Natural born son/daughter
-4               Adopted son/daughter
-5               Stepson/stepdaughter
-6               Brother/sister
-7               Father/mother
-8               Grandchild
-9               Parent-in-law
-10              Son-in-law/daughter-in-law
-11              Other relative
-12              Brother-in-law/sister-in-law
-13              Nephew/niece
-14              Grandparent
-15              Uncle/aunt
-16              Cousin
-17              Roomer/boarder
-18              Housemate/roommate
-19              Unmarried partner
-20              Foster child
-=============   =================================
 
 Primary Cases File Format
 -------------------------
@@ -1141,14 +1089,14 @@ within 100km of the specified point.
 
   0 0 100 0 1 100 40.44181 -80.01278 100
 
-Output Parameters
------------------
+Output Control Parameters
+-------------------------
 
-FRED produces several output files. The level of detail can be controlled
-by parameters described in the following table.
+FRED produces several output files. The level of detail can be
+controlled by the following parameters:
 
-Table 2: Output Parameters
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Table 5.3: Output Control Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 +---------------------------------------+----------+---------------------------------------------------------------------------------+
 | Parameter = <default value>           | Type     | Definition and Notes                                                            |
