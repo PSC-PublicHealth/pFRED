@@ -1,28 +1,36 @@
+
 FRED User’s Guide
 =================
 
-John Grefenstette, Jay DePasse, David Galloway, Yu-Ting Weng, Donald Burke
-
-*University of Pittsburgh*
-
-Roni Rosenfeld, Alona Fyshe, Anuroop Sriram, Christopher Tischuk
-
-*Carnegie-Mellon University*
-		 
-Shawn Brown, Nathan Stone
-
-*Pittsburgh Supercomputing Center*
-
-Phil Cooley, Bill Wheaton
-
-*RTI International*
-
-
+.. image:: whitespace.pdf
+   :width: 3in
+   :height: 0.25in
 
 **23 Jan 2013**
 
+.. image:: whitespace.pdf
+   :width: 3in
+   :height: 0.25in
 
+**John Grefenstette, Jay DePasse, David Galloway, Yu-Ting Weng, Donald Burke**
 
+*University of Pittsburgh*
+
+**Roni Rosenfeld, Alona Fyshe, Anuroop Sriram, Christopher Tischuk**
+
+*Carnegie-Mellon University*
+
+**Shawn Brown, Nathan Stone**
+
+*Pittsburgh Supercomputing Center*
+
+**Phil Cooley, Bill Wheaton**
+
+*RTI International*
+
+.. image:: whitespace.pdf
+   :width: 3in
+   :height: 4in
 
 Acknowledgments
 ---------------
@@ -501,22 +509,22 @@ Disease Model
 =============
 
 FRED supports multiple diseases circulating in the same population.
- Each Disease has separate parameters specifying transmissibility,
+Each Disease has separate parameters specifying transmissibility,
 mortality rate, its natural history (e.g., latent period, infectious
-period, symptomatic period).  See ``Disease.cc``
+period, symptomatic period). See ``Disease.cc``
 
 Each disease has an associated Epidemic object that keeps track of
 population level statistics associated with the disease, such as the
 number of agents that are Susceptible, Exposed, Infectious and
-Recovered.  The Epidemic object prints out the daily reports to the
-output file.  See ``Epidemic.cc``.
+Recovered. The Epidemic object prints out the daily reports to the
+output file. See ``Epidemic.cc``.
 
 Transmission Model
 ------------------
 
 The core phenomenon of an epidemic in FRED is the spread of an infection
-from one agent to another in a particular place.  Each type of place
-represents a distinct environment for the spread of infection.  Each
+from one agent to another in a particular place. Each type of place
+represents a distinct environment for the spread of infection. Each
 type of place is characterized by two sets of numeric parameters:
 
 -  the number of contacts per infectious person per day, and
@@ -532,28 +540,27 @@ the age of the infectious person and the susceptible person.  These are
 specified as vector input parameters.
 
 The key method implementing infection is called
-``Place::spread_infection()`` in ``Place.cc``.  This method is called once
-a day for each infectious place (having at least one infectious
-visitor).  The method follows the following procedure:
+``Place::spread_infection()`` in ``Place.cc``. This method is called
+once a day for each infectious place (having at least one infectious
+visitor). The method follows the following procedure:
 
 ::
 
-  For each infectious person ``i``, the expected number of contacts is:
-    Num_contacts(i) = Trans(D) * CR(P) * Inf(i) * S(P)/N(P)
-
-    where: Trans(D) is the transmissibility factor for disease D,
-      CR(P) is the contact rate for place P,
-      Inf(i) is the infectivity of agent i,
-      S(P) is the number of susceptible agents visiting place P, and
-      N(P) is the number of total agents who usually visit place P
+  For each infectious person i, the expected number of contacts is:
+      Num_contacts(i) = Trans(D) * CR(P) * Inf(i) * S(P)/N(P)
+      where:
+	Trans(D) = the transmissibility factor for disease D,
+      	CR(P) = the contact rate for place P,
+      	Inf(i) = the infectivity of agent i,
+      	S(P) = the number of susceptible agents visiting place P, and
+      	N(P) = the number of total agents who usually visit place P
 
   For contact number 1 .. Num_contacts(i)
-
     pick a susceptible agent j from today’s visitors;
     let PROB = Trans_prob(i.j) \* Sus(j)
-    where Trans_prob(i.j) is the transmission probability from i to j,
-    and Sus(j) is the susceptibility of agent j.
-
+    where
+	Trans_prob(i.j) = the transmission probability from i to j, and
+	Sus(j) = the susceptibility of agent j.
     If a random number R is less than PROB, then agent i infects agent j.
 
 For further details, see ``Place.cc``, ``Household.cc``
@@ -590,13 +597,11 @@ to the 1957–58 epidemic with an AR of 33% and a basic reproductive rate
 (R0) of approximately 1.4.
 
 The calibration process using the Allegheny County synthetic population
-results in the following default parameters:
+results in the following default parameters::
 
-::
-
-  neighborhood_contacts[0] = 42.478577
-  school_contacts[0] = 14.320478
-  workplace_contacts[0] = 1.589467
+	neighborhood_contacts[0] = 42.478577
+	school_contacts[0] = 14.320478
+	workplace_contacts[0] = 1.589467
 
 By default, the contact rates for classrooms are double those for the
 school in general.  Likewise, the contact rates for office are double
@@ -615,13 +620,13 @@ Contacts within Household
 
 Calibration to the 30-70 target criteria was impossible unless within
 household contacts were treated differently than other locations.
- Following (Cooley at al, 2011), we assumed that each pair of agents
+Following (Cooley at al, 2011), we assumed that each pair of agents
 within a household make contact each day with a specified probability.
- This probability is tunes as part of the calibration step to achieve
-the 30-70 target distribution.  The resulting contact probability for
-Allegheny County is:
+This probability is tunes as part of the calibration step to achieve
+the 30-70 target distribution. The resulting contact probability for
+Allegheny County is::
 
-``household_contacts[0] = 0.198226``
+	  household_contacts[0] = 0.198226
 
 .. raw:: pdf
 
@@ -671,31 +676,31 @@ TBD.
 School closure
 --------------
 
-FRED includes two school closure policies: global and individual.  There
+FRED includes two school closure policies: global and individual. There
 are two triggers for the global school closure policy
 (``school_closure_policy = global``). First, all schools decide to close
 on the simulation day specified by the parameter ``school_closure_day``,
 unless that parameter is negative. Second, all schools decide to close
 if the population attack rate exceeds a threshold
-(``school_closure_threshold``).  With either trigger, school closure is
+(``school_closure_threshold``). With either trigger, school closure is
 delayed by a number of days indicated by parameter
-``school_closure_delay``.  Schools reopen after a number of days
+``school_closure_delay``. Schools reopen after a number of days
 indicated by parameter ``school_closure_period``.
 
 If the individual school closure policy is selected
 (``school_closure_policy = individual``), then each school is closed if
 the attack rate within the school exceeds a threshold
-(``school_closure_threshold``).  School closure is delayed by a number
-of days indicated by parameter ``school_closure_delay``.  Schools reopen
+(``school_closure_threshold``). School closure is delayed by a number of
+days indicated by parameter ``school_closure_delay``. Schools reopen
 after a number of days indicated by parameter ``school_closure_period``,
 but may close again if the school attack rate exceeds the threshold.
 
 The default is no school closure policy: ``school_closure_policy =
 none``
 
-School are always closed on weekends.  All schools also close for the
-summer if the parameter ``school_summer_schedule`` is set.  In that
-case, schools are closed between the dates specified by parameters
+School are always closed on weekends. All schools also close for the
+summer if the parameter ``school_summer_schedule`` is set. In that case,
+schools are closed between the dates specified by parameters
 ``school_summer_start`` and ``school_summer_end``, inclusive.
 
 For details, see ``School.cc``.
@@ -716,7 +721,7 @@ Geography and Travel
 ====================
 
 FRED represents geography as a hierarchy of fixed square grids.
- Currently there are three layers in the hierarchy, called Large Grid,
+Currently there are three layers in the hierarchy, called Large Grid,
 Grid, and Small Grid.
 
 The Large Grid consists of 20km x 20km cells by default. The Large Grid
@@ -728,7 +733,7 @@ climate or other environmental profiles (see **Seasonality** below).
 The medium grid, called ``Grid``, consists of 1km x 1km cells by default.
  These cells function as neighborhood units, and store information about
 the preferred schools and workplaces attended by people living with the
-cells.  This information is used when agents need to change schools, or
+cells. This information is used when agents need to change schools, or
 leave school and start to work.
 
 The Small Grid consists of 10m x 10m cells.  In the future, these cells
@@ -752,11 +757,11 @@ the total population for each cell, considering the entire U.S.
 population.  The trip list file contains a large sample of trips from
 one cell to another.  This file covers the entire U.S.  The trip file
 can contain samples based on data obtained from air travel databases or
-from any other source considered appropriate.  The current default is a
+from any other source considered appropriate. The current default is a
 sample of 5 million cell-to-cell trips based on a gravity model of
 travel, using the formula::
 
-  Prob_travel(i,j) = Pop(i) * Pop(j) / (K * Distance(i,j))
+	Prob_travel(i,j) = Pop(i) * Pop(j) / (K * Distance(i,j))
 
 where ``Pop(i)`` is the total population residing in cell ``i`` (derived from
 the entire U.S. synthetic population), ``Distance(i,j)`` is the distance in
@@ -809,9 +814,9 @@ which the values in the profile are interpreted as absolute (specific)
 humidity and transformed according to a Disease-specific function
 hardcoded in the **Disease** class.
 
-The default function found in ``Disease.cc`` is:
+The default function found in ``Disease.cc`` is::
 
-``multiplier = exp( ( ( seasonality_Ka * seasonality_value ) + seasonality_Kb ) ) + seasonality_min``
+    multiplier = exp(((seasonality_Ka * seasonality_value) + seasonality_Kb)) + seasonality_min
 
 The parameters govern the interpretation of the values given in the 
 ``seasonality_timestep_file`` are described in below.
@@ -825,10 +830,10 @@ Run-time Parameters
 
 The run-time parameters for FRED are contained in two parameter files.
 The first file is ``$FRED_HOME/input_files/params.default`` and
-contains the default values of all defined run-time parameters.  This
-file should not be modified. The second file is usually called
+contains the default values of all defined run-time parameters. This
+file should not be modified by the user. The second file is usually called
 ``params`` and contains any parameter values that override the default
-values.  The ``params`` file may be empty.
+values. The ``params`` file must exist but it may be empty.
 
 Both files have the same format. Lines that begin with a ``#`` character
 are considered comments and are ignored. Parameters with scalar values
@@ -836,9 +841,7 @@ are specified with lines of the form:
 
 ``<name> = <value>``
 
-For example:
-
-::
+For example::
 
   days = 100
   diseases = 1
@@ -848,9 +851,7 @@ Some parameters are vector valued, in which case the format is:
 
 ``<`` *name* ``> = <`` *size* ``>`` *v_1 v_2 ... v_size*
 
-For example:
-
-::
+For example::
 
   # cdf of trip duration in days
   travel_duration = 6 0 0.2 0.4 0.6 0.8 1.0
@@ -859,6 +860,75 @@ If a parameter appears more than once in a parameter file, the last
 setting takes precedence. If a parameter appears in both
 ``params.default`` and ``params``, the value in ``params`` overrides the
 value in ``params.default``.
+
+Simulation Initialization Parameters
+------------------------------------
+
+
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| Parameter = <default value>           | Type     | Definition and Notes                                                            |
++=======================================+==========+=================================================================================+
+| ``diseases = 1``                                                                                                                   |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | The number of diseases circulating in the population. Any  number of diseases   |
+|                                       |          | is allowed.  Runtime and memory required is proportional to the number of       |
+|                                       |          | diseases.                                                                       |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``days = 240``                                                                                                                     |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | The number of days in a single simulation run. FRED runs for the given number   |
+|                                       |          | of days regardless of the epidemic state (that is, FRED  does not stop early    |
+|                                       |          | if no one is currently infected.)                                               |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``seed = 123456``                                                                                                                  |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | The seed for the random number generator. The seed values for all runs of the   |
+|                                       |          | simulation are based on the initial seed and the run number, and are            |
+|                                       |          | independent of the number of random numbers generated in other runs.            |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``start_date = 2012-01-02``                                                                                                        |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | string   | Simulation start date in the format YYYY-MM-DD.                                 |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``rotate_start_date = 0``                                                                                                          |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | Whether to rotate through 7 start dates on multiple runs                        |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``reseed_day = -1``                                                                                                                |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | If ``reseed_day > -1``, start each run with the same random seed and then reset |
+|                                       |          | the seed at day reseed_day. The effect is that the initial days will follow the |
+|                                       |          | same trajectory, but the simulations will follow independent trajectories       |
+|                                       |          | starting on ``reseed_day``. This permits estimation of conditional variance.    |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``use_mean_latitude = 0``                                                                                                          |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | If ``use_mean_latitude = 1``, then the mean latitude in the households file     |
+|                                       |          | is used for the planar projection from (longitude,latitude) to (x,y)            |
+|                                       |          | coordinates.  This is recommended for regions substantially North or South      |
+|                                       |          | from the US mean latitude.  If set to 0 (the default), then the mean US         |
+|                                       |          | latitude is used.                                                               |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``grid_large_cell_size = 20.0``                                                                                                    |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | float    | Size of large-scale grid cells in km.                                           |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``grid_cell_size = 1.0``                                                                                                           |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | float    | Size of normal grid cells in km.                                                |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``grid_small_cell_size = 0.1``                                                                                                     |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | float    | Size of high resolution grid cells in km.                                       |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``enable_small_grid = 0``                                                                                                          |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | If set, enables the high resolution geographical grid.                          |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+
+
+
+
 
 Input File Parameters
 ---------------------
@@ -1080,80 +1150,90 @@ by parameters described in the following table.
 Table 2: Output Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-| Parameter                        | Type     | Definition, Defaults and Notes                                                  |
-+==================================+==========+=================================================================================+
-| ``outdir``                                                                                                                    |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-|                                  | string   | Directory containing the output files.  If the string beings with “/” it is     |
-|                                  |          | interpreted as an absolute path.  Otherwise, it is relative to the current      |
-|                                  |          | working directory.                                                              |
-|                                  |          |                                                                                 |
-|                                  |          | **Default:** OUT                                                                |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``verbose``                                                                                                                   |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-|                                  | int      | If set, print information for monitoring system progress to the standard        |
-|                                  |          | output.  Higher values produce more output.                                     |
-|                                  |          |                                                                                 |
-|                                  |          | **Default:** 1                                                                  |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``debug``                                                                                                                     |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-|                                  | int      | If set, print verbose debugging output to stdout. Higher values produce more    |
-|                                  |          | output.                                                                         |
-|                                  |          |                                                                                 |
-|                                  |          | **Default:** 0                                                                  |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``track_infection_events``                                                                                                    |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-|                                  | int      | If set, then a file called ``infections<n>.txt`` is created for ``run <n>``.    |
-|                                  |          | This file contains one line per disease transmission event, showing the id      |
-|                                  |          | of the infector, the infectee, and various other information.  The format for   |
-|                                  |          | the infections file is:                                                         |
-|                                  |          |                                                                                 |
-|                                  |          | ``DAY DISEASE_ID HOST_ID HOST_AGE`` ``INFECTOR_ID INFECTOR_AGE PLACE_ID``       |
-|                                  |          |                                                                                 |
-|                                  |          | If ``track_infection_events > 1``, additional data is written on each line.     |
-|                                  |          | For further details, see: ``Infection.cc``.                                     |
-|                                  |          |                                                                                 |
-|                                  |          | **Default:** 1                                                                  |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``quality_control``                                                                                                           |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-|                                  | int      | If set, information about the size and age distribution for the various types   |
-|                                  |          | of places is printed out in the Log file.                                       |
-|                                  |          |                                                                                 |
-|                                  |          | **Default:** 1                                                                  |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``rr_delay``                                                                                                                  |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-|                                  | int      | Identifies the number of days between the definition of a cohort and the        |
-|                                  |          | reporting of that cohort’s reproductive rate in the output file.  See examples  |
-|                                  |          | below.                                                                          |
-|                                  |          |                                                                                 |
-|                                  |          | **Default:** 20                                                                 |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``output_population``                                                                                                         |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-|                                  | int      | If set, a file containing the current population will be output periodically.   |
-|                                  |          | See explanation below.                                                          |
-|                                  |          |                                                                                 |
-|                                  |          | **Default:** 0                                                                  |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``output_population_date_match``                                                                                              |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-|                                  | string   | If ``output_population`` is set, dump the population on any date that matches   |
-|                                  |          | this string.  The format is ``DD-MM-YY``, with ``*`` matching any value.        |
-|                                  |          |                                                                                 |
-|                                  |          | **Default:** = ``01-01-*``                                                      |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``pop_outfile``                                                                                                               |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
-|                                  | string   | Name of population dump file.                                                   |
-|                                  |          |                                                                                 |
-|                                  |          | **Default:** ``pop_out``                                                        |
-+----------------------------------+----------+---------------------------------------------------------------------------------+
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| Parameter = <default value>           | Type     | Definition and Notes                                                            |
++=======================================+==========+=================================================================================+
+| ``outdir = OUT``                                                                                                                   |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | string   | Directory containing the output files.  If the string beings with “/” it is     |
+|                                       |          | interpreted as an absolute path. Otherwise, it is relative to the current       |
+|                                       |          | working directory.                                                              |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``verbose = 1``                                                                                                                    |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | If set, print information for monitoring system progress to the standard        |
+|                                       |          | output. Higher values produce more output.                                      |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``debug = 0``                                                                                                                      |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | If set, print verbose debugging output to stdout. Higher values produce more    |
+|                                       |          | output.                                                                         |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``track_infection_events = 0``                                                                                                     |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | If set, then a file called ``infections<n>.txt`` is created for ``run <n>``.    |
+|                                       |          | This file contains one line per disease transmission event, showing the id      |
+|                                       |          | of the infector, the infectee, and various other information.  The format for   |
+|                                       |          | the infections file is:                                                         |
+|                                       |          |                                                                                 |
+|                                       |          | ``DAY DISEASE_ID HOST_ID HOST_AGE`` ``INFECTOR_ID INFECTOR_AGE PLACE_ID``       |
+|                                       |          |                                                                                 |
+|                                       |          | If ``track_infection_events > 1``, additional data is written on each line.     |
+|                                       |          | For further details, see: ``Infection.cc``.                                     |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``track_age_distribution = 0``                                                                                                     |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      |                                                                                 |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``track_household_distribution = 0``                                                                                               |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      |                                                                                 |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``track_network_stats = 0``                                                                                                        |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      |                                                                                 |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``report_age_of_infection = 0``                                                                                                    |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      |                                                                                 |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``report_place_of_infection = 0``                                                                                                  |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      |                                                                                 |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``report_presenteeism = 0``                                                                                                        |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      |                                                                                 |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``print_household_locations = 0``                                                                                                  |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      |                                                                                 |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``quality_control = 1``                                                                                                            |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | If set, information about the size and age distribution for the various types   |
+|                                       |          | of places is printed out in the Log file.                                       |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``rr_delay = 10``                                                                                                                  |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | Identifies the number of days between the definition of a cohort and the        |
+|                                       |          | reporting of that cohort’s reproductive rate in the output file.  See examples  |
+|                                       |          | below.                                                                          |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``output_population = 0``                                                                                                          |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | If set, a file containing the current population will be output periodically.   |
+|                                       |          | See explanation below.                                                          |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``output_population_date_match = 01-01-*``                                                                                         |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | string   | If ``output_population`` is set, dump the population on any date that matches   |
+|                                       |          | this string.  The format is ``DD-MM-YY``, with ``*`` matching any value.        |   
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``pop_outfile = pop_out``                                                                                                          |
++---------------------------------------+----------+---------------------------------------------------------------------------------+ 
+|                                       | string   | Name of population dump file.                                                   |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
 
 Output file format
 ------------------
@@ -1218,60 +1298,6 @@ MAX_NUM_DISEASES:
 
   This constant is defined in ``Global.h``.
 
-Global Control Parameters
--------------------------
-
-The following parameters provide basic control of FRED simulations.
-
-start_date: 
-~~~~~~~~~~~
-
-  the calender date corresponding the simulation day 0.
-  Format YYYY-MM-DD.
-
-  ``start_date = 2011-01-01``
-
-days: 
-~~~~~
-
-  the number of days in a single simulation run.  FRED runs for
-  the given number of days regardless of the epidemic state (that is, FRED
-  does not stop early if no one is currently infected.)
-
-  ``days = 120``
-
-seed: 
-~~~~~
-
-  the seed for the random number generator.  The seed values for
-  all runs of the simulation are based on the initial seed and the run
-  number, and are independent of the number of random numbers generated in
-  other runs.
-
-  ``seed = 123456``
-
-reseed_day: 
-~~~~~~~~~~~
-
-  if ``reseed_day > -1``, start each run with the same random seed and
-  then reset the seed at day reseed_day.  The effect is that the initial
-  days will follow the same trajectory, but the simulations will follow
-  independent trajectories starting on ``reseed_day``.  This permits
-  estimation of conditional variance.
-
-  ``reseed_day = -1``
-
-use_mean_latitude:
-~~~~~~~~~~~~~~~~~~
-
-  if ``use_mean_latitude = 1``, then the mean latitude in the location
-  file is used for the planar projection from (longitude,latitude) to
-  (x,y) coordinates.  This is recommended for regions substantially
-  North or South from the US mean latitude.  If set to 0 (the default),
-  then the mean US latitude is used.
-
-  ``use_mean_latitude = 0``
-
 print_household_locations
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1324,9 +1350,6 @@ Disease Model Parameters
 diseases:
 ~~~~~~~~~
 
-  The number of diseases circulating in the population. Any
-  number of diseases is allowed.  Runtime and memory required is
-  proportional to the number of diseases.
 
   ``diseases = 1``
 
@@ -1621,14 +1644,6 @@ Seasonal Forcing Parameters:
 ----------------------------
 
 
-enable_large_grid:
-~~~~~~~~~~~~~~~~~~
-
-  Seasonal forcing REQUIRES that the large grid is enabled
-
-  **Default: 0**
-
-  
 enable_seasonality:
 ~~~~~~~~~~~~~~~~~~~
 
