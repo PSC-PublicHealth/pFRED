@@ -426,11 +426,12 @@ void Utils::get_next_token(char * out_string, char ** input_string) {
 }
 
 // remove non-NULL char c from string s with length at most maxlen
+// string must be null-terminated.
 void Utils::delete_char(char *s, char c, int maxlen) {
-  int len = strnlen(s, maxlen+1);
+  int len = std::strlen( s );
 
-  // abort if no NULL found
-  if (len == maxlen)
+  // abort if greater that or equal to maximum length 
+  if (len >= maxlen)
     return;
 
   // do not remove NULL characters
