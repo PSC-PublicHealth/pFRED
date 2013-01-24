@@ -5,24 +5,34 @@ John Grefenstette, Jay DePasse, David Galloway, Yu-Ting Weng, Donald Burke
 
 *University of Pittsburgh*
 
+	    
+	    
 
 Roni Rosenfeld, Alona Fyshe, Anuroop Sriram, Christopher Tischuk
 
 *Carnegie-Mellon University*
+		 
+		 
 
 
 Shawn Brown, Nathan Stone
 
 *Pittsburgh Supercomputing Center*
 
+	    
+	    
 
 Phil Cooley, Bill Wheaton
 
 *RTI International*
 
+     
+     
 
-23 Jan 2013
+.. center: 23 Jan 2013
 
+   
+   
 
 Acknowledgments
 ---------------
@@ -2622,3 +2632,8 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+.. footer::
+
+   ###Page###
+
