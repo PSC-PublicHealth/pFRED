@@ -6,7 +6,7 @@ FRED User’s Guide
    :width: 3in
    :height: 0.25in
 
-**23 Jan 2013**
+**24 Jan 2013**
 
 .. image:: whitespace.pdf
    :width: 3in
