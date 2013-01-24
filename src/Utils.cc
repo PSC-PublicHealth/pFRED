@@ -430,7 +430,7 @@ void Utils::get_next_token(char * out_string, char ** input_string) {
 void Utils::delete_char(char *s, char c, int maxlen) {
   int len = std::strlen( s );
 
-  // abort if greater that or equal to maximum length 
+  // abort if greater than or equal to maximum length 
   if (len >= maxlen)
     return;
 
