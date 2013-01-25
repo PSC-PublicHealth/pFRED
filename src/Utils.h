@@ -18,6 +18,7 @@
 #define UTILS_H_
 
 #include <string>
+#include <cstring>
 #include <stdarg.h>
 #include <stdio.h>
 
