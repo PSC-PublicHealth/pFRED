@@ -388,6 +388,13 @@ else {
   `grep POPULATION_FILE $out/LOG1 | awk \'{print \$2}\' > $meta/POPULATION`; 
 }
 
+# gzip GAIA files if they exists
+for my $r ($start_run..$end_run) {
+  if (-d "$out/GAIA.$r") {
+    system "cd $out; tar czf gaia-$r.tgz GAIA.$r";
+  }
+}
+
 # gzip files to save space
 system "gzip $out/inf*.txt" if $zip;
 
