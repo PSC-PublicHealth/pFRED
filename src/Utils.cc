@@ -98,7 +98,7 @@ void Utils::fred_warning(const char* format, ...){
   fflush(stdout);
 }
 
-void Utils::fred_open_output_files(char * directory, int run){
+void Utils::fred_open_output_files(char * directory, int run, mode_t mode){
   char filename[FRED_STRING_SIZE];
 
   // ErrorLog file is created at the first warning or error
@@ -167,6 +167,13 @@ void Utils::fred_open_output_files(char * directory, int run){
       Utils::fred_abort("Can't open %s\n", filename);
     }
   }
+
+  // create GAIA data directory
+  char gaia_directory[FRED_STRING_SIZE];
+  sprintf(gaia_directory, "%s/GAIA.%d", directory, run);
+  if (0!=mkdir(gaia_directory, mode) && EEXIST!=errno) // make it
+    Utils::fred_abort("mkdir(gaia_directory) failed with %d\n",errno); // or die
+
   return;
 }
 

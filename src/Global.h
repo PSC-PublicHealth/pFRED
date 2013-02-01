@@ -200,6 +200,7 @@ class Global {
     static bool Report_Place_Of_Infection;
     static bool Report_Presenteeism;
     static bool Assign_Teachers;
+    static int Print_GAIA_Data;
 
     // global singleton objects
     static Population Pop;

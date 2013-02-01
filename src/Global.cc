@@ -87,6 +87,7 @@ int Global::Report_Age_Of_Infection = 0;
 bool Global::Report_Place_Of_Infection = false;
 bool Global::Report_Presenteeism = false;
 bool Global::Assign_Teachers = false;
+int Global::Print_GAIA_Data = 0;
 
 // per-strain immunity reporting off by default
 // will be enabled in Utils::fred_open_output_files (called from Fred.cc)
@@ -189,6 +190,7 @@ void Global::get_global_parameters() {
   Global::Print_Household_Locations = temp_int;
   Params::get_param_from_string("assign_teachers",&temp_int);
   Global::Assign_Teachers = temp_int;
+  Params::get_param_from_string("print_gaia_data",&Print_GAIA_Data);
 
   // Initialize Demographics
   Demographics::read_init_files();

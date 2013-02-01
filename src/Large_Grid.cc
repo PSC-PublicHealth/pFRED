@@ -252,7 +252,6 @@ void Large_Grid::read_max_popsize() {
     printf("finished reading %s\n", filename);
   }
 }
-//<<<<<<< Large_Grid.cc
 
 void Large_Grid::report_grid_stats( int day ) {
   for ( int dis = 0; dis < Global::Diseases; ++dis ) {
@@ -265,8 +264,6 @@ void Large_Grid::report_grid_stats( int day ) {
     }
   }
 }
-
-//=======
 
 Place *Large_Grid::get_nearby_workplace(int row, int col, double x, double y, int min_staff, int max_staff, double * min_dist) {
   // find nearest workplace that has right number of employees
@@ -287,4 +284,3 @@ Place *Large_Grid::get_nearby_workplace(int row, int col, double x, double y, in
 }
 
 
-//>>>>>>> 1.13

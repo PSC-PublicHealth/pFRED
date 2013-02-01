@@ -347,3 +347,10 @@ void Place::turn_workers_into_teachers(Place *school) {
 	 new_teachers, label, school->get_label());
   N = 0;
 }
+
+int Place::get_infectious_count(int disease_id) {
+  Place_State_Merge place_state_merge = Place_State_Merge();
+  place_state[ disease_id ].apply( place_state_merge );
+  std::vector< Person * > & infectious = place_state_merge.get_infectious_vector();
+  return (int) infectious.size();
+}

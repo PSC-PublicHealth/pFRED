@@ -133,6 +133,9 @@ public:
 
   int get_number_of_neighborhoods();
 
+  void initialize_gaia_data(char *filename);
+  void print_gaia_data(char *filename);
+
 protected:
   Cell ** grid;			      // Rectangular array of grid_cells
   Large_Grid * large_grid;	    // Pointer to surrounding large grid

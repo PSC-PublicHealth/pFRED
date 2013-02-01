@@ -78,8 +78,17 @@ class Geo_Utils{
     double x2 = get_x(lon2); double y2 = get_y(lat2);
     return sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
   }
-
- private:
+  
+  static double x_to_degree_longitude(double x) {
+    return (x / km_per_deg_longitude);
+  }
+  
+  static double y_to_degree_latitude(double y) {
+    return (y / km_per_deg_latitude);
+  }
+  
+  
+private:
   // see http://andrew.hedges.name/experiments/haversine/
   static const double EARTH_RADIUS;	 // earth's radius in kilometers
   static const double KM_PER_DEG_LAT;	     // assuming spherical earth

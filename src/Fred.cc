@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
     Utils::fred_abort("mkdir(Output_directory) failed with %d\n",errno); // or die
 
   // open output files with global file pointers
-  Utils::fred_open_output_files(directory, run);
+  Utils::fred_open_output_files(directory, run, mode);
 
   // initialize RNG
   INIT_RANDOM(Global::Seed);
@@ -203,6 +203,13 @@ int main(int argc, char* argv[]) {
     disease->initialize_evolution_reporting_grid( Global::Large_Cells );
   }
 
+  // initialize GAIA data if desired
+  if (Global::Print_GAIA_Data) {
+    char gaiafile[FRED_STRING_SIZE];
+    sprintf(gaiafile, "%s/GAIA.%d/setup.txt", directory, run);
+    Global::Cells->initialize_gaia_data(gaiafile);
+  }
+
   Utils::fred_print_lap_time("FRED initialization");
   Utils::fred_print_wall_time("FRED initialization complete");
 
@@ -260,6 +267,13 @@ int main(int argc, char* argv[]) {
     // incremental trace
     if (Global::Incremental_Trace && day && !(day%Global::Incremental_Trace))
       Global::Pop.print(1, day);
+
+    // print GAIA data if desired
+    if (Global::Print_GAIA_Data) {
+      char gaiafile[FRED_STRING_SIZE];
+      sprintf(gaiafile, "%s/GAIA.%d/day-%d-inf.txt", directory, run, day);
+      Global::Cells->print_gaia_data(gaiafile);
+    }
 
     #pragma omp parallel sections
     {

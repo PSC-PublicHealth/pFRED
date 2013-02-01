@@ -398,6 +398,14 @@ public:
   double get_clinical_attack_rate(int disease_id) { return (100.0*total_cases[disease_id])/ (double) N; }
   
   /**
+   * Get the number of infectious people in this place.
+   *
+   * @param disease_id an integer representation of the disease
+   * @return the count of infectious people for a given diease
+   */
+  int get_infectious_count(int disease_id);
+  
+  /**
    * Set the id.
    *
    * @param n the new id

@@ -41,9 +41,12 @@ void Cell::setup(Grid * grd, int i, int j) {
   max_y = grid_min_y + (row+1)*grid_cell_size;
   center_y = (min_y+max_y)/2.0;
   center_x = (min_x+max_x)/2.0;
-  houses = 0;
-  occupied_houses = 0;
   household.clear();
+  houses = 0;
+  target_households = 0;
+  target_popsize = 0;
+  occupied_houses = 0;
+  neighborhood = NULL;
 }
 
 void Cell::make_neighborhood( Place::Allocator< Neighborhood > & neighborhood_allocator ) {
@@ -183,3 +186,13 @@ double Cell::distance_to_grid_cell(Cell *p2) {
   double y2 = p2->get_center_y();
   return sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 }
+
+
+int Cell::get_infectious_count(int disease_id) {
+  int infectious_count = 0;
+  for (int i = 0; i < houses; i++) {
+    infectious_count += household[i]->get_infectious_count(disease_id);
+  }
+  return infectious_count;
+}
+

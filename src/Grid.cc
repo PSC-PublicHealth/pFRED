@@ -488,3 +488,33 @@ void Grid::print_household_distribution(char * dir, char * date_string, int run)
   fclose(fp);
 }
 
+void Grid::initialize_gaia_data(char *filename) {
+  FILE *fp = fopen(filename, "w");
+  fprintf(fp, "rows = %d\n", rows);
+  fprintf(fp, "cols = %d\n", rows);
+  fprintf(fp, "min_lat = %f\n", Global::Large_Cells->get_min_lat());
+  fprintf(fp, "min_lon = %f\n", Global::Large_Cells->get_min_lon());
+  fprintf(fp, "cell_x_size = %f\n", Geo_Utils::x_to_degree_longitude(grid_cell_size));
+  fprintf(fp, "cell_y_size = %f\n\n", Geo_Utils::y_to_degree_latitude(grid_cell_size));
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      Cell * cell = (Cell *) &grid[i][j];
+      fprintf(fp, "%d %d %d\n", i, j, cell->get_target_popsize());
+    }
+  }
+  fclose(fp);
+}
+
+void Grid::print_gaia_data(char *filename) {
+  FILE *fp = fopen(filename, "w");
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      Cell * cell = (Cell *) &grid[i][j];
+      int count = cell->get_infectious_count(0);
+      if (count)
+	fprintf(fp, "%d %d %d\n", i, j, count);
+    }
+  }
+  fclose(fp);
+}
+
