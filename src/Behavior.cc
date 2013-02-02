@@ -86,16 +86,20 @@ Behavior::~Behavior() {
   }
   // vaccine attitudes
   if ( Behavior::number_of_vaccines > 0 ) {
-    if ( accept_vaccine_params.enabled ) {
+    if ( accept_vaccine_params.enabled &&
+        accept_vaccine != UNDEFINED_ATTITUDE ) {
       delete attitudes [accept_vaccine ]; 
     }
-    if ( accept_vaccine_dose_params.enabled ) {
+    if ( accept_vaccine_dose_params.enabled &&
+        accept_vaccine_dose != UNDEFINED_ATTITUDE ) {
       delete attitudes [accept_vaccine_dose ]; 
     }
-    if ( accept_vaccine_for_child_params.enabled ) {
+    if ( accept_vaccine_for_child_params.enabled && 
+        accept_vaccine_for_child != UNDEFINED_ATTITUDE) {
       delete attitudes[ accept_vaccine_for_child ]; 
     }
-    if ( accept_vaccine_dose_for_child_params.enabled ) {
+    if ( accept_vaccine_dose_for_child_params.enabled &&
+        accept_vaccine_dose_for_child != UNDEFINED_ATTITUDE) {
       delete attitudes[ accept_vaccine_dose_for_child ]; 
     }
   }
