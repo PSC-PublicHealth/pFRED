@@ -5,7 +5,6 @@ PRNG_DIR = $(SRC_DIR)/PRNG__Mersenne_Twister
 DSFMT_DIR = $(PRNG_DIR)/dSFMT-src-2.2
 SQLITE_DIR = $(SRC_DIR)/sqlite/sqlite-autoconf-3071300
 SNAPPY_DIR = $(SRC_DIR)/snappy
-SNAPPY_SRC_DIR = $(SNAPPY_DIR)/snappy-1.0.5
 SNAPPY_INC_DIR = $(SNAPPY_DIR)/include
 SNAPPY_HDR = $(SNAPPY_INC_DIR)/snappy.h 
 
@@ -131,7 +130,7 @@ DEPENDS: $(SRC) $(HDR)
 include DEPENDS
 
 $(SNAPPY_LIB):
-	cd $(SNAPPY_SRC_DIR); make clean; ./configure --prefix=$(SNAPPY_DIR); make && make install;
+	cd $(SNAPPY_DIR); tar --strip-components=1 -xzvf snappy-1.0.5.tar.gz; ./configure --prefix=$(SNAPPY_DIR); make && make install;
 
 
 FRED.tar.gz: $(SRC) $(HDR)
@@ -149,7 +148,7 @@ clean:
 	rm -f gmock.a gmock_main.a *.o FRED ../bin/FRED fsz ../bin/fsz *~
 	(cd ../region; make clean)
 	(cd ../tests; make clean)
-	(cd $(SNAPPY_SRC_DIR); make clean)
+	(cd $(SNAPPY_DIR); make clean)
 	(cd $(SNAPPY_DIR); rm -r lib include share)
 	(cd $(SQLITE_DIR); make clean)
 
