@@ -3,7 +3,7 @@
 SRC_DIR = $(shell pwd)
 PRNG_DIR = $(SRC_DIR)/PRNG__Mersenne_Twister
 DSFMT_DIR = $(PRNG_DIR)/dSFMT-src-2.2
-SQLITE_DIR = $(SRC_DIR)/sqlite/sqlite-autoconf-3071300
+SQLITE_DIR = $(SRC_DIR)/sqlite
 SNAPPY_DIR = $(SRC_DIR)/snappy
 SNAPPY_INC_DIR = $(SNAPPY_DIR)/include
 SNAPPY_HDR = $(SNAPPY_INC_DIR)/snappy.h 
@@ -118,7 +118,7 @@ dSFMT.o:
 	$(CPP) $(DSFMT_CPPFLAGS) $(DSFMT_SRC) -c $(DSFMT_HDR) 
 
 sqlite3.o:
-	cd $(SQLITE_DIR); make distclean; ./configure; make; cp sqlite3.o $(SRC_DIR)
+	cd $(SQLITE_DIR); tar --strip-components=1 -xzvf sqlite-autoconf-3071502.tar.gz; ./configure; make; cp sqlite3.o $(SRC_DIR)
 
 fsz: $(SNAPPY_LIB) Compression.o Global.h fsz.cc
 	$(CPP) -o fsz $(CPPFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) Compression.o $(LFLAGS) fsz.cc
