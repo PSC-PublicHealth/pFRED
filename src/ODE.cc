@@ -257,7 +257,7 @@ void ODE::set_parameter_defaults() {
   a_p = 0.0736;
   b_a = 0.00484, a_a = 0.00484, r_s = 1.1e-5;
 
-  // >>>>>>>>>>>>>>> note that the "burst size" is defined as g_v divided by a_i
+  // note that the "burst size" is defined as g_v divided by a_i
   }
 
 //  ...Functions (with Adapters) Used by the Integrator...

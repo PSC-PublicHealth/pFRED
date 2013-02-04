@@ -105,10 +105,18 @@ public:
    */
   bool default_sick_leave_behavior();
 
+  /// returns string containing Activities schedule; does
+  /// not include trailing newline
+  std::string schedule_to_string( Person * self, int day );
+
   /**
    * Print the Activity schedule
    */
   void print_schedule( Person * self, int day );
+
+  /// returns string containing Activities status; does
+  /// not include trailing newline
+  std::string to_string( Person * self );
 
   /**
    * Print out information about this object
@@ -234,6 +242,7 @@ private:
 
   Place * favorite_place[FAVORITE_PLACES];    // list of expected places
   Place ** tmp_favorite_place; // list of favorite places, stored while traveling
+  Place * home_neighborhood;
   std::bitset< FAVORITE_PLACES > on_schedule; // true iff favorite place is on schedule
   int schedule_updated;			 // date of last schedule update
   bool travel_status;				// true if traveling

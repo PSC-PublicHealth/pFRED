@@ -83,6 +83,8 @@ public:
    */
   Place * select_neighborhood(double community_prob, double community_distance, double local_prob);
 
+  Place * select_new_neighborhood(double community_prob, double community_distance, double local_prob, double random);
+
   /**
    * @return a pointer to a random Person in this Cell
    */

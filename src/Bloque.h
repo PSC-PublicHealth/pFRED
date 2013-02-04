@@ -76,67 +76,6 @@ private:
   typedef std::map< MaskType, mask > MaskMap; 
   typedef typename MaskMap::iterator MaskMapItr;
 
-
-  struct Range {
-    int begin_index, end_index;
-    int begin_block, end_block;
-    int begin_slot, end_slot;
-    int begin_register, end_register;
-    int begin_bit, end_bit;
- 
-    std::vector< std::pair< int, int > > range_ij;
-   
-    Range() {
-      begin_index = end_index = -1;
-      begin_block = end_block = -1;
-      begin_slot = end_slot = -1;
-      begin_register = end_register = -1;
-      begin_bit = end_bit = -1;
-    }
-    Range( int _begin_index, int _end_index ):
-      begin_index( _begin_index ), end_index ( _end_index ) {
-        
-        begin_block = begin_index / bitsPerBlock;
-        begin_slot = begin_index % bitsPerBlock;
-        begin_register = begin_slot / registerWidth;
-        begin_bit = begin_slot % registerWidth; 
-
-        end_block = end_index / bitsPerBlock;
-        end_slot = end_index % bitsPerBlock;
-        end_register = end_slot / registerWidth;
-        end_bit = end_slot % registerWidth; 
-
-        for ( int i = begin_block; i < end_block + 1; ++i ) {
-      
-          int j0 = 0;
-          int jN = registersPerBlock;
-
-          if ( i == begin_block ) {
-            j0 = begin_register;
-          }
-          if ( i == end_block ) {
-            jN = end_register + 1;
-          }
-
-          for ( int j = j0; j < jN; ++j ) {
-            range_ij.push_back( std::pair< int, int >( i, j ) );
-          }
-        }
-
-    }
-
-    int size() {
-      assert( begin_index > 0 && end_index >= begin_index );
-      return end_index - begin_index + 1;
-    }
-    bool contains( int index ) {
-      return index >= begin_index && index <= end_index;
-    }
-  };
-
-  // character labels for ranges of indexes
-  std::map< char, Range > labeled_ranges;
-
   MaskMap userMasks;
   std::map< MaskType, int > user_mask_num_items;
 
@@ -229,17 +168,6 @@ public:
         }
       }
     }
-  }
-
-  void add_labeled_range( char label, int begin, int end ) {
-    assert( begin >= 0 );
-    assert( end >= begin );
-    labeled_ranges[ label ] = Range( begin, end );
-  }
-
-  int get_labeled_range_size( char label ) {
-    assert( labeled_ranges.find( label ) != labeled_ranges.end() );
-    return labeled_ranges[ label ].size();
   }
 
   int get_free_index() {
@@ -465,54 +393,6 @@ public:
       }
     }
   }
-
-
-  template < typename Functor > 
-  void parallel_masked_apply_to_labeled_range( char label, MaskType m, Functor & f ) {
-    mask & userMask = userMasks[ m ];
-    Range r = labeled_ranges[ label ];
-
-    f.number_applied = 0;
-    int number_applied = 0;
-    #pragma omp parallel for reduction(+:number_applied)
-    for ( int i = r.begin_block; i < r.end_block + 1; ++i ) {
-      
-      int j0 = 0;
-      int jN = registersPerBlock;
-
-      if ( i == r.begin_block ) {
-        j0 = r.begin_register;
-      }
-      if ( i == r.end_block ) {
-        jN = r.end_register + 1;
-      }
-
-      for ( int j = j0; j < jN; ++j ) {
-
-        int k0 = 0;
-        int kN = registerWidth;
-
-        if ( i == r.begin_block && j == r.begin_register ) {
-          k0 = r.begin_bit;
-        }
-        if ( i == r.end_block && j == r.end_register ) {
-          kN = r.end_bit; // TODO TODO TODO TODO something is not right here ... why not r.end_bit + 1 ????
-        }
-
-        BitType reg = ( defaultMask[ i ][ j ] ) & ( userMask[ i ][ j ] );  
-        if ( reg > ( (BitType) 0 ) ) {
-          for ( int k = k0; k < kN; ++k ) {
-            if ( ( reg ) & ( (BitType) 1 << ( k ) ) ) {
-              f( blockVector[ i ][ ( j * registerWidth ) + k ] );
-              ++( number_applied );
-            }
-          }
-        }
-      }
-    }
-    f.number_applied = number_applied;
-  }
-
 
   /*
    * Generic, parallel 'masked apply' method for all items in container;

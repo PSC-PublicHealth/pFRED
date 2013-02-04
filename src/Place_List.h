@@ -69,7 +69,6 @@ public:
   int get_number_of_places() { return places.size(); }
  
   int get_number_of_places( char place_type );
-  //int get_max_id() { return max_id; }
   
   int get_new_place_id() {
     int id = next_place_id;

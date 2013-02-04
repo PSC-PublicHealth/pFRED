@@ -118,10 +118,12 @@ struct Place_State_Merge : Place_State {
 
 
 class Place {
-public:
-  Place() {}
-  ~Place() {}
 
+public:
+  
+  Place() {}
+
+  ~Place() {}
   /**
    *  Sets the id, label, logitude, latitude , container and population of this Place
    *  Allocates disease-related memory for this place
@@ -478,6 +480,8 @@ public:
   void set_grid_cell(Cell *p) { grid_cell = p; }
   
   Place * select_neighborhood(double community_prob, double community_distance, double local_prob);
+
+  Place * select_new_neighborhood(double community_prob, double community_distance, double local_prob, double random);
 
   int get_days_infectious() { return days_infectious; }
 

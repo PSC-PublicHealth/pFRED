@@ -176,12 +176,12 @@ Person * Population::add_person( int age, char sex, int race, int rel, Place *ho
   return person;
 }
 
-void Population::set_mask_by_index( fred::Population_Masks mask, int person_index ) {
+void Population::set_mask_by_index( fred::Pop_Masks mask, int person_index ) {
   // assert that the mask has in fact been added
   blq.set_mask_by_index( mask, person_index );
 }
 
-void Population::clear_mask_by_index( fred::Population_Masks mask, int person_index ) {
+void Population::clear_mask_by_index( fred::Pop_Masks mask, int person_index ) {
    // assert that the mask has in fact been added
   blq.clear_mask_by_index( mask, person_index );
 }

@@ -336,6 +336,10 @@ Place * Place::select_neighborhood(double community_prob, double community_dista
   return grid_cell->select_neighborhood(community_prob, community_distance, local_prob);
 }
 
+Place * Place::select_new_neighborhood(double community_prob, double community_distance, double local_prob, double random) {
+  return grid_cell->select_new_neighborhood(community_prob, community_distance, local_prob, random);
+}
+
 void Place::turn_workers_into_teachers(Place *school) {
   int new_teachers = 0;
   for (int i = 0; i < (int) enrollees.size(); i++) {

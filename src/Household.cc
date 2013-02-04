@@ -167,24 +167,25 @@ void Household::record_profile() {
 
 void Household::spread_infection(int day, int disease_id) {
 
-  Place_State_Merge place_state_merge = Place_State_Merge();
-  place_state[ disease_id ].apply( place_state_merge );
-  std::vector< Person * > & susceptibles = place_state_merge.get_susceptible_vector();
-  std::vector< Person * > & infectious = place_state_merge.get_infectious_vector();
+  //Place_State_Merge place_state_merge = Place_State_Merge();
+  //place_state[ disease_id ].apply( place_state_merge );
+  //std::vector< Person * > & susceptibles = place_state_merge.get_susceptible_vector();
+  //std::vector< Person * > & infectious = place_state_merge.get_infectious_vector();
   // need at least one susceptible, return otherwise
-  if ( susceptibles.size() == 0 ) return;
+  if ( housemate.size() == 1 ) return;
 
   double contact_prob = get_contact_rate( day, disease_id );
 
   // randomize the order of the infectious list
-  FYShuffle<Person *>( infectious );
+  FYShuffle<Person *>( housemate );
 
-  for ( int infector_pos = 0; infector_pos < infectious.size(); ++infector_pos ) {
-    Person * infector = infectious[ infector_pos ];      // infectious individual
-    assert( infector->get_health()->is_infectious( disease_id ) );
+  for ( int infector_pos = 0; infector_pos < housemate.size(); ++infector_pos ) {
+    Person * infector = housemate[ infector_pos ];      // infectious individual
+    if ( ! infector->get_health()->is_infectious( disease_id ) ) { continue; }
 
-    for (int pos = 0; pos < susceptibles.size(); ++pos) {
-      Person * infectee = susceptibles[ pos ];
+    for (int pos = 0; pos < housemate.size(); ++pos) {
+      if ( pos == infector_pos ) { continue; }
+      Person * infectee = housemate[ pos ];
       // if a non-infectious person is selected, pick from non_infectious vector
       // only proceed if person is susceptible
       if ( infectee->is_susceptible( disease_id ) ) {
@@ -197,5 +198,25 @@ void Household::spread_infection(int day, int disease_id) {
       }
     } // end contact loop
   } // end infectious list loop
+}
+
+void Household::add_infectious(int disease_id, Person * per) {
+
+  //place_state[ disease_id ]().add_infectious( per );
+  
+  if ( !( infectious_bitset.test( disease_id ) ) ) {
+    Disease * dis = population->get_disease( disease_id );
+    dis->add_infectious_place( this, type );
+    infectious_bitset.set( disease_id );
+  }
+
+  if (per->get_health()->is_symptomatic()) {
+    #pragma omp atomic
+    Sympt[disease_id]++;
+    #pragma omp atomic
+    cases[disease_id]++;
+    #pragma omp atomic
+    total_cases[disease_id]++;
+  }
 }
 

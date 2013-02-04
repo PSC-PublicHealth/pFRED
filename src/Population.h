@@ -227,7 +227,7 @@ public:
    * TODO redefine the mask type so that multiple sets of masks
    * are available (one set for each disease)
    */
-  void set_mask_by_index( fred::Population_Masks mask, int person_index );
+  void set_mask_by_index( fred::Pop_Masks mask, int person_index );
 
   /*
    * Clear the mask bit for the person_index
@@ -235,12 +235,12 @@ public:
    * TODO redefine the mask type so that multiple sets of masks
    * are available (one set for each disease)
    */
-  void clear_mask_by_index( fred::Population_Masks mask, int person_index );
+  void clear_mask_by_index( fred::Pop_Masks mask, int person_index );
 
   /*
    * Check to see if mask is set for person_index
    */
-  bool check_mask_by_index( fred::Population_Masks mask, int person_index ) {
+  bool check_mask_by_index( fred::Pop_Masks mask, int person_index ) {
     return blq.mask_is_set( mask, person_index );
   }
 
@@ -249,32 +249,32 @@ public:
     return blq.size();
   }
 
-  int size( fred::Population_Masks mask ) { return blq.size( mask ); }
+  int size( fred::Pop_Masks mask ) { return blq.size( mask ); }
 
   template< typename Functor >
   void apply( Functor & f ) { blq.apply( f ); }
 
   template< typename Functor >
-  void apply( fred::Population_Masks m, Functor & f ) { blq.apply( m, f ); }
+  void apply( fred::Pop_Masks m, Functor & f ) { blq.apply( m, f ); }
 
   template< typename Functor >
   void parallel_apply( Functor & f ) { blq.parallel_apply( f ); }
 
   template< typename Functor >
-  void parallel_masked_apply( fred::Population_Masks m, Functor & f ) { blq.parallel_masked_apply( m, f ); }
+  void parallel_masked_apply( fred::Pop_Masks m, Functor & f ) { blq.parallel_masked_apply( m, f ); }
 
   template< typename Functor >
-  void parallel_not_masked_apply( fred::Population_Masks m, Functor & f ) { blq.parallel_not_masked_apply( m, f ); }
+  void parallel_not_masked_apply( fred::Pop_Masks m, Functor & f ) { blq.parallel_not_masked_apply( m, f ); }
 
   template< typename Functor >
-  void parallel_apply_with_thread_id( fred::Population_Masks m, Functor & f ) {
+  void parallel_apply_with_thread_id( fred::Pop_Masks m, Functor & f ) {
     blq.parallel_masked_apply_with_thread_id( m, f );
   }
 
 
   /* TODO rewrite
   template< typename MaskType >
-  struct masked_iterator : bloque< Person, fred::Population_Masks >::masked_iterator< MaskType > { };
+  struct masked_iterator : bloque< Person, fred::Pop_Masks >::masked_iterator< MaskType > { };
 
   template< typename MaskType >
   masked_iterator< MaskType > begin() { return blq.begin(); }
@@ -308,8 +308,7 @@ private:
 
   void parse_lines_from_stream( std::istream & stream );
 
-  bloque< Person, fred::Population_Masks > blq;   // all Persons in the population
-  //std::map< int, int > id_to_index;
+  bloque< Person, fred::Pop_Masks > blq;   // all Persons in the population
   vector <Person * > death_list;     // list agents to die today
   vector <Person * > maternity_list; // list agents to give birth today
   int pop_size;

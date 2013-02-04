@@ -174,6 +174,8 @@ public:
 
   void spread_infection(int day, int s);
 
+  void add_infectious(int disease_id, Person * per);
+
 private:
   static double * Household_contacts_per_day;
   static double *** Household_contact_prob;

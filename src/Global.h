@@ -294,7 +294,7 @@ namespace fred {
 
   typedef float geo;
 
-  enum Population_Masks {
+  enum Pop_Masks {
     Infectious = 'I',
     Susceptible = 'S',
     Update_Deaths = 'D',

@@ -139,17 +139,22 @@ public:
     }
 
     fred::geo get_lon() { 
-      if (loc) { return lon; }
-      else { Utils::fred_abort("Tried to access location that was not specified.\
-            Calls to get_lon() and get_lat() should be preceeded  by has_location()");}
-      return NULL;
+      if ( !loc ) {
+        Utils::fred_abort("Tried to access location that was not specified.\
+            Calls to get_lon() and get_lat() should be preceeded  by has_location()");
+      }
+      else {
+        return lon;
+      }
     }
 
     fred::geo get_lat() {
-      if (loc) { return lat; }
-      else { Utils::fred_abort("Tried to access location that was not specified.\
+      if ( !loc ) {
+        Utils::fred_abort("Tried to access location that was not specified.\
           Calls to get_lon() and get_lat() should be preceeded  by has_location()");}
-      return NULL;
+      else {
+        return lat;
+      }
     }
 
     void print() {

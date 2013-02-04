@@ -461,7 +461,7 @@ int Params::get_param_map(char *s, map<string, double> *p) {
     }
   }
 
-  return err; // TODO: <<< is this correct?
+  return err; // TODO: is this correct?
 }
 
 int Params::get_double_indexed_param_map(string s, int index_i, int index_j, map<string, double> *p) {

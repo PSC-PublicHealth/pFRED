@@ -137,6 +137,21 @@ Place * Cell::select_neighborhood(double community_prob,
   return grid_cell->get_neighborhood();
 }
 
+Place * Cell::select_new_neighborhood( double community_prob,
+				  double community_distance, double local_prob, double r ) {
+  Cell * grid_cell;
+  // this method only called if r > local_prob, so the following
+  // selects a random cell with community_prob
+  if (r < community_prob + local_prob) {
+    grid_cell = grid->select_random_grid_cell(center_x, center_y, community_distance);
+  }
+  // select randomly from among immediate neighbors
+  else {
+    grid_cell = grid->select_random_neighbor(row,col);
+  }
+  if (grid_cell == NULL || grid_cell->get_houses() == 0) grid_cell = this; // fall back to local grid_cell
+  return grid_cell->get_neighborhood();
+}
 
 Person *Cell::select_random_person() {
   if ((int)person.size() == 0) return NULL;

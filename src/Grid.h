@@ -137,6 +137,7 @@ public:
   void print_gaia_data(char *filename);
 
 protected:
+
   Cell ** grid;			      // Rectangular array of grid_cells
   Large_Grid * large_grid;	    // Pointer to surrounding large grid
 

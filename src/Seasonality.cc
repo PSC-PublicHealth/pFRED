@@ -44,13 +44,27 @@ void Seasonality::update(int day) {
   while (it != seasonality_timestep_map->end()) {
     Seasonality_Timestep_Map::Seasonality_Timestep * cts = *it; 
     if (cts->is_applicable(day, Global::Epidemic_offset)) {
+
       int row = 0;
       int col = 0;
+
       if ( cts->has_location() ) {
         row = grid->get_row(cts->get_lat());
         col = grid->get_col(cts->get_lon());
       }
       points.push_back(point(row,col,cts->get_seasonality_value()));
+
+      // TODO THIS IS A TEMPORARY HACK TO SUPPORT NORTHERN/SOUTHERN HEMISPHERE EVOLUTION EXPERIMENTS
+      //if ( cts->has_location() && cts->get_lon() > grid->get_min_lon() && cts->get_lon() < grid->get_max_lon() ) {
+        //row = grid->get_row(cts->get_lat());
+      //  col = grid->get_col(cts->get_lon());
+      //  for ( int r = 0; r < grid->get_rows(); ++r ) { 
+      //    points.push_back(point(r,col,cts->get_seasonality_value()));
+      //  }
+      //}
+      //else {
+      //  points.push_back(point(row,col,cts->get_seasonality_value()));
+      //}
     }
     it++;
   }
