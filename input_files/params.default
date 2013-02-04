@@ -357,7 +357,6 @@ dbfile = dbfile.txt
 
 all_diseases_antigenically_identical = 0
 
-# Evolution Stuff
 evolution[0] = 0
 num_strains[0] = 1
 strain_data[0][0] = a:1
@@ -375,8 +374,8 @@ infection_immunity_prob_values[0] = 1 1.0
 vaccination_immunity_prob_ages[0] = 6 0 2 3 70 71 100
 vaccination_immunity_prob_values[0] = 3 0.5 0.9 0.3
 num_amino_acids = 12
-past_infections = none
-past_infections_delay = 20
+past_infections_strains = none
+past_infections_hosts = none
 #######################################################
 #######################################################
 #######################################################
