@@ -51,7 +51,7 @@ if [ ! -d OUT.TEST ]; then
 fi
 
 # clear the test directory
-rm -f OUT.TEST/*
+rm -rf OUT.TEST/*
 
 # run the regression test
 echo FRED regression test: $dir

@@ -37,5 +37,5 @@ fi
 rm -f OUT.RT/LOG*
 rm -f OUT.RT/*.txt
 
-cp -p OUT.TEST/* OUT.RT
+cp -rp OUT.TEST/* OUT.RT
 rt $dir
