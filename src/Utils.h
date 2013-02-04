@@ -21,6 +21,7 @@
 #include <cstring>
 #include <stdarg.h>
 #include <stdio.h>
+#include <sys/types.h>
 
 ////// LOGGING MACROS
 ////// gcc recognizes a signature without variadic args: (verbosity, format) as well as
