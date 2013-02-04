@@ -1,6 +1,7 @@
 days = 20
 outdir = OUT.TEST
 quality_control = 0
+track_infection_events = 1
 
 # enable behaviors must be set
 enable_behaviors = 1
