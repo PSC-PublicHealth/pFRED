@@ -419,10 +419,6 @@ bool Behavior::child_acceptance_of_another_vaccine_dose() {
 
 Person * Behavior::select_adult(Household *h, int relationship, Person * self) {
 
-  // experimental code.
-  // skip for now:
-  return NULL;
-
   int N = h->get_size();
 
   if (relationship == Global::GRANDCHILD) {
