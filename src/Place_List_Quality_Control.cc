@@ -118,7 +118,7 @@ void Place_List::quality_control(char *directory) {
   }
 
   // relationship between children and decision maker
-  if (Global::Verbose > 1) {
+  if (Global::Verbose > 1 && Global::Enable_Behaviors) {
     // find adult decision maker for each child
     for (int p = 0; p < number_places; p++) {
       if (places[p]->get_type() == HOUSEHOLD) {
@@ -130,13 +130,20 @@ void Place_List::quality_control(char *directory) {
           int ch_age = child->get_age();
           if (ch_age < 18) {
             int ch_rel = child->get_relationship();
-            //int dm_age = child->get_adult_decision_maker()->get_age(); // TODO segfault on above line!
-            int dm_rel = child->get_adult_decision_maker()->get_relationship();
-            if (dm_rel != 1 || ch_rel != 3) {
-              //printf("DECISION_MAKER: household %d %s  decision_maker: %d %d child: %d %d\n",
-              //h->get_id(), h->get_label(), dm_age, dm_rel, ch_age, ch_rel);
-            }
-          }
+	    Person * dm = child->get_health_decision_maker();
+	    if (dm == NULL) {
+	      printf("DECISION_MAKER: household %d %s  child: %d %d is making own health decisions\n",
+		     h->get_id(), h->get_label(), ch_age, ch_rel);
+	    }
+	    else {
+	      int dm_age = dm->get_age();
+	      int dm_rel = dm->get_relationship();
+	      if (dm_rel != 1 || ch_rel != 3) {
+		printf("DECISION_MAKER: household %d %s  decision_maker: %d %d child: %d %d\n",
+		       h->get_id(), h->get_label(), dm_age, dm_rel, ch_age, ch_rel);
+	      }
+	    }
+	  }
         }
       }
     }

@@ -39,6 +39,8 @@
 #include "Past_Infection.h"
 #include "Evolution.h"
 #include "Activities.h"
+#include "Behavior.h"
+
 
 #include <snappy.h>
 using namespace std; 
@@ -504,9 +506,9 @@ void Population::read_population() {
     fclose(pifp);
   }
 
-  // select adult to make health decisions
+  // setup health behaviors
   for (int p = 0; p < pop_size; p++) {
-    blq.get_item_by_index( p ).select_adult_decision_maker(NULL); // TODO use blq.apply for this
+    blq.get_item_by_index( p ).setup_behavior(); // TODO use blq.apply for this
   }
 
   FRED_VERBOSE(0, "finished reading population, pop_size = %d\n", pop_size);
@@ -566,13 +568,13 @@ void Population::update(int day) {
 
       if ( Global::Enable_Behaviors ) {
         // turn mother into an adult decision maker, if not already
-        if ( mother != mother->get_adult_decision_maker() ) {
-          FRED_VERBOSE( 0, "young mother %d age %d become adult decision maker on day %d\n",
+        if ( mother->is_health_decision_maker() == false ) {
+          FRED_VERBOSE( 0, "young mother %d age %d becomes baby's health decision maker on day %d\n",
               mother->get_id(), mother->get_age(), day );
-          mother->become_an_adult_decision_maker();
+          mother->become_health_decision_maker();
         }
         // let mother decide health behaviors for child
-        baby->get_behavior()->set_adult_decision_maker( mother );
+        baby->set_health_decision_maker( mother );
       }
 
       if ( vacc_manager->do_vaccination() ) {
@@ -647,10 +649,14 @@ void Population::update(int day) {
     }
   }
 
+  FRED_VERBOSE(1, "population::update health  day = %d\n", day);
+
   // update everyone's health status
   update_population_health update_functor( day );
   blq.parallel_masked_apply( fred::Update_Health, update_functor );
   // Utils::fred_print_wall_time("day %d update_health", day);
+
+  FRED_VERBOSE(1, "population::update household_mobility day = %d\n", day);
 
   if (Global::Enable_Mobility) {
     // update household mobility activity on July 1
@@ -661,6 +667,8 @@ void Population::update(int day) {
     }
   }
 
+  FRED_VERBOSE(1, "population::update prepare activities day = %d\n", day);
+
   // prepare Activities at start up
   if (day == 0) {
     for (int p = 0; p < pop_size; p++) {
@@ -669,6 +677,8 @@ void Population::update(int day) {
     Activities::before_run();
   }
 
+  FRED_VERBOSE(1, "population::update_activity_profile day = %d\n", day);
+
   // update activity profiles on July 1
   if (Global::Enable_Aging && Date::match_pattern(Global::Sim_Current_Date, "07-01-*")) {
     for (int p = 0; p < pop_size; p++) {
@@ -676,9 +686,13 @@ void Population::update(int day) {
     }
   }
 
+  FRED_VERBOSE(1, "population::update_travel day = %d\n", day);
+
   // update travel decisions
   Travel::update_travel(day);
   // Utils::fred_print_wall_time("day %d update_travel", day);
+
+  FRED_VERBOSE(1, "population::update_behavior day = %d\n", day);
 
   // update decisions about behaviors
   for (int p = 0; p < pop_size; p++) {
@@ -686,9 +700,13 @@ void Population::update(int day) {
   }
   // Utils::fred_print_wall_time("day %d update_behavior", day);
 
+  FRED_VERBOSE(1, "population::update vacc_manager day = %d\n", day);
+
   // distribute vaccines
   vacc_manager->update(day);
   // Utils::fred_print_wall_time("day %d vacc_manager", day);
+
+  FRED_VERBOSE(1, "population::update av_manager day = %d\n", day);
 
   // distribute AVs
   av_manager->update(day);

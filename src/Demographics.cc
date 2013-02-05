@@ -169,9 +169,9 @@ void Demographics::birthday( Person * self, int day ) {
   int age_lookup = ( age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE );
   if (Global::Enable_Aging) {
     age++;
-    if ( age == Global::ADULT_AGE && self != self->get_adult_decision_maker()) {
+    if ( age == Global::ADULT_AGE && self->is_health_decision_maker() == false) {
       // become responsible for adult decisions
-      self->become_an_adult_decision_maker();
+      self->become_health_decision_maker();
     }
   }
 

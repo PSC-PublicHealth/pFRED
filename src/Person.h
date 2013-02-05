@@ -437,25 +437,21 @@ public:
     health.take_vaccine( this, vacc, day, vm );
   }
 
-  /**
-   * @return a pointer to this Person's Behavior
-   */
-  Behavior * get_behavior() { return &behavior; }
-
-  void select_adult_decision_maker( Person * old_adult ) {
-    behavior.select_adult_decision_maker( this, old_adult );
-  }
-  Person * get_adult_decision_maker() { return behavior.get_adult_decision_maker(); }
-  bool adult_is_staying_home(int day) { return behavior.adult_is_staying_home( this, day ); }
-  bool child_is_staying_home(int day) { return behavior.child_is_staying_home( this, day ); }
-  bool acceptance_of_vaccine() { return behavior.acceptance_of_vaccine( this ); }
-  bool acceptance_of_another_vaccine_dose() { return behavior.acceptance_of_another_vaccine_dose( this ); }
-  bool child_acceptance_of_vaccine() { return behavior.child_acceptance_of_vaccine( this ); }
+  // set up and access health behaviors
+  void setup_behavior() { behavior.setup( this ); }
+  bool is_health_decision_maker() { return behavior.is_health_decision_maker(); }
+  Person * get_health_decision_maker() { return behavior.get_health_decision_maker(); }
+  void set_health_decision_maker(Person * p) { behavior.set_health_decision_maker(p); }
+  void become_health_decision_maker() { behavior.become_health_decision_maker(); }
+  bool adult_is_staying_home() { return behavior.adult_is_staying_home(); }
+  bool child_is_staying_home() { return behavior.child_is_staying_home(); }
+  bool acceptance_of_vaccine() { return behavior.acceptance_of_vaccine(); }
+  bool acceptance_of_another_vaccine_dose() { return behavior.acceptance_of_another_vaccine_dose(); }
+  bool child_acceptance_of_vaccine() { return behavior.child_acceptance_of_vaccine(); }
   bool child_acceptance_of_another_vaccine_dose() {
-    return behavior.child_acceptance_of_another_vaccine_dose( this );
+    return behavior.child_acceptance_of_another_vaccine_dose();
   }
 
-  void become_an_adult_decision_maker() { behavior.initialize_adult_behavior(this); }
   bool is_sick_leave_available() { return activities.is_sick_leave_available(); }
 
   void terminate();
