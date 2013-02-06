@@ -361,7 +361,6 @@ bool Behavior::child_is_staying_home() {
 }
 
 bool Behavior::acceptance_of_vaccine() {
-  return true;
   assert(Global::Enable_Behaviors > 0);
   int n = ACCEPT_VACCINE;
   Behavior_params * params = Behavior::behavior_params[n];
