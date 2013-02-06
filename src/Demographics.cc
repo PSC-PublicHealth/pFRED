@@ -298,12 +298,15 @@ void Demographics::print() {
 }
 
 double Demographics::get_real_age() const {
-  if ( birth_year > Date::get_epoch_start_year() ) {
-    const Date tmp_date = Date(birth_year, birth_day_of_year);
-    int days_of_life = Date::days_between(Global::Sim_Current_Date, & tmp_date);
-    return ((double) days_of_life / 365.0);
-  }
-  FRED_WARNING("WARNING: Birth year (%d) before start of epoch (Date::EPOCH_START_YEAR == %d)!\n", birth_year, Date::get_epoch_start_year());
-  return -1;
+  return double( get_age_in_days() ) / 365.0;
 }
 
+int Demographics::get_age_in_days() const {
+  if ( birth_year > Date::get_epoch_start_year() ) {
+    const Date tmp_date = Date(birth_year, birth_day_of_year);
+    return Date::days_between(Global::Sim_Current_Date, & tmp_date);
+  }
+  FRED_WARNING("WARNING: Birth year (%d) before start of epoch (Date::EPOCH_START_YEAR == %d)!\n",
+      birth_year, Date::get_epoch_start_year());
+  return -1;
+}

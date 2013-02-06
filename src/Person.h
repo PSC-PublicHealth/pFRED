@@ -227,6 +227,8 @@ public:
    */
   double get_real_age() const { return demographics.get_real_age(); }
 
+  int get_age_in_days() const { return demographics.get_age_in_days(); }
+
   /**
    * @return the Person's sex
    */
@@ -429,8 +431,8 @@ public:
   void clear_past_infections(int disease) { health.clear_past_infections(disease); }
 
   //void add_past_infection(int d, Past_Infection *pi){ health.add_past_infection(d, pi); }  
-  void add_past_infection( vector< int > & strains, int recovery_date, int age_at_exposure, Disease * dis ) {
-    health.add_past_infection( strains, recovery_date, age_at_exposure, dis ); 
+  void add_past_infection( int strain_id, int recovery_date, int age_at_exposure, Disease * dis ) {
+    health.add_past_infection( strain_id, recovery_date, age_at_exposure, dis ); 
   }
 
   void take_vaccine( Vaccine *vacc, int day, Vaccine_Manager* vm ) {

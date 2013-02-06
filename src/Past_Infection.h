@@ -25,7 +25,6 @@
 
 class Disease;
 class Person;
-class Infection;
 
 using namespace std;
 
@@ -33,17 +32,16 @@ class Past_Infection {
 
 public:
   Past_Infection();
-  Past_Infection( Infection * infection );
-  Past_Infection( vector< int > & _strains, int _recovery_date, int _age_at_exposure );
+  Past_Infection( int _strain_id, int _recovery_date, int _age_at_exposure );
 
-  void get_strains( vector < int > & strains );
+  int get_strain();
   int get_recovery_date() { return recovery_date; }
   int get_age_at_exposure() { return age_at_exposure; }
   void report();
   static string format_header();
 
 private:
-  vector< int > strains;
+  int strain_id;
   short int recovery_date;
   short int age_at_exposure;
 };

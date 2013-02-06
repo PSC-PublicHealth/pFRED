@@ -233,7 +233,16 @@ void Health::update( Person * self, int day ) {
           susceptible_date[ disease_id ] = infection[ disease_id ]->get_susceptible_date();
           evaluate_susceptibility.set( disease_id );
           if ( infection[ disease_id ]->provides_immunity() ) {
-            past_infections[ disease_id ].push_back( Past_Infection( infection[ disease_id ] ) );
+            std::vector< int > strains;
+            infection[ disease_id ]->get_strains( strains );
+            std::vector< int >::iterator itr = strains.begin();
+            for ( ; itr != strains.end(); ++itr ) {
+              int strain = *itr;
+              int recovery_date = infection[ disease_id ]->get_recovery_date(); 
+              int age_at_exposure = infection[ disease_id ]->get_age_at_exposure(); 
+              past_infections[ disease_id ].push_back(
+                  Past_Infection( strain, recovery_date, age_at_exposure ) );
+            }
           }
           delete infection[ disease_id ];
           active_infections.reset( disease_id );

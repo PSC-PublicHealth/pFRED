@@ -41,8 +41,7 @@ void StrainTable::setup( Disease * d ) {
 void StrainTable::add_root_strain( int num_elements ) {
   assert( strains.size() == 0 );
   Strain * new_strain = new Strain( num_elements );
-  new_strain->setup( 0, disease, disease->get_transmissibility(), NULL );
-  strains.push_back( new_strain );
+  add( new_strain, disease->get_transmissibility() );
 }
 
 void StrainTable::reset() {
@@ -54,6 +53,28 @@ void StrainTable::add( Strain * strain ) {
   strains.push_back( strain );
 }
 
+int StrainTable::add( Strain * new_strain, double transmissibility ) {
+  fred::Spin_Lock lock( mutex );
+
+  int new_strain_id;
+  // if this genotype has been seen already, re-use existing id
+  std::string new_geno_string = new_strain->to_string(); 
+  if ( strain_genotype_map.find( new_geno_string ) != strain_genotype_map.end() ) {
+    new_strain_id = strain_genotype_map[ new_geno_string ];
+  }
+  else {
+    // child strain id is next available id from strain table
+    new_strain_id = strains.size();
+    strain_genotype_map[ new_geno_string ] = new_strain_id;
+    // set the child strain's id, disease pointer, transmissibility, and parent strain pointer
+    new_strain->setup( new_strain_id, disease, transmissibility, NULL );
+    // Add the new child to the strain table
+    add( new_strain );
+  }
+  // return the newly created id
+  return new_strain_id;
+}
+
 int StrainTable::add( Strain * child_strain, double transmissibility, int parent_strain_id ) {
 
   fred::Spin_Lock lock( mutex );
@@ -62,11 +83,11 @@ int StrainTable::add( Strain * child_strain, double transmissibility, int parent
   Strain * parent_strain = strains[ parent_strain_id ];
   // if no change, return the parent strain id
   if ( child_strain->get_data() == parent_strain->get_data() ) {
-    return child_strain_id;
+    return parent_strain_id;
   }
   // if this genotype has been seen already, re-use existing id
   std::string child_geno_string = child_strain->to_string(); 
-  if ( strain_genotype_map.find( child_geno_string ) == strain_genotype_map.end() ) {
+  if ( strain_genotype_map.find( child_geno_string ) != strain_genotype_map.end() ) {
     child_strain_id = strain_genotype_map[ child_geno_string ];
   }
   else {

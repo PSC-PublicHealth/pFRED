@@ -59,7 +59,7 @@ void Place_List::get_parameters() {
   Params::get_param_from_string("county", Global::County);
   
   // if the user specifies "city" param, it overrides the
-  // synhetic_population_id
+  // synthetic_population_id
 
   if (strcmp(Global::City, "none") != 0) {
     
@@ -91,16 +91,16 @@ void Place_List::get_parameters() {
       // city,state,county,fips);
       sprintf(city_state, "%s %s", city, state);
       if (strcmp(Global::City, city_state) == 0) {
-	found = 1;
-	break;
+      found = 1;
+      break;
       }
     }
     fclose(fp);
     if (found) {
       Utils::fred_log("FOUND a county for city = |%s| county = |%s County %s| and fips = |%s|\n",
-	     Global::City, county, state, fips);
+        Global::City, county, state, fips);
       sprintf(Global::Synthetic_population_id, "%s_%s",
-	      Global::Synthetic_population_version, fips);
+        Global::Synthetic_population_version, fips);
     }
     else {
       Utils::fred_abort("Sorry, could not find a county for city = |%s|\n", Global::City);
@@ -140,16 +140,16 @@ void Place_List::get_parameters() {
       // city,state,county,fips);
       sprintf(county_state, "%s County %s", county, state);
       if (strcmp(Global::County, county_state) == 0) {
-	found = 1;
-	break;
+        found = 1;
+        break;
       }
     }
     fclose(fp);
     if (found) {
       Utils::fred_log("FOUND county = |%s| fips = |%s|\n",
-	     county_state, fips);
+       county_state, fips);
       sprintf(Global::Synthetic_population_id, "%s_%s",
-	      Global::Synthetic_population_version, fips);
+        Global::Synthetic_population_version, fips);
     }
     else {
       Utils::fred_abort("Sorry, could not find county called |%s|\n", Global::County);
@@ -228,14 +228,14 @@ void Place_List::read_places() {
 
   // record the actual synthetic population in the log file
   Utils::fred_log("POPULATION_FILE: %s/%s\n",
-		  Global::Synthetic_population_directory,
-		  Global::Synthetic_population_id);
+                  Global::Synthetic_population_directory,
+                  Global::Synthetic_population_id);
 
   // read household locations
   sprintf(location_file, "%s/%s/%s_synth_households.txt", 
-	  Global::Synthetic_population_directory,
-	  Global::Synthetic_population_id,
-	  Global::Synthetic_population_id);
+          Global::Synthetic_population_directory,
+          Global::Synthetic_population_id,
+          Global::Synthetic_population_id);
   fp = Utils::fred_open_file(location_file);
   while (fgets(line, 1024, fp) != NULL) {
     // printf("%s%s",line,newline); fflush(stdout); exit(0);
@@ -270,9 +270,9 @@ void Place_List::read_places() {
 
   // read workplace locations
   sprintf(location_file, "%s/%s/%s_workplaces.txt", 
-	  Global::Synthetic_population_directory,
-	  Global::Synthetic_population_id,
-	  Global::Synthetic_population_id);
+          Global::Synthetic_population_directory,
+          Global::Synthetic_population_id,
+          Global::Synthetic_population_id);
   fp = Utils::fred_open_file(location_file);
   while (fgets(line, 255, fp) != NULL) {
     Utils::get_next_token(workplace_id, &line);
@@ -296,9 +296,9 @@ void Place_List::read_places() {
 
   // read school locations
   sprintf(location_file, "%s/%s/%s_schools.txt", 
-	  Global::Synthetic_population_directory,
-	  Global::Synthetic_population_id,
-	  Global::Synthetic_population_id);
+          Global::Synthetic_population_directory,
+          Global::Synthetic_population_id,
+          Global::Synthetic_population_id);
   fp = Utils::fred_open_file(location_file);
   while (fgets(line, 255, fp) != NULL) {
     Utils::get_next_token(school_id, &line);
@@ -414,7 +414,7 @@ void Place_List::read_places() {
       Household * h = (Household *) get_place_from_label((char*) household_labels[i].c_str());
       h->set_household_income(household_incomes[i]);
       FRED_VERBOSE( 1, "INC: %s %c %f %f %d\n", h->get_label(), h->get_type(),
-		    h->get_latitude(), h->get_longitude(), h->get_household_income());
+                    h->get_latitude(), h->get_longitude(), h->get_household_income());
     }
   }
 
@@ -491,7 +491,7 @@ void Place_List::read_places() {
       int col = Global::Large_Cells->get_col(place->get_longitude());
       Large_Cell * grid_cell = Global::Large_Cells->get_grid_cell(row,col);
       if (grid_cell != NULL) {
-	grid_cell->add_workplace(place);
+        grid_cell->add_workplace(place);
       }
     }
   }
@@ -622,7 +622,7 @@ void Place_List::setup_classrooms() {
 
 double distance_between_places(Place * p1, Place * p2) {
   return Geo_Utils::xy_distance(p1->get_latitude(), p1->get_longitude(),
-				p2->get_latitude(), p2->get_longitude());
+                                p2->get_latitude(), p2->get_longitude());
 }
 
 void Place_List::assign_teachers() {
@@ -641,17 +641,17 @@ void Place_List::assign_teachers() {
       // do not have the teachers in the workforce)
       Large_Cell * large_cell = Global::Large_Cells->get_grid_cell(lat,lon);
       if (large_cell == NULL) {
-	FRED_VERBOSE(0, "school OUTSIDE_REGION lat %f lon %f \n", lat, lon);
-	continue;
+        FRED_VERBOSE(0, "school OUTSIDE_REGION lat %f lon %f \n", lat, lon);
+        continue;
       }
       
       Place * nearby_workplace = large_cell->get_workplace_near_to_school(school);
       if (nearby_workplace != NULL) {
-	// make all the workers in selected workplace teachers at the nearby school
-	nearby_workplace->turn_workers_into_teachers(school);
+        // make all the workers in selected workplace teachers at the nearby school
+        nearby_workplace->turn_workers_into_teachers(school);
       }
       else {
-	FRED_VERBOSE(0, "NO NEARBY_WORKPLACE FOUND for school at lat %f lon %f \n", lat, lon);
+        FRED_VERBOSE(0, "NO NEARBY_WORKPLACE FOUND for school at lat %f lon %f \n", lat, lon);
       }
     }
   }

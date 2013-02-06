@@ -43,7 +43,8 @@ class StrainTable {
     void add_root_strain( int num_elements );
     
     void add( Strain * s );
-
+    
+    int add( Strain * child_strain, double transmissibility );
     int add( Strain * child_strain, double transmissibility, int parent_strain_id );
     
     double get_transmissibility( int id );

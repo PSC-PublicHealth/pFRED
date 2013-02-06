@@ -556,7 +556,7 @@ class FergEvolution : public MSEvolution {
   virtual ~FergEvolution();
 
   void initialize_reporting_grid( Large_Grid * grid );
-  void setup(Disease *disease);
+  void setup( Disease * disease );
   void update( int day );
  
   Infection * transmit( Infection * infection, Transmission & transmission, Person * infectee );
@@ -588,7 +588,7 @@ class FergEvolution : public MSEvolution {
   fred::Mutex mutex;
 
   Large_Grid * grid;
-
+  
   int reignition_threshold;
   void initialize_reignitors( int number_cells );
   void cache_reignitor( int cell, int strain_id );
@@ -597,17 +597,28 @@ class FergEvolution : public MSEvolution {
   fred::Mutex reignition_mutex;
 
   struct Ferg_Evolution_Init_Past_Infections {
-    std::vector< int > strains;
+    typedef std::multimap<int,std::vector< Past_Infection > *>::iterator Hist_Itr_Type;
+    int num_infections_seeded;
+    unsigned int bin_width;
+    std::map< int, int > strain_lookup;
+    std::multimap< int, std::vector< Past_Infection > * > host_infection_histories;
     Disease * disease;
-    Ferg_Evolution_Init_Past_Infections( Disease * _disease ) : disease( _disease ) {
-      strains.push_back( 0 );
+    FergEvolution * evo;
+    Ferg_Evolution_Init_Past_Infections( FergEvolution * _evo ) : evo( _evo ) {
+      disease = evo->get_disease();
+      bin_width = 127;
+      num_infections_seeded = 0;
     }
     void operator() ( Person & person );
+    void set_bin_width( unsigned int _bin_width ) { bin_width = _bin_width; }
+    int get_bin( int val ) { return ( val | bin_width ); }
+    void finalize();
   };
 
  protected:
   
   int aminoAcids[ 64 ];
+  int num_codons;
   
   double delta;
   std::vector< double > mutation_cdf;

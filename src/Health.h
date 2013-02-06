@@ -446,8 +446,8 @@ public:
   void clear_past_infections( int disease ) { past_infections[ disease ].clear(); }
 
   //void add_past_infection(int d, Past_Infection *pi){ past_infections[d].push_back(pi); }  
-  void add_past_infection( vector< int > & strains, int recovery_date, int age_at_exposure, Disease * dis ) {
-    past_infections[ dis->get_id() ].push_back( Past_Infection( strains, recovery_date, age_at_exposure ) );
+  void add_past_infection( int strain_id, int recovery_date, int age_at_exposure, Disease * dis ) {
+    past_infections[ dis->get_id() ].push_back( Past_Infection( strain_id, recovery_date, age_at_exposure ) );
   }
 
   void die() { alive = false; }

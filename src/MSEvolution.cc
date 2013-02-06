@@ -116,16 +116,11 @@ double MSEvolution::prob_past_infections( Person * infectee, int new_strain, int
   int disease_id = disease->get_id();
   double probTaking = 1.0;
   int n = infectee->get_num_past_infections( disease_id );
-  Past_Infection * pastInf;
-  vector< int > old_strains;
   for( int i = 0; i < n; i++ ) {
-    pastInf = infectee->get_past_infection( disease_id, i );
-    pastInf->get_strains( old_strains );
-    for ( unsigned int j = 0; j < old_strains.size(); j++ ) {
-      //printf("DATES: %d %d\n", day, pastInf->get_recovery_date()); 
-      probTaking *= ( 1 - prob_inf_blocking( old_strains[ j ], new_strain, 
-            day - pastInf->get_recovery_date(), pastInf->get_age_at_exposure() ) );
-    }
+    Past_Infection * past_infection = infectee->get_past_infection( disease_id, i );
+    //printf("DATES: %d %d\n", day, pastInf->get_recovery_date()); 
+    probTaking *= ( 1 - prob_inf_blocking( past_infection->get_strain(), new_strain, 
+          day - past_infection->get_recovery_date(), past_infection->get_age_at_exposure() ) );
   }
   return probTaking;
 }

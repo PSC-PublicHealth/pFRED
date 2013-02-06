@@ -42,13 +42,19 @@ using namespace std;
 void FergEvolution :: setup( Disease * disease ) {
 
   MSEvolution::setup( disease );
+  // codon translation table maps codon number to amino acid
   char numAA_file_name[ MAX_PARAM_SIZE ];
-  strcpy( numAA_file_name, "$FRED_HOME/input_files/evolution/numAA.txt" );
-  ifstream aafile;
+  char numAA_file_param[ MAX_PARAM_SIZE ] = "codon_translation_file";
+  Params::get_param_from_string( numAA_file_param, numAA_file_name );
   Utils::get_fred_file_name( numAA_file_name );
+  ifstream aafile;
   aafile.open( numAA_file_name );
-  if ( !( aafile.good() ) ) {
-    Utils::fred_abort( "The file $FRED_HOME/input_files/evolution/numAA.txt (required by FergEvolution::setup) is non-existent, corrupted, empty, or otherwise not 'good()'... " );
+  if ( !aafile.good() || strcmp( "none", numAA_file_name ) == 0 ) {
+    Utils::fred_abort(
+        "The file %s specified by parameter %s %s %s",
+        "(required by FergEvolution::setup)",
+        "is non-existent, corrupted, empty, or otherwise not 'good()'... ",
+        numAA_file_name, numAA_file_param );
   }
   while( !aafile.eof() ){
     int n;
@@ -58,9 +64,8 @@ void FergEvolution :: setup( Disease * disease ) {
   aafile.close();
   // get mutation probability (nucleotide)
   Params::get_param((char *) "mutation_rate", &delta);
-  int num_amino_acids;
-  Params::get_param((char *) "num_amino_acids", &num_amino_acids );
-  num_ntides = num_amino_acids * 3;
+  Params::get_param((char *) "num_codons", &num_codons );
+  num_ntides = num_codons * 3;
   // setup cdf for mutation probability
   mutation_cdf.clear();
   // pass mutation cdf in by reference
@@ -72,7 +77,7 @@ void FergEvolution :: setup( Disease * disease ) {
 
   base_strain = 0;
   last_strain = base_strain;
-  disease->add_root_strain( num_amino_acids ); 
+  disease->add_root_strain( num_codons ); 
   reignition_threshold = 1;
 }
 
@@ -208,7 +213,7 @@ void FergEvolution::try_to_mutate( Infection * infection, Transmission & transmi
           }
           // update the trajectory
           trajectory->mutate( parent_strain_id, child_strain_id, d ); 
-          trajectory->mutate( parent_strain_id, child_strain_id, 0 ); // TODO wtf is this???
+          //trajectory->mutate( parent_strain_id, child_strain_id, 0 ); // TODO wtf is this???
           FRED_VERBOSE( 1, "Evolution created a mutated strain! %5d   --> %5d %s\n",
               parent_strain_id, child_strain_id, novel ? " ...novel!" : "" );
         } // <--------------------------------------------------- Mutex for add strain
@@ -245,32 +250,30 @@ void FergEvolution::try_to_mutate( Infection * infection, Transmission & transmi
 
 void FergEvolution::add_failed_infection( Transmission & transmission, Person * infectee ) {
   Transmission::Loads * loads = transmission.get_initial_loads();
-  vector< int > strains;
   Transmission::Loads::const_iterator it;
   for ( it = loads->begin(); it != loads->end(); ++it ) {
-    strains.push_back( it->first );
+    int strain_id = it->first;
+    int day = transmission.get_exposure_date();
+    int recovery_date = day - 6;
+    int age_at_exposure = infectee->get_age();
+    infectee->add_past_infection( strain_id, recovery_date, age_at_exposure, disease );
   }
-  int day = transmission.get_exposure_date();
-  int recovery_date = day - 6;
-  int age_at_exposure = infectee->get_age();
-  infectee->add_past_infection( strains, recovery_date, age_at_exposure, disease );
 }
 
 double FergEvolution::get_prob_taking( Person * infectee, int new_strain, double quantity, int day ) {
-  double prob_taking = MSEvolution::get_prob_taking( infectee, new_strain, quantity, day );
-  return prob_taking;
+  return MSEvolution::get_prob_taking( infectee, new_strain, quantity, day );
 }
 
 Infection * FergEvolution::transmit( Infection * infection, Transmission & transmission, Person * infectee ) {
   infection = MSEvolution::transmit( infection, transmission, infectee );
-  // if the infection failed, record as past_infection (stored in Health object of infectee)
   if ( infection == NULL ) {
-    // immune boosting
+    // if the infection failed, record as past_infection (stored in Health object of infectee)
     add_failed_infection( transmission, infectee );
-    return infection;
   }
-  // attempt to mutate this infection; this will also do reporting for this infection
-  try_to_mutate( infection, transmission );
+  else {
+    // attempt to mutate this infection; this will also do reporting for this infection
+    try_to_mutate( infection, transmission );
+  }
   // return the (possibly mutated) infection to Health
   return infection;
 }
@@ -301,11 +304,10 @@ void FergEvolution::update( int day ) {
   // then reignite all cells.  THIS IS A PARALLEL METHOD
   int total_incidence = disease->get_epidemic()->get_incident_infections();
   if ( total_incidence < reignition_threshold ) {
-    FRED_STATUS( 0, "Reignition! Total incidence = %d, reignition threshold = %d\n",
-      total_incidence, reignition_threshold );
+    FRED_STATUS( 0, "%s Total incidence = %d, reignition threshold = %d\n",
+      "Reignition required!", total_incidence, reignition_threshold );
     reignite_all_cells( day );
   }
-
 }
 
 bool FergEvolution::reignite( Person * pers, int strain_id, int day ) {
@@ -350,8 +352,8 @@ void FergEvolution::initialize_reignitors( int num_cells ) {
 }
 
 void FergEvolution::cache_reignitor( int cell, int strain_id ) {
-  FRED_STATUS( 4,
-      "Caching strain for later reignition.  Thread = %d, cell = %d, strain_id = %d\n",
+  FRED_STATUS( 4, "%s Thread = %d, cell = %d, strain_id = %d\n"
+      "Caching strain for later reignition.",
       fred::omp_get_thread_num(), cell, strain_id );
   reignitors()[ cell ] = strain_id;
 }
@@ -363,14 +365,15 @@ void FergEvolution::clear_reignitors() {
 }
 
 void FergEvolution::reignite_all_cells( int day ) {
-  std::cout << "<------------------------------------------------------------------------------------ reginite all cells\n";
+  FRED_STATUS( 0, "Reiginiting all cells on day %d\n", day );
   double selection_probability = 1.0 / double( fred::omp_get_max_threads() );
   #pragma omp parallel for
   for ( int cell_id = 0; cell_id < num_clusters; ++cell_id ) {
     int strain = reignitors()[ cell_id ];
     if ( strain >= 0 && RANDOM() < selection_probability ) { 
       Large_Cell * cell = Global::Large_Cells->get_grid_cell_from_id( cell_id );
-      FRED_STATUS( 0, "Reigniting person in cell %d with strain %d\n", cell_id, reignitors()[ cell_id ] );
+      FRED_STATUS( 0, "Reigniting person in cell %d with strain %d\n",
+          cell_id, reignitors()[ cell_id ] );
       Person * person = cell->select_random_person();
       reignite( person, strain, day );
     }
@@ -379,16 +382,193 @@ void FergEvolution::reignite_all_cells( int day ) {
 
 
 void FergEvolution::init_prior_immunity( Disease * disease ) {
-  Ferg_Evolution_Init_Past_Infections init_past_infection_functor( disease );
-  Global::Pop.parallel_apply( init_past_infection_functor ); 
-}
-
-void FergEvolution::Ferg_Evolution_Init_Past_Infections::operator() ( Person & person ) {
-  double age = person.get_real_age();
-  if ( age > 5 && RANDOM() < 0.5 ) {
-    int recovery_date = 0 - IRAND( 0, 1460 );
-    int age_at_exp = age - ( (double) recovery_date / 365.0 );
-    person.add_past_infection( strains, recovery_date, age_at_exp, disease );
+  int num_strains_added = 0;
+  int num_hosts_added = 0;
+  // Functor for to apply population immune history intialization in parallel
+  Ferg_Evolution_Init_Past_Infections init_past_infection_functor( this );
+  std::map< int, int > & strain_lookup = init_past_infection_functor.strain_lookup;
+  typedef std::multimap< int, std::vector< Past_Infection > * > History_Type;
+  History_Type & host_history = init_past_infection_functor.host_infection_histories;
+  // <------------------------------------------------------------------------- read past strains
+  char past_strains_file[ MAX_PARAM_SIZE ];
+  char past_strains_param[ MAX_PARAM_SIZE ] = "past_infections_strains_file";
+  Params::get_param_from_string( past_strains_param, past_strains_file );
+  if ( strcmp( "none", past_strains_file ) ) {
+    Utils::get_fred_file_name( past_strains_file );
+    FRED_STATUS( 0, "Initializing prior exposure StrainTable using file: %s\n",
+        past_strains_file ); 
+    ifstream past_strains_stream;
+    past_strains_stream.open( past_strains_file );
+    if ( !( past_strains_stream.good() ) ) {
+      Utils::fred_abort(
+          "The file %s specified by parameter %s %s %s",
+          "(required by FergEvolution::init_prior_immunity) is",
+          "non-existent, corrupted, empty, or otherwise not 'good()'... ",
+          past_strains_file, past_strains_param );
+    }
+    // first line of file gives the number of strains
+    int num_past_strains;
+    past_strains_stream >> num_past_strains;
+    // subsequent lines give strain id, followed by the (integer) codons making up
+    // the genome
+    while ( !past_strains_stream.eof() && num_strains_added < num_past_strains ) {
+      int past_strain_id, new_strain_id;
+      past_strains_stream >> past_strain_id;
+      // make new strain
+      Strain * new_strain = new Strain( num_codons );
+      Strain_Data & new_data = new_strain->get_data();
+      for ( int c = 0; c < num_codons; ++c ) {
+        int codon;
+        past_strains_stream >> codon;
+        new_data[ c ] = codon;
+      }
+      new_strain_id = disease->add_strain( new_strain, disease->get_transmissibility( 0 ) );
+      // the past_strain_id is unique, but multiple past_strains may have the same
+      // genotype and map to the same entry in the FRED StrainTable
+      strain_lookup[ past_strain_id ] = new_strain_id;
+      ++num_strains_added;
+      FRED_STATUS( 1,  "Assigned id %d to past infection strain %d : %s\n",
+          new_strain_id, past_strain_id, new_strain->to_string().c_str() );
+    }
+    past_strains_stream.close();
+    if ( num_strains_added > 0 ) {
+      FRED_STATUS( 0, "Added %d unique genotypes from file %s to the StrainTable\n",
+        num_strains_added, past_strains_file );
+    }
+    else {
+      FRED_WARNING( "Help! No past strains found in file %s\n",
+        past_strains_file );
+    }
+  }
+  // <------------------------------------------------------------------------- read host exposure history
+  char past_hosts_file[ MAX_PARAM_SIZE ];
+  char past_hosts_param[ MAX_PARAM_SIZE ] = "past_infections_hosts_file";
+  Params::get_param_from_string( past_hosts_param, past_hosts_file );
+  if ( strcmp( "none", past_hosts_file ) ) {
+    Utils::get_fred_file_name( past_hosts_file );
+    FRED_STATUS( 0,
+        "Initializing population exposure and immune history using file: %s\n",
+        past_hosts_file ); 
+    ifstream past_hosts_stream;
+    past_hosts_stream.open( past_hosts_file );
+    if ( !( past_hosts_stream.good() ) ) {
+      Utils::fred_abort(
+          "The file %s specified by parameter %s %s %s",
+          "(required by FergEvolution::init_prior_immunity) is",
+          "non-existent, corrupted, empty, or otherwise not 'good()'... ",
+          past_hosts_file, past_hosts_param );
+    }
+    // first line of file gives the number of hosts
+    int num_past_hosts;
+    past_hosts_stream >> num_past_hosts;
+    //  for each host:
+    //    line N: two numbers, host age in days and number of times the host has been infected
+    //    line N+1+: one line for each time this host has been infected.
+    //      two numbers:  ID of the strain that the host was infected with and
+    //                    the age of the host in days when they were infected with that strain.
+    //
+    //  note: the host is still infected if the host's age is <= 6 days after the infection age.
+    //  (The infection lasts 6 days, of which the first 2 are considered latent and the next 4
+    //  are considered infectious. Anything after 6 days is recovered.)
+    while ( !past_hosts_stream.eof() && num_hosts_added < num_past_hosts ) {
+      unsigned int current_age, num_infections;
+      past_hosts_stream >> current_age;
+      past_hosts_stream >> num_infections;
+      std::vector< Past_Infection > * past_infections = NULL;
+      if ( num_infections > 0 ) {
+        past_infections = new std::vector< Past_Infection >(); 
+        for ( int i = 0; i < num_infections; ++i ) {
+          int past_strain_id, strain_id, age_at_exposure, recovery_day;
+          past_hosts_stream >> past_strain_id;
+          past_hosts_stream >> age_at_exposure;
+          recovery_day = 6 - ( current_age - age_at_exposure );
+          if ( strain_lookup.find( past_strain_id ) != strain_lookup.end() ) {
+            strain_id = strain_lookup[ past_strain_id ];
+            past_infections->push_back( Past_Infection( strain_id, recovery_day, age_at_exposure ) );
+          }
+        }
+        // bin current age when storing in host multimap (round up to next 2^6 days)
+        init_past_infection_functor.set_bin_width( 127 );
+        current_age = init_past_infection_functor.get_bin( current_age ); 
+      }
+      host_history.insert( std::make_pair( current_age, past_infections ) );  
+      ++num_hosts_added;
+    }
+    past_hosts_stream.close();
+    if ( num_hosts_added > 0 ) {
+      FRED_STATUS( 0, "Successfully read %d past infection histories from file: %s\n",
+        num_hosts_added, past_hosts_file );
+    }
+    else {
+      FRED_WARNING( "Help! No past infection histories found in file: %s\n",
+        past_hosts_file );
+    }
+  } 
+  // <------------------------------------------------------------------------- apply immune histories to population 
+  if ( num_hosts_added > 0 && num_strains_added > 0 ) {
+    FRED_STATUS( 0, "%s using %d strains and %d host histories.\n",
+        "Beginning immune history initialization",
+        num_strains_added, num_hosts_added );
+    Global::Pop.parallel_apply( init_past_infection_functor ); 
+    init_past_infection_functor.finalize();
+  }
+  else {
+    FRED_WARNING( "Help!%s %s strains: %d hosts: %d\n",
+        "Failed to read both past strains and host histories;",
+        "skipping population immune history initialization.",
+        num_strains_added, num_hosts_added );
   }
 }
 
+void FergEvolution::Ferg_Evolution_Init_Past_Infections::operator() ( Person & person ) {
+  int age = person.get_age_in_days();
+  int binned_age = get_bin( age );
+  Hist_Itr_Type hist_itr; 
+  num_infections_seeded = 0;
+  int num_in_bin = host_infection_histories.count( binned_age );
+  if ( num_in_bin > 0 ) {
+    hist_itr = host_infection_histories.lower_bound( binned_age );
+    // randomly select one of the histories in the bin:
+    std::advance( hist_itr, IRAND(0,num_in_bin) );
+    std::vector< Past_Infection > * history = (*hist_itr).second;
+    if ( history != NULL ) {
+      std::vector< Past_Infection >::iterator inf_itr = history->begin();
+      for ( ; inf_itr != history->end(); ++inf_itr ) {
+        int strain_id = (*inf_itr).get_strain();
+        int recovery_date = (*inf_itr).get_recovery_date();
+        int age_at_exp = (*inf_itr).get_age_at_exposure();
+   
+        if ( recovery_date > 0 ) {
+          // re-use reignition mechanism to seed from past infection history 
+          evo->reignite( &person, strain_id, 0 );
+          #pragma omp atomic
+          ++num_infections_seeded;
+          FRED_VERBOSE( 1,
+            "%s person_id %d age %d bin %d strain %d recovery %d age_at_exp %d\n",
+            "Seeded infection from past history:", person.get_id(), age,
+            binned_age, strain_id, recovery_date, age_at_exp );
+        }
+        else {
+          // infection not active; store as past infection
+          person.add_past_infection( strain_id, recovery_date, age_at_exp, disease );
+          // if running in parallel, avoid printing or performace suffers
+          FRED_VERBOSE( 4,
+            "%s person_id %d age %d bin %d strain %d recovery %d age_at_exp %d\n",
+            "Added past infection to:", person.get_id(), age, binned_age,
+            strain_id, recovery_date, age_at_exp );
+        }
+      }
+    }
+  }
+}
+
+void FergEvolution::Ferg_Evolution_Init_Past_Infections::finalize() {
+  FRED_STATUS( 0,
+      "Initialization of population prior exposure history complete. %s %d %s\n",
+      "Seeded", num_infections_seeded, "infections from past infection history" );
+  // free memory
+  Hist_Itr_Type hist_itr = host_infection_histories.begin();
+  for ( ; hist_itr != host_infection_histories.end(); ++hist_itr ) {
+    delete (*hist_itr).second;
+  }
+}

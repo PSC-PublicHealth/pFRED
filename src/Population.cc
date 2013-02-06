@@ -1,13 +1,13 @@
 /*
-  This file is part of the FRED system.
+   This file is part of the FRED system.
 
-  Copyright (c) 2010-2012, University of Pittsburgh, John Grefenstette,
-  Shawn Brown, Roni Rosenfield, Alona Fyshe, David Galloway, Nathan
-  Stone, Jay DePasse, Anuroop Sriram, and Donald Burke.
+   Copyright (c) 2010-2012, University of Pittsburgh, John Grefenstette,
+   Shawn Brown, Roni Rosenfield, Alona Fyshe, David Galloway, Nathan
+   Stone, Jay DePasse, Anuroop Sriram, and Donald Burke.
 
-  Licensed under the BSD 3-Clause license.  See the file "LICENSE" for
-  more information.
-*/
+   Licensed under the BSD 3-Clause license.  See the file "LICENSE" for
+   more information.
+   */
 
 //
 //
@@ -147,7 +147,7 @@ Person * Population::add_person( int age, char sex, int race, int rel, Place *ho
 
   int id = Population::next_id++; 
   int idx = blq.get_free_index();
-   
+
   Person * person = blq.get_free_pointer( idx );
 
   // mark valid before adding person so that mask operations will be
@@ -155,8 +155,8 @@ Person * Population::add_person( int age, char sex, int race, int rel, Place *ho
   blq.mark_valid_by_index( idx ); 
 
   new( person ) Person( idx, id, age, sex, race, rel, 
-        house, school, work, day, today_is_birthday );
- 
+      house, school, work, day, today_is_birthday );
+
   //assert( id_to_index.find( id ) == id_to_index.end() );
   //id_to_index[ id ] = idx;
 
@@ -166,10 +166,10 @@ Person * Population::add_person( int age, char sex, int race, int rel, Place *ho
 
   if ( Global::Enable_Aging ) {
     Demographics * demographics = person->get_demographics();
-  	int pos = demographics->get_birth_day_of_year();
-	  //Check to see if the day of the year is after FEB 28
+    int pos = demographics->get_birth_day_of_year();
+    //Check to see if the day of the year is after FEB 28
     if ( pos > 59 && !Date::is_leap_year( demographics->get_birth_year() ) ) {
-	    pos++;
+      pos++;
     }
     birthday_vecs[ pos ].push_back( person );
     FRED_VERBOSE( 2, "Adding person %d to birthday vector for day = %d.\n ... birthday_vecs[ %d ].size() = %zu\n", id, pos, pos, birthday_vecs[ pos ].size() );
@@ -184,7 +184,7 @@ void Population::set_mask_by_index( fred::Pop_Masks mask, int person_index ) {
 }
 
 void Population::clear_mask_by_index( fred::Pop_Masks mask, int person_index ) {
-   // assert that the mask has in fact been added
+  // assert that the mask has in fact been added
   blq.clear_mask_by_index( mask, person_index );
 }
 
@@ -193,11 +193,11 @@ void Population::delete_person(Person * person) {
 
   person->terminate();
   FRED_VERBOSE(1,"DELETED PERSON: %d\n", person->get_id());
-      
+
   for (int d = 0; d < Global::Diseases; d++) {
     disease[d].get_evolution()->terminate_person(person);
   }
- 
+
   if ( Global::Enable_Travel ) {
     Travel::terminate_person(person);
   }
@@ -247,7 +247,7 @@ void Population::prepare_to_give_birth( int day, int person_index ) {
 
 void Population::setup() {
   FRED_STATUS(0, "setup population entered\n","");
-  
+
   disease = new Disease [Global::Diseases];
   for (int d = 0; d < Global::Diseases; d++) {
     disease[d].setup(d, this, mutation_prob[d]);
@@ -266,7 +266,7 @@ void Population::setup() {
   }
 
   if (Global::Verbose > 1) av_manager->print();
-  
+
   // TODO provide clear() method for bloque
   //id_to_index.clear();
   pop_size = 0;
@@ -299,7 +299,7 @@ void Population::setup() {
 }
 
 void Population::parse_lines_from_stream( std::istream & stream ) {
-  
+
   // vector used for batch add of new persons
   std::vector< Person_Init_Data > pidv;
 
@@ -319,18 +319,18 @@ void Population::parse_lines_from_stream( std::istream & stream ) {
     char p_id[32], hh_id[32], serialno[32], stcotrbg[32],  age_str[4];
     char sex_str[4], race_str[4], sporder[32],  relate[4];
     char school_id[32], workplace_id[32];
-    
+
     bool today_is_birthday = false;
     int day = 0;
-    
+
     char * strtok_r_ptr;
     //printf("line: |%s|\n", line); fflush(stdout); // exit(0);
     Utils::replace_csv_missing_data(newline, line, "-1");
     strcpy(p_id,strtok_r(newline,",",&strtok_r_ptr));
- 
+
     //skip header line
     if (strcmp(p_id,"p_id")==0) continue;
- 
+
     strcpy(hh_id,strtok_r(NULL,",",&strtok_r_ptr));
     strcpy(serialno,strtok_r(NULL,",",&strtok_r_ptr));
     strcpy(stcotrbg,strtok_r(NULL,",",&strtok_r_ptr));
@@ -341,9 +341,9 @@ void Population::parse_lines_from_stream( std::istream & stream ) {
     strcpy(relate,strtok_r(NULL,",",&strtok_r_ptr));
     strcpy(school_id,strtok_r(NULL,",",&strtok_r_ptr));
     strcpy(workplace_id,strtok_r(NULL,",\n",&strtok_r_ptr));
- 
+
     strcpy(label, p_id);
- 
+
     // add type indicator to label for places
     if (strcmp(hh_id,"-1")) {   sprintf(house_label, "H%s", hh_id);}
     else { strcpy(house_label,"-1"); }
@@ -351,22 +351,22 @@ void Population::parse_lines_from_stream( std::istream & stream ) {
     else { strcpy(work_label,"-1"); }
     if (strcmp(school_id,"-1")) { sprintf(school_label, "S%s", school_id); }
     else { strcpy(school_label,"-1"); }
- 
+
     sscanf(relate, "%d", &relationship);
     sscanf(age_str, "%d", &age);
     sex = strcmp(sex_str,"1")==0 ? 'M' : 'F';
     sscanf(race_str, "%d", &race);
- 
+
     // printf("|%s %d %c %d %s %s %s %d|\n", label, age, sex, race
     //    house_label, work_label, school_label, relationship);
     // fflush(stdout);
     /*
-      if (strcmp(work_label,"-1") && strcmp(school_label,"-1")) {
-      printf("STUDENT-WORKER: %s %d %c %s %s\n", label, age, sex, work_label, school_label);
-      fflush(stdout);
-      }
-    */
-     
+       if (strcmp(work_label,"-1") && strcmp(school_label,"-1")) {
+       printf("STUDENT-WORKER: %s %d %c %s %s\n", label, age, sex, work_label, school_label);
+       fflush(stdout);
+       }
+       */
+
     // create a Person_Init_Data object
     pidv.push_back( Person_Init_Data( age, race, relationship, sex, today_is_birthday, day ) );
     // get a reference to it
@@ -375,7 +375,7 @@ void Population::parse_lines_from_stream( std::istream & stream ) {
     pid.house = Global::Places.get_place_from_label(house_label);
     if ( pid.house == NULL ) {
       FRED_VERBOSE( 0, "WARNING: skipping person %s --  no household found for label = %s\n",
-        label, house_label );
+          label, house_label );
       // we need at least a household (homeless people not yet supported), so skip this person
       pidv.pop_back();  
       continue;
@@ -384,13 +384,13 @@ void Population::parse_lines_from_stream( std::istream & stream ) {
     pid.work = Global::Places.get_place_from_label( work_label );
     if ( strcmp( work_label, "-1" ) != 0 && pid.work == NULL ) {
       FRED_VERBOSE( 2, "WARNING: person %s -- no workplace found for label = %s\n",
-            label, work_label );
+          label, work_label );
       if (Global::Enable_Local_Workplace_Assignment) {
         pid.work = Global::Places.get_random_workplace();
         FRED_CONDITIONAL_VERBOSE( 0, pid.work!=NULL, "WARNING: person %s assigned to workplace %s\n",
-                label, pid.work->get_label() );
+            label, pid.work->get_label() );
         FRED_CONDITIONAL_VERBOSE( 0, pid.work==NULL, "WARNING: no workplace available for person %s\n",
-                label );
+            label );
       }
     }
     pid.school = Global::Places.get_place_from_label( school_label );
@@ -421,12 +421,12 @@ void Population::read_population() {
   // read in population
   char population_file[1024];
   char line[1024];
- 
+
   // try to open compressed population file
   sprintf(population_file, "%s/%s/%s_synth_people.txt.fsz",
-           Global::Synthetic_population_directory,
-           Global::Synthetic_population_id,
-           Global::Synthetic_population_id);
+      Global::Synthetic_population_directory,
+      Global::Synthetic_population_id,
+      Global::Synthetic_population_id);
 
   FILE *fp = NULL; 
   fp = Utils::fred_open_file(population_file);
@@ -438,21 +438,21 @@ void Population::read_population() {
     if ( compressor.check_magic_bytes() ) {
       // limit to two threads to prevent locking and I/O overhead; also
       // helps to preserve population order in bloque assignment
-      #pragma omp parallel
+#pragma omp parallel
       {
-	std::stringstream stream;
-	while ( compressor.load_next_block_stream( stream ) ) {
-	  parse_lines_from_stream( stream );
-	}
+        std::stringstream stream;
+        while ( compressor.load_next_block_stream( stream ) ) {
+          parse_lines_from_stream( stream );
+        }
       }
     }
   }
   else {
     // try to find the uncompressed file
     sprintf(population_file, "%s/%s/%s_synth_people.txt",
-	    Global::Synthetic_population_directory,
-	    Global::Synthetic_population_id,
-	    Global::Synthetic_population_id);
+        Global::Synthetic_population_directory,
+        Global::Synthetic_population_id,
+        Global::Synthetic_population_id);
     fp = Utils::fred_open_file(population_file);
     if (fp == NULL) {
       Utils::fred_abort("population_file %s not found\n", population_file);
@@ -462,51 +462,7 @@ void Population::read_population() {
     parse_lines_from_stream( stream );
   }
 
-  // Read past infections
-  char past_infections[FRED_STRING_SIZE];
-  int delay;
-  Params::get_param_from_string("past_infections", past_infections);
-  Params::get_param_from_string("past_infections_delay", &delay);
-  if ( strcmp(past_infections, "none") != 0) {
-    FILE *pifp = fopen(past_infections, "r");
-    int person_id, dis_id, rec_date, age_at_exp, num_strains, strain;
-    vector<int> strains;
-    // Read header line
-    char line[FRED_STRING_SIZE];
-    fscanf(pifp, "%[^\n]s\n", line);
-    int linenum = 0;
-    while ( !feof(pifp) ) {
-      if ( fscanf(pifp, "%d %d %d %d %d ", 
-            &person_id, &dis_id, &rec_date, 
-            &age_at_exp, &num_strains) != 5) {
-        Utils::fred_abort("Help! Read failure for past infections line %d\n", linenum);
-      }
-        
-      rec_date = (rec_date>delay)?0:(rec_date-delay);
-      assert(rec_date <= 0);
-      strains.clear();
-      for(int i=0; i<num_strains; i++){
-        fscanf(pifp, "%d", &strain);
-        strains.push_back(strain);
-      }
-      fscanf(pifp, "\n");
-      Disease *dis = get_disease( dis_id );
-      // TODO person id and index not the same thing! This is
-      // problematic: if the id read in from the past infections file belonged
-      // to a person who was born during the simulation, then their id will not yet exist.  As a
-      // temporary fix, we can get the person by index since id == index for the initial population.
-      Person *person = get_person_by_index( person_id );
-
-      //Past_Infection *pi = new Past_Infection(strains, rec_date, age_at_exp, dis, person);
-      //person->add_past_infection(dis_id, pi);
-      person->add_past_infection( strains, rec_date, age_at_exp, dis );
-      
-      linenum++;
-    }
-    fclose(pifp);
-  }
-
-  // setup health behaviors
+  // select adult to make health decisions
   for (int p = 0; p < pop_size; p++) {
     blq.get_item_by_index( p ).setup_behavior(); // TODO use blq.apply for this
   }
@@ -529,31 +485,31 @@ void Population::update(int day) {
         Global::Sim_Start_Date->get_month(day),
         Global::Sim_Start_Date->get_day_of_month(day));
 
-  int bd_count = 0;
-  size_t vec_size = 0;
+    int bd_count = 0;
+    size_t vec_size = 0;
 
-  FRED_VERBOSE( 0, "day_of_year = [%d]\n", day_of_year );
+    FRED_VERBOSE( 0, "day_of_year = [%d]\n", day_of_year );
 
-  bool is_leap = Date::is_leap_year(year);
-  
-  FRED_VERBOSE( 2, "Day: %d, Year: %d, is_leap: %d\n", day_of_year, year, is_leap ); 
+    bool is_leap = Date::is_leap_year(year);
 
-  // All birthdays except Feb. 29 ( unless in leap year ) 
-  if ( day_of_year != 60 || is_leap ) {
-    for (size_t p = 0; p < birthday_vecs[ day_of_year ].size(); p++) {
-      birthday_vecs[ day_of_year ][ p ]->birthday( day );
-      bd_count++;
+    FRED_VERBOSE( 2, "Day: %d, Year: %d, is_leap: %d\n", day_of_year, year, is_leap ); 
+
+    // All birthdays except Feb. 29 ( unless in leap year ) 
+    if ( day_of_year != 60 || is_leap ) {
+      for (size_t p = 0; p < birthday_vecs[ day_of_year ].size(); p++) {
+        birthday_vecs[ day_of_year ][ p ]->birthday( day );
+        bd_count++;
+      }
     }
-  }
 
-  //If we are NOT in a leap year, then we need to do all of the day 60 (feb 29) birthdays on day 61
-  if ( !is_leap && day_of_year == 61 ) {
-    for (size_t p = 0; p < birthday_vecs[60].size(); p++) {
-      birthday_vecs[ 60 ][ p ]->birthday( day );
-      bd_count++;
+    //If we are NOT in a leap year, then we need to do all of the day 60 (feb 29) birthdays on day 61
+    if ( !is_leap && day_of_year == 61 ) {
+      for (size_t p = 0; p < birthday_vecs[60].size(); p++) {
+        birthday_vecs[ 60 ][ p ]->birthday( day );
+        bd_count++;
+      }
     }
-  }
-  FRED_VERBOSE( 0, "birthday count = [%d]\n", bd_count );
+    FRED_VERBOSE( 0, "birthday count = [%d]\n", bd_count );
   }
 
   if ( Global::Enable_Births ) {
@@ -604,7 +560,7 @@ void Population::update(int day) {
       if ( death_list[ i ]->get_sex() == 'F' )
         death_count_female[ age_lookup ]++;
       else
-       death_count_male[ age_lookup ]++;
+        death_count_male[ age_lookup ]++;
 
       if ( vacc_manager->do_vaccination() ) {
         FRED_DEBUG( 1, "Removing %d from Vaccine Queue\n", death_list[ i ]->get_id() );
@@ -623,7 +579,7 @@ void Population::update(int day) {
         int pos = (*itr).second;
         int day_of_year = death_list[ i ]->get_birth_day_of_year();
 
-      	// Check to see if the day of the year is after FEB 28
+        // Check to see if the day of the year is after FEB 28
         // and in a leap year, if so, increment position in birthday vector
         if ( day_of_year > 59 && !Date::is_leap_year( death_list[i]->get_birth_year() ) )
           day_of_year++;
@@ -749,7 +705,7 @@ void Population::report(int day) {
       int count, num_deaths, num_births;
       double birthrate, deathrate;
       fprintf(Global::Statusfp,
-         "DEMOGRAPHICS Year %d TotalPop %d Age %d ", 
+          "DEMOGRAPHICS Year %d TotalPop %d Age %d ", 
           Global::Sim_Current_Date->get_year(), pop_size, i);
       count = age_count_female[i];
       num_births = birth_count[i];

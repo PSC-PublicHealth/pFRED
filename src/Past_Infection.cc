@@ -23,18 +23,8 @@ using namespace std;
 
 Past_Infection :: Past_Infection() { }
 
-Past_Infection::Past_Infection( Infection * infection ) {
-  infection->get_strains( strains );
-  assert( strains.size() > 0 );
-  recovery_date = infection->get_recovery_date();
-  age_at_exposure = infection->get_age_at_exposure();
-  if ( Global::Report_Immunity ) {
-    report();
-  }
-}
-
-Past_Infection::Past_Infection( vector< int > & _strains, int _recovery_date, int _age_at_exposure ) {
-  strains = _strains;
+Past_Infection::Past_Infection( int _strain_id, int _recovery_date, int _age_at_exposure ) {
+  strain_id = _strain_id;
   recovery_date = _recovery_date;
   age_at_exposure = _age_at_exposure;
   if ( Global::Report_Immunity ) {
@@ -42,19 +32,15 @@ Past_Infection::Past_Infection( vector< int > & _strains, int _recovery_date, in
   }
 }
 
-void Past_Infection::get_strains( vector< int > & strains ) {
-  strains = this->strains;
+int Past_Infection::get_strain() {
+  return strain_id;
 }
 
 void Past_Infection::report () {
-  fprintf( Global::Immunityfp, "%d %d %zu ",
-      recovery_date, age_at_exposure, strains.size() );
-  for( int i = 0; i < strains.size(); i++ ){
-    fprintf( Global::Immunityfp, "%d ", strains[ i ] );
-  }
-  fprintf(Global::Immunityfp, "\n");
+  fprintf( Global::Immunityfp, "%d %d %d\n",
+      recovery_date, age_at_exposure, strain_id );
 }
 
 string Past_Infection :: format_header() {
-  return "# person_id disease_id recovery_date age_at_exposure num_strains [strains]+ \n";
+  return "# person_id disease_id recovery_date age_at_exposure strain_id\n";
 }

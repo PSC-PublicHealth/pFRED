@@ -199,8 +199,8 @@ int main(int argc, char* argv[]) {
 
   for (int d = 0; d < Global::Diseases; ++d) {
     Disease * disease = Global::Pop.get_disease( d );
-    disease->init_prior_immunity();
     disease->initialize_evolution_reporting_grid( Global::Large_Cells );
+    disease->init_prior_immunity();
   }
 
   // initialize GAIA data if desired
@@ -226,11 +226,11 @@ int main(int argc, char* argv[]) {
 
     if (Date::match_pattern(Global::Sim_Current_Date, "01-01-*")) {
       if (Global::Track_age_distribution) {
-	Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
-	Global::Places.print_household_size_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+        Global::Pop.print_age_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+        Global::Places.print_household_size_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
       }
       if (Global::Track_household_distribution) {
-	Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+        Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
       }
     }
 
@@ -260,7 +260,7 @@ int main(int argc, char* argv[]) {
         Global::Places.print_household_size_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
       }
       if (Global::Track_household_distribution) {
-	      Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
+        Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
       }
     }
 

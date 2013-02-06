@@ -222,6 +222,8 @@ public:
   bool gen_immunity_vaccination( int age );
 
   int add_strain( Strain * child_strain, double transmissibility, int parent_strain_id );
+  int add_strain( Strain * child_strain, double transmissibility );
+
   void add_root_strain( int num_elements );
   void printStrain( int strain_id, stringstream &out );
   std::string get_strain_data_string( int strain_id );

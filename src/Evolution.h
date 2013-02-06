@@ -84,6 +84,9 @@ public:
 
   virtual void init_prior_immunity( Disease * disease ) { };
 
+  Disease * get_disease() { return disease; }
+
+
 protected:
   Disease *disease;
 };

@@ -272,6 +272,10 @@ int Disease::add_strain( Strain * child_strain, double transmissibility, int par
   return strain_table->add( child_strain, transmissibility, parent_strain_id );
 }
 
+int Disease::add_strain( Strain * child_strain, double transmissibility ) {
+  return strain_table->add( child_strain, transmissibility );
+}
+
 double Disease::calculate_climate_multiplier( double seasonality_value ) {
   return exp( ( ( seasonality_Ka * seasonality_value ) + seasonality_Kb ) ) + seasonality_min;
 }

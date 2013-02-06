@@ -67,6 +67,7 @@ public:
    */
   double get_real_age() const;
 
+  int get_age_in_days() const;
   /**
    * @return the agent's age
    */
