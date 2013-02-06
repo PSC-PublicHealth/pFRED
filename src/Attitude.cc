@@ -43,6 +43,12 @@ Attitude::Attitude(int _index) {
     frequency = 0;
     break;
 
+  case FLIP:
+    probability = URAND(params->min_prob, params->max_prob); 
+    willing = (RANDOM() <= probability);
+    frequency = params->frequency;
+    break;
+
   default: // REFUSE
     willing = false;
     probability = 0.0;
