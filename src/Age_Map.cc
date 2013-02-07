@@ -87,6 +87,42 @@ void Age_Map::read_from_input(string Input) {
   return;
 }
 
+void Age_Map::read_table(string Input) {
+  Name = Input + " Age Map";
+  
+  char ages_string[255];
+  char values_string[255];
+  
+  sprintf(ages_string,"%s_ages",Input.c_str());
+  
+  vector < int > ages_tmp;
+  int na  = Params::get_param_vector(ages_string,ages_tmp);
+  
+  if(na % 2) {
+    Utils::fred_abort("Error parsing Age_Map: %s: Must be an even number of age entries\n", Input.c_str()); 
+  }
+  
+  for(int i=0;i<na; i+=2){
+    vector <int> ages_tmp2(2);
+    ages_tmp2[0] = ages_tmp[i];
+    ages_tmp2[1] = ages_tmp[i+1];
+    ages.push_back( ages_tmp2 );
+  }
+  
+  int rows = ages.size();
+  int cols = rows;
+  for (int i = 0; i < rows; i++) {
+    double * row_tmp = new double[cols];
+    sprintf(values_string,"%s_values[%d]",Input.c_str(),i);
+    Params::get_param_vector(values_string,row_tmp);
+    table.push_back ( row_tmp );
+  }
+  
+  if(quality_control() != true)
+    Utils::fred_abort("");
+  return;
+}
+
 int Age_Map::get_minimum_age(void) const {
   int min = 9999999;
   for(unsigned int i=0;i<ages.size();i++){
@@ -120,6 +156,27 @@ double Age_Map::find_value(int age) const {
       return values[i];
   
   return 0.0;
+}
+
+
+double Age_Map::find_value(int age1, int age2) const {
+  
+  unsigned int i, j;
+
+  for(i=0;i<values.size();i++)
+    if(age1 >= ages[i][0] && age1 <= ages[i][1])
+      break;
+  
+  for(j=0;i<values.size();j++)
+    if(age2 >= ages[j][0] && age2 <= ages[j][1])
+      break;
+
+  if (i < values.size() && j < values.size()) {
+    return table[i][j];
+  }
+  else {
+    return 0.0;
+  }
 }
 
 
@@ -168,3 +225,4 @@ bool Age_Map::quality_control() const {
   
   return true;
 }
+

@@ -98,6 +98,8 @@ public:
    */
   void read_from_input(string Input, int i, int j);
 
+  void read_table(string Input);
+
   /**
    * Add a value to the Age_Map
    *
@@ -117,6 +119,17 @@ public:
    */
   double find_value(int age) const;
   
+  // Operations
+  /**
+   * Tries to find a value in a table indexed by age ranges.
+   * If the age falls within an lower and upper bound for a given age range, then
+   * the associated value is returned.  Will return 0.0 if no matching range is found.
+   *
+   * @param age the age to find
+   * @return the found value
+   */
+  double find_value(int age1, int age2) const;
+  
   // Utility functions
   /**
    * Print out information about this object
@@ -134,6 +147,7 @@ private:
   string Name;
   vector < vector<int> > ages;  // vector to hold the age ranges
   vector <double> values;       // vector to hold the values for each age range
+  vector <double *> table;	// table to hold the values indexed by age range 
 };
 
 #endif
