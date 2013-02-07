@@ -282,7 +282,8 @@ void Vaccine_Manager::vaccinate(int day) {
   // Start vaccinating Priority
   list < Person* >:: iterator ip;
   ip = priority_queue.begin();
-
+  int accept_count = 0;
+  int reject_count = 0;
   // Run through the priority queue first 
   while(ip!=priority_queue.end()) {
     Person* current_person = *ip;
@@ -297,7 +298,8 @@ void Vaccine_Manager::vaccinate(int day) {
         accept_vaccine = current_person->acceptance_of_vaccine();
       }
       if(accept_vaccine==true){
-        number_vaccinated++;
+        accept_count++;
+	number_vaccinated++;
         current_vaccine_capacity--;
         n_p_vaccinated++;
         Vaccine* vacc = vaccine_package->get_vaccine(vacc_app);
@@ -307,6 +309,7 @@ void Vaccine_Manager::vaccinate(int day) {
         ip = priority_queue.erase(ip);  // remove a vaccinated person 
       }
       else {
+	reject_count++;
         // skip non-compliant person under HBM
         // if(strcmp(Global::Behavior_model_type,"HBM") == 0) ++ip;
         if(0) ++ip;
@@ -321,13 +324,14 @@ void Vaccine_Manager::vaccinate(int day) {
       }
       ++ip;
     }
-
+    
     if(total_vaccines_avail == 0) {
       if(Global::Verbose > 0) {
         cout << "Vaccinated priority to stock out "<< n_p_vaccinated << " agents, for a total of "
           << number_vaccinated << " on day " << day << "\n";
         cout << "Left in queues:  Priority ("<< priority_queue.size() << ")    Regular ("
           <<queue.size() << ")\n";
+	cout << "Number of acceptances: " << accept_count << ", Number of rejections: " << reject_count << "\n";
       }
       return;
     }
@@ -337,6 +341,7 @@ void Vaccine_Manager::vaccinate(int day) {
           << number_vaccinated << " on day " << day << "\n";
         cout << "Left in queues:  Priority ("<< priority_queue.size() << ")    Regular ("
           <<queue.size() << ")\n";
+	cout << "Number of acceptances: " << accept_count << ", Number of rejections: " << reject_count << "\n";
       }
       return;
     }
@@ -350,10 +355,10 @@ void Vaccine_Manager::vaccinate(int day) {
 
   // Run now through the regular queue
   ip = queue.begin();
-
+  accept_count = 0;
+  reject_count = 0;
   while(ip != queue.end()){
     Person* current_person = *ip;
-
     int vacc_app = vaccine_package->pick_from_applicable_vaccines(current_person->get_age());
     if(vacc_app > -1){
       bool accept_vaccine = true;
@@ -364,6 +369,7 @@ void Vaccine_Manager::vaccinate(int day) {
         accept_vaccine = current_person->acceptance_of_vaccine();
       }
       if(accept_vaccine==true){
+	accept_count++;
         number_vaccinated++;
         current_vaccine_capacity--;
         n_r_vaccinated++;
@@ -374,6 +380,7 @@ void Vaccine_Manager::vaccinate(int day) {
         ip = queue.erase(ip);  // remove a vaccinated person 
       }
       else {
+	reject_count++;
         // skip non-compliant person under HBM
         // if(strcmp(Global::Behavior_model_type,"HBM") == 0) ip++;
         if(0) ip++;
@@ -390,6 +397,7 @@ void Vaccine_Manager::vaccinate(int day) {
           << number_vaccinated << " on day " << day << "\n";
         cout << "Left in queues:  priority ("<< priority_queue.size() << ")    Regular ("
           <<queue.size() << ")\n";
+	cout << "Number of acceptances: " << accept_count << ", Number of rejections: " << reject_count << "\n";
       }
       return;
     }
@@ -399,6 +407,7 @@ void Vaccine_Manager::vaccinate(int day) {
           << number_vaccinated << " on day " << day << "\n";
         cout << "Left in queues:  priority ("<< priority_queue.size() << ")    Regular ("
           <<queue.size() << ")\n";
+	cout << "Number of acceptances: " << accept_count << ", Number of rejections: " << reject_count << "\n";
       }
       return;
     }
@@ -409,6 +418,7 @@ void Vaccine_Manager::vaccinate(int day) {
       << " agents, for a total of "<< number_vaccinated << " on day " << day << "\n";
     cout << "Left in queues:  priority ("<< priority_queue.size() << ")    Regular ("
       <<queue.size() << ")\n";
+    cout << "Number of acceptances: " << accept_count << ", Number of rejections: " << reject_count << "\n";
   }
   return;
 }
