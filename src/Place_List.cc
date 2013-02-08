@@ -43,6 +43,8 @@
 #include "Random.h"
 #include "Utils.h"
 
+int Read_Group_Quarters = 0;
+
 // Place_List::quality_control implementation is very large,
 // include from separate .cc file:
 #include "Place_List_Quality_Control.cc"
@@ -222,6 +224,7 @@ void Place_List::read_places() {
   char ungraded[32];
   char source[32];
   char stco[32];
+  char gq_type[32];
 
   household_labels.clear();
   household_incomes.clear();
@@ -268,6 +271,44 @@ void Place_List::read_places() {
   }
   fclose(fp);
 
+  if (Read_Group_Quarters) {
+    // read group quarters locations and create households
+    sprintf(location_file, "%s/%s/%s_synth_gq.txt", 
+	    Global::Synthetic_population_directory,
+	    Global::Synthetic_population_id,
+	    Global::Synthetic_population_id);
+    fp = Utils::fred_open_file(location_file);
+    while (fgets(line, 1024, fp) != NULL) {
+      // printf("%s%s",line,newline); fflush(stdout); exit(0);
+      Utils::get_next_token(hh_id, &line);
+      // skip header line
+      if (strcmp(hh_id, "gq_id") == 0) continue;
+      Utils::get_next_token(gq_type, &line);
+      Utils::get_next_token(hh_size, &line);
+      Utils::get_next_token(stcotrbg, &line);
+      Utils::get_next_token(stcotrbg, &line);
+      Utils::get_next_token(latitude, &line);
+      Utils::get_next_token(longitude, &line);
+
+      place_type = 'H';
+      sprintf(s, "%c%s-%s", place_type, hh_id, gq_type);
+      sscanf(latitude, "%f", &lat);
+      sscanf(longitude, "%f", &lon);
+
+      pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
+      ++( place_type_counts[ place_type ] );
+      // printf ("%s %c %f %f\n", s, place_type,lat,lon); fflush(stdout);
+
+      // save household incomes for later processing
+      income = 0;
+      household_incomes.push_back(income);
+      household_labels.push_back(string(s));
+      line = line_str;
+    }
+    fclose(fp);
+  }
+
+
   // read workplace locations
   sprintf(location_file, "%s/%s/%s_workplaces.txt", 
           Global::Synthetic_population_directory,
@@ -293,6 +334,37 @@ void Place_List::read_places() {
     line = line_str;
   }
   fclose(fp);
+
+  if (Read_Group_Quarters) {
+    // read workplace locations from group quarters
+    sprintf(location_file, "%s/%s/%s_synth_gq.txt", 
+	    Global::Synthetic_population_directory,
+	    Global::Synthetic_population_id,
+	    Global::Synthetic_population_id);
+    fp = Utils::fred_open_file(location_file);
+    while (fgets(line, 255, fp) != NULL) {
+      Utils::get_next_token(workplace_id, &line);
+      // skip header line
+      if (strcmp(workplace_id, "gq_id") == 0) continue;
+      Utils::get_next_token(gq_type, &line);
+      Utils::get_next_token(num_workers_assigned, &line);
+      Utils::get_next_token(stcotrbg, &line);
+      Utils::get_next_token(stcotrbg, &line);
+      Utils::get_next_token(latitude, &line);
+      Utils::get_next_token(longitude, &line);
+
+      place_type = 'W';
+      sprintf(s, "%c%s-%s", place_type, workplace_id, gq_type);
+      sscanf(latitude, "%f", &lat);
+      sscanf(longitude, "%f", &lon);
+
+      pidv.push_back( Place_Init_Data( s, place_type, lat, lon ) );
+      ++( place_type_counts[ place_type ] );
+      // printf ("%s %c %f %f\n", s, place_type,lat,lon); fflush(stdout);
+      line = line_str;
+    }
+    fclose(fp);
+  }
 
   // read school locations
   sprintf(location_file, "%s/%s/%s_schools.txt", 
