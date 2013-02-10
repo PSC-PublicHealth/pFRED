@@ -94,6 +94,9 @@ county = none
 # to the FIPS code to form the synthetic_population_id
 synthetic_population_version = 2005_2009_ver2
 
+# Optional support for group quarters (dormitories, barracks, etc.)
+enable_group_quarters = 0
+
 # If set, then all workers who have a workplace outside the location file
 # are assigned a random workplace in the location file.
 enable_local_workplace_assignment = 0
