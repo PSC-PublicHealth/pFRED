@@ -123,6 +123,8 @@ public:
    */
   void print( Person * self );
 
+  unsigned char get_deme_id();
+
   /**
    * @return a pointer to this agent's Household
    */

@@ -381,89 +381,11 @@ void Grid::select_emigrants(int day) {
 }
 
 void Grid::select_immigrants(int day) {
-  
-   // NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE //
-   //                                                                                                                         //
-   // This is not currently used anywhere.  Some of the machinery that this function depends on is missing,                   //
-   // and has been for some time (namely, the pstring array in Population, missing since as early as revision 1.100).         //
-   // select_immigrants, as it is written below, relies on the place_label_map, which is now cleared after the                //
-   // read_population is finished.  There is an alternative way to do this... please talk to Jay if interested                //
-   // in resurrecting this function.                                                                                          //  
-   //                                                                                                                         //
-   // NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE //
-   
-
-  /*
-  int current_year = Global::Sim_Current_Date->get_year();
-  int current_popsize = Global::Pop.get_pop_size();
-  printf("IMM curr = %d target = %d ", current_popsize, target_popsize);
-  printf("vacant houses = %d  current_year = %d\n", get_vacant_houses(), current_year);
-  int n = 0;
-  int houses_filled = 0;
-  while (current_popsize < target_popsize && get_vacant_houses() > 0) {
-    // pick a vacant house
-    Place * vacant = get_vacant_house();
-    printf("vacant house = %d\n", vacant->get_id());
-    // find its grid_cell
-    Cell * p = vacant->get_grid_cell();
-    printf("Cell row = %d col = %d\n", p->get_row(), p->get_col());
-    // pick a random household from the grid_cell
-    Household * clone_house = (Household *) p->select_random_household();
-    int size = clone_house->get_orig_size();
-    printf("IMM: clone house = %d size = %d\n", clone_house->get_id(), size);
-    houses_filled++;
-    // clone the original residents of this house
-    for (int i = 0; i < size; i++) {
-      // clone the ith original housemate
-      int idx = clone_house->get_orig_id(i);
-      char pstring[FRED_STRING_SIZE];
-      strcpy(pstring, Global::Pop.get_pstring(idx));
-
-//<<<<<<< Grid.cc
-      int age, married, rel, occ;
-//=======
-      int next_id = Global::Pop.get_next_id();
-      int age, race, rel;
-//>>>>>>> 1.30
-      char label[32], house_label[32], school_label[32], work_label[32];
-      char sex;
-      sscanf(pstring, "%s %d %c %d %d %s %s %s",
-	     label, &age, &sex, &race, &rel, house_label, school_label, work_label);
-
-      // make younger to reflect age based on next decennial
-      int year_diff = 2010-current_year;
-      if (age >= year_diff) age = age - year_diff;
-
-      // redirect to the vacant house
-      strcpy(house_label, vacant->get_label());
-
-      // create clone
-      Place * house = Global::Places.get_place_from_label(house_label);
-      Place * work = Global::Places.get_place_from_label(work_label);
-      Place * school = Global::Places.get_place_from_label(school_label);
-      bool today_is_birthday = false;
-//<<<<<<< Grid.cc
-      // create and add to the population; unique id is automatically assigned
-      // in Population::add_person
-      Person * clone = Global::Pop.add_person( age, sex, married, rel,
-          occ, house, school, work, day, today_is_birthday );
-//=======
-      // create and add to the population
-      Person * clone = Global::Pop.add_person( next_id, age, sex, race, rel,
-          house, school, work, day, today_is_birthday );
-//>>>>>>> 1.30
-
-      clone->print(stdout,0);
-      current_popsize++;
-      n++;
-    }
-  }
-  if (houses_filled > 0) {
-    printf("IMM: %d house filled, %d people added, new popsize = %d = %d\n",
-        houses_filled, n, current_popsize, Global::Pop.get_pop_size());
-    fflush(stdout);
-  }
-  */
+   // NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE //
+   //                                                                       //
+   // Last revision that included this (commented out) code was 1.36        //  
+   //                                                                       //
+   // NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE //
 }
 
 void Grid::print_household_distribution(char * dir, char * date_string, int run) {

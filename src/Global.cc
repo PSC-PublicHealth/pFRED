@@ -66,6 +66,7 @@ char Global::Seasonality_Timestep[FRED_STRING_SIZE];
 int Global::Track_Residual_Immunity = 0;
 double Global::Work_absenteeism = 0.0;
 double Global::School_absenteeism = 0.0;
+bool Global::Enable_Group_Quarters = false;
 bool Global::Enable_Small_Grid = false;
 bool Global::Enable_Aging = false;
 bool Global::Enable_Births = false;
@@ -158,6 +159,8 @@ void Global::get_global_parameters() {
 
   //Set all of the boolean flags
   int temp_int = 0;
+  Params::get_param_from_string("enable_group_quarters", &temp_int);
+  Global::Enable_Group_Quarters = temp_int;
   Params::get_param_from_string("enable_small_grid", &temp_int);
   Global::Enable_Small_Grid = temp_int;
   Params::get_param_from_string("enable_aging", &temp_int);

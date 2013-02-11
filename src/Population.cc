@@ -45,8 +45,6 @@
 #include <snappy.h>
 using namespace std; 
 
-char ** pstring;
-
 // used for reporting
 int age_count_male[Demographics::MAX_AGE + 1];
 int age_count_female[Demographics::MAX_AGE + 1];
@@ -272,7 +270,7 @@ void Population::setup() {
   pop_size = 0;
   maternity_list.clear();
   death_list.clear();
-  read_population();
+  read_all_populations();
 
   // empty out the incremental list of Person's who have changed
   incremental_changes.clear();
@@ -298,7 +296,78 @@ void Population::setup() {
   FRED_STATUS(0, "population setup finished\n","");
 }
 
-void Population::parse_lines_from_stream( std::istream & stream ) {
+Person_Init_Data Population::get_person_init_data( char * line,
+    const Place_List & places, bool is_group_quarters_population ) {
+
+  char newline[1024];
+  Utils::replace_csv_missing_data(newline, line, "-1");
+  Utils::Tokens tokens = Utils::split_by_delim( newline, ',', false );
+  const PopFileColIndex & col = get_pop_file_col_index( is_group_quarters_population );
+  assert( int( tokens.size() ) == col.number_of_columns );
+  // initialized with default values
+  Person_Init_Data pid = Person_Init_Data();
+  strcpy( pid.label, tokens[ col.p_id ] );
+  // add type indicator to label for places
+  if ( is_group_quarters_population ) {
+    pid.in_grp_qrtrs = true;
+    sscanf( tokens[ col.gq_type ], "%c", & pid.gq_type );
+    // special formatting for GQ house and workplace labels
+    if ( strcmp( tokens[ col.home_id ], "-1" ) ) {
+      sprintf( pid.house_label, "H%s-%c", tokens[ col.home_id ],
+          pid.gq_type, pid.gq_type );
+    }
+    if ( strcmp( tokens[ col.workplace_id ], "-1" ) ) {
+      sprintf( pid.work_label, "W%s-%c", tokens[ col.workplace_id ],
+          pid.gq_type, pid.gq_type );
+    }
+  }
+  else {
+    // columns not present in group quarters population
+    sscanf( tokens[ col.relate ], "%d", & pid.relationship );
+    // standard formatting for house and workplace labels
+    if ( strcmp( tokens[ col.home_id ], "-1" ) ) {
+      sprintf( pid.house_label, "H%s", tokens[ col.home_id ] );
+    }
+    if ( strcmp( tokens[ col.workplace_id ], "-1" ) ) {
+      sprintf( pid.work_label, "W%s", tokens[ col.workplace_id ] );
+    }
+  }
+  // school label is the same for both synth_people and synth_gq_people
+  if ( strcmp( tokens[ col.school_id ], "-1" ) ) {
+    sprintf( pid.school_label, "S%s", tokens[ col.school_id ] );
+  }
+  // age, race, sex same for synth_people and synth_gq_people
+  sscanf( tokens[ col.age_str ], "%d", & pid.age );
+  pid.sex = strcmp( tokens[ col.sex_str ], "1" )==0 ? 'M' : 'F';
+  sscanf( tokens[ col.race_str ], "%d", & pid.race );
+  // set pointer to primary places in init data object
+  pid.house = places.get_place_from_label( pid.house_label );
+  pid.work = places.get_place_from_label( pid.work_label );
+  pid.school = places.get_place_from_label( pid.school_label );
+  // warn if we can't find workplace
+  if ( strcmp( pid.work_label, "-1" ) != 0 && pid.work == NULL ) {
+    FRED_VERBOSE( 2, "WARNING: person %s -- no workplace found for label = %s\n",
+        pid.label, pid.work_label );
+    if ( Global::Enable_Local_Workplace_Assignment ) {
+      pid.work = Global::Places.get_random_workplace();
+      FRED_CONDITIONAL_VERBOSE( 0, pid.work != NULL,
+          "WARNING: person %s assigned to workplace %s\n",
+          pid.label, pid.work->get_label() );
+      FRED_CONDITIONAL_VERBOSE( 0, pid.work == NULL,
+          "WARNING: no workplace available for person %s\n",
+          pid.label );
+    }
+  }
+  // warn if we can't find school
+  FRED_CONDITIONAL_VERBOSE( 2,  (strcmp(pid.school_label,"-1")!=0 && pid.school == NULL),
+      "WARNING: person %s -- no school found for label = %s\n",
+      pid.label, pid.school_label);
+
+  return pid;
+}
+
+void Population::parse_lines_from_stream( std::istream & stream,
+    bool is_group_quarters_pop ) {
 
   // vector used for batch add of new persons
   std::vector< Person_Init_Data > pidv;
@@ -307,104 +376,44 @@ void Population::parse_lines_from_stream( std::istream & stream ) {
     char line[FRED_STRING_SIZE];
     stream.getline( line, FRED_STRING_SIZE );
     // skip empty lines...
-    if ( line[ 0 ] == '\0' ) {
-      continue;
-    }
-    // temporaries
-    char label[32], house_label[32], school_label[32], work_label[32];
-    int age, race, relationship;
-    char sex;
-
-    char newline[1024];
-    char p_id[32], hh_id[32], serialno[32], stcotrbg[32],  age_str[4];
-    char sex_str[4], race_str[4], sporder[32],  relate[4];
-    char school_id[32], workplace_id[32];
-
-    bool today_is_birthday = false;
-    int day = 0;
-
-    char * strtok_r_ptr;
+    if ( line[ 0 ] == '\0' ) continue;
     //printf("line: |%s|\n", line); fflush(stdout); // exit(0);
-    Utils::replace_csv_missing_data(newline, line, "-1");
-    strcpy(p_id,strtok_r(newline,",",&strtok_r_ptr));
-
+    const Person_Init_Data & pid = get_person_init_data( line, Global::Places,
+        is_group_quarters_pop ); 
+    // verbose printing of all person initialization data
+    FRED_VERBOSE( 1, "%s\n", pid.to_string().c_str() );
     //skip header line
-    if (strcmp(p_id,"p_id")==0) continue;
-
-    strcpy(hh_id,strtok_r(NULL,",",&strtok_r_ptr));
-    strcpy(serialno,strtok_r(NULL,",",&strtok_r_ptr));
-    strcpy(stcotrbg,strtok_r(NULL,",",&strtok_r_ptr));
-    strcpy(age_str,strtok_r(NULL,",",&strtok_r_ptr));
-    strcpy(sex_str,strtok_r(NULL,",",&strtok_r_ptr));
-    strcpy(race_str,strtok_r(NULL,",",&strtok_r_ptr));
-    strcpy(sporder,strtok_r(NULL,",",&strtok_r_ptr));
-    strcpy(relate,strtok_r(NULL,",",&strtok_r_ptr));
-    strcpy(school_id,strtok_r(NULL,",",&strtok_r_ptr));
-    strcpy(workplace_id,strtok_r(NULL,",\n",&strtok_r_ptr));
-
-    strcpy(label, p_id);
-
-    // add type indicator to label for places
-    if (strcmp(hh_id,"-1")) {   sprintf(house_label, "H%s", hh_id);}
-    else { strcpy(house_label,"-1"); }
-    if (strcmp(workplace_id,"-1")) { sprintf(work_label, "W%s", workplace_id); }
-    else { strcpy(work_label,"-1"); }
-    if (strcmp(school_id,"-1")) { sprintf(school_label, "S%s", school_id); }
-    else { strcpy(school_label,"-1"); }
-
-    sscanf(relate, "%d", &relationship);
-    sscanf(age_str, "%d", &age);
-    sex = strcmp(sex_str,"1")==0 ? 'M' : 'F';
-    sscanf(race_str, "%d", &race);
-
-    // printf("|%s %d %c %d %s %s %s %d|\n", label, age, sex, race
-    //    house_label, work_label, school_label, relationship);
-    // fflush(stdout);
+    if (strcmp(pid.label,"p_id")==0) continue;
     /*
-       if (strcmp(work_label,"-1") && strcmp(school_label,"-1")) {
-       printf("STUDENT-WORKER: %s %d %c %s %s\n", label, age, sex, work_label, school_label);
-       fflush(stdout);
-       }
-       */
+    printf("|%s %d %c %d %s %s %s %d|\n", label, age, sex, race
+        house_label, work_label, school_label, relationship);
+    fflush(stdout);
+    
+    if (strcmp(work_label,"-1") && strcmp(school_label,"-1")) {
+      printf("STUDENT-WORKER: %s %d %c %s %s\n", label, age, sex, work_label, school_label);
+      fflush(stdout);
+    }
+    */
+    if ( pid.house != NULL ) {
+      // create a Person_Init_Data object
+      pidv.push_back( pid );
+    }
+    else {
+      // we need at least a household (homeless people not yet supported), so
+      // skip this person
+      FRED_VERBOSE( 0, "WARNING: skipping person %s -- %s %s\n",
+          pid.label, "no household found for label =", pid.house_label );
+    }
+  } // <----- end while loop over stream
 
-    // create a Person_Init_Data object
-    pidv.push_back( Person_Init_Data( age, race, relationship, sex, today_is_birthday, day ) );
-    // get a reference to it
-    Person_Init_Data & pid = pidv.back();
-    // set pointer to household in init data object
-    pid.house = Global::Places.get_place_from_label(house_label);
-    if ( pid.house == NULL ) {
-      FRED_VERBOSE( 0, "WARNING: skipping person %s --  no household found for label = %s\n",
-          label, house_label );
-      // we need at least a household (homeless people not yet supported), so skip this person
-      pidv.pop_back();  
-      continue;
-    }
-    // set pointer to workplace in init data object
-    pid.work = Global::Places.get_place_from_label( work_label );
-    if ( strcmp( work_label, "-1" ) != 0 && pid.work == NULL ) {
-      FRED_VERBOSE( 2, "WARNING: person %s -- no workplace found for label = %s\n",
-          label, work_label );
-      if (Global::Enable_Local_Workplace_Assignment) {
-        pid.work = Global::Places.get_random_workplace();
-        FRED_CONDITIONAL_VERBOSE( 0, pid.work!=NULL, "WARNING: person %s assigned to workplace %s\n",
-            label, pid.work->get_label() );
-        FRED_CONDITIONAL_VERBOSE( 0, pid.work==NULL, "WARNING: no workplace available for person %s\n",
-            label );
-      }
-    }
-    pid.school = Global::Places.get_place_from_label( school_label );
-    FRED_CONDITIONAL_VERBOSE( 2,  (strcmp(school_label,"-1")!=0 && pid.school == NULL),
-        "WARNING: person %s -- no school found for label = %s\n",
-        label, school_label);
-  }
   // Iterate through vector of already parsed initialization data and
   // add to population bloque.  More efficient to do this in batches; also
   // preserves the (fine-grained) order in the population file.  Protect
   // with mutex so that we do this sequentially and avoid thrashing the 
   // scoped mutex in add_person.
   fred::Scoped_Lock lock( batch_add_person_mutex );
-  for ( std::vector< Person_Init_Data >::iterator it = pidv.begin(); it != pidv.end(); ++it ) {
+  std::vector< Person_Init_Data >::iterator it = pidv.begin();
+  for ( ; it != pidv.end(); ++it ) {
     Person_Init_Data & pid = *it;
     // here the person is actually created and added to the population
     // The person's unique id is automatically assigned
@@ -413,20 +422,57 @@ void Population::parse_lines_from_stream( std::istream & stream ) {
   }
 }
 
-void Population::read_population() {
+void Population::split_synthetic_populations_by_deme() {
+  using namespace std;
+  using namespace Utils;
+  FRED_STATUS( 0, "Validating synthetic population identifiers before reading.\n", "" );
+  const char * pop_dir = Global::Synthetic_population_directory;
+  FRED_STATUS( 0, "Using population directory: %s\n", pop_dir );
+  const char delim = ' ';
+  Demes = split_by_delim( Global::Synthetic_population_id, delim );
+  FRED_STATUS( 0, "Split ID string \"%s\" into %d %s using delimiter: \'%c\'\n",
+      Global::Synthetic_population_id, int( Demes.size() ),
+      Demes.size() > 1 ? "tokens" : "token", delim ); 
+  FRED_STATUS( 0, "FRED defines a \"deme\" to be a local population %s\n%s\n",
+      "of people whose households are contained in the same bounded geographic region.",
+      "There is a one-to-one mapping between Synthetic Population ID and Deme ID." );
+  assert( Demes.size() > 0 );
+  for ( int d = 0; d < Demes.size(); ++d ) { 
+    FRED_STATUS( 0, "Deme %d == %s\n", d, Demes[ d ] );
+  }
+}
+
+void Population::read_all_populations() {
+  using namespace std;
+  using namespace Utils;
+  const char * pop_dir = Global::Synthetic_population_directory;
+  assert( Demes.size() > 0 );
+  for ( int d = 0; d < Demes.size(); ++d ) { 
+    FRED_STATUS( 0, "Loading population for Deme %d: %s\n", d, Demes[ d ] );
+    read_population( pop_dir, Demes[ d ], "people" );
+    if ( Global::Enable_Group_Quarters ) {
+      FRED_STATUS( 0, "Loading group quarters population for Deme %d: %s\n",
+          d, Demes[ d ] );
+      read_population( pop_dir, Demes[ d ], "gq_people" );
+    }
+  }
+}
+
+void Population::read_population( const char * pop_dir, const char * pop_id,
+    const char * pop_type ) {
+
   FRED_STATUS(0, "read population entered\n");
 
   Population::next_id = 0;
 
-  // read in population
   char population_file[1024];
   char line[1024];
 
+  bool is_group_quarters_pop = strcmp( pop_type, "gq_people" ) == 0 ? true : false;
+
   // try to open compressed population file
-  sprintf(population_file, "%s/%s/%s_synth_people.txt.fsz",
-      Global::Synthetic_population_directory,
-      Global::Synthetic_population_id,
-      Global::Synthetic_population_id);
+  sprintf( population_file, "%s/%s/%s_synth_%s.txt.fsz",
+      pop_dir, pop_id, pop_id, pop_type );
 
   FILE *fp = NULL; 
   fp = Utils::fred_open_file(population_file);
@@ -438,28 +484,27 @@ void Population::read_population() {
     if ( compressor.check_magic_bytes() ) {
       // limit to two threads to prevent locking and I/O overhead; also
       // helps to preserve population order in bloque assignment
-#pragma omp parallel
+      #pragma omp parallel
       {
         std::stringstream stream;
         while ( compressor.load_next_block_stream( stream ) ) {
-          parse_lines_from_stream( stream );
+          parse_lines_from_stream( stream, is_group_quarters_pop );
         }
       }
     }
   }
   else {
     // try to find the uncompressed file
-    sprintf(population_file, "%s/%s/%s_synth_people.txt",
-        Global::Synthetic_population_directory,
-        Global::Synthetic_population_id,
-        Global::Synthetic_population_id);
+    sprintf( population_file, "%s/%s/%s_synth_%s.txt",
+        pop_dir, pop_id, pop_id, pop_type );
+
     fp = Utils::fred_open_file(population_file);
     if (fp == NULL) {
       Utils::fred_abort("population_file %s not found\n", population_file);
     }
     fclose(fp);
     std::ifstream stream ( population_file, ifstream::in );
-    parse_lines_from_stream( stream );
+    parse_lines_from_stream( stream, is_group_quarters_pop );
   }
 
   // select adult to make health decisions
@@ -981,10 +1026,6 @@ void Population::report_death(int day, Person *per) const {
       per->get_id(),
       per->get_age());
   fflush(Global::Deathfp);
-}
-
-char * Population::get_pstring(int id) {
-  return pstring[id];
 }
 
 void Population::print_age_distribution(char * dir, char * date_string, int run) {

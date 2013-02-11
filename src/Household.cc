@@ -41,6 +41,7 @@ Household::Household( const  char *lab, fred::geo lon,
   housemate.clear();
   adults = children = 0;
   N = 0; 
+  group_quarters = false;
 }
 
 void Household::get_parameters(int diseases) {

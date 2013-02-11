@@ -135,8 +135,19 @@ int main(int argc, char* argv[]) {
 
   // initializations
 
-  // read in the household, schools and workplaces (also sets up grids)
-  Global::Places.read_places();
+  // Initializes Synthetic Population parameters, determines the synthetic
+  // population id if the city or county was specified as a parameter
+  // Must be called BEFORE Pop.split_synthetic_populations_by_deme() because
+  // city/county population lookup may overwrite Global::Synthetic_population_id
+  Global::Places.get_parameters();
+
+  // split the population id parameter string ( that was initialized in 
+  // Places::get_parameters ) on whitespace; each population id is processed as a
+  // separate deme, and stored in the Population object.
+  Global::Pop.split_synthetic_populations_by_deme();
+
+  // Loop over all Demes and read in the household, schools and workplaces (also sets up grids)
+  Global::Places.read_all_places( Global::Pop.get_demes() );
   Utils::fred_print_lap_time("Places.read_places");
 
   // read in the population and have each person enroll

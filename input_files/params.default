@@ -378,9 +378,7 @@ vaccination_immunity_prob_ages[0] = 6 0 2 3 70 71 100
 vaccination_immunity_prob_values[0] = 3 0.5 0.9 0.3
 num_codons = 12
 codon_translation_file = $FRED_HOME/input_files/evolution/numAA.txt
-#past_infections_strains_file = $FRED_HOME/input_files/evolution/strains.txt 
 past_infections_strains_file = none
-#past_infections_hosts_file = $FRED_HOME/input_files/evolution/hosts.txt
 past_infections_hosts_file = none
 #######################################################
 #######################################################

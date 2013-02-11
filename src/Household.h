@@ -176,12 +176,24 @@ public:
 
   void add_infectious(int disease_id, Person * per);
 
+  void set_deme_id( unsigned char _deme_id ) {
+    deme_id = _deme_id;
+  }
+
+  unsigned char get_deme_id() { return deme_id; }
+
+  void mark_as_group_quarters() { group_quarters = true; }
+
+  bool is_group_quarters() { return group_quarters; }
+
 private:
   static double * Household_contacts_per_day;
   static double *** Household_contact_prob;
   static bool Household_parameters_set;
 
   int household_income;				// household income
+  unsigned char deme_id;      // deme == synthetic population id
+  bool group_quarters;
 
   vector <Person *> housemate;
   short int children;

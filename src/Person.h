@@ -358,6 +358,9 @@ public:
    * @see Activities::get_household()
    */
   Place * get_household() { return activities.get_household(); }
+
+  unsigned char get_deme_id() { return activities.get_deme_id(); }
+
   bool is_householder() { return demographics.is_householder(); }
 
   /**

@@ -180,6 +180,7 @@ class Global {
     static int Seed_age_upper_bound;
 
     //Boolean flags
+    static bool Enable_Group_Quarters;
     static bool Enable_Small_Grid;
     static bool Enable_Aging;
     static bool Enable_Births;

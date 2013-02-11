@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <map>
+#include <set>
 #include <cstring>
 #include <iostream>
 #include <fstream>
@@ -38,14 +39,23 @@ class Classroom;
 class Workplace;
 
 #include <tr1/unordered_map>
-typedef std::tr1::unordered_map< string, int > Place_Label_Map;
+
+// Helper class used during read_all_places/read_places; definition
+// after Place_List class
+class Place_Init_Data;
 
 class Place_List {
+
+  typedef std::set< Place_Init_Data > InitSetT;
+  typedef std::tr1::unordered_map< string, int > LabelMapT;
+  typedef std::pair< InitSetT::iterator, bool > SetInsertResultT;
+  typedef std::map< char, int > TypeCountsMapT;
+  typedef std::map< char, string > TypeNameMapT;
 
 public:
   
   Place_List() {
-    place_label_map = new Place_Label_Map();
+    place_label_map = new LabelMapT();
     places.clear();
     workplaces.clear();
     next_place_id = 0;
@@ -54,12 +64,15 @@ public:
 
   ~Place_List();
 
-  void read_places();
+  void read_all_places( const Utils::Tokens & Demes );
+  void read_places( const char * pop_dir, const char * pop_id,
+      unsigned char deme_id, InitSetT & pids );
+
   void prepare();
   void update(int day);
   void quality_control(char * directory);
   void get_parameters();
-  Place * get_place_from_label(char *s);
+  Place * get_place_from_label(char *s) const;
   Place * get_place_at_position(int i) { return places[i]; }
 
 
@@ -83,15 +96,34 @@ public:
   void print_household_size_distribution(char * dir, char * date_string, int run);
   void end_of_run();
 
+  int get_number_of_demes() { return number_of_demes; }
+
 private:
+
+  void read_household_file( unsigned char deme_id, char * location_file,
+    InitSetT & pids );
+
+  void read_workplace_file( unsigned char deme_id, char * location_file,
+    InitSetT & pids );
+
+  void read_school_file( unsigned char deme_id, char * location_file,
+    InitSetT & pids );
+
+  void read_group_quarters_file( unsigned char deme_id, char * location_file,
+    InitSetT & pids );
+
+  int number_of_demes;
+  
+  void set_number_of_demes( int n ) { number_of_demes = n; }
+
+  fred::geo min_lat, max_lat, min_lon, max_lon;
 
   void delete_place_label_map();
 
-  class Place_Init_Data;
   void parse_lines_from_stream( std::istream & stream,
-    std::vector< Place_Init_Data > & pidv );
+    std::vector< Place_Init_Data > & pids );
   
-  std::map< char, string > place_type_name_lookup_map;
+  TypeNameMapT place_type_name_lookup_map;
 
   void init_place_type_name_lookup_map() {
     place_type_name_lookup_map[ NEIGHBORHOOD ]  = "NEIGHBORHOOD";
@@ -110,7 +142,7 @@ private:
     return place_type_name_lookup_map[ place_type ];
   }
 
-  int add_place( Place * p );
+  bool add_place( Place * p );
 
   template< typename Place_Type >
   void add_preallocated_places( char place_type, Place::Allocator< Place_Type > & pal ) {
@@ -139,36 +171,63 @@ private:
   } 
 
   // map to hold counts for each place type
-  std::map< char, int > place_type_counts;
+  TypeCountsMapT place_type_counts;
 
   int next_place_id;
 
   char locfile[80];
 
-  struct Place_Init_Data {
-    char s[ 80 ];
-    char place_type;
-    fred::geo lat, lon;
-    Place_Init_Data( char _s[], char _place_type, fred::geo _lat, fred::geo _lon ):
-      place_type( _place_type ), lat( _lat ), lon( _lon ) {
-        strcpy( s, _s );
-    };
-    bool operator< ( const Place_Init_Data & other ) const {
-      if ( place_type != other.place_type ) {
-        return place_type < other.place_type;
-      }
-      else {
-        return lat < other.lat;
-      }
-    }
-  };
-
   vector <Place *> places;
   vector <Place *> workplaces;
 
-  Place_Label_Map * place_label_map;
+  LabelMapT * place_label_map;
 
 };
 
+struct Place_Init_Data {
+
+  char s[ 80 ];
+  char place_type;
+  int income;
+  unsigned char deme_id;
+  fred::geo lat, lon;
+    
+  Place_Init_Data( char _s[], char _place_type, const char * _lat, const char * _lon,
+      unsigned char _deme_id, const char * _income = "0" ):
+    place_type( _place_type ), deme_id( _deme_id ) {
+
+    strcpy( s, _s );
+    sscanf( _lat, "%f", &lat);
+    sscanf( _lon, "%f", &lon);
+    sscanf( _income, "%d", & income );
+
+    assert( lat >= -90 && lat <= 90 );
+    assert( lon >= -180 && lon <= 180 );
+  };
+
+  bool operator< ( const Place_Init_Data & other ) const {
+
+    if ( place_type != other.place_type ) {
+      return place_type < other.place_type;
+    }
+    else if ( strcmp( s, other.s ) < 0 ) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  const std::string to_string() const {
+    std::stringstream ss;
+    ss << "Place Init Data ";
+    ss << place_type << " ";
+    ss << lat << " ";
+    ss << s << " ";
+    ss << int( deme_id ) << std::endl;
+    return ss.str();
+  }
+
+};
 
 #endif // _FRED_PLACE_LIST_H

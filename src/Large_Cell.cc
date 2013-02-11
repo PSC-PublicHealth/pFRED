@@ -182,4 +182,3 @@ void Large_Cell::add_workplace(Place *workplace) {
   // double y = Geo_Utils::get_y(workplace->get_latitude());
   // printf("ADD WORK: to large cell (%d, %d) %s %f %f\n", row,col,workplace->get_label(),x,y); fflush(stdout);
 }
-//>>>>>>> 1.8

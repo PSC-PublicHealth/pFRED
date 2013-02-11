@@ -104,10 +104,10 @@ void Place::update(int day) {
 }
 
 void Place::print(int disease_id) {
-  //printf("Place %d label %s type %c ", id, label, type);
+  printf("Place %d label %s type %c\n", id, label, type);
   //printf("S %zu I %zu N %d\n", susceptibles[disease_id].size(),
   //    infectious[disease_id].size(), N);
-  //fflush(stdout);
+  fflush(stdout);
 }
 
 void Place::enroll(Person * per) {
@@ -228,22 +228,18 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
                                         Person * infectee, int disease_id, int day) {
 
   assert( infectee->is_susceptible( disease_id ) );
-
   FRED_STATUS(1,"infectee is susceptible\n","");
-
-  double susceptibility = infectee->get_susceptibility(disease_id);
   
+  double susceptibility = infectee->get_susceptibility(disease_id);
   FRED_VERBOSE( 2, "susceptibility = %f\n", susceptibility );
 
   double r = RANDOM();
   double infection_prob = transmission_prob * susceptibility;
-  
   FRED_CONDITIONAL_VERBOSE( 1, r >= infection_prob,
       "transmission failed: r = %f  prob = %f\n", r, infection_prob );
 
   if (r < infection_prob) {
     // successful transmission; create a new infection in infectee
-    // TODO this should be a const reference instead of new allocation???
     Transmission transmission = Transmission(infector, this, day);
     infector->infect( infectee, disease_id, transmission );
 
@@ -259,7 +255,6 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
         "infection day %i of disease %i from %d to %d\n",
         day, disease_id, infector->get_id(), infectee->get_id() );
     FRED_CONDITIONAL_VERBOSE( 3, infection_prob > 1, "infection_prob exceeded unity!\n" );
-
   }
 }
 

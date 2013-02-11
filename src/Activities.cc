@@ -917,6 +917,18 @@ bool Activities::become_a_teacher( Person * self, Place *school) {
   return success;
 }
 
+unsigned char Activities::get_deme_id() {
+  Place * p;
+  if ( traveling_outside ) {
+    p = tmp_favorite_place[ HOUSEHOLD_INDEX ];
+  }
+  else {
+    p = favorite_place[ HOUSEHOLD_INDEX ];
+  }
+  assert( p->is_household() );
+  return static_cast< Household * >( p )->get_deme_id();
+}
+
 void Activities::terminate( Person * self ) {
   // Person was enrolled in only his original 
   // favorite places, not his host's places while travelling

@@ -294,6 +294,11 @@ public:
   char get_type() { return type; }
 
   bool is_workplace() { return type == 'W'; }
+  bool is_office() { return type == 'O'; }
+  bool is_household() { return type == 'H'; }
+  bool is_neighborhood() { return type == 'N'; }
+  bool is_school() { return type == 'S'; }
+  bool is_classroom() { return type == 'C'; }
 
   /**
    * Get the latitude.
