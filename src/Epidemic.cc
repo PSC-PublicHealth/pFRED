@@ -189,6 +189,8 @@ void Epidemic::become_immune(Person *person, bool susceptible, bool infectious, 
           infectious_list\n", person->get_id() );
     }
   }
+#pragma omp atomic
+  ++immune_count;
 
   if (symptomatic) {
 #pragma omp atomic
