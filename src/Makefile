@@ -28,9 +28,14 @@ OS := $(shell uname)
 ifeq ($(OS),Linux)
 NCPU ?= $(shell grep -c ^processor /proc/cpuinfo)
 SNAPPY_LIB = $(SNAPPY_DIR)/lib/libsnappy.so
+M64 = -m64
+else ifeq ($(shell echo $(OS) | cut -f1 -d_),CYGWIN)
+NCPU ?=  $(shell grep -c ^processor /proc/cpuinfo)
+SNAPPY_LIB = $(SNAPPY_DIR)/lib/libsnappy.la 
 else ifeq ($(OS),Darwin)
 NCPU ?= $(shell sysctl -n hw.ncpu)
 SNAPPY_LIB = $(SNAPPY_DIR)/lib/libsnappy.dylib
+M64 = -m64
 endif
 ################   Compiler Flags   ##############################
 CPP = g++ 
@@ -40,25 +45,25 @@ LOGGING_PRESET_1 = -DFREDWARNING
 LOGGING_PRESET_2 = -DFREDSTATUS -DFREDWARNING
 LOGGING_PRESET_3 = -DFREDVERBOSE -DFREDSTATUS -DFREDWARNING -DFREDDEBUG
 
-DSFMT_CPPFLAGS = -g -m64 -O3 -DDSFMT_MEXP=19937 -DDSFMT_DO_NOT_USE_OLD_NAMES -finline-functions -fomit-frame-pointer -DNDEBUG \
+DSFMT_CPPFLAGS = -g -O3 -DDSFMT_MEXP=19937 -DDSFMT_DO_NOT_USE_OLD_NAMES -finline-functions -fomit-frame-pointer -DNDEBUG \
 -fno-strict-aliasing --param max-inline-insns-single=1800
 
 DSFMT_SRC = $(DSFMT_DIR)/dSFMT.c
 DSFMT_HDR = $(DSFMT_DIR)/dSFMT.h $(DSFMT_DIR)/dSFMT-params19937.h
 
 # use this for development:
-## CPPFLAGS = -g -m64 -O2 $(LOGGING_PRESET_3) -Wall
+## CPPFLAGS = -g -O2 $(LOGGING_PRESET_3) -Wall
 
 # use one of these for profiling
-# CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) # -DNDEBUG
-# CPPFLAGS = -pg -m64 -O2 -DNDEBUG $(LOGGING_PRESET_3) -fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls -fno-omit-frame-pointer
-# CPPFLAGS = -g -m64 -O3 -fopenmp $(LOGGING_PRESET_3) -fno-omit-frame-pointer -Isnappy/include #-fast #-Wall
+# CPPFLAGS = -g $(M64) -O3 $(LOGGING_PRESET_3) # -DNDEBUG
+# CPPFLAGS = -pg $(M64) -O2 -DNDEBUG $(LOGGING_PRESET_3) -fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls -fno-omit-frame-pointer
+# CPPFLAGS = -g $(M64) -O3 -fopenmp $(LOGGING_PRESET_3) -fno-omit-frame-pointer -Isnappy/include #-fast #-Wall
 
 # Use one of these for production:
 ## Use this to run with multiple threads
-CPPFLAGS = -g -m64 -O3 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer
+CPPFLAGS = -g $(M64) -O3 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer
 ## Use this to make reproducible serial runs
-#CPPFLAGS = -g -m64 -O3 $(LOGGING_PRESET_3) -DNCPU=1 #-fast #-Wall
+#CPPFLAGS = -g $(M64) -O3 $(LOGGING_PRESET_3) -DNCPU=1 #-fast #-Wall
 
 CPPFLAGS += $(INCLUDE_DIRS)
 
@@ -74,6 +79,8 @@ LFLAGS = $(SNAPPY_DIR)/lib/libsnappy.a
 UNIX	:= $(shell uname)
 ifeq ($(UNIX), Linux)
 MD5SUM	:= md5sum
+else ifeq ($(shell echo $(UNIX) | cut -f1 -d_),CYGWIN)
+MD5SUM := md5sum
 else
 MD5SUM	:= md5 -q
 endif
