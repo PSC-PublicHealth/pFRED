@@ -17,6 +17,8 @@
 #ifndef _FRED_HOUSEHOLD_H
 #define _FRED_HOUSEHOLD_H
 
+#include <map>
+
 #include "Place.h"
 #include "Person.h"
 #include "Cell.h"
@@ -186,7 +188,14 @@ public:
 
   bool is_group_quarters() { return group_quarters; }
 
+  int gq_get_num_rooms();
+
+  int gq_get_room_number( int housemate_index );
+
+  int gq_get_room_size() { return 3; }
+
 private:
+
   static double * Household_contacts_per_day;
   static double *** Household_contact_prob;
   static bool Household_parameters_set;
@@ -195,13 +204,15 @@ private:
   unsigned char deme_id;      // deme == synthetic population id
   bool group_quarters;
 
-  vector <Person *> housemate;
+  std::vector <Person *> housemate;
+
   short int children;
   short int adults;
 
   // profile of original housemates
   vector < unsigned char > ages;
   vector <int> ids;
+ 
 };
 
 #endif // _FRED_HOUSEHOLD_H

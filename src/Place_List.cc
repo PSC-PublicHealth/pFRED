@@ -237,7 +237,9 @@ void Place_List::read_all_places( const Utils::Tokens & Demes ) {
       Household * h = ( Household * ) place;
       h->set_household_income( (*itr).income );
       h->set_deme_id( (*itr).deme_id );
-      h->mark_as_group_quarters();
+      if ( itr->is_group_quarters ) {
+        h->mark_as_group_quarters();
+      }
       households.push_back( h );
     }
     else if (place_type == SCHOOL) {
@@ -511,7 +513,7 @@ void Place_List::read_group_quarters_file( unsigned char deme_id,
       sprintf(s, "%c%s-%s", place_type, tokens[ gq_id ], tokens[ gq_type ] );
    
       result = pids.insert( Place_Init_Data( s, place_type, tokens[ latitude ],
-            tokens[ longitude ], deme_id ) );
+            tokens[ longitude ], deme_id, "0", true ) );
 
       if ( result.second ) {
         ++( place_type_counts[ place_type ] );
@@ -522,7 +524,7 @@ void Place_List::read_group_quarters_file( unsigned char deme_id,
       sprintf(s, "%c%s-%s", place_type, tokens[ gq_id ], tokens[ gq_type ] );
  
       result = pids.insert( Place_Init_Data( s, place_type, tokens[ latitude ],
-            tokens[ longitude ], deme_id ) );
+            tokens[ longitude ], deme_id, "0", true ) );
 
       if ( result.second ) {
         ++( place_type_counts[ place_type ] );

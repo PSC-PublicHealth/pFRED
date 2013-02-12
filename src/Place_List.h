@@ -191,11 +191,11 @@ struct Place_Init_Data {
   int income;
   unsigned char deme_id;
   fred::geo lat, lon;
-    
-  Place_Init_Data( char _s[], char _place_type, const char * _lat, const char * _lon,
-      unsigned char _deme_id, const char * _income = "0" ):
-    place_type( _place_type ), deme_id( _deme_id ) {
+  bool is_group_quarters; 
 
+  void setup( char _s[], char _place_type, const char * _lat, const char * _lon,
+      unsigned char _deme_id, const char * _income, bool _is_group_quarters ) {
+    place_type = _place_type;
     strcpy( s, _s );
     sscanf( _lat, "%f", &lat);
     sscanf( _lon, "%f", &lon);
@@ -203,7 +203,15 @@ struct Place_Init_Data {
 
     assert( lat >= -90 && lat <= 90 );
     assert( lon >= -180 && lon <= 180 );
+
+    is_group_quarters = _is_group_quarters;
   };
+
+
+  Place_Init_Data( char _s[], char _place_type, const char * _lat, const char * _lon,
+      unsigned char _deme_id, const char * _income = "0", bool _is_group_quarters = false ) {
+      setup( _s, _place_type, _lat, _lon, _deme_id, _income, _is_group_quarters );
+  }
 
   bool operator< ( const Place_Init_Data & other ) const {
 

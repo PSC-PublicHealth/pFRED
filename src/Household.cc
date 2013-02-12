@@ -13,6 +13,7 @@
 //
 // File: Household.cc
 //
+#include <limits>
 
 #include "Household.h"
 #include "Global.h"
@@ -178,7 +179,9 @@ void Household::spread_infection(int day, int disease_id) {
   double contact_prob = get_contact_rate( day, disease_id );
 
   // randomize the order of the infectious list
-  FYShuffle<Person *>( housemate );
+  if ( !is_group_quarters() ) { // <--------------------------------------------------------------- TODO temporary support for group quarters 
+    FYShuffle<Person *>( housemate );
+  }
 
   for ( int infector_pos = 0; infector_pos < housemate.size(); ++infector_pos ) {
     Person * infector = housemate[ infector_pos ];      // infectious individual
@@ -186,6 +189,12 @@ void Household::spread_infection(int day, int disease_id) {
 
     for (int pos = 0; pos < housemate.size(); ++pos) {
       if ( pos == infector_pos ) { continue; }
+      if ( Global::Enable_Group_Quarters && is_group_quarters() ) { // <--------------------------- TODO temporary support for group quarters
+        if ( gq_get_room_number( pos ) < gq_get_room_number( infector_pos ) ||
+             gq_get_room_number( pos ) > gq_get_room_number( infector_pos ) ) {
+          continue;
+        }
+      }
       Person * infectee = housemate[ pos ];
       // if a non-infectious person is selected, pick from non_infectious vector
       // only proceed if person is susceptible
@@ -220,4 +229,18 @@ void Household::add_infectious(int disease_id, Person * per) {
     total_cases[disease_id]++;
   }
 }
+
+int Household::gq_get_num_rooms() {
+  return housemate.size() / gq_get_room_size();
+}
+
+int Household::gq_get_room_number( int housemate_index ) {
+  return housemate_index / gq_get_room_size();
+}
+
+
+
+
+
+
 
