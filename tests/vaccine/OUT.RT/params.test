@@ -14,8 +14,9 @@ vaccine_tracefile = vacctrace
 
 enable_vaccination = 1
 number_of_vaccines = 1
-prob_accept_vaccine = 0.6
-prob_accept_another_vaccine_dose = 1.0
+accept_vaccine_enabled = 1
+accept_vaccine_strategy_distribution = 7 20 80 0 0 0 0 0
+
 ## Definition of Vaccine #0
 vaccine_number_of_doses[0]    = 1
 vaccine_total_avail[0]        = 235881
