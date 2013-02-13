@@ -7,16 +7,19 @@ use Getopt::Long qw(:config no_ignore_case bundling);
 my $key;
 my $title = "FRED: Allegheny County Model";
 my $help = "";
+my $static = "";
 my $opt_result = GetOptions(
 			    "h" => \$help,
+			    "s" => \$static,
 			    "k=s" => \$key,
 			    "T=s" => \$title,
 );
 
 my $usage = <<EOH;
-usage: $0 -k key -t title [-h]
+usage: $0 -k key -T title [-h]
        -k key: key of fred_job to animate.
        -T title: Title to appear on movie.
+       -s if set, map a static map instead of a movie.
 EOH
 
 die $usage if $help;
@@ -27,13 +30,27 @@ die "Please set environmental variable FRED_HOME to location of FRED home direct
 my $id = `$FRED/bin/fred_id $key`;
 chomp $id;
 my $dir = "$FRED/RESULTS/JOB/$id/DATA/REPORTS";
-chdir  $dir or die "Can't chdir toe $dir\n";
+chdir  $dir or die "Can't chdir to $dir\n";
 
-# print "GAIA movie started at ", scalar localtime, "\n";
-system "pypy $FRED/bin/fred_gaia_inputs.py -k $key -t inc_anim -T '$title'";
-# print "GAIA movie finished at ", scalar localtime, "\n";
-unlink "fred_gaia_pop_style_$key.txt";
-unlink "fred_gaia_style_inc$key.1.txt";
-unlink "fred_gaia_ts_$key.1.txt";
-unlink "out.xml";
-system "ls -l fred_gaia_ts_$key.1.mov";
+if ($static) {
+  # print "GAIA map started at ", scalar localtime, "\n";
+  system "pypy $FRED/bin/fred_gaia_inputs.py -k $key -T '$title' >& /dev/null";
+  # print "GAIA map finished at ", scalar localtime, "\n";
+  # clean up files
+  unlink "fred_gaia_pop_style_$key.txt";
+  unlink "fred_gaia_$key.1.txt";
+  unlink "fred_gaia_inc_style_$key.1.txt";
+  unlink "out.xml";
+  print "$dir/fred_gaia_$key.1.png\n";
+}
+else {
+  # print "GAIA movie started at ", scalar localtime, "\n";
+  system "pypy $FRED/bin/fred_gaia_inputs.py -k $key -t inc_anim -T '$title' >& /dev/null";
+  # print "GAIA movie finished at ", scalar localtime, "\n";
+  unlink "fred_gaia_pop_style_$key.txt";
+  unlink "fred_gaia_style_inc$key.1.txt";
+  unlink "fred_gaia_ts_$key.1.txt";
+  unlink "out.xml";
+  print "$dir/fred_gaia_ts_$key.1.mov\n";
+}
+

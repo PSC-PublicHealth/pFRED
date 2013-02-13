@@ -199,6 +199,7 @@ sub add_experiment {
   }
   print EXEC "echo job finished\n";
   print EXEC "date\n";
+  print EXEC "echo\n\n";
   print NAV "$key\n";
 }
 
