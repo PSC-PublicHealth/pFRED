@@ -10,7 +10,7 @@ use Getopt::Std;
 
 my $FRED = $ENV{FRED_HOME};
 die "$0: Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
-my $usage = "usage: $0 [-f config_file | -h | -s | -n n | -m m ]\n";
+my $usage = "usage: $0 [-f config_file | -h | -s | -n n | -m m | -M ]\n";
 
 # create RESULTS directory if needed
 my $FREDRESULTS = $ENV{FRED_RESULTS};
@@ -29,7 +29,7 @@ if (not -d $fred_experiment_space_dir) {
 
 # get command line arguments
 my %options = ();
-getopts("hsf:n:m:", \%options);
+getopts("hsf:n:m:M", \%options);
 my $n = 10;
 my $m = 10;
 if (exists $options{n}) { $n = $options{n}; }
@@ -71,6 +71,8 @@ RR = Reproductive Rate
 EOF
   exit;
 }
+my $movie = 0;
+if (exists $options{M}) { $movie = 1; }
 
 my $config_file = $options{f};
 die $usage if (not $config_file) or (not -e $config_file);
@@ -181,6 +183,8 @@ sub recurse {
 sub add_experiment {
   my $key = shift;
   print EXEC "\n";
+  print EXEC "echo job started\n";
+  print EXEC "date\n";
   print EXEC "cp $paramsfile params.$key\n";
   
   my @pars = split "-", $key;
@@ -190,6 +194,11 @@ sub add_experiment {
   }
   print EXEC "fred_delete -f -k $key\n";
   print EXEC "fred_job -k $key -p params.$key -n $n -m $m\n";
+  if ($movie) {
+    print EXEC "fred_movie -k $key -T \'Allegheny County with $key\'\n"; 
+  }
+  print EXEC "echo job finished\n";
+  print EXEC "date\n";
   print NAV "$key\n";
 }
 

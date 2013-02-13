@@ -24,11 +24,16 @@ die $usage if $help;
 my $FRED = $ENV{FRED_HOME};
 die "Please set environmental variable FRED_HOME to location of FRED home directory\n" if not $FRED;
 
-print "GAIA movie started at ", scalar localtime, "\n";
+my $id = `$FRED/bin/fred_id $key`;
+chomp $id;
+my $dir = "$FRED/RESULTS/JOB/$id/DATA/REPORTS";
+chdir  $dir or die "Can't chdir toe $dir\n";
+
+# print "GAIA movie started at ", scalar localtime, "\n";
 system "pypy $FRED/bin/fred_gaia_inputs.py -k $key -t inc_anim -T '$title'";
-print "GAIA movie finished at ", scalar localtime, "\n";
+# print "GAIA movie finished at ", scalar localtime, "\n";
 unlink "fred_gaia_pop_style_$key.txt";
 unlink "fred_gaia_style_inc$key.1.txt";
 unlink "fred_gaia_ts_$key.1.txt";
 unlink "out.xml";
-system "ls -l fred_gaia_ts_$key.1.mpg";
+system "ls -l fred_gaia_ts_$key.1.mov";
