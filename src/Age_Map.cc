@@ -148,6 +148,13 @@ void Age_Map::add_value(int lower_age, int upper_age,double val) {
 }
 
 
+void Age_Map::set_value(int age, double val) {
+  for(unsigned int i=0;i<values.size();i++)
+    if(age >= ages[i][0] && age <= ages[i][1])
+      values[i] = val;
+}
+
+
 double Age_Map::find_value(int age) const {
   
   //  if(age >=0 && age < ages[0]) return values[0];

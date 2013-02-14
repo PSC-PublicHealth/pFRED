@@ -109,6 +109,14 @@ public:
    */
   void add_value(int lower_age, int upper_age, double val);
   
+  /**
+   * Set a value in the Age_Map
+   *
+   * @param age the age to use for the key
+   * @param val what value should be returned
+   */
+  void set_value(int age, double val);
+  
   // Operations
   /**
    * Tries to find a value given an age.  If the age falls within an lower and upper bound for a given age range, then
