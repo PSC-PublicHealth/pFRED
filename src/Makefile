@@ -39,7 +39,7 @@ M64 = -m64
 endif
 ################   Compiler Flags   ##############################
 CPP = g++ 
-CPP = /Developer/usr/bin/g++
+# CPP = /Developer/usr/bin/g++
 
 LOGGING_PRESET_0 = 
 LOGGING_PRESET_1 = -DFREDWARNING
