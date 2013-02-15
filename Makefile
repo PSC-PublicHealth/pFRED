@@ -14,7 +14,7 @@ clean:
 		(cd $$i; make clean); \
 	done
 
-VER = 2.0.0
+VER = 2.1.0
 
 release:
 	make clean
