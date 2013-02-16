@@ -53,6 +53,9 @@ fi
 # clear the test directory
 rm -rf OUT.TEST/*
 
+# run single-threaded
+export OMP_NUM_THREADS=1
+
 # run the regression test
 echo FRED regression test: $dir
 echo -n run 1
