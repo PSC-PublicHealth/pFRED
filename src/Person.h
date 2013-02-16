@@ -351,7 +351,7 @@ public:
   /**
    * @return the a pointer to this agent's Neighborhood
    */
-  Place * get_neighborhood() const { return activities.get_neighborhood(); }
+  Place * get_neighborhood() { return activities.get_neighborhood(); }
 
   /**
    * @return a pointer to this Person's Household
@@ -362,12 +362,6 @@ public:
   unsigned char get_deme_id() { return activities.get_deme_id(); }
 
   bool is_householder() { return demographics.is_householder(); }
-
-  /**
-   * @return a pointer to this Person's Neighborhood
-   * @see Activities::get_neighborhood()
-   */
-  Place * get_neighborhood() { return activities.get_neighborhood(); }
 
   /**
    * @return a pointer to this Person's School

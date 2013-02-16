@@ -27,13 +27,20 @@
 class Person;
 class Place;
 
-#define HOUSEHOLD_INDEX 0
-#define NEIGHBORHOOD_INDEX 1
-#define SCHOOL_INDEX 2
-#define CLASSROOM_INDEX 3
-#define WORKPLACE_INDEX 4
-#define OFFICE_INDEX 5
-#define FAVORITE_PLACES 6
+// the following enum defines symbolic names for
+// activities.  The last element should always be
+// FAVORITE_PLACES
+
+enum Activity_index {
+  HOUSEHOLD_INDEX,
+  NEIGHBORHOOD_INDEX,
+  SCHOOL_INDEX,
+  CLASSROOM_INDEX,
+  WORKPLACE_INDEX,
+  OFFICE_INDEX,
+  FAVORITE_PLACES,
+};
+
 #define MAX_MOBILITY_AGE 100
 
 // Activity Profiles
@@ -123,37 +130,100 @@ public:
    */
   void print( Person * self );
 
-  unsigned char get_deme_id();
+  unsigned char get_deme_id(); 
+
+  Place * get_favorite_place(int i) {
+    return favorite_place[place_map[i]]; 
+  }
+
+  void set_favorite_place(int i, Place * p) {
+    if (p == NULL) {
+      place_map[i] = 0;
+    }
+    else {
+      if (place_map[i] == 0) {
+	favorite_place.push_back(NULL);
+	place_map[i] = favorite_place.size()-1;
+      }
+      favorite_place[place_map[i]] = p;
+    }
+  }
+
+  void set_household(Place * p) {
+    set_favorite_place(HOUSEHOLD_INDEX, p);
+  }
+
+  void set_neighborhood(Place * p) {
+    set_favorite_place(NEIGHBORHOOD_INDEX, p);
+  }
+
+  void set_school(Place * p) {
+    set_favorite_place(SCHOOL_INDEX, p);
+  }
+
+  void set_classroom(Place * p) {
+    set_favorite_place(CLASSROOM_INDEX, p);
+  }
+
+  void set_workplace(Place * p) {
+    set_favorite_place(WORKPLACE_INDEX, p);
+  }
+
+  void set_office(Place * p) {
+    set_favorite_place(OFFICE_INDEX, p);
+  }
+
+
+  Place * get_temporary_household() {
+    return tmp_favorite_place[place_map[HOUSEHOLD_INDEX]];
+  }
+
 
   /**
    * @return a pointer to this agent's Household
    */
-  Place * get_household() { return favorite_place[HOUSEHOLD_INDEX]; }
+  Place * get_household() {
+    return get_favorite_place(HOUSEHOLD_INDEX);
+  }
+
 
   /**
    * @return a pointer to this agent's Neighborhood
    */
-  Place * get_neighborhood() const { return favorite_place[NEIGHBORHOOD_INDEX]; }
+  Place * get_neighborhood() {
+    return get_favorite_place(NEIGHBORHOOD_INDEX);
+  }
+
 
   /**
    * @return a pointer to this agent's School
    */
-  Place * get_school() { return favorite_place[SCHOOL_INDEX]; }
+  Place * get_school() {
+    return get_favorite_place(SCHOOL_INDEX);
+  }
+
 
   /**
    * @return a pointer to this agent's Classroom
    */
-  Place * get_classroom() { return favorite_place[CLASSROOM_INDEX]; }
+  Place * get_classroom() {
+    return get_favorite_place(CLASSROOM_INDEX);
+  }
+
 
   /**
    * @return a pointer to this agent's Workplace
    */
-  Place * get_workplace() { return favorite_place[WORKPLACE_INDEX]; }
+  Place * get_workplace() {
+    return get_favorite_place(WORKPLACE_INDEX);
+  }
 
   /**
    * @return a pointer to this agent's Office
    */
-  Place * get_office() { return favorite_place[OFFICE_INDEX]; }
+  Place * get_office() {
+    return get_favorite_place(OFFICE_INDEX);
+  }
 
   /**
    * Assign the agent to a School
@@ -230,7 +300,13 @@ public:
   int get_degree();
 
   int get_household_size();
-  int get_group_size(int index);
+  int get_group_size(int index) {
+    int size = 0;
+    if (get_favorite_place(index) != NULL)
+      size = get_favorite_place(index)->get_size();
+    return size;
+  }
+
   bool is_sick_leave_available() { return sick_leave_available; }
   int get_sick_days_absent() { return my_sick_days_absent; }
   int get_sick_days_present() { return my_sick_days_present; }
@@ -242,7 +318,8 @@ public:
 
 private:
 
-  Place * favorite_place[FAVORITE_PLACES];    // list of expected places
+  unsigned char place_map[FAVORITE_PLACES];
+  vector <Place *> favorite_place;
   Place ** tmp_favorite_place; // list of favorite places, stored while traveling
   Place * home_neighborhood;
   std::bitset< FAVORITE_PLACES > on_schedule; // true iff favorite place is on schedule
@@ -295,6 +372,76 @@ private:
    */
   void read_init_files();
 
+  void clear_favorite_places() {
+    for (int i = 0; i < FAVORITE_PLACES; i++) {
+      place_map[i] = 0;
+    }
+    favorite_place.clear();
+    favorite_place.push_back(NULL);
+  }
+
+  void enroll_in_favorite_places(Person *self) {
+    for (int i = 0; i < FAVORITE_PLACES; i++) {
+      if (get_favorite_place(i) != NULL) {
+	get_favorite_place(i)->enroll(self);
+      }
+    }
+  }
+
+  void unenroll_from_favorite_places(Person * self) {
+    for (int i = 0; i < FAVORITE_PLACES; i++) {
+      if (get_favorite_place(i) != NULL) {
+	get_favorite_place(i)->unenroll(self);
+      }
+    }
+  }
+
+  void make_favorite_places_infectious(Person *self, int dis) {
+    for (int i = 0; i < FAVORITE_PLACES; i++) {
+      if (on_schedule[i]) {
+	assert(get_favorite_place(i) != NULL);
+	get_favorite_place(i)->add_infectious(dis, self);
+      }
+    }
+  }
+
+  void join_susceptible_lists_at_favorite_places(Person * self, int dis) {
+    for (int i = 0; i < FAVORITE_PLACES; i++) {
+      if (on_schedule[i] && i != HOUSEHOLD_INDEX) {
+        assert(get_favorite_place(i) != NULL);
+        if (get_favorite_place(i)->is_infectious(dis)) {
+          get_favorite_place(i)->add_susceptible(dis, self);
+        }
+      }
+    }
+  }
+
+  /**
+   * Place this agent's favorite places into a temporary location
+   */
+
+  void store_favorite_places() {
+    tmp_favorite_place = new Place * [favorite_place.size()]; 
+    for (int i = 0; i < favorite_place.size(); i++) {
+      tmp_favorite_place[i] = favorite_place[i];
+    }
+  }
+
+  /**
+   * Copy the favorite places from the temporary location, then reclaim the allocated memory of the temporary storage
+   */
+  void restore_favorite_places() {
+    for (int i = 0; i < favorite_place.size(); i++) {
+      favorite_place[i] = tmp_favorite_place[i];
+    }
+    delete [] tmp_favorite_place;
+  }
+
+  int get_place_id(int p) {
+    return get_favorite_place(p)==NULL? -1 : get_favorite_place(p)->get_id();
+  }
+
+
 protected:
 
   /**
@@ -303,15 +450,6 @@ protected:
   friend class Person;
   Activities() { }
 
-  /**
-   * Place this agent's favorite places into a temporary location
-   */
-  void store_favorite_places();
-
-  /**
-   * Copy the favorite places from the temporary location, then reclaim the allocated memory of the temporary storage
-   */
-  void restore_favorite_places();
 };
 
 
