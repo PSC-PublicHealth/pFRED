@@ -18,12 +18,8 @@
 #define _FRED_PERSON_H
 
 #include "Global.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
 using namespace std;
 
-class Population;
 class Place;
 class Disease;
 class Infection;

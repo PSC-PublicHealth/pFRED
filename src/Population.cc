@@ -869,7 +869,7 @@ void Population::quality_control() {
   // check population
   for (int p = 0; p < pop_size; p++) {
     Person & pop_i = blq.get_item_by_index( p );
-    if (pop_i.get_activities()->get_household() == NULL) {
+    if (pop_i.get_household() == NULL) {
       fprintf(Global::Statusfp, "Help! Person %d has no home.\n",p);
       pop_i.print(Global::Statusfp, 0);
     }

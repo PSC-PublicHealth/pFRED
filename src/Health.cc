@@ -473,6 +473,11 @@ bool Health::is_on_av_for_disease(int day, int d) const {
   return false;
 }
 
+int Health::get_av_start_day(int i) const {
+  assert( av_health != NULL );
+  return (*av_health)[ i ]->get_av_start_day();
+}
+
 
 void Health::infect( Person * self, Person *infectee, int disease_id, Transmission & transmission ) {
   // 'infect' call chain:

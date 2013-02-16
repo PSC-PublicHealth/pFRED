@@ -22,20 +22,14 @@
 #include "Health.h"
 #include "Behavior.h"
 #include "Place.h"
-#include "Household.h"
 #include "Disease.h"
 #include "Population.h"
-#include "AV_Health.h"
 #include "Age_Map.h"
-#include "Date.h"
-#include "Place_List.h"
 #include "Transmission.h"
-#include "Utils.h"
 
 #include <cstdio>
 #include <vector>
 #include <sstream>
-class Household;
 
 Person::Person() {
   id = -1;
@@ -95,7 +89,7 @@ void Person::print(FILE *fp, int disease) {
   fprintf(fp, "infectees %d ", health.get_infectees(disease));
   fprintf(fp, "antivirals: %2d ",health.get_number_av_taken());
   for(int i=0;i<health.get_number_av_taken();i++)
-    fprintf(fp," %2d",health.get_av_health(i)->get_av_start_day());
+    fprintf(fp," %2d",health.get_av_start_day(i));
   fprintf(fp,"\n");
   fflush(fp);
 }
@@ -129,42 +123,21 @@ Person * Person::give_birth(int day) {
   return baby;
 }
 
+char * get_place_label(Place * p) {
+  return (p==NULL) ? (char *) "-1" : p->get_label();
+}
+
 string Person::to_string() {
 
   stringstream tmp_string_stream;
   // (i.e *ID* Age Sex Household School *Classroom* Workplace *Office* Relationship)
   tmp_string_stream << this->id << " " << this->get_age() << " " <<  this->get_sex() << " " ;
   tmp_string_stream << this->get_race() << " " ;
-  Place *tmp_place = this->get_household();
-  if(tmp_place == NULL)
-    tmp_string_stream << "-1 ";
-  else
-    tmp_string_stream << tmp_place->get_label() << " ";
-
-  tmp_place = this->get_school();
-  if(tmp_place == NULL)
-    tmp_string_stream << "-1 ";
-  else
-    tmp_string_stream << tmp_place->get_label() << " ";
-
-  tmp_place = this->get_classroom();
-  if(tmp_place == NULL)
-    tmp_string_stream << "-1 ";
-  else
-    tmp_string_stream << tmp_place->get_label() << " ";
-
-  tmp_place = this->get_workplace();
-  if(tmp_place == NULL)
-    tmp_string_stream << "-1 ";
-  else
-    tmp_string_stream << tmp_place->get_label() << " ";
-
-  tmp_place = this->get_office();
-  if(tmp_place == NULL)
-    tmp_string_stream << "-1 ";
-  else
-    tmp_string_stream << tmp_place->get_label() << " ";
-
+  tmp_string_stream << get_place_label(this->get_household()) << " ";
+  tmp_string_stream << get_place_label(this->get_school()) << " ";
+  tmp_string_stream << get_place_label(this->get_classroom()) << " ";
+  tmp_string_stream << get_place_label(this->get_workplace()) << " ";
+  tmp_string_stream << get_place_label(this->get_office()) << " ";
   tmp_string_stream << this->get_relationship();
 
   return tmp_string_stream.str();

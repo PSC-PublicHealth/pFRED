@@ -35,7 +35,6 @@ class AV_Health;
 class Vaccine;
 class Vaccine_Health;
 class Vaccine_Manager;
-//class Past_Infection;
 
 class Health {
 
@@ -361,6 +360,11 @@ public:
     assert( av_health != NULL );
     return (*av_health)[ i ];
   }
+
+  /**
+   * @return this instance's av_start day
+   */
+  int get_av_start_day(int i) const;
 
   /**
    * @return a pointer to this instance's Vaccine_Health object
