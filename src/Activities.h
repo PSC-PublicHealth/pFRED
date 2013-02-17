@@ -32,12 +32,12 @@ class Place;
 // FAVORITE_PLACES
 
 enum Activity_index {
-  HOUSEHOLD_INDEX,
-  NEIGHBORHOOD_INDEX,
-  SCHOOL_INDEX,
-  CLASSROOM_INDEX,
-  WORKPLACE_INDEX,
-  OFFICE_INDEX,
+  HOUSEHOLD_ACTIVITY,
+  NEIGHBORHOOD_ACTIVITY,
+  SCHOOL_ACTIVITY,
+  CLASSROOM_ACTIVITY,
+  WORKPLACE_ACTIVITY,
+  OFFICE_ACTIVITY,
   FAVORITE_PLACES,
 };
 
@@ -150,32 +150,32 @@ public:
   }
 
   void set_household(Place * p) {
-    set_favorite_place(HOUSEHOLD_INDEX, p);
+    set_favorite_place(HOUSEHOLD_ACTIVITY, p);
   }
 
   void set_neighborhood(Place * p) {
-    set_favorite_place(NEIGHBORHOOD_INDEX, p);
+    set_favorite_place(NEIGHBORHOOD_ACTIVITY, p);
   }
 
   void set_school(Place * p) {
-    set_favorite_place(SCHOOL_INDEX, p);
+    set_favorite_place(SCHOOL_ACTIVITY, p);
   }
 
   void set_classroom(Place * p) {
-    set_favorite_place(CLASSROOM_INDEX, p);
+    set_favorite_place(CLASSROOM_ACTIVITY, p);
   }
 
   void set_workplace(Place * p) {
-    set_favorite_place(WORKPLACE_INDEX, p);
+    set_favorite_place(WORKPLACE_ACTIVITY, p);
   }
 
   void set_office(Place * p) {
-    set_favorite_place(OFFICE_INDEX, p);
+    set_favorite_place(OFFICE_ACTIVITY, p);
   }
 
 
   Place * get_temporary_household() {
-    return tmp_favorite_place[place_map[HOUSEHOLD_INDEX]];
+    return tmp_favorite_place[place_map[HOUSEHOLD_ACTIVITY]];
   }
 
 
@@ -183,7 +183,7 @@ public:
    * @return a pointer to this agent's Household
    */
   Place * get_household() {
-    return get_favorite_place(HOUSEHOLD_INDEX);
+    return get_favorite_place(HOUSEHOLD_ACTIVITY);
   }
 
 
@@ -191,7 +191,7 @@ public:
    * @return a pointer to this agent's Neighborhood
    */
   Place * get_neighborhood() {
-    return get_favorite_place(NEIGHBORHOOD_INDEX);
+    return get_favorite_place(NEIGHBORHOOD_ACTIVITY);
   }
 
 
@@ -199,7 +199,7 @@ public:
    * @return a pointer to this agent's School
    */
   Place * get_school() {
-    return get_favorite_place(SCHOOL_INDEX);
+    return get_favorite_place(SCHOOL_ACTIVITY);
   }
 
 
@@ -207,7 +207,7 @@ public:
    * @return a pointer to this agent's Classroom
    */
   Place * get_classroom() {
-    return get_favorite_place(CLASSROOM_INDEX);
+    return get_favorite_place(CLASSROOM_ACTIVITY);
   }
 
 
@@ -215,14 +215,14 @@ public:
    * @return a pointer to this agent's Workplace
    */
   Place * get_workplace() {
-    return get_favorite_place(WORKPLACE_INDEX);
+    return get_favorite_place(WORKPLACE_ACTIVITY);
   }
 
   /**
    * @return a pointer to this agent's Office
    */
   Place * get_office() {
-    return get_favorite_place(OFFICE_INDEX);
+    return get_favorite_place(OFFICE_ACTIVITY);
   }
 
   /**
@@ -407,7 +407,7 @@ private:
 
   void join_susceptible_lists_at_favorite_places(Person * self, int dis) {
     for (int i = 0; i < FAVORITE_PLACES; i++) {
-      if (on_schedule[i] && i != HOUSEHOLD_INDEX) {
+      if (on_schedule[i] && i != HOUSEHOLD_ACTIVITY) {
         assert(get_favorite_place(i) != NULL);
         if (get_favorite_place(i)->is_infectious(dis)) {
           get_favorite_place(i)->add_susceptible(dis, self);

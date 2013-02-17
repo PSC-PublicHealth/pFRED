@@ -289,45 +289,45 @@ void Activities::update_schedule( Person * self, int day ) {
   schedule_updated = day;
   on_schedule.reset();
   // always visit the household
-  on_schedule[HOUSEHOLD_INDEX] = true;
+  on_schedule[HOUSEHOLD_ACTIVITY] = true;
   // provisionally visit the neighborhood
-  on_schedule[NEIGHBORHOOD_INDEX] = true;
+  on_schedule[NEIGHBORHOOD_ACTIVITY] = true;
   // weekday vs weekend provisional activity
   if (Activities::is_weekday) {
     if (get_school() != NULL)
-      on_schedule[SCHOOL_INDEX] = true;
+      on_schedule[SCHOOL_ACTIVITY] = true;
     if (get_classroom() != NULL)
-      on_schedule[CLASSROOM_INDEX] = true;
+      on_schedule[CLASSROOM_ACTIVITY] = true;
     if (get_workplace() != NULL)
-      on_schedule[WORKPLACE_INDEX] = true;
+      on_schedule[WORKPLACE_ACTIVITY] = true;
     if (get_office() != NULL)
-      on_schedule[OFFICE_INDEX] = true;
+      on_schedule[OFFICE_ACTIVITY] = true;
   }
   else {
     if (profile == WEEKEND_WORKER_PROFILE || profile == STUDENT_PROFILE) {
       if (get_workplace() != NULL)
-        on_schedule[WORKPLACE_INDEX] = true;
+        on_schedule[WORKPLACE_ACTIVITY] = true;
       if (get_office() != NULL)
-        on_schedule[OFFICE_INDEX] = true;
+        on_schedule[OFFICE_ACTIVITY] = true;
     }
   }
   // skip work at background absenteeism rate
-  if (Global::Work_absenteeism > 0.0 && on_schedule[WORKPLACE_INDEX]) {
+  if (Global::Work_absenteeism > 0.0 && on_schedule[WORKPLACE_ACTIVITY]) {
     if (RANDOM() < Global::Work_absenteeism) {
-      on_schedule[WORKPLACE_INDEX] = false;
-      on_schedule[OFFICE_INDEX] = false;
+      on_schedule[WORKPLACE_ACTIVITY] = false;
+      on_schedule[OFFICE_ACTIVITY] = false;
     }
   }
   // skip school at background school absenteeism rate
-  if (Global::School_absenteeism > 0.0 && on_schedule[SCHOOL_INDEX]) {
+  if (Global::School_absenteeism > 0.0 && on_schedule[SCHOOL_ACTIVITY]) {
     if (RANDOM() < Global::School_absenteeism) {
-      on_schedule[SCHOOL_INDEX] = false;
-      on_schedule[CLASSROOM_INDEX] = false;
+      on_schedule[SCHOOL_ACTIVITY] = false;
+      on_schedule[CLASSROOM_ACTIVITY] = false;
     }
   }
   // decide whether to stay home if symptomatic moved to update_infectious_activities
   // decide which neighborhood to visit today
-  if (on_schedule[NEIGHBORHOOD_INDEX]) {
+  if (on_schedule[NEIGHBORHOOD_ACTIVITY]) {
     double r = RANDOM();
     if ( r < Home_neighborhood_prob ) {
       set_neighborhood(home_neighborhood);
@@ -343,7 +343,7 @@ void Activities::update_schedule( Person * self, int day ) {
 void Activities::decide_whether_to_stay_home( Person * self, int day ) {
   assert (self->is_symptomatic());
   bool stay_home = false;
-  bool it_is_a_workday = (on_schedule[WORKPLACE_INDEX] || (is_teacher() && on_schedule[SCHOOL_INDEX]));
+  bool it_is_a_workday = (on_schedule[WORKPLACE_ACTIVITY] || (is_teacher() && on_schedule[SCHOOL_ACTIVITY]));
 
   if (self->is_adult()) {
     if (Activities::Enable_default_sick_behavior) {
@@ -384,7 +384,7 @@ void Activities::decide_whether_to_stay_home( Person * self, int day ) {
   }
 
   // record school absent/present decision if it is a school day
-  if ((is_teacher()==false) && on_schedule[SCHOOL_INDEX]) {
+  if ((is_teacher()==false) && on_schedule[SCHOOL_ACTIVITY]) {
     if (stay_home) {
       Activities::School_sick_days_absent++;
       my_sick_days_absent++;
@@ -397,11 +397,11 @@ void Activities::decide_whether_to_stay_home( Person * self, int day ) {
 
   if (stay_home) {
     // withdraw to household
-    on_schedule[WORKPLACE_INDEX] = false;
-    on_schedule[OFFICE_INDEX] = false;
-    on_schedule[SCHOOL_INDEX] = false;
-    on_schedule[CLASSROOM_INDEX] = false;
-    on_schedule[NEIGHBORHOOD_INDEX] = false;
+    on_schedule[WORKPLACE_ACTIVITY] = false;
+    on_schedule[OFFICE_ACTIVITY] = false;
+    on_schedule[SCHOOL_ACTIVITY] = false;
+    on_schedule[CLASSROOM_ACTIVITY] = false;
+    on_schedule[NEIGHBORHOOD_ACTIVITY] = false;
     // printf("agent %d staying home on day %d\n", self->get_id(), day);
   }
 }
@@ -618,11 +618,11 @@ int Activities::get_degree() {
   int degree;
   int n;
   degree = 0;
-  n = get_group_size(NEIGHBORHOOD_INDEX);
+  n = get_group_size(NEIGHBORHOOD_ACTIVITY);
   if (n > 0) degree += (n-1);
-  n = get_group_size(SCHOOL_INDEX);
+  n = get_group_size(SCHOOL_ACTIVITY);
   if (n > 0) degree += (n-1);
-  n = get_group_size(WORKPLACE_INDEX);
+  n = get_group_size(WORKPLACE_ACTIVITY);
   if (n > 0) degree += (n-1);
   return degree;
 }
