@@ -227,6 +227,8 @@ void Activities::assign_profile( Person * self ) {
 
 void Activities::update(int day) {
 
+  FRED_STATUS( 1, "Activities update entered\n");
+
   // decide if this is a weekday:
   Activities::day_of_week = Global::Sim_Current_Date->get_day_of_week();
   Activities::is_weekday = (0 < Activities::day_of_week && Activities::day_of_week < 6);
@@ -246,6 +248,8 @@ void Activities::update(int day) {
   Activities::Sick_days_absent = 0;
   Activities::School_sick_days_present = 0;
   Activities::School_sick_days_absent = 0;
+
+  FRED_STATUS( 1, "Activities update completed\n");
 }
 
 
@@ -696,7 +700,7 @@ void Activities::update_profile( Person * self ) {
       set_office(NULL);
       profile = RETIRED_PROFILE;
       initialize_sick_leave(); // no sick leave available if retired
-      FRED_STATUS( 1, "changed behavior profile to RETIRED: age %d age %d sex %c\n",
+      FRED_STATUS( 1, "changed behavior profile to RETIRED: age %d age %d sex %c\n%s\n",
         self->get_id(), age, self->get_sex(), to_string( self ).c_str() );
     }
     return;
@@ -817,6 +821,7 @@ void Activities::stop_traveling( Person * self ) {
 
 bool Activities::become_a_teacher( Person * self, Place *school) {
   bool success = false;
+  FRED_STATUS( 1, "Become a teacher entered for person %d age %d\n", self->get_id(), self->get_age());
   if (get_school() != NULL) {
     if (Global::Verbose > 1) {
       FRED_WARNING("become_a_teacher: person %d already goes to school %d age %d\n",
@@ -828,6 +833,7 @@ bool Activities::become_a_teacher( Person * self, Place *school) {
     // set profile
     profile = TEACHER_PROFILE;
     // join the school
+    FRED_STATUS( 1, "set school to %s\n", school->get_label());
     set_school(school);
     get_school()->enroll(self);
     success = true;
@@ -836,12 +842,14 @@ bool Activities::become_a_teacher( Person * self, Place *school) {
   // withdraw from this workplace and any associated office
   if (get_workplace() != NULL) {
     get_workplace()->unenroll(self);
+    FRED_STATUS( 1, "set workplace to NULL\n");
     set_workplace(NULL);
   }
   if (get_office() != NULL) {
     get_office()->unenroll(self);
     set_office(NULL);
   }
+  FRED_STATUS( 1, "Become a teacher finished for person %d age %d\n", self->get_id(), self->get_age());
   return success;
 }
 
@@ -855,6 +863,15 @@ std::string Activities::schedule_to_string( Person * self, int day ) {
   return ss.str(); 
 }
 
+std::string Activities::to_string() {
+  std::stringstream ss;
+  ss <<  "Activities: "; 
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
+    ss << get_place_label(p) << " ";
+  }
+  return ss.str();
+}
+  
 std::string Activities::to_string( Person * self ) {
   std::stringstream ss;
   ss <<  "Activities for person " << self->get_id() << ": "; 

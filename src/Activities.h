@@ -124,6 +124,7 @@ public:
   /// returns string containing Activities status; does
   /// not include trailing newline
   std::string to_string( Person * self );
+  std::string to_string();
 
   /**
    * Print out information about this object
@@ -138,7 +139,22 @@ public:
 
   void set_favorite_place(int i, Place * p) {
     if (p == NULL) {
+      if (place_map[i] != 0) {
+	// printf("Before %s\n", to_string().c_str());fflush(stdout);
+	// release pointer to favorite place, to avoid memory leak
+	int last = favorite_place.size() - 1;
+	Place * tmp = favorite_place[last];
+	favorite_place[place_map[i]] = tmp;
+	for (int j = 0; j < FAVORITE_PLACES; j++) {
+	  if (place_map[j] == last) {
+	    place_map[j] = place_map[i];
+	    break;
+	  }
+	}
+	favorite_place.pop_back();
+      }
       place_map[i] = 0;
+      // printf("After %s\n\n", to_string().c_str());fflush(stdout);
     }
     else {
       if (place_map[i] == 0) {
@@ -439,6 +455,10 @@ private:
 
   int get_place_id(int p) {
     return get_favorite_place(p)==NULL? -1 : get_favorite_place(p)->get_id();
+  }
+
+  char * get_place_label(int p) {
+    return get_favorite_place(p)==NULL? (char *) "NULL" : get_favorite_place(p)->get_label();
   }
 
 
