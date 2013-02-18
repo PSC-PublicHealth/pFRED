@@ -1,6 +1,7 @@
 ##################### FRED Makefile ###########################
 
 DIRS = bin doc input_files src populations tests
+FRED_HOME = $(CURDIR)
 
 all:
 	@for i in $(DIRS); do \
