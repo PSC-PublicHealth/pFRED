@@ -140,26 +140,26 @@ public:
   void set_favorite_place(int i, Place * p) {
     if (p == NULL) {
       if (place_map[i] != 0) {
-	// printf("Before %s\n", to_string().c_str());fflush(stdout);
-	// release pointer to favorite place, to avoid memory leak
-	int last = favorite_place.size() - 1;
-	Place * tmp = favorite_place[last];
-	favorite_place[place_map[i]] = tmp;
-	for (int j = 0; j < FAVORITE_PLACES; j++) {
-	  if (place_map[j] == last) {
-	    place_map[j] = place_map[i];
-	    break;
-	  }
-	}
-	favorite_place.pop_back();
+        // printf("Before %s\n", to_string().c_str());fflush(stdout);
+        // release pointer to favorite place, to avoid memory leak
+        int last = favorite_place.size() - 1;
+        Place * tmp = favorite_place[last];
+        favorite_place[place_map[i]] = tmp;
+        for (int j = 0; j < FAVORITE_PLACES; j++) {
+          if (place_map[j] == last) {
+            place_map[j] = place_map[i];
+            break;
+          }
+        }
+        favorite_place.pop_back();
       }
       place_map[i] = 0;
       // printf("After %s\n\n", to_string().c_str());fflush(stdout);
     }
     else {
       if (place_map[i] == 0) {
-	favorite_place.push_back(NULL);
-	place_map[i] = favorite_place.size()-1;
+        favorite_place.push_back(NULL);
+        place_map[i] = favorite_place.size()-1;
       }
       favorite_place[place_map[i]] = p;
     }
@@ -197,11 +197,28 @@ public:
 
   /**
    * @return a pointer to this agent's Household
+   *
+   * If traveling, this is the household that is currently
+   * being visited
    */
   Place * get_household() {
     return get_favorite_place(HOUSEHOLD_ACTIVITY);
   }
 
+  /**
+   * @return a pointer to this agent's permanent Household
+   *
+   * If traveling, this is the Person's permanent residence,
+   * NOT the household being visited
+   */
+  Place * get_permanent_household() {
+    if ( travel_status == true && traveling_outside == true ) {
+      return get_temporary_household();
+    }
+    else {
+      return get_household();
+    }
+  }
 
   /**
    * @return a pointer to this agent's Neighborhood
@@ -339,10 +356,10 @@ private:
   Place ** tmp_favorite_place; // list of favorite places, stored while traveling
   Place * home_neighborhood;
   std::bitset< FAVORITE_PLACES > on_schedule; // true iff favorite place is on schedule
-  int schedule_updated;			 // date of last schedule update
-  bool travel_status;				// true if traveling
+  int schedule_updated;                         // date of last schedule update
+  bool travel_status;                                // true if traveling
   bool traveling_outside;      // true if traveling outside modeled area
-  char profile;				      // activities profile type
+  char profile;                                      // activities profile type
 
   // individual sick day variables
   short int my_sick_days_absent;
@@ -399,7 +416,7 @@ private:
   void enroll_in_favorite_places(Person *self) {
     for (int i = 0; i < FAVORITE_PLACES; i++) {
       if (get_favorite_place(i) != NULL) {
-	get_favorite_place(i)->enroll(self);
+        get_favorite_place(i)->enroll(self);
       }
     }
   }
@@ -407,7 +424,7 @@ private:
   void unenroll_from_favorite_places(Person * self) {
     for (int i = 0; i < FAVORITE_PLACES; i++) {
       if (get_favorite_place(i) != NULL) {
-	get_favorite_place(i)->unenroll(self);
+        get_favorite_place(i)->unenroll(self);
       }
     }
   }
@@ -415,8 +432,8 @@ private:
   void make_favorite_places_infectious(Person *self, int dis) {
     for (int i = 0; i < FAVORITE_PLACES; i++) {
       if (on_schedule[i]) {
-	assert(get_favorite_place(i) != NULL);
-	get_favorite_place(i)->add_infectious(dis, self);
+        assert(get_favorite_place(i) != NULL);
+        get_favorite_place(i)->add_infectious(dis, self);
       }
     }
   }

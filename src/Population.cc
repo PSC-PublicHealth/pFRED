@@ -170,7 +170,9 @@ Person * Population::add_person( int age, char sex, int race, int rel, Place *ho
       pos++;
     }
     birthday_vecs[ pos ].push_back( person );
-    FRED_VERBOSE( 2, "Adding person %d to birthday vector for day = %d.\n ... birthday_vecs[ %d ].size() = %zu\n", id, pos, pos, birthday_vecs[ pos ].size() );
+    FRED_VERBOSE( 2,
+        "Adding person %d to birthday vector for day = %d.\n ... birthday_vecs[ %d ].size() = %zu\n",
+        id, pos, pos, birthday_vecs[ pos ].size() );
     birthday_map[ person ] = ( (int) birthday_vecs[ pos ].size() - 1 );
   }
   return person;
@@ -324,6 +326,11 @@ Person_Init_Data Population::get_person_init_data( char * line,
   else {
     // columns not present in group quarters population
     sscanf( tokens[ col.relate ], "%d", & pid.relationship );
+    sscanf( tokens[ col.race_str ], "%d", & pid.race );
+    // schools only defined for synth_people
+    if ( strcmp( tokens[ col.school_id ], "-1" ) ) {
+      sprintf( pid.school_label, "S%s", tokens[ col.school_id ] );
+    }
     // standard formatting for house and workplace labels
     if ( strcmp( tokens[ col.home_id ], "-1" ) ) {
       sprintf( pid.house_label, "H%s", tokens[ col.home_id ] );
@@ -332,14 +339,9 @@ Person_Init_Data Population::get_person_init_data( char * line,
       sprintf( pid.work_label, "W%s", tokens[ col.workplace_id ] );
     }
   }
-  // school label is the same for both synth_people and synth_gq_people
-  if ( strcmp( tokens[ col.school_id ], "-1" ) ) {
-    sprintf( pid.school_label, "S%s", tokens[ col.school_id ] );
-  }
-  // age, race, sex same for synth_people and synth_gq_people
+  // age, sex same for synth_people and synth_gq_people
   sscanf( tokens[ col.age_str ], "%d", & pid.age );
   pid.sex = strcmp( tokens[ col.sex_str ], "1" )==0 ? 'M' : 'F';
-  sscanf( tokens[ col.race_str ], "%d", & pid.race );
   // set pointer to primary places in init data object
   pid.house = places.get_place_from_label( pid.house_label );
   pid.work = places.get_place_from_label( pid.work_label );
@@ -358,8 +360,8 @@ Person_Init_Data Population::get_person_init_data( char * line,
           pid.label );
     }
   }
-  // warn if we can't find school
-  FRED_CONDITIONAL_VERBOSE( 2,  (strcmp(pid.school_label,"-1")!=0 && pid.school == NULL),
+  // warn if we can't find school.  No school for gq_people
+  FRED_CONDITIONAL_VERBOSE( 0,  (strcmp(pid.school_label,"-1")!=0 && pid.school == NULL),
       "WARNING: person %s -- no school found for label = %s\n",
       pid.label, pid.school_label);
 
@@ -456,6 +458,10 @@ void Population::read_all_populations() {
       read_population( pop_dir, Demes[ d ], "gq_people" );
     }
   }
+  // select adult to make health decisions
+  for (int p = 0; p < pop_size; p++) {
+    blq.get_item_by_index( p ).setup_behavior(); // TODO use blq.apply for this
+  }
 }
 
 void Population::read_population( const char * pop_dir, const char * pop_id,
@@ -507,10 +513,6 @@ void Population::read_population( const char * pop_dir, const char * pop_id,
     parse_lines_from_stream( stream, is_group_quarters_pop );
   }
 
-  // select adult to make health decisions
-  for (int p = 0; p < pop_size; p++) {
-    blq.get_item_by_index( p ).setup_behavior(); // TODO use blq.apply for this
-  }
 
   FRED_VERBOSE(0, "finished reading population, pop_size = %d\n", pop_size);
 

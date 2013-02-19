@@ -355,6 +355,8 @@ public:
    */
   Place * get_household() { return activities.get_household(); }
 
+  Place * get_permanent_household() { return activities.get_permanent_household(); }
+
   unsigned char get_deme_id() { return activities.get_deme_id(); }
 
   bool is_householder() { return demographics.is_householder(); }

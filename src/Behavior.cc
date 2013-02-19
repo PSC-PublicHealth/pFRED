@@ -68,6 +68,7 @@ void Behavior::delete_attitudes() {
   }
 }
 
+
 void Behavior::setup( Person * self ) {
   if (Global::Enable_Behaviors == 0) return;
 
@@ -75,7 +76,7 @@ void Behavior::setup( Person * self ) {
   if (self->is_adult()) {
     // adults do not have a separate health decision maker
     FRED_VERBOSE(1,"behavior_setup for adult %d age %d -- will make own health decisions\n",
-		 self->get_id(), self->get_age());
+                 self->get_id(), self->get_age());
     health_decision_maker = NULL;
     setup_attitudes();
     return;
@@ -89,7 +90,7 @@ void Behavior::setup( Person * self ) {
   // child is on its own
   if ( person == NULL ) {
     FRED_VERBOSE(1,"behavior_setup for child %d age %d -- will make own health decisions\n",
-		 self->get_id(), self->get_age());
+                 self->get_id(), self->get_age());
     // no separate health decision maker
     health_decision_maker = NULL;
     setup_attitudes();
@@ -99,7 +100,7 @@ void Behavior::setup( Person * self ) {
   // an older child is available
   if ( person->is_adult() == false ) {
     FRED_VERBOSE(0,"behavior_setup for child %d age %d -- minor person %d age %d will make health decisions\n",
-		 self->get_id(), self->get_age(), person->get_id(), person->get_age());
+                 self->get_id(), self->get_age(), person->get_id(), person->get_age());
     health_decision_maker = person;
     person->become_health_decision_maker();
     return;
@@ -107,7 +108,7 @@ void Behavior::setup( Person * self ) {
 
   // an adult is available
   FRED_VERBOSE(0,"behavior_setup for child %d age %d -- adult person %d age %d will make health decisions\n",
-	       self->get_id(), self->get_age(), person->get_id(), person->get_age());
+               self->get_id(), self->get_age(), person->get_id(), person->get_age());
   health_decision_maker = person; // no need to setup atitudes for adults
   return;
 }
@@ -434,10 +435,10 @@ Person * Behavior::select_adult(Household *h, int relationship, Person * self) {
     for (int i = 0; i < N; i++) {
       Person * person = h->get_housemate(i);
       if (person->is_adult() == false || person == self)
-	continue;
+        continue;
       int r = person->get_relationship();
       if (r == Global::SPOUSE || r == Global::CHILD || r == Global::SIBLING || r == Global::IN_LAW) {
-	return person;
+        return person;
       }
     }
 
@@ -445,10 +446,10 @@ Person * Behavior::select_adult(Household *h, int relationship, Person * self) {
     for (int i = 0; i < N; i++) {
       Person * person = h->get_housemate(i);
       if (person->is_adult() == false || person == self)
-	continue;
+        continue;
       int r = person->get_relationship();
       if (r == Global::PARENT || r == Global::OTHER_RELATIVE) {
-	return person;
+        return person;
       }
     }
   }

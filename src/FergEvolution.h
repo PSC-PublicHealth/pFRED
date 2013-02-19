@@ -100,6 +100,9 @@ struct FergEvolution_Report : public Transaction {
       if ( incidence ) delete[] incidence;
       if ( mutated ) delete[] mutated;
     }
+    void add_incidence( int incident_cell, int day ) {
+      ++( incidence[ incident_cell ][ day ] );
+    }
   };
   struct Extended_Daily {
     typedef int Window[ window_size ];

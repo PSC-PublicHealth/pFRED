@@ -120,6 +120,7 @@ void Large_Cell::unenroll(Person *per) {
   else {
     person.clear();
   }
+  --( demes[ per->get_deme_id() ] );
 }
 
 Transaction * Large_Cell::collect_cell_stats( int day, int disease_id ) {
@@ -182,3 +183,17 @@ void Large_Cell::add_workplace(Place *workplace) {
   // double y = Geo_Utils::get_y(workplace->get_latitude());
   // printf("ADD WORK: to large cell (%d, %d) %s %f %f\n", row,col,workplace->get_label(),x,y); fflush(stdout);
 }
+
+unsigned char Large_Cell::get_deme_id() {
+  unsigned char deme_id = 0;
+  int max_deme_count = 0;
+  std::map< unsigned char, int >::iterator itr = demes.begin();
+  for ( ; itr != demes.end(); ++itr ) {
+    if ( (*itr).second > max_deme_count ) {
+      max_deme_count = (*itr).second;
+      deme_id = (*itr).first;
+    }
+  }
+  return deme_id;
+}
+

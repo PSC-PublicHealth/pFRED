@@ -105,6 +105,7 @@ public:
     // <-------------------------------------------------------------- Mutex
     fred::Scoped_Lock lock(mutex);
     person.push_back( p );
+    ++demes[ p->get_deme_id() ];
     ++popsize;
   }
   int get_popsize() { return popsize; }
@@ -121,6 +122,8 @@ public:
 
   Transaction * collect_cell_stats( int day, int disease_id );
 
+  unsigned char get_deme_id();
+
 protected:
   fred::Mutex mutex;
   Large_Grid * grid;
@@ -131,6 +134,7 @@ protected:
   int id;
   static int next_cell_id;
   vector <Place *> workplaces;
+  std::map< unsigned char, int > demes;
 };
 
 #endif // _FRED_LARGE_CELL_H

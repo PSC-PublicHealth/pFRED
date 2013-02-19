@@ -440,6 +440,9 @@ struct Person_Init_Data {
   }
 
   void default_initialization() {
+    house = NULL;
+    work = NULL;
+    school = NULL;
     strcpy( label, "-1" );
     strcpy( house_label, "-1" );
     strcpy( school_label, "-1" );
