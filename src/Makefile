@@ -38,6 +38,8 @@ SNAPPY_LIB = $(SNAPPY_DIR)/lib/libsnappy.dylib
 M64 = -m64
 endif
 ################   Compiler Flags   ##############################
+FRED_EXECUTABLE_NAME = FRED
+
 CPP = g++ 
 # CPP = /Developer/usr/bin/g++
 
@@ -58,11 +60,11 @@ DSFMT_HDR = $(DSFMT_DIR)/dSFMT.h $(DSFMT_DIR)/dSFMT-params19937.h
 # use one of these for profiling
 # CPPFLAGS = -g $(M64) -O3 $(LOGGING_PRESET_3) # -DNDEBUG
 # CPPFLAGS = -pg $(M64) -O2 -DNDEBUG $(LOGGING_PRESET_3) -fno-inline-functions -fno-inline-functions-called-once -fno-optimize-sibling-calls -fno-omit-frame-pointer
-# CPPFLAGS = -g $(M64) -O3 -fopenmp $(LOGGING_PRESET_3) -fno-omit-frame-pointer -Isnappy/include #-fast #-Wall
-
 # Use one of these for production:
+
 ## Use this to run with multiple threads
 CPPFLAGS = -g $(M64) -O3 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer
+
 
 ## Use this to make reproducible serial runs
 # CPPFLAGS = -g $(M64) -O3 $(LOGGING_PRESET_3) -DNCPU=1 #-fast #-Wall
@@ -120,7 +122,7 @@ MD5 := FRED.md5
 all: FRED FRED.tar.gz fsz $(MD5)
 
 FRED: $(SNAPPY_LIB) $(OBJ) dSFMT.o sqlite3.o
-	$(CPP) -o FRED $(CPPFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) $(OBJ) dSFMT.o sqlite3.o $(LFLAGS) -ldl
+	$(CPP) -o $(FRED_EXECUTABLE_NAME) $(CPPFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) $(OBJ) dSFMT.o sqlite3.o $(LFLAGS) -ldl
 	cp FRED ../bin
 
 dSFMT.o:
