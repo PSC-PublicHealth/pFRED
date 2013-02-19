@@ -42,18 +42,19 @@ Behavior::Behavior( Person * self ) {
     }
   }
 
-  if (Global::Enable_Behaviors == 0) return;
-
-  // create array of pointers to attitudes
-  attitude = new Attitude * [NUM_BEHAVIORS];
-
-  // initialize to null attitudes
-  for (int i = 0; i < NUM_BEHAVIORS; i++) {
-    attitude[i] = NULL;
-  }
-
+  // avoid unitialized values!
+  attitude = NULL
   // will be properly initialized in setup() after all agents are created
   health_decision_maker = NULL;
+
+  if ( Global::Enable_Behaviors ) {
+    // create array of pointers to attitudes
+    attitude = new Attitude * [NUM_BEHAVIORS];
+    // initialize to null attitudes
+    for (int i = 0; i < NUM_BEHAVIORS; i++) {
+      attitude[i] = NULL;
+    }
+  }
 }
 
 
@@ -63,9 +64,15 @@ Behavior::~Behavior() {
 
 
 void Behavior::delete_attitudes() {
-  delete [] attitude;
+  if ( attitude != NULL ) {
+    for (int i = 0; i < NUM_BEHAVIORS; i++) {
+      if ( attitude[i] != NULL ) {
+        printf( "%p\n",attitude[i]);
+        delete attitude[i];
+      }
+    }
+  }
 }
-
 
 void Behavior::setup( Person * self ) {
   if (Global::Enable_Behaviors == 0) return;
