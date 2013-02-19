@@ -42,24 +42,16 @@ Behavior::Behavior( Person * self ) {
     }
   }
 
-  // avoid unitialized values!
+  // will be initialized in setup_attitudes() if needed
   attitude = NULL;
+
   // will be properly initialized in setup() after all agents are created
   health_decision_maker = NULL;
-
-  if ( Global::Enable_Behaviors ) {
-    // create array of pointers to attitudes
-    attitude = new Attitude * [NUM_BEHAVIORS];
-    // initialize to null attitudes
-    for (int i = 0; i < NUM_BEHAVIORS; i++) {
-      attitude[i] = NULL;
-    }
-  }
 }
 
 
 Behavior::~Behavior() {
-  // delete_attitudes();
+  delete_attitudes();
 }
 
 
@@ -67,10 +59,12 @@ void Behavior::delete_attitudes() {
   if ( attitude != NULL ) {
     for (int i = 0; i < NUM_BEHAVIORS; i++) {
       if ( attitude[i] != NULL ) {
-        printf( "%p\n",attitude[i]);
+        // printf( "%p\n",attitude[i]);
         delete attitude[i];
       }
     }
+    delete [] attitude;
+    attitude = NULL;
   }
 }
 
@@ -121,8 +115,15 @@ void Behavior::setup( Person * self ) {
 void Behavior::setup_attitudes() {
   if (Global::Enable_Behaviors == 0) return;
 
-  // The following is needed to block a bug:
-  // return;
+  assert(attitude == NULL);
+
+  // create array of pointers to attitudes
+  attitude = new Attitude * [NUM_BEHAVIORS];
+
+  // initialize to null attitudes
+  for (int i = 0; i < NUM_BEHAVIORS; i++) {
+    attitude[i] = NULL;
+  }
 
   if ( Behavior::behavior_params[STAY_HOME_WHEN_SICK]->enabled ) {
     attitude[STAY_HOME_WHEN_SICK] = new Attitude(STAY_HOME_WHEN_SICK);

@@ -165,12 +165,14 @@ void Demographics::update_deaths( Person * self, int day ) {
 }
 
 void Demographics::birthday( Person * self, int day ) {
+  FRED_STATUS( 2, "birthday entered for person %d age %d\n", self->get_id(), self->get_age());
   //The age to look up should be an integer between 0 and the MAX_AGE
   int age_lookup = ( age <= Demographics::MAX_AGE ? age : Demographics::MAX_AGE );
   if (Global::Enable_Aging) {
     age++;
     if ( age == Global::ADULT_AGE && self->is_health_decision_maker() == false) {
       // become responsible for adult decisions
+      FRED_STATUS( 2, "become_health_decision_maker\n");
       self->become_health_decision_maker();
     }
   }
@@ -189,6 +191,7 @@ void Demographics::birthday( Person * self, int day ) {
           RANDOM() <= pct_chance_to_die) {
 
       // Yes, so set the death day (in simulation days)
+      FRED_STATUS( 2, "set deceased_sim_day\n");
       this->deceased_sim_day = (day + IRAND(0,364));
       // and flag for daily updates until death
       Global::Pop.set_mask_by_index( fred::Update_Deaths, self->get_pop_index() );
@@ -217,6 +220,7 @@ void Demographics::birthday( Person * self, int day ) {
       }
     }
   }
+  FRED_STATUS( 2, "birthday finished for person %d age %d\n", self->get_id(), self->get_age());
 }
 
 void Demographics::read_init_files() {
