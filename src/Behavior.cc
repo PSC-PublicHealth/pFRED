@@ -43,7 +43,7 @@ Behavior::Behavior( Person * self ) {
   }
 
   // avoid unitialized values!
-  attitude = NULL
+  attitude = NULL;
   // will be properly initialized in setup() after all agents are created
   health_decision_maker = NULL;
 
