@@ -59,8 +59,8 @@ enum Activity_index {
 
 class Activities {
 public:
-  Activities (Person * self, Place *house, Place *school, Place *work);
 
+  
   /**
    * Setup activities at start of run
    */
@@ -349,7 +349,14 @@ public:
   bool is_teacher() { return profile == TEACHER_PROFILE; }
   bool is_student() { return profile == STUDENT_PROFILE; }
 
+  /**
+   * Reads the yearly_mobility_rate_file set in params.def
+   * Note: this is not used unless <code>Global::Enable_Mobility</code> is set to <code>true</code>
+   */
+  static void read_init_files();
+
 private:
+
 
   unsigned char place_map[FAVORITE_PLACES];
   vector <Place *> favorite_place;
@@ -398,12 +405,6 @@ private:
   static int Sick_days_absent;
   static int School_sick_days_present;
   static int School_sick_days_absent;
-
-  /**
-   * Reads the yearly_mobility_rate_file set in params.def
-   * Note: this is not used unless <code>Global::Enable_Mobility</code> is set to <code>true</code>
-   */
-  void read_init_files();
 
   void clear_favorite_places() {
     for (int i = 0; i < FAVORITE_PLACES; i++) {
@@ -478,7 +479,6 @@ private:
     return get_favorite_place(p)==NULL? (char *) "NULL" : get_favorite_place(p)->get_label();
   }
 
-
 protected:
 
   /**
@@ -486,6 +486,8 @@ protected:
    */
   friend class Person;
   Activities() { }
+  void setup( Person * self, Place *house, Place *school, Place *work );
+
 
 };
 

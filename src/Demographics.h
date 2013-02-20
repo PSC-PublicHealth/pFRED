@@ -31,22 +31,6 @@ public:
   static const double MEAN_PREG_DAYS;
   static const double STDDEV_PREG_DAYS;
 
-  /**
-   * Default constructor
-   */
-  Demographics();
-
-  /**
-   * Constructor that sets all of the attributes of a Demographics object
-   * @param self_index the index Person object with which this Demographics object is associated
-   * @param _age
-   * @param _sex (M or F)
-   * @param day the simulation day
-   * @param is_newborn needed to know how to set the date of birth
-   */
-  Demographics(int self_index, short int _age, char _sex, short int _race,
-	       short int rel, int day, bool is_newborn = false);
-
   ~Demographics();
 
   /**
@@ -154,6 +138,26 @@ private:
   static double age_yearly_birth_rate[MAX_PREGNANCY_AGE + 1];
   static double age_daily_birth_rate[MAX_PREGNANCY_AGE + 1];
   static bool is_initialized;
+
+protected:
+
+  friend class Person;
+  /**
+   * Default constructor
+   */
+  Demographics();
+
+  /**
+   * setup for two-phase construction; sets all of the attributes of a Demographics object
+   * @param self pointer to the Person object with which this Demographics object is associated
+   * @param _age
+   * @param _sex (M or F)
+   * @param day the simulation day
+   * @param is_newborn needed to know how to set the date of birth
+   */
+  void setup( Person * self, short int _age, char _sex, short int _race,
+	       short int rel, int day, bool is_newborn = false );
+
 
 };
 

@@ -28,9 +28,8 @@
 bool Behavior::parameters_are_set = false;
 Behavior_params ** Behavior::behavior_params = new Behavior_params * [NUM_BEHAVIORS];
 
-
-Behavior::Behavior( Person * self ) {
-
+/// static method called in main (Fred.cc)
+void Behavior::init_static_params() {
   // get parameters (just once)
   if (Behavior::parameters_are_set == false) {
     for (int i = 0; i < NUM_BEHAVIORS; i++) {
@@ -41,19 +40,18 @@ Behavior::Behavior( Person * self ) {
       print_params(i);
     }
   }
+}
 
+Behavior::Behavior() {
   // will be initialized in setup_attitudes() if needed
   attitude = NULL;
-
   // will be properly initialized in setup() after all agents are created
   health_decision_maker = NULL;
 }
 
-
 Behavior::~Behavior() {
   delete_attitudes();
 }
-
 
 void Behavior::delete_attitudes() {
   if ( attitude != NULL ) {
@@ -70,6 +68,8 @@ void Behavior::delete_attitudes() {
 
 
 void Behavior::setup( Person * self ) {
+
+  assert( Behavior::parameters_are_set == true ); 
   if (Global::Enable_Behaviors == 0) return;
 
   // setup an adult

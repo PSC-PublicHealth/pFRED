@@ -32,6 +32,8 @@
 #include "Seasonality.h"
 #include "Past_Infection.h"
 #include "DB.h"
+#include "Activities.h"
+#include "Behavior.h"
 
 #include "execinfo.h"
 #include <csignal>
@@ -149,6 +151,11 @@ int main(int argc, char* argv[]) {
   // Loop over all Demes and read in the household, schools and workplaces (also sets up grids)
   Global::Places.read_all_places( Global::Pop.get_demes() );
   Utils::fred_print_lap_time("Places.read_places");
+
+  // initialize activities
+  Activities::read_init_files();
+  // initialize behaviors
+  Behavior::init_static_params();
 
   // read in the population and have each person enroll
   // in each favorite place identified in the population file

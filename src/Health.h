@@ -514,6 +514,7 @@ protected:
   
   friend class Person;
   Health() { }
+  void setup( Person * self );
 };
 
 #endif // _FRED_HEALTH_H

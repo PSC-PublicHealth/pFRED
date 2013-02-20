@@ -34,25 +34,7 @@ class Transmission;
 class Person {
 public:
 
-  /**
-   * Default constructor
-   */
   Person();
-
-  /**
-   * Constructor that sets all of the attributes of a Person object
-   * @param index the person id
-   * @param age
-   * @param sex (M or F)
-   * @param house pointer to this Person's Household
-   * @param school pointer to this Person's School
-   * @param work pointer to this Person's Workplace
-   * @param day the simulation day
-   * @param today_is_birthday true if this is a newborn
-   */
-  Person(int index, int id, int age, char sex, int race, int rel, Place *house,
-   Place *school, Place *work, int day, bool today_is_birthday);
-
   ~Person();
 
   /**
@@ -470,16 +452,35 @@ public:
   bool is_student() { return activities.is_student(); }
 
 private:
+
   // id: Person's unique identifier (never reused)
   int id;
   // index: Person's location in population container; once set, will be unique at any given time,
   // but can be reused over the course of the simulation for different people (after death/removal)
   int index; 
-  friend class Population;
   Health health;
   Demographics demographics;
   Activities activities;
   Behavior behavior;
+
+protected:
+
+  friend class Population;
+  /**
+   * Constructor that sets all of the attributes of a Person object
+   * @param index the person id
+   * @param age
+   * @param sex (M or F)
+   * @param house pointer to this Person's Household
+   * @param school pointer to this Person's School
+   * @param work pointer to this Person's Workplace
+   * @param day the simulation day
+   * @param today_is_birthday true if this is a newborn
+   */
+  void setup(int index, int id, int age, char sex, int race, int rel, Place *house,
+   Place *school, Place *work, int day, bool today_is_birthday);
+
+
 };
 
 #endif // _FRED_PERSON_H

@@ -39,16 +39,17 @@ Person::Person() {
 Person::~Person() {
 }
 
-Person::Person(int _index, int _id, int age, char sex,
-	       int race, int rel, Place *house, Place *school, Place *work,
-	       int day, bool today_is_birthday) {
+void Person::setup(int _index, int _id, int age, char sex,
+       int race, int rel, Place *house, Place *school, Place *work,
+       int day, bool today_is_birthday) {
 
   index = _index;
   id = _id;
-  demographics = Demographics(_index, age, sex, race, rel, day, today_is_birthday);
-  health = Health( this );
-  activities = Activities( this, house, school, work );
-  behavior = Behavior( this );
+  demographics.setup( this, age, sex, race, rel, day, today_is_birthday );
+  health.setup( this );
+  activities.setup( this, house, school, work );
+  // behavior setup called externally, after entire population is available
+  // (in Population::read... methods for the initial population) 
 
   for (int disease = 0; disease < Global::Diseases; disease++) {
     Disease* dis = Global::Pop.get_disease(disease);

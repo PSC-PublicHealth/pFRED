@@ -47,7 +47,7 @@ enum {
   takes_av
 };
 
-Health::Health (Person * person) {
+void Health::setup ( Person * person ) {
   alive = true;
   intervention_flags = intervention_flags_type();
   // infection pointers stored in statically allocated array (length of which

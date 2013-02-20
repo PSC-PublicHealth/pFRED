@@ -59,12 +59,8 @@ int Activities::Sick_days_absent = 0;
 int Activities::School_sick_days_present = 0;
 int Activities::School_sick_days_absent = 0;
 
-Activities::Activities (Person * self, Place *house, Place *school, Place *work) {
-  //Create the static arrays one time
-  if (!Activities::is_initialized) {
-    read_init_files();
-    Activities::is_initialized = true;
-  }
+
+void Activities::setup( Person * self, Place *house, Place *school, Place *work) {
   clear_favorite_places();
   set_household(house);
   set_school(school);
@@ -95,6 +91,7 @@ Activities::Activities (Person * self, Place *house, Place *school, Place *work)
   my_sick_leave_decision = false;
   sick_days_remaining = 0.0;
   sick_leave_available = false;
+
 }
 
 void Activities::prepare() {
@@ -752,6 +749,10 @@ void Activities::update_household_mobility( Person * self ) {
 }
 
 void Activities::read_init_files() {
+
+  if ( is_initialized ) { return; }
+  else { is_initialized = true; }
+
   Params::get_param_from_string("community_distance", &Activities::Community_distance);
   Params::get_param_from_string("community_prob", &Activities::Community_prob);
   Params::get_param_from_string("home_neighborhood_prob", &Activities::Home_neighborhood_prob);

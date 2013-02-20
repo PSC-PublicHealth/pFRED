@@ -47,8 +47,10 @@ Demographics::Demographics() {
   deceased = false;
 }
 
-Demographics::Demographics(int self_index, short int _age, char _sex, 
-			   short int _race, short int rel, int day, bool is_newborn) {
+void Demographics::setup( Person * self, short int _age, char _sex, 
+			   short int _race, short int rel, int day, bool is_newborn ) {
+
+  int self_index = self->get_pop_index();
 
   // adjust age for those over 89 (due to binning in the synthetic pop)
   if (_age > 89) {

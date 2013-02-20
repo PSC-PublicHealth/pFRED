@@ -39,6 +39,7 @@ M64 = -m64
 endif
 ################   Compiler Flags   ##############################
 FRED_EXECUTABLE_NAME = FRED
+FRED_memcheck: FRED_EXECUTABLE_NAME = FRED_memcheck
 
 CPP = g++ 
 # CPP = /Developer/usr/bin/g++
@@ -63,13 +64,11 @@ DSFMT_HDR = $(DSFMT_DIR)/dSFMT.h $(DSFMT_DIR)/dSFMT-params19937.h
 # Use one of these for production:
 
 ## Use this to run with multiple threads
-CPPFLAGS = -g $(M64) -O3 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer
-
+CPPFLAGS = -g $(M64) -O3 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer $(INCLUDE_DIRS)
+FRED_memcheck: CPPFLAGS = -g $(M64) -O1 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer $(INCLUDE_DIRS)
 
 ## Use this to make reproducible serial runs
 # CPPFLAGS = -g $(M64) -O3 $(LOGGING_PRESET_3) -DNCPU=1 #-fast #-Wall
-
-CPPFLAGS += $(INCLUDE_DIRS)
 
 CXX = $(CPP)
 CXXFLAGS = $(CPPFLAGS)
@@ -123,7 +122,9 @@ all: FRED FRED.tar.gz fsz $(MD5)
 
 FRED: $(SNAPPY_LIB) $(OBJ) dSFMT.o sqlite3.o
 	$(CPP) -o $(FRED_EXECUTABLE_NAME) $(CPPFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) $(OBJ) dSFMT.o sqlite3.o $(LFLAGS) -ldl
-	cp FRED ../bin
+	cp $(FRED_EXECUTABLE_NAME) ../bin
+
+FRED_memcheck: FRED
 
 dSFMT.o:
 	$(CPP) $(DSFMT_CPPFLAGS) $(DSFMT_SRC) -c $(DSFMT_HDR) 

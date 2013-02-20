@@ -152,7 +152,9 @@ Person * Population::add_person( int age, char sex, int race, int rel, Place *ho
   // available in the constructor (of Person and all ancillary objects)
   blq.mark_valid_by_index( idx ); 
 
-  new( person ) Person( idx, id, age, sex, race, rel, 
+  new( person ) Person();
+  
+  person->setup( idx, id, age, sex, race, rel, 
       house, school, work, day, today_is_birthday );
 
   //assert( id_to_index.find( id ) == id_to_index.end() );
@@ -361,7 +363,8 @@ Person_Init_Data Population::get_person_init_data( char * line,
     }
   }
   // warn if we can't find school.  No school for gq_people
-  FRED_CONDITIONAL_VERBOSE( 0,  (strcmp(pid.school_label,"-1")!=0 && pid.school == NULL),
+  FRED_CONDITIONAL_VERBOSE( 0,
+      (strcmp(pid.school_label,"-1")!=0 && pid.school == NULL),
       "WARNING: person %s -- no school found for label = %s\n",
       pid.label, pid.school_label);
 
@@ -378,7 +381,7 @@ void Population::parse_lines_from_stream( std::istream & stream,
     char line[FRED_STRING_SIZE];
     stream.getline( line, FRED_STRING_SIZE );
     // skip empty lines...
-    if ( line[ 0 ] == '\0' ) continue;
+    if ( ( line[ 0 ] == '\0' ) || strncmp( line, "p_id", 4 ) == 0 ) continue;
     //printf("line: |%s|\n", line); fflush(stdout); // exit(0);
     const Person_Init_Data & pid = get_person_init_data( line, Global::Places,
         is_group_quarters_pop ); 

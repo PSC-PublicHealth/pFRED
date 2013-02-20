@@ -98,14 +98,12 @@ typedef struct {
 class Behavior {
 public:
 
-  /**
-   * Constructor
-   * @param p a pointer to the agent who will exhibit this behavior
-   */
-  Behavior(Person * self);
-  ~Behavior();
+  static void init_static_params();
 
   void setup(Person * self);
+
+  ~Behavior();
+
   void update( Person * self, int day );
   void terminate( Person * self );
 
@@ -156,7 +154,8 @@ private:
 
 protected:
   friend class Person;
-  Behavior() { };
+  Behavior();
+
 };
 
 #endif // _FRED_BEHAVIOR_H
