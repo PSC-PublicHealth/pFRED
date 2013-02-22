@@ -151,6 +151,8 @@ void Health::become_exposed( Person * self, Disease *disease, Transmission & tra
         FRED_STATUS( 1, "EXPOSED person %d to disease %d\n", self->get_id(), disease->get_id() );
       }
     }
+    // notify the household of a new incident infection
+    self->notify_household(disease_id);
   }
 }
 

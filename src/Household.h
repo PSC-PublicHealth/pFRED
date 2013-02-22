@@ -194,6 +194,10 @@ public:
 
   int gq_get_room_size() { return 3; }
 
+  virtual void update(int day);
+  virtual void report(int day);
+  int count_infectious(int day, int disease_id);
+
 private:
 
   static double * Household_contacts_per_day;

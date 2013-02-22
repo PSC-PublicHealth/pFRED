@@ -137,6 +137,40 @@ void Small_Grid::quality_control(char * directory) {
 }
 
 
+void Small_Grid::update(int day) {
+  for (int row = 0; row < rows; row++) {
+    for (int col = 0; col < cols; col++) {
+      grid[row][col].update(day);
+    }
+  }
+}
+
+
 // Specific to Small_Cell Small_Grid:
 
+
+void Small_Grid::initialize_gaia_data(char *filename) {
+  FILE *fp = fopen(filename, "w");
+  fprintf(fp, "rows = %d\n", rows);
+  fprintf(fp, "cols = %d\n", rows);
+  fprintf(fp, "min_lat = %f\n", Global::Large_Cells->get_min_lat());
+  fprintf(fp, "min_lon = %f\n", Global::Large_Cells->get_min_lon());
+  fprintf(fp, "cell_x_size = %f\n", Geo_Utils::x_to_degree_longitude(grid_cell_size));
+  fprintf(fp, "cell_y_size = %f\n\n", Geo_Utils::y_to_degree_latitude(grid_cell_size));
+  fclose(fp);
+}
+
+void Small_Grid::print_gaia_data(char *filename) {
+  FILE *fp = fopen(filename, "w");
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      Small_Cell * cell = (Small_Cell *) &grid[i][j];
+      int cases = cell->get_cases();
+      int popsize = cell->get_popsize();
+      if (cases > 0)
+	fprintf(fp, "%d %d %d %d\n", i, j, cases, popsize);
+    }
+  }
+  fclose(fp);
+}
 

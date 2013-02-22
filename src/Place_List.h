@@ -70,6 +70,7 @@ public:
 
   void prepare();
   void update(int day);
+  void report(int day);
   void quality_control(char * directory);
   void get_parameters();
   Place * get_place_from_label(char *s) const;

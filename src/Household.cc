@@ -20,6 +20,8 @@
 #include "Params.h"
 #include "Person.h"
 #include "Cell.h"
+#include "Small_Cell.h"
+#include "Small_Grid.h"
 #include "Grid.h"
 #include "Utils.h"
 #include "Random.h"
@@ -238,9 +240,41 @@ int Household::gq_get_room_number( int housemate_index ) {
   return housemate_index / gq_get_room_size();
 }
 
+void Household::update(int day) {
 
+  if (Global::Print_GAIA_Data) {
+    // provide data for GAIA
+    // int count = get_infections_today(0);
+    int count = count_infectious(day, 0);
+    Small_Cell * cell = Global::Small_Cells->get_grid_cell(get_latitude(),get_longitude());
+    cell->household_report(count, N);
+    // printf("day %d household %s cases %d total %d\n", day, get_label(), count, N);
+  }
 
+  Place::update(day);
+}
 
+void Household::report(int day) {
 
+  if (Global::Print_GAIA_Data) {
+    // provide data for GAIA
+    // int count = get_infections_today(0);
+    int count = count_infectious(day, 0);
+    Small_Cell * cell = Global::Small_Cells->get_grid_cell(get_latitude(),get_longitude());
+    cell->household_report(count, N);
+    // printf("day %d household %s cases %d total %d\n", day, get_label(), count, N);
+  }
+
+  Place::report(day);
+}
+
+int Household::count_infectious(int day, int disease_id) {
+  int count = 0;
+  for ( int i = 0; i < housemate.size(); ++i ) {
+    Person * p = housemate[ i ];
+    if ( p->get_health()->is_infectious( disease_id ) ) { count++; }
+  }
+  return count;
+}
 
 

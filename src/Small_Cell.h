@@ -27,10 +27,17 @@ public:
   ~Small_Cell() {}
   void setup(Small_Grid * grd, int i, int j);
   void quality_control();
+  void update(int day) { cases = 0; popsize = 0; }
   double distance_to_grid_cell(Small_Cell *grid_cell2);
+  int get_cases() { return cases; }
+  int get_popsize() { return popsize; }
+  void print();
+  void household_report(int inf, int total) { cases += inf; popsize += total; print();} 
 
 protected:
   Small_Grid * grid;
+  int cases;
+  int popsize;
 };
 
 #endif // _FRED_SMALL_CELL_H

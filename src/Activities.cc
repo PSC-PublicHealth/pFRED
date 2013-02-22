@@ -893,6 +893,13 @@ unsigned char Activities::get_deme_id() {
   return static_cast< Household * >( p )->get_deme_id();
 }
 
+void Activities::notify_household(int disease_id) {
+  Place * h = get_household();
+  if (h != NULL) {
+    h->increment_infections_today(disease_id);
+  }
+}
+
 void Activities::terminate( Person * self ) {
   // Person was enrolled in only his original 
   // favorite places, not his host's places while travelling

@@ -151,8 +151,6 @@ public:
    */
   int get_target_popsize() { return target_popsize; }
 
-  int get_infectious_count(int disease_id);
-
 protected:
   Grid * grid;
   int houses;

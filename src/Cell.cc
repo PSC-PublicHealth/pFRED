@@ -202,12 +202,3 @@ double Cell::distance_to_grid_cell(Cell *p2) {
   return sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 }
 
-
-int Cell::get_infectious_count(int disease_id) {
-  int infectious_count = 0;
-  for (int i = 0; i < houses; i++) {
-    infectious_count += household[i]->get_infectious_count(disease_id);
-  }
-  return infectious_count;
-}
-

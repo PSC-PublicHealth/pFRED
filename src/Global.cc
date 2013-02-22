@@ -193,7 +193,9 @@ void Global::get_global_parameters() {
   Global::Print_Household_Locations = temp_int;
   Params::get_param_from_string("assign_teachers",&temp_int);
   Global::Assign_Teachers = temp_int;
-  Params::get_param_from_string("print_gaia_data",&Print_GAIA_Data);
+  Params::get_param_from_string("print_gaia_data",&Global::Print_GAIA_Data);
+
+  if (Global::Print_GAIA_Data) Global::Enable_Small_Grid = true;
 
   // Initialize Demographics
   Demographics::read_init_files();

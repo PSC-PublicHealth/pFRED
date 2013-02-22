@@ -93,6 +93,7 @@ void Place::update(int day) {
   for (int d = 0; d < Global::Diseases; d++) {
     //if(day > 0) print_susceptibles(d);
     cases[d] = deaths[d] = Sympt[ d ] = 0;
+    infections_today[d] = 0;
     if ( infectious_bitset.test( d ) ) {
       place_state[ d ].clear(); 
     }
@@ -102,6 +103,8 @@ void Place::update(int day) {
     infectious_bitset.reset();
   }
 }
+
+void Place::report(int day) {}
 
 void Place::print(int disease_id) {
   printf("Place %d label %s type %c\n", id, label, type);
@@ -353,3 +356,4 @@ int Place::get_infectious_count(int disease_id) {
   std::vector< Person * > & infectious = place_state_merge.get_infectious_vector();
   return (int) infectious.size();
 }
+

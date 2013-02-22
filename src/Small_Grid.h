@@ -35,6 +35,11 @@ public:
 
   // Specific to Small_Cell grid:
 
+  void update(int day);
+
+  void initialize_gaia_data(char *filename);
+  void print_gaia_data(char *filename);
+
 protected:
   Small_Cell ** grid;            // Rectangular array of grid_cells
   Large_Grid * large_grid;

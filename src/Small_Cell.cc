@@ -16,6 +16,7 @@
 
 #include "Small_Cell.h"
 #include "Small_Grid.h"
+#include "Utils.h"
 
 void Small_Cell::setup(Small_Grid * grd, int i, int j) {
   grid = grd;
@@ -44,7 +45,8 @@ double Small_Cell::distance_to_grid_cell(Small_Cell *p2) {
   return sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 }
 
-
-
+void Small_Cell::print() {
+  FRED_VERBOSE(0, "small_cell: %d %d %d %d\n", row, col, cases, popsize);
+}
 
 

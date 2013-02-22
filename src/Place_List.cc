@@ -567,6 +567,18 @@ void Place_List::update(int day) {
   FRED_STATUS(1, "update places finished\n", "");
 }
 
+void Place_List::report(int day) {
+
+  FRED_STATUS(1, "report places entered\n","");
+
+  int number_places = places.size();
+  for ( int p = 0; p < number_places; ++p ) {
+    places[ p ]->report( day );
+  }
+
+  FRED_STATUS(1, "report places finished\n", "");
+}
+
 Place * Place_List::get_place_from_label(char *s) const {
   if (strcmp(s, "-1") == 0) return NULL;
   string str;

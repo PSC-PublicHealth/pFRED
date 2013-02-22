@@ -145,7 +145,9 @@ public:
    * Perform a daily update of this place.  The daily count arrays will all be reset and the vectors
    * containing infectious and symptomatics will be cleared.
    */
-  void update(int day);
+  virtual void update(int day);
+
+  virtual void report(int day);
 
   /**
    * Display the information for a given disease.
@@ -496,6 +498,8 @@ public:
 
   double get_x() { return Geo_Utils::get_x(longitude); }
   double get_y() { return Geo_Utils::get_y(latitude); }
+  int get_infections_today(int disease_id) { return infections_today[disease_id]; }
+  void increment_infections_today(int disease_id) { infections_today[disease_id]++; }
 
 protected:
   // state array contains:
@@ -524,6 +528,7 @@ protected:
   int deaths[ Global::MAX_NUM_DISEASES ];           // deaths today
   int total_cases[ Global::MAX_NUM_DISEASES ];      // total symptomatic cases
   int total_deaths[ Global::MAX_NUM_DISEASES ];     // total deaths
+  int infections_today [ Global::MAX_NUM_DISEASES ];// new infections today
 
   Population * population;
   Cell * grid_cell;       // geo grid_cell for this place

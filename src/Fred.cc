@@ -225,7 +225,7 @@ int main(int argc, char* argv[]) {
   if (Global::Print_GAIA_Data) {
     char gaiafile[FRED_STRING_SIZE];
     sprintf(gaiafile, "%s/GAIA.%d/setup.txt", directory, run);
-    Global::Cells->initialize_gaia_data(gaiafile);
+    Global::Small_Cells->initialize_gaia_data(gaiafile);
   }
 
   Utils::fred_print_lap_time("FRED initialization");
@@ -252,6 +252,9 @@ int main(int argc, char* argv[]) {
         Global::Cells->print_household_distribution(directory, (char *) Global::Sim_Current_Date->get_YYYYMMDD().c_str(), run);
       }
     }
+
+    if (Global::Enable_Small_Grid)
+      Global::Small_Cells->update(day);
 
     Global::Places.update(day);
     Utils::fred_print_lap_time("day %d update places", day);
@@ -291,7 +294,8 @@ int main(int argc, char* argv[]) {
     if (Global::Print_GAIA_Data) {
       char gaiafile[FRED_STRING_SIZE];
       sprintf(gaiafile, "%s/GAIA.%d/day-%d-inf.txt", directory, run, day);
-      Global::Cells->print_gaia_data(gaiafile);
+      // Global::Places.report(day);
+      Global::Small_Cells->print_gaia_data(gaiafile);
     }
 
     #pragma omp parallel sections

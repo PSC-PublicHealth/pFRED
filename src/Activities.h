@@ -363,6 +363,8 @@ public:
    */
   static void read_init_files();
 
+  void notify_household(int disease_id);
+
 private:
 
   std::map< int, Place * > favorite_places_map;
