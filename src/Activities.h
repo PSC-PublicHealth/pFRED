@@ -358,7 +358,8 @@ public:
 
   /**
    * Reads the yearly_mobility_rate_file set in params.def
-   * Note: this is not used unless <code>Global::Enable_Mobility</code> is set to <code>true</code>
+   * Note: this is not used unless <code>Global::Enable_Mobility</code>
+   * is set to <code>true</code>
    */
   static void read_init_files();
 
@@ -461,8 +462,10 @@ private:
   }
 
   /**
-   * Copy the favorite places from the temporary location, then reclaim the allocated memory of the temporary storage
+   * Copy the favorite places from the temporary location, then reclaim
+   * the allocated memory of the temporary storage
    */
+
   void restore_favorite_places() {
     favorite_places_map = *tmp_favorite_places_map;
     delete tmp_favorite_places_map;

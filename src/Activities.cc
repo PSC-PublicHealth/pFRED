@@ -234,7 +234,7 @@ void Activities::update(int day) {
   Activities::is_weekday = (0 < Activities::day_of_week && Activities::day_of_week < 6);
 
   // print out absenteeism/presenteeism counts
-  FRED_CONDITIONAL_VERBOSE( 0, day > 0,
+  FRED_CONDITIONAL_VERBOSE( 1, day > 0,
       "DAY %d ABSENTEEISM: work absent %d present %d %0.2f  school absent %d present %d %0.2f\n", day-1,
       Activities::Sick_days_absent,
       Activities::Sick_days_present,
@@ -466,7 +466,7 @@ void Activities::assign_school( Person * self ) {
       nbrs.push_back( Global::Cells->get_grid_cell(row+j, col-level) );
 
     int target_pop = 0;
-    for(unsigned int i=0; i<nbrs.size(); i++) {
+    for(size_t i=0; i<nbrs.size(); i++) {
       target_pop += nbrs.at(i)->get_target_popsize();
     }
     // Radiation model (Simini et al, 2011)
@@ -475,7 +475,7 @@ void Activities::assign_school( Person * self ) {
     double prob_per_person = prob / target_pop;
 
     int attempts = 0;
-    for(unsigned int i=0; i<nbrs.size(); i++) {
+    for(size_t i=0; i<nbrs.size(); i++) {
       Cell *nbr = nbrs.at(i);
       if(nbr == NULL) continue;
       else attempts++;
@@ -523,7 +523,6 @@ void Activities::assign_classroom( Person * self ) {
 }
 
 void Activities::assign_workplace( Person * self ) {
-  int age = self->get_age();
   Cell *grid_cell = get_household()->get_grid_cell();
   assert(grid_cell != NULL);
   Place *p = grid_cell->select_random_workplace();
@@ -557,7 +556,7 @@ void Activities::assign_workplace( Person * self ) {
       nbrs.push_back( Global::Cells->get_grid_cell(row+j, col-level) );
 
     int target_pop = 0;
-    for(unsigned int i=0; i<nbrs.size(); i++) {
+    for(size_t i=0; i<nbrs.size(); i++) {
       target_pop += nbrs.at(i)->get_target_popsize();
     }
     // Radiation model (Simini et al, 2011)
@@ -566,7 +565,7 @@ void Activities::assign_workplace( Person * self ) {
     double prob_per_person = prob / target_pop;
 
     int attempts = 0;
-    for(unsigned int i=0; i<nbrs.size(); i++) {
+    for(size_t i=0; i<nbrs.size(); i++) {
       Cell *nbr = nbrs.at(i);
       if(nbr == NULL) continue;
       else attempts++;
@@ -585,21 +584,6 @@ void Activities::assign_workplace( Person * self ) {
     if(attempts == 0) break;
     level++;
   }
-
-  /*
-     int trials = 0;
-     while (trials < 100) {
-     grid_cell = (Cell *) Global::Cells->select_random_grid_cell();
-     p = grid_cell->select_random_workplace();
-     if (p != NULL) {
-     set_workplace(p);
-     set_office(NULL);
-     assign_office();
-     return;
-     }
-     trials++;
-     }*/
-  //Utils::fred_abort("assign_workplace: can't locate workplace for person %d\n", self->get_id());
   FRED_WARNING("assign_workplace: can't locate workplace for person %d\n", self->get_id());
 }
 
@@ -640,7 +624,7 @@ void Activities::update_profile( Person * self ) {
     // select a school based on age and neighborhood
     assign_school( self );
     
-    FRED_STATUS( 1, "changed behavior profile to STUDENT: id %d age %d sex %c\n%s\n",
+    FRED_STATUS( 1, "CHANGED BEHAVIOR PROFILE TO STUDENT: id %d age %d sex %c\n%s\n",
           self->get_id(), age, self->get_sex(), to_string( self ).c_str() );
     
     return;
