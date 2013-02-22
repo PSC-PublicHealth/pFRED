@@ -32,7 +32,7 @@ public:
   int get_cases() { return cases; }
   int get_popsize() { return popsize; }
   void print();
-  void household_report(int inf, int total) { cases += inf; popsize += total; print();} 
+  void household_report(int inf, int total) { cases += inf; popsize += total; } 
 
 protected:
   Small_Grid * grid;
