@@ -127,6 +127,7 @@ int Workplace::get_number_of_rooms() {
   int rooms = N / Workplace::Office_size;
   next_office = 0;
   if (N % Workplace::Office_size) rooms++;
+  if ( rooms == 0 ) ++rooms;
   return rooms;
 }
 
@@ -164,6 +165,8 @@ Place * Workplace::assign_office(Person *per) {
 
   // pick next office, round-robin
   int i = next_office;
+
+  assert( offices.size() > i );
 
   FRED_STATUS( 1, "office = %d %s %d\n",
       i, offices[i]->get_label(), offices[i]->get_id());

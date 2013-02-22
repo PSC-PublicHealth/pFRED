@@ -266,11 +266,6 @@ class Population {
     template< typename Functor >
       void parallel_not_masked_apply( fred::Pop_Masks m, Functor & f ) { blq.parallel_not_masked_apply( m, f ); }
 
-    template< typename Functor >
-      void parallel_apply_with_thread_id( fred::Pop_Masks m, Functor & f ) {
-        blq.parallel_masked_apply_with_thread_id( m, f );
-      }
-
     const Utils::Tokens & get_demes() { return Demes; }
     /* TODO rewrite
        template< typename MaskType >
@@ -390,6 +385,7 @@ class Population {
       update_population_births( int _day ) : day( _day ) { }
       void operator() ( Person & p );
     };
+
     struct update_population_deaths {
       int day;
       update_population_deaths( int _day ) : day( _day ) { }
@@ -399,7 +395,14 @@ class Population {
     // functor for health update
     struct update_population_health {
       int day;
-      update_population_health( int d ) : day( d ) { };
+      update_population_health( int d ) : day( d ) { }
+      void operator() ( Person & p );
+    };
+
+    // functor for activity profile update
+    struct Update_Population_Activities {
+      int day;
+      Update_Population_Activities( int d ) : day( d ) { }
       void operator() ( Person & p );
     };
 

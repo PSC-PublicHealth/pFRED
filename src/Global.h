@@ -254,8 +254,10 @@ namespace fred {
 
     tiny_bitset() {
       if ( n_bits > sizeof( BitType ) ) {
-        fprintf( stderr, "This specialized bitset is limited to %zu bits.  If a larger bitset is needed, use std::bitset\n", sizeof( BitType ) );
-
+        fprintf( stderr,
+            "This specialized bitset is limited to %zu bits.%s\n",
+            sizeof( BitType ),
+            "If a larger bitset is needed, use std::bitset" );
       }
       assert( n_bits <= sizeof( BitType ) );
       reset();
@@ -265,9 +267,11 @@ namespace fred {
     void set() { bits = ~0; }
     void set( int pos ) { bits |= ( (BitType) 1 << pos ); }
     int size() {
-      // Published in 1988, the C Programming Language 2nd Ed. (by Brian W. Kernighan and Dennis M. Ritchie) mentions this in exercise 2-9.
-      // Don Knuth pointed out that this method "was first published by Peter Wegner in CACM 3 (1960), 322.
-      // Also discovered independently by Derrick Lehmer and published in 1964 in a book edited by Beckenbach.)"
+      // Published in 1988, the C Programming Language 2nd Ed. (by Brian W.
+      // Kernighan and Dennis M. Ritchie) mentions this in exercise 2-9.
+      // Knuth pointed out that this method "was first published by Peter
+      // Wegner in CACM 3 (1960), 322. Also discovered independently by
+      // Derrick Lehmer and published in 1964 in a book edited by Beckenbach.)"
       BitType c; // c accumulates the total bits set in v
       for (c = 0; bits; c++) {
         bits &= bits - 1; // clear the least significant bit set

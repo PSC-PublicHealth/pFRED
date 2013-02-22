@@ -112,6 +112,7 @@ static int employees_xlarge_with_sick_leave = 0;
 static int employees_xlarge_without_sick_leave = 0;
 
 void Activities::initialize_sick_leave() {
+  FRED_VERBOSE( 1, "Activities::initialize_sick_leave entered\n");
   int workplace_size = 0;
   my_sick_days_absent = 0;
   my_sick_days_present = 0;
@@ -161,6 +162,7 @@ void Activities::initialize_sick_leave() {
   }
   else
     sick_leave_available = false;
+  FRED_VERBOSE( 1, "Activities::initialize_sick_leave size_leave_avaliable = %d\n", sick_leave_available?1:0);
 
   // compute sick days remaining (for flu)
   sick_days_remaining = 0.0;
@@ -177,6 +179,7 @@ void Activities::initialize_sick_leave() {
       sick_days_remaining = Activities::Flu_days;
     }
   }
+  FRED_VERBOSE( 1, "Activities::initialize_sick_leave sick_days_remaining = %d\n", sick_days_remaining);
 }
 
 void Activities::before_run() {
@@ -482,7 +485,7 @@ void Activities::assign_school( Person * self ) {
         p = nbr->select_random_school(age);
         if(p != NULL) {
           set_school(p);
-	  set_classroom(NULL);
+          set_classroom(NULL);
           assign_classroom( self );
           return;
         }
@@ -666,8 +669,8 @@ void Activities::update_profile( Person * self ) {
         self->get_id(), age, self->get_sex(),
         s != NULL ? s->get_label() : "NULL",
         c != NULL ? c->get_label() : "NULL",
-		   get_school()->get_label(),
-		   get_classroom()->get_label(),
+        get_place_label( SCHOOL_ACTIVITY ),
+        get_place_label( CLASSROOM_ACTIVITY ),
         to_string( self ).c_str() );
     }
     return;
@@ -681,23 +684,26 @@ void Activities::update_profile( Person * self ) {
     profile = WORKER_PROFILE;
     assign_workplace( self );
     initialize_sick_leave();
-    FRED_STATUS( 1, "changed behavior profile to WORKER: id %d age %d sex %c\n%s\n",
+    FRED_STATUS( 1, "CHANGED BEHAVIOR PROFILE TO WORKER: id %d age %d sex %c\n%s\n",
       self->get_id(), age, self->get_sex(), to_string( self ).c_str() );
     return;
   }
 
   if (profile != RETIRED_PROFILE && Global::RETIREMENT_AGE <= age) {
     if ( RANDOM() < 0.5 ) {
+      FRED_STATUS( 1, "CHANGING BEHAVIOR PROFILE TO RETIRED: id %d age %d sex %c\n",
+        self->get_id(), age, self->get_sex());
+      FRED_STATUS( 1, "to_string: %s\n", to_string( self ).c_str() );
       // quit working
       if (is_teacher()) {
-	set_school(NULL);
-	set_classroom(NULL);
+        set_school(NULL);
+        set_classroom(NULL);
       }
       set_workplace(NULL);
       set_office(NULL);
       profile = RETIRED_PROFILE;
       initialize_sick_leave(); // no sick leave available if retired
-      FRED_STATUS( 1, "changed behavior profile to RETIRED: age %d age %d sex %c\n%s\n",
+      FRED_STATUS( 1, "CHANGED BEHAVIOR PROFILE TO RETIRED: id %d age %d sex %c\n%s\n",
         self->get_id(), age, self->get_sex(), to_string( self ).c_str() );
     }
     return;
@@ -858,8 +864,11 @@ std::string Activities::schedule_to_string( Person * self, int day ) {
   std::stringstream ss;
   ss << "day " << day << " schedule for person " << self->get_id() << "  ";
   for (int p = 0; p < FAVORITE_PLACES; p++) {
-    ss << on_schedule[p]? "+" : "-";
-    ss << get_place_id(p) << " ";
+    if ( get_favorite_place( p ) ) {
+      ss << activity_lookup( p ) << ": ";
+      ss << on_schedule[p]? "+" : "-";
+      ss << get_place_id(p) << " ";
+    }
   }
   return ss.str(); 
 }
@@ -868,7 +877,10 @@ std::string Activities::to_string() {
   std::stringstream ss;
   ss <<  "Activities: "; 
   for (int p = 0; p < FAVORITE_PLACES; p++) {
-    ss << get_place_label(p) << " ";
+    if ( get_favorite_place( p ) ) {
+      ss << activity_lookup( p ) << ": ";
+      ss << get_place_label(p) << " ";
+    }
   }
   return ss.str();
 }
@@ -877,7 +889,10 @@ std::string Activities::to_string( Person * self ) {
   std::stringstream ss;
   ss <<  "Activities for person " << self->get_id() << ": "; 
   for (int p = 0; p < FAVORITE_PLACES; p++) {
-    ss << get_place_id(p) << " ";
+    if ( get_favorite_place( p ) ) {
+      ss << activity_lookup( p ) << ": ";
+      ss << get_place_id(p) << " ";
+    }
   }
   return ss.str();
 }

@@ -26,6 +26,9 @@
  *  - supports additional arbitrary bitmasks to control iteration
  *  - thread-safe
  *  - can traverse container and apply an arbitrary functor to each (possibly in parallel)
+ *  - TODO bloques can be 'linked' so that when an item is created in the 'parent' bloque,
+ *         a slot with the corresponding index is automatically created in all of the 'child'
+ *         bloques.  The ability to add slots directly to the 'child' bloques is lost
  */
 
 #include <deque>
@@ -54,7 +57,7 @@
 
 typedef uint64_t BitType;
 
-template < class ObjectType, class MaskType >
+template < typename ObjectType, typename MaskType, typename LinkObjectType = int, typename LinkMaskType = char >
 class bloque {
 
 /*
@@ -63,6 +66,11 @@ class bloque {
  */
 
 private:
+
+  friend class bloque< LinkObjectType, LinkMaskType, ObjectType, MaskType >;
+
+  int is_linked, is_parent, is_child;
+  std::vector< bloque< LinkObjectType, LinkMaskType, ObjectType, MaskType > * > links;
 
   size_t blockSize;
   size_t numItems;
@@ -151,10 +159,22 @@ private:
 public:
 
   bloque() {
+    is_linked = false;
+    is_parent = false;
+    is_child = false;
     numItems = 0;
     endIndex = 0;
     init();
     addBlock();
+  }
+
+  void link_bloque( bloque< LinkObjectType, LinkMaskType, ObjectType, MaskType > * linked_child ) {
+    assert( linked_child != NULL );
+    // can only link bloques with the same size (for now)
+    assert( blockVector.size() == linked_child->blockVector.size() );
+    is_linked = true;
+    is_parent = true;
+    links.push_back( linked_child );
   }
 
   void add_mask( MaskType maskName ) {
@@ -171,11 +191,17 @@ public:
   }
 
   int get_free_index() {
+    assert( is_child == false );
     int free_index;
     #pragma omp critical(BLOQUE_RESIZE_LOCK)
     {
       if ( freeSlots.empty() ) {
         addBlock();
+        if ( is_linked && is_parent ) {
+          for ( int i = 0; i < links.size(); ++i ) {
+            links[ i ]->addBlock();
+          }
+        }
       }
       itemPosition freePosition = freeSlots.front();
       if ( numItems == 0 ) {
@@ -307,35 +333,24 @@ public:
      return  ( userMasks[ mask ][ pos.block ][ pos.slot / registerWidth ] ) & ( (BitType) 1 << ( pos.slot % registerWidth ) );
   }
 
-  /*
-   * Generic, sequential 'apply' method for all items in container
-   */
-  template < typename Functor > 
-  void apply( Functor & f ) {
-    for ( iterator i = begin(); i != end(); ++i ) {
-      f( *i );
-    }
-  }
+  template < typename Functor >
+  void apply( Functor & f ) { apply( f, false ); }
 
-  /*
-   * Sequentially apply functor for all items in container that have specified mask set
-   */
-  template < typename Functor > 
-  void apply( MaskType mask, Functor & f ) {
-    for ( iterator i = begin(); i != end(); ++i ) {
-      itemPosition & pos = i.currentItemPosition;
-      if ( ( userMasks[ mask ][ pos.block ][ pos.slot / registerWidth ] ) & ( (BitType) 1 << ( pos.slot % registerWidth ) ) ) {
-        f( *i );
-      }
-    }
-  }
+  template < typename Functor >
+  void parallel_apply( Functor & f ) { apply( f, true ); }
+
+  template < typename Functor >
+  void masked_apply( MaskType m, Functor & f ) { masked_apply( m, f, false ); }
+
+  template < typename Functor >
+  void parallel_masked_apply( MaskType m, Functor & f ) { masked_apply( m, f, true ); }
 
   /*
    * Generic, parallel 'apply' method for all items in container
    */
   template < typename Functor > 
-  void parallel_apply( Functor & f ) {
-    #pragma omp parallel for
+  void apply( Functor & f, bool enable_parallelism ) {
+    #pragma omp parallel for if(enable_parallelism)
     for ( int i = 0; i < blockVector.size(); ++i ) {
       for ( int j = 0; j < registersPerBlock; ++j ) {
         if ( ( defaultMask[ i ][ j ] ) > ( (BitType) 0 ) ) {
@@ -353,9 +368,9 @@ public:
    * Generic, parallel 'masked apply' method for all items in container
    */
   template < typename Functor > 
-  void parallel_masked_apply( MaskType m, Functor & f ) {
+  void masked_apply( MaskType m, Functor & f, bool enable_parallelism ) {
     mask & userMask = userMasks[ m ]; 
-    #pragma omp parallel for
+    #pragma omp parallel for if(enable_parallelism)
     for ( int i = 0; i < blockVector.size(); ++i ) {
       for ( int j = 0; j < registersPerBlock; ++j ) {
         BitType reg = ( defaultMask[ i ][ j ] ) & ( userMask[ i ][ j ] );  
@@ -393,48 +408,6 @@ public:
       }
     }
   }
-
-  /*
-   * Generic, parallel 'masked apply' method for all items in container;
-   * passes the thread id to the functor.  This is intended to enable
-   * parallel application of the functor to gather num_threads sub-results,
-   * which are then subsequently merged to produce final output.
-   *
-   * Expects that the functor operator() takes two arguments: an object
-   * reference and the thread_id
-   *
-   * Expects that the functor implements two methods: get_max_threads()
-   * and get_thread_num().  These should perform the same function as
-   * their similarly named omp_get_max_threads() and omp_get_thread_num()
-   * counterparts declared in omp.h
-   */
-  template < typename Functor > 
-  void parallel_masked_apply_with_thread_id( MaskType m, Functor & f ) {
-    mask & userMask = userMasks[ m ];
-    int num_threads = f.get_max_threads();
-    #pragma omp parallel
-    {
-      int thread_id = f.get_thread_num();
-      int block_items_per_thread = ( blockVector.size() / num_threads ) + 1 ;
-      int begin = thread_id * block_items_per_thread;
-      int end = begin + block_items_per_thread;
-      end = ( end > (int) blockVector.size() ) ? ( (int) blockVector.size() ) : ( end );
-      for ( int i = begin; i < end; ++i ) {
-        for ( int j = 0; j < registersPerBlock; ++j ) {
-          BitType reg = ( defaultMask[ i ][ j ] ) & ( userMask[ i ][ j ] );  
-          if ( reg > ( (BitType) 0 ) ) {
-            for ( int k = 0; k < registerWidth; ++k ) {
-              if ( ( reg ) & ( (BitType) 1 << ( k ) ) ) {
-                f( blockVector[ i ][ ( j * registerWidth ) + k ], thread_id );
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // void parallelIndexedApply( std::vector< int > indices, Functor & f ) ...
 
   void sortFreeSlots() {
     // <----------------------------------------------------------------------------------- TODO: mutex/lock container!!! 
@@ -478,163 +451,7 @@ public:
     return blockVector[ block ][ slot ];
   }
 
-  //////////// BEGIN ITERATORS ///////////////////////////
-  
-  /// Basic iterator for bloque (iterates over all valid items in container)
 
-  template< class IteratedObjectType >
-  struct bloque_iterator : std::iterator< std::forward_iterator_tag, IteratedObjectType > {
-
-    IteratedObjectType & operator* () { return blq->get_item_by_position( currentItemPosition ); }
-
-    template< class __IteratedObjectType >
-    friend bool operator== ( bloque_iterator const &lhs, bloque_iterator< __IteratedObjectType > const &rhs ) {
-      return lhs.currentItemPosition == rhs.currentItemPosition;
-    }
-
-    template< class __IteratedObjectType >
-    friend bool operator!= ( bloque_iterator const &lhs, bloque_iterator< __IteratedObjectType > const &rhs ) {
-      return lhs.currentItemPosition != rhs.currentItemPosition;
-    }
-
-    bloque_iterator & operator++ () {
-      currentItemPosition = blq->getNextItemPosition( currentItemPosition );
-      return *this;
-    }
-
-    template< class __IteratedObjectType >
-    bool operator< ( bloque_iterator< __IteratedObjectType > const & other ) {
-      return currentItemPosition < other.currentItemPosition;
-    }
-
-    //private:
-
-    itemPosition currentItemPosition;
-    bloque * blq;
-
-    // private constructor for begin, end
-    friend class bloque;
-    bloque_iterator( bloque * __bloque, itemPosition __currentItemPosition ) {
-      blq = __bloque;
-      currentItemPosition = __currentItemPosition;
-    }
-  };
- 
-  typedef bloque_iterator< ObjectType > iterator;
-  typedef bloque_iterator< ObjectType const > const_iterator;
-
-  iterator begin() {
-    return iterator( this, firstItemPosition );
-  }
-
-  iterator end() {
-    return iterator( this, itemPosition( lastItemPosition.asIndex() + 1 ) );
-  }
-
-  /// Masked iterator for bloque (iterates over all valid items for which the bit for the specified mask is set)
-
-  template< class IteratedObjectType, class IteratedMaskType >
-  struct bloque_masked_iterator : std::iterator< std::forward_iterator_tag, IteratedObjectType > {
-
-    IteratedObjectType & operator* () { return blq->get_item_by_position( currentItemPosition ); }
-
-    template< class __IteratedObjectType, class __IteratedMaskType >
-    friend bool operator== ( bloque_masked_iterator const &lhs, bloque_masked_iterator< __IteratedObjectType, __IteratedMaskType > const &rhs ) {
-      return lhs.currentItemPosition == rhs.currentItemPosition;
-    }
-
-    template< class __IteratedObjectType, class __IteratedMaskType >
-    friend bool operator!= ( bloque_masked_iterator const &lhs, bloque_masked_iterator< __IteratedObjectType, __IteratedMaskType > const &rhs ) {
-      return lhs.currentItemPosition != rhs.currentItemPosition;
-    }
-
-    bloque_masked_iterator & operator++ () {
-      currentItemPosition = blq->getNextItemPosition< IteratedMaskType >( currentItemPosition );
-      return *this;
-    }
-
-    template< class __IteratedObjectType, class __IteratedMaskType >
-    bool operator< ( bloque_masked_iterator< __IteratedObjectType, __IteratedMaskType > const & other ) {
-      return currentItemPosition < other.currentItemPosition;
-    }
-
-    //private:
-
-    itemPosition currentItemPosition;
-    bloque * blq;
-
-    // private constructor for begin, end
-    friend class bloque;
-    bloque_masked_iterator( bloque * __bloque, itemPosition __currentItemPosition ) {
-      blq = __bloque;
-      currentItemPosition = __currentItemPosition;
-    }
-  };
-
-  // templated typedef workaround
-
-  template< typename __MaskType >
-  struct masked_iterator : bloque_masked_iterator< ObjectType, __MaskType > { };
-
-  template< typename __MaskType >
-  struct const_masked_iterator : bloque_masked_iterator< ObjectType const, __MaskType > { };
-
-  // begin, end for masked iterators
-
-  template< typename __MaskType >
-  masked_iterator< __MaskType > begin() {
-    return masked_iterator< __MaskType >( this, firstItemPosition );
-  }
-
-  template< typename __MaskType >
-  const_masked_iterator< __MaskType > begin() {
-    return const_masked_iterator< __MaskType >( this, firstItemPosition );
-  }
-
-  template< typename __MaskType >
-  masked_iterator< __MaskType > end() {
-    return masked_iterator< __MaskType >( this, itemPosition( lastItemPosition.asIndex() + 1 ) );
-  }
-
-  template< typename __MaskType >
-  const_masked_iterator< __MaskType > end() {
-    return const_masked_iterator< __MaskType >( this, itemPosition( lastItemPosition.asIndex() + 1 ) );
-  }
-
-  // TODO masked iterator needs work, prefer one of the 'apply' methods
-  //
-  ///////////// END ITERATORS /////////////////////////////////////////
-
-  /*
-  void print() {
-    // print method for debugging
-    
-    //firstItemPosition.print();
-    //lastItemPosition.print();
-    for ( size_t i = 0; i < blockVector.size(); ++i ) {
-      for ( size_t j = 0; j < bitsPerBlock; ++j ) {
-        std::cout << i << " " << j << " " << blockVector[i][j] << " " << (bool) ( ( defaultMask[ i ][ j / registerWidth ] ) & ( (BitType) 1 << ( j % registerWidth ) ) ) << std::endl;
-      }
-    }
-    
-    /////////////////////////////
-
-    for ( iterator i = begin(); i != end(); ++i ) {
-      i.currentItemPosition.print();
-      std::cout << *i << std::endl;
-    }
-  }
-  */
-
-  /*
-   * overloaded stream; mainly for debugging
-   *
-  
-  template < class __ObjectType, class __MaskType >
-  friend std::ostream & operator<< ( std::ostream & os, const bloque< __ObjectType, __MaskType > & ) {
-    std::cout << "hello there" << std::endl;
-  }
-  */
 
 /* ****************************************************************
  * private methods ************************************************
@@ -647,7 +464,7 @@ private:
     numItems = 0;
     blockSize = bitsPerBlock;
   }
-  
+ 
   void addBlock() {
     
     size_t beginNewBlock = blockVector.size();
@@ -694,6 +511,5 @@ private:
   }
 
 };
-
 
 #endif

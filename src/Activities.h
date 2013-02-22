@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <bitset>
+#include <map>
 
 #include "Global.h"
 #include "Random.h"
@@ -58,9 +59,22 @@ enum Activity_index {
 #define UNDEFINED_PROFILE 'X'
 
 class Activities {
-public:
 
-  
+public:
+ 
+  static const char * activity_lookup( int idx ) {
+    assert( idx >= 0 );
+    assert( idx < FAVORITE_PLACES );
+    switch ( idx ) {
+      case HOUSEHOLD_ACTIVITY: return "Household";
+      case NEIGHBORHOOD_ACTIVITY: return "Neighborhood";
+      case SCHOOL_ACTIVITY: return "School";
+      case CLASSROOM_ACTIVITY: return "Classroom";
+      case WORKPLACE_ACTIVITY: return "Workplace";
+      case OFFICE_ACTIVITY: return "Office";
+      default: Utils::fred_abort( "Invalid Activity Type", "" );
+    }
+  }
   /**
    * Setup activities at start of run
    */
@@ -133,35 +147,24 @@ public:
 
   unsigned char get_deme_id(); 
 
-  Place * get_favorite_place(int i) {
-    return favorite_place[place_map[i]]; 
+  Place * get_favorite_place( int i ) {
+    if ( favorite_places_map.find( i ) !=
+        favorite_places_map.end() ) {
+      return favorite_places_map[ i ];
+    }
+    else { return NULL; }
   }
 
   void set_favorite_place(int i, Place * p) {
-    if (p == NULL) {
-      if (place_map[i] != 0) {
-        // printf("Before %s\n", to_string().c_str());fflush(stdout);
-        // release pointer to favorite place, to avoid memory leak
-        int last = favorite_place.size() - 1;
-        Place * tmp = favorite_place[last];
-        favorite_place[place_map[i]] = tmp;
-        for (int j = 0; j < FAVORITE_PLACES; j++) {
-          if (place_map[j] == last) {
-            place_map[j] = place_map[i];
-            break;
-          }
-        }
-        favorite_place.pop_back();
-      }
-      place_map[i] = 0;
-      // printf("After %s\n\n", to_string().c_str());fflush(stdout);
+    if ( p != NULL ) {
+      favorite_places_map[ i ] = p;
     }
     else {
-      if (place_map[i] == 0) {
-        favorite_place.push_back(NULL);
-        place_map[i] = favorite_place.size()-1;
+      std::map< int, Place * >::iterator itr;
+      itr = favorite_places_map.find( i );
+      if ( itr != favorite_places_map.end() ) {
+        favorite_places_map.erase( itr );
       }
-      favorite_place[place_map[i]] = p;
     }
   }
 
@@ -191,7 +194,11 @@ public:
 
 
   Place * get_temporary_household() {
-    return tmp_favorite_place[place_map[HOUSEHOLD_ACTIVITY]];
+    if ( tmp_favorite_places_map->find( HOUSEHOLD_ACTIVITY ) !=
+        tmp_favorite_places_map->end() ) {
+      return (*tmp_favorite_places_map)[ HOUSEHOLD_ACTIVITY ];
+    }
+    else { return NULL; }
   }
 
 
@@ -357,10 +364,8 @@ public:
 
 private:
 
-
-  unsigned char place_map[FAVORITE_PLACES];
-  vector <Place *> favorite_place;
-  Place ** tmp_favorite_place; // list of favorite places, stored while traveling
+  std::map< int, Place * > favorite_places_map;
+  std::map< int, Place * > * tmp_favorite_places_map; // list of favorite places, stored while traveling
   Place * home_neighborhood;
   std::bitset< FAVORITE_PLACES > on_schedule; // true iff favorite place is on schedule
   int schedule_updated;                         // date of last schedule update
@@ -407,11 +412,7 @@ private:
   static int School_sick_days_absent;
 
   void clear_favorite_places() {
-    for (int i = 0; i < FAVORITE_PLACES; i++) {
-      place_map[i] = 0;
-    }
-    favorite_place.clear();
-    favorite_place.push_back(NULL);
+    favorite_places_map.clear();
   }
 
   void enroll_in_favorite_places(Person *self) {
@@ -455,28 +456,26 @@ private:
    */
 
   void store_favorite_places() {
-    tmp_favorite_place = new Place * [favorite_place.size()]; 
-    for (int i = 0; i < favorite_place.size(); i++) {
-      tmp_favorite_place[i] = favorite_place[i];
-    }
+    tmp_favorite_places_map = new std::map< int, Place * >(); 
+    *tmp_favorite_places_map = favorite_places_map; 
   }
 
   /**
    * Copy the favorite places from the temporary location, then reclaim the allocated memory of the temporary storage
    */
   void restore_favorite_places() {
-    for (int i = 0; i < favorite_place.size(); i++) {
-      favorite_place[i] = tmp_favorite_place[i];
-    }
-    delete [] tmp_favorite_place;
+    favorite_places_map = *tmp_favorite_places_map;
+    delete tmp_favorite_places_map;
   }
 
-  int get_place_id(int p) {
-    return get_favorite_place(p)==NULL? -1 : get_favorite_place(p)->get_id();
+  int get_place_id( int p ) {
+    return get_favorite_place( p ) == NULL ?
+      -1 : get_favorite_place( p )->get_id();
   }
 
-  char * get_place_label(int p) {
-    return get_favorite_place(p)==NULL? (char *) "NULL" : get_favorite_place(p)->get_label();
+  const char * get_place_label( int p ) {
+    return get_favorite_place( p ) == NULL ?
+      "NULL" : get_favorite_place( p )->get_label();
   }
 
 protected:

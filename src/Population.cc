@@ -208,9 +208,10 @@ void Population::delete_person(Person * person) {
   //id_to_index.erase( person->get_id() );
 
   int idx = person->get_pop_index();
+  assert( get_person_by_index( idx ) == person );
   // call Person's destructor directly!!!
   get_person_by_index( idx ) -> ~Person();
-  blq.mark_invalid_by_index( person->get_pop_index() ); // <------------ TODO perform check to make sure person and blq[index] refer to the same thing! 
+  blq.mark_invalid_by_index( person->get_pop_index() );
 
   pop_size--;
 
@@ -687,9 +688,8 @@ void Population::update(int day) {
 
   // update activity profiles on July 1
   if (Global::Enable_Aging && Date::match_pattern(Global::Sim_Current_Date, "07-01-*")) {
-    for (int p = 0; p < pop_size; p++) {
-      blq.get_item_by_index( p ).update_activity_profile();
-    }
+    Update_Population_Activities update_population_activities( day );
+    blq.apply( update_population_activities );
   }
 
   FRED_VERBOSE(1, "population::update_travel day = %d\n", day);
@@ -731,6 +731,10 @@ void Population::update_population_deaths::operator() ( Person & p ) {
 
 void Population::update_population_health::operator() ( Person & p ) {
   p.update_health( day );
+}
+
+void Population::Update_Population_Activities::operator() ( Person & p ) {
+  p.update_activity_profile();
 }
 
 void Population::report(int day) {

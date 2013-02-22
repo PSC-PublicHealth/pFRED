@@ -235,6 +235,7 @@ int main(int argc, char* argv[]) {
   Utils::fred_start_timer( &simulation_start_time );
 
   for (int day = 0; day < Global::Days; day++) {
+
     Utils::fred_start_day_timer();
     if (day == Global::Reseed_day) {
       fprintf(Global::Statusfp, "************** reseed day = %d\n", day);
