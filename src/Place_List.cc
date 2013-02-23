@@ -772,7 +772,7 @@ void Place_List::print_household_size_distribution(char * dir, char * date_strin
 }
 
 void Place_List::end_of_run() {
-  if (Global::Verbose > 0) {
+  if (Global::Verbose > 1) {
     int number_places = places.size();
     for (int p = 0; p < number_places; p++) {
       Place *place = places[p];
