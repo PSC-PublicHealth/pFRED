@@ -193,7 +193,6 @@ public:
   int gq_get_room_size() { return 3; }
 
   virtual void report(int day);
-  int count_infectious(int day, int disease_id);
 
 private:
 

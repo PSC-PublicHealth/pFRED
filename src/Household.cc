@@ -248,17 +248,5 @@ void Household::report(int day) {
     Small_Cell * cell = Global::Small_Cells->get_grid_cell(get_latitude(),get_longitude());
     cell->update_cell_counts(count, N);
   }
-  Place::report(day);
 }
-
-
-int Household::count_infectious(int day, int disease_id) {
-  int count = 0;
-  for ( int i = 0; i < housemate.size(); ++i ) {
-    Person * p = housemate[ i ];
-    if ( p->get_health()->is_infectious( disease_id ) ) { count++; }
-  }
-  return count;
-}
-
 
