@@ -178,9 +178,7 @@ public:
 
   void add_infectious(int disease_id, Person * per);
 
-  void set_deme_id( unsigned char _deme_id ) {
-    deme_id = _deme_id;
-  }
+  void set_deme_id( unsigned char _deme_id ) { deme_id = _deme_id; }
 
   unsigned char get_deme_id() { return deme_id; }
 
@@ -194,7 +192,6 @@ public:
 
   int gq_get_room_size() { return 3; }
 
-  virtual void update(int day);
   virtual void report(int day);
   int count_infectious(int day, int disease_id);
 
@@ -204,14 +201,13 @@ private:
   static double *** Household_contact_prob;
   static bool Household_parameters_set;
 
-  int household_income;				// household income
-  unsigned char deme_id;      // deme == synthetic population id
-  bool group_quarters;
-
-  std::vector <Person *> housemate;
-
   short int children;
   short int adults;
+  int household_income;		      // household income
+  unsigned char deme_id;	      // deme == synthetic population id
+  bool group_quarters;
+
+  std::vector <Person *> housemate;		// list of housemates
 
   // profile of original housemates
   vector < unsigned char > ages;

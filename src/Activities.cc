@@ -893,10 +893,12 @@ unsigned char Activities::get_deme_id() {
   return static_cast< Household * >( p )->get_deme_id();
 }
 
-void Activities::notify_household(int disease_id) {
-  Place * h = get_household();
-  if (h != NULL) {
-    h->increment_infections_today(disease_id);
+void Activities::count_new_infection(Person * self, int disease_id) {
+  for (int p = 0; p < FAVORITE_PLACES; p++) {
+    Place * place = get_favorite_place(p);
+    if (place != NULL) {
+      place->count_new_infection(self, disease_id);
+    }
   }
 }
 

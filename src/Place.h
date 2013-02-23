@@ -114,9 +114,6 @@ struct Place_State_Merge : Place_State {
 };
 
 
-
-
-
 class Place {
 
 public:
@@ -173,8 +170,7 @@ public:
   virtual void unenroll(Person * per);
 
   /**
-   * Add a susceptible person to the place. This method adds the person to the susceptibles vector and
-   * increments the number of susceptibles in the place (S).
+   * Add a susceptible person to the place. This method adds the person to the susceptibles vector.
    *
    * @param disease_id an integer representation of the disease
    * @param per a pointer to a Person object that will be added to the place for a given diease
@@ -182,8 +178,7 @@ public:
   void add_susceptible(int disease_id, Person * per);
 
   /**
-   * Add a infectious person to the place. This method adds the person to the infectious vector and
-   * increments the number of infectious in the place (I).
+   * Add a infectious person to the place. This method adds the person to the infectious vector.
    *
    * @param disease_id an integer representation of the disease
    * @param per a pointer to a Person object that will be added to the place for a given diease
@@ -226,11 +221,6 @@ public:
    * @return <code>true</code> if any infectious people are here; <code>false</code> if not
    */
   bool is_infectious(int disease_id) { return infectious_bitset.test( disease_id ); }
-
-  /**
-   * <bold>Deprecated.</bold>
-   */
-  void print_stats(int day, int disease_id);
   
   /**
    * Sets the static variables for the class from the parameter file for a given number of disease_ids.
@@ -317,14 +307,6 @@ public:
   fred::geo get_longitude() { return longitude; }
 
   /**
-   * Get the count of (S)ymptomatics for a given diease in this place.
-   *
-   * @param disease_id an integer representation of the disease
-   * @return the symptomatic count for the given diease
-   */
-  int get_symptomatic(int disease_id) { return Sympt[disease_id]; }
-
-  /**
    * Get the count of agents in this place.
    *
    * @return the count of agents
@@ -351,75 +333,6 @@ public:
    * @return the population
    */
   Population *get_population() { return population; }
-
-  /**
-   * Get the number of cases of a given diease for day.
-   * The member variable cases gets reset when <code>update()</code> is called, which for now is on a daily basis.
-   *
-   * @param disease_id an integer representation of the disease
-   * @return the count of cases for a given diease
-   */
-  int get_daily_cases(int disease_id) { return cases[disease_id]; }
-
-  /**
-   * Get the number of deaths from a given diease for a day.
-   * The member variable deaths gets reset when <code>update()</code> is called, which for now is on a daily basis.
-   *
-   * @param disease_id an integer representation of the disease
-   * @return the count of deaths for a given diease
-   */
-  int get_daily_deaths(int disease_id) { return deaths[disease_id]; }
-
-  /**
-   * Get the number of cases of a given diease for the simulation thus far.
-   * This value is not reset when <code>update()</code> is called.
-   *
-   * @param disease_id an integer representation of the disease
-   * @return the count of cases for a given diease
-   */
-  int get_total_cases(int disease_id) { return total_cases[disease_id]; }
-
-  /**
-   * Get the number of deaths from a given diease for the simulation thus far.
-   * This value is not reset when <code>update()</code> is called.
-   *
-   * @param disease_id an integer representation of the disease
-   * @return the count of deaths for a given diease
-   */
-  int get_total_deaths(int disease_id) { return total_deaths[disease_id]; }
-
-  /**
-   * Get the number of cases of a given diease for the simulation thus far divided by the
-   * number of agents in this place.
-   *
-   * @param disease_id an integer representation of the disease
-   * @return the count of rate of cases per people for a given diease
-   */
-  double get_incidence_rate(int disease_id) { return (double) total_cases[disease_id] / (double) N; }
-  
-  /**
-   * Get the clincal attack rate = 100 * number of cases thus far divided by the
-   * number of agents in this place.
-   *
-   * @param disease_id an integer representation of the disease
-   * @return the count of rate of cases per people for a given diease
-   */
-  double get_clinical_attack_rate(int disease_id) { return (100.0*total_cases[disease_id])/ (double) N; }
-  
-  /**
-   * Get the number of infectious people in this place.
-   *
-   * @param disease_id an integer representation of the disease
-   * @return the count of infectious people for a given diease
-   */
-  int get_infectious_count(int disease_id);
-  
-  /**
-   * Set the id.
-   *
-   * @param n the new id
-   */
-  //void set_id(int n) { id = n; }
 
   /**
    * Set the type.
@@ -490,16 +403,79 @@ public:
 
   Place * select_new_neighborhood(double community_prob, double community_distance, double local_prob, double random);
 
-  int get_days_infectious() { return days_infectious; }
-
-  double get_attack_rate() { return(N?(100.0*total_infections)/(double)N:0.0); }
-
   void turn_workers_into_teachers(Place *school);
 
   double get_x() { return Geo_Utils::get_x(longitude); }
   double get_y() { return Geo_Utils::get_y(latitude); }
-  int get_infections_today(int disease_id) { return infections_today[disease_id]; }
-  void increment_infections_today(int disease_id) { infections_today[disease_id]++; }
+
+  void count_new_infection(Person * per, int disease_id);
+
+  int get_new_infections(int disease_id) { return new_infections[disease_id]; }
+  int get_current_infections(int disease_id) { return current_infections[disease_id]; }
+  int get_total_infections(int disease_id) { return total_infections[disease_id]; }
+
+  /**
+   * Get the number of cases of a given disease for day.
+   *
+   * @param disease_id an integer representation of the disease
+   * @return the count of cases for a given diease
+   */
+  int get_current_cases(int disease_id) { return current_symptomatic_infections[disease_id]; }
+
+  /**
+   * Get the number of deaths from a given disease for a day.
+   * The member variable deaths gets reset when <code>update()</code> is called, which for now is on a daily basis.
+   *
+   * @param disease_id an integer representation of the disease
+   * @return the count of deaths for a given disease
+   */
+  int get_new_deaths(int disease_id) { return new_deaths[disease_id]; }
+
+  /**
+   * Get the number of cases of a given disease for the simulation thus far.
+   *
+   * @param disease_id an integer representation of the disease
+   * @return the count of cases for a given disease
+   */
+  int get_total_cases(int disease_id) { return total_symptomatic_infections[disease_id]; }
+
+  /**
+   * Get the number of deaths from a given disease for the simulation thus far.
+   *
+   * @param disease_id an integer representation of the disease
+   * @return the count of deaths for a given disease
+   */
+  int get_total_deaths(int disease_id) { return total_deaths[disease_id]; }
+
+  /**
+   * Get the number of cases of a given disease for the simulation thus far divided by the
+   * number of agents in this place.
+   *
+   * @param disease_id an integer representation of the disease
+   * @return the count of rate of cases per people for a given disease
+   */
+  double get_incidence_rate(int disease_id) { return (double) total_symptomatic_infections[disease_id] / (double) N; }
+  
+  /**
+   * Get the clincal attack rate = 100 * number of cases thus far divided by the
+   * number of agents in this place.
+   *
+   * @param disease_id an integer representation of the disease
+   * @return the count of rate of cases per people for a given disease
+   */
+  double get_clinical_attack_rate(int disease_id) { return (100.0*total_symptomatic_infections[disease_id])/ (double) N; }
+  
+  /**
+   * Get the attack rate = 100 * number of infections thus far divided by the
+   * number of agents in this place.
+   *
+   * @param disease_id an integer representation of the disease
+   * @return the count of rate of cases per people for a given disease
+   */
+  double get_attack_rate(int disease_id) { return(N?(100.0*total_infections[disease_id])/(double)N:0.0); }
+
+  int get_first_day_infectious() { return first_day_infectious; }
+  int get_last_day_infectious() { return last_day_infectious; }
 
 protected:
   // state array contains:
@@ -522,19 +498,23 @@ protected:
   int open_date;          //   [close_date, open_date)
   int N;                  // total number of potential visitors
 
-
-  int Sympt[ Global::MAX_NUM_DISEASES ];            // symptomatics count
-  int cases[ Global::MAX_NUM_DISEASES ];            // symptomatic cases today
-  int deaths[ Global::MAX_NUM_DISEASES ];           // deaths today
-  int total_cases[ Global::MAX_NUM_DISEASES ];      // total symptomatic cases
-  int total_deaths[ Global::MAX_NUM_DISEASES ];     // total deaths
-  int infections_today [ Global::MAX_NUM_DISEASES ];// new infections today
-
   Population * population;
   Cell * grid_cell;       // geo grid_cell for this place
   
-  int days_infectious;
-  int total_infections;
+  // infection stats
+  int new_infections[ Global::MAX_NUM_DISEASES ]; // new infections today
+  int total_infections[ Global::MAX_NUM_DISEASES ]; // total infections over all time
+  int current_infections[ Global::MAX_NUM_DISEASES ]; // total infections today
+
+  int new_symptomatic_infections[ Global::MAX_NUM_DISEASES ]; // new sympt infections today
+  int total_symptomatic_infections[ Global::MAX_NUM_DISEASES ]; // total sympt infections over all time
+  int current_symptomatic_infections[ Global::MAX_NUM_DISEASES ]; // total sympt infections today
+
+  int new_deaths[ Global::MAX_NUM_DISEASES ];	    // deaths today
+  int total_deaths[ Global::MAX_NUM_DISEASES ];     // total deaths
+
+  int first_day_infectious;
+  int last_day_infectious;
 
   double get_contact_rate(int day, int disease_id);
   int get_contact_count(Person * infector, int disease_id, int day, double contact_rate);

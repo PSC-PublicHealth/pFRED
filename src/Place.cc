@@ -30,39 +30,38 @@
 #include "Large_Cell.h"
 
 
-    
-
 void Place::setup( const char *lab, fred::geo lon, fred::geo lat, Place* cont, Population *pop ) {
   population = pop;
-  // actual id assigned in Place_List::add_place
-  id = -1;
+  id = -1;		  // actual id assigned in Place_List::add_place
   container = cont;
   strcpy(label, lab);
   longitude = lon;
   latitude = lat;
-  
+  enrollees.clear();
+  N = 0;
+  first_day_infectious = -1;
+  last_day_infectious = -2;
+
   // zero out all disease-specific counts
   for ( int d = 0; d < Global::MAX_NUM_DISEASES; ++d ) {
-    Sympt[ d ] = 0;
-    cases[ d ] = 0;
-    deaths[ d ] = 0;
-    total_cases[ d ] = 0;
+    new_infections[ d ] = 0;
+    total_infections[ d ] = 0;
+    current_infections[ d ] = 0;
+
+    new_symptomatic_infections[ d ] = 0;
+    total_symptomatic_infections[ d ] = 0;
+    current_symptomatic_infections[ d ] = 0;
+
+    new_deaths[ d ] = 0;
     total_deaths[ d ] = 0;
   }
 
-  enrollees.clear();
-
-  N = 0;
-  days_infectious = 0;
-  total_infections = 0;
 }
-
-void Place::print_stats(int day, int disease_id) { }
 
 
 void Place::prepare() {
   for (int d = 0; d < Global::Diseases; d++) {
-    // Following aritmetic estimates the optimal number of thread-safe states
+    // Following arithmetic estimates the optimal number of thread-safe states
     // to be allocated for this place, for each disease.  The number of states
     // should always be 1 <= dim <= max_num_threads.  Each state is thread-safe,
     // but increasing the number of states reduces lock-contention.  Minimizing
@@ -76,8 +75,6 @@ void Place::prepare() {
     place_state[ d ] = State< Place_State >( dim );
     // Clear the states for use
     place_state[ d ].clear();
-    // initialize totals
-    total_cases[d] = total_deaths[d] = 0;
   }
   update(0);
   open_date = 0;
@@ -91,9 +88,6 @@ void Place::prepare() {
 
 void Place::update(int day) {
   for (int d = 0; d < Global::Diseases; d++) {
-    //if(day > 0) print_susceptibles(d);
-    cases[d] = deaths[d] = Sympt[ d ] = 0;
-    infections_today[d] = 0;
     if ( infectious_bitset.test( d ) ) {
       place_state[ d ].clear(); 
     }
@@ -102,14 +96,34 @@ void Place::update(int day) {
     }
     infectious_bitset.reset();
   }
+
+  for (int d = 0; d < Global::Diseases; d++) {
+    new_infections[ d ] = 0;
+    current_infections[ d ] = 0;
+    new_symptomatic_infections[ d ] = 0;
+    current_symptomatic_infections[ d ] = 0;
+    new_deaths[ d ] = 0;
+  }
+}
+
+void Place::count_new_infection(Person * per, int disease_id) {
+  #pragma omp atomic
+  new_infections[disease_id]++; 
+  #pragma omp atomic
+  total_infections[disease_id]++;
+
+  if (per->get_health()->is_symptomatic()) {
+    #pragma omp atomic
+    new_symptomatic_infections[disease_id]++;
+    #pragma omp atomic
+    total_symptomatic_infections[disease_id]++;
+  }
 }
 
 void Place::report(int day) {}
 
 void Place::print(int disease_id) {
   printf("Place %d label %s type %c\n", id, label, type);
-  //printf("S %zu I %zu N %d\n", susceptibles[disease_id].size(),
-  //    infectious[disease_id].size(), N);
   fflush(stdout);
 }
 
@@ -123,13 +137,10 @@ void Place::unenroll(Person * per) {
 }
 
 void Place::add_susceptible(int disease_id, Person * per) {
-
   place_state[ disease_id ]().add_susceptible( per );
-
 }
 
 void Place::add_infectious(int disease_id, Person * per) {
- 
   place_state[ disease_id ]().add_infectious( per );
   
   if ( !( infectious_bitset.test( disease_id ) ) ) {
@@ -138,15 +149,15 @@ void Place::add_infectious(int disease_id, Person * per) {
     infectious_bitset.set( disease_id );
   }
 
+  #pragma omp atomic
+  current_infections[disease_id]++;
+
   if (per->get_health()->is_symptomatic()) {
     #pragma omp atomic
-    Sympt[disease_id]++;
-    #pragma omp atomic
-    cases[disease_id]++;
-    #pragma omp atomic
-    total_cases[disease_id]++;
+    current_symptomatic_infections[disease_id]++;
   }
 }
+
 
 void Place::print_susceptibles(int disease_id) {
  
@@ -246,11 +257,6 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
     Transmission transmission = Transmission(infector, this, day);
     infector->infect( infectee, disease_id, transmission );
 
-    if (disease_id == 0) {
-      #pragma omp atomic
-      total_infections++;
-    }
-
     FRED_VERBOSE( 1, "transmission succeeded: r = %f  prob = %f\n", r, infection_prob );
     FRED_CONDITIONAL_VERBOSE( 1, infector->get_exposure_date(disease_id) == 0,
         "SEED infection day %i from %d to %d\n", day, infector->get_id(),infectee->get_id() );
@@ -264,9 +270,11 @@ void Place::attempt_transmission(double transmission_prob, Person * infector,
 void Place::spread_infection(int day, int disease_id) {
   // Place::spread_infection is used for all derived places except for Households
 
-  if ( disease_id == 0 ) days_infectious++; // TODO Why only disease 0 ????
   if ( is_open( day ) == false ) return;
   if ( should_be_open( day, disease_id ) == false ) return;
+
+  if (first_day_infectious == -1) first_day_infectious = day;
+  last_day_infectious = day;
 
   Place_State_Merge place_state_merge = Place_State_Merge();
   place_state[ disease_id ].apply( place_state_merge );
@@ -348,12 +356,5 @@ void Place::turn_workers_into_teachers(Place *school) {
   FRED_VERBOSE(0, "%d new teachers reassigned from workplace %s to school %s\n",
 	 new_teachers, label, school->get_label());
   N = 0;
-}
-
-int Place::get_infectious_count(int disease_id) {
-  Place_State_Merge place_state_merge = Place_State_Merge();
-  place_state[ disease_id ].apply( place_state_merge );
-  std::vector< Person * > & infectious = place_state_merge.get_infectious_vector();
-  return (int) infectious.size();
 }
 

@@ -18,13 +18,9 @@
 #include "Small_Grid.h"
 #include "Utils.h"
 
-void Small_Cell::setup(Small_Grid * grd, int i, int j) {
-  grid = grd;
+void Small_Cell::setup(int i, int j, double grid_cell_size, double grid_min_x, double grid_min_y) {
   row = i;
   col = j;
-  double grid_cell_size = grid->get_grid_cell_size();
-  double grid_min_x = grid->get_min_x();
-  double grid_min_y = grid->get_min_y();
   min_x = grid_min_x + (col)*grid_cell_size;
   min_y = grid_min_y + (row)*grid_cell_size;
   max_x = grid_min_x + (col+1)*grid_cell_size;
@@ -46,7 +42,7 @@ double Small_Cell::distance_to_grid_cell(Small_Cell *p2) {
 }
 
 void Small_Cell::print() {
-  FRED_VERBOSE(0, "small_cell: %d %d %d %d\n", row, col, cases, popsize);
+  FRED_VERBOSE(0, "small_cell: %d %d %d %d\n", row, col, count, popsize);
 }
 
 

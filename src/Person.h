@@ -451,7 +451,7 @@ public:
   bool is_teacher() { return activities.is_teacher(); }
   bool is_student() { return activities.is_student(); }
 
-  void notify_household(int disease_id) { activities.notify_household(disease_id); }
+  void count_new_infection(Person * self, int disease_id) { activities.count_new_infection(self, disease_id); }
 
 private:
 

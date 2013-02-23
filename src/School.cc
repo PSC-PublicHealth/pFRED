@@ -231,7 +231,7 @@ void School::apply_individual_school_closure_policy(int day, int disease_id) {
 
   // if school_closure_cases > -1 then close if this number of cases occurs
   if (School::school_closure_cases != -1) {
-    close_this_school = (School::school_closure_cases <= Sympt[disease_id]);
+    close_this_school = (School::school_closure_cases <= get_current_cases(disease_id));
   }
   else {
     // close if attack rate threshold is reached

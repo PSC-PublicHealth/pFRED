@@ -67,7 +67,8 @@ Small_Grid::Small_Grid(Large_Grid * lgrid) {
 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      grid[i][j].setup(this,i,j);
+      // grid[i][j].setup(this,i,j);
+      grid[i][j].setup(i, j, grid_cell_size, min_x, min_y);
     }      
   }
 }
@@ -148,9 +149,10 @@ void Small_Grid::update(int day) {
 
 // Specific to Small_Cell Small_Grid:
 
-
-void Small_Grid::initialize_gaia_data(char *filename) {
-  FILE *fp = fopen(filename, "w");
+void Small_Grid::initialize_gaia_data(char * directory, int run) {
+  char gaiafile[FRED_STRING_SIZE];
+  sprintf(gaiafile, "%s/GAIA.%d/setup.txt", directory, run);
+  FILE *fp = fopen(gaiafile, "w");
   fprintf(fp, "rows = %d\n", rows);
   fprintf(fp, "cols = %d\n", rows);
   fprintf(fp, "min_lat = %f\n", Global::Large_Cells->get_min_lat());
@@ -160,15 +162,18 @@ void Small_Grid::initialize_gaia_data(char *filename) {
   fclose(fp);
 }
 
-void Small_Grid::print_gaia_data(char *filename) {
-  FILE *fp = fopen(filename, "w");
+void Small_Grid::print_gaia_data(char * directory, int run, int day) {
+  char gaiafile[FRED_STRING_SIZE];
+  sprintf(gaiafile, "%s/GAIA.%d/day-%d-inf.txt", directory, run, day);
+  FILE *fp = fopen(gaiafile, "w");
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       Small_Cell * cell = (Small_Cell *) &grid[i][j];
-      int cases = cell->get_cases();
-      int popsize = cell->get_popsize();
-      if (cases > 0)
-	fprintf(fp, "%d %d %d %d\n", i, j, cases, popsize);
+      int count = cell->get_count();
+      if (count > 0) {
+	int popsize = cell->get_popsize();
+	fprintf(fp, "%d %d %d %d\n", i, j, count, popsize);
+      }
     }
   }
   fclose(fp);

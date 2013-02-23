@@ -772,13 +772,18 @@ void Place_List::print_household_size_distribution(char * dir, char * date_strin
 }
 
 void Place_List::end_of_run() {
-  if (Global::Verbose > 1) {
+  if (Global::Verbose > 0) {
     int number_places = places.size();
     for (int p = 0; p < number_places; p++) {
       Place *place = places[p];
-      fprintf(Global::Statusfp,"PLACE REPORT: id %d type %c size %d days_inf %d attack_rate %5.2f\n",
-          place->get_id(), place->get_type(), place->get_size(),
-          place->get_days_infectious(), 100.0*place->get_attack_rate());
+      fprintf(Global::Statusfp,"PLACE REPORT: id %d type %c size %d inf %d attack_rate %5.2f current %d new %d first_day %d last_day %d\n",
+	      place->get_id(), place->get_type(), place->get_size(),
+	      place->get_total_infections(0),
+	      100.0*place->get_attack_rate(0),
+	      place->get_current_infections(0),
+	      place->get_new_infections(0),
+	      place->get_first_day_infectious(),
+	      place->get_last_day_infectious());
     }
   }
 }

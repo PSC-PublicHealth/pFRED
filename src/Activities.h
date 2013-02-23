@@ -363,7 +363,7 @@ public:
    */
   static void read_init_files();
 
-  void notify_household(int disease_id);
+  void count_new_infection(Person *self, int disease_id);
 
 private:
 

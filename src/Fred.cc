@@ -223,9 +223,7 @@ int main(int argc, char* argv[]) {
 
   // initialize GAIA data if desired
   if (Global::Print_GAIA_Data) {
-    char gaiafile[FRED_STRING_SIZE];
-    sprintf(gaiafile, "%s/GAIA.%d/setup.txt", directory, run);
-    Global::Small_Cells->initialize_gaia_data(gaiafile);
+    Global::Small_Cells->initialize_gaia_data(directory, run);
   }
 
   Utils::fred_print_lap_time("FRED initialization");
@@ -292,10 +290,8 @@ int main(int argc, char* argv[]) {
 
     // print GAIA data if desired
     if (Global::Print_GAIA_Data) {
-      char gaiafile[FRED_STRING_SIZE];
-      sprintf(gaiafile, "%s/GAIA.%d/day-%d-inf.txt", directory, run, day);
-      // Global::Places.report(day);
-      Global::Small_Cells->print_gaia_data(gaiafile);
+      Global::Places.report(day);
+      Global::Small_Cells->print_gaia_data(directory, run, day);
     }
 
     #pragma omp parallel sections

@@ -25,18 +25,17 @@ class Small_Cell : public Abstract_Cell {
 public:
   Small_Cell() {}
   ~Small_Cell() {}
-  void setup(Small_Grid * grd, int i, int j);
+  void setup(int i, int j, double grid_cell_size, double grid_min_x, double grid_min_y);
   void quality_control();
-  void update(int day) { cases = 0; popsize = 0; }
+  void update(int day) { count = 0; popsize = 0; }
   double distance_to_grid_cell(Small_Cell *grid_cell2);
-  int get_cases() { return cases; }
+  int get_count() { return count; }
   int get_popsize() { return popsize; }
+  void update_cell_counts(int inf, int total) { count += inf; popsize += total; } 
   void print();
-  void household_report(int inf, int total) { cases += inf; popsize += total; } 
 
 protected:
-  Small_Grid * grid;
-  int cases;
+  int count;
   int popsize;
 };
 

@@ -20,46 +20,66 @@
 #include "Household.h"
 
 int Perceptions::get_neighborhood_cases(int disease) {
+  return 0;
+  /*
   Place * p = self->get_neighborhood();
   if (p == NULL) return 0.0;
   else return p->get_daily_cases(disease);
+  */
 }
 
 int Perceptions::get_neighborhood_deaths(int disease) {
+  return 0;
+  /*
   Place * p = self->get_neighborhood();
   if (p == NULL) return 0.0;
   else return p->get_daily_deaths(disease);
+  */
 }
 
 int Perceptions::get_workplace_cases(int disease) {
+  return 0;
+  /*
   int count = 0;
   Place * p = self->get_workplace();
   if (p != NULL) count = p->get_daily_cases(disease);
   return count;
+  */
 }
 
 int Perceptions::get_workplace_deaths(int disease) {
+  return 0;
+  /*
   int count = 0;
   Place * p = self->get_workplace();
   if (p != NULL) count = p->get_daily_deaths(disease);
   return count;
+  */
 }
 
 int Perceptions::get_school_cases(int disease) {
+  return 0;
+  /*
   int count = 0;
   Place * p = self->get_school();
   if (p != NULL) count = p->get_daily_cases(disease);
   return count;
+  */
 }
 
 int Perceptions::get_school_deaths(int disease) {
+  return 0;
+  /*
   int count = 0;
   Place * p = self->get_activities()->get_school();
   if (p != NULL) count = p->get_daily_deaths(disease);
   return count;
+  */
 }
 
 double Perceptions::get_household_school_incidence(int disease) {
+  return 0;
+  /*
   int count = 0;
   int total_school = 0;
   Household * house = (Household *) self->get_household();
@@ -74,6 +94,7 @@ double Perceptions::get_household_school_incidence(int disease) {
   }
   if (total_school == 0) return 0.0;
   return (double) count / (double) total_school;
+  */
 }
 
 

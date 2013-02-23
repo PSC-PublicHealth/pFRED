@@ -37,8 +37,8 @@ public:
 
   void update(int day);
 
-  void initialize_gaia_data(char *filename);
-  void print_gaia_data(char *filename);
+  void initialize_gaia_data(char * directory, int run);
+  void print_gaia_data(char * directory, int run, int day);
 
 protected:
   Small_Cell ** grid;            // Rectangular array of grid_cells
