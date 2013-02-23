@@ -650,10 +650,8 @@ void Population::update(int day) {
 
   // first update everyone's health intervention status
   if ( Global::Enable_Vaccination || Global::Enable_Antivirals ) {
-    // update everyone's health vaccination and antiviral status
-    for (int p = 0; p < pop_size; p++) {
-      blq.get_item_by_index( p ).update_health_interventions(day);
-    }
+    Update_Health_Interventions update_health_interventions( day );
+    blq.apply( update_health_interventions );
   }
 
   FRED_VERBOSE(1, "population::update health  day = %d\n", day);
@@ -665,12 +663,12 @@ void Population::update(int day) {
 
   FRED_VERBOSE(1, "population::update household_mobility day = %d\n", day);
 
-  if (Global::Enable_Mobility) {
-    // update household mobility activity on July 1
-    if (Date::match_pattern(Global::Sim_Current_Date, "07-01-*")) {
-      for (int p = 0; p < pop_size; p++) {
-        blq.get_item_by_index( p ).update_household_mobility();
-      }
+  // update household mobility activity on July 1
+  if ( Global::Enable_Mobility
+      && Date::match_pattern( Global::Sim_Current_Date, "07-01-*" ) ) {
+
+    for (int p = 0; p < pop_size; p++) {
+      blq.get_item_by_index( p ).update_household_mobility();
     }
   }
 
@@ -687,7 +685,9 @@ void Population::update(int day) {
   FRED_VERBOSE(1, "population::update_activity_profile day = %d\n", day);
 
   // update activity profiles on July 1
-  if (Global::Enable_Aging && Date::match_pattern(Global::Sim_Current_Date, "07-01-*")) {
+  if ( Global::Enable_Aging
+      && Date::match_pattern( Global::Sim_Current_Date, "07-01-*" ) ) {
+
     Update_Population_Activities update_population_activities( day );
     blq.apply( update_population_activities );
   }
@@ -701,9 +701,8 @@ void Population::update(int day) {
   FRED_VERBOSE(1, "population::update_behavior day = %d\n", day);
 
   // update decisions about behaviors
-  for (int p = 0; p < pop_size; p++) {
-    blq.get_item_by_index( p ).update_behavior(day);
-  }
+  Update_Population_Behaviors update_population_behaviors( day );
+  blq.apply( update_population_behaviors );
   // Utils::fred_print_wall_time("day %d update_behavior", day);
 
   FRED_VERBOSE(1, "population::update vacc_manager day = %d\n", day);
@@ -729,12 +728,20 @@ void Population::update_population_deaths::operator() ( Person & p ) {
   p.update_deaths( day );
 }
 
+void Population::Update_Health_Interventions::operator() ( Person & p ) {
+  p.update_health_interventions( day );
+}
+
 void Population::update_population_health::operator() ( Person & p ) {
   p.update_health( day );
 }
 
 void Population::Update_Population_Activities::operator() ( Person & p ) {
   p.update_activity_profile();
+}
+
+void Population::Update_Population_Behaviors::operator() ( Person & p ) {
+  p.update_behavior( day );
 }
 
 void Population::report(int day) {

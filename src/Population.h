@@ -392,6 +392,13 @@ class Population {
       void operator() ( Person & p );
     };
 
+    // functor for health interventions (vaccination & antivirals) updates
+    struct Update_Health_Interventions {
+      int day;
+      Update_Health_Interventions( int d ) : day( d ) { }
+      void operator() ( Person & p );
+    };
+    
     // functor for health update
     struct update_population_health {
       int day;
@@ -403,6 +410,13 @@ class Population {
     struct Update_Population_Activities {
       int day;
       Update_Population_Activities( int d ) : day( d ) { }
+      void operator() ( Person & p );
+    };
+
+    // functor for behavior updates
+    struct Update_Population_Behaviors {
+      int day;
+      Update_Population_Behaviors( int d ) : day( d ) { }
       void operator() ( Person & p );
     };
 
