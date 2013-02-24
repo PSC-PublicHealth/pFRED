@@ -65,7 +65,7 @@ DSFMT_HDR = $(DSFMT_DIR)/dSFMT.h $(DSFMT_DIR)/dSFMT-params19937.h
 
 ## Use this to run with multiple threads
 CPPFLAGS = -g $(M64) -O3 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer $(INCLUDE_DIRS)
-FRED_memcheck: CPPFLAGS = -g $(M64) -O1 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer $(INCLUDE_DIRS)
+FRED_memcheck: CPPFLAGS = -g $(M64) -O0 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer $(INCLUDE_DIRS)
 
 ## Use this to make reproducible serial runs
 # CPPFLAGS = -g $(M64) -O3 $(LOGGING_PRESET_3) -DNCPU=1 #-fast #-Wall

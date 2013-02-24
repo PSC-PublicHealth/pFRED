@@ -80,11 +80,15 @@ struct FergEvolution_Report : public Transaction {
     }
   };
   // Daily: stores data for each of the past seven days
-  struct Daily {
+  class Daily {
+
     typedef int Window[ window_size ];
     Window * incidence;
     Window * mutated;
     int n;
+
+    public:
+
     Daily() : incidence( NULL ), mutated( NULL ) { }
     void init( int N ) {
       incidence = new Window[ N ];
@@ -100,9 +104,19 @@ struct FergEvolution_Report : public Transaction {
       if ( incidence ) delete[] incidence;
       if ( mutated ) delete[] mutated;
     }
-    void add_incidence( int incident_cell, int day ) {
-      ++( incidence[ incident_cell ][ day ] );
+    void add_incidence( int incident_cell, int day, int increment = 1 ) {
+      incidence[ incident_cell ][ day ] += increment;
     }
+    int get_incidence( int incident_cell, int day ) const {
+      return incidence[ incident_cell ][ day ];
+    }
+    void add_mutated( int cell, int day, int increment = 1 ) {
+      mutated[ cell ][ day ] += increment;
+    }
+    int get_mutated( int cell, int day ) const {
+      return mutated[ cell ][ day ];
+    }
+
   };
   struct Extended_Daily {
     typedef int Window[ window_size ];
@@ -258,8 +272,8 @@ struct FergEvolution_Report : public Transaction {
         for ( int d = 0; d <= other.days_index; ++d ) {
           assert( days[ d ] == -1 || days[ d ] == other.days[ d ] );
           days[ d ] = other.days[ d ];
-          daily_strain_map[ strain ].incidence[ c ][ d ] += daily.incidence[ c ][ d ];
-          daily_strain_map[ strain ].mutated[ c ][ d ] += daily.mutated[ c ][ d ];
+          daily_strain_map[ strain ].add_incidence( c, d, daily.get_incidence( c, d ) );
+          daily_strain_map[ strain ].add_mutated( c, d, daily.get_mutated( c, d ) );
  
           if ( other_extended_daily_iter != other.extended_daily_strain_map.end() ) {
             extended_daily_strain_map[ strain ].exposed[ c ][ d ] += other_extended_daily_iter->second.exposed[ c ][ d ];
@@ -333,7 +347,7 @@ struct FergEvolution_Report : public Transaction {
     if ( daily_strain_map.find( strain ) == daily_strain_map.end() ) {
       daily_strain_map[ strain ].init( num_clusters );
     }
-    ++daily_strain_map[ strain ].incidence[ cluster ][ days_index ]; 
+    daily_strain_map[ strain ].add_incidence( cluster, days_index ); 
   }
   // Report mutated strain
   void report_mutation( int cluster, int child_strain, int parent_strain, bool novel ) {
@@ -341,7 +355,7 @@ struct FergEvolution_Report : public Transaction {
     if ( daily_strain_map.find( child_strain ) == daily_strain_map.end() ) {
       daily_strain_map[ child_strain ].init( num_clusters );
     }
-    ++daily_strain_map[ child_strain ].mutated[ cluster ][ days_index ]; 
+    daily_strain_map[ child_strain ].add_mutated( cluster, days_index ); 
     // report novel mutations
     if ( novel ) {
       daily_novel_mutations[ cluster ][ days_index ].insert(
@@ -418,7 +432,7 @@ struct FergEvolution_Report : public Transaction {
       const Daily & daily = (*daily_iter).second;
       for ( int c = 0; c < num_clusters; ++c ) {
         for ( int d = 0; d < window_size; ++d ) {
-          if ( daily.incidence[ c ][ d ] > 0 ) {
+          if ( daily.get_incidence( c, d ) > 0 ) {
             std::string * values_array = new std::string[ n_values[ S ] ]; 
             std::stringstream ss;
             ss << dates_array[ d ];
@@ -427,7 +441,7 @@ struct FergEvolution_Report : public Transaction {
             values_array[ 1 ] = ss.str(); ss.str("");
             ss << strain;
             values_array[ 2 ] = ss.str(); ss.str("");
-            ss << daily.incidence[ c ][ d ]; 
+            ss << daily.get_incidence( c, d ); 
             values_array[ 3 ] = ss.str(); ss.str("");
             values[ S ].push_back( values_array );
           }

@@ -565,8 +565,8 @@ void Population::update(int day) {
 
   if ( Global::Enable_Births ) {
     // populate the maternity list (Demographics::update_births)
-    update_population_births update_population_births_functor( day );
-    blq.parallel_masked_apply( fred::Update_Births, update_population_births_functor ); 
+    Update_Population_Births update_population_births( day );
+    blq.parallel_masked_apply( fred::Update_Births, update_population_births ); 
     // add the births to the population
     size_t births = maternity_list.size();
     for ( size_t i = 0; i < births; i++ ) {
@@ -598,8 +598,8 @@ void Population::update(int day) {
 
   if ( Global::Enable_Deaths ) {
     // populate the death list (Demographics::update_deaths)
-    update_population_deaths update_population_deaths_functor( day );
-    blq.parallel_masked_apply( fred::Update_Deaths, update_population_deaths_functor ); 
+    Update_Population_Deaths update_population_deaths( day );
+    blq.parallel_masked_apply( fred::Update_Deaths, update_population_deaths ); 
 
     // remove the dead from the population
     size_t deaths = death_list.size();
@@ -657,8 +657,8 @@ void Population::update(int day) {
   FRED_VERBOSE(1, "population::update health  day = %d\n", day);
 
   // update everyone's health status
-  update_population_health update_functor( day );
-  blq.parallel_masked_apply( fred::Update_Health, update_functor );
+  Update_Population_Health update_population_health( day );
+  blq.parallel_masked_apply( fred::Update_Health, update_population_health );
   // Utils::fred_print_wall_time("day %d update_health", day);
 
   FRED_VERBOSE(1, "population::update household_mobility day = %d\n", day);
@@ -720,11 +720,11 @@ void Population::update(int day) {
   FRED_STATUS( 1, "population begin_day finished\n");
 }
 
-void Population::update_population_births::operator() ( Person & p ) {
+void Population::Update_Population_Births::operator() ( Person & p ) {
   p.update_births( day );
 }
 
-void Population::update_population_deaths::operator() ( Person & p ) {
+void Population::Update_Population_Deaths::operator() ( Person & p ) {
   p.update_deaths( day );
 }
 
@@ -732,7 +732,7 @@ void Population::Update_Health_Interventions::operator() ( Person & p ) {
   p.update_health_interventions( day );
 }
 
-void Population::update_population_health::operator() ( Person & p ) {
+void Population::Update_Population_Health::operator() ( Person & p ) {
   p.update_health( day );
 }
 

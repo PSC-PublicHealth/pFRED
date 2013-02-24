@@ -367,14 +367,17 @@ public:
 
 private:
 
+  // current favorite places
   std::map< int, Place * > favorite_places_map;
-  std::map< int, Place * > * tmp_favorite_places_map; // list of favorite places, stored while traveling
+  // list of favorite places, stored while traveling
+  std::map< int, Place * > * tmp_favorite_places_map;
+
   Place * home_neighborhood;
   std::bitset< FAVORITE_PLACES > on_schedule; // true iff favorite place is on schedule
-  int schedule_updated;                         // date of last schedule update
-  bool travel_status;                                // true if traveling
-  bool traveling_outside;      // true if traveling outside modeled area
-  char profile;                                      // activities profile type
+  int schedule_updated;                       // date of last schedule update
+  bool travel_status;                         // true if traveling
+  bool traveling_outside;                     // true if traveling outside modeled area
+  char profile;                               // activities profile type
 
   // individual sick day variables
   short int my_sick_days_absent;

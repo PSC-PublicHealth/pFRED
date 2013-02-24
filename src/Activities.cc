@@ -584,7 +584,9 @@ void Activities::assign_workplace( Person * self ) {
     if(attempts == 0) break;
     level++;
   }
-  FRED_WARNING("assign_workplace: can't locate workplace for person %d\n", self->get_id());
+
+  FRED_WARNING("assign_workplace: can't locate workplace for person %d\n",
+      self->get_id());
 }
 
 void Activities::assign_office( Person * self ) {
@@ -618,15 +620,17 @@ int Activities::get_degree() {
 void Activities::update_profile( Person * self ) {
   int age = self->get_age();
 
-  if (profile == PRESCHOOL_PROFILE && Global::SCHOOL_AGE <= age && age < Global::ADULT_AGE) {
+  if ( profile == PRESCHOOL_PROFILE
+      && Global::SCHOOL_AGE <= age && age < Global::ADULT_AGE) {
     // start school
     profile = STUDENT_PROFILE;
     // select a school based on age and neighborhood
     assign_school( self );
     
-    FRED_STATUS( 1, "CHANGED BEHAVIOR PROFILE TO STUDENT: id %d age %d sex %c\n%s\n",
-          self->get_id(), age, self->get_sex(), to_string( self ).c_str() );
-    
+    FRED_STATUS( 1,
+        "CHANGED BEHAVIOR PROFILE TO STUDENT: id %d age %d sex %c\n%s\n",
+        self->get_id(), age, self->get_sex(), to_string( self ).c_str() );
+   
     return;
   }
 
@@ -636,9 +640,10 @@ void Activities::update_profile( Person * self ) {
     Classroom * c = (Classroom *) get_classroom();
     if (c == NULL || c->get_age_level() == age) {
       // no change
-      FRED_STATUS( 1, "KEPT CLASSROOM ASSIGNMENT: id %d age %d sex %c %s %s | %s\n",
-        self->get_id(), age, self->get_sex(), s->get_label(), c->get_label(),
-        to_string( self ).c_str() );
+      FRED_STATUS( 1,
+          "KEPT CLASSROOM ASSIGNMENT: id %d age %d sex %c %s %s | %s\n",
+          self->get_id(), age, self->get_sex(), s->get_label(), c->get_label(),
+          to_string( self ).c_str() );
     }
     else {
       if ( s != NULL && s->classrooms_for_age( age ) > 0 ) {
@@ -649,13 +654,15 @@ void Activities::update_profile( Person * self ) {
       else {
         assign_school( self );
       }
-      FRED_STATUS( 1, "CHANGED CLASSROOM ASSIGNMENT: id %d age %d sex %c from %s %s to %s %s | %s\n",
-        self->get_id(), age, self->get_sex(),
-        s != NULL ? s->get_label() : "NULL",
-        c != NULL ? c->get_label() : "NULL",
-        get_place_label( SCHOOL_ACTIVITY ),
-        get_place_label( CLASSROOM_ACTIVITY ),
-        to_string( self ).c_str() );
+      FRED_STATUS( 1,
+          "%s: id %d age %d sex %c from %s %s to %s %s | %s\n",
+          "CHANGED CLASSROOM ASSIGNMENT",
+          self->get_id(), age, self->get_sex(),
+          s != NULL ? s->get_label() : "NULL",
+          c != NULL ? c->get_label() : "NULL",
+          get_place_label( SCHOOL_ACTIVITY ),
+          get_place_label( CLASSROOM_ACTIVITY ),
+          to_string( self ).c_str() );
     }
     return;
   }
@@ -675,8 +682,9 @@ void Activities::update_profile( Person * self ) {
 
   if (profile != RETIRED_PROFILE && Global::RETIREMENT_AGE <= age) {
     if ( RANDOM() < 0.5 ) {
-      FRED_STATUS( 1, "CHANGING BEHAVIOR PROFILE TO RETIRED: id %d age %d sex %c\n",
-        self->get_id(), age, self->get_sex());
+      FRED_STATUS( 1,
+          "CHANGING BEHAVIOR PROFILE TO RETIRED: id %d age %d sex %c\n",
+          self->get_id(), age, self->get_sex());
       FRED_STATUS( 1, "to_string: %s\n", to_string( self ).c_str() );
       // quit working
       if (is_teacher()) {
@@ -687,8 +695,9 @@ void Activities::update_profile( Person * self ) {
       set_office(NULL);
       profile = RETIRED_PROFILE;
       initialize_sick_leave(); // no sick leave available if retired
-      FRED_STATUS( 1, "CHANGED BEHAVIOR PROFILE TO RETIRED: id %d age %d sex %c\n%s\n",
-        self->get_id(), age, self->get_sex(), to_string( self ).c_str() );
+      FRED_STATUS( 1,
+          "CHANGED BEHAVIOR PROFILE TO RETIRED: id %d age %d sex %c\n%s\n",
+          self->get_id(), age, self->get_sex(), to_string( self ).c_str() );
     }
     return;
   }
@@ -701,7 +710,8 @@ static int mcount = 0;
 void Activities::update_household_mobility( Person * self ) {
   if (!Global::Enable_Mobility) return;
 
-  FRED_STATUS( 1, "update_household_mobility entered with mcount = %d\n", mcount );
+  FRED_STATUS( 1,
+      "update_household_mobility entered with mcount = %d\n", mcount );
 
   if (mcount == 0) {
     for (int i = 0; i <= MAX_MOBILITY_AGE; i++) {

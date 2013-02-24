@@ -380,15 +380,15 @@ class Population {
     void write_population_output_file(int day);
 
     // functors for demographics updates 
-    struct update_population_births {
+    struct Update_Population_Births {
       int day;
-      update_population_births( int _day ) : day( _day ) { }
+      Update_Population_Births( int _day ) : day( _day ) { }
       void operator() ( Person & p );
     };
 
-    struct update_population_deaths {
+    struct Update_Population_Deaths {
       int day;
-      update_population_deaths( int _day ) : day( _day ) { }
+      Update_Population_Deaths( int _day ) : day( _day ) { }
       void operator() ( Person & p );
     };
 
@@ -400,9 +400,9 @@ class Population {
     };
     
     // functor for health update
-    struct update_population_health {
+    struct Update_Population_Health {
       int day;
-      update_population_health( int d ) : day( d ) { }
+      Update_Population_Health( int d ) : day( d ) { }
       void operator() ( Person & p );
     };
 

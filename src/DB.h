@@ -35,6 +35,7 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <stdio.h>
 
 #include "Global.h"
 
@@ -107,6 +108,7 @@ class DB {
 
   void open_database( const char * dbfilename ) {
     char * sErrMsg = 0;
+    remove( dbfilename );
     sqlite3_open( dbfilename, &db );
     sqlite3_exec(db, "PRAGMA synchronous = OFF", NULL, NULL, &sErrMsg);
     sqlite3_exec(db, "PRAGMA journal_mode = MEMORY", NULL, NULL, &sErrMsg);
