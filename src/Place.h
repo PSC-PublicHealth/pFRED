@@ -492,8 +492,6 @@ protected:
   fred::geo latitude;     // geo location
   fred::geo longitude;    // geo location
   vector <Person *> enrollees;
-  vector <Person *> *susceptibles;    // list of susceptible visitors
-  vector <Person *> *infectious;      // list of infectious visitors
   int close_date;         // this place will be closed during:
   int open_date;          //   [close_date, open_date)
   int N;                  // total number of potential visitors
