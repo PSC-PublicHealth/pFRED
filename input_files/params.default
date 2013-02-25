@@ -55,6 +55,7 @@ quality_control = 1
 print_household_locations = 0
 rr_delay = 10
 print_gaia_data = 0
+select_gaia_data = I
 
 # set 0 for end-of-run trace printout only, non-zero to print every n-th day
 incremental_trace = 0
