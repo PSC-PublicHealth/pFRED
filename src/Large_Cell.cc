@@ -120,7 +120,12 @@ void Large_Cell::unenroll(Person *per) {
   else {
     person.clear();
   }
-  --( demes[ per->get_deme_id() ] );
+  // TODO Can't do this!  Since the deme_id is stored in the Person's household,
+  // and the household has, at this point, already been removed from the Person's
+  // favorite_places_map, the deme_id is not accessible at this point.
+  // This is not a problem until we run for long enough that over 4 billion people
+  // have ever lived in the Large_Cell (not likely/possible).
+  //--( demes[ per->get_deme_id() ] );
 }
 
 Transaction * Large_Cell::collect_cell_stats( int day, int disease_id ) {

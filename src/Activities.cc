@@ -915,9 +915,9 @@ void Activities::count_new_infection(Person * self, int disease_id) {
 void Activities::terminate( Person * self ) {
   // Person was enrolled in only his original 
   // favorite places, not his host's places while travelling
-  if(travel_status && ! traveling_outside) 
+  if ( travel_status && !traveling_outside ) { 
     restore_favorite_places();
-
+  }
   unenroll_from_favorite_places(self);
 }
 
