@@ -66,6 +66,20 @@ class Seasonality;
  */
 class Global {
   public:
+
+    // Output codes
+    static const int OUTPUT_S = 0;
+    static const int OUTPUT_E = 1;
+    static const int OUTPUT_I = 2;
+    static const int OUTPUT_Is = 3;
+    static const int OUTPUT_R = 4;
+    static const int OUTPUT_C = 5;
+    static const int OUTPUT_Cs = 6;
+    static const int OUTPUT_D = 7;
+    static const int OUTPUT_A = 8;
+    static const int OUTPUT_As = 9;
+    static const int OUTPUT_T = 10;
+
     // global constants
     static const int DAYS_PER_WEEK = 7;
     static const int ADULT_AGE = 18;
@@ -202,6 +216,7 @@ class Global {
     static bool Report_Presenteeism;
     static bool Assign_Teachers;
     static int Print_GAIA_Data;
+    static int Select_GAIA_Data;
 
     // global singleton objects
     static Population Pop;

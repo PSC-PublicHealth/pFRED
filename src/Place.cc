@@ -44,13 +44,15 @@ void Place::setup( const char *lab, fred::geo lon, fred::geo lat, Place* cont, P
 
   // zero out all disease-specific counts
   for ( int d = 0; d < Global::MAX_NUM_DISEASES; ++d ) {
+
     new_infections[ d ] = 0;
     total_infections[ d ] = 0;
-    current_infections[ d ] = 0;
 
     new_symptomatic_infections[ d ] = 0;
     total_symptomatic_infections[ d ] = 0;
-    current_symptomatic_infections[ d ] = 0;
+
+    current_infectious_visitors[ d ] = 0;
+    current_symptomatic_visitors[ d ] = 0;
 
     new_deaths[ d ] = 0;
     total_deaths[ d ] = 0;
@@ -99,10 +101,10 @@ void Place::update(int day) {
 
   for (int d = 0; d < Global::Diseases; d++) {
     new_infections[ d ] = 0;
-    current_infections[ d ] = 0;
     new_symptomatic_infections[ d ] = 0;
-    current_symptomatic_infections[ d ] = 0;
     new_deaths[ d ] = 0;
+    current_infectious_visitors[ d ] = 0;
+    current_symptomatic_visitors[ d ] = 0;
   }
 }
 
@@ -150,11 +152,11 @@ void Place::add_infectious(int disease_id, Person * per) {
   }
 
   #pragma omp atomic
-  current_infections[disease_id]++;
+  current_infectious_visitors[disease_id]++;
 
   if (per->get_health()->is_symptomatic()) {
     #pragma omp atomic
-    current_symptomatic_infections[disease_id]++;
+    current_symptomatic_visitors[disease_id]++;
   }
 }
 

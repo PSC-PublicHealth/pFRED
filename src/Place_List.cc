@@ -780,7 +780,7 @@ void Place_List::end_of_run() {
 	      place->get_id(), place->get_type(), place->get_size(),
 	      place->get_total_infections(0),
 	      100.0*place->get_attack_rate(0),
-	      place->get_current_infections(0),
+	      place->get_current_infectious_visitors(0),
 	      place->get_new_infections(0),
 	      place->get_first_day_infectious(),
 	      place->get_last_day_infectious());

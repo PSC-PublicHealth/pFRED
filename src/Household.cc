@@ -225,12 +225,10 @@ void Household::add_infectious(int disease_id, Person * per) {
     infectious_bitset.set( disease_id );
   }
 
-  #pragma omp atomic
-  current_infections[disease_id]++;
+  add_infectious_visitor(disease_id);
 
   if (per->get_health()->is_symptomatic()) {
-    #pragma omp atomic
-    current_symptomatic_infections[disease_id]++;
+    add_symptomatic_visitor(disease_id);
   }
 }
 
@@ -244,7 +242,40 @@ int Household::gq_get_room_number( int housemate_index ) {
 
 void Household::report(int day) {
   if (Global::Print_GAIA_Data) {
-    int count = current_infections[0];
+    int count = 0;
+    switch (Global::Select_GAIA_Data) {
+
+    case Global::OUTPUT_I:
+      // use this to map out infectious population (I)
+      count = get_current_infectious_visitors(0);
+      break;
+
+    case Global::OUTPUT_Is:
+      // use this to map out symptomatic population (I_s)
+      count = get_current_symptomatic_visitors(0);
+      break;
+
+    case Global::OUTPUT_C:
+      // use this to map out new infections
+      count = get_new_infections(0);
+      break;
+
+    case Global::OUTPUT_Cs:
+      // use this to map out new infections
+      count = get_new_symptomatic_infections(0);
+      break;
+
+    case Global::OUTPUT_D:
+      // use this to map out total infections
+      count = get_total_deaths(0);
+      break;
+
+    case Global::OUTPUT_T:
+      // use this to map out total infections
+      count = get_total_infections(0);
+      break;
+    }
+
     Small_Cell * cell = Global::Small_Cells->get_grid_cell(get_latitude(),get_longitude());
     cell->update_cell_counts(count, N);
   }

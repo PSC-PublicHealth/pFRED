@@ -89,6 +89,7 @@ bool Global::Report_Place_Of_Infection = false;
 bool Global::Report_Presenteeism = false;
 bool Global::Assign_Teachers = false;
 int Global::Print_GAIA_Data = 0;
+int Global::Select_GAIA_Data = 0;
 
 // per-strain immunity reporting off by default
 // will be enabled in Utils::fred_open_output_files (called from Fred.cc)
@@ -193,9 +194,20 @@ void Global::get_global_parameters() {
   Global::Print_Household_Locations = temp_int;
   Params::get_param_from_string("assign_teachers",&temp_int);
   Global::Assign_Teachers = temp_int;
-  Params::get_param_from_string("print_gaia_data",&Global::Print_GAIA_Data);
 
+  // GAIA params
+  Params::get_param_from_string("print_gaia_data",&Global::Print_GAIA_Data);
   if (Global::Print_GAIA_Data) Global::Enable_Small_Grid = true;
+
+  char tmp_string[256];
+  Params::get_param_from_string("select_gaia_data",tmp_string);
+  if (strcmp(tmp_string, "I") == 0) { Global::Select_GAIA_Data = Global::OUTPUT_I; }
+  if (strcmp(tmp_string, "Is") == 0) { Global::Select_GAIA_Data = Global::OUTPUT_Is; }
+  if (strcmp(tmp_string, "C") == 0) { Global::Select_GAIA_Data = Global::OUTPUT_C; }
+  if (strcmp(tmp_string, "Cs") == 0) { Global::Select_GAIA_Data = Global::OUTPUT_Cs; }
+  if (strcmp(tmp_string, "D") == 0) { Global::Select_GAIA_Data = Global::OUTPUT_D; }
+  if (strcmp(tmp_string, "T") == 0) { Global::Select_GAIA_Data = Global::OUTPUT_T; }
+
 
   // Initialize Demographics
   Demographics::read_init_files();

@@ -411,8 +411,14 @@ public:
   void count_new_infection(Person * per, int disease_id);
 
   int get_new_infections(int disease_id) { return new_infections[disease_id]; }
-  int get_current_infections(int disease_id) { return current_infections[disease_id]; }
   int get_total_infections(int disease_id) { return total_infections[disease_id]; }
+  int get_new_symptomatic_infections(int disease_id) { return new_symptomatic_infections[disease_id]; }
+  int get_total_symptomatic_infections(int disease_id) { return total_symptomatic_infections[disease_id]; }
+
+  int get_current_infectious_visitors(int disease_id) { return current_infectious_visitors[disease_id]; }
+  int get_current_symptomatic_visitors(int disease_id) { return current_symptomatic_visitors[disease_id]; }
+  void add_infectious_visitor(int disease_id) { current_infectious_visitors[disease_id]++; }
+  void add_symptomatic_visitor(int disease_id) { current_symptomatic_visitors[disease_id]++; }
 
   /**
    * Get the number of cases of a given disease for day.
@@ -420,7 +426,7 @@ public:
    * @param disease_id an integer representation of the disease
    * @return the count of cases for a given diease
    */
-  int get_current_cases(int disease_id) { return current_symptomatic_infections[disease_id]; }
+  int get_current_cases(int disease_id) { return get_current_symptomatic_visitors(disease_id); }
 
   /**
    * Get the number of deaths from a given disease for a day.
@@ -502,11 +508,12 @@ protected:
   // infection stats
   int new_infections[ Global::MAX_NUM_DISEASES ]; // new infections today
   int total_infections[ Global::MAX_NUM_DISEASES ]; // total infections over all time
-  int current_infections[ Global::MAX_NUM_DISEASES ]; // total infections today
-
   int new_symptomatic_infections[ Global::MAX_NUM_DISEASES ]; // new sympt infections today
   int total_symptomatic_infections[ Global::MAX_NUM_DISEASES ]; // total sympt infections over all time
-  int current_symptomatic_infections[ Global::MAX_NUM_DISEASES ]; // total sympt infections today
+
+  // these counts refer to today's visitors:
+  int current_infectious_visitors[ Global::MAX_NUM_DISEASES ]; // total infectious visitors today
+  int current_symptomatic_visitors[ Global::MAX_NUM_DISEASES ]; // total sympt infections today
 
   int new_deaths[ Global::MAX_NUM_DISEASES ];	    // deaths today
   int total_deaths[ Global::MAX_NUM_DISEASES ];     // total deaths
