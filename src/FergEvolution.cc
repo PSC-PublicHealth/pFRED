@@ -139,15 +139,27 @@ double FergEvolution::genetic_distance( int strain1, int strain2 ) {
   return distance;
 }
 
-int FergEvolution :: get_cluster( Person * pers ) {
-  return get_cluster( pers->get_health()->get_infection( disease->get_id() ) );
-}
+void FergEvolution::get_infecting_and_infected_cells( Infection * infection,
+    int & infector_cell, int & infectee_cell ) {
 
-int FergEvolution :: get_cluster( Infection * infection ) {
-  Place * household = infection->get_host()->get_household();
-  fred::geo lon = household->get_longitude();
-  fred::geo lat = household->get_latitude();
-  return grid->get_grid_cell( lat, lon )->get_id() ;
+  Place * household = NULL;
+  fred::geo lon, lat;
+  // get infectee's cell (must exist)
+  household = infection->get_host()->get_household();
+  assert( household != NULL );
+  lon = household->get_longitude();
+  lat = household->get_latitude();
+  infectee_cell = grid->get_grid_cell( lat, lon )->get_id();
+  // get infector's cell (if doesn't exist, use infectee's cell)
+  if ( infection->get_infector() != NULL ) {
+    household = infection->get_infector()->get_household();
+    lon = household->get_longitude();
+    lat = household->get_latitude();
+    infector_cell = grid->get_grid_cell( lat, lon )->get_id();
+  }
+  else {
+    infector_cell = infectee_cell;
+  }
 }
 
 void FergEvolution::try_to_mutate( Infection * infection, Transmission & transmission ) {
@@ -160,7 +172,8 @@ void FergEvolution::try_to_mutate( Infection * infection, Transmission & transmi
   // only support single infections for now
   assert( strains.size() == 1 );
   // get the geographic cluster where this infection occurred
-  int cell_id = get_cluster( infection );
+  int infector_cell_id, infectee_cell_id;
+  get_infecting_and_infected_cells( infection, infector_cell_id, infectee_cell_id );
   bool mutated = false;
 
   for ( int d = 0; d < duration; d++ ){
@@ -234,16 +247,16 @@ void FergEvolution::try_to_mutate( Infection * infection, Transmission & transmi
           }
         }
         // <----------------------- report mutation to database
-        report().report_mutation( cell_id, child_strain_id, parent_strain_id, novel );
+        report().report_mutation( infectee_cell_id, child_strain_id, parent_strain_id, novel );
       }
       // <------------------------ report incidence to database (lockless, thread-safe)
-      report().report_incidence( cell_id, child_strain_id ); 
+      report().report_incidence( infector_cell_id, infectee_cell_id, child_strain_id ); 
       int exposed_duration = infection->get_infectious_date() - infection->get_exposure_date();
       int infectious_duration = infection->get_recovery_date() - infection->get_infectious_date();
-      report().report_exposure( cell_id, child_strain_id, exposed_duration );
-      report().report_prevalence( cell_id, child_strain_id, exposed_duration, infectious_duration );
+      report().report_exposure( infectee_cell_id, child_strain_id, exposed_duration );
+      report().report_prevalence( infectee_cell_id, child_strain_id, exposed_duration, infectious_duration );
       // update reignitor for this cell
-      cache_reignitor( cell_id, child_strain_id );
+      cache_reignitor( infectee_cell_id, child_strain_id );
     }
   }
 }
