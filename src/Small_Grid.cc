@@ -171,13 +171,13 @@ void Small_Grid::initialize_gaia_data(char * directory, int run) {
   fclose(fp);
 
   // make directory for this run
-  sprintf(gaia_top_dir, "%s/RUN%d", gaia_top_dir, run);
+  sprintf(gaia_top_dir, "%s/run%d", gaia_top_dir, run);
   Utils::fred_make_directory(gaia_top_dir);
 
   // create GAIA sub directories for diseases and output vars
   for (int d = 0; d < Global::Diseases; d++) {
     char gaia_dis_dir[FRED_STRING_SIZE];
-    sprintf(gaia_dis_dir, "%s/DIS%d", gaia_top_dir, d);
+    sprintf(gaia_dis_dir, "%s/dis%d", gaia_top_dir, d);
     Utils::fred_make_directory(gaia_dis_dir);
 
     // create directories for specific output variables
@@ -195,7 +195,7 @@ void Small_Grid::initialize_gaia_data(char * directory, int run) {
 void Small_Grid::print_gaia_data(char * directory, int run, int day) {
   for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
     char dir[FRED_STRING_SIZE];
-    sprintf(dir, "%s/GAIA/RUN%d", directory, run);
+    sprintf(dir, "%s/GAIA/run%d", directory, run);
     print_output_data(dir, disease_id, Global::OUTPUT_I, (char *) "I", day);
     print_output_data(dir, disease_id, Global::OUTPUT_Is, (char *)"Is", day);
     print_output_data(dir, disease_id, Global::OUTPUT_C, (char *)"C", day);
@@ -206,7 +206,7 @@ void Small_Grid::print_gaia_data(char * directory, int run, int day) {
 void Small_Grid::print_output_data(char * dir, int disease_id, int output_code, char * output_str, int day) {
   Global::Places.get_cell_data_from_households(disease_id, output_code);
   char filename[FRED_STRING_SIZE];
-  sprintf(filename, "%s/DIS%d/%s/day-%d.txt", dir, disease_id, output_str, day);
+  sprintf(filename, "%s/dis%d/%s/day-%d.txt", dir, disease_id, output_str, day);
   FILE *fp = fopen(filename, "w");
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
