@@ -70,7 +70,6 @@ public:
 
   void prepare();
   void update(int day);
-  void report(int day);
   void quality_control(char * directory);
   void get_parameters();
   Place * get_place_from_label(char *s) const;
@@ -98,6 +97,14 @@ public:
   void end_of_run();
 
   int get_number_of_demes() { return number_of_demes; }
+
+  void get_cell_data(int disease_id, char place_type, int output_code);
+  void get_cell_data_from_households(int disease_id, int output_code) {
+    get_cell_data(disease_id, HOUSEHOLD, output_code);
+  }
+  //void get_cell_data_from_schools(int disease_id, int output_code);
+  //void get_cell_data_from_workplaces(int disease_id, int output_code);
+  //void get_cell_data_from_neighborhoods(int disease_id, int output_code);
 
 private:
 

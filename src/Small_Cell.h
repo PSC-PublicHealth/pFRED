@@ -17,6 +17,7 @@
 #ifndef _FRED_SMALL_CELL_H
 #define _FRED_SMALL_CELL_H
 
+#include "Global.h"
 #include "Abstract_Cell.h"
 
 class Small_Grid;
@@ -27,12 +28,13 @@ public:
   ~Small_Cell() {}
   void setup(int i, int j, double grid_cell_size, double grid_min_x, double grid_min_y);
   void quality_control();
-  void update(int day) { count = 0; popsize = 0; }
   double distance_to_grid_cell(Small_Cell *grid_cell2);
+  void print();
+
+  void update(int day) { count = 0; popsize = 0; }
+  void update_cell_count(int n, int total) { count += n; popsize += total; } 
   int get_count() { return count; }
   int get_popsize() { return popsize; }
-  void update_cell_counts(int inf, int total) { count += inf; popsize += total; } 
-  void print();
 
 protected:
   int count;

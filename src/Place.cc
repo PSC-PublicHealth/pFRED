@@ -23,11 +23,11 @@
 #include "Transmission.h"
 #include "Date.h"
 #include "Neighborhood.h"
-#include "Cell.h"
 #include "Seasonality.h"
 #include "Utils.h"
-#include "Large_Grid.h"
-#include "Large_Cell.h"
+#include "Cell.h"
+#include "Small_Grid.h"
+#include "Small_Cell.h"
 
 
 void Place::setup( const char *lab, fred::geo lon, fred::geo lat, Place* cont, Population *pop ) {
@@ -121,8 +121,6 @@ void Place::count_new_infection(Person * per, int disease_id) {
     total_symptomatic_infections[disease_id]++;
   }
 }
-
-void Place::report(int day) {}
 
 void Place::print(int disease_id) {
   printf("Place %d label %s type %c\n", id, label, type);
@@ -360,3 +358,29 @@ void Place::turn_workers_into_teachers(Place *school) {
   N = 0;
 }
 
+int Place::get_output_count(int disease_id, int output_code) {
+  switch (output_code) {
+  case Global::OUTPUT_I:
+    return get_current_infectious_visitors(disease_id);
+    break;
+    
+  case Global::OUTPUT_Is:
+    return get_current_symptomatic_visitors(disease_id);
+    break;
+    
+  case Global::OUTPUT_C:
+    return get_new_infections(disease_id);
+    break;
+    
+  case Global::OUTPUT_Cs:
+    return get_new_symptomatic_infections(disease_id);
+    break;
+  }
+  return 0;
+}
+
+
+Small_Cell * Place::get_small_grid_cell() {
+  return Global::Small_Cells->get_grid_cell(latitude, longitude);
+}
+ 

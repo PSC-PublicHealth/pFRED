@@ -130,7 +130,8 @@ using namespace std;
 namespace Utils {
   void fred_abort(const char* format,...);
   void fred_warning(const char* format,...);
-  void fred_open_output_files(char * directory, int run, mode_t mode);
+  void fred_open_output_files(char * directory, int run);
+  void fred_make_directory(char * directory);
   void fred_end();
   void fred_print_wall_time(const char* format, ...);
   void fred_start_timer();

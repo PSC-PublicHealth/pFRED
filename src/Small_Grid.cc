@@ -19,6 +19,7 @@
 #include <string>
 using namespace std;
 
+#include "Place_List.h"
 #include "Small_Grid.h"
 #include "Large_Grid.h"
 #include "Small_Cell.h"
@@ -150,22 +151,63 @@ void Small_Grid::update(int day) {
 // Specific to Small_Cell Small_Grid:
 
 void Small_Grid::initialize_gaia_data(char * directory, int run) {
+  char gaia_dir[FRED_STRING_SIZE];
+
+  // create GAIA data directory
+  char gaia_top_dir[FRED_STRING_SIZE];
+  sprintf(gaia_top_dir, "%s/GAIA", directory);
+  Utils::fred_make_directory(gaia_top_dir);
+
+  // create GAIA setup file
   char gaiafile[FRED_STRING_SIZE];
-  sprintf(gaiafile, "%s/GAIA.%d/setup.txt", directory, run);
+  sprintf(gaiafile, "%s/setup.txt", gaia_top_dir);
   FILE *fp = fopen(gaiafile, "w");
   fprintf(fp, "rows = %d\n", rows);
   fprintf(fp, "cols = %d\n", rows);
   fprintf(fp, "min_lat = %f\n", Global::Large_Cells->get_min_lat());
   fprintf(fp, "min_lon = %f\n", Global::Large_Cells->get_min_lon());
   fprintf(fp, "cell_x_size = %f\n", Geo_Utils::x_to_degree_longitude(grid_cell_size));
-  fprintf(fp, "cell_y_size = %f\n\n", Geo_Utils::y_to_degree_latitude(grid_cell_size));
+  fprintf(fp, "cell_y_size = %f\n", Geo_Utils::y_to_degree_latitude(grid_cell_size));
   fclose(fp);
+
+  // make directory for this run
+  sprintf(gaia_top_dir, "%s/RUN%d", gaia_top_dir, run);
+  Utils::fred_make_directory(gaia_top_dir);
+
+  // create GAIA sub directories for diseases and output vars
+  for (int d = 0; d < Global::Diseases; d++) {
+    char gaia_dis_dir[FRED_STRING_SIZE];
+    sprintf(gaia_dis_dir, "%s/DIS%d", gaia_top_dir, d);
+    Utils::fred_make_directory(gaia_dis_dir);
+
+    // create directories for specific output variables
+    sprintf(gaia_dir, "%s/I", gaia_dis_dir);
+    Utils::fred_make_directory(gaia_dir);
+    sprintf(gaia_dir, "%s/Is", gaia_dis_dir);
+    Utils::fred_make_directory(gaia_dir);
+    sprintf(gaia_dir, "%s/C", gaia_dis_dir);
+    Utils::fred_make_directory(gaia_dir);
+    sprintf(gaia_dir, "%s/Cs", gaia_dis_dir);
+    Utils::fred_make_directory(gaia_dir);
+  }
 }
 
 void Small_Grid::print_gaia_data(char * directory, int run, int day) {
-  char gaiafile[FRED_STRING_SIZE];
-  sprintf(gaiafile, "%s/GAIA.%d/day-%d-inf.txt", directory, run, day);
-  FILE *fp = fopen(gaiafile, "w");
+  for (int disease_id = 0; disease_id < Global::Diseases; disease_id++) {
+    char dir[FRED_STRING_SIZE];
+    sprintf(dir, "%s/GAIA/RUN%d", directory, run);
+    print_output_data(dir, disease_id, Global::OUTPUT_I, (char *) "I", day);
+    print_output_data(dir, disease_id, Global::OUTPUT_Is, (char *)"Is", day);
+    print_output_data(dir, disease_id, Global::OUTPUT_C, (char *)"C", day);
+    print_output_data(dir, disease_id, Global::OUTPUT_Cs, (char *)"Cs", day);
+  }
+}
+
+void Small_Grid::print_output_data(char * dir, int disease_id, int output_code, char * output_str, int day) {
+  Global::Places.get_cell_data_from_households(disease_id, output_code);
+  char filename[FRED_STRING_SIZE];
+  sprintf(filename, "%s/DIS%d/%s/day-%d.txt", dir, disease_id, output_str, day);
+  FILE *fp = fopen(filename, "w");
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       Small_Cell * cell = (Small_Cell *) &grid[i][j];

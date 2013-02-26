@@ -40,6 +40,7 @@ using namespace std;
 #include "Geo_Utils.h"
 
 class Cell;
+class Small_Cell;
 class Person;
 
 
@@ -143,8 +144,6 @@ public:
    * containing infectious and symptomatics will be cleared.
    */
   virtual void update(int day);
-
-  virtual void report(int day);
 
   /**
    * Display the information for a given disease.
@@ -399,6 +398,9 @@ public:
    */
   void set_grid_cell(Cell *p) { grid_cell = p; }
   
+  int get_output_count(int disease_id, int output_code);
+  Small_Cell * get_small_grid_cell();
+
   Place * select_neighborhood(double community_prob, double community_distance, double local_prob);
 
   Place * select_new_neighborhood(double community_prob, double community_distance, double local_prob, double random);

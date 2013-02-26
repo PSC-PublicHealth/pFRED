@@ -34,9 +34,7 @@ public:
   void quality_control(char * directory);
 
   // Specific to Small_Cell grid:
-
   void update(int day);
-
   void initialize_gaia_data(char * directory, int run);
   void print_gaia_data(char * directory, int run, int day);
 
@@ -45,6 +43,7 @@ protected:
   Large_Grid * large_grid;
 
   // Specific to Small_Cell grid:
+  void print_output_data(char * dir, int disease_id, int output_code, char * output_str, int day);
 };
 
 #endif // _FRED_SMALL_GRID_H

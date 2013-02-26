@@ -192,8 +192,6 @@ public:
 
   int gq_get_room_size() { return 3; }
 
-  virtual void report(int day);
-
 private:
 
   static double * Household_contacts_per_day;

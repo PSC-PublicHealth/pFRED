@@ -38,6 +38,7 @@
 #include "Large_Grid.h"
 #include "Large_Cell.h"
 #include "Small_Grid.h"
+#include "Small_Cell.h"
 #include "Geo_Utils.h"
 #include "Travel.h"
 #include "Seasonality.h"
@@ -567,18 +568,6 @@ void Place_List::update(int day) {
   FRED_STATUS(1, "update places finished\n", "");
 }
 
-void Place_List::report(int day) {
-
-  FRED_STATUS(1, "report places entered\n","");
-
-  int number_places = places.size();
-  for ( int p = 0; p < number_places; ++p ) {
-    places[ p ]->report( day );
-  }
-
-  FRED_STATUS(1, "report places finished\n", "");
-}
-
 Place * Place_List::get_place_from_label(char *s) const {
   if (strcmp(s, "-1") == 0) return NULL;
   string str;
@@ -789,9 +778,23 @@ void Place_List::end_of_run() {
 }
 
 
- void Place_List::delete_place_label_map() {
-   if ( place_label_map ) {
-     delete place_label_map;
-     place_label_map = NULL;
-   }
- }
+void Place_List::delete_place_label_map() {
+  if ( place_label_map ) {
+    delete place_label_map;
+    place_label_map = NULL;
+  }
+}
+
+void Place_List::get_cell_data(int disease_id, char place_type, int output_code) {
+  int number_places = (int) places.size();
+  for (int p = 0; p < number_places; p++) {
+    Place * place = places[p];
+    if (place->get_type() == place_type) {
+      int count = place->get_output_count(disease_id, output_code);
+      int popsize = place->get_size();
+      Small_Cell * cell = place->get_small_grid_cell();
+      cell->update_cell_count(count, popsize);
+    }
+  }
+}
+

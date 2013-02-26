@@ -98,7 +98,7 @@ void Utils::fred_warning(const char* format, ...){
   fflush(stdout);
 }
 
-void Utils::fred_open_output_files(char * directory, int run, mode_t mode){
+void Utils::fred_open_output_files(char * directory, int run){
   char filename[FRED_STRING_SIZE];
 
   // ErrorLog file is created at the first warning or error
@@ -168,14 +168,19 @@ void Utils::fred_open_output_files(char * directory, int run, mode_t mode){
     }
   }
 
-  // create GAIA data directory
-  char gaia_directory[FRED_STRING_SIZE];
-  sprintf(gaia_directory, "%s/GAIA.%d", directory, run);
-  if (0!=mkdir(gaia_directory, mode) && EEXIST!=errno) // make it
-    Utils::fred_abort("mkdir(gaia_directory) failed with %d\n",errno); // or die
-
   return;
 }
+
+void Utils::fred_make_directory(char * directory) {
+  mode_t mask;        // the user's current umask
+  mode_t mode = 0777; // as a start
+  mask = umask(0); // get the current mask, which reads and sets...
+  umask(mask);     // so now we have to put it back
+  mode ^= mask;    // apply the user's existing umask
+  if (0!=mkdir(directory, mode) && EEXIST!=errno) // make it
+    Utils::fred_abort("mkdir(%s) failed with %d\n", directory, errno); // or die
+}
+
 
 void Utils::fred_end(void){
   // This is a function that cleans up FRED and exits

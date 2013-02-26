@@ -99,16 +99,10 @@ int main(int argc, char* argv[]) {
   }
 
   // create the output directory, if necessary
-  mode_t mask;        // the user's current umask
-  mode_t mode = 0777; // as a start
-  mask = umask(0); // get the current mask, which reads and sets...
-  umask(mask);     // so now we have to put it back
-  mode ^= mask;    // apply the user's existing umask
-  if (0!=mkdir(directory, mode) && EEXIST!=errno) // make it
-    Utils::fred_abort("mkdir(Output_directory) failed with %d\n",errno); // or die
+  Utils::fred_make_directory(directory);
 
   // open output files with global file pointers
-  Utils::fred_open_output_files(directory, run, mode);
+  Utils::fred_open_output_files(directory, run);
 
   // initialize RNG
   INIT_RANDOM(Global::Seed);
@@ -225,7 +219,7 @@ int main(int argc, char* argv[]) {
   }
 
   // initialize GAIA data if desired
-  if (Global::Print_GAIA_Data) {
+  if (Global::Print_GAIA_Data && run == 1) {
     Global::Small_Cells->initialize_gaia_data(directory, run);
   }
 
@@ -300,9 +294,9 @@ int main(int argc, char* argv[]) {
       Global::Pop.print(1, day);
 
     // print GAIA data if desired
-    if (Global::Print_GAIA_Data) {
-      Global::Places.report(day);
+    if (Global::Print_GAIA_Data && run == 1) {
       Global::Small_Cells->print_gaia_data(directory, run, day);
+      Utils::fred_print_lap_time("day %d print_gaia_data", day);
     }
 
     #pragma omp parallel sections
