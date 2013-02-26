@@ -160,7 +160,7 @@ void Small_Grid::initialize_gaia_data(char * directory, int run) {
 
   // create GAIA setup file
   char gaiafile[FRED_STRING_SIZE];
-  sprintf(gaiafile, "%s/setup.txt", gaia_top_dir);
+  sprintf(gaiafile, "%s/grid.txt", gaia_top_dir);
   FILE *fp = fopen(gaiafile, "w");
   fprintf(fp, "rows = %d\n", rows);
   fprintf(fp, "cols = %d\n", rows);
