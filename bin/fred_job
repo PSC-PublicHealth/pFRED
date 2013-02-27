@@ -389,10 +389,8 @@ else {
 }
 
 # gzip GAIA files if they exists
-for my $r ($start_run..$end_run) {
-  if (-d "$out/GAIA.$r") {
-    system "cd $out; tar czf gaia-$r.tgz GAIA.$r";
-  }
+if (-d "$out/GAIA") {
+  system "cd $out; tar czf gaia.tgz GAIA";
 }
 
 # gzip files to save space
