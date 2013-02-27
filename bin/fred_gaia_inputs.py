@@ -473,7 +473,7 @@ if __name__ == '__main__':
                     print "Completed writing GAIA file for %s"%(str(infections_file_key))
                     print "Creating PlotInfo for %s"%(str(infections_file_key))
                 plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_pop_file,gaia_style_inc_file],False,
-                                    "gif","mpg",None,None,-1.0,-1.0,
+                                    "gif","mov",None,None,-1.0,-1.0,
                                     0,1000,False,None,42.0,-1.0,"255.255.255.255",None,2.0,fred_title,None,opts.debug)
                 if opts.debug:
                     print "Completed PlotInfo for %s"%(str(infections_file_key))
