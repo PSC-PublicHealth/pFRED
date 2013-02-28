@@ -64,7 +64,7 @@ public:
 
   ~Place_List();
 
-  void read_all_places( const Utils::Tokens & Demes );
+  void read_all_places( const std::vector< Utils::Tokens > & Demes );
   void read_places( const char * pop_dir, const char * pop_id,
       unsigned char deme_id, InitSetT & pids );
 

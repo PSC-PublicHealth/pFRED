@@ -104,7 +104,7 @@
 // FRED_WARNING and FRED_CONDITIONAL_WARNING print to both stdout and the Global::ErrorLogfp using Utils::fred_warning
 #ifdef FREDWARNING
 #define FRED_WARNING(format, ...){\
-  Utils::fred_warning("FRED_WARNING: <%s, LINE:%d> " format, __FILE__, __LINE__, ## __VA_ARGS__);\
+  Utils::fred_warning("<%s, LINE:%d> " format, __FILE__, __LINE__, ## __VA_ARGS__);\
 }
 
 #else
@@ -115,7 +115,7 @@
 #ifdef FREDWARNING
 #define FRED_CONDITIONAL_WARNING(condition, format, ...){\
   if (condition) {\
-    Utils::fred_warning("FRED_CONDITIONAL_WARNING: <%s, LINE:%d> " format, __FILE__, __LINE__, ## __VA_ARGS__);\
+    Utils::fred_warning("<%s, LINE:%d> " format, __FILE__, __LINE__, ## __VA_ARGS__);\
   }\
 }
 

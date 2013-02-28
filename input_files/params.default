@@ -79,6 +79,8 @@ output_population_date_match = 01-01-*
 synthetic_population_directory = $FRED_HOME/populations
 synthetic_population_id = 2005_2009_ver2_42003
 
+num_demes = 1
+
 # If a city is named it overrides the synthetic_population_id parameter.
 # The city format is "name state_abbrevation", such as:
 # city = Pittsburgh PA

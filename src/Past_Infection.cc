@@ -27,9 +27,6 @@ Past_Infection::Past_Infection( int _strain_id, int _recovery_date, int _age_at_
   strain_id = _strain_id;
   recovery_date = _recovery_date;
   age_at_exposure = _age_at_exposure;
-  if ( Global::Report_Immunity ) {
-    report();
-  }
 }
 
 int Past_Infection::get_strain() {
@@ -37,7 +34,7 @@ int Past_Infection::get_strain() {
 }
 
 void Past_Infection::report () {
-  fprintf( Global::Immunityfp, "%d %d %d\n",
+  printf( "DEBUG %d %d %d\n",
       recovery_date, age_at_exposure, strain_id );
 }
 

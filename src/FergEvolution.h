@@ -107,17 +107,20 @@ struct FergEvolution_Report : public Transaction {
       if ( incidence ) delete[] incidence;
       if ( mutated ) delete[] mutated;
     }
-    void add_incidence( int infector_cell, int infectee_cell, int day, int increment = 1 ) {
-      incidence[ infectee_cell + infector_cell ][ day ] += increment;
+    void add_incidence( int infector_cell, int infectee_cell, int day, int increment ) {
+      incidence[ ( n * infectee_cell ) + infector_cell ][ day ] += increment;
+    }
+    int get_incidence( int infector_cell, int infectee_cell, int day ) const {
+      return incidence[ ( n * infectee_cell ) + infector_cell ][ day ];
     }
     int get_incidence( int incident_cell, int day ) const {
       int cell_incidence = 0;
       for ( int c = 0; c < n; ++c ) {
-        cell_incidence += incidence[ incident_cell + c ][ day ];
+        cell_incidence += incidence[ ( n * incident_cell ) + c ][ day ];
       }
       return cell_incidence;
     }
-    void add_mutated( int cell, int day, int increment = 1 ) {
+    void add_mutated( int cell, int day, int increment ) {
       mutated[ cell ][ day ] += increment;
     }
     int get_mutated( int cell, int day ) const {
@@ -278,7 +281,9 @@ struct FergEvolution_Report : public Transaction {
         for ( int d = 0; d <= other.days_index; ++d ) {
           assert( days[ d ] == -1 || days[ d ] == other.days[ d ] );
           days[ d ] = other.days[ d ];
-          daily_strain_map[ strain ].add_incidence( c, d, daily.get_incidence( c, d ) );
+          for ( int cc = 0; cc < num_clusters; ++cc ) {
+            daily_strain_map[ strain ].add_incidence( c, cc, d, daily.get_incidence( c, cc, d ) );
+          }
           daily_strain_map[ strain ].add_mutated( c, d, daily.get_mutated( c, d ) );
  
           if ( other_extended_daily_iter != other.extended_daily_strain_map.end() ) {
@@ -353,7 +358,7 @@ struct FergEvolution_Report : public Transaction {
     if ( daily_strain_map.find( strain ) == daily_strain_map.end() ) {
       daily_strain_map[ strain ].init( num_clusters );
     }
-    daily_strain_map[ strain ].add_incidence( infector_cell, infectee_cell, days_index ); 
+    daily_strain_map[ strain ].add_incidence( infector_cell, infectee_cell, days_index, 1 ); 
   }
   // Report mutated strain
   void report_mutation( int cluster, int child_strain, int parent_strain, bool novel ) {
@@ -361,7 +366,7 @@ struct FergEvolution_Report : public Transaction {
     if ( daily_strain_map.find( child_strain ) == daily_strain_map.end() ) {
       daily_strain_map[ child_strain ].init( num_clusters );
     }
-    daily_strain_map[ child_strain ].add_mutated( cluster, days_index ); 
+    daily_strain_map[ child_strain ].add_mutated( cluster, days_index, 1 ); 
     // report novel mutations
     if ( novel ) {
       daily_novel_mutations[ cluster ][ days_index ].insert(
@@ -638,6 +643,10 @@ class FergEvolution : public MSEvolution {
     int get_bin( int val ) { return ( val | bin_width ); }
     void finalize();
   };
+
+ private:
+
+  void merge_reports_by_parallel_reduction( FergEvolution_Report * merged_report );
 
  protected:
   

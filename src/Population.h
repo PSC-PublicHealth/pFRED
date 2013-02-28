@@ -266,7 +266,7 @@ class Population {
     template< typename Functor >
       void parallel_not_masked_apply( fred::Pop_Masks m, Functor & f ) { blq.parallel_not_masked_apply( m, f ); }
 
-    const Utils::Tokens & get_demes() { return Demes; }
+    const std::vector< Utils::Tokens > & get_demes() { return Demes; }
     /* TODO rewrite
        template< typename MaskType >
        struct masked_iterator : bloque< Person, fred::Pop_Masks >::masked_iterator< MaskType > { };
@@ -332,7 +332,7 @@ class Population {
         return hh_pop_file_col_index;
     }
 
-    Utils::Tokens Demes;
+    std::vector< Utils::Tokens > Demes;
 
     void parse_lines_from_stream( std::istream & stream, bool is_group_quarters_pop );
 
@@ -379,6 +379,11 @@ class Population {
      */
     void write_population_output_file(int day);
 
+    // functor for behavior setup
+    struct Setup_Population_Behavior {
+      void operator() ( Person & p );
+    };
+
     // functors for demographics updates 
     struct Update_Population_Births {
       int day;
@@ -403,6 +408,20 @@ class Population {
     struct Update_Population_Health {
       int day;
       Update_Population_Health( int d ) : day( d ) { }
+      void operator() ( Person & p );
+    };
+
+    // functor for household mobility
+    struct Update_Population_Household_Mobility {
+      int day;
+      Update_Population_Household_Mobility( int d ) : day( d ) { }
+      void operator() ( Person & p );
+    };
+
+    // functor for prepare activities
+    struct Prepare_Population_Activities {
+      int day;
+      Prepare_Population_Activities( int d ) : day( d ) { }
       void operator() ( Person & p );
     };
 

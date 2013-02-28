@@ -95,6 +95,44 @@ void FergEvolution::initialize_reporting_grid( Large_Grid * _grid ) {
   initialize_reignitors( num_clusters );
 }
 
+void FergEvolution::merge_reports_by_parallel_reduction(
+    FergEvolution_Report * merged_report ) {
+
+  FRED_VERBOSE( 1, "Merging weekly reports by parallel reduction:\n", "" );
+
+  std::vector< int > space( report.size() );
+  
+  for ( int i = 0; i < report.size(); ++i ) {
+    space[ i ] = i;
+  }
+
+  #pragma omp parallel
+  while ( space.size() > 1 ) {
+    int even_size = space.size() - ( space.size() & 1 );
+    #pragma omp single
+    FRED_VERBOSE( 2, "%s %d %s\n",
+        "There are", (int) space.size(),
+        "reports remaining in the reduction space." )
+    #pragma omp for ordered
+    for ( int i = even_size - 1; i > 0; i -= 2 ) {
+      FRED_VERBOSE( 2, "... Merging report %4d   into report %4d ...\n",
+          space[ i ], space[ i - 1 ] );
+      #pragma omp ordered
+      {
+        report( space[ i ] ).clear();
+        space.erase( space.begin() + i );
+      }
+    }
+  #pragma omp barrier
+  }
+
+  assert( space.size() == 1 );
+  merged_report->merge( report( 0 ) );
+  report( 0 ).clear();
+  FRED_VERBOSE( 1, "%s %s\n", "Finished merging weekly reports.",
+      "Merged report is ready for submission to database." );
+}
+
 
 FergEvolution::~FergEvolution() {
   clear_reignitors();
@@ -301,10 +339,10 @@ void FergEvolution::update( int day ) {
   if ( report( 0 ).get_day() == FergEvolution_Report::window_size - 1 ) {
     weekly_report = new FergEvolution_Report( num_clusters );
     weekly_report->set_disease( disease );
-    for ( int t = 0; t < report.size(); ++t ) {
-      weekly_report->merge( report( t ) );
-      report( t ).clear();
-    }
+    // all thread-local reports in the report State will be merged into
+    // the weekly_report pointer given as argument; reports are automatically
+    // cleared following following merge
+    merge_reports_by_parallel_reduction( weekly_report );
     Global::db.enqueue_transaction( weekly_report );
   }
   else {
@@ -537,12 +575,13 @@ void FergEvolution::Ferg_Evolution_Init_Past_Infections::operator() ( Person & p
   int age = person.get_age_in_days();
   int binned_age = get_bin( age );
   Hist_Itr_Type hist_itr; 
-  num_infections_seeded = 0;
   int num_in_bin = host_infection_histories.count( binned_age );
   if ( num_in_bin > 0 ) {
     hist_itr = host_infection_histories.lower_bound( binned_age );
     // randomly select one of the histories in the bin:
-    std::advance( hist_itr, IRAND(0,num_in_bin) );
+    int adv = IRAND( 0, num_in_bin - 1 );
+    //printf( "num_in_bin %d advance by %d\n", num_in_bin, adv );
+    std::advance( hist_itr, adv );
     std::vector< Past_Infection > * history = (*hist_itr).second;
     if ( history != NULL ) {
       std::vector< Past_Infection >::iterator inf_itr = history->begin();
@@ -562,6 +601,10 @@ void FergEvolution::Ferg_Evolution_Init_Past_Infections::operator() ( Person & p
             binned_age, strain_id, recovery_date, age_at_exp );
         }
         else {
+          if ( recovery_date > 0 ) {
+            recovery_date = 0;
+            age_at_exp = age;
+          }
           // infection not active; store as past infection
           person.add_past_infection( strain_id, recovery_date, age_at_exp, disease );
           // if running in parallel, avoid printing or performace suffers

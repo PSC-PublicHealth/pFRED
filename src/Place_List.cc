@@ -159,7 +159,7 @@ void Place_List::get_parameters() {
   }
 }
 
-void Place_List::read_all_places( const Utils::Tokens & Demes ) {
+void Place_List::read_all_places( const std::vector< Utils::Tokens > & Demes ) {
 
   // store the number of demes as member variable
   set_number_of_demes( Demes.size() );
@@ -186,11 +186,18 @@ void Place_List::read_all_places( const Utils::Tokens & Demes ) {
   
   // need to have at least one deme
   assert( Demes.size() > 0 );
+  assert( Demes.size() <= std::numeric_limits< unsigned char >::max() );
+
+  // and each deme must contain at least one synthetic population id
   for ( int d = 0; d < Demes.size(); ++d ) { 
-    FRED_STATUS( 0, "Reading Places for Deme %d: %s\n", d, Demes[ d ] );
-    // <----------------------------------------------------------------------- Call read_places to actually read the population files
-    assert( d >= 0 && d <= std::numeric_limits< unsigned char >::max() );
-    read_places( pop_dir, Demes[ d ], d, pids );
+    FRED_STATUS( 0, "Reading Places for Deme %d:\n", d );
+    assert( Demes[ d ].size() > 0 );
+    for ( int i = 0; i < Demes[ d ].size(); ++i ) {
+      // o---------------------------------------- Call read_places to actually
+      // |                                         read the population files
+      // V
+      read_places( pop_dir, Demes[ d ][ i ], d, pids );
+    }
   }
 
   // HOUSEHOLD in-place allocator

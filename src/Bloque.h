@@ -445,20 +445,37 @@ public:
     return blockVector[ pos.block ][ pos.slot ];
   }
 
-  ObjectType & get_item_by_index( size_t itemIndex ) {
+  ObjectType & get_item_reference_by_index( size_t itemIndex ) {
     size_t block = itemIndex / bitsPerBlock;
     size_t slot = itemIndex % bitsPerBlock;
+    assert( is_valid_item( block, slot ) );
     return blockVector[ block ][ slot ];
   }
 
+  ObjectType * get_item_pointer_by_index( size_t itemIndex ) {
+    size_t block = itemIndex / bitsPerBlock;
+    size_t slot = itemIndex % bitsPerBlock;
+    if ( is_valid_item( block, slot ) ) {
+      return &( blockVector[ block ][ slot ] );
+    }
+    else { return NULL; }
+  }
 
-
+  bool is_valid_index( size_t itemIndex ) {
+    size_t block = itemIndex / bitsPerBlock;
+    size_t slot = itemIndex % bitsPerBlock;
+    return is_valid_item( block, slot );
+  }
 /* ****************************************************************
  * private methods ************************************************
  * ****************************************************************
  */
 
 private:
+
+  bool is_valid_item( size_t block, size_t slot ) {
+    return ( ( defaultMask[ block ][ slot / registerWidth ] ) & ( (BitType) 1 << ( slot % registerWidth ) ) );
+  }
 
   void init() {
     numItems = 0;

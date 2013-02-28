@@ -19,6 +19,8 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <limits>
+
 
 #include "Population.h"
 #include "Params.h"
@@ -87,11 +89,11 @@ void Population::initialize_masks() {
 // index and id are not the same thing!
 
 Person * Population::get_person_by_index( int _index ) {
-  return &( blq.get_item_by_index( _index ) );
+  return blq.get_item_pointer_by_index( _index );
 }
 
 //Person * Population::get_person_by_id( int _id ) {
-//  return &( blq.get_item_by_index( id_to_index[ _id ] ) ); 
+//  return blq.get_item_pointer_by_index( id_to_index[ _id ] ); 
 //}
 
 Population::~Population() {
@@ -291,7 +293,7 @@ void Population::setup() {
     int count = 0;
     for ( int p = 0; p < pop_size; p++ ){
       Disease * d = &disease[ 0 ];
-      if ( blq.get_item_by_index( p ).get_health()->is_immune(d) ) { count++; }
+      if ( blq.get_item_reference_by_index( p ).get_health()->is_immune(d) ) { count++; }
     }
     FRED_STATUS(0, "number of residually immune people = %d\n", count);
   }
@@ -431,20 +433,65 @@ void Population::parse_lines_from_stream( std::istream & stream,
 void Population::split_synthetic_populations_by_deme() {
   using namespace std;
   using namespace Utils;
+  const char delim = ' ';
+
   FRED_STATUS( 0, "Validating synthetic population identifiers before reading.\n", "" );
   const char * pop_dir = Global::Synthetic_population_directory;
   FRED_STATUS( 0, "Using population directory: %s\n", pop_dir );
-  const char delim = ' ';
-  Demes = split_by_delim( Global::Synthetic_population_id, delim );
-  FRED_STATUS( 0, "Split ID string \"%s\" into %d %s using delimiter: \'%c\'\n",
-      Global::Synthetic_population_id, int( Demes.size() ),
-      Demes.size() > 1 ? "tokens" : "token", delim ); 
-  FRED_STATUS( 0, "FRED defines a \"deme\" to be a local population %s\n%s\n",
+  FRED_STATUS( 0, "FRED defines a \"deme\" to be a local population %s\n%s%s\n",
       "of people whose households are contained in the same bounded geographic region.",
-      "There is a one-to-one mapping between Synthetic Population ID and Deme ID." );
-  assert( Demes.size() > 0 );
-  for ( int d = 0; d < Demes.size(); ++d ) { 
-    FRED_STATUS( 0, "Deme %d == %s\n", d, Demes[ d ] );
+      "No Synthetic Population ID may have more than one Deme ID, but a Deme ID may ",
+      "contain many Synthetic Population IDs." );
+
+  int param_num_demes = 1;
+  Params::get_param_from_string( "num_demes", &param_num_demes );
+  assert( param_num_demes > 0 );
+  Demes.clear();
+
+  std::set< std::string > pop_id_set;
+
+  for ( int d = 0; d < param_num_demes; ++d ) { 
+    // allow up to 195 (county) population ids per deme
+    // TODO set this limit in param file / Global.h.
+    char pop_id_string[ 4096 ];
+    std::stringstream ss;
+    ss << "synthetic_population_id[" << d << "]";
+
+    if ( Params::does_param_exist( ss.str() ) ) {
+      Params::get_indexed_param( "synthetic_population_id", d, pop_id_string );
+    }
+    else {
+      if ( d == 0 ) {
+        strcpy( pop_id_string, Global::Synthetic_population_id );
+      }
+      else {
+        Utils::fred_abort( "Help! %d %s %d %s %d %s\n",
+            param_num_demes, "demes were requested ( param_num_demes = ",
+            param_num_demes, " ), but indexed paramater synthetic_population_id[",
+            d,"] was not found!" );
+      }
+    }
+    Demes.push_back( split_by_delim( pop_id_string, delim ) );
+    FRED_STATUS( 0, "Split ID string \"%s\" into %d %s using delimiter: \'%c\'\n",
+        pop_id_string, int( Demes[ d ].size() ),
+        Demes[ d ].size() > 1 ? "tokens" : "token", delim );
+    assert( Demes.size() > 0 );
+    // only allow up to 255 demes
+    assert( Demes.size() <= std::numeric_limits< unsigned char >::max() );
+    FRED_STATUS( 0, "Deme %d comprises %d synthetic population id%s:\n",
+        d, Demes[ d ].size(), Demes[ d ].size() > 1 ? "s" : "" );
+    assert( Demes[ d ].size() > 0 );
+    for ( int i = 0; i < Demes[ d ].size(); ++i ) {
+      FRED_CONDITIONAL_WARNING(
+          pop_id_set.find( Demes[ d ][ i ] ) != pop_id_set.end(),
+          "%s %s %s %s\n", "Population ID ", Demes[ d ][ i ],
+          "was specified more than once!",
+          "Population IDs must be unique across all Demes!" );
+      assert( pop_id_set.find( Demes[ d ][ i ] ) == pop_id_set.end() );
+      pop_id_set.insert( Demes[ d ][ i ] );
+      FRED_STATUS( 0, "--> Deme %d, Synth. Pop. ID %d: %s\n",
+          d, i, Demes[ d ][ i ] );
+    }
   }
 }
 
@@ -454,18 +501,32 @@ void Population::read_all_populations() {
   const char * pop_dir = Global::Synthetic_population_directory;
   assert( Demes.size() > 0 );
   for ( int d = 0; d < Demes.size(); ++d ) { 
-    FRED_STATUS( 0, "Loading population for Deme %d: %s\n", d, Demes[ d ] );
-    read_population( pop_dir, Demes[ d ], "people" );
-    if ( Global::Enable_Group_Quarters ) {
-      FRED_STATUS( 0, "Loading group quarters population for Deme %d: %s\n",
-          d, Demes[ d ] );
-      read_population( pop_dir, Demes[ d ], "gq_people" );
+    FRED_STATUS( 0, "Loading population for Deme %d:\n", d );
+    assert( Demes[ d ].size() > 0 );
+    for ( int i = 0; i < Demes[ d ].size(); ++i ) {
+      FRED_STATUS( 0 , "Loading population %d for Deme %d: %s\n",
+          i, d, Demes[ d ][ i ] );
+      // o---------------------------------------- Call read_population to actually
+      // |                                         read the population files
+      // V
+      read_population( pop_dir, Demes[ d ][ i ], "people" );
+      if ( Global::Enable_Group_Quarters ) {
+        FRED_STATUS( 0, "Loading group quarters population %d for Deme %d: %s\n",
+            i, d, Demes[ d ][ i ] );
+        // o---------------------------------------- Call read_population to actually
+        // |                                         read the population files
+        // V
+        read_population( pop_dir, Demes[ d ][ i ], "gq_people" );
+      }
     }
   }
   // select adult to make health decisions
-  for (int p = 0; p < pop_size; p++) {
-    blq.get_item_by_index( p ).setup_behavior(); // TODO use blq.apply for this
-  }
+  Setup_Population_Behavior setup_population_behavior;
+  blq.apply( setup_population_behavior );
+}
+
+void Population::Setup_Population_Behavior::operator() ( Person & p ) {
+  p.setup_behavior();
 }
 
 void Population::read_population( const char * pop_dir, const char * pop_id,
@@ -666,19 +727,16 @@ void Population::update(int day) {
   // update household mobility activity on July 1
   if ( Global::Enable_Mobility
       && Date::match_pattern( Global::Sim_Current_Date, "07-01-*" ) ) {
-
-    for (int p = 0; p < pop_size; p++) {
-      blq.get_item_by_index( p ).update_household_mobility();
-    }
+    Update_Population_Household_Mobility update_household_mobility( day );
+    blq.apply( update_household_mobility );
   }
 
   FRED_VERBOSE(1, "population::update prepare activities day = %d\n", day);
 
   // prepare Activities at start up
-  if (day == 0) {
-    for (int p = 0; p < pop_size; p++) {
-      blq.get_item_by_index( p ).prepare_activities();
-    }
+  if ( day == 0 ) {
+    Prepare_Population_Activities prepare_population_activities( day );
+    blq.apply( prepare_population_activities );
     Activities::before_run();
   }
 
@@ -687,7 +745,6 @@ void Population::update(int day) {
   // update activity profiles on July 1
   if ( Global::Enable_Aging
       && Date::match_pattern( Global::Sim_Current_Date, "07-01-*" ) ) {
-
     Update_Population_Activities update_population_activities( day );
     blq.apply( update_population_activities );
   }
@@ -736,6 +793,14 @@ void Population::Update_Population_Health::operator() ( Person & p ) {
   p.update_health( day );
 }
 
+void Population::Update_Population_Household_Mobility::operator() ( Person & p ) {
+  p.update_household_mobility();
+}
+
+void Population::Prepare_Population_Activities::operator() ( Person & p ) {
+  p.prepare_activities();
+}
+
 void Population::Update_Population_Activities::operator() ( Person & p ) {
   p.update_activity_profile();
 }
@@ -752,7 +817,8 @@ void Population::report(int day) {
   if (Global::Verbose > 0 && Date::match_pattern(Global::Sim_Current_Date, "12-31-*")) {
     // print the statistics on December 31 of each year
     for (int i = 0; i < pop_size; ++i) {
-      Person & pop_i = blq.get_item_by_index( i );
+      if ( !blq.is_valid_index( i ) ) { continue; }
+      Person & pop_i = blq.get_item_reference_by_index( i );
       int age_lookup = pop_i.get_age();
 
       if (age_lookup > Demographics::MAX_AGE)
@@ -809,8 +875,10 @@ void Population::print(int incremental, int day) {
     if (Global::Trace_Headers) fprintf(Global::Tracefp, "# All agents, by ID\n");
     for (int p = 0; p < pop_size; p++) {
       for (int i=0; i<Global::Diseases; i++) {
-        Person & pop_i = blq.get_item_by_index( p );
-        pop_i.print(Global::Tracefp, i);
+        if ( blq.is_valid_index( p ) ) {
+          Person & pop_i = blq.get_item_reference_by_index( p );
+          pop_i.print(Global::Tracefp, i);
+        }
       }
     }
 
@@ -884,7 +952,8 @@ void Population::quality_control() {
 
   // check population
   for (int p = 0; p < pop_size; p++) {
-    Person & pop_i = blq.get_item_by_index( p );
+    if ( !blq.is_valid_index( p ) ) { continue; }
+    Person & pop_i = blq.get_item_reference_by_index( p );
     if (pop_i.get_household() == NULL) {
       fprintf(Global::Statusfp, "Help! Person %d has no home.\n",p);
       pop_i.print(Global::Statusfp, 0);
@@ -899,7 +968,8 @@ void Population::quality_control() {
     // age distribution
     for (int c = 0; c < 20; c++) { count[c] = 0; }
     for (int p = 0; p < pop_size; p++) {
-      Person & pop_i = blq.get_item_by_index( p );
+      if ( !blq.is_valid_index( p ) ) { continue; }
+      Person & pop_i = blq.get_item_reference_by_index( p );
       //int a = pop[p]->get_age();
       int a = pop_i.get_age();
 
@@ -930,7 +1000,8 @@ void Population::quality_control() {
         int rcount[20];
         for (int c = 0; c < 20; c++) { rcount[c] = 0; }
         for (int p = 0; p < pop_size; p++) {
-          Person & pop_i = blq.get_item_by_index( p );
+          if ( !blq.is_valid_index( p ) ) { continue; }
+          Person & pop_i = blq.get_item_reference_by_index( p );
           int a = pop_i.get_age();
           int n = a / 10;
           if(pop_i.get_health()->is_at_risk(dis)==true) {
@@ -975,7 +1046,9 @@ void Population::assign_classrooms() {
     fflush(Global::Statusfp);
   }
   for (int p = 0; p < pop_size; p++){
-    blq.get_item_by_index( p ).assign_classroom();
+    if ( blq.is_valid_index( p ) ) {
+      blq.get_item_reference_by_index( p ).assign_classroom();
+    }
   }
   if (Global::Verbose > 0) {
     fprintf(Global::Statusfp, "assign classrooms finished\n");
@@ -989,7 +1062,9 @@ void Population::assign_offices() {
     fflush(Global::Statusfp);
   }
   for (int p = 0; p < pop_size; p++){
-    blq.get_item_by_index( p ).assign_office();
+    if ( blq.is_valid_index( p ) ) {
+      blq.get_item_reference_by_index( p ).assign_office();
+    }
   }
   if (Global::Verbose > 0) {
     fprintf(Global::Statusfp, "assign offices finished\n");
@@ -1007,7 +1082,8 @@ void Population::get_network_stats(char *directory) {
   FILE *fp = fopen(filename, "w");
   fprintf(fp, "id,age,deg,h,n,s,c,w,o\n");
   for (int p = 0; p < pop_size; p++){
-    Person & pop_i = blq.get_item_by_index( p );
+    if ( !blq.is_valid_index( p ) ) { continue; }
+    Person & pop_i = blq.get_item_reference_by_index( p );
     fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
         pop_i.get_id(),
         pop_i.get_age(),
@@ -1055,7 +1131,8 @@ void Population::print_age_distribution(char * dir, char * date_string, int run)
     count[i] = 0;
   }
   for (int p = 0; p < pop_size; p++){
-    Person & pop_i = blq.get_item_by_index( p );
+    if ( !blq.is_valid_index( p ) ) { continue; }
+    Person & pop_i = blq.get_item_reference_by_index( p );
     int age = pop_i.get_age();
     if (0 <= age && age <= Demographics::MAX_AGE) count[age]++;
     if (age > Demographics::MAX_AGE) count[Demographics::MAX_AGE]++;
@@ -1071,15 +1148,20 @@ void Population::print_age_distribution(char * dir, char * date_string, int run)
 
 Person * Population::select_random_person() {
   int i = IRAND(0,pop_size-1);
-  return &( blq.get_item_by_index(i) );
+  while ( !blq.is_valid_index( i ) ) {
+    i = IRAND(0,pop_size-1);
+  }
+  return blq.get_item_pointer_by_index(i);
 }
 
 Person * Population::select_random_person_by_age(int min_age, int max_age) {
   int i = IRAND(0,pop_size-1);
-  while (blq.get_item_by_index( i ).get_age() < min_age || blq.get_item_by_index( i ).get_age() > max_age) {
+  while ( !blq.is_valid_index( i )
+      || blq.get_item_reference_by_index( i ).get_age() < min_age
+      || blq.get_item_reference_by_index( i ).get_age() > max_age) {
     i = IRAND(0,pop_size-1);
   }
-  return &( blq.get_item_by_index(i) );
+  return blq.get_item_pointer_by_index(i);
 }
 
 void Population::write_population_output_file(int day) {
@@ -1096,8 +1178,10 @@ void Population::write_population_output_file(int day) {
   //  fprintf(fp, "Population for day %d\n", day);
   //  fprintf(fp, "------------------------------------------------------------------\n");
   for (int p = 0; p < pop_size; ++p) {
-    Person & pop_i = blq.get_item_by_index( p );
-    fprintf(fp, "%s\n", pop_i.to_string().c_str());
+    if ( blq.is_valid_index( p ) ) {
+      Person & pop_i = blq.get_item_reference_by_index( p );
+      fprintf(fp, "%s\n", pop_i.to_string().c_str());
+    }
   }
   fflush(fp);
   fclose(fp);
