@@ -188,9 +188,9 @@ void School::apply_global_school_closure_policy(int day, int disease_id) {
       }
     }
     else {
-      // Close schools if the global clinical attack rate has reached the threshold (after a delay)
+      // Close schools if the global symptomatic attack rate has reached the threshold (after a delay)
       Disease * disease = Global::Pop.get_disease(disease_id);
-      if (School::school_closure_threshold <= disease->get_clinical_attack_rate()) {
+      if (School::school_closure_threshold <= disease->get_symptomatic_attack_ratio()) {
 	// the following only happens once
 	School::global_closure_is_active = true;
 	School::global_close_date = day + School::school_closure_delay;
@@ -208,8 +208,8 @@ void School::apply_global_school_closure_policy(int day, int disease_id) {
     if (Global::Verbose > 1) {
       Disease * disease = Global::Pop.get_disease(disease_id);
       printf("School %d day %d ar %5.2f cases = %d / %d (%5.2f) close_date %d open_date %d\n",
-	     id, day, disease->get_clinical_attack_rate(),
-	     get_total_cases(disease_id), N, get_clinical_attack_rate(disease_id), close_date, open_date);
+	     id, day, disease->get_symptomatic_attack_ratio(),
+	     get_total_cases(disease_id), N, get_symptomatic_attack_ratio(disease_id), close_date, open_date);
     }
   }
 }
@@ -223,7 +223,7 @@ void School::apply_individual_school_closure_policy(int day, int disease_id) {
 
   // don't apply any policy before the epdemic reaches a noticeable threshold
   Disease * disease = Global::Pop.get_disease(disease_id);
-  if (disease->get_clinical_attack_rate() < School::school_closure_threshold) {
+  if (disease->get_symptomatic_attack_ratio() < School::school_closure_threshold) {
     return;
   }
 
@@ -248,8 +248,8 @@ void School::apply_individual_school_closure_policy(int day, int disease_id) {
     if (Global::Verbose > 0) {
       Disease * disease = Global::Pop.get_disease(disease_id);
       printf("School %d day %d ar %5.2f cases = %d / %d (%5.2f) close_date %d open_date %d\n",
-	     id, day, disease->get_clinical_attack_rate(),
-	     get_total_cases(disease_id), N, get_clinical_attack_rate(disease_id), close_date, open_date);
+	     id, day, disease->get_symptomatic_attack_ratio(),
+	     get_total_cases(disease_id), N, get_symptomatic_attack_ratio(disease_id), close_date, open_date);
     }
   }
 }

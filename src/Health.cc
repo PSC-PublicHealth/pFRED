@@ -151,7 +151,7 @@ void Health::become_exposed( Person * self, Disease *disease, Transmission & tra
         FRED_STATUS( 1, "EXPOSED person %d to disease %d\n", self->get_id(), disease->get_id() );
       }
     }
-    // count a new incident infection
+    // count a new infection
     self->count_new_infection(self, disease_id);
   }
 }
@@ -491,7 +491,7 @@ void Health::infect( Person * self, Person *infectee, int disease_id, Transmissi
   #pragma omp atomic
   ++( infectee_count[ disease_id ] );
 
-  disease->increment_infectee_count( infection[disease_id]->get_exposure_date() );
+  disease->increment_cohort_infectee_count( infection[disease_id]->get_exposure_date() );
 
   FRED_STATUS( 1, "person %d infected person %d infectees = %d\n",
         self->get_id(), infectee->get_id(), infectee_count[disease_id] );

@@ -471,7 +471,7 @@ public:
    * @param disease_id an integer representation of the disease
    * @return the count of rate of cases per people for a given disease
    */
-  double get_clinical_attack_rate(int disease_id) { return (100.0*total_symptomatic_infections[disease_id])/ (double) N; }
+  double get_symptomatic_attack_ratio(int disease_id) { return (100.0*total_symptomatic_infections[disease_id])/ (double) N; }
   
   /**
    * Get the attack rate = 100 * number of infections thus far divided by the
@@ -480,7 +480,7 @@ public:
    * @param disease_id an integer representation of the disease
    * @return the count of rate of cases per people for a given disease
    */
-  double get_attack_rate(int disease_id) { return(N?(100.0*total_infections[disease_id])/(double)N:0.0); }
+  double get_attack_ratio(int disease_id) { return(N?(100.0*total_infections[disease_id])/(double)N:0.0); }
 
   int get_first_day_infectious() { return first_day_infectious; }
   int get_last_day_infectious() { return last_day_infectious; }

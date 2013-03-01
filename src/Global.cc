@@ -87,6 +87,7 @@ bool Global::Print_Household_Locations = false;
 int Global::Report_Age_Of_Infection = 0;
 bool Global::Report_Place_Of_Infection = false;
 bool Global::Report_Presenteeism = false;
+bool Global::Report_Prevalence = false;
 bool Global::Assign_Teachers = false;
 int Global::Print_GAIA_Data = 0;
 
@@ -204,6 +205,8 @@ void Global::get_global_parameters() {
   Params::get_param_from_string("report_age_of_infection",&Global::Report_Age_Of_Infection);
   Params::get_param_from_string("report_place_of_infection",&temp_int);
   Global::Report_Place_Of_Infection = temp_int;
+  Params::get_param_from_string("report_prevalence",&temp_int);
+  Global::Report_Prevalence = temp_int;
   Params::get_param_from_string("report_presenteeism",&temp_int);
   Global::Report_Presenteeism = temp_int;
 

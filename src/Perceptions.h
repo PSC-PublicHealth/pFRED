@@ -40,17 +40,11 @@ public:
   void update(int day) {}
 
   /**
-   * @return the number of cases of a given disease throughout the Population
-   */
-  int get_global_cases(int disease) {
-    return Global::Pop.get_disease(disease)->get_epidemic()->get_clinical_incidents();
-  }
-
-  /**
    * @return the number of deaths from a given disease throughout the Population
    */
   int get_global_deaths(int disease) {
-    return Global::Pop.get_disease(disease)->get_mortality_rate()*get_global_cases(disease);
+    // return Global::Pop.get_disease(disease)->get_mortality_rate()*get_global_cases(disease);
+    return 0.0;
   }
 
   /**

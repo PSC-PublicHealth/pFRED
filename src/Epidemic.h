@@ -60,24 +60,9 @@ public:
    */
   void get_infectious_places(int day);
 
-  /**
-   * @return the attack rate
-   */
-  double get_attack_rate() { return attack_rate; }
-
   void get_primary_infections(int day);
 
   void transmit(int day);
-
-  int get_clinical_incidents() { return clinical_incidents; }
-
-  int get_total_clinical_incidents() { return total_clinical_incidents; }
-
-  double get_clinical_attack_rate() { return clinical_attack_rate; }
-
-  int get_incident_infections() { return incident_infections; }
-
-  int get_total_incidents() { return total_incidents; }
 
   void become_susceptible(Person *person);
   void become_unsusceptible(Person *person);
@@ -90,14 +75,33 @@ public:
 
   void find_infectious_places(int day, int dis);
   void add_susceptibles_to_infectious_places(int day, int dis);
-  void increment_infectee_count(int day) {
+
+  void increment_cohort_infectee_count(int cohort_day) {
     #pragma omp atomic
-    ++( infectees[ day ] );
+    ++( number_infected_by_cohort[ cohort_day ] );
   }
 
-  int get_num_infectious(); 
   void get_infectious_samples(int num_samples, vector<Person *> &samples);
   void get_infectious_samples(vector<Person *> &samples, double prob);
+
+  int get_susceptible_people() { return susceptible_people; }
+  int get_exposed_people() { return exposed_people; }
+  int get_infectious_people() { return infectious_people; }
+  int get_removed_people() { return removed_people; }
+  int get_immune_people() { return immune_people; }
+  int get_people_becoming_infected_today() { return people_becoming_infected_today; }
+  int get_total_people_ever_infected() { return total_people_ever_infected; }
+  int get_people_becoming_symptomatic_today() { return people_becoming_symptomatic_today; }
+  int get_people_with_current_symptoms() { return people_with_current_symptoms; }
+  double get_RR() { return RR; }
+  double get_attack_ratio() { return attack_ratio; }
+  double get_symptomatic_attack_ratio() { return symptomatic_attack_ratio; }
+
+  int get_incidence() { return incidence; }
+  int get_symptomatic_incidence () { return symptomatic_incidence; }
+  int get_prevalence_count () { return prevalence_count; }
+  double get_prevalence () { return prevalence; }
+  int get_incident_infections() { return get_incidence(); }
 
   // static methods
   static void update(int day);
@@ -123,20 +127,34 @@ private:
   vector <Place *> inf_workplaces;
   vector <Place *> inf_offices;
 
-  double attack_rate;
-  double clinical_attack_rate;
-  int clinical_incidents;
-  int total_clinical_incidents;
-  int incident_infections;
-  int total_incidents;
-  int * new_cases;
-  int * infectees;
-  double RR;    // reproductive rate
-  int cohort_size;
-  int exposed_count;
-  int symptomatic_count;
-  int removed_count;
-  int immune_count;
+  // population health state counters
+  int susceptible_people;
+  int exposed_people;
+  int infectious_people;
+  int removed_people;
+  int immune_people;
+
+  int people_becoming_infected_today;
+  int total_people_ever_infected;
+
+  int people_becoming_symptomatic_today;
+  int people_with_current_symptoms;
+  int total_people_ever_symptomatic;
+
+  // used for computing reproductive rate:
+  double RR;
+  int * daily_cohort_size;
+  int * number_infected_by_cohort;
+
+  // attack ratios
+  double attack_ratio;
+  double symptomatic_attack_ratio;
+
+  // used for maintining quantities from previous day;
+  int incidence;
+  int symptomatic_incidence;
+  int prevalence_count;
+  double prevalence;
 
   //fred::Mutex mutex;
   fred::Spin_Mutex neighborhood_mutex;

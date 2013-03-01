@@ -104,16 +104,16 @@ public:
   double calculate_climate_multiplier( double seasonality_value );
 
   /**
-   * @return the Epidemic's attack rate
-   * @see Epidemic::get_attack_rate()
+   * @return the Epidemic's attack ratio
+   * @see Epidemic::get_attack_ratio()
    */
-  double get_attack_rate();
+  double get_attack_ratio();
 
   /**
-   * @return the Epidemic's clincial attack rate
-   * @see Epidemic::get_attack_rate()
+   * @return the Epidemic's symptomatic attack ratio
+   * @see Epidemic::get_attack_ratio()
    */
-  double get_clinical_attack_rate();
+  double get_symptomatic_attack_ratio();
 
   /**
    * @return a pointer to this Disease's residual_immunity Age_Map
@@ -216,7 +216,7 @@ public:
     epidemic->become_immune( person, susceptible, infectious, symptomatic );
   }
 
-  void increment_infectee_count( int day ) { epidemic->increment_infectee_count( day ); }
+  void increment_cohort_infectee_count( int day ) { epidemic->increment_cohort_infectee_count( day ); }
  
   bool gen_immunity_infection( int age );
   bool gen_immunity_vaccination( int age );

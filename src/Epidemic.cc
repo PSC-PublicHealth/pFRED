@@ -45,10 +45,11 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   id = disease->get_id();
   primary_cases_map = _primary_cases_map;
   primary_cases_map->print(); 
-  new_cases = new int [Global::Days];
-  infectees = new int [Global::Days];
+  daily_cohort_size = new int [Global::Days];
+  number_infected_by_cohort = new int [Global::Days];
   for (int i = 0; i < Global::Days; i++) {
-    new_cases[i] = infectees[i] = 0;
+    daily_cohort_size[i] = 0;
+    number_infected_by_cohort[i] = 0;
   }
 
   inf_households.reserve( Global::Places.get_number_of_places( HOUSEHOLD ) );
@@ -65,16 +66,27 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   inf_workplaces.clear();
   inf_offices.clear();
   
-  attack_rate = 0.0;
-  total_incidents = 0;
-  clinical_incidents = 0;
-  total_clinical_incidents = 0;
-  incident_infections = 0;
-  symptomatic_count = 0;
-  exposed_count = removed_count = immune_count = 0;
-  daily_infections_list.clear();
+  susceptible_people = 0;
+  exposed_people = 0;
+  infectious_people = 0;
+  removed_people = 0;
+  immune_people = 0;
+
+  people_becoming_infected_today = 0;
+  total_people_ever_infected = 0;
+
+  people_becoming_symptomatic_today = 0;
+  people_with_current_symptoms = 0;
+  total_people_ever_symptomatic = 0;
+
+  attack_ratio = 0.0;
+  symptomatic_attack_ratio = 0.0;
+
+  incidence = 0;
+  prevalence = 0.0;
 
   place_person_list_reserve_size = 1;
+  daily_infections_list.clear();
 }
 
 Epidemic::~Epidemic() {
@@ -99,9 +111,10 @@ void Epidemic::become_unsusceptible(Person *person) {
 
 void Epidemic::become_exposed(Person *person) {
   #pragma omp atomic
-  ++exposed_count;
+  ++people_becoming_infected_today;
   #pragma omp atomic
-  ++incident_infections;
+  ++exposed_people;
+
   // TODO the daily infections list may end up containing defunct pointers if
   // enable_deaths is in effect (whether or not we are running in parallel mode).
   // Make daily reports and purge list after each report to fix this.
@@ -111,7 +124,7 @@ void Epidemic::become_exposed(Person *person) {
 
 void Epidemic::become_infectious(Person *person) {
   #pragma omp atomic
-  exposed_count--;
+  exposed_people--;
   // operations on bloque (underlying container for population) are thread-safe
   Global::Pop.set_mask_by_index( fred::Infectious, person->get_pop_index() );
 }
@@ -129,9 +142,9 @@ void Epidemic::become_uninfectious(Person *person) {
 
 void Epidemic::become_symptomatic(Person *person) {
   #pragma omp atomic
-  ++symptomatic_count;
+  ++people_with_current_symptoms;
   #pragma omp atomic
-  ++clinical_incidents;
+  ++people_becoming_symptomatic_today;
 }
 
 void Epidemic::become_removed(Person *person, bool susceptible, bool infectious, bool symptomatic) {
@@ -160,10 +173,10 @@ void Epidemic::become_removed(Person *person, bool susceptible, bool infectious,
   }
   if (symptomatic) {
     #pragma omp atomic
-    --( symptomatic_count );
+    --( people_with_current_symptoms );
   }
   #pragma omp atomic
-  ++( removed_count );
+  ++( removed_people );
 }
 
 void Epidemic::become_immune(Person *person, bool susceptible, bool infectious, bool symptomatic) {
@@ -189,71 +202,85 @@ void Epidemic::become_immune(Person *person, bool susceptible, bool infectious, 
           infectious_list\n", person->get_id() );
     }
   }
-#pragma omp atomic
-  ++immune_count;
-
   if (symptomatic) {
-#pragma omp atomic
-    --symptomatic_count;
+    #pragma omp atomic
+    --( people_with_current_symptoms );
   }
-#pragma omp atomic
-  ++removed_count;
+  #pragma omp atomic
+  ++immune_people;
+
+  #pragma omp atomic
+  ++removed_people;
 }
 
 void Epidemic::print_stats(int day) {
   FRED_VERBOSE(1, "epidemic update stats\n","");
 
-  if (day == 0) {
-    N_init = N = disease->get_population()->get_pop_size();
-  }
-  else {
-    N = disease->get_population()->get_pop_size();
-  }
-
-  new_cases[day] = incident_infections;
-  total_incidents += incident_infections;
-  total_clinical_incidents += clinical_incidents;
-  attack_rate = (100.0*total_incidents)/N_init;
-  clinical_attack_rate = (100.0*total_clinical_incidents)/N_init;
+  // set population size, and remember original pop size
+  if (day == 0) { N_init = N = disease->get_population()->get_pop_size(); }
+  else { N = disease->get_population()->get_pop_size(); }
 
   // get reproductive rate for the cohort exposed RR_delay days ago
   // unless RR_delay == 0
+  daily_cohort_size[day] = people_becoming_infected_today;
   RR = 0.0;         // reproductive rate for a fixed cohort of infectors
-  cohort_size = 0;  // size of the cohort exposed on cohort_day
   if (0 < Global::RR_delay && Global::RR_delay <= day) {
     int cohort_day = day - Global::RR_delay;    // exposure day for cohort
-    cohort_size = new_cases[cohort_day];        // size of cohort
+    int cohort_size = daily_cohort_size[cohort_day];        // size of cohort
     if (cohort_size > 0) {
       // compute reproductive rate for this cohort
-      RR = (double)infectees[cohort_day] /(double)cohort_size;
+      RR = (double)number_infected_by_cohort[cohort_day] /(double)cohort_size;
     }
   }
 
-  int susceptible_count = Global::Pop.size( fred::Susceptible ); 
-  int infectious_count = Global::Pop.size( fred::Infectious );
+  susceptible_people = Global::Pop.size( fred::Susceptible ); 
+  infectious_people = Global::Pop.size( fred::Infectious );
 
-  double average_seasonality_multiplier = 1.0;
-  if (Global::Enable_Seasonality) {
-    average_seasonality_multiplier = Global::Clim->get_average_seasonality_multiplier(disease->get_id());
-  }
+  total_people_ever_infected += people_becoming_infected_today;
+  total_people_ever_symptomatic += people_becoming_symptomatic_today;
+
+  attack_ratio = (100.0*total_people_ever_infected)/N_init;
+  symptomatic_attack_ratio = (100.0*total_people_ever_symptomatic)/N_init;
+
+  // preserve these quantities for use during the next day
+  incidence = people_becoming_infected_today;
+  symptomatic_incidence = people_becoming_symptomatic_today;
+  prevalence_count = exposed_people + infectious_people;
+  prevalence = (double) prevalence_count / (double) N;
 
   char buffer[ FRED_STRING_SIZE ];
-  int nchar_used = sprintf(buffer,
-			   "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d I_s %7d R %7d M %7d C %7d CI %7d AR %5.2f CAR %5.2f RR %4.2f N %7d",
-			   day,
-			   Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
-			   Global::Sim_Current_Date->get_day_of_week_string().c_str(), 
-			   Global::Sim_Current_Date->get_epi_week_year(), 
-			   Global::Sim_Current_Date->get_epi_week(),
-			   id, susceptible_count, exposed_count, infectious_count,
-			   symptomatic_count, removed_count, immune_count,
-			   incident_infections, clinical_incidents, attack_rate, 
-			   clinical_attack_rate, RR, N);
+  int nchar_used;
+  if (Global::Report_Prevalence) {
+    nchar_used = sprintf(buffer,
+			 "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d I_s %7d R %7d M %7d P %7d C %7d CI %7d AR %5.2f CAR %5.2f RR %4.2f N %7d",
+			 day, Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
+			 Global::Sim_Current_Date->get_day_of_week_string().c_str(), 
+			 Global::Sim_Current_Date->get_epi_week_year(), 
+			 Global::Sim_Current_Date->get_epi_week(),
+			 id, susceptible_people, exposed_people, infectious_people,
+			 people_with_current_symptoms, removed_people, immune_people,
+			 prevalence_count, incidence, symptomatic_incidence,
+			 attack_ratio, symptomatic_attack_ratio, RR, N);
+  }
+  else {
+    nchar_used = sprintf(buffer,
+			 "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d I_s %7d R %7d M %7d C %7d CI %7d AR %5.2f CAR %5.2f RR %4.2f N %7d",
+			 day, Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
+			 Global::Sim_Current_Date->get_day_of_week_string().c_str(), 
+			 Global::Sim_Current_Date->get_epi_week_year(), 
+			 Global::Sim_Current_Date->get_epi_week(),
+			 id, susceptible_people, exposed_people, infectious_people,
+			 people_with_current_symptoms, removed_people, immune_people,
+			 incidence, symptomatic_incidence,
+			 attack_ratio, symptomatic_attack_ratio, RR, N);
+  }
 
   fprintf( Global::Outfp, "%s", buffer );
   FRED_STATUS(0, "%s", buffer);
 
   if (Global::Enable_Seasonality) {
+    double average_seasonality_multiplier = 1.0;
+    average_seasonality_multiplier = Global::Clim->get_average_seasonality_multiplier(disease->get_id());
     fprintf(Global::Outfp, " SM %2.4f", average_seasonality_multiplier);
     FRED_STATUS(0, " SM %2.4f", average_seasonality_multiplier);
   } 
@@ -290,7 +317,7 @@ void Epidemic::print_stats(int day) {
   }
 
   // prepare for next day
-  incident_infections = clinical_incidents = 0;
+  people_becoming_infected_today = people_becoming_symptomatic_today = 0;
   daily_infections_list.clear();
 }
 
@@ -299,7 +326,7 @@ void::Epidemic::report_age_of_infection(int day) {
   double mean_age = 0.0;
   int count_infections = 0;
   for (int i = 0; i < 21; i++) age_count[i] = 0;
-  for (int i = 0; i < incident_infections; i++) {
+  for (int i = 0; i < people_becoming_infected_today; i++) {
     Person * infectee = daily_infections_list[i];
     int age = infectee->get_age();
     mean_age += age;
@@ -336,7 +363,7 @@ void::Epidemic::report_transmission_by_age_group(int day) {
       age_count[i][j] = 0;
   int group = 1;
   int groups = 100 / group;
-  for (int i = 0; i < incident_infections; i++) {
+  for (int i = 0; i < people_becoming_infected_today; i++) {
     Person * infectee = daily_infections_list[i];
     Person * infector = daily_infections_list[i]->get_infector(0);
     if (infector == NULL) continue;
@@ -366,7 +393,7 @@ void::Epidemic::report_place_of_infection(int day) {
   int C = 0;
   int W = 0;
   int O = 0;
-  for (int i = 0; i < incident_infections; i++) {
+  for (int i = 0; i < people_becoming_infected_today; i++) {
     Person * infectee = daily_infections_list[i];
     char c = infectee->get_infected_place_type(id);
     switch(c) {
@@ -409,7 +436,7 @@ void Epidemic::report_presenteeism(int day) {
     large = Workplace::get_large_workplace_size();
   }
 
-  for (int i = 0; i < incident_infections; i++) {
+  for (int i = 0; i < people_becoming_infected_today; i++) {
     Person * infectee = daily_infections_list[i];
     char c = infectee->get_infected_place_type(id);
     infections_in_pop++;
@@ -718,6 +745,3 @@ void Epidemic::get_infectious_samples(vector<Person *> &samples, double prob = 1
   Global::Pop.parallel_masked_apply( fred::Infectious, sampler );
 }
 
-int Epidemic::get_num_infectious() {
-  return Global::Pop.size( fred::Infectious );
-}

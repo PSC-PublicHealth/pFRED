@@ -231,12 +231,12 @@ int Disease::get_days_symp() {
   return ihm->get_days_symp();
 }
 
-double Disease::get_attack_rate() {
-  return epidemic->get_attack_rate();
+double Disease::get_attack_ratio() {
+  return epidemic->get_attack_ratio();
 }
 
-double Disease::get_clinical_attack_rate() {
-  return epidemic->get_clinical_attack_rate();
+double Disease::get_symptomatic_attack_ratio() {
+  return epidemic->get_symptomatic_attack_ratio();
 }
 
 // static
