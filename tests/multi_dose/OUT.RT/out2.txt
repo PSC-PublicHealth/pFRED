@@ -1,20 +1,20 @@
-Day   0 Date 2012-01-02 Wkday Mon Year 2012 Week  1 Str 0 S 1164779 E     100 I       0 I_s       0 R       0 M       0 C     100 CI       0 AR  0.01 CAR  0.00 RR 0.00 N 1164879
-Day   1 Date 2012-01-03 Wkday Tue Year 2012 Week  1 Str 0 S 1164755 E      50 I      74 I_s      51 R       0 M       0 C      24 CI      51 AR  0.01 CAR  0.00 RR 0.00 N 1164879
-Day   2 Date 2012-01-04 Wkday Wed Year 2012 Week  1 Str 0 S 1164706 E      52 I     121 I_s      85 R       0 M       0 C      49 CI      34 AR  0.01 CAR  0.01 RR 0.00 N 1164879
-Day   3 Date 2012-01-05 Wkday Thu Year 2012 Week  1 Str 0 S 1164617 E     100 I     162 I_s     112 R       0 M       0 C      89 CI      27 AR  0.02 CAR  0.01 RR 0.00 N 1164879
-Day   4 Date 2012-01-06 Wkday Fri Year 2012 Week  1 Str 0 S 1164534 E     102 I     221 I_s     146 R      22 M       0 C      83 CI      50 AR  0.03 CAR  0.01 RR 0.00 N 1164879
-Day   5 Date 2012-01-07 Wkday Sat Year 2012 Week  1 Str 0 S 1164449 E      98 I     267 I_s     184 R      65 M       0 C      85 CI      68 AR  0.04 CAR  0.02 RR 0.00 N 1164879
-Day   6 Date 2012-01-08 Wkday Sun Year 2012 Week  2 Str 0 S 1164374 E      95 I     297 I_s     207 R     113 M       0 C      75 CI      56 AR  0.04 CAR  0.02 RR 0.00 N 1164879
-Day   7 Date 2012-01-09 Wkday Mon Year 2012 Week  2 Str 0 S 1164179 E     209 I     326 I_s     230 R     165 M       0 C     195 CI      56 AR  0.06 CAR  0.03 RR 0.00 N 1164879
-Day   8 Date 2012-01-10 Wkday Tue Year 2012 Week  2 Str 0 S 1163927 E     282 I     424 I_s     300 R     246 M       0 C     252 CI     133 AR  0.08 CAR  0.04 RR 0.00 N 1164879
-Day   9 Date 2012-01-11 Wkday Wed Year 2012 Week  2 Str 0 S 1163578 E     402 I     573 I_s     407 R     326 M       0 C     349 CI     159 AR  0.11 CAR  0.05 RR 0.00 N 1164879
-Day  10 Date 2012-01-12 Wkday Thu Year 2012 Week  2 Str 0 S 1162961 E     676 I     834 I_s     585 R     408 M       0 C     617 CI     234 AR  0.16 CAR  0.07 RR 1.51 N 1164879
-Day  11 Date 2012-01-13 Wkday Fri Year 2012 Week  2 Str 0 S 1162084 E    1007 I    1270 I_s     872 R     518 M       0 C     877 CI     371 AR  0.24 CAR  0.11 RR 1.83 N 1164879
-Day  12 Date 2012-01-14 Wkday Sat Year 2012 Week  2 Str 0 S 1161473 E     788 I    1939 I_s    1321 R     679 M       0 C     611 CI     564 AR  0.29 CAR  0.15 RR 1.76 N 1164879
-Day  13 Date 2012-01-15 Wkday Sun Year 2012 Week  3 Str 0 S 1160740 E     850 I    2382 I_s    1615 R     907 M       0 C     733 CI     442 AR  0.36 CAR  0.19 RR 1.71 N 1164879
-Day  14 Date 2012-01-16 Wkday Mon Year 2012 Week  3 Str 0 S 1159042 E    1838 I    2735 I_s    1857 R    1264 M       0 C    1698 CI     485 AR  0.50 CAR  0.23 RR 1.75 N 1164879
-Day  15 Date 2012-01-17 Wkday Tue Year 2012 Week  3 Str 0 S 1156832 E    2537 I    3665 I_s    2477 R    1845 M       0 C    2210 CI    1024 AR  0.69 CAR  0.32 RR 1.28 N 1164879
-Day  16 Date 2012-01-18 Wkday Wed Year 2012 Week  3 Str 0 S 1153613 E    3621 I    5144 I_s    3496 R    2501 M       0 C    3219 CI    1463 AR  0.97 CAR  0.45 RR 2.05 N 1164879
-Day  17 Date 2012-01-19 Wkday Thu Year 2012 Week  3 Str 0 S 1148891 E    5353 I    7409 I_s    5008 R    3226 M       0 C    4722 CI    2006 AR  1.37 CAR  0.62 RR 2.84 N 1164879
-Day  18 Date 2012-01-20 Wkday Fri Year 2012 Week  3 Str 0 S 1142118 E    7735 I   10892 I_s    7340 R    4134 M       0 C    6773 CI    2947 AR  1.95 CAR  0.87 RR 2.33 N 1164879
-Day  19 Date 2012-01-21 Wkday Sat Year 2012 Week  3 Str 0 S 1137596 E    5948 I   15767 I_s   10624 R    5568 M       0 C    4522 CI    4219 AR  2.34 CAR  1.24 RR 2.22 N 1164879
+Day   0 Date 2012-01-02 Wkday Mon Year 2012 Week  1 Str 0 S 1164779 E     100 I       0 Is       0 R       0 M       0 P     100 C     100 Cs       0 AR  0.01 ARs  0.00 RR 0.00 N 1164879
+Day   1 Date 2012-01-03 Wkday Tue Year 2012 Week  1 Str 0 S 1164755 E      50 I      74 Is      51 R       0 M       0 P     124 C      24 Cs      51 AR  0.01 ARs  0.00 RR 0.00 N 1164879
+Day   2 Date 2012-01-04 Wkday Wed Year 2012 Week  1 Str 0 S 1164706 E      52 I     121 Is      85 R       0 M       0 P     173 C      49 Cs      34 AR  0.01 ARs  0.01 RR 0.00 N 1164879
+Day   3 Date 2012-01-05 Wkday Thu Year 2012 Week  1 Str 0 S 1164617 E     100 I     162 Is     112 R       0 M       0 P     262 C      89 Cs      27 AR  0.02 ARs  0.01 RR 0.00 N 1164879
+Day   4 Date 2012-01-06 Wkday Fri Year 2012 Week  1 Str 0 S 1164534 E     102 I     221 Is     146 R      22 M       0 P     323 C      83 Cs      50 AR  0.03 ARs  0.01 RR 0.00 N 1164879
+Day   5 Date 2012-01-07 Wkday Sat Year 2012 Week  1 Str 0 S 1164449 E      98 I     267 Is     184 R      65 M       0 P     365 C      85 Cs      68 AR  0.04 ARs  0.02 RR 0.00 N 1164879
+Day   6 Date 2012-01-08 Wkday Sun Year 2012 Week  2 Str 0 S 1164374 E      95 I     297 Is     207 R     113 M       0 P     392 C      75 Cs      56 AR  0.04 ARs  0.02 RR 0.00 N 1164879
+Day   7 Date 2012-01-09 Wkday Mon Year 2012 Week  2 Str 0 S 1164179 E     209 I     326 Is     230 R     165 M       0 P     535 C     195 Cs      56 AR  0.06 ARs  0.03 RR 0.00 N 1164879
+Day   8 Date 2012-01-10 Wkday Tue Year 2012 Week  2 Str 0 S 1163927 E     282 I     424 Is     300 R     246 M       0 P     706 C     252 Cs     133 AR  0.08 ARs  0.04 RR 0.00 N 1164879
+Day   9 Date 2012-01-11 Wkday Wed Year 2012 Week  2 Str 0 S 1163578 E     402 I     573 Is     407 R     326 M       0 P     975 C     349 Cs     159 AR  0.11 ARs  0.05 RR 0.00 N 1164879
+Day  10 Date 2012-01-12 Wkday Thu Year 2012 Week  2 Str 0 S 1162961 E     676 I     834 Is     585 R     408 M       0 P    1510 C     617 Cs     234 AR  0.16 ARs  0.07 RR 1.51 N 1164879
+Day  11 Date 2012-01-13 Wkday Fri Year 2012 Week  2 Str 0 S 1162084 E    1007 I    1270 Is     872 R     518 M       0 P    2277 C     877 Cs     371 AR  0.24 ARs  0.11 RR 1.83 N 1164879
+Day  12 Date 2012-01-14 Wkday Sat Year 2012 Week  2 Str 0 S 1161473 E     788 I    1939 Is    1321 R     679 M       0 P    2727 C     611 Cs     564 AR  0.29 ARs  0.15 RR 1.76 N 1164879
+Day  13 Date 2012-01-15 Wkday Sun Year 2012 Week  3 Str 0 S 1160740 E     850 I    2382 Is    1615 R     907 M       0 P    3232 C     733 Cs     442 AR  0.36 ARs  0.19 RR 1.71 N 1164879
+Day  14 Date 2012-01-16 Wkday Mon Year 2012 Week  3 Str 0 S 1159042 E    1838 I    2735 Is    1857 R    1264 M       0 P    4573 C    1698 Cs     485 AR  0.50 ARs  0.23 RR 1.75 N 1164879
+Day  15 Date 2012-01-17 Wkday Tue Year 2012 Week  3 Str 0 S 1156832 E    2537 I    3665 Is    2477 R    1845 M       0 P    6202 C    2210 Cs    1024 AR  0.69 ARs  0.32 RR 1.28 N 1164879
+Day  16 Date 2012-01-18 Wkday Wed Year 2012 Week  3 Str 0 S 1153613 E    3621 I    5144 Is    3496 R    2501 M       0 P    8765 C    3219 Cs    1463 AR  0.97 ARs  0.45 RR 2.05 N 1164879
+Day  17 Date 2012-01-19 Wkday Thu Year 2012 Week  3 Str 0 S 1148891 E    5353 I    7409 Is    5008 R    3226 M       0 P   12762 C    4722 Cs    2006 AR  1.37 ARs  0.62 RR 2.84 N 1164879
+Day  18 Date 2012-01-20 Wkday Fri Year 2012 Week  3 Str 0 S 1142118 E    7735 I   10892 Is    7340 R    4134 M       0 P   18627 C    6773 Cs    2947 AR  1.95 ARs  0.87 RR 2.33 N 1164879
+Day  19 Date 2012-01-21 Wkday Sat Year 2012 Week  3 Str 0 S 1137596 E    5948 I   15767 Is   10624 R    5568 M       0 P   21715 C    4522 Cs    4219 AR  2.34 ARs  1.24 RR 2.22 N 1164879
