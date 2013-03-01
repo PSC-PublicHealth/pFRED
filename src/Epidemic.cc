@@ -252,7 +252,7 @@ void Epidemic::print_stats(int day) {
   int nchar_used;
   if (Global::Report_Prevalence) {
     nchar_used = sprintf(buffer,
-			 "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d I_s %7d R %7d M %7d P %7d C %7d CI %7d AR %5.2f CAR %5.2f RR %4.2f N %7d",
+			 "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d Is %7d R %7d M %7d P %7d C %7d Cs %7d AR %5.2f ARs %5.2f RR %4.2f N %7d",
 			 day, Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
 			 Global::Sim_Current_Date->get_day_of_week_string().c_str(), 
 			 Global::Sim_Current_Date->get_epi_week_year(), 
@@ -264,7 +264,7 @@ void Epidemic::print_stats(int day) {
   }
   else {
     nchar_used = sprintf(buffer,
-			 "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d I_s %7d R %7d M %7d C %7d CI %7d AR %5.2f CAR %5.2f RR %4.2f N %7d",
+			 "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d Is %7d R %7d M %7d C %7d Cs %7d AR %5.2f ARs %5.2f RR %4.2f N %7d",
 			 day, Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
 			 Global::Sim_Current_Date->get_day_of_week_string().c_str(), 
 			 Global::Sim_Current_Date->get_epi_week_year(), 
