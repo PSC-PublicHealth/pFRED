@@ -4,17 +4,18 @@ use warnings;
 use Env;
 use Getopt::Long qw(:config no_ignore_case bundling);
 
-my %titles = ( AR => "Attack Rate",
-	       C => "Total Infections",
-	       CAR => "Clinical Attack Rate",
-	       CI => "Symptomatic Cases",
+my %titles = ( AR => "Attack Ratio",
+	       C => "Incidence",
+	       ARs => "Symptomatic Attack Rate",
+	       Cs => "Symptomatic Incidence",
 	       Cls => "Classroom Transmissions",
 	       E => "Exposed",
 	       H => "Household Transmissions",
 	       I => "Infectious",
-	       I_s => "Symptomatics",
+	       Is => "Symptomatics",
 	       M => "Immune",
 	       N => "Pop Size",
+	       P => "Prevalence",
 	       Off => "Office Transmissions",
 	       R => "Recovered",
 	       RR => "Reproductive Rate",
