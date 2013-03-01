@@ -1,6 +1,6 @@
-FRED started Thu Feb 28 08:58:33 2013
+FRED started Fri Mar  1 17:46:45 2013
 param file = params.test
-fred_open_file: opening file /tmp/FRED/input_files/params.default for reading
+fred_open_file: opening file /Users/gref/FRED/input_files/params.default for reading
 fred_open_file: opening file params.test for reading
 PARAMS: debug = 1
 PARAMS: test = 0
@@ -63,7 +63,7 @@ year = 2012, month = 1, day_of_month = 2
 Date = [2012-01-02]
 seed = 12345601
 
-FRED run 2 started Thu Feb 28 08:58:33 2013
+FRED run 2 started Fri Mar  1 17:46:45 2013
 PARAMS: synthetic_population_directory = $FRED_HOME/populations
 PARAMS: synthetic_population_id = 2005_2009_ver2_42003
 PARAMS: synthetic_population_version = 2005_2009_ver2
@@ -80,9 +80,9 @@ Deme 0 comprises 1 synthetic population id:
 Reading Places for Deme 0:
 read places entered
 POPULATION_FILE: $FRED_HOME/populations/2005_2009_ver2_42003
-fred_open_file: opening file /tmp/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_households.txt for reading
-fred_open_file: opening file /tmp/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_workplaces.txt for reading
-fred_open_file: opening file /tmp/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt for reading
+fred_open_file: opening file /Users/gref/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_households.txt for reading
+fred_open_file: opening file /Users/gref/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_workplaces.txt for reading
+fred_open_file: opening file /Users/gref/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt for reading
 FRED_VERBOSE: <Place_List.cc, LINE:491> READ_SCHOOL: S421917000400 S 40.424461 -79.992722 name |GRANDVIEW EL SCH|
 FRED_VERBOSE: <Place_List.cc, LINE:491> READ_SCHOOL: S01905916 S 40.343613 -80.033813 name |HILLCREST CHRISTIAN ACADEMY|
 FRED_VERBOSE: <Place_List.cc, LINE:491> READ_SCHOOL: S01194139 S 40.287746 -80.025528 name |ST JOAN OF ARC SCHOOL|
@@ -931,7 +931,7 @@ disease 0 setup finished
 Loading population for Deme 0:
 Loading population 0 for Deme 0: 2005_2009_ver2_42003
 read population entered
-fred_open_file: opening file /tmp/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt.fsz for reading
+fred_open_file: opening file /Users/gref/FRED/populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt.fsz for reading
 Is this an fsz-compressed file?  Magic bytes match.  Treat this file as fsz-compressed.
 PARAMS: number_antivirals = 0
 FRED_VERBOSE: <Population.cc, LINE:582> finished reading population, pop_size = 1164879
@@ -2499,7 +2499,7 @@ FRED_VERBOSE: <Place_List.cc, LINE:680> School SK9500488 19355.931768 9989.64000
 FRED_VERBOSE: <Place_List.cc, LINE:680> School SK9500519 8788.215066 14481.046581 FRED_VERBOSE: <Large_Cell.cc, LINE:148>  size 118 staff 6 9 11 
 FRED_VERBOSE: <Large_Cell.cc, LINE:157> nearby workplace W564814614 8788.218416 14481.041077 wsize 7 work_dist 0.006444
 FRED_VERBOSE: <Place.cc, LINE:357> 7 new teachers reassigned from workplace W564814614 to school SK9500519
-assign teachers took 1 seconds
+assign teachers took 0 seconds
 setup offices entered
 PARAMS: office_contacts[0] = -1.000000
 PARAMS: office_prob[0] = 1
@@ -2508,13 +2508,13 @@ Added   54283           OFFICE places to Place_List
 setup offices finished
 assign offices entered
 assign offices finished
-assign offices took 0 seconds
+assign offices took 1 seconds
 prepare places entered
 deleting place_label_map
 prepare places finished
 place prep took 1 seconds
 FRED initialization took 0 seconds
-FRED initialization complete Thu Feb 28 08:58:53 2013
+FRED initialization complete Fri Mar  1 17:47:05 2013
 day 0 update places took 0 seconds
 employees at small workplaces with sick leave: 135385
 employees at small workplaces without sick leave: 120119
@@ -2524,7 +2524,7 @@ employees at large workplaces with sick leave: 87776
 employees at large workplaces without sick leave: 37419
 employees at xlarge workplaces with sick leave: 103021
 employees at xlarge workplaces without sick leave: 18164
-day 0 update population took 1 seconds
+day 0 update population took 0 seconds
 Number of infectious places        =>         0
 Number of infectious households    =>         0
 Number of infectious neighborhoods =>         0
@@ -2533,11 +2533,11 @@ Number of infectious classrooms    =>         0
 Number of infectious workplaces    =>         0
 Number of infectious offices       =>         0
 day 0 update epidemics took 0 seconds
-Day   0 Date 2012-01-02 Wkday Mon Year 2012 Week  1 Str 0 S 1164779 E     100 I       0 I_s       0 R       0 M       0 C     100 CI       0 AR  0.01 CAR  0.00 RR 0.00 N 1164879
+Day   0 Date 2012-01-02 Wkday Mon Year 2012 Week  1 Str 0 S 1164779 E     100 I       0 Is       0 R       0 M       0 P     100 C     100 Cs       0 AR  0.01 ARs  0.00 RR 0.00 N 1164879
 day 0 report population took 0 seconds
-day 0 finished Thu Feb 28 08:58:54 2013
-day 0 took 1 seconds
-day 0 maxrss 1085321216
+day 0 finished Fri Mar  1 17:47:05 2013
+day 0 took 0 seconds
+day 0 maxrss 1086959616
 day 1 update places took 0 seconds
 day 1 update population took 0 seconds
 Number of infectious places        =>       195
@@ -2548,11 +2548,11 @@ Number of infectious classrooms    =>         6
 Number of infectious workplaces    =>        26
 Number of infectious offices       =>        26
 day 1 update epidemics took 1 seconds
-Day   1 Date 2012-01-03 Wkday Tue Year 2012 Week  1 Str 0 S 1164756 E      46 I      77 I_s      51 R       0 M       0 C      23 CI      51 AR  0.01 CAR  0.00 RR 0.00 N 1164879
+Day   1 Date 2012-01-03 Wkday Tue Year 2012 Week  1 Str 0 S 1164756 E      46 I      77 Is      51 R       0 M       0 P     123 C      23 Cs      51 AR  0.01 ARs  0.00 RR 0.00 N 1164879
 day 1 report population took 0 seconds
-day 1 finished Thu Feb 28 08:58:55 2013
+day 1 finished Fri Mar  1 17:47:06 2013
 day 1 took 1 seconds
-day 1 maxrss 1086619648
+day 1 maxrss 1088258048
 day 2 update places took 0 seconds
 day 2 update population took 0 seconds
 Number of infectious places        =>       271
@@ -2563,11 +2563,11 @@ Number of infectious classrooms    =>         9
 Number of infectious workplaces    =>        33
 Number of infectious offices       =>        33
 day 2 update epidemics took 0 seconds
-Day   2 Date 2012-01-04 Wkday Wed Year 2012 Week  1 Str 0 S 1164704 E      56 I     119 I_s      78 R       0 M       0 C      52 CI      27 AR  0.02 CAR  0.01 RR 0.00 N 1164879
+Day   2 Date 2012-01-04 Wkday Wed Year 2012 Week  1 Str 0 S 1164704 E      56 I     119 Is      78 R       0 M       0 P     175 C      52 Cs      27 AR  0.02 ARs  0.01 RR 0.00 N 1164879
 day 2 report population took 0 seconds
-day 2 finished Thu Feb 28 08:58:55 2013
+day 2 finished Fri Mar  1 17:47:06 2013
 day 2 took 0 seconds
-day 2 maxrss 1087516672
+day 2 maxrss 1089155072
 day 3 update places took 0 seconds
 day 3 update population took 0 seconds
 Number of infectious places        =>       357
@@ -2578,11 +2578,11 @@ Number of infectious classrooms    =>        17
 Number of infectious workplaces    =>        38
 Number of infectious offices       =>        40
 day 3 update epidemics took 1 seconds
-Day   3 Date 2012-01-05 Wkday Thu Year 2012 Week  1 Str 0 S 1164613 E     105 I     161 I_s     106 R       0 M       0 C      91 CI      28 AR  0.02 CAR  0.01 RR 0.00 N 1164879
+Day   3 Date 2012-01-05 Wkday Thu Year 2012 Week  1 Str 0 S 1164613 E     105 I     161 Is     106 R       0 M       0 P     266 C      91 Cs      28 AR  0.02 ARs  0.01 RR 0.00 N 1164879
 day 3 report population took 0 seconds
-day 3 finished Thu Feb 28 08:58:56 2013
+day 3 finished Fri Mar  1 17:47:07 2013
 day 3 took 1 seconds
-day 3 maxrss 1088372736
+day 3 maxrss 1090011136
 day 4 update places took 0 seconds
 day 4 update population took 0 seconds
 Number of infectious places        =>       440
@@ -2593,12 +2593,12 @@ Number of infectious classrooms    =>        26
 Number of infectious workplaces    =>        42
 Number of infectious offices       =>        46
 day 4 update epidemics took 0 seconds
-Day   4 Date 2012-01-06 Wkday Fri Year 2012 Week  1 Str 0 S 1164504 E     131 I     221 I_s     144 R      23 M       0 C     109 CI      53 AR  0.03 CAR  0.01 RR 0.00 N 1164879
+Day   4 Date 2012-01-06 Wkday Fri Year 2012 Week  1 Str 0 S 1164504 E     131 I     221 Is     144 R      23 M       0 P     352 C     109 Cs      53 AR  0.03 ARs  0.01 RR 0.00 N 1164879
 day 4 report population took 0 seconds
-day 4 finished Thu Feb 28 08:58:56 2013
+day 4 finished Fri Mar  1 17:47:07 2013
 day 4 took 0 seconds
-day 4 maxrss 1088958464
+day 4 maxrss 1090596864
 
-FRED simulation complete. Excluding initialization, 5 days took 3 seconds
-FRED finished Thu Feb 28 08:58:56 2013
-FRED took 23 seconds
+FRED simulation complete. Excluding initialization, 5 days took 2 seconds
+FRED finished Fri Mar  1 17:47:07 2013
+FRED took 22 seconds

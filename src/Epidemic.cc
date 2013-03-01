@@ -249,32 +249,16 @@ void Epidemic::print_stats(int day) {
   prevalence = (double) prevalence_count / (double) N;
 
   char buffer[ FRED_STRING_SIZE ];
-  int nchar_used;
-  if (Global::Report_Prevalence) {
-    nchar_used = sprintf(buffer,
-			 "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d Is %7d R %7d M %7d P %7d C %7d Cs %7d AR %5.2f ARs %5.2f RR %4.2f N %7d",
-			 day, Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
-			 Global::Sim_Current_Date->get_day_of_week_string().c_str(), 
-			 Global::Sim_Current_Date->get_epi_week_year(), 
-			 Global::Sim_Current_Date->get_epi_week(),
-			 id, susceptible_people, exposed_people, infectious_people,
-			 people_with_current_symptoms, removed_people, immune_people,
-			 prevalence_count, incidence, symptomatic_incidence,
-			 attack_ratio, symptomatic_attack_ratio, RR, N);
-  }
-  else {
-    nchar_used = sprintf(buffer,
-			 "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d Is %7d R %7d M %7d C %7d Cs %7d AR %5.2f ARs %5.2f RR %4.2f N %7d",
-			 day, Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
-			 Global::Sim_Current_Date->get_day_of_week_string().c_str(), 
-			 Global::Sim_Current_Date->get_epi_week_year(), 
-			 Global::Sim_Current_Date->get_epi_week(),
-			 id, susceptible_people, exposed_people, infectious_people,
-			 people_with_current_symptoms, removed_people, immune_people,
-			 incidence, symptomatic_incidence,
-			 attack_ratio, symptomatic_attack_ratio, RR, N);
-  }
-
+  int nchar_used = sprintf(buffer,
+			   "Day %3d Date %s Wkday %s Year %d Week %2d Str %d S %7d E %7d I %7d Is %7d R %7d M %7d P %7d C %7d Cs %7d AR %5.2f ARs %5.2f RR %4.2f N %7d",
+			   day, Global::Sim_Current_Date->get_YYYYMMDD().c_str(),
+			   Global::Sim_Current_Date->get_day_of_week_string().c_str(), 
+			   Global::Sim_Current_Date->get_epi_week_year(), 
+			   Global::Sim_Current_Date->get_epi_week(),
+			   id, susceptible_people, exposed_people, infectious_people,
+			   people_with_current_symptoms, removed_people, immune_people,
+			   prevalence_count, incidence, symptomatic_incidence,
+			   attack_ratio, symptomatic_attack_ratio, RR, N);
   fprintf( Global::Outfp, "%s", buffer );
   FRED_STATUS(0, "%s", buffer);
 
