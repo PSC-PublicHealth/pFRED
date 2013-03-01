@@ -51,6 +51,7 @@ track_network_stats = 0
 report_age_of_infection = 0
 report_place_of_infection = 0
 report_presenteeism = 0
+report_prevalence = 0
 quality_control = 1
 print_household_locations = 0
 rr_delay = 10
