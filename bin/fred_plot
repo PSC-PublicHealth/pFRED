@@ -5,8 +5,8 @@ use Env;
 use Getopt::Long qw(:config no_ignore_case bundling);
 
 my %titles = ( AR => "Attack Ratio",
-	       C => "Incidence",
 	       ARs => "Symptomatic Attack Rate",
+	       C => "Incidence",
 	       Cs => "Symptomatic Incidence",
 	       Cls => "Classroom Transmissions",
 	       E => "Exposed",
@@ -45,7 +45,6 @@ my $with = "lines";
 my $title = "FRED: Allegheny County Model";
 my $period = "daily";
 my $weekly;
-my $strain = 0;
 # my $fontsize = "giant";
 # my $fontsize = "large";
 my $fontsize = "medium";
@@ -81,7 +80,6 @@ my $opt_result = GetOptions(
 			    "normalize" => \$normalize,
 			    "period=s" => \$period,
 			    "smooth" => \$smooth,
-			    "strain=i" => \$strain,
 			    "title=s" => \$title,
 			    "var=s" => \@varlist,
 			    "weekly" => \$weekly,
@@ -125,7 +123,7 @@ die $usage if $help;
 
 # if attack rates are requested, disable smoothing and weekly sums
 for my $v (@varlist) {
- if ($v eq "AR" or $v eq "CAR") {  
+ if ($v =~ /AR/) {  
    $smooth = 0;
    $weekly = 0;
    $legend = "bottom right";
@@ -189,7 +187,7 @@ if ($ylabel) {
 
 
 for my $v (@varlist) {
- if ($v eq "AR" or $v eq "CAR") {  
+ if ($v =~ /AR/) {  
    print FH "set ylabel 'Percent Infected' offset 1.2,0\n";
    $ymax = 100 if $ymax eq "*";
    print FH "set yrange [0:$ymax]\n";
@@ -257,7 +255,14 @@ sub get_data {
   my $reportsdir = "$FREDRESULTS/RESULTS/JOB/$id/DATA/REPORTS";
   die "fred_plot can't find results\n" if not -d $reportsdir;
 
-  my $datafile = "$reportsdir/$v\_$period-$strain.dat";
+  my $dis = 0;
+  if ($v =~ /\-/) {
+    ($dis) = $v =~ /\-(\d+)/;
+    $v =~ s/\-.*//;
+    print "v = $v dis = $dis\n";
+  }
+
+  my $datafile = "$reportsdir/$v\_$period-$dis.dat";
   die "fred_plot: can't find data file $datafile\n" if not -e $datafile;
   system "cat $datafile > $file";
 }
