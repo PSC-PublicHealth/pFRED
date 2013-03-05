@@ -267,13 +267,13 @@ namespace fred {
     BitType bits;
 
     tiny_bitset() {
-      if ( n_bits > sizeof( BitType ) ) {
+      if ( n_bits > sizeof( BitType ) * 8 ) {
         fprintf( stderr,
-            "This specialized bitset is limited to %zu bits.%s\n",
-            sizeof( BitType ),
-            "If a larger bitset is needed, use std::bitset" );
+		 "This specialized bitset is limited to %zu bytes.%s\n",
+		 sizeof( BitType ),
+		 "If a larger bitset is needed, please change the underlying BitType in tiny_bitset (Global.h)" );
       }
-      assert( n_bits <= sizeof( BitType ) );
+      assert( n_bits <= sizeof( BitType ) * 8 );
       reset();
     }
     void reset() { bits = 0; }
