@@ -286,7 +286,29 @@ void Place_List::quality_control(char *directory) {
   }
 
   if (Global::Verbose) {
-    int count[20];
+    int count[100];
+    int total = 0;
+    // size distribution of schools
+    for (int c = 0; c < 20; c++) { count[c] = 0; }
+    for (int p = 0; p < number_places; p++) {
+      if (places[p]->get_type() == SCHOOL) {
+        int s = places[p]->get_size();
+        int n = s / 50;
+        if (n < 20) { count[n]++; }
+        else { count[19]++; }
+        total++;
+      }
+    }
+    fprintf(Global::Statusfp, "\nSchool size distribution: %d schools\n", total);
+    for (int c = 0; c < 20; c++) {
+      fprintf(Global::Statusfp, "%3d: %6d (%.2f%%)\n",
+          (c+1)*50, count[c], (100.0*count[c])/total);
+    }
+    fprintf(Global::Statusfp, "\n");
+  }
+
+  if (Global::Verbose) {
+    int count[101];
     int small_employees = 0;
     int med_employees = 0;
     int large_employees = 0;
@@ -294,7 +316,7 @@ void Place_List::quality_control(char *directory) {
     int total_employees = 0;
     int total = 0;
     // size distribution of workplaces
-    for (int c = 0; c < 20; c++) { count[c] = 0; }
+    for (int c = 0; c <= 100; c++) { count[c] = 0; }
     for (int p = 0; p < number_places; p++) {
       if (places[p]->get_type() == WORKPLACE || places[p]->get_type() == SCHOOL) {
         int s = places[p]->get_size();
@@ -302,9 +324,9 @@ void Place_List::quality_control(char *directory) {
 	  School * school = (School *) places[p];
 	  s = school->get_staff_size();
 	}
-        int n = s / 50;
-        if (n < 20) { count[n]++; }
-        else { count[19]++; }
+        int n = s;
+        if (n <= 100) { count[n]++; }
+        else { count[100]++; }
         total++;
         if (s < 50) {
           small_employees += s;
@@ -322,9 +344,9 @@ void Place_List::quality_control(char *directory) {
       }
     }
     fprintf(Global::Statusfp, "\nWorkplace size distribution: %d workplaces\n", total);
-    for (int c = 0; c < 20; c++) {
+    for (int c = 0; c <= 100; c++) {
       fprintf(Global::Statusfp, "%3d: %6d (%.2f%%)\n",
-          (c+1)*50, count[c], (100.0*count[c])/total);
+          (c+1)*1, count[c], (100.0*count[c])/total);
     }
     fprintf(Global::Statusfp, "\n\n");
 

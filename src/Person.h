@@ -343,6 +343,8 @@ public:
 
   bool is_householder() { return demographics.is_householder(); }
 
+  void make_householder() { demographics.make_householder(); }
+
   /**
    * @return a pointer to this Person's School
    * @see Activities::get_school()

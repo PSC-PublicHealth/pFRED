@@ -96,6 +96,8 @@ public:
    */
   bool is_householder() { return relationship == Global::HOUSEHOLDER; }
 
+  void make_householder() { relationship = Global::HOUSEHOLDER; }
+
   /**
    * Perform the necessary changes to the demographics on an agent's birthday
    */

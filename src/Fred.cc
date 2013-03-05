@@ -156,6 +156,7 @@ int main(int argc, char* argv[]) {
   // read in the population and have each person enroll
   // in each favorite place identified in the population file
   Global::Pop.setup();
+  Global::Places.setup_households();
   Utils::fred_print_lap_time("Pop.setup");
 
   // define FRED-specific places and have each person enroll as needed

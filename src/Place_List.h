@@ -89,6 +89,7 @@ public:
     return id;
   }
 
+  void setup_households();
   void setup_classrooms();
   void assign_teachers();
   void setup_offices();

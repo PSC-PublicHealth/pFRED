@@ -627,6 +627,36 @@ int Place_List::get_number_of_places( char place_type ) {
   return place_type_counts[ place_type ];
 }
 
+void Place_List::setup_households() {
+
+  FRED_STATUS(0, "setup households entered\n","");
+
+  int number_places = (int) places.size();
+  for (int p = 0; p < number_places; p++) {
+    if (places[p]->get_type() == HOUSEHOLD) {
+      Household * house = (Household *) places[p];
+      int head = -1;
+      int max_age = -1;
+      Person * person_with_max_age = NULL;
+      for (int j = 0; j < house->get_size(); j++) {
+	Person *person = house->get_housemate(j);
+	int age = person->get_age();
+	if (age > max_age) {
+	  max_age = age;
+	  person_with_max_age = person;
+	}
+	if (person->is_householder())
+	  head = j;
+      }
+      if (head == -1) {
+	person_with_max_age->make_householder();
+      }
+    }
+  }
+
+  FRED_STATUS(0, "setup households finished\n","");
+}
+
 void Place_List::setup_classrooms() {
 
   FRED_STATUS(0, "setup classrooms entered\n","");
