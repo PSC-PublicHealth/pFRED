@@ -44,9 +44,14 @@ Small_Grid::Small_Grid(Large_Grid * lgrid) {
 
   // find the multiple to use in defining this grid;
   // the multiple must be an integer
+#if 1 //STB Added for cygwin, the assert for some reason is never true in 32-bit
+      // Don't mess with unless you know what you are doing
   int mult = large_grid_cell_size / grid_cell_size;
   assert(mult == (1.0*large_grid_cell_size / (1.0* grid_cell_size)));
-
+#else
+  double mult_double = (1.0*double(large_grid_cell_size) / (1.0*double(grid_cell_size)));
+  int mult = int(mult_double);
+#endif
   rows = large_grid_rows * mult;
   cols = large_grid_cols * mult;
 
@@ -163,7 +168,7 @@ void Small_Grid::initialize_gaia_data(char * directory, int run) {
   sprintf(gaiafile, "%s/grid.txt", gaia_top_dir);
   FILE *fp = fopen(gaiafile, "w");
   fprintf(fp, "rows = %d\n", rows);
-  fprintf(fp, "cols = %d\n", rows);
+  fprintf(fp, "cols = %d\n", cols);
   fprintf(fp, "min_lat = %f\n", Global::Large_Cells->get_min_lat());
   fprintf(fp, "min_lon = %f\n", Global::Large_Cells->get_min_lon());
   fprintf(fp, "cell_x_size = %f\n", Geo_Utils::x_to_degree_longitude(grid_cell_size));
@@ -200,7 +205,26 @@ void Small_Grid::print_gaia_data(char * directory, int run, int day) {
     print_output_data(dir, disease_id, Global::OUTPUT_Is, (char *)"Is", day);
     print_output_data(dir, disease_id, Global::OUTPUT_C, (char *)"C", day);
     print_output_data(dir, disease_id, Global::OUTPUT_Cs, (char *)"Cs", day);
+    print_population_data(dir, disease_id, day);
   }
+}
+
+void Small_Grid::print_population_data(char * dir, int disease_id, int day) {
+  char filename[FRED_STRING_SIZE];
+  printf("Printing popuation\n");
+  Global::Places.get_cell_data_from_households(disease_id,1);
+  sprintf(filename,"%s/dis%d/N/day-%d.txt",dir,disease_id,day);
+  FILE *fp = fopen(filename, "w");
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) { 
+      Small_Cell * cell = (Small_Cell *) &grid[i][j];
+      int popsize = cell->get_popsize();
+      if (popsize > 0){
+	fprintf(fp, "%d %d %d\n", i, j, popsize);
+      }
+    }
+  }
+  fclose(fp);
 }
 
 void Small_Grid::print_output_data(char * dir, int disease_id, int output_code, char * output_str, int day) {

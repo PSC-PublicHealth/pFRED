@@ -43,6 +43,7 @@ protected:
   Large_Grid * large_grid;
 
   // Specific to Small_Cell grid:
+  void print_population_data(char * dir, int disease_id, int day);
   void print_output_data(char * dir, int disease_id, int output_code, char * output_str, int day);
 };
 
