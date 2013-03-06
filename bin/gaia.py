@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# $Id: gaia.py,v 1.4 2013-01-19 22:18:20 stbrown Exp $ #
+# $Id: gaia.py,v 1.5 2013-03-06 15:40:13 stbrown Exp $ #
 
 # Copyright 2009, Pittsburgh Supercomputing Center (PSC).  
 # See the file 'COPYRIGHT.txt' for any restrictions.
@@ -28,19 +28,22 @@ class GAIA:
         if self.confInfo.debug:
             httpConn.set_debuglevel(2)
         httpConn.connect()
-      
+
+	time1 = time.time()
         xmlMessage = self.plotInfo.printXMLMessage()
-        
-        with open("out.xml","wb") as f:
-            f.write('|%s|'%xmlMessage[:])
+	with open("out.xml","wb") as f:
+	    f.write(xmlMessage)
+
+	time2 = time.time()
+	print "Took %g seconds to concatenate xml"%(time2-time1)
+	time1 = time.time()
         headers = { Constants.MIME_CONTENT_TYPE: Constants.MIME_TEXT_XML,
                     Constants.MIME_CONTENT_LENGTH: '%d; %s="%s"'\
                     %(len(xmlMessage),Constants.MIME_CHARSET,Constants.MIME_ISO_8859_1)}
-
         httpConn.request("GET",self.confInfo.serverURL,"%s"%xmlMessage,headers)
-
+	time2 = time.time()
+	print "Sent request took %g seconds"%(time2-time1)
         response = httpConn.getresponse()
-
         ### determine the file we are returning
         responseFileType = response.getheader(Constants.MIME_CONTENT_TYPE)
         responseLength = response.getheader(Constants.MIME_CONTENT_LENGTH)
@@ -73,9 +76,10 @@ class Constants:
     minimum_ABGR_value = int(0)
     kNormalizedGeometry = float(1000.0)
     supportedOutputFormats = ['gif','png']
-    supportedBundleFormats = ['tar','mpg']
-    supportedWrapperTypes = {'fips':5,'hasc':5,'usfips':5,'lonlat':6,'lonlat-label':7,'lonlat-path':-1}
-    GAIA_DEFAULT_STYLE = -1
+    supportedBundleFormats = ['tar','mpg','mov','mp4']
+    supportedWrapperTypes = {'fips':5,'hasc':5,'usfips':5,'lonlat':6,'lonlat-label':7,'lonlat-path':-1,
+                             'lonlat-poly':-1}
+    GAIA_DEFAULT_STYLE = 0
     GAIA_DEFAULT_TIME_SEQ = -1
     WRAPPER_TYPE_VARIABLE = -1
     WRAPPER_RAW_ELEMENT_DELIMITER = ':'
@@ -92,6 +96,9 @@ class Constants:
     MIME_IMAGE_GIF         = "image/gif"
     MIME_IMAGE_PNG         = "image/png"
     MIME_VIDEO_MPG         = "video/mpeg"
+    MIME_VIDEO_MOV         = "video/quicktime"
+    MIME_VIDEO_MP4         = "video/mp4"
+    MIME_VIDEO_OGG         = "video/ogg"
     MIME_APP_TAR           = "application/x-tar"
     MIME_APP_GZIP          = "application/x-gzip"
     MIME_APP_OCT_STREAM    = "application/octet-stream"
@@ -102,7 +109,10 @@ class Constants:
 
     fileExtensions = {MIME_IMAGE_GIF:'.gif',
                       MIME_IMAGE_PNG:'.png',
-                      MIME_VIDEO_MPG:'.mov',
+                      MIME_VIDEO_MPG:'.mpg',
+		              MIME_VIDEO_MOV:'.mov',
+		              MIME_VIDEO_MP4:'.mp4',
+                      MIME_VIDEO_OGG:'.ogg',
                       MIME_APP_TAR:'.tgz',
                       MIME_APP_GZIP:'.gz'}
 
@@ -190,10 +200,8 @@ class PlotInfo:
                  fill_color_ = None,
                  stroke_width_ = 1.0,
                  title_ = None,
-                 legend_ = None,
-                 debug_= False):
+                 legend_ = None):
 
-        self.debug = debug_
         self.input_filename = input_filename_
         if output_filename_ is None:
             self.output_filename = os.path.splitext(self.input_filename)[0]
@@ -238,20 +246,16 @@ class PlotInfo:
         else:
             self.wrappers = []
         self.styles = []
-        for styleFilename in styles_filenames_:
-            self.styles.append(self.parseStyles(styleFilename))
-
+	if styles_filenames_ is not None:
+	    for styleFilename in styles_filenames_:
+		self.styles.append(self.parseStyles(styleFilename))
                    
     def parseWrappers(self):
-        if self.debug:
-            print "Parsing Wrappers"
         wrappers_tmp = []
         lonLatPathRecs = {}
+        lonLatPolyRecs = {}
         with open(self.input_filename,"rb") as f:
             for line in f:
-                if self.debug:
-                    print "Line: %s"%line
-                    sys.stdout.flush()
                 elements = line.split()
                 if elements[0][0]== Constants.GAIA_INPUT_COMMENT_FLAG:
                     continue
@@ -278,6 +282,14 @@ class PlotInfo:
                     for elem in elements[1:]:
                         elemStr += str(elem) + " "
                     lonLatPathRecs[elemID].append(elemStr)
+                elif elemType == "lonlat-poly":
+                    elemID = int(elements[1])
+                    if not lonLatPolyRecs.has_key(elemID):
+                        lonLatPolyRecs[elemID] = []
+                    elemStr = ""
+                    for elem in elements[1:]:
+                        elemStr += str(elem) + " "
+                    lonLatPolyRecs[elemID].append(elemStr)
                 else:
                     raise RuntimeError("ERROR: Unsupported GAIA Element Type of %s in input"%elemType)
 
@@ -290,8 +302,12 @@ class PlotInfo:
                 element = LonLatPath()
                 element.parseRec(lonLatPathRecs[lonLatID])
                 wrappers_tmp.append(element)
-        if self.debug:
-            print "Completed Parsing Wrappers"
+        ### Parse out the LonLatPolys
+        if len(lonLatPolyRecs) > 0:
+            for lonLatID in lonLatPolyRecs.keys():
+                element = LonLatPoly()
+                element.parseRec(lonLatPolyRecs[lonLatID])
+                wrappers_tmp.append(element)
         return wrappers_tmp
 
     def parseStyles(self,styleFilename):
@@ -317,84 +333,90 @@ class PlotInfo:
         return styles_tmp
 
     def printXMLMessage(self):
-        if self.debug:
-            print "Creating XML message"
-        xmlString = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?><gaia>'
-        xmlString+= '<output-format>%s</output-format>'%(self.output_format)
+	xmlList = []
+        xmlList.append('<?xml version="1.0" encoding="UTF-8" standalone="no" ?><gaia>')
+        xmlList.append('<output-format>%s</output-format>'%(self.output_format))
         
         if self.bundle_format is not None:
-            xmlString+= '<bundle-format>%s</bundle-format>'%(self.bundle_format)
+            xmlList.append('<bundle-format>%s</bundle-format>'%(self.bundle_format))
             
         if self.num_gradients > 0:
-            xmlString+= '<num-gradients>%d</num-gradients>'%(self.num_gradients)
+            xmlList.append('<num-gradients>%d</num-gradients>'%(self.num_gradients))
             
         if self.max_resolution > 0:
-            xmlString+= '<max-resolution>%#g</max-resolution>'%(self.max_resolution)
+            xmlList.append( '<max-resolution>%#g</max-resolution>'%(self.max_resolution))
 
         if self.start_color is not None:
-            xmlString+= '<start-color>%s</start-color>'%(str(self.start_color))
+            xmlList.append('<start-color>%s</start-color>'%(str(self.start_color)))
 
         if self.end_color is not None:
-            xmlString+= '<end-color>%s</end-color>'%(str(self.end_color))
+            xmlList.append('<end-color>%s</end-color>'%(str(self.end_color)))
 
         if self.start_radius > -1:
-            xmlString+= '<start-radius>%g</start-radius>'%(self.start_radius)
+            xmlList.append('<start-radius>%g</start-radius>'%(self.start_radius))
 
         if self.end_radius > -1:
-            xmlString+= '<end-radius>%g</end-radius>'%(self.end_radius)
+            xmlList.append('<end-radius>%g</end-radius>'%(self.end_radius))
 
         if self.font is not None:
-            xmlString+= '<font-type>%s</font-type>'%(self.font)
+            xmlList.append('<font-type>%s</font-type>'%(self.font))
 
         if self.font_size > -1:
-            xmlString+= '<font-size>%g</font-size>'%(self.font_size)
+            xmlList.append( '<font-size>%g</font-size>'%(self.font_size))
 
         if self.legend_font_size > -1:
-            xmlString+= '<legend-font-size>%g</legend-font-size>'%(self.legend_font_size)
+            xmlList.append( '<legend-font-size>%g</legend-font-size>'%(self.legend_font_size))
 
         if self.background_color is not None:
-            xmlString+= '<background-color>%s</background-color>'%(self.background_color)
+            xmlList.append( '<background-color>%s</background-color>'%(self.background_color))
 
         if self.stroke_width > -1:
-            xmlString+= '<stroke-width>%g</stroke-width>'%(self.stroke_width)
+            xmlList.append( '<stroke-width>%g</stroke-width>'%(self.stroke_width))
 
         if self.project_image is True:
-            xmlString+= '<project-image>1</project-image>'
+            xmlList.append( '<project-image>1</project-image>')
             
         if self.title is not None:
-            xmlString+= '<title>%s</title>'%self.title
+            xmlList.append( '<title>%s</title>'%self.title)
 
         if self.legend is not None:
-            xmlString+= '<legend-text>%s</legend-text>'%self.legend
+            xmlList.append( '<legend-text>%s</legend-text>'%self.legend)
+
 
         ### Now write the styles
         if len(self.styles) > 0:
             for styleDict in self.styles:
-                xmlString+= '<style-range-list style-id="%d" legend-support="%d">'\
-                            %(styleDict['styleID'],styleDict['legend-support'])
+                xmlList.append( '<style-range-list style-id="%d" legend-support="%d">'\
+                            %(styleDict['styleID'],styleDict['legend-support']))
                 for style in styleDict['elements']: 
-                    xmlString += '<color>%s</color><radius>%f</radius>'\
+                    xmlList.append('<color>%s</color><radius>%f</radius>'\
                                  '<lower-bound>%f</lower-bound>'\
                                  '<upper-bound>%f</upper-bound>'\
                                  %(str(style['color']),
                                    style['radius'],
                                    style['lower_bound'],
-                                   style['upper_bound'])
+                                   style['upper_bound']))
 
-                xmlString+= '</style-range-list>'
+                xmlList.append( '</style-range-list>')
 
-        xmlString += '<wrapper-raw>'
+        xmlList.append('<wrapper-raw>')
         wrapperCount = 0
+        for wrapper in self.wrappers:
+            elementStr = str(wrapper) + Constants.WRAPPER_RAW_ELEMENT_DELIMITER
+            wrapperCount += len(elementStr)
+            if wrapperCount > Constants.WRAPPER_BUFFER_SIZE:
+                xmlList.append('</wrapper-raw><wrapper-raw>')
+                wrapperCount = len(elementStr)
+            xmlList.append(elementStr)
+           
+        xmlList.append('</wrapper-raw>')
 
-        xmlWrapString = ''.join([str(x)+Constants.WRAPPER_RAW_ELEMENT_DELIMITER for x in self.wrappers])   
-        xmlString += xmlWrapString[:-1] + '</wrapper-raw>'
-        xmlString += '</gaia>'
-        if self.debug:
-            print "Completed parsing XML"
+        xmlList.append('</gaia>')
+        xmlString = "".join(xmlList)
         return xmlString
 
 class ConfInfo:
-    def __init__(self,serverURL_="gaia.psc.edu",serverPort_="13500",logInfo_=None,debug_=False):
+    def __init__(self,serverURL_="gaia.psc.edu",serverPort_="13501",logInfo_=None,debug_=False):
         self.serverURL = serverURL_
         self.serverPort = serverPort_
         self.logInfo = logInfo_
@@ -656,52 +678,103 @@ class LonLatPath(Wrapper):
 
         return returnString[:-2] + " %g %d %g"%(self.value,self.styleID,self.time)
         
+class LonLatPoly(Wrapper):
+    def __init__(self,coordinates_=None,polyID_=0,value_=0.0,time_=Constants.GAIA_DEFAULT_TIME_SEQ,
+                 styleID_=Constants.GAIA_DEFAULT_STYLE):
+        Wrapper.__init__(self,"lonlat-path",time_,styleID_)
+        if coordinates_ is None:
+            self.coordinates = []
+        else:
+            self.coordinates = coordinates_
+        self.value = float(value_)
+        self.polyID = int(polyID_)
+
+### This is a special element, as it needs to be defined on more than one record
+                 
+    def parseRec(self,recs):
+        assert(isinstance(recs,list))
+        if len(recs) < 2:
+            raise RuntimeError("ERROR: Must Define more than one lonlat point for a LonLatPoly")
+
+        second_pass = False
+        for rec in recs:
+            ## split by space
+            recSplit = rec.split()
+
+            polyID = int(recSplit.pop(0))
+            latitude = float(recSplit.pop(0))
+            longitude = float(recSplit.pop(0))
+            styleID = Constants.GAIA_DEFAULT_STYLE
+            time = Constants.GAIA_DEFAULT_TIME_SEQ
+            
+            foundFlag = False
+            for record in recSplit:
+                if Constants.WRAPPER_VALUE_STYLE_DELIMITER in record:
+                    if foundFlag:
+                        raise RuntimeError("ERROR: Format of LonLat Wrapper has more than one Style parameter specified")
+                    foundFlag = True
+                    styleSplit = record.split(Constants.WRAPPER_VALUE_STYLE_DELIMITER)
+                    styleID = int(styleSplit[1])
+                    ### eliminate this from the record
+                    recSplit[recSplit.index(record)] = str(styleSplit[0])
+            value = float(recSplit.pop(0))
+
+            if len(recSplit) > 0:
+                time = float(recSplit.pop(0))
+
+            if second_pass:
+                # If this is the second entry or greater... just error check
+                if self.polyID != polyID or self.value != value or self.time != time:
+                    raise RuntimeError("ERROR: Inconsistent Records in LonLatPoly records")
+            else:
+                # If this is the first entry, set the values
+                self.polyID = polyID
+                self.value = value
+                self.time = time
+                self.styleID = styleID
+
+            self.coordinates.append((longitude,latitude))
+                    
+
+    def __str__(self):
+        returnString = "lonlat-poly %d "%(self.polyID)
+        for coords in self.coordinates:
+            returnString += "%f %f, "%(coords[0],coords[1])
+
+        return returnString[:-2] + " %g %d %g"%(self.value,self.styleID,self.time)
         
+                
 ### Static Utility functions
 
 def compressList(chunkList):
     for i in range(0,len(chunkList)-1):
-	#print "Start " + str(chunkList[i])
-	#print "End " + str(chunkList[i+1])
-	if len(chunkList[i])==0:
-	    continue
-	endValue = chunkList[i][len(chunkList[i])-1]
-	begValue = chunkList[i+1][0]
-	#print "start beg,end: " + str(begValue) + " " + str(endValue)
-	while int(begValue) == int(endValue) and len(chunkList[i+1]) != 0:
-	    del chunkList[i+1][0]
-	    chunkList[i].append(begValue)
-	#    print "Alter Start " + str(chunkList[i])
-	#    print "Alter End " + str(chunkList[i+1])
-	    if len(chunkList[i+1]) == 0:
-		continue
-	    begValue = chunkList[i+1][0]
-	#    print "new begValue: " + str(begValue)
+        #print "Start " + str(chunkList[i])
+        #print "End " + str(chunkList[i+1])
+        if len(chunkList[i])==0:
+            continue
+        endValue = chunkList[i][len(chunkList[i])-1]
+        begValue = chunkList[i+1][0]
+        #print "start beg,end: " + str(begValue) + " " + str(endValue)
+        while int(begValue) == int(endValue) and len(chunkList[i+1]) != 0:
+            del chunkList[i+1][0]
+            chunkList[i].append(begValue)
+#    print "Alter Start " + str(chunkList[i])
+#    print "Alter End " + str(chunkList[i+1])
+            if len(chunkList[i+1]) == 0:
+                continue
+            begValue = chunkList[i+1][0]
+        #    print "new begValue: " + str(begValue)
     for i in range(len(chunkList)-1,0,-1):
-	if len(chunkList[i]) == 0:
-	    del chunkList[i]
+        if len(chunkList[i]) == 0:
+            del chunkList[i]
     return len(chunkList)
 
 def chunkUpList(valueList,numOfBins):
 
     ## If the number of unique values in this list is too small, adjust
     valueUnique = set(valueList)
-    #print "Number of Uniques = " + str(len(valueUnique))
-    chunkList = []
-    if numOfBins > len(valueUnique):
-        numOfBins = len(valueUnique)
-        ## bin up by unique values then as that is the most efficient way to do this
-        ## and be done
-        count = 0
-        previousValue = valueList[0]
-        chunkList[0] = []
-        for value in valueList:
-            if value != previousValue:
-                count += 1
-                chunkList[count] = []
-            chunkList[count].append(value)
-        return (numOfBins,chunkList)
-    
+    if numOfBins > len(valueUnique): numOfBins = len(valueUnique)
+
     minimumValue = min(valueList)
     maximumValue = max(valueList)
     numberOfValues = len(valueList)
@@ -723,25 +796,22 @@ def chunkUpList(valueList,numOfBins):
     beforeNumChunks = len(chunkList)
     afterNumChunks = 0
     while beforeNumChunks != afterNumChunks:
-	beforeNumChunks = len(chunkList)
-	afterNumChunks = compressList(chunkList)
+        beforeNumChunks = len(chunkList)
+        afterNumChunks = compressList(chunkList)
 
     ## Return this tuple so that we can adjust our expectations
     return (numOfBins,chunkList)
     
     
 def computeBoundaries(valueList,numOfBins):
- 
+    
     valueListSorted = sorted(valueList)
 
     ### Initial Chunks
     (orgNumBins,chunkList) = chunkUpList(valueListSorted,numOfBins)
 
-    #print "OrgBins = " + str(orgNumBins) + " ChunkLen = " + str(len(chunkList))
     ### Iterate until we get to the proper number of bins
-    if orgNumBins != len(chunkList):
-        #while orgNumBins != len(chunkList):
-            ##     while orgNumBins != len(chunkList):
+    while orgNumBins != len(chunkList):
         reducedNumBins = orgNumBins - 1
         newValueList = []
         for chunk in chunkList[1:]:
@@ -756,16 +826,34 @@ def computeBoundaries(valueList,numOfBins):
         for chunk in newChunkList:
             chunkList.append(chunk)
 
-
-            #print "newNumBins = %d orgNumBins = %d chunkLen = %d"%(newNumBins,orgNumBins,len(chunkList))
     # Create and Return Boundaries (Joel would not approve of the fact that this is multple lines :))
     boundaryList = []
     boundaryList.append((chunkList[0][0],chunkList[0][len(chunkList[0])-1]))	
     for i in range(1,len(chunkList)):
-	boundaryList.append((chunkList[i-1][len(chunkList[i-1])-1]+1,chunkList[i][len(chunkList[i])-1]))
+        boundaryList.append((chunkList[i-1][len(chunkList[i-1])-1]+1,chunkList[i][len(chunkList[i])-1]))
 
     return boundaryList
 
+def computePercentBoundariesAndColors(maxBoundary = 25.0):
+    ### First the colors, which is easy
+    if maxBoundary < 25:
+        raise RuntimeError("maxBoundary must be 25 or larger")
+    colors = ["255.255.0.0","255.255.199.0",
+              "255.103.250.0",
+              "255.15.249.167","255.17.140.255",
+              "255.0.0.255"]
+    percents = [0.05,0.10,0.15,0.25,0.50,1.0]
+    boundaries = []
+    for i in range(0,len(percents)-1):
+        lowerBoundary = int(percents[i]*float(maxBoundary))
+        upperBoundary = int(percents[i+1]*float(maxBoundary))
+        if upperBoundary == lowerBoundary+1:
+            boundaries.append((lowerBoundary,lowerBoundary))
+        else:
+            boundaries.append((lowerBoundary,upperBoundary-1))
+    boundaries.append((maxBoundary,100))
+    return (colors,boundaries)
+        
 def computeColors(colorStart,colorEnd,numberOfColors):
     if isinstance(colorStart,str):
         colorStart = aBGR(value=colorStart)
@@ -860,8 +948,17 @@ def main():
     testLonLatPaths[0].parseRec(testLonLatPathRec[0])
     testLonLatPaths[1].parseRec(testLonLatPathRec[1])
 
-    print 'Test LonLatPaths:'
+    print 'Test LonLatPath:'
     for llp in testLonLatPaths:
+        print '\t%s'%(str(llp))
+        
+    testLonLatPolyRec = [["1 1.0 1.0 1.0:1","1 2.0 2.0 1.0:1","1 3.0 3.0 1.0:1","1 1.0 1.0 1.0:1"],
+                         ["2 1.1 1.1 1.1 1:2","2 2.1 2.1 2.1 1:2","2 1.1 1.1 1.1 1:2"]]
+    testLonLatPolys = [LonLatPoly() for i in range(len(testLonLatPolyRec))]
+    testLonLatPolys[0].parseRec(testLonLatPolyRec[0])
+    testLonLatPolys[1].parseRec(testLonLatPolyRec[1])
+    print 'Test LonLatPoly:'
+    for llp in testLonLatPolys:
         print '\t%s'%(str(llp))
     #test_plotInfo = PlotInfo(input_filename_="../../samples/CA-usfips.samp")
     #gaia = GAIA(test_plotInfo)

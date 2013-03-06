@@ -3,167 +3,352 @@
 import os,sys,string
 import math
 import optparse
-from fred import FRED,FRED_RUN,FRED_Infection_Record,FRED_Locations_Set,FRED_People_Set
-from gaia import GAIA,ConfInfo,PlotInfo,Constants,computeBoundaries,computeColors
+from fred import FRED,FRED_RUN,FRED_Household_Set
+from gaia import GAIA,ConfInfo,PlotInfo,Constants,computeBoundaries,computePercentBoundariesAndColors,computeColors
 import time
+import glob
 
 POP_DENSITY_STYLE_NUMBER = 2
 INC_STYLE_NUMBER = 3
+
 
 ###############################################################################################
 ### Grid Class definititions
                 
 class Grid:
-    def __init__(self,bounding_box,increment):
-        self.increment = increment
+    def __init__(self):
+        self.incX = 0.0
+        self.incY = 0.0
+        self.bounding_box = None
+        self.number_lon = 0
+        self.number_lat = 0
+        self.data = None
+        self.dir = None
+        self.polyOffSet = 1
+	self.variable = None
+
+    def setupFromFredGridFile(self,gridDir,variable='C'):
+        self.dir = gridDir
+	self.variable=variable
+        with open(self.dir+"/grid.txt") as f:
+            self.number_lat = int(f.readline().split("=")[1])
+            self.number_lon = int(f.readline().split("=")[1])
+            min_lat = float(f.readline().split("=")[1])
+            min_lon = float(f.readline().split("=")[1])
+            self.incX = float(f.readline().split("=")[1])
+            self.incY = float(f.readline().split("=")[1])
+            print "%d %d %g %g %g %g"%(self.number_lat,self.number_lon
+                                       ,min_lat,min_lon,self.incX,self.incY)
+            self.bounding_box = (min_lat,min_lon,
+                                  min_lat+(self.incX*self.number_lat),
+                                  min_lon+(self.incY*self.number_lon))
+            self.data = [0 for x in range(self.number_lon*self.number_lat)]
+            
+    def setupExplicit(self,bounding_box,incX,incY,variable='C'):
+        self.incX = incX
+        self.incY = incY
         self.bounding_box = bounding_box
-
-        self.number_lon = int(((self.bounding_box[3]-self.bounding_box[1])/self.increment))+1
-        self.number_lat = int(((self.bounding_box[2]-self.bounding_box[0])/self.increment))+1
-
+	self.variable=variable
+        
+        self.number_lon = int(((self.bounding_box[3]-self.bounding_box[1])/self.incY))+1
+        self.number_lat = int(((self.bounding_box[2]-self.bounding_box[0])/self.incX))+1
+        print str(self.number_lon) + " " + str(self.number_lat)
         self.data = [0 for x in range(self.number_lon*self.number_lat)]
-    
 
+    def fillDataRunAveTimeMax(self,disease_id=0,percents=False):
+        Gdir = "%s"%(self.dir)
+        runs = glob.glob(Gdir+"/run*")
+        print str(runs)
+        numRuns = len(runs)
+        numDays = 0
+        for run in runs:
+            dayFiles = glob.glob(run + "/dis" + str(disease_id) + "/" + self.variable + "/day-*.txt")
+            numDays = len(dayFiles)
+            for dayFile in dayFiles:
+                with open(dayFile,"rb") as fDay:
+                    for line in fDay:
+                        lineSplit = line.split()
+                        x = int(lineSplit[0])
+                        y = int(lineSplit[1])
+                        value = float(lineSplit[2])
+                        if percents is True:
+                            people = float(lineSplit[3])
+                            if(value > people):
+                                raise RuntimeError("There is a value that higher than the number of "\
+                                                   +"peole in grid %d %d: %g %g"%(x,y,value,people))
+                            if int((value/people)*100.0) > self.data[y*self.number_lat+x]:
+                                self.data[y*self.number_lat+x] = int((value/people)*100.0)
+                        else:
+                            if value > self.data[y*self.number_lat+x]:
+                                self.data[y*self.number_lat+x] = value
+        for i in range(0,len(self.data)):
+            self.data[i] /= float(numRuns)
+    
+    def fillDataRunTimeAve(self,disease_id=0,percents=False):
+        ### Find the proper directory
+        Gdir = "%s"%(self.dir)
+        runs = glob.glob(Gdir+"/run*")
+        print str(runs)
+        numRuns = len(runs)
+        numDays = 0
+        for run in runs:
+            dayFiles = glob.glob(run + "/dis" + str(disease_id) + "/" + self.variable + "/day-*.txt")
+            numDays = len(dayFiles)
+            for dayFile in dayFiles:
+                with open(dayFile,"rb") as fDay:
+                    for line in fDay:
+                        lineSplit = line.split()
+                        x = int(lineSplit[0])
+                        y = int(lineSplit[1])
+                        value = float(lineSplit[2])
+                        if percents is True:
+                            people = float(lineSplit[3])
+                            if(value > people):
+                                raise RuntimeError("There is a value that higher than the number of "\
+                                                   +"peole in grid %d %d: %g %g"%(x,y,value,people))
+                            self.data[y*self.number_lat+x] += value/people
+                        else:
+                            self.data[y*self.number_lat+x] += value
+        for i in range(0,len(self.data)):
+            self.data[i] = int(float(self.data[i])/float(numRuns*numDays))
+    
+    def fillDataRunAveTimeSum(self,disease_id=0,percents=False):
+        Gdir = "%s"%(self.dir)
+        runs = glob.glob(Gdir+"/run*")
+        print str(runs)
+        numRuns = len(runs)
+        numDays = 0
+        for run in runs:
+            dayFiles = glob.glob(run + "/dis" + str(disease_id) + "/" + self.variable + "/day-*.txt")
+            numDays = len(dayFiles)
+            for dayFile in dayFiles:
+                with open(dayFile,"rb") as fDay:
+                    for line in fDay:
+                        lineSplit = line.split()
+                        x = int(lineSplit[0])
+                        y = int(lineSplit[1])
+                        value = float(lineSplit[2])
+                        if percents is True:
+                            people = float(lineSplit[3])
+                            if(value > people):
+                                raise RuntimeError("There is a value that higher than the number of "\
+                                                   +"peole in grid %d %d: %g %g"%(x,y,value,people))
+                            self.data[y*self.number_lat+x] += int((value/people)*100.0)
+                        else:
+                            self.data[y*self.number_lat+x] += value
+        for i in range(0,len(self.data)):
+            self.data[i] /= float(numRuns)
+                                   
+    def fillDataForDayRunAve(self,disease_id=0,day=0,percents=False):
+        Gdir = "%s"%(self.dir)
+        runs = glob.glob(Gdir+"/run*")
+        print str(runs)
+        numRuns = len(runs)
+        for run in runs:
+            dayFile = run + "/dis" + str(disease_id) + "/" + self.variable + "/day-"+str(day)+".txt"
+            with open(dayFile,"rb") as fDay:
+                for line in fDay:
+                    lineSplit = line.split()
+                    x = int(lineSplit[0])
+                    y = int(lineSplit[1])
+                    value = float(lineSplit[2])
+                    if percents is True:
+                        people = float(lineSplit[3])
+                        if(value > people):
+                            raise RuntimeError("There is a value that higher than the number of "\
+                                               +"peole in grid %d %d: %g %g"%(x,y,value,people))
+                        self.data[y*self.number_lat+x] += int((value/people)*100.0)
+                    else:
+                        self.data[y*self.number_lat+x] += value
+			
+        for i in range(0,len(self.data)):
+            self.data[i] /= float(numRuns)
+                
     def indexes(self,latitude,longitude):
-        lonind = int(math.floor((longitude - self.bounding_box[1])/self.increment))
-        latind = int(math.floor((latitude  - self.bounding_box[0])/self.increment))
+        if self.bounding_box is None:
+            raise RuntimeError("Grid has not been initialized before trying to calculate and index")
+        lonind = int(math.floor((longitude - self.bounding_box[1])/self.incY))
+        latind = int(math.floor((latitude  - self.bounding_box[0])/self.incX))
         return lonind*self.number_lat + latind
 
+    def _zeroData(self):
+        for i in range(0,len(self.data)):
+            self.data[i] = 0.0
+    
     def __div__(self,value):
         return [ float(x/value) for x in self.data ]
 
-    def writeToGaiaFile(self,file,styleID=None):
+    def _sumData(self):
+        return sum(self.data)
+    
+    def writeToGaiaFile(self,fileHandle,day=None,styleID=None):
+        polyCount = self.polyOffSet
+        #f.write("USFIPS st42.ct003.tr*.bl* -1:-1\n")
         for i in range(0,self.number_lon):
             for j in range(0,self.number_lat):
-                lonpoint = self.bounding_box[1] + float(i)*self.increment +\
-                           self.increment/2.0
-                latpoint = self.bounding_box[0] + float(j)*self.increment +\
-                           self.increment/2.0
+                
+                lon1 = self.bounding_box[1] + \
+                       float(i)*(self.incX)
+                lon2 = self.bounding_box[1] + \
+                       float(i+1)*(self.incX)
+                lat1 = self.bounding_box[0] + float(j)*(self.incY)
+                lat2 = self.bounding_box[0] + float(j+1)*(self.incY)                  
+                upperLeft   = (lon1,lat1)
+                upperRight  = (lon2,lat1)
+                lowerLeft = (lon1,lat2)
+                lowerRight = (lon2,lat2)
                 grid_coord = i*self.number_lat + j
-                if(self.data[grid_coord] != 0):
-                    if styleID:
-                        file.write("lonlat %10.5f %10.10f %10d:%d\n"\
-                                   %(latpoint,lonpoint,self.data[grid_coord],styleID))
-                    else:
-                        file.write("lonlat %10.5f %10.10f %10d\n"\
-                                   %(latpoint,lonpoint,self.data[grid_coord]))
-        
-    def writeStyleFile(self,file,radius=6.0,startColor="255.255.0.0",
-                       endColor="255.0.0.255",numbounds=10,styleID=None):
-        boundaries = computeBoundaries(self.data,numbounds)
-        colors = computeColors(startColor,endColor,len(boundaries))
-
+                if day is None:
+                    if(self.data[grid_coord] != 0):
+                        if styleID:
+                            fileHandle.write("lonlat-poly %d %g %g %10d:%d\n"\
+                                       %(polyCount,upperLeft[1],upperLeft[0],
+                                        self.data[grid_coord],styleID))
+                            fileHandle.write("lonlat-poly %d %g %g %10d:%d\n"\
+                                       %(polyCount,upperRight[1],upperRight[0],
+                                         self.data[grid_coord],styleID))
+                            fileHandle.write("lonlat-poly %d %g %g %10d:%d\n"\
+                                       %(polyCount,lowerRight[1],lowerRight[0],
+                                         self.data[grid_coord],styleID))
+                            fileHandle.write("lonlat-poly %d %g %g %10d:%d\n"\
+                                       %(polyCount,lowerLeft[1],lowerLeft[0],
+                                         self.data[grid_coord],styleID))
+                        else:
+                            fileHandle.write("lonlat-poly %d %g %g %10d\n"\
+                                       %(polyCount,upperLeft[1],upperLeft[0],
+                                         self.data[grid_coord]))
+                            fileHandle.write("lonlat-poly %d %g %g %10d\n"\
+                                       %(polyCount,upperRight[1],upperRight[0],
+                                         self.data[grid_coord]))
+                            fileHandle.write("lonlat-poly %d %g %g %10d\n"\
+                                       %(polyCount,lowerRight[1],lowerRight[0],
+                                         self.data[grid_coord]))
+                            fileHandle.write("lonlat-poly %d %g %g %10d\n"\
+                                       %(polyCount,lowerLeft[1],lowerLeft[0],
+                                         self.data[grid_coord]))
+			polyCount +=1
+                else:
+                    if(self.data[grid_coord] != 0):
+                        if styleID:
+                            fileHandle.write("lonlat-poly %d %g %g %10d %10d:%d\n"\
+                                       %(polyCount,upperLeft[1],upperLeft[0],
+                                        self.data[grid_coord],day,styleID))
+                            fileHandle.write("lonlat-poly %d %g %g %10d %10d:%d\n"\
+                                       %(polyCount,upperRight[1],upperRight[0],
+                                         self.data[grid_coord],day,styleID))
+                            fileHandle.write("lonlat-poly %d %g %g %10d %10d:%d\n"\
+                                       %(polyCount,lowerRight[1],lowerRight[0],
+                                         self.data[grid_coord],day,styleID))
+                            fileHandle.write("lonlat-poly %d %g %g %10d %10d:%d\n"\
+                                       %(polyCount,lowerLeft[1],lowerLeft[0],
+                                         self.data[grid_coord],day,styleID))
+                        else:
+                            fileHandle.write("lonlat-poly %d %g %g %10d %10d\n"\
+                                       %(polyCount,upperLeft[1],upperLeft[0],
+                                         self.data[grid_coord],day))
+                            fileHandle.write("lonlat-poly %d %g %g %10d %10d\n"\
+                                       %(polyCount,upperRight[1],upperRight[0],
+                                         self.data[grid_coord],day))
+                            fileHandle.write("lonlat-poly %d %g %g %10d %10d\n"\
+                                       %(polyCount,lowerRight[1],lowerRight[0],
+                                         self.data[grid_coord],day))
+                            fileHandle.write("lonlat-poly %d %g %g %10d %10d\n"\
+                                       %(polyCount,lowerLeft[1],lowerLeft[0],
+                                         self.data[grid_coord],day))
+			polyCount+=1
+        self.polyOffSet = polyCount
+    
+    def writeStyleFile(self,fileHandle,styleID=None,legend=False,percents=False):
+        if percents is True:
+            maxBoundary = 25
+            colors,boundaries = computePercentBoundariesAndColors(maxBoundary)
+        else:   
+            boundaries = computeBoundaries(self.data,7)
+            #colors = computeColors(startColor,endColor,len(boundaries))
+	    if self.variable == "N":
+		colors = computeColors("255.200.200.200","255.0.0.0",7)
+	    else:
+		colors = ["255.255.255.255","255.255.0.0","255.255.199.0",
+			  "255.103.250.0",
+			  "255.15.249.167","255.17.140.255",
+			  "255.0.0.255"]
+		
         if styleID:
-            file.write("id=%d\n"%styleID)
+            fileHandle.write("id=%d\n"%styleID)
+            if legend:
+                fileHandle.write("legend-support=1\n")
         for boundary in boundaries:
-            file.write('%s %g %g %g\n'%(colors[boundaries.index(boundary)],radius,boundary[0],boundary[1]))
+            if boundary[0] == 0 and boundary[1] == 0:
+                pass
+            else:
+                fileHandle.write('%s 0 %g %g\n'%(colors[boundaries.index(boundary)],
+						 boundary[0],boundary[1]))
 
-class PopDenGrid(Grid):
-    def __init__(self,bounding_box_,increment_,fred_locations_):
-        Grid.__init__(self,bounding_box_,increment_)
-
-        assert(isinstance(fred_locations_,FRED_Locations_Set))
-
-        for location in fred_locations_.locations.keys():
-            place = fred_locations_.locations[location]
-            lon = place.lon
-            lat = place.lat
-            grid_coords = self.indexes(lat,lon)
-            self.data[grid_coords] = self.data[grid_coords]\
-                                     + place.size
-    def writeToGaiaFile(self,file):
-        Grid.writeToGaiaFile(self,file,POP_DENSITY_STYLE_NUMBER)
-
-    def writeStyleFile(self,file,radius=6.0,numbounds=10):
-        Grid.writeStyleFile(self,file,radius,"255.200.200.200","255.0.0.0",numbounds,
-                            POP_DENSITY_STYLE_NUMBER)
-
-class IncidenceGrid(Grid):
-    def __init__(self,bounding_box_,increment_,fred_locations_,fred_population_,infections_):
-        Grid.__init__(self,bounding_box_,increment_)
-
-        assert(isinstance(fred_locations_,FRED_Locations_Set))
-        assert(isinstance(fred_population_,FRED_People_Set))
-
-        for inf_rec in infections_:
-            inf_id = int(inf_rec.infected_id)
-            household = fred_population_.people[inf_id].household
-            place = fred_locations_.locations[household]
-            lon = place.lon
-            lat = place.lat
-            grid_coords = self.indexes(lat,lon)
-            self.data[grid_coords] = self.data[grid_coords] + 1
-
-    def writeToGaiaFile(self,file):
-        Grid.writeToGaiaFile(self,file,INC_STYLE_NUMBER)
-
-    def writeStyleFile(self,file,radius=6.0,numbounds=10):
-        Grid.writeStyleFile(self,file,radius=radius,numbounds=numbounds,
-                            styleID=INC_STYLE_NUMBER)
-
-class AveIncidenceGrid(IncidenceGrid):
-    def __init__(self,bounding_box_,increment_,fred_locations_,fred_population_,infections_dict_):
-        emptyList = []
-        IncidenceGrid.__init__(self,bounding_box_,increment_,fred_locations_,fred_population_, emptyList)
-
-        for infections_file_key in infections_dict_.keys():
-            infections_file = infections_dict_[infections_file_key]
-            #fill the infectious places
-            for inf_rec in infections_file:
-                inf_id = int(inf_rec.infected_id)
-                household = fred_population_.people[inf_id].household
-                place = fred_locations_.locations[household]
-                lon = place.lon
-                lat = place.lat
-                grid_coords = self.indexes(lat,lon)
-                self.data[grid_coords] = self.data[grid_coords] + 1
-            nruns = len(infections_dict_.keys())
-            self.data = [ float(x/float(nruns)) for x in self.data ]
-
-          
 ###############################################################################################
-
 
 if __name__ == '__main__':
     parser = optparse.OptionParser(usage="""
     %prog [--help][-k key][-r run_number][-t vis_type]
-    -k or --key   Fred Key
-    -r or --run   The run number of vizualize
-                  ave = produce an average result
-                  all = produce an input for all runs
-    -t or --type  Type of GAIA visualization
-		  hous_den   = Household Density Plot
-                  inc_anim   = incidence animation
-                  inc_static = incidence map
-    -T or --title Title for the visualization
-    -p or --pop   FRED Population file to use (if blank will try to use the one from input)
-    -l or --loc   FRED Location file to use (if blank will try to use the one from input)
-    -g or --grid  Size of grid points to plot
-    -w or --time  Turn on profiling
-    -d or --debug Turn on debug printing
+    -k or --key        Fred Key
+    -r or --run        (Not Working)
+                       The run number of vizualize
+                       ave = produce an average result
+                       all = produce an input for all runs
+    -v or --variable   The variable from FRED you would like to plot.
+                       Available variables are actually determined by FRED but here are some
+		       examples:
+		       N - Populaton Density
+		       C - Newly exposed persons
+		       P - Prevalence
+		       I - Number of people infectious
+    -t or --type       Type of GAIA visualization
+                       static = a static image
+		       animated = a ogg movie of the visualization
+    -o or --op         Operation to perform on the data (only for static)
+                       sum = will sum up all of the data over days of simulation
+		       max = will only take the maximum value for each grid over days of simulation
+		       (Note if -v is set to N and -t is set to static, this is always max).
+    -m or --movformat  Format you would like the movie in (only for -t animated)
+                       mov - produces quicktime movie
+		       mp4 - produces mp4 movie
+		       ogg - procudes ogg movie (default)
+    -T or --title      Title for the visualization
+    -p or --percents   If set, will plot the percentage of the value in each grid cell.
+    -l or --loc        FRED Location file to use (if blank will try to use the one from input
+    -w or --time       (Not Working) Turn on profiling
+    -d or --debug      (Not Working) Turn on debug printing
     """)
 
     parser.add_option("-k","--key",type="string",
                       help="The FRED key for the run you wish to visualize")
     parser.add_option("-r","--run",type="string",
-                      help="The number of the run you would like to visualize (number,ave, or all)",
+                      help="(Not Working) The number of the run you would like to visualize"\
+		      +"(number,ave, or all)",
                       default=1)
-    parser.add_option("-t","--type",type="string",
+    parser.add_option("-v","--variable",type='choice',action='store',
+                      choices=['N','I','Is','C','Cs'],
+                      default='C', help='Variable that you would like GAIA to plot' )
+    parser.add_option("-t","--type",type="choice",action="store",
+                      choices=["static","animated"],
                       help="The type of GAIA Visualization you would like (inc_anim,inc_static)",
-                      default="inc_static")
-    parser.add_option("-p","--pop",type="string",
-                      help="The FRED Population File to use")
+                      default="static")
+    parser.add_option("-o","--op",type="choice",action="store",
+		      choices=["max","sum"],
+		      help="Operation to perform on the data (only for -t = static)",
+		      default="sum")
+    parser.add_option("-p","--percents",action="store_true",
+		      default=False,
+                      help="If true, plot each grid point as a percentage of the number of people there")
+    parser.add_option("-m","--movformat",type="choice",action="store",
+		      choices=["mp4","mov","ogg"],
+		      help="Format GAIA movie produces (only for -t animated",
+		      default="ogg")
     parser.add_option("-l","--loc",type="string",
                       help="The FRED Location File to use")
-
-    parser.add_option("-g","--grid",type="float",
-                      help="The size of grid points",
-                      default=0.002)
     parser.add_option("-w","--time",action="store_true",
                       default=False)
     parser.add_option("-d","--debug",action="store_true",
                       default=False)
-
     parser.add_option("-T","--title",type="string",
                       help="Title to put on the GAIA vizualization",default="")
     
@@ -183,13 +368,20 @@ if __name__ == '__main__':
             print "Invalid parameter for run, needs to be an integer, all or ave"
             sys.exit(1)
 
-    valid_types = ["inc_static","inc_anim",'pop_den','test_grid']
-    if opts.type not in valid_types:
-        print "Invalid or unsupported type parameter, needs to be inc_static or inc_anim"
-        sys.exit(1)
     vizType = opts.type
+    vizVariable = opts.variable
+    vizOp = opts.op
+    movFormat = opts.movformat
 
-   ### Find the FRED run in this SIMS
+    imgFormat = "png"
+    if vizType == "animated":
+	imgFormat = "gif"
+
+    percentsString = ""
+    if opts.percents is True:
+	percentsString = "_percents"
+
+    ### Find the FRED run in this SIMS
     fred_run = FRED_RUN(fred,key)
 
     ### Find the Population File
@@ -198,295 +390,74 @@ if __name__ == '__main__':
     synth_pop_dir = fred_run.get_param("synthetic_population_directory")
     synth_pop_id = fred_run.get_param("synthetic_population_id")
     synth_pop_prefix = os.path.expandvars(synth_pop_dir + "/" + synth_pop_id + "/" + synth_pop_id)
-    synth_pop_filename = synth_pop_prefix + "_synth_people.txt"
     synth_household_filename = synth_pop_prefix + "_synth_households.txt"
-    
-    try:
-        open(synth_pop_filename,"r")
-    except IOError:
-        print "Problem opening FRED population file " + synth_pop_filename
-        sys.exit(1)
-        
+
     try:
         open(synth_household_filename,"r")
     except IOError:
-        print "Problem opening FRED location file " + loc_file
-        
-    if vizType == "test_grid":
-        gaia_bounding_box = (0.0,0.0,100.0,100.0)
-        gaia_grid = Grid(gaia_bounding_box,0.1)
-        print "Coords for 2.5445,55.3233 = " + str(gaia_grid.indexes(2.5445,55.3233))
-        print "Coords for 0.1,0.2 = " + str(gaia_grid.indexes(0.1,0.2))
-        print "Coords for 100.0,100.0 = " + str(gaia_grid.indexes(100.0,100.0))
-        sys.exit()
-        
-    fred_population = FRED_People_Set(synth_pop_filename)
-    fred_locations_households = FRED_Locations_Set(synth_household_filename,"households")
-    time2 = time.time()
-    if opts.time: print "Time to Read Synthetic Population = %g sec"%(time2-time1)
-
-    ## Parse Title
-    fred_title = opts.title
-    if opts.title == "":
-        if vizType == "inc_static":
-            fred_title = "Incidence Map"
-        elif vizType == "pop_den":
-            fred_title = "Population Density"
-        elif vizType == "inc_anim":
-            fred_title = "Incidence Map per Day of Epidemic"
-## CREATE the GAIA Input
-    gaia_bounding_box = fred_locations_households.bounding_box()
-    if vizType == "inc_static":
-        if opts.run == "all" or opts.run == "ave":
-            #print "all"
-            fred_run.load_infection_files()
-        else:
-            fred_run.load_infection_files(int(opts.run))
-
-    if vizType == "inc_anim":
-        fred_run.load_infection_files(1)
+        print "Problem opening FRED location file " + synth_household_filename
     
-    if vizType == "inc_static":
-        ## fill the population density first, as it is constant
-        gaia_grid_pop = PopDenGrid(gaia_bounding_box,opts.grid,fred_locations_households)
-        gaia_style_pop_file = "fred_gaia_pop_style_"+ str(fred_run.key) + ".txt"
-       
-        with open(gaia_style_pop_file,"wb") as f:
-            gaia_grid_pop.writeStyleFile(f,radius=1.5)
-                
-        if opts.run == "ave":
-            gaia_input_file = "fred_gaia_" + str(fred_run.key) + ".ave.txt" 
-            gaia_style_inc_file = "fred_gaia_inc_style_"+ str(fred_run.key) + ".ave.txt"
-            gaia_grid_inc = AveIncidenceGrid(gaia_bounding_box,opts.grid,
-                                            fred_locations_households,fred_population,
-                                            fred_run.infections_files)
-            with open(gaia_input_file,"w") as f:
-                ### Write out the county fips elements
-                for countyFips in fred_locations_households.countyList:
-                    f.write("USFIPS st%2s.ct%3s.tr*.bl* -1\n"%(countyFips[0:2],countyFips[2:5]))
-                ### Write the population density grid out
-                gaia_grid_pop.writeToGaiaFile(f)
- 
-                ### Write the incidence grid
-                gaia_grid_inc.writeToGaiaFile(f)
-                with open(gaia_style_inc_file,"wb") as f:
-                    gaia_grid_inc.writeStyleFile(f,1.0,numbounds=10)
-                
-                plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_pop_file,gaia_style_inc_file],
-                                    False,"png",None,None,None,-1.0,-1.0,
-                                    0,1000,False,None,72.0,-1.0,"255.255.255.255",None,2.0,fred_title,None)
-                    
-                time1 = time.time()
-                gaia = GAIA(plotInfo)
-                time2 = time.time()
-                if opts.time: print "Time to produce GAIA object = %g sec"%(time2 - time1)
-                    
-                time1 = time.time()
-                gaia.call()
-                time2 = time.time()
-                if opts.time: print "Time for GAIA to produce visualization = %g sec"%(time2 - time1)
-        else:
-            for infections_file_key in fred_run.infections_files.keys():
-                infections_file = fred_run.infections_files[infections_file_key]
-                gaia_grid_inc = IncidenceGrid(gaia_bounding_box,opts.grid,fred_locations_households,
-                                              fred_population,infections_file)
-                gaia_input_file = "fred_gaia_" + str(fred_run.key) + "."\
-                                  + str(infections_file_key) + ".txt"
-            
-                gaia_style_inc_file = "fred_gaia_inc_style_"+ str(fred_run.key) + "."\
-                                      + str(infections_file_key) + ".txt"
-               
-                with open(gaia_input_file,"w") as f:
-                ### Write out the county fips elements
-                    for countyFips in fred_locations_households.countyList:
-                        f.write("USFIPS st%2s.ct%3s.tr*.bl* -1\n"%(countyFips[0:2],countyFips[2:5]))
-                ### Write the population density grid out
-                    gaia_grid_pop.writeToGaiaFile(f)
-                    gaia_grid_inc.writeToGaiaFile(f)
+    fredHouseholds = FRED_Household_Set(synth_household_filename)
+    grid = Grid()
+    grid.setupFromFredGridFile(fred_run.gaiaDir,variable=vizVariable)    
+    gaia_input_file = "gaia_input_%s_%s_%s_%s%s.txt"%(vizType,key,vizVariable,vizOp,percentsString)
+    gaia_style_file = "gaia_style_%s_%s_%s_%s%s.txt"%(vizType,key,vizVariable,vizOp,percentsString)
 
-                with open(gaia_style_inc_file,"wb") as f:
-                    gaia_grid_inc.writeStyleFile(f,1.5,numbounds=10)
-
-                plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_pop_file,gaia_style_inc_file],
-                                    False,"png",None,None,None,-1.0,-1.0,
-                                    0,1000,False,None,42.0,-1.0,"255.255.255.255",None,2.0,fred_title,None,
-                                    opts.debug)
-
-                time1 = time.time()
-                gaia = GAIA(plotInfo)
-                time2 = time.time()
-                if opts.time: print "Time to produce GAIA object = %g sec"%(time2 - time1)
-
-                time1 = time.time()
-                gaia.call()
-                time2 = time.time()
-                if opts.time: print "Time for GAIA to produce visualization = %g sec"%(time2 - time1)
-
-    if vizType == 'pop_den':
-	gaia_grid = PopDenGrid(gaia_bounding_box,opts.grid,fred_locations_households)
-	gaia_input_file = "fred_gaia_pop_den_"+str(fred_run.key) + ".txt"
-        gaia_style_file = "fred_gaia_pop_den_"+str(fred_run.key) + ".style.txt"
-        
-        with open(gaia_input_file,"w") as f:
-            for countyFips in fred_locations_households.countyList:
+    if vizType == "static":
+	if vizVariable == "N":
+	    grid.fillDataRunAveTimeMax(0, percents=opts.percents)
+	elif vizOp == "sum":
+	    grid.fillDataRunAveTimeSum(0, percents=opts.percents)
+	elif vizOp == "max":
+	    grid.fillDataRunAveTimeMax(0, percents=opts.percents)
+	    
+        with open(gaia_input_file,"wb") as f:
+            for countyFips in fredHouseholds.countyList:
                 f.write("USFIPS st%2s.ct%3s.tr*.bl* -1\n"%(countyFips[0:2],countyFips[2:5]))
-            gaia_grid.writeToGaiaFile(f)
-            
-        ### Compute the Boundaries
+            grid.writeToGaiaFile(f,styleID=1)
         with open(gaia_style_file,"wb") as f:
-            gaia_grid.writeStyleFile(f,radius=1.5)
-        plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_file],False,"png",None,None,None,-1,-1,
-                            0,1000,False,None,42.0,-1.0,"255.255.255.255",None,1.0,fred_title,None,
-                            opts.debug)
-
-        time1 = time.time()
-        gaia = GAIA(plotInfo)
-        time2 = time.time()
-        if opts.time: print "Time to produce GAIA object = %g sec"%(time2 - time1)
-
-        time1 = time.time()
-        gaia.call()
-        time2 = time.time()
-        if opts.time: print "Time for GAIA to produce visualization = %g sec"%(time2 - time1)
-
-    ## if vizType == "hous_den":
-    ##     gaia_grid = Grid(gaia_bounding_box,opts.grid)
-    ##     gaia_input_file = "fred_gaia_house_den_"+str(fred_run.key) + ".txt"
-    ##     for location in fred_locations_households.locations.keys():
-    ##         place = fred_locations_households.locations[location]
-    ##         lon = place.lon
-    ##         lat = place.lat
-    ##         grid_coords = gaia_grid.indexes(lat,lon)
-    ##         gaia_grid.data[grid_coords[1]][grid_coords[0]] = gaia_grid.data[grid_coords[1]][grid_coords[0]] + 1
-    ##     with open(gaia_input_file,"w") as f:
-    ##         for countyFips in fred_locations_households.countyList:
-    ##             f.write("USFIPS st%2s.ct%3s.tr* -1\n"%(countyFips[0:2],countyFips[2:5]))
-    ##         for i in range(0,gaia_grid.number_lon):
-    ##             for j in range(0,gaia_grid.number_lat):
-    ##                 lonpoint = gaia_grid.bounding_box[1] + float(i)*gaia_grid.increment + gaia_grid.increment/2.0
-    ##                 latpoint = gaia_grid.bounding_box[0] + float(j)*gaia_grid.increment + gaia_grid.increment/2.0
-    ##                 if(gaia_grid.data[i][j] != 0):
-    ##                     f.write("lonlat %10.10f %10.10f %10d\n"%(latpoint,lonpoint,gaia_grid.data[i][j]))
-
-    ##     plotInfo = PlotInfo(gaia_input_file,None,None,False,"png",None,"255.200.200.200","255.0.0.0",6.0,6.0,
-    ##                         10,5000,False,None,-1.0,-1.0,"255.255.255.255",None,1.0,None,None)
-    
-    if vizType == "inc_anim":
-        ### Get the popoulation density
-        ## fill the population density first, as it is constant
-        if opts.debug:
-            print "Creating Population Density Grid"
-        gaia_grid_pop = PopDenGrid(gaia_bounding_box,opts.grid,fred_locations_households)
-        gaia_style_pop_file = "fred_gaia_pop_style_"+ str(fred_run.key) + ".txt"
-        with open(gaia_style_pop_file,"wb") as f:
-            gaia_grid_pop.writeStyleFile(f,radius=1.5)
-        if opts.debug:
-            print "Finished Creating Population Density Grid"
+            grid.writeStyleFile(f,styleID=1,
+                                legend=True,percents=opts.percents)
+	    
+    elif vizType == "animated":
+        nDays = int(fred_run.params_dict["days"])
+        with open(gaia_input_file,"wb") as f:        
+            maxDay = -11111
+            maxSum = -999999
+            for day in range(0,nDays):
+                grid._zeroData()
+                grid.fillDataForDayRunAve(0,day,percents=opts.percents)
+                sumG = grid._sumData()
+                if sumG > 0.0:
+                    for countyFips in fredHouseholds.countyList:
+                        f.write("USFIPS st%2s.ct%3s.tr*.bl* -1 %d\n"%(countyFips[0:2],countyFips[2:5],day))
+                    grid.writeToGaiaFile(f,day=day,styleID=1)
+                if sumG > maxSum:
+                    maxSum = sumG
+                    maxDay = day
             
-        for infections_file_key in fred_run.infections_files.keys():
-            if opts.debug:
-                print "Creating Infections Grid for %s"%(str(infections_file_key))
-                                                         
-            infections_file = fred_run.infections_files[infections_file_key]
-            #if fred_run.infections_files.index(infections_file) != int(opts.run): continue
-        ## First find out how many days one needs to show
-            time1 = time.time()
-            max_day = -99999
-            gaia_input_file = "fred_gaia_ts_" + str(fred_run.key) + "." \
-                              + str(infections_file_key) + ".txt"
-            gaia_style_inc_file = "fred_gaia_style_inc" + str(fred_run.key)\
-                                  + "." + str(infections_file_key) + ".txt"
-            for inf_rec in infections_file:
-                day = inf_rec.day
-                max_day = max(day,max_day)
-                gaia_grids = []
-            for i in range(0,max_day+1):
-                gaia_grids.append(Grid(gaia_bounding_box,opts.grid))
+        ### Fill the maximum one again so I can compute boundaries.
+        grid._zeroData()
+        grid.fillDataForDayRunAve(0,maxDay,percents=False)
+        with open(gaia_style_file,"wb")as f:
+            grid.writeStyleFile(f, styleID=1, legend=1, percents=opts.percents)
 
-            for inf_rec in infections_file:
-                inf_id = int(inf_rec.infected_id)
-                household = fred_population.people[inf_id].household
-                place = fred_locations_households.locations[household]
-                lon = place.lon
-                lat = place.lat
-                day = int(inf_rec.day)
-                grid_coords = gaia_grids[day].indexes(lat,lon)
-                gaia_grids[day].data[grid_coords] =\
-                                    gaia_grids[day].data[grid_coords] + 1
-            time2 = time.time()
-            if opts.time: print "Time to grid the incidence = %g"%(time2-time1)
-            if opts.debug:
-                print "Completed Infections Grid for %s"%(str(infections_file_key))
-            time1 = time.time()
-            if opts.debug:
-                print "Creating Gaia Input file for %s"%(str(infections_file_key))
-            with open(gaia_input_file,"w") as f:
-                max_inc = -99999
-                peak_day = 0
-                for k in range(0,max_day+1):
-                    gaia_grid = gaia_grids[k]
-                    incSum = sum(gaia_grid.data)
-                    if incSum > max_inc:
-                        max_inc = incSum
-                        #print "Day: %g IncSum: %g PeakDay %k"%(k,max_inc,peak_day
-                        peak_day = k
-
-                    for countyFips in fred_locations_households.countyList:
-                        f.write("USFIPS st%2s.ct%3s.tr*.bl* -1 %g\n"%(countyFips[0:2],countyFips[2:5],k))
-                    
-                    for i in range(0,gaia_grid_pop.number_lon):
-                        for j in range(0,gaia_grid_pop.number_lat):
-                            lonpoint = gaia_grid_pop.bounding_box[1] + float(i)*gaia_grid_pop.increment +\
-                                       gaia_grid_pop.increment/2.0
-                            latpoint = gaia_grid_pop.bounding_box[0] + float(j)*gaia_grid_pop.increment +\
-                                       gaia_grid_pop.increment/2.0
-                            grid_coord= i*gaia_grid_pop.number_lat + j
-                            if(gaia_grid_pop.data[grid_coord] != 0):
-                                f.write("lonlat %10.5f %10.10f %10d %g:2\n"\
-                                        %(latpoint,lonpoint,gaia_grid_pop.data[grid_coord],k))
-                                
-                    for i in range(0,gaia_grid.number_lon):
-                        for j in range(0,gaia_grid.number_lat):
-                            lonpoint = gaia_grid.bounding_box[1] +\
-                                       float(i)*gaia_grid.increment + gaia_grid.increment/2.0
-                            latpoint = gaia_grid.bounding_box[0] +\
-                                       float(j)*gaia_grid.increment + gaia_grid.increment/2.0
-                            grid_coords = i*gaia_grid.number_lat + j
-                            if(gaia_grid.data[grid_coords] != 0):
-                                f.write("lonlat %10.5f %10.5f %10d %10d:3\n"%(latpoint,lonpoint,\
-                                                                            int(gaia_grid.data[grid_coords]),k))	
-                time2 = time.time()
-                if opts.time: print "Time to write gaia file = %g"%(time2-time1)
-                time1 = time.time()
-                boundaries_inc = computeBoundaries(gaia_grids[peak_day].data,5)
-                colors_inc = computeColors("255.255.0.0","255.0.0.255",len(boundaries_inc))
-            
-                with open(gaia_style_inc_file,"wb") as f:
-                    f.write('id=3\n')
-                    for boundary in boundaries_inc:
-                        f.write('%s 1.5 %g %g\n'%(colors_inc[boundaries_inc.index(boundary)],\
-                                                  boundary[0],boundary[1]))
-            
-                time2 = time.time()
-                if opts.time: print "Time to computer inc boudaries = %g"%(time2-time1)
-                if opts.debug:
-                    print "Completed writing GAIA file for %s"%(str(infections_file_key))
-                    print "Creating PlotInfo for %s"%(str(infections_file_key))
-                plotInfo = PlotInfo(gaia_input_file,None,[gaia_style_pop_file,gaia_style_inc_file],False,
-                                    "gif","mov",None,None,-1.0,-1.0,
-                                    0,1000,False,None,42.0,-1.0,"255.255.255.255",None,2.0,fred_title,None,opts.debug)
-                if opts.debug:
-                    print "Completed PlotInfo for %s"%(str(infections_file_key))
-                    print "Sending to GAIA"
-                time1 = time.time()
-                gaia = GAIA(plotInfo)
-                time2 = time.time()
-                if opts.time: print "Time to produce GAIA object = %g sec"%(time2 - time1)
-                
-                time1 = time.time()
-                gaia.call()
-                time2 = time.time()
-                if opts.debug:
-                    print "GAIA returned"
-                if opts.time: print "Time for GAIA to produce visualization = %g sec"%(time2 - time1)
+    legendTitle = "Number of Persons"
+    if opts.percents:
+	legendTitle = "Percentage"
+                                 
+    plotInfo = PlotInfo(input_filename_= gaia_input_file,
+                        styles_filenames_=[gaia_style_file],
+                        output_format_=imgFormat,
+                        bundle_format_= movFormat,
+                        stroke_width_=0.5,
+                        max_resolution_=500,
+                        font_size_=18.0,
+                        background_color_="255.255.255.255",
+                        title_= opts.title,
+                        legend_=legendTitle,
+                        legend_font_size_=12.0)
+    gaia = GAIA(plotInfo)
+    print "Calling GAIA"
+    gaia.call()
 
