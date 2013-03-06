@@ -135,7 +135,8 @@ class Grid:
                                                    +"peole in grid %d %d: %g %g"%(x,y,value,people))
                             self.data[y*self.number_lat+x] += int((value/people)*100.0)
                         else:
-                            self.data[y*self.number_lat+x] += value
+			    self.data[y*self.number_lat+x] += value
+			    			    
         for i in range(0,len(self.data)):
             self.data[i] /= float(numRuns)
                                    
@@ -387,23 +388,31 @@ if __name__ == '__main__':
 
     time1 = time.time()
     countyList = []
-    if fred_run.params_dict['city'] is not None:
-	countyList = [fred.cityDict[fred_run.params_dict['city']]]
-    elif fred_run.params_dict['county'] is not None:
-	countyList = [fred.countyDict[fred_run.params_dict['county']]]
-    else:
-	synth_pop_dir = fred_run.get_param("synthetic_population_directory")
-	synth_pop_id = fred_run.get_param("synthetic_population_id")
-	synth_pop_prefix = os.path.expandvars(synth_pop_dir + "/" + synth_pop_id + "/" + synth_pop_id)
-	synth_household_filename = synth_pop_prefix + "_synth_households.txt"
+    #if fred_run.params_dict['city'] is not None:
+#	print fred_run.params_dict['city']
+#	countyList = [fred.cityDict[fred_run.params_dict['city']]]
+#    elif fred_run.params_dict['county'] is not None:
+#	countyList = [fred.countyDict[fred_run.params_dict['county']]]
+#    else:
+	#synth_pop_dir = fred_run.get_param("synthetic_population_directory")
+	#synth_pop_id = fred_run.get_param("synthetic_population_id")
+	
+	#synth_pop_prefix = os.path.expandvars(synth_pop_dir + "/" + synth_pop_id + "/" + synth_pop_id)
+    synth_pop_dir = fred_run.get_meta_variable("POPULATION")
+    synthSplit = synth_pop_dir.split("/")
+    synth_pop_id = synthSplit[len(synthSplit)-1]
+   # print synth_pop_dir + ": " + synth_pop_id
+    synth_pop_prefix = os.path.expandvars(synth_pop_dir + "/" + synth_pop_id)
+    synth_household_filename = synth_pop_prefix + "_synth_households.txt"
 
-	try:
-	    open(synth_household_filename,"r")
-	except IOError:
-	    print "Problem opening FRED location file " + synth_household_filename
+    try:
+	open(synth_household_filename,"r")
+    except IOError:
+	print "Problem opening FRED location file " + synth_household_filename
     
-	fredHouseholds = FRED_Household_Set(synth_household_filename)
-	countyList = fredHouseholds.countyList
+    fredHouseholds = FRED_Household_Set(synth_household_filename)
+    countyList = fredHouseholds.countyList
+    print str(countyList)
     
     grid = Grid()
     grid.setupFromFredGridFile(fred_run.gaiaDir,variable=vizVariable)    

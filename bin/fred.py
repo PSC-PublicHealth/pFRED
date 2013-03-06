@@ -29,14 +29,6 @@ class FRED:
 
         #print self.key_dict
 
-	self.countyDict = dict()
-	self.cityDict = dict()
-	with open(self.home_dir + "/input_files/US_counties.txt","rb") as f:
-	    for line in f:
-		lineSplit = line.split("\t")
-		self.countyDict[lineSplit[2]+ " County " + lineSplit[1]] = lineSplit[3]
-		self.cityDict[lineSplit[0]+ " " + lineSplit[1]] = lineSplit[3]
-	
     def key_lookup(self,key):
         if self.key_dict.has_key(str(key)):
             return self.key_dict[str(key)]
@@ -242,7 +234,7 @@ class FRED_RUN:
 
     def get_meta_variable(self,variable):
         if os.access(self.run_meta_dir + "/" + variable,os.F_OK) == True:
-            return open(self.run_meta_dir + "/" + variable,"r").readline().strip()
+	    return open(self.run_meta_dir + "/" + variable,"rb").readline().strip()
         else:
             fred.fred_class_error("cannot obtain "+ variable +" from meta data for key = " + str(self.key))
 
