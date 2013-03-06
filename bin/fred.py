@@ -29,6 +29,14 @@ class FRED:
 
         #print self.key_dict
 
+	self.countyDict = dict()
+	self.cityDict = dict()
+	with open(self.home_dir + "/input_files/US_counties.txt","rb") as f:
+	    for line in f:
+		lineSplit = line.split("\t")
+		self.countyDict[lineSplit[2]+ " County " + lineSplit[1]] = lineSplit[3]
+		self.cityDict[lineSplit[0]+ " " + lineSplit[1]] = lineSplit[3]
+	
     def key_lookup(self,key):
         if self.key_dict.has_key(str(key)):
             return self.key_dict[str(key)]
@@ -300,8 +308,6 @@ class FRED_Household_Set:
                 for line in f:
                     recs = string.split(line,",")
                     self.locations.append(recs)
-                    if recs[0] == "261942604":
-                        print "this exists!!!!"
                     self.locationsIDDict[recs[0]] = lcount
                     lcount += 1
 

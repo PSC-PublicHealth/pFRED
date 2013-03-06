@@ -183,7 +183,6 @@ class Grid:
     
     def writeToGaiaFile(self,fileHandle,day=None,styleID=None):
         polyCount = self.polyOffSet
-        #f.write("USFIPS st42.ct003.tr*.bl* -1:-1\n")
         for i in range(0,self.number_lon):
             for j in range(0,self.number_lat):
                 
@@ -387,17 +386,25 @@ if __name__ == '__main__':
     ### Find the Population File
 
     time1 = time.time()
-    synth_pop_dir = fred_run.get_param("synthetic_population_directory")
-    synth_pop_id = fred_run.get_param("synthetic_population_id")
-    synth_pop_prefix = os.path.expandvars(synth_pop_dir + "/" + synth_pop_id + "/" + synth_pop_id)
-    synth_household_filename = synth_pop_prefix + "_synth_households.txt"
+    countyList = []
+    if fred_run.params_dict['city'] is not None:
+	countyList = [fred.cityDict[fred_run.params_dict['city']]]
+    elif fred_run.params_dict['county'] is not None:
+	countyList = [fred.countyDict[fred_run.params_dict['county']]]
+    else:
+	synth_pop_dir = fred_run.get_param("synthetic_population_directory")
+	synth_pop_id = fred_run.get_param("synthetic_population_id")
+	synth_pop_prefix = os.path.expandvars(synth_pop_dir + "/" + synth_pop_id + "/" + synth_pop_id)
+	synth_household_filename = synth_pop_prefix + "_synth_households.txt"
 
-    try:
-        open(synth_household_filename,"r")
-    except IOError:
-        print "Problem opening FRED location file " + synth_household_filename
+	try:
+	    open(synth_household_filename,"r")
+	except IOError:
+	    print "Problem opening FRED location file " + synth_household_filename
     
-    fredHouseholds = FRED_Household_Set(synth_household_filename)
+	fredHouseholds = FRED_Household_Set(synth_household_filename)
+	countyList = fredHouseholds.countyList
+    
     grid = Grid()
     grid.setupFromFredGridFile(fred_run.gaiaDir,variable=vizVariable)    
     gaia_input_file = "gaia_input_%s_%s_%s_%s%s.txt"%(vizType,key,vizVariable,vizOp,percentsString)
@@ -412,7 +419,7 @@ if __name__ == '__main__':
 	    grid.fillDataRunAveTimeMax(0, percents=opts.percents)
 	    
         with open(gaia_input_file,"wb") as f:
-            for countyFips in fredHouseholds.countyList:
+            for countyFips in countyList:
                 f.write("USFIPS st%2s.ct%3s.tr*.bl* -1\n"%(countyFips[0:2],countyFips[2:5]))
             grid.writeToGaiaFile(f,styleID=1)
         with open(gaia_style_file,"wb") as f:
@@ -429,7 +436,7 @@ if __name__ == '__main__':
                 grid.fillDataForDayRunAve(0,day,percents=opts.percents)
                 sumG = grid._sumData()
                 if sumG > 0.0:
-                    for countyFips in fredHouseholds.countyList:
+                    for countyFips in countyList:
                         f.write("USFIPS st%2s.ct%3s.tr*.bl* -1 %d\n"%(countyFips[0:2],countyFips[2:5],day))
                     grid.writeToGaiaFile(f,day=day,styleID=1)
                 if sumG > maxSum:
