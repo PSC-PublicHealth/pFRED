@@ -27,6 +27,7 @@ void Small_Cell::setup(int i, int j, double grid_cell_size, double grid_min_x, d
   max_y = grid_min_y + (row+1)*grid_cell_size;
   center_y = (min_y+max_y)/2.0;
   center_x = (min_x+max_x)/2.0;
+  reset_counts();
 }
 
 void Small_Cell::quality_control() {

@@ -363,8 +363,6 @@ public:
    */
   static void read_init_files();
 
-  void count_new_infection(Person *self, int disease_id);
-
 private:
 
   // current favorite places

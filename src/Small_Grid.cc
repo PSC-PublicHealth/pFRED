@@ -73,7 +73,6 @@ Small_Grid::Small_Grid(Large_Grid * lgrid) {
 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      // grid[i][j].setup(this,i,j);
       grid[i][j].setup(i, j, grid_cell_size, min_x, min_y);
     }      
   }
@@ -144,16 +143,7 @@ void Small_Grid::quality_control(char * directory) {
 }
 
 
-void Small_Grid::update(int day) {
-  for (int row = 0; row < rows; row++) {
-    for (int col = 0; col < cols; col++) {
-      grid[row][col].update(day);
-    }
-  }
-}
-
-
-// Specific to Small_Cell Small_Grid:
+// Specific to Small_Grid:
 
 void Small_Grid::initialize_gaia_data(char * directory, int run) {
   char gaia_dir[FRED_STRING_SIZE];
@@ -194,6 +184,10 @@ void Small_Grid::initialize_gaia_data(char * directory, int run) {
     Utils::fred_make_directory(gaia_dir);
     sprintf(gaia_dir, "%s/Cs", gaia_dis_dir);
     Utils::fred_make_directory(gaia_dir);
+    sprintf(gaia_dir, "%s/P", gaia_dis_dir);
+    Utils::fred_make_directory(gaia_dir);
+    sprintf(gaia_dir, "%s/N", gaia_dis_dir);
+    Utils::fred_make_directory(gaia_dir);
   }
 }
 
@@ -205,16 +199,20 @@ void Small_Grid::print_gaia_data(char * directory, int run, int day) {
     print_output_data(dir, disease_id, Global::OUTPUT_Is, (char *)"Is", day);
     print_output_data(dir, disease_id, Global::OUTPUT_C, (char *)"C", day);
     print_output_data(dir, disease_id, Global::OUTPUT_Cs, (char *)"Cs", day);
+    print_output_data(dir, disease_id, Global::OUTPUT_P, (char *)"P", day);
     print_population_data(dir, disease_id, day);
   }
 }
 
 void Small_Grid::print_population_data(char * dir, int disease_id, int day) {
   char filename[FRED_STRING_SIZE];
-  printf("Printing popuation\n");
-  Global::Places.get_cell_data_from_households(disease_id,1);
+  // printf("Printing population size for GAIA\n");
   sprintf(filename,"%s/dis%d/N/day-%d.txt",dir,disease_id,day);
   FILE *fp = fopen(filename, "w");
+
+  // get the counts for an arbitrary output code;
+  // we only care about the popsize here.
+  Global::Places.get_cell_data_from_households(disease_id, Global::OUTPUT_C);
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) { 
       Small_Cell * cell = (Small_Cell *) &grid[i][j];
@@ -222,16 +220,23 @@ void Small_Grid::print_population_data(char * dir, int disease_id, int day) {
       if (popsize > 0){
 	fprintf(fp, "%d %d %d\n", i, j, popsize);
       }
+      // zero out this cell
+      cell->reset_counts();
     }
   }
   fclose(fp);
 }
 
 void Small_Grid::print_output_data(char * dir, int disease_id, int output_code, char * output_str, int day) {
-  Global::Places.get_cell_data_from_households(disease_id, output_code);
   char filename[FRED_STRING_SIZE];
   sprintf(filename, "%s/dis%d/%s/day-%d.txt", dir, disease_id, output_str, day);
   FILE *fp = fopen(filename, "w");
+  // printf("print_output_data to file %s\n", filename);
+
+  // get the counts for this output_code
+  Global::Places.get_cell_data_from_households(disease_id, output_code);
+
+  // print out the non-zero cells
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       Small_Cell * cell = (Small_Cell *) &grid[i][j];
@@ -240,6 +245,8 @@ void Small_Grid::print_output_data(char * dir, int disease_id, int output_code, 
 	int popsize = cell->get_popsize();
 	fprintf(fp, "%d %d %d %d\n", i, j, count, popsize);
       }
+      // zero out this cell
+      cell->reset_counts();
     }
   }
   fclose(fp);

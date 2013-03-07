@@ -76,9 +76,10 @@ class Global {
     static const int OUTPUT_C = 5;
     static const int OUTPUT_Cs = 6;
     static const int OUTPUT_D = 7;
-    static const int OUTPUT_A = 8;
-    static const int OUTPUT_As = 9;
-    static const int OUTPUT_T = 10;
+    static const int OUTPUT_AR = 8;
+    static const int OUTPUT_ARs = 9;
+    static const int OUTPUT_P = 10;
+    static const int OUTPUT_N = 11;
 
     // global constants
     static const int DAYS_PER_WEEK = 7;

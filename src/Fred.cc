@@ -252,9 +252,6 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    if (Global::Enable_Small_Grid)
-      Global::Small_Cells->update(day);
-
     Global::Places.update(day);
     Utils::fred_print_lap_time("day %d update places", day);
 
@@ -266,6 +263,12 @@ int main(int argc, char* argv[]) {
 
     Global::Pop.report(day);
     Utils::fred_print_lap_time("day %d report population", day);
+
+    // print GAIA data if desired
+    if (Global::Print_GAIA_Data && run == 1) {
+      Global::Small_Cells->print_gaia_data(directory, run, day);
+      Utils::fred_print_lap_time("day %d print_gaia_data", day);
+    }
 
     if ( Global::Enable_Migration
         && Date::match_pattern( Global::Sim_Current_Date, "02-*-*" ) ) {
@@ -293,12 +296,6 @@ int main(int argc, char* argv[]) {
     // incremental trace
     if (Global::Incremental_Trace && day && !(day%Global::Incremental_Trace))
       Global::Pop.print(1, day);
-
-    // print GAIA data if desired
-    if (Global::Print_GAIA_Data && run == 1) {
-      Global::Small_Cells->print_gaia_data(directory, run, day);
-      Utils::fred_print_lap_time("day %d print_gaia_data", day);
-    }
 
     #pragma omp parallel sections
     {

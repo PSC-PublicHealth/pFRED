@@ -34,7 +34,6 @@ public:
   void quality_control(char * directory);
 
   // Specific to Small_Cell grid:
-  void update(int day);
   void initialize_gaia_data(char * directory, int run);
   void print_gaia_data(char * directory, int run, int day);
 

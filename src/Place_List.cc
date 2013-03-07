@@ -797,24 +797,6 @@ void Place_List::print_household_size_distribution(char * dir, char * date_strin
   fclose(fp);
 }
 
-void Place_List::end_of_run() {
-  if (Global::Verbose > 1) {
-    int number_places = places.size();
-    for (int p = 0; p < number_places; p++) {
-      Place *place = places[p];
-      fprintf(Global::Statusfp,"PLACE REPORT: id %d type %c size %d inf %d attack_ratio %5.2f current %d new %d first_day %d last_day %d\n",
-	      place->get_id(), place->get_type(), place->get_size(),
-	      place->get_total_infections(0),
-	      100.0*place->get_attack_ratio(0),
-	      place->get_current_infectious_visitors(0),
-	      place->get_new_infections(0),
-	      place->get_first_day_infectious(),
-	      place->get_last_day_infectious());
-    }
-  }
-}
-
-
 void Place_List::delete_place_label_map() {
   if ( place_label_map ) {
     delete place_label_map;
@@ -834,4 +816,22 @@ void Place_List::get_cell_data(int disease_id, char place_type, int output_code)
     }
   }
 }
+
+void Place_List::end_of_run() {
+  if (Global::Verbose > 1) {
+    int number_places = places.size();
+    for (int p = 0; p < number_places; p++) {
+      Place *place = places[p];
+      fprintf(Global::Statusfp,"PLACE REPORT: id %d type %c size %d inf %d attack_ratio %5.2f current %d new %d first_day %d last_day %d\n",
+	      place->get_id(), place->get_type(), place->get_size(),
+	      place->get_total_infections(0),
+	      100.0*place->get_attack_ratio(0),
+	      place->get_current_infectious_visitors(0),
+	      place->get_new_infections(0),
+	      place->get_first_day_infectious(),
+	      place->get_last_day_infectious());
+    }
+  }
+}
+
 

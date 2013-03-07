@@ -127,6 +127,14 @@ public:
    */
   void become_susceptible( Disease * disease ) { health.become_susceptible( this, disease ); }
 
+  void update_household_counts(int day, int disease_id) {
+    health.update_place_counts( this, day, disease_id, get_household());
+  }
+
+  void update_school_counts(int day, int disease_id) {
+    health.update_place_counts( this, day, disease_id, get_school());
+  }
+
   /**
    * This agent will become infectious with the disease
    * @param disease a pointer to the Disease
@@ -258,6 +266,8 @@ public:
    */
   bool is_infectious(int dis) { return health.is_infectious(dis); }
 
+  bool is_infected(int dis) { return health.is_infected(dis); }
+
   /**
    * @param disease the disease to check
    * @return the specific Disease's susceptibility for this Person
@@ -376,10 +386,15 @@ public:
   int get_degree() { return activities.get_degree(); }
 
   int get_household_size(){ return activities.get_group_size(HOUSEHOLD_ACTIVITY); }
+
   int get_neighborhood_size(){ return activities.get_group_size(NEIGHBORHOOD_ACTIVITY); }
+
   int get_school_size(){ return activities.get_group_size(SCHOOL_ACTIVITY); }
+
   int get_classroom_size(){ return activities.get_group_size(CLASSROOM_ACTIVITY); }
+
   int get_workplace_size(){ return activities.get_group_size(WORKPLACE_ACTIVITY); }
+
   int get_office_size(){ return activities.get_group_size(OFFICE_ACTIVITY); }
 
   /**
@@ -452,8 +467,6 @@ public:
   bool become_a_teacher(Place *school) { return activities.become_a_teacher(this, school); }
   bool is_teacher() { return activities.is_teacher(); }
   bool is_student() { return activities.is_student(); }
-
-  void count_new_infection(Person * self, int disease_id) { activities.count_new_infection(self, disease_id); }
 
 private:
 

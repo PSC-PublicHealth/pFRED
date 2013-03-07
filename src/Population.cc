@@ -811,6 +811,25 @@ void Population::Update_Population_Behaviors::operator() ( Person & p ) {
 
 void Population::report(int day) {
 
+  // update infection counters for places
+  for (int d = 0; d < Global::Diseases; d++) {
+    for (int i = 0; i < pop_size; ++i) {
+      if ( !blq.is_valid_index( i ) ) { continue; }
+      Person & pop_i = blq.get_item_reference_by_index( i );
+      if (pop_i.is_infected(d)) {
+
+	// Update the infection counters for households, if needed for GAIA vis data.
+	if (Global::Print_GAIA_Data) {
+	  pop_i.update_household_counts(day, d);
+	}
+
+	// Update the infection counters for schools
+	if (pop_i.get_school() != NULL)
+	  pop_i.update_school_counts(day, d);
+      }
+    }
+  }
+
   // give out anti-virals (after today's infections)
   av_manager->disseminate(day);
 

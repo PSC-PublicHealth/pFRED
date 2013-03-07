@@ -151,8 +151,6 @@ void Health::become_exposed( Person * self, Disease *disease, Transmission & tra
         FRED_STATUS( 1, "EXPOSED person %d to disease %d\n", self->get_id(), disease->get_id() );
       }
     }
-    // count a new infection
-    self->count_new_infection(self, disease_id);
   }
 }
 
@@ -496,6 +494,30 @@ void Health::infect( Person * self, Person *infectee, int disease_id, Transmissi
   FRED_STATUS( 1, "person %d infected person %d infectees = %d\n",
         self->get_id(), infectee->get_id(), infectee_count[disease_id] );
 }
+
+void Health::update_place_counts(Person * self, int day, int disease_id, Place * place) {
+  if (place == NULL) return;
+  if (is_infected(disease_id)) {
+    // printf("DAY %d person %d place %s ", day, self->get_id(), place->get_label()); 
+    if (is_newly_infected(day, disease_id)) {
+      place->add_new_infection(disease_id);
+      // printf("NEWLY "); 
+    }
+    place->add_current_infection(disease_id);
+    // printf("INFECTED "); 
+
+    if (is_symptomatic(disease_id)) {
+      if (is_newly_symptomatic(day, disease_id)) {
+	place->add_new_symptomatic_infection(disease_id);
+	// printf("NEWLY "); 
+      }
+      place->add_current_symptomatic_infection(disease_id);
+      // printf("SYMPTOMATIC"); 
+    }
+    // printf("\n"); 
+  }
+}
+
 
 void Health::terminate( Person * self ) {
   for ( int disease_id = 0; disease_id < Global::Diseases; ++disease_id ) {

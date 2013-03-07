@@ -31,7 +31,7 @@ public:
   double distance_to_grid_cell(Small_Cell *grid_cell2);
   void print();
 
-  void update(int day) { count = 0; popsize = 0; }
+  void reset_counts() { count = 0; popsize = 0; }
   void update_cell_count(int n, int total) { count += n; popsize += total; } 
   int get_count() { return count; }
   int get_popsize() { return popsize; }

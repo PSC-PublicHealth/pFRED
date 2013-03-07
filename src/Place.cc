@@ -46,6 +46,7 @@ void Place::setup( const char *lab, fred::geo lon, fred::geo lat, Place* cont, P
   for ( int d = 0; d < Global::MAX_NUM_DISEASES; ++d ) {
 
     new_infections[ d ] = 0;
+    current_infections[ d ] = 0;
     total_infections[ d ] = 0;
 
     new_symptomatic_infections[ d ] = 0;
@@ -54,8 +55,9 @@ void Place::setup( const char *lab, fred::geo lon, fred::geo lat, Place* cont, P
     current_infectious_visitors[ d ] = 0;
     current_symptomatic_visitors[ d ] = 0;
 
-    new_deaths[ d ] = 0;
-    total_deaths[ d ] = 0;
+    // NOT IMPLEMENTED YET:
+    // new_deaths[ d ] = 0;
+    // total_deaths[ d ] = 0;
   }
 
 }
@@ -101,24 +103,11 @@ void Place::update(int day) {
 
   for (int d = 0; d < Global::Diseases; d++) {
     new_infections[ d ] = 0;
+    current_infections[ d ] = 0;
     new_symptomatic_infections[ d ] = 0;
-    new_deaths[ d ] = 0;
     current_infectious_visitors[ d ] = 0;
     current_symptomatic_visitors[ d ] = 0;
-  }
-}
-
-void Place::count_new_infection(Person * per, int disease_id) {
-  #pragma omp atomic
-  new_infections[disease_id]++; 
-  #pragma omp atomic
-  total_infections[disease_id]++;
-
-  if (per->get_health()->is_symptomatic()) {
-    #pragma omp atomic
-    new_symptomatic_infections[disease_id]++;
-    #pragma omp atomic
-    total_symptomatic_infections[disease_id]++;
+    // new_deaths[ d ] = 0;
   }
 }
 
@@ -374,6 +363,14 @@ int Place::get_output_count(int disease_id, int output_code) {
     
   case Global::OUTPUT_Cs:
     return get_new_symptomatic_infections(disease_id);
+    break;
+
+  case Global::OUTPUT_P:
+    return get_current_infections(disease_id);
+    break;
+
+  case Global::OUTPUT_N:
+    return get_size();
     break;
   }
   return 0;

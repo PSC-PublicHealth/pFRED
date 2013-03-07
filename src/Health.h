@@ -35,6 +35,7 @@ class AV_Health;
 class Vaccine;
 class Vaccine_Health;
 class Vaccine_Manager;
+class Place;
 
 class Health {
 
@@ -142,6 +143,8 @@ public:
    * @return <code>true</code> if the agent is infectious, <code>false</code> otherwise
    */
   bool is_infectious(int disease_id) const { return (infectious.test( disease_id ) ); }
+
+  bool is_infected(int disease_id) const { return active_infections.test( disease_id ); }
 
   /**
    * Is the agent symptomatic - note that this is independent of disease
@@ -453,6 +456,13 @@ public:
   void add_past_infection( int strain_id, int recovery_date, int age_at_exposure, Disease * dis ) {
     past_infections[ dis->get_id() ].push_back( Past_Infection( strain_id, recovery_date, age_at_exposure ) );
   }
+
+  void update_place_counts(Person * self, int day, int disease_id, Place * place);
+
+  bool is_newly_infected(int day, int disease_id) { return day == get_exposure_date(disease_id); }
+
+  bool is_newly_symptomatic(int day, int disease_id) { return day == get_symptomatic_date(disease_id); }
+
 
   void die() { alive = false; }
 
