@@ -496,7 +496,7 @@ Utils::Tokens & Utils::split_by_delim( const std::string & str,
 
   while ( std::getline( ss, item, delim ) ) {
     if ( !item.empty() ) {
-      if ( item.at(0) == '\"' || item.at(0) == '\'' ) {
+      if ( item.size() > 1 && ( item.at(0) == '\"' || item.at(0) == '\'' ) ) {
         quoted_item = item;
         continue;
       }
