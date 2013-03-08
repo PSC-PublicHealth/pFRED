@@ -491,7 +491,28 @@ Utils::Tokens & Utils::split_by_delim( const std::string & str,
   std::stringstream ss( str );
   std::string item;
 
+  std::string quoted_item;
+  quoted_item.clear();
+
   while ( std::getline( ss, item, delim ) ) {
+    if ( !item.empty() ) {
+      if ( item.at(0) == '\"' || item.at(0) == '\'' ) {
+        quoted_item = item;
+        continue;
+      }
+      else if ( !quoted_item.empty() ) {
+        if ( item.at(item.size()-1) != quoted_item.at(0) ) {
+          quoted_item = quoted_item + "," + item;
+          continue;
+        }
+        else {
+          item = quoted_item + "," + item;
+          item.erase(0,1);
+          item.erase(item.size()-1,1);
+          quoted_item.clear();
+        }
+      }
+    }
     if ( !item.empty() || !collapse_consecutive_delims ) {
       tokens.push_back( item );
     }
