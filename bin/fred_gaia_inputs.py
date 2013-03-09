@@ -262,17 +262,19 @@ class Grid:
         if percents is True:
             maxBoundary = 25
             colors,boundaries = computePercentBoundariesAndColors(maxBoundary)
-        else:   
-            boundaries = computeBoundaries(self.data,7)
+        else:
+	    maxData = max(self.data)
+	    
+            colors,boundaries = computePercentBoundariesAndColors(.25*maxData,scalar=max(self.data))
             #colors = computeColors(startColor,endColor,len(boundaries))
-	    if self.variable == "N":
-		colors = computeColors("255.200.200.200","255.0.0.0",7)
-	    else:
-		colors = ["255.255.255.255","255.255.0.0","255.255.199.0",
-			  "255.103.250.0",
-			  "255.15.249.167","255.17.140.255",
-			  "255.0.0.255"]
-		
+	    #if self.variable == "N":
+	#	colors = computeColors("255.200.200.200","255.0.0.0",7)
+	#    else:
+	#	colors = ["255.255.255.255","255.255.0.0","255.255.199.0",
+	#		  "255.103.250.0",
+	#		  "255.15.249.167","255.17.140.255",
+	#		  "255.0.0.255"
+	print str(len(colors)) + " " + str(len(boundaries))	
         if styleID:
             fileHandle.write("id=%d\n"%styleID)
             if legend:
@@ -444,10 +446,10 @@ if __name__ == '__main__':
                 grid._zeroData()
                 grid.fillDataForDayRunAve(0,day,percents=opts.percents)
                 sumG = grid._sumData()
-                if sumG > 0.0:
-                    for countyFips in countyList:
-                        f.write("USFIPS st%2s.ct%3s.tr*.bl* -1 %d\n"%(countyFips[0:2],countyFips[2:5],day))
-                    grid.writeToGaiaFile(f,day=day,styleID=1)
+		for countyFips in countyList:
+		    f.write("USFIPS st%2s.ct%3s.tr*.bl* -1 %d\n"%(countyFips[0:2],countyFips[2:5],day))
+		if sumG > 0.0:
+		    grid.writeToGaiaFile(f,day=day,styleID=1)
                 if sumG > maxSum:
                     maxSum = sumG
                     maxDay = day

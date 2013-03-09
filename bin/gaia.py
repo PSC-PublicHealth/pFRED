@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# $Id: gaia.py,v 1.5 2013-03-06 15:40:13 stbrown Exp $ #
+# $Id: gaia.py,v 1.6 2013-03-09 16:08:21 stbrown Exp $ #
 
 # Copyright 2009, Pittsburgh Supercomputing Center (PSC).  
 # See the file 'COPYRIGHT.txt' for any restrictions.
@@ -834,24 +834,58 @@ def computeBoundaries(valueList,numOfBins):
 
     return boundaryList
 
-def computePercentBoundariesAndColors(maxBoundary = 25.0):
+def computePercentBoundariesAndColors(maxBoundary = 25.0, scalar=100.0):
     ### First the colors, which is easy
-    if maxBoundary < 25:
-        raise RuntimeError("maxBoundary must be 25 or larger")
+    #if maxBoundary < 25:
+    #    raise RuntimeError("maxBoundary must be 25 or larger")
     colors = ["255.255.0.0","255.255.199.0",
               "255.103.250.0",
               "255.15.249.167","255.17.140.255",
               "255.0.0.255"]
     percents = [0.05,0.10,0.15,0.25,0.50,1.0]
     boundaries = []
-    for i in range(0,len(percents)-1):
-        lowerBoundary = int(percents[i]*float(maxBoundary))
-        upperBoundary = int(percents[i+1]*float(maxBoundary))
-        if upperBoundary == lowerBoundary+1:
-            boundaries.append((lowerBoundary,lowerBoundary))
-        else:
-            boundaries.append((lowerBoundary,upperBoundary-1))
-    boundaries.append((maxBoundary,100))
+    if scalar <= 10:
+	boundaries.append((1,1))
+	boundaries.append((2,2))
+	boundaries.append((3,3))
+	boundaries.append((4,4))
+	boundaries.append((5,5))
+	boundaries.append((6,int(scalar)))
+    elif scalar <= 30:
+	boundaries.append((1,1))
+	boundaries.append((2,2))
+	boundaries.append((3,3))
+	boundaries.append((4,4))
+	boundaries.append((5,7))
+	boundaries.append((8,int(scalar)))
+    elif scalar <= 50:
+	boundaries.append((1,1))
+	boundaries.append((2,2))
+	boundaries.append((3,3))
+	boundaries.append((4,6))
+	boundaries.append((6,10))
+	boundaries.append((11,int(scalar)))
+    elif scalar < 100:
+	boundaries.append((1,1))
+	boundaries.append((2,2))
+	boundaries.append((3,5))
+	boundaries.append((6,10))
+	boundaries.append((11,25))
+	boundaries.append((26,int(scalar)))    
+    else:
+	for i in range(0,len(percents)-1):
+	    if i==0:
+		lowerBoundary = 1
+	    else:
+		lowerBoundary = int(percents[i]*maxBoundary)
+
+	    upperBoundary = int(percents[i+1]*maxBoundary)
+	    if upperBoundary == lowerBoundary+1:
+		    boundaries.append((lowerBoundary,lowerBoundary))
+	    else:
+		boundaries.append((lowerBoundary,upperBoundary-1))
+	boundaries.append((int(maxBoundary),int(math.ceil(scalar))))
+    
     return (colors,boundaries)
         
 def computeColors(colorStart,colorEnd,numberOfColors):
