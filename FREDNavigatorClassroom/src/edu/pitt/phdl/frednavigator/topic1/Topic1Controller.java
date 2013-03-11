@@ -5,8 +5,8 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -14,8 +14,6 @@ import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -31,9 +29,8 @@ import javafx.stage.Stage;
 public class Topic1Controller implements Initializable {
 
   String r0Value = "2.5";
-  LineChart chart;
   String fileVariable;
-  BorderPane borderPane;
+
   MediaPlayer mediaPlayer;
   //Slider r0Slider;
   @FXML
@@ -45,6 +42,12 @@ public class Topic1Controller implements Initializable {
   @FXML
   private Tab tabIncidence;
   @FXML
+  private BorderPane brdrPaneIncidence;
+  @FXML
+  private Tab tabAttackRate;
+  @FXML
+  private BorderPane brdrPaneAttackRate;
+  @FXML
   private Slider r0Slider;
 
   @FXML
@@ -52,90 +55,7 @@ public class Topic1Controller implements Initializable {
   {
     System.exit(0);
   }
-
-  @FXML
-  private void newSTab(ActionEvent event)
-  {
-    fileVariable = "S";
-    makeNewTab(fileVariable);
-  }
-
-  @FXML
-  private void newETab(ActionEvent event)
-  {
-    fileVariable = "E";
-    makeNewTab(fileVariable);
-  }
-
-  @FXML
-  private void newITab(ActionEvent event)
-  {
-    fileVariable = "I";
-    makeNewTab(fileVariable);
-  }
-
-  @FXML
-  private void newRTab(ActionEvent event)
-  {
-    fileVariable = "R";
-    makeNewTab(fileVariable);
-  }
-
-  @FXML
-  private void newCTab(ActionEvent event)
-  {
-    fileVariable = "C";
-    makeNewTab(fileVariable);
-  }
-
-  private void makeNewTab(String variable)
-  {
-    Tab newTab = new Tab();
-    newTab.setText(variable);
-
-    borderPane = new BorderPane();
-
-//    r0Slider = makeR0Slider();
- 
-    /*r0Slider.setOnMouseDragReleased(new EventHandler<MouseDragEvent>() {
-     public void handle(MouseDragEvent me) {
-     System.out.println("Mouse Drag Event");
-     //Number old_val, Number new_val) {
-     double new_val = r0Slider.getValue();
-     String new_val_string = (new_val * 10) + "";
-     //Test if slider has moved to the next slider tick
-     if (new_val_string.charAt(3) == '0') {
-     r0Value = new_val_string.charAt(0) + "." + 
-     new_val_string.charAt(1);
-     if (r0Value.charAt(0) > '1' && r0Value.charAt(2) == '0') {
-     r0Value = r0Value.charAt(0) + "";
-     }
-     chart = makeLineChart(fileVariable, r0Value);
-     borderPane.setCenter(chart);
-     }
-     }
-     });*/
-
-    borderPane.setTop(r0Slider);
-    chart = makeLineChart(variable, r0Value);
-    borderPane.setCenter(chart);
-
-    Button movieButton = new Button();
-    movieButton.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e)
-      {
-        openMovie();
-      }
-    });
-    movieButton.setText("Play Movie");
-    borderPane.setLeft(movieButton);
-
-
-    newTab.setContent(borderPane);
-    //tabPane.getTabs().add(newTab);
-  }
-
+  
   /**
    *
    */
@@ -177,22 +97,77 @@ public class Topic1Controller implements Initializable {
     stage.show();
     play();
   }
-
-  private LineChart makeLineChart(String variable, String r0Value)
+  
+  private void makeLineChartOnSelectedTab(String r0Value, Tab selectedTab)
   {
-    NumberAxis xAxis = new NumberAxis();
-    NumberAxis yAxis = new NumberAxis();
-    xAxis.setLabel("Days");
+    //If we are on the SEIR tab
+    if(selectedTab == this.tabSEIR)
+    {
+      NumberAxis xAxis = new NumberAxis();
+      NumberAxis yAxis = new NumberAxis(0.0, 1200000.0, 100000.0);
+      xAxis.setLabel("Days");
+      yAxis.setLabel("Number of People");
 
 
-    //creating the chart
-    LineChart<Number, Number> lineChart =
-            new LineChart<>(xAxis, yAxis);
+      //creating the chart
+      LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+      lineChart.setTitle("SEIR: R0=" + r0Value);
+      
+      
+      XYChart.Series seriesS = makeLineChartSeries("S", r0Value, "Susceptible");
+      lineChart.getData().add(seriesS);
+      XYChart.Series seriesE = makeLineChartSeries("E", r0Value, "Exposed");
+      lineChart.getData().add(seriesE);
+      XYChart.Series seriesI = makeLineChartSeries("I", r0Value, "Infected");
+      lineChart.getData().add(seriesI);
+       XYChart.Series seriesR = makeLineChartSeries("R", r0Value, "Recovered");
+      lineChart.getData().add(seriesR);
+      lineChart.setCreateSymbols(false);
+      this.brdrPaneSEIR.setCenter(lineChart);
+      
+    } else if(selectedTab == this.tabIncidence) {
+      NumberAxis xAxis = new NumberAxis();
+      NumberAxis yAxis = new NumberAxis(0.0, 1200000.0, 100000.0);
+      xAxis.setLabel("Days");
+      yAxis.setLabel("Number of People");
 
-    lineChart.setTitle("R0=" + r0Value + " " + variable);
+      //creating the chart
+      LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+      lineChart.setTitle("Incidence: R0=" + r0Value);
+
+      XYChart.Series seriesS = makeLineChartSeries("C", r0Value, "Incidence");
+      lineChart.getData().add(seriesS);
+      XYChart.Series seriesE = makeLineChartSeries("CI", r0Value, "Symptomatic Incidence");
+      lineChart.getData().add(seriesE);
+      lineChart.setCreateSymbols(false);
+      this.brdrPaneIncidence.setCenter(lineChart);
+      
+    } else if(selectedTab == this.tabAttackRate) {
+      NumberAxis xAxis = new NumberAxis();
+      NumberAxis yAxis = new NumberAxis(0.0, 100.0, 1.0);
+      xAxis.setLabel("Days");
+      yAxis.setLabel("% Infected");
+
+      //creating the chart
+      LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+      lineChart.setTitle("Attack Rate: R0=" + r0Value);
+
+      XYChart.Series seriesS = makeLineChartSeries("AR", r0Value, "Attack Rate");
+      lineChart.getData().add(seriesS);
+      XYChart.Series seriesE = makeLineChartSeries("CAR", r0Value, "Clinical Attack Rate");
+      lineChart.getData().add(seriesE);
+      lineChart.setCreateSymbols(false);
+      this.brdrPaneAttackRate.setCenter(lineChart);
+    
+    }
+
+  }
+
+  private XYChart.Series makeLineChartSeries(String variable, String r0Value, String seriesName)
+  {
     //defining a series
     XYChart.Series series = new XYChart.Series();
-    series.setName("Number of People");
+    series.setName(seriesName);
 
     String pathToExperimentDirectory =
             FREDNavigatorTopic1.pathToFRED + "RESULTS/JOB/"
@@ -220,11 +195,9 @@ public class Topic1Controller implements Initializable {
       }
     }
 
-    lineChart.getData().add(series);
-    lineChart.setCreateSymbols(false);
-    return lineChart;
+    return series;
   }
-
+  
   /**
    *
    * @param url
@@ -241,7 +214,7 @@ public class Topic1Controller implements Initializable {
         double new_val_double = new_val.doubleValue();
         String new_val_string = (new_val_double * 10) + "";
         //Test if slider has moved to the next slider tick
-        if (new_val_string.charAt(3) == '0')
+        if(new_val_string.charAt(3) == '0')
         {
           r0Value = new_val_string.charAt(0) + "."
                   + new_val_string.charAt(1);
@@ -249,12 +222,31 @@ public class Topic1Controller implements Initializable {
           {
             r0Value = r0Value.charAt(0) + "";
           }
-          chart = makeLineChart("I", r0Value);
-          brdrPaneSEIR.setCenter(chart);
+          
+          ObservableList<Tab> tabs = tabPaneTopic1.getTabs();
+          Tab selectedTab = null;
+          for(Tab tab : tabs) {
+            if(tab.isSelected()) 
+            {
+              selectedTab = tab;
+              break;
+            }
+          }
+          makeLineChartOnSelectedTab(r0Value, selectedTab);
         }
-//        System.out.println("test: " + old_val + ", " + new_val);
-//        brdrPaneSEIR.setCenter(new Label("test: " + old_val + ", " + new_val));
       }
     });
+    
+    //Add Change Listener to Tab Pane so that when the user switches tabs, it will have the correct graph
+    // already populated
+    this.tabPaneTopic1.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+      @Override 
+      public void changed(ObservableValue<? extends Tab> tab, Tab oldTab, Tab newTab) {
+        makeLineChartOnSelectedTab(r0Value, newTab);
+      }
+    });
+    
+    //Have the correct graph populated when the page is initialized (should be SEIR Tab)
+    makeLineChartOnSelectedTab(this.r0Value, this.tabSEIR);
   }
 }

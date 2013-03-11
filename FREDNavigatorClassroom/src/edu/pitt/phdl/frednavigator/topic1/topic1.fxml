@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
+<?import java.net.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
@@ -13,15 +14,6 @@
         <Menu mnemonicParsing="false" text="File">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#closeApplication" text="Close" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="New Tab">
-          <items>
-            <MenuItem mnemonicParsing="false" onAction="#newSTab" text="S Tab" />
-            <MenuItem mnemonicParsing="false" onAction="#newETab" text="E Tab" />
-            <MenuItem mnemonicParsing="false" onAction="#newITab" text="I Tab" />
-            <MenuItem mnemonicParsing="false" onAction="#newRTab" text="R Tab" />
-            <MenuItem mnemonicParsing="false" onAction="#newCTab" text="C Tab" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
@@ -55,21 +47,21 @@
             </TitledPane>
           </panes>
         </Accordion>
-        <TabPane fx:id="tabPaneTopic1" prefHeight="486.0" prefWidth="469.0" tabClosingPolicy="UNAVAILABLE">
+        <TabPane id="tab-pane-topic1" fx:id="tabPaneTopic1" prefHeight="486.0" prefWidth="469.0" tabClosingPolicy="UNAVAILABLE">
           <tabs>
-            <Tab id="tabSEIR" fx:id="tabSEIR" style="" text="Exploring Health State Curves">
+            <Tab id="tab-SEIR" fx:id="tabSEIR" style="" text="Exploring Health State Curves">
               <content>
                 <BorderPane fx:id="brdrPaneSEIR" prefHeight="200.0" prefWidth="200.0" />
               </content>
             </Tab>
-            <Tab id="tabIncidence" fx:id="tabIncidence" style="" text="Exploring Incidence">
+            <Tab id="tab-incidence" fx:id="tabIncidence" style="" text="Exploring Incidence">
               <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <BorderPane fx:id="brdrPaneIncidence" prefHeight="200.0" prefWidth="200.0" />
               </content>
             </Tab>
-            <Tab text="Untitled Tab">
+            <Tab id="tab-attack-rate" fx:id="tabAttackRate" style="" text="Exploring Attack Rate">
               <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <BorderPane fx:id="brdrPaneAttackRate" prefHeight="200.0" prefWidth="200.0" />
               </content>
             </Tab>
           </tabs>
@@ -77,4 +69,7 @@
       </children>
     </HBox>
   </children>
+  <stylesheets>
+    <URL value="@topic1.css" />
+  </stylesheets>
 </AnchorPane>
