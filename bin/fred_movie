@@ -76,7 +76,7 @@ die "key is $id\n" if $id =~ /UNKNOWN/;
 my $dir = "$FRED/RESULTS/JOB/$id/DATA/REPORTS";
 chdir  $dir or die "Can't chdir to $dir\n";
 
-my $cmd = "pypy $FRED/bin/fred_gaia_inputs.py -k $key -v $variable -o $op -t $type -m $movformat -T '$title'";
+my $cmd = "$FRED/bin/pypy $FRED/bin/fred_gaia_inputs.py -k $key -v $variable -o $op -t $type -m $movformat -T '$title'";
 $cmd .= " -p" if $percents;
 
 print "$cmd\n";
