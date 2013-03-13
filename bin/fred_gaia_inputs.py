@@ -328,7 +328,7 @@ if __name__ == '__main__':
 		      +"(number,ave, or all)",
                       default=1)
     parser.add_option("-v","--variable",type='choice',action='store',
-                      choices=['N','I','Is','C','Cs'],
+                      choices=['N','I','Is','C','Cs','P'],
                       default='C', help='Variable that you would like GAIA to plot' )
     parser.add_option("-t","--type",type="choice",action="store",
                       choices=["static","animated"],
