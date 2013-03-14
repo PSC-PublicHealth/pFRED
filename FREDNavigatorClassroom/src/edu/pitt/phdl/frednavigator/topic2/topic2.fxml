@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="520.0000999999975" prefWidth="849.0" xmlns:fx="http://javafx.com/fxml" fx:controller="edu.pitt.phdl.frednavigator.topic2.Topic2Controller">
+  <children>
+    <MenuBar minHeight="22.0" opacity="0.83" prefHeight="28.0" prefWidth="849.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#startPage" text="Start Page" />
+            <MenuItem mnemonicParsing="false" onAction="#closeApplication" text="Close" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+    <HBox layoutX="4.0" layoutY="31.0" prefHeight="482.0" prefWidth="845.0">
+      <children>
+        <Accordion minWidth="127.0" prefHeight="486.0" prefWidth="127.0">
+          <expandedPane>
+            <TitledPane fx:id="x1" animated="false" text="untitled">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                    <Slider fx:id="r0Slider" blockIncrement="0.2" layoutX="18.0" layoutY="37.0" majorTickUnit="0.2" max="3.01" min="1.0" minorTickCount="0" orientation="VERTICAL" prefHeight="360.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.6" />
+                    <Label layoutX="24.0" layoutY="8.0" text="R0" />
+                    <Slider id="r0Slider" fx:id="immunizationSlider" blockIncrement="0.1" layoutX="62.0" layoutY="36.0" majorTickUnit="10.0" max="80.0" minorTickCount="0" orientation="VERTICAL" prefHeight="360.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                    <Button fx:id="btnPlayMovie" layoutX="18.0" layoutY="399.0" mnemonicParsing="false" onAction="#openMovie" text="Play Movie" />
+                  </children>
+                </AnchorPane>
+              </content>
+            </TitledPane>
+          </expandedPane>
+          <panes>
+            <fx:reference source="x1" />
+            <TitledPane animated="false" text="untitled">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </TitledPane>
+          </panes>
+        </Accordion>
+        <TabPane id="tab-pane-topic1" fx:id="tabPaneTopic2" prefHeight="482.0" prefWidth="718.0" tabClosingPolicy="UNAVAILABLE">
+          <tabs>
+            <Tab id="tab-SEIR" fx:id="tabSEIR" closable="false" style="" text="Exploring Health State">
+              <content>
+                <BorderPane fx:id="brdrPaneSEIR" onMouseClicked="#openMovie" prefHeight="200.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab id="tab-attack-rate" fx:id="tabAttackRate" closable="false" style="" text="Exploring Attack Rate">
+              <content>
+                <BorderPane fx:id="brdrPaneAttackRate" prefHeight="200.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab id="tab-incidence" fx:id="tabIncidence" closable="false" style="" text="Exploring Incidence">
+              <content>
+                <BorderPane fx:id="brdrPaneIncidence" prefHeight="200.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab id="tab-prevalence" fx:id="tabPrevalence" style="" text="Exploring Prevalence">
+              <content>
+                <BorderPane id="brdrPaneIncidence" fx:id="brdrPanePrevalence" prefHeight="200.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+          </tabs>
+        </TabPane>
+      </children>
+    </HBox>
+  </children>
+</AnchorPane>
