@@ -53,7 +53,7 @@ Baseline Parameter File: params.school_closure
 
 Sweep Parameters:
 # the following illustrates a loop using min, max and increment:
-Name: R0 Min: 1.0 Max: 3.5 Inc: 0.5
+Name: R0 Min: 1.0 Max: 3.5 Inc: 0.5  Format: %0.1f
 # the following uses a comma-separated list of values,
 # which may be strings (with no spaces)
 Name: Cases Values: [1, 5, 10]
@@ -115,10 +115,10 @@ $line =~ /Sweep Parameters:/ or die "Bad sweep format\n";
 get_next_line();
 while ($line !~ /Output Variables/) {
   my @pval = ();
-  my ($min, $max, $inc, $value);
+  my ($min, $max, $inc, $value, $fmt);
   if ($line =~ /Min:/) {
-    ($name, $min, $max, $inc) = $line =~ /Name:\s+(\S+)\s+Min:\s+(\S+)\s+Max:\s+(\S+)\s+Inc:\s+(\S+)/;
-    for (my $x = $min; $x <= $max; $x += $inc) { push @pval, $x; }
+    ($name, $min, $max, $inc, $fmt) = $line =~ /Name:\s*(\S+)\s+Min:\s*(\S+)\s+Max:\s*(\S+)\s+Inc:\s*(\S+)\s+Format:\s*(\S+)/;
+    for (my $x = $min; $x <= $max; $x += $inc) { my $s = sprintf ("$fmt", $x); push @pval, $s; }
   }
   else {
     ($name, $value) = $line =~ /Name:\s+(\S+)\s+Values: \[(.*)\]/;
