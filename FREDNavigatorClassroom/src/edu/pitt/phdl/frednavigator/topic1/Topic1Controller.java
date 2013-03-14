@@ -1,19 +1,27 @@
 package edu.pitt.phdl.frednavigator.topic1;
 
+import edu.pitt.phdl.frednavigator.FredNavigatorContext;
+import edu.pitt.phdl.frednavigator.HomepageController;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -28,7 +36,7 @@ import javafx.stage.Stage;
  */
 public class Topic1Controller implements Initializable {
 
-  String r0Value = "2.5";
+  String r0Value = "1.5";
   String fileVariable;
 
   MediaPlayer mediaPlayer;
@@ -47,13 +55,35 @@ public class Topic1Controller implements Initializable {
   private Tab tabAttackRate;
   @FXML
   private BorderPane brdrPaneAttackRate;
+  @FXML 
+  private Tab tabPrevalence;
+  @FXML
+  private BorderPane brdrPanePrevalence;
   @FXML
   private Slider r0Slider;
+  @FXML
+  private Button btnPlayMovie;
 
   @FXML
   private void closeApplication(ActionEvent event)
   {
     System.exit(0);
+  }
+    
+  @FXML
+  private void startPage(ActionEvent event)
+  {
+    try
+    {
+      Parent homepageLayout;
+      homepageLayout = FXMLLoader.load(getClass().getResource("/edu/pitt/phdl/frednavigator/homepage.fxml"));
+      Scene hompageScene = new Scene(homepageLayout);
+      FredNavigatorContext.getInstance().getFredNavigatorStage().setScene(hompageScene);     
+    }
+    catch (IOException ex)
+    {
+      Logger.getLogger(HomepageController.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
   
   /**
@@ -77,10 +107,8 @@ public class Topic1Controller implements Initializable {
     }
   }
 
-  /**
-   *
-   */
-  public void openMovie()
+  @FXML
+  private void openMovie()
   {
     String MEDIA_URL = "file:///Users/jackpaparian/Desktop/fred_gaia_ts_R0=1.4.1.mp4";
     mediaPlayer = new MediaPlayer(new Media(MEDIA_URL));
@@ -125,26 +153,11 @@ public class Topic1Controller implements Initializable {
       lineChart.setCreateSymbols(false);
       this.brdrPaneSEIR.setCenter(lineChart);
       
-    } else if(selectedTab == this.tabIncidence) {
+    } 
+    else if(selectedTab == this.tabAttackRate) 
+    {
       NumberAxis xAxis = new NumberAxis();
-      NumberAxis yAxis = new NumberAxis(0.0, 1200000.0, 100000.0);
-      xAxis.setLabel("Days");
-      yAxis.setLabel("Number of People");
-
-      //creating the chart
-      LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
-      lineChart.setTitle("Incidence: R0=" + r0Value);
-
-      XYChart.Series seriesS = makeLineChartSeries("C", r0Value, "Incidence");
-      lineChart.getData().add(seriesS);
-      XYChart.Series seriesE = makeLineChartSeries("CI", r0Value, "Symptomatic Incidence");
-      lineChart.getData().add(seriesE);
-      lineChart.setCreateSymbols(false);
-      this.brdrPaneIncidence.setCenter(lineChart);
-      
-    } else if(selectedTab == this.tabAttackRate) {
-      NumberAxis xAxis = new NumberAxis();
-      NumberAxis yAxis = new NumberAxis(0.0, 100.0, 1.0);
+      NumberAxis yAxis = new NumberAxis(0.0, 100.0, 5.0);
       xAxis.setLabel("Days");
       yAxis.setLabel("% Infected");
 
@@ -154,12 +167,48 @@ public class Topic1Controller implements Initializable {
 
       XYChart.Series seriesS = makeLineChartSeries("AR", r0Value, "Attack Rate");
       lineChart.getData().add(seriesS);
-      XYChart.Series seriesE = makeLineChartSeries("CAR", r0Value, "Clinical Attack Rate");
+      XYChart.Series seriesE = makeLineChartSeries("ARs", r0Value, "Clinical Attack Rate");
       lineChart.getData().add(seriesE);
       lineChart.setCreateSymbols(false);
       this.brdrPaneAttackRate.setCenter(lineChart);
     
-    }
+    } 
+    else if(selectedTab == this.tabPrevalence) 
+    {
+      NumberAxis xAxis = new NumberAxis();
+      NumberAxis yAxis = new NumberAxis(0.0, 550000.0, 50000.0);
+      xAxis.setLabel("Days");
+      yAxis.setLabel("Number of People");
+
+      //creating the chart
+      LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+      lineChart.setTitle("Prevalence: R0=" + r0Value);
+
+      XYChart.Series seriesS = makeLineChartSeries("P", r0Value, "Prevalence");
+      lineChart.getData().add(seriesS);
+//      XYChart.Series seriesE = makeLineChartSeries("ARs", r0Value, "Clinical Attack Rate");
+//      lineChart.getData().add(seriesE);
+      lineChart.setCreateSymbols(false);
+      this.brdrPanePrevalence.setCenter(lineChart);
+    } 
+    else if(selectedTab == this.tabIncidence) 
+    {
+      NumberAxis xAxis = new NumberAxis();
+      NumberAxis yAxis = new NumberAxis(0.0, 120000.0, 10000.0);
+      xAxis.setLabel("Days");
+      yAxis.setLabel("Number of People");
+
+      //creating the chart
+      LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+      lineChart.setTitle("Incidence: R0=" + r0Value);
+
+      XYChart.Series seriesS = makeLineChartSeries("C", r0Value, "Incidence");
+      lineChart.getData().add(seriesS);
+      XYChart.Series seriesE = makeLineChartSeries("Cs", r0Value, "Symptomatic Incidence");
+      lineChart.getData().add(seriesE);
+      lineChart.setCreateSymbols(false);
+      this.brdrPaneIncidence.setCenter(lineChart);    
+    } 
 
   }
 
@@ -218,10 +267,10 @@ public class Topic1Controller implements Initializable {
         {
           r0Value = new_val_string.charAt(0) + "."
                   + new_val_string.charAt(1);
-          if (r0Value.charAt(0) > '1' && r0Value.charAt(2) == '0')
-          {
-            r0Value = r0Value.charAt(0) + "";
-          }
+//          if (r0Value.charAt(0) > '1' && r0Value.charAt(2) == '0')
+//          {
+//            r0Value = r0Value.charAt(0) + "";
+//          }
           
           ObservableList<Tab> tabs = tabPaneTopic1.getTabs();
           Tab selectedTab = null;

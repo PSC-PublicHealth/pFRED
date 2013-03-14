@@ -23,7 +23,7 @@ xmlns:fx always required -->
   <Text id="description" text="Investigate the behavior of flu epidemics in Pittsburgh. Through computer simulations, you can vary the conditions of the epidemic and see the effects of different ways to control the epidemic." wrappingWidth="500.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1" />
   <VBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2">
     <Button onAction="#openTopic1Page" text="Topic 1 - Epidemic Dynamics and the Reproductive Number R0" />
-    <Button text="Topic 2 - Effects of Vaccination" />
+    <Button onAction="#openTopic2Page" text="Topic 2 - Effects of Vaccination" />
     <Button text="Topic 3 - Effects of School Closure" />
   </VBox>
   <HBox alignment="CENTER" minWidth="250.0" spacing="10.0" GridPane.columnIndex="0" GridPane.rowIndex="3">

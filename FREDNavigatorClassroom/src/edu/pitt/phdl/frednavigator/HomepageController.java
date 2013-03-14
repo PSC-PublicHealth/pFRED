@@ -32,6 +32,23 @@ public class HomepageController implements Initializable {
                        
   }
   
+  @FXML
+  private void openTopic2Page(ActionEvent event) {
+    
+    try
+    {
+      Parent topic2Layout;
+      topic2Layout = FXMLLoader.load(getClass().getResource("/edu/pitt/phdl/frednavigator/topic2/topic2.fxml"));
+      Scene topic2Scene = new Scene(topic2Layout);
+      FredNavigatorContext.getInstance().getFredNavigatorStage().setScene(topic2Scene);     
+    }
+    catch (IOException ex)
+    {
+      Logger.getLogger(HomepageController.class.getName()).log(Level.SEVERE, null, ex);
+    }
+                       
+  }
+  
   @Override
   public void initialize(URL url, ResourceBundle rb) {
       System.out.println("URL: " + url.toString());
