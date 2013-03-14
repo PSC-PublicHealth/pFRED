@@ -80,15 +80,15 @@ my $cmd = "$FRED/bin/pypy $FRED/bin/fred_gaia_inputs.py -k $key -v $variable -o 
 $cmd .= " -p" if $percents;
 
 my $pid = $$;
-system "date > gaia.out-$pid";
 print "$cmd\n";
-system "echo $cmd > gaia.out-$pid";
+system "date > gaia.out-$pid";
+system "echo $cmd >> gaia.out-$pid";
 system "$cmd >> gaia.out-$pid";
 system "date >> gaia.out-$pid";
-unlink "$dir/gaia_style_$filebase.txt $dir/gaia_input_$filebase.txt $dir/out.xml";
+system "rm -f gaia*.txt out.xml";
 my $outfile = "";
-$outfile = "$filebase.png" if $type eq "static";
-$outfile = "$filebase.$movformat" if $type eq "animated";
+$outfile = "gaia_input_$filebase.png" if $type eq "static";
+$outfile = "gaia_input_$filebase.$movformat" if $type eq "animated";
 print "$dir/$outfile\n";
 exit;
 
