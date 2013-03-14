@@ -282,6 +282,14 @@ public:
    */
   double get_infectivity(int disease, int day) const { return health.get_infectivity(disease, day); }
 
+  /*
+   * Advances the course of the infection by moving the exposure date
+   * backwards
+   */
+  void advance_seed_infection( int disease_id, int days_to_advance ) {
+    health.advance_seed_infection( disease_id, days_to_advance );
+  }
+
   /**
    * @param disease the disease to check
    * @return the simulation day that this agent became exposed to disease

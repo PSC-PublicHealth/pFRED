@@ -193,6 +193,12 @@ seed_by_age = 0
 seed_age_lower_bound = 0
 seed_age_upper_bound = 120
 
+# control how far into their infection trajectory the seeds are
+# "exposed" => all seeded infections start on day 0 [ DEFAULT ]
+# "infectious" => all seeded infections start on first infectious day
+# "random" => randomly select the day in the infection trajectory with uniform probability
+advanced_seeding = exposed 
+
 # To delay the start of the epidemic up to 6 days.  If the value is > 6, 
 #  the system will assign a random delay based on the run number
 epidemic_offset = 0

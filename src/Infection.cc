@@ -162,6 +162,26 @@ void Infection::update(int today) {
   }
 }
 
+void Infection::advance_seed_infection( int days_to_advance ) {
+  // only valid for seed infections!
+  assert( recovery_date != -1 );
+  assert( exposure_date != -1 );
+  exposure_date -= days_to_advance;
+  determine_transition_dates();
+  if ( get_infectious_date() <= 0 + Global::Epidemic_offset ) {
+    host->become_infectious( disease );
+  }
+  if ( get_symptomatic_date() <= 0 + Global::Epidemic_offset ) {
+    host->become_symptomatic( disease );
+  }
+  if ( get_recovery_date() <= 0 + Global::Epidemic_offset ) {
+    host->recover( disease );
+  }
+  if ( get_unsusceptible_date() <= 0 + Global::Epidemic_offset ) {
+    host->become_unsusceptible( disease );
+  }
+}
+
 void Infection::modify_symptomatic_period(double multp, int today) {
   // negative multiplier
   if (multp < 0)

@@ -93,6 +93,7 @@ public:
   void report_infection(int day) const;
 
   // chrono
+
   /**
    * @return the exposure_date
    */
@@ -142,6 +143,8 @@ public:
   int get_unsusceptible_date() const {
     return exposure_date + susceptibility_period;
   }
+
+  void advance_seed_infection( int days_to_advance );
 
   /**
    * @param multp the multiplier

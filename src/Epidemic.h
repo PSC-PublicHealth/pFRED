@@ -24,6 +24,10 @@
 #include "Global.h"
 #include "Place.h"
 
+#define SEED_EXPOSED 'E'
+#define SEED_INFECTIOUS 'I'
+#define SEED_RANDOM 'R'
+
 using namespace std;
 
 class Disease;
@@ -36,7 +40,9 @@ class Epidemic {
 public:
   Epidemic(Disease * str, Timestep_Map *);
   ~Epidemic();
-  
+ 
+  void setup();
+
   /**
    * Output daily Epidemic statistics to the files
    * @param day the simulation day
@@ -115,9 +121,23 @@ private:
   int N_init;     // initial population size
   
   Timestep_Map* primary_cases_map;
+
+  // valid seeding types are:
+  // "exposed" => SEED_EXPOSED 'E'
+  // "infectious" => SEED_INFECTIOUS 'I'
+  // "random" => SEED_RANDOM 'R'
+  // see Epidemic::advance_seed_infection"
+  char seeding_type_name[ FRED_STRING_SIZE ];
+  char seeding_type;
+
+  /// advances infection either to the first infetious day (SEED_INFECTIOUS)
+  /// or to a random day in the trajectory (SEED_RANDOM)
+  /// this is accomplished by moving the exposure date back as appropriate;
+  /// (ultimately done in Infection::advance_infection)
+  void advance_seed_infection( Person * person );
+
   // lists of susceptible and infectious Persons now kept as
   // bit maskes in Population "Bloque"
-
   vector <Person *> daily_infections_list;
 
   vector <Place *> inf_households;

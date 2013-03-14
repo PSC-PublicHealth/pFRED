@@ -1012,7 +1012,7 @@ Table 5.2: Input File Parameters
 |                                  |          |                                                                                 |
 |                                  |          | *Note*: Only used if ``enable_travel = 1``                                      |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``primary_cases_file[d] = $FRED_HOME/input_files/primary_cases_schedule_0.txt *(for disease 0)*``                             | 
+| ``primary_cases_file[d] = $FRED_HOME/input_files/primary_cases_schedule_0.txt`` *(for disease 0)*                             | 
 +----------------------------------+----------+---------------------------------------------------------------------------------+
 |                                  | string   | *Required files giving the number of primary infections to introduce for each*  |
 |                                  |          | *simulation day*                                                                |
@@ -1020,9 +1020,10 @@ Table 5.2: Input File Parameters
 |                                  |          | **Format**:                                                                     |
 |                                  |          | time step map *(see text)*                                                      |  
 |                                  |          |                                                                                 |
-|                                  |          | *Note*: *More extensive documentation of the extended format given below*       |
+|                                  |          | *Note*: *More extensive documentation of the extended format given below;*      |
+|                                  |          | *Use Epidemic Initialization Parameters to modify seeding behavior*             |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
-| ``vaccination_capacity_file = $FRED_HOME/input_files/vaccination_capacity-0.txt *(for vaccine 0)*``                           |
+| ``vaccination_capacity_file = $FRED_HOME/input_files/vaccination_capacity-0.txt`` *(for vaccine 0)*                           |
 +----------------------------------+----------+---------------------------------------------------------------------------------+
 |                                  | string   | *Optional file giving vaccine availability*                                     |
 |                                  |          |                                                                                 |
@@ -1313,6 +1314,8 @@ primary_cases_file[d]:
   ``primary_cases_file[0] = primary_case_schedule-0.txt``
 
   The ``primary_cases_file[d]`` follows the *Multistrain Timestep Map input format*.
+
+  *Note*: *Use Epidemic Initialization Parameters to modify seeding behavior*
 
 trans[d]:
 ~~~~~~~~~
@@ -1942,6 +1945,38 @@ Anti-virals parameters:
   ``enable_antivirals = 0`` (**Default**)
 
   ``number_antivirals = 0`` (**Default**)
+
+
+Epidemic Initialization Parameters
+----------------------------------
+
+Epidemic Initialization Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| Parameter = <default value>           | Type     | Definition and Notes                                                            |
++=======================================+==========+=================================================================================+
+| ``seed_by_age = 0``                                                                                                                |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | Seed by age group; select with uniform probability from age range               |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``seed_age_lower_bound = 0``                                                                                                       |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | Seed by age group lower bound                                                   |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``seed_age_upper_bound = 120``                                                                                                     |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | int      | Seed by age group upper bound                                                   |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+| ``advanced_seeding = exposed``                                                                                                     |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+|                                       | string   | control how far into their infection trajectory the seeds are                   |
+|                                       |          | exposed => all seeded infections start on day 0 [ DEFAULT ]                     |
+|                                       |          | infectious => all seeded infections start on first infectious day               |
+|                                       |          | random => randomly select the day in the infection trajectory                   |
++---------------------------------------+----------+---------------------------------------------------------------------------------+
+
+
 
 Overnight Travel Parameters
 ---------------------------

@@ -89,6 +89,16 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   daily_infections_list.clear();
 }
 
+void Epidemic::setup() {
+  Params::get_param_from_string("advanced_seeding", seeding_type_name );
+  if ( !strcmp( seeding_type_name, "exposed" ) ) { seeding_type = 'E'; }
+  else if ( !strcmp( seeding_type_name, "infectious" ) ) { seeding_type = 'I'; }
+  else if ( !strcmp( seeding_type_name, "random" ) ) { seeding_type = 'R'; }
+  else {
+    Utils::fred_abort( "Invalid advance_seeding parameter: %s!\n", seeding_type_name );
+  }
+}
+
 Epidemic::~Epidemic() {
   delete primary_cases_map;
 }
@@ -591,6 +601,9 @@ void Epidemic::get_primary_infections(int day){
           transmission.set_initial_loads( disease->get_primary_loads( day ) );
           person->become_exposed( disease, transmission );
           successes++;
+          if ( seeding_type != SEED_EXPOSED ) {
+            advance_seed_infection( person );
+          }
         }
 
         if (successes < mst->get_min_successes() && i == (mst->get_num_seeding_attempts() - 1) && extra_attempts > 0 ) {
@@ -605,8 +618,30 @@ void Epidemic::get_primary_infections(int day){
       }
     }
   }
-
 }
+
+void Epidemic::advance_seed_infection( Person * person ) {
+  // if advanced_seeding is infectious or random
+  int d = disease->get_id();
+  int advance = 0;
+  int duration = person->get_recovered_date( d ) - person->get_exposure_date( d );
+  assert( duration > 0 );
+  if ( seeding_type == SEED_INFECTIOUS ) {
+    advance = person->get_infectious_date( d ) - person->get_exposure_date( d );
+  }
+  else if ( seeding_type == SEED_RANDOM ) {
+    advance = IRAND( 0, duration );
+  }
+  else {
+    Utils::fred_abort( "Invalid advanced seeding strategy: %c\n", seeding_type );
+  } 
+  assert( advance <= duration );
+  FRED_VERBOSE( 0, "%s %s %s %d %s %d %s\n",
+      "advanced_seeding:", seeding_type_name, "=> advance infection trajectory of duration",
+      duration, "by", advance, "days" );
+  person->advance_seed_infection( d, advance );
+}
+
 
 void Epidemic::transmit(int day){
   Population *pop = disease->get_population();

@@ -108,6 +108,7 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   Multistrain_Timestep_Map * msts = new Multistrain_Timestep_Map(param_name_str);
   msts->read_map();
   epidemic = new Epidemic(this, msts);
+  epidemic->setup();
 
   // Define residual immunity
   residual_immunity = new Age_Map("Residual Immunity");

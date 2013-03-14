@@ -294,6 +294,12 @@ void Health::declare_at_risk(Disease* disease) {
   at_risk.set( disease_id );
 }
 
+void Health::advance_seed_infection( int disease_id, int days_to_advance ) {
+  assert( active_infections.test( disease_id ) );
+  assert( infection[ disease_id ] != NULL );
+  infection[ disease_id ]->advance_seed_infection( days_to_advance );
+}
+
 int Health::get_exposure_date(int disease_id) const {
   if (!( active_infections.test( disease_id ) ))
     return -1;

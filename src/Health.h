@@ -184,6 +184,12 @@ public:
     return at_risk.test( disease_id );
   }
 
+  /*
+   * Advances the course of the infection by moving the exposure date
+   * backwards
+   */
+  void advance_seed_infection( int disease_id, int days_to_advance );
+
   /**
    * @param disease
    * @return the simulation day that this agent became exposed to the disease
