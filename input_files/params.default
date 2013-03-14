@@ -277,7 +277,7 @@ infectivity_threshold[0] = 0.0
 symptomaticity_threshold[0] = 0.0
 residual_immunity_ages[0] = 0
 residual_immunity_values[0] = 0
-Immunization_Rate = -1
+Immunization = -1
 
 # At-risk populations:
 # at_risk_ages[0] = 14 0 1 2 4 5 18 19 24 25 49 50 64 65 110
