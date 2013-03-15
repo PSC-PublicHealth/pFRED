@@ -24,9 +24,10 @@
 #include "Global.h"
 #include "Place.h"
 
+#define SEED_USER 'U'
+#define SEED_RANDOM 'R'
 #define SEED_EXPOSED 'E'
 #define SEED_INFECTIOUS 'I'
-#define SEED_RANDOM 'R'
 
 using namespace std;
 
@@ -123,12 +124,12 @@ private:
   Timestep_Map* primary_cases_map;
 
   // valid seeding types are:
-  // "exposed" => SEED_EXPOSED 'E'
-  // "infectious" => SEED_INFECTIOUS 'I'
+  // "user_specified" => SEED_USER 'U'
   // "random" => SEED_RANDOM 'R'
   // see Epidemic::advance_seed_infection"
   char seeding_type_name[ FRED_STRING_SIZE ];
   char seeding_type;
+  double fraction_seeds_infectious; 
 
   /// advances infection either to the first infetious day (SEED_INFECTIOUS)
   /// or to a random day in the trajectory (SEED_RANDOM)

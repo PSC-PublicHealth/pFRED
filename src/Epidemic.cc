@@ -14,14 +14,16 @@
 // File: Epidemic.cc
 //
 
-#include "Epidemic.h"
-#include "Disease.h"
-
+#include <stdlib.h>
 #include <stdio.h>
 #include <new>
 #include <iostream>
 #include <vector>
+
 using namespace std;
+
+#include "Epidemic.h"
+#include "Disease.h"
 #include "Random.h"
 #include "Params.h"
 #include "Person.h"
@@ -90,10 +92,30 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
 }
 
 void Epidemic::setup() {
+  using namespace Utils;
   Params::get_param_from_string("advanced_seeding", seeding_type_name );
-  if ( !strcmp( seeding_type_name, "exposed" ) ) { seeding_type = 'E'; }
-  else if ( !strcmp( seeding_type_name, "infectious" ) ) { seeding_type = 'I'; }
-  else if ( !strcmp( seeding_type_name, "random" ) ) { seeding_type = 'R'; }
+  if ( !strcmp( seeding_type_name, "random" ) ) { seeding_type = 'R'; }
+  else if ( !strcmp( seeding_type_name, "exposed" ) ) { seeding_type = 'E';}
+  else if ( !strcmp( seeding_type_name, "infectious" ) ) {
+    fraction_seeds_infectious = 1.0;
+    seeding_type = 'I';
+  }
+  // format is exposed:0.0000;infectious:0.0000
+  else if ( strchr( seeding_type_name, ';' ) != NULL ) {
+    Tokens tokens = split_by_delim( seeding_type_name, ';', false );
+    assert( strchr( tokens[0], ':' ) != NULL );
+    assert( strchr( tokens[1], ':' ) != NULL );
+    Tokens t1 = split_by_delim( tokens[0], ':', false );
+    Tokens t2 = split_by_delim( tokens[1], ':', false );
+    assert( strcmp( t1[0], "exposed" ) == 0 );
+    assert( strcmp( t2[0], "infectious" ) == 0 );
+    double fraction_exposed, fraction_infectious;
+    fraction_exposed = atof( t1[1] );
+    fraction_infectious = atof( t2[1] );
+    assert( fraction_exposed + fraction_infectious <= 1.01 );
+    assert( fraction_exposed + fraction_infectious >= 0.99 );
+    fraction_seeds_infectious = fraction_infectious;
+  }  
   else {
     Utils::fred_abort( "Invalid advance_seeding parameter: %s!\n", seeding_type_name );
   }
@@ -626,15 +648,12 @@ void Epidemic::advance_seed_infection( Person * person ) {
   int advance = 0;
   int duration = person->get_recovered_date( d ) - person->get_exposure_date( d );
   assert( duration > 0 );
-  if ( seeding_type == SEED_INFECTIOUS ) {
-    advance = person->get_infectious_date( d ) - person->get_exposure_date( d );
-  }
-  else if ( seeding_type == SEED_RANDOM ) {
+  if ( seeding_type == SEED_RANDOM ) {
     advance = IRAND( 0, duration );
   }
-  else {
-    Utils::fred_abort( "Invalid advanced seeding strategy: %c\n", seeding_type );
-  } 
+  else if ( RANDOM() < fraction_seeds_infectious ) {
+    advance = person->get_infectious_date( d ) - person->get_exposure_date( d );
+  }
   assert( advance <= duration );
   FRED_VERBOSE( 0, "%s %s %s %d %s %d %s\n",
       "advanced_seeding:", seeding_type_name, "=> advance infection trajectory of duration",

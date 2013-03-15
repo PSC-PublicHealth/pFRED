@@ -1974,6 +1974,8 @@ Epidemic Initialization Parameters
 |                                       |          | exposed => all seeded infections start on day 0 [ DEFAULT ]                     |
 |                                       |          | infectious => all seeded infections start on first infectious day               |
 |                                       |          | random => randomly select the day in the infection trajectory                   |
+|                                       |          | exposed:<float>;infectious<float> => user-specified fraction of initially       |
+|                                       |          | exposed/infectious seeds (e.g. "exposed:0.25;infectious:0.75")                  |
 +---------------------------------------+----------+---------------------------------------------------------------------------------+
 
 

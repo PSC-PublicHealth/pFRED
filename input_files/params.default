@@ -197,6 +197,8 @@ seed_age_upper_bound = 120
 # "exposed" => all seeded infections start on day 0 [ DEFAULT ]
 # "infectious" => all seeded infections start on first infectious day
 # "random" => randomly select the day in the infection trajectory with uniform probability
+# "exposed:<float>;infectious:<float>" =>  user-specified fraction of initially
+#  exposed/infectious seeds (e.g. "exposed:0.25;infectious:0.75"); must sum to ~1.0 
 advanced_seeding = exposed 
 
 # To delay the start of the epidemic up to 6 days.  If the value is > 6, 
