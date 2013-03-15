@@ -114,17 +114,17 @@ void Disease::setup(int disease, Population *pop, double *mut_prob) {
   residual_immunity = new Age_Map("Residual Immunity");
   residual_immunity->read_from_input("residual_immunity",id);
 
-  // use params "Immunization_rate" to override the residual immunity for
+  // use params "Immunization" to override the residual immunity for
   // the group starting with age 0.
   // This allows easy specification for a prior imunization rate, e.g.,
   // to specify 25% prior immunization rate, use the parameters:
   //
   // residual_immunity_ages[0] = 2 0 100
   // residual_immunity_values[0] = 1 0.0
-  // Immunization_Rate = 0.25
+  // Immunization = 0.25
   //
   double immunization_rate;
-  Params::get_param_from_string("Immunization_Rate",&immunization_rate);
+  Params::get_param_from_string("Immunization",&immunization_rate);
   if (immunization_rate >= 0.0) {
     residual_immunity->set_value(0, immunization_rate);
   }

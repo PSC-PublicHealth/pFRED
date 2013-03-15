@@ -210,6 +210,9 @@ struct Place_Init_Data {
     sscanf( _lon, "%f", &lon);
     sscanf( _income, "%d", & income );
 
+    if (!( lat >= -90 && lat <= 90 ) || !( lon >= -180 && lon <= 180 )) {
+      printf("BAD LAT-LON: type = %c lat = %f  lon = %f  inc = %d  s = %s\n", place_type, lat, lon, income, s);
+    }
     assert( lat >= -90 && lat <= 90 );
     assert( lon >= -180 && lon <= 180 );
 
