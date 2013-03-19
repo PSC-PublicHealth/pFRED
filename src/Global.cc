@@ -44,6 +44,8 @@ char Global::Incfilebase[FRED_STRING_SIZE];
 char Global::Immunityfilebase[FRED_STRING_SIZE];
 char Global::City[FRED_STRING_SIZE];
 char Global::County[FRED_STRING_SIZE];
+char Global::US_state[FRED_STRING_SIZE];
+char Global::FIPS_code[FRED_STRING_SIZE];
 
 char Global::DBfile[FRED_STRING_SIZE];
 

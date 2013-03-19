@@ -59,19 +59,58 @@ void Place_List::get_parameters() {
   Params::get_param_from_string("synthetic_population_version", Global::Synthetic_population_version);
   Params::get_param_from_string("city", Global::City);
   Params::get_param_from_string("county", Global::County);
+  Params::get_param_from_string("state", Global::US_state);
+  Params::get_param_from_string("fips", Global::FIPS_code);
   
-  // if the user specifies "city" param, it overrides the
-  // synthetic_population_id
+  if (strcmp(Global::FIPS_code, "none") != 0) {
 
-  if (strcmp(Global::City, "none") != 0) {
-    
+    // fips param overrides the synthetic_population_id
+
+    // get population_id from fips
+    char counties_file[FRED_STRING_SIZE];
+    char line_string[FRED_STRING_SIZE];
+    char *line, *city, *state, *county, *fips;
+    int found = 0;
+    sprintf(counties_file, "$FRED_HOME/input_files/US_counties.txt");
+    FILE *fp = Utils::fred_open_file(counties_file);
+    if (fp == NULL) {
+      Utils::fred_abort("counties file |%s| NOT FOUND\n", counties_file);
+    }
+    while (fgets(line_string, FRED_STRING_SIZE-1, fp) != NULL) {
+      line = line_string;
+      city = strsep(&line, "\t");
+      state = strsep(&line, "\t");
+      county = strsep(&line, "\t");
+      fips = strsep(&line, "\n");
+      // printf("city = |%s| state = |%s| county = |%s| fips = |%s|\n",
+      // city,state,county,fips);
+      if (strcmp(Global::FIPS_code, fips) == 0) {
+	found = 1;
+	break;
+      }
+    }
+    fclose(fp);
+    if (found) {
+      Utils::fred_log("FOUND a county = |%s County %s| for fips = |%s|\n",
+        county, state, fips);
+      sprintf(Global::Synthetic_population_id, "%s_%s",
+        Global::Synthetic_population_version, fips);
+    }
+    else {
+      Utils::fred_abort("Sorry, could not find a county for fips = |%s|\n", Global::FIPS_code);
+    }
+  }
+  else if (strcmp(Global::City, "none") != 0) {
+
+    // city param overrides the  synthetic_population_id
+       
     // delete any commas and periods
     Utils::delete_char(Global::City, ',', FRED_STRING_SIZE);
     Utils::delete_char(Global::City, '.', FRED_STRING_SIZE);
-
+      
     // replace white space characters with a single space
     Utils::normalize_white_space(Global::City);
-
+      
     // get population_id from city
     char counties_file[FRED_STRING_SIZE];
     char city_state[FRED_STRING_SIZE];
@@ -93,26 +132,24 @@ void Place_List::get_parameters() {
       // city,state,county,fips);
       sprintf(city_state, "%s %s", city, state);
       if (strcmp(Global::City, city_state) == 0) {
-      found = 1;
-      break;
+	found = 1;
+	break;
       }
     }
     fclose(fp);
     if (found) {
       Utils::fred_log("FOUND a county for city = |%s| county = |%s County %s| and fips = |%s|\n",
-        Global::City, county, state, fips);
+		      Global::City, county, state, fips);
       sprintf(Global::Synthetic_population_id, "%s_%s",
-        Global::Synthetic_population_version, fips);
+	      Global::Synthetic_population_version, fips);
     }
     else {
       Utils::fred_abort("Sorry, could not find a county for city = |%s|\n", Global::City);
     }
   }
+  else  if (strcmp(Global::County, "none") != 0) {
 
-  // if the user specifies a "county" params but not a "city" param, the
-  // county overrides the synhetic_population_id
-
-  if (strcmp(Global::City, "none") == 0 && strcmp(Global::County, "none") != 0) {
+    // county param overrides the synthetic_population_id
 
     // delete any commas and periods
     Utils::delete_char(Global::County, ',', FRED_STRING_SIZE);
@@ -149,12 +186,54 @@ void Place_List::get_parameters() {
     fclose(fp);
     if (found) {
       Utils::fred_log("FOUND county = |%s| fips = |%s|\n",
-       county_state, fips);
+		      county_state, fips);
       sprintf(Global::Synthetic_population_id, "%s_%s",
-        Global::Synthetic_population_version, fips);
+	      Global::Synthetic_population_version, fips);
     }
     else {
       Utils::fred_abort("Sorry, could not find county called |%s|\n", Global::County);
+    }
+  }
+  else  if (strcmp(Global::US_state, "none") != 0) {
+
+    // state param overrides the synthetic_population_id
+
+    // delete any commas and periods
+    Utils::delete_char(Global::US_state, ',', FRED_STRING_SIZE);
+    Utils::delete_char(Global::US_state, '.', FRED_STRING_SIZE);
+
+    // replace white space characters with a single space
+    Utils::normalize_white_space(Global::US_state);
+
+    // get population_id from state
+    char states_file[FRED_STRING_SIZE];
+    char line_string[FRED_STRING_SIZE];
+    char *line, *abbrev, *state, *fips;
+    int found = 0;
+    sprintf(states_file, "$FRED_HOME/input_files/US_states.txt");
+    FILE *fp = Utils::fred_open_file(states_file);
+    if (fp == NULL) {
+      Utils::fred_abort("states file |%s| NOT FOUND\n", states_file);
+    }
+    while (fgets(line_string, FRED_STRING_SIZE-1, fp) != NULL) {
+      line = line_string;
+      fips = strsep(&line, "\t");
+      abbrev = strsep(&line, "\t");
+      state = strsep(&line, "\n");
+      if (strcmp(Global::US_state, abbrev) == 0 || strcmp(Global::US_state, state) == 0) {
+        found = 1;
+        break;
+      }
+    }
+    fclose(fp);
+    if (found) {
+      Utils::fred_log("FOUND state = |%s| state_abbrev = |%s| fips = |%s|\n",
+		      state, abbrev, fips);
+      sprintf(Global::Synthetic_population_id, "%s_%s",
+	      Global::Synthetic_population_version, fips);
+    }
+    else {
+      Utils::fred_abort("Sorry, could not find state called |%s|\n", Global::US_state);
     }
   }
 }

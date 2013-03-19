@@ -212,6 +212,7 @@ struct Place_Init_Data {
 
     if (!( lat >= -90 && lat <= 90 ) || !( lon >= -180 && lon <= 180 )) {
       printf("BAD LAT-LON: type = %c lat = %f  lon = %f  inc = %d  s = %s\n", place_type, lat, lon, income, s);
+      lat = 34.999999;
     }
     assert( lat >= -90 && lat <= 90 );
     assert( lon >= -180 && lon <= 180 );

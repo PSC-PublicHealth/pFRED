@@ -169,6 +169,8 @@ class Global {
     static char Immunityfilebase[];
     static char City[];
     static char County[];
+    static char US_state[];
+    static char FIPS_code[];
 
     static char DBfile[];
 
