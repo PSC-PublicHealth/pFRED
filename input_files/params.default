@@ -76,24 +76,46 @@ output_population_date_match = 01-01-*
 #
 ##########################################################
 
-# defauts to Allegheny County Population (Ver 2)
+# location of the synthetic population files
 synthetic_population_directory = $FRED_HOME/populations
+
+# defaults to Allegheny County Population (RTI Ver 2)
 synthetic_population_id = 2005_2009_ver2_42003
 
 num_demes = 1
 
-# If a city is named it overrides the synthetic_population_id parameter.
+#
+# If any of the following parameters are specified, they will override
+# the the synthetic_population_id parameter.
+#
+# Precedence is in the following order:
+#  FIPS code, 
+#  city name,
+#  county name, 
+#  state name
+#
+# That is, a FIPS code overrides a city name, which overrides
+# county and so on.  In all cases, the name is ultimately
+# transformed into a FIPS code.
+
+# For Allegheny County, PA:
+# fips = 42003
+fips = none
+
 # The city format is "name state_abbrevation", such as:
 # city = Pittsburgh PA
 city = none
 
-# If a county is named but a city is not, the county overrides the
-# synthetic_population_id parameter.
 # The county format is "name state_abbrevation", such as:
 # county = Allegheny County PA
 county = none
 
-# If a city or county is named, the pop_version_prefix will be prepended
+# The state format can be the state name or abbrevation, such as:
+# state = New York
+# state = NY
+state = none
+
+# The synthetic_population_version will be prepended
 # to the FIPS code to form the synthetic_population_id
 synthetic_population_version = 2005_2009_ver2
 
