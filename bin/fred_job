@@ -381,12 +381,12 @@ if (not $parallel) {
 } # if serial
 
 # record the POPULATION file used (in case it was altered by parameters)
-if ($parallel) {
-  `grep POPULATION_FILE $meta/LOG.1 | awk \'{print \$2}\' > $meta/POPULATION`; 
-}
-else {
-  `grep POPULATION_FILE $out/LOG1 | awk \'{print \$2}\' > $meta/POPULATION`; 
-}
+my $log1 = $parallel ? "$meta/LOG.1" : "$out/LOG1";
+`grep POPULATION_FILE $log1 | awk \'{print \$2}\' > $meta/POPULATION`; 
+
+# record the pop size and density
+`grep convex_density $log1 | awk \'{print \$4}\' > $meta/POPSIZE`; 
+`grep convex_density $log1 | awk \'{print \$11}\' > $meta/DENSITY`; 
 
 # gzip GAIA files if they exists
 if (-d "$out/GAIA") {
