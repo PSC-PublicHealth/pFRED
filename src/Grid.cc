@@ -155,9 +155,23 @@ void Grid::quality_control(char * directory) {
     fflush(Global::Statusfp);
   }
 
+  int popsize = 0;
+  int tot_occ_cells = 0;
   for (int row = 0; row < rows; row++) {
+    int min_occ_col = cols+1;
+    int max_occ_col = -1;
     for (int col = 0; col < cols; col++) {
       grid[row][col].quality_control();
+      int cell_pop = grid[row][col].get_target_popsize();
+      if (cell_pop > 0) {
+	if (col > max_occ_col) max_occ_col = col;
+	if (col < min_occ_col) min_occ_col = col;
+	popsize += cell_pop;
+      }
+    }
+    if (min_occ_col < cols) {
+      int cells_occ = max_occ_col - min_occ_col + 1;
+      tot_occ_cells += cells_occ;
     }
   }
 
@@ -185,6 +199,12 @@ void Grid::quality_control(char * directory) {
   }
 
   if (Global::Verbose) {
+    int total_area = rows*cols;
+    int convex_area = tot_occ_cells;
+    fprintf(Global::Statusfp, "Density: popsize = %d total region = %d total_density = %f\n",
+	    popsize, total_area, (total_area>0) ? (double) popsize / (double) total_area : 0.0);
+    fprintf(Global::Statusfp, "Density: popsize = %d convex region = %d convex_density = %f\n",
+	    popsize, convex_area, (convex_area>0) ? (double) popsize / (double) convex_area : 0.0);
     fprintf(Global::Statusfp, "grid quality control finished\n");
     fflush(Global::Statusfp);
   }
