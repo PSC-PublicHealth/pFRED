@@ -71,33 +71,72 @@ void Place_List::get_parameters() {
     char line_string[FRED_STRING_SIZE];
     char *line, *city, *state, *county, *fips;
     int found = 0;
-    sprintf(counties_file, "$FRED_HOME/input_files/US_counties.txt");
-    FILE *fp = Utils::fred_open_file(counties_file);
-    if (fp == NULL) {
-      Utils::fred_abort("counties file |%s| NOT FOUND\n", counties_file);
-    }
-    while (fgets(line_string, FRED_STRING_SIZE-1, fp) != NULL) {
-      line = line_string;
-      city = strsep(&line, "\t");
-      state = strsep(&line, "\t");
-      county = strsep(&line, "\t");
-      fips = strsep(&line, "\n");
-      // printf("city = |%s| state = |%s| county = |%s| fips = |%s|\n",
-      // city,state,county,fips);
-      if (strcmp(Global::FIPS_code, fips) == 0) {
-	found = 1;
-	break;
+    int fipsLength = strlen(Global::FIPS_code);
+    if (fipsLength == 5){ 
+      sprintf(counties_file, "$FRED_HOME/input_files/US_counties.txt");
+      FILE *fp = Utils::fred_open_file(counties_file);
+      if (fp == NULL) {
+	Utils::fred_abort("counties file |%s| NOT FOUND\n", counties_file);
+      }
+      while (fgets(line_string, FRED_STRING_SIZE-1, fp) != NULL) {
+	line = line_string;
+	city = strsep(&line, "\t");
+	state = strsep(&line, "\t");
+	county = strsep(&line, "\t");
+	fips = strsep(&line, "\n");
+	// printf("city = |%s| state = |%s| county = |%s| fips = |%s|\n",
+	// city,state,county,fips);
+	if (strcmp(Global::FIPS_code, fips) == 0) {
+	  found = 1;
+	  break;
+	}
+      }
+      fclose(fp);
+      if (found) {
+	Utils::fred_log("FOUND a county = |%s County %s| for fips = |%s|\n",
+			county, state, fips);
+	sprintf(Global::Synthetic_population_id, "%s_%s",
+		Global::Synthetic_population_version, fips);
+      }
+      else {
+	Utils::fred_abort("Sorry, could not find a county for fips = |%s|\n", 
+			  Global::FIPS_code);
       }
     }
-    fclose(fp);
-    if (found) {
-      Utils::fred_log("FOUND a county = |%s County %s| for fips = |%s|\n",
-        county, state, fips);
-      sprintf(Global::Synthetic_population_id, "%s_%s",
-        Global::Synthetic_population_version, fips);
+    else if (fipsLength == 2){
+      // get population_id from state
+      char states_file[FRED_STRING_SIZE];
+      char line_string[FRED_STRING_SIZE];
+      char *line, *abbrev, *state, *fips;
+      int found = 0;
+      sprintf(states_file, "$FRED_HOME/input_files/US_states.txt");
+      FILE *fp = Utils::fred_open_file(states_file);
+      if (fp == NULL) {
+	Utils::fred_abort("states file |%s| NOT FOUND\n", states_file);
+      }
+      while (fgets(line_string, FRED_STRING_SIZE-1, fp) != NULL) {
+	line = line_string;
+	fips = strsep(&line, "\t");
+	abbrev = strsep(&line, "\t");
+	state = strsep(&line, "\n");
+	if (strcmp(Global::FIPS_code, fips) == 0) {
+	  found = 1;
+	  break;
+	}
+      }
+      fclose(fp);
+      if (found) {
+	Utils::fred_log("FOUND state = |%s| state_abbrev = |%s| fips = |%s|\n",
+			state, abbrev, fips);
+	sprintf(Global::Synthetic_population_id, "%s_%s",
+		Global::Synthetic_population_version, fips);
+      }
+      else {
+	Utils::fred_abort("Sorry, could not find state called |%s|\n", Global::US_state);
+      }
     }
     else {
-      Utils::fred_abort("Sorry, could not find a county for fips = |%s|\n", Global::FIPS_code);
+      Utils::fred_abort("FRED keyword fips only supports 2 digits (for states) and 5 digits (for counties), you specified %s",Global::FIPS_code);
     }
   }
   else if (strcmp(Global::City, "none") != 0) {
