@@ -220,11 +220,13 @@ public:
    */
   Person * get_infector(int disease_id) const;
 
+  Place * get_infected_place(int disease_id) const;
+
   /**
    * @param disease the disease to check
    * @return
    */
-  int get_infected_place(int disease_id) const;
+  int get_infected_place_id(int disease_id) const;
 
   /**
    * @param disease the disease to check

@@ -38,6 +38,7 @@ using namespace std;
 #include "Grid.h"
 #include "Household.h"
 #include "Utils.h"
+#include "Geo_Utils.h"
 #include "Seasonality.h"
 #include "Evolution.h"
 #include "Workplace.h"
@@ -323,6 +324,7 @@ void Epidemic::print_stats(int day) {
   if (Global::Report_Presenteeism) { report_presenteeism(day); }
   if (Global::Report_Place_Of_Infection) { report_place_of_infection(day); }
   if (Global::Report_Age_Of_Infection) { report_age_of_infection(day); }
+  if (Global::Report_Distance_Of_Infection) { report_distance_of_infection(day); }
   
   fprintf(Global::Outfp, "\n");  
   fflush(Global::Outfp);
@@ -381,7 +383,7 @@ void::Epidemic::report_transmission_by_age_group(int day) {
   int groups = 100 / group;
   for (int i = 0; i < people_becoming_infected_today; i++) {
     Person * infectee = daily_infections_list[i];
-    Person * infector = daily_infections_list[i]->get_infector(0);
+    Person * infector = daily_infections_list[i]->get_infector(id);
     if (infector == NULL) continue;
     int a1 = infector->get_age();
     int a2 = infectee->get_age();
@@ -426,6 +428,32 @@ void::Epidemic::report_place_of_infection(int day) {
   Utils::fred_log("\nDay %d INF_PLACE: ", day);
   Utils::fred_report(" X %d H %d Nbr %d Sch %d", X, H, N, S);
   Utils::fred_report(" Cls %d Wrk %d Off %d ", C, W, O);
+  Utils::fred_log("\n");
+}
+
+void Epidemic::report_distance_of_infection(int day) {
+  double tot_dist = 0.0;
+  double ave_dist = 0.0;
+  int n = 0;
+  for (int i = 0; i < people_becoming_infected_today; i++) {
+    Person * infectee = daily_infections_list[i];
+    Person * infector = infectee->get_infector(id);
+    if (infector == NULL) continue;
+    Place * new_place = infectee->get_health()->get_infected_place(id);
+    if (new_place == NULL) continue;
+    Place * old_place = infector->get_health()->get_infected_place(id);
+    if (old_place == NULL) continue;
+    double lat1 = new_place->get_latitude();
+    double lon1 = new_place->get_longitude();
+    double lat2 = old_place->get_latitude();
+    double lon2 = old_place->get_longitude();
+    double dist = Geo_Utils::xy_distance(lat1, lon1, lat2, lon2);
+    tot_dist =+ dist;
+    n++;
+  }
+  if (n>0) { ave_dist = tot_dist / n; }
+  Utils::fred_log("\nDay %d INF_DIST: ", day);
+  Utils::fred_report(" Dist %f ", 1000*ave_dist);
   Utils::fred_log("\n");
 }
 

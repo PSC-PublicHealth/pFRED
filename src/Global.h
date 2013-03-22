@@ -216,6 +216,7 @@ class Global {
     static bool Print_Household_Locations;
     static int Report_Age_Of_Infection;
     static bool Report_Place_Of_Infection;
+    static bool Report_Distance_Of_Infection;
     static bool Report_Presenteeism;
     static bool Assign_Teachers;
     static int Print_GAIA_Data;

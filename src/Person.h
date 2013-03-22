@@ -318,7 +318,8 @@ public:
    * @param disease the disease to check
    * @return the id of the location where this agent became infected with disease
    */
-  int get_infected_place(int disease) const { return health.get_infected_place(disease); }
+  int get_infected_place_id(int disease) const { return health.get_infected_place_id(disease); }
+  Place * get_infected_place(int disease) const { return health.get_infected_place(disease); }
 
   /**
    * @param disease the disease to check

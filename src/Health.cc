@@ -335,7 +335,14 @@ Person * Health::get_infector(int disease_id) const {
     return infection[disease_id]->get_infector();
 }
 
-int Health::get_infected_place(int disease_id) const {
+Place * Health::get_infected_place(int disease_id) const {
+  if (!( active_infections.test( disease_id ) ))
+    return NULL;
+  else
+    return infection[disease_id]->get_infected_place();
+}
+
+int Health::get_infected_place_id(int disease_id) const {
   if (!( active_infections.test( disease_id ) ))
     return -1;
   else if (infection[disease_id]->get_infected_place() == NULL)

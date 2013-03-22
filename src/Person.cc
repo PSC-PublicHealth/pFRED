@@ -79,7 +79,7 @@ void Person::print(FILE *fp, int disease) {
   fprintf(fp, "places %d ", FAVORITE_PLACES);
   fprintf(fp, "infected_at %c %6d ",
           health.get_infected_place_type(disease),
-    health.get_infected_place(disease));
+    health.get_infected_place_id(disease));
   Person * infector = health.get_infector(disease);
   int infector_id;
   if (infector == NULL) 
