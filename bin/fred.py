@@ -364,6 +364,8 @@ class FRED_People_Set:
             with open(self.population_file,"r") as f:
                 ### header with column headings
                 header = f.readline()
+		if header[0:2] == "Is":
+                    header = f.readline()
                 headerSplit = header.split(",")
                 count = 0
                 for column in headerSplit:
