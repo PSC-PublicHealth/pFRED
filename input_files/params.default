@@ -297,7 +297,6 @@ mortality_rate[0] = 0.0
 # Sequential model: each agent is SEiIR
 
 days_latent[0] = 3       0.0 0.8 1.0
-days_incubating[0] = 4   0.0 0.3 0.8 1.0
 days_asymp[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
 days_symp[0] = 7   0.0 0.0 0.0 0.3 0.7 0.9 1.0
 immunity_loss_rate[0] = 0
