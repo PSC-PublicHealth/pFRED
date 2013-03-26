@@ -24,19 +24,16 @@ DefaultIntraHost::DefaultIntraHost() {
   asymp_infectivity = -1.0;
   symp_infectivity = -1.0;
   max_days_latent = -1;
-  max_days_incubating = -1;
   max_days_asymp = -1;
   max_days_symp = -1;
   max_days = 0;
   days_latent = NULL;
-  days_incubating = NULL;
   days_asymp = NULL;
   days_symp = NULL;
 }
 
 DefaultIntraHost::~DefaultIntraHost() {
   delete [] days_latent;
-  delete [] days_incubating;
   delete [] days_asymp;
   delete [] days_symp;
 }
@@ -53,10 +50,6 @@ void DefaultIntraHost::setup(Disease *disease) {
   Params::get_indexed_param("days_latent",id,&n);
   days_latent = new double [n];
   max_days_latent = Params::get_indexed_param_vector("days_latent", id, days_latent) -1;
-
-  Params::get_indexed_param("days_incubating",id,&n);
-  days_incubating = new double [n];
-  max_days_incubating = Params::get_indexed_param_vector("days_incubating",id, days_incubating) - 1;
 
   Params::get_indexed_param("days_asymp",id,&n);
   days_asymp = new double [n];
@@ -125,12 +118,6 @@ Trajectory * DefaultIntraHost::get_trajectory( Infection *infection, Transmissio
 int DefaultIntraHost::get_days_latent() {
   int days = 0;
   days = draw_from_distribution(max_days_latent, days_latent);
-  return days;
-}
-
-int DefaultIntraHost::get_days_incubating() {
-  int days = 0;
-  days = draw_from_distribution(max_days_incubating, days_incubating);
   return days;
 }
 

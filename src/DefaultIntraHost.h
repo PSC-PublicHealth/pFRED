@@ -51,11 +51,6 @@ class DefaultIntraHost : public IntraHost {
     int get_days_latent();
 
     /**
-     * @return this intrahost model's days incubating
-     */
-    int get_days_incubating();
-
-    /**
      * @return this intrahost model's days asymptomatic
      */
     int get_days_asymp();
@@ -115,12 +110,10 @@ class DefaultIntraHost : public IntraHost {
     double symp_infectivity;
     int infection_model;
     int max_days_latent;
-    int max_days_incubating;
     int max_days_asymp;
     int max_days_symp;
     int max_days;
     double *days_latent;
-    double *days_incubating;
     double *days_asymp;
     double *days_symp;
     double prob_symptomatic;
