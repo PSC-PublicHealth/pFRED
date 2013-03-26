@@ -15,6 +15,7 @@
 #include "DefaultIntraHost.h"
 #include "FixedIntraHost.h"
 #include "Utils.h"
+#include "RSAIntraHost.h"
 //#include "ODEIntraHost.h"
 
 using namespace std;
@@ -32,7 +33,8 @@ IntraHost *IntraHost :: newIntraHost(int type) {
     case 1:
       return new FixedIntraHost;
 
-      //    case 2:
+    case 2:
+      return new RSAIntraHost;
       //      return new ODEIntraHost;
 
     default:

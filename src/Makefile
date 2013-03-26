@@ -105,7 +105,7 @@ OBJ =   Fred.o Global.o Age_Map.o Timestep_Map.o Utils.o Params.o Date.o Random.
 	Disease.o Infection.o Epidemic.o \
 	EvolutionFactory.o Evolution.o Strain.o Trajectory.o StrainTable.o \
 	Multistrain_Timestep_Map.o \
-	IntraHost.o DefaultIntraHost.o FixedIntraHost.o \
+	IntraHost.o DefaultIntraHost.o FixedIntraHost.o RSAIntraHost.o\
 	Abstract_Grid.o Abstract_Cell.o \
 	Seasonality_Timestep_Map.o Seasonality.o \
 	Past_Infection.o MSEvolution.o FergEvolution.o Piecewise_Linear.o \
