@@ -6,8 +6,13 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane id="AnchorPane" prefHeight="520.0000999999975" prefWidth="849.0" xmlns:fx="http://javafx.com/fxml" fx:controller="edu.pitt.phdl.frednavigator.topic1.Topic1Controller">
+  <stylesheets>
+  <!-- Right now I am just linking to the same stylesheet. We can change this -->
+    <URL value="@../homepage.css" />
+  </stylesheets>
   <children>
     <MenuBar minHeight="22.0" opacity="0.83" prefHeight="28.0" prefWidth="849.0">
       <menus>
@@ -49,8 +54,18 @@
             </TitledPane>
           </panes>
         </Accordion>
-        <TabPane id="tab-pane-topic1" fx:id="tabPaneTopic1" prefHeight="482.0" prefWidth="718.0" tabClosingPolicy="UNAVAILABLE">
+        <TabPane id="tab-splash" fx:id="tabPaneTopic1" prefHeight="482.0" prefWidth="718.0" tabClosingPolicy="UNAVAILABLE">
           <tabs>
+            <Tab text="Info">
+              <content>
+                <!--<AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />-->
+                <VBox alignment="CENTER">
+                <Text id="title-text" text="Epidemic Dynamics and the Reproductive Number R0" wrappingWidth="500" /> 
+                <Text id="description" text="In this topic you will explore how quickly epidemic spread based on how many people are infected by each infected person."  wrappingWidth="700"/>
+                </VBox>
+                
+              </content>
+            </Tab>
             <Tab id="tab-SEIR" fx:id="tabSEIR" closable="false" style="" text="Exploring Health State">
               <content>
                 <BorderPane fx:id="brdrPaneSEIR" onMouseClicked="#openMovie" prefHeight="200.0" prefWidth="200.0" />
