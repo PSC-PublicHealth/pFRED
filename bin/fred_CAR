@@ -19,6 +19,6 @@ chomp $status;
 $status =~ s/\s.*//;
 die "fred_AR: bad status: $status\n" if $status ne "FINISHED";
 
-my $CAR = `$bin/fred_plot --data -k $key -v CAR | tail -1 | awk '{print \$2, \$3}' `;
+my $CAR = `$bin/fred_plot --data -k $key -v ARs | tail -1 | awk '{print \$2, \$3}' `;
 print "$CAR";
 
