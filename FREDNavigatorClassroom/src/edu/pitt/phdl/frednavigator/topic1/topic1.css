@@ -11,7 +11,7 @@ root {
 }
 
 .chart-series-line {    
-    -fx-stroke-width: 2px;
+    -fx-stroke-width: 4px;
     -fx-effect: null;
 }
 

@@ -25,10 +25,15 @@ public class HomepageController implements Initializable {
       Scene topic1Scene = new Scene(topic1Layout);
       FredNavigatorContext.getInstance().getFredNavigatorStage().setScene(topic1Scene);     
     }
-    catch (IOException ex)
+    catch (Exception ex)
     {
       Logger.getLogger(HomepageController.class.getName()).log(Level.SEVERE, null, ex);
     }
+ 
+//    catch (IOException ex)
+//    {
+//      Logger.getLogger(HomepageController.class.getName()).log(Level.SEVERE, null, ex);
+//    }
                        
   }
   

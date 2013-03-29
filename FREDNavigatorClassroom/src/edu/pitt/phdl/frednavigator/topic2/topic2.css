@@ -11,11 +11,18 @@ root {
 }
 
 .chart-series-line {    
-    -fx-stroke-width: 2px;
+    -fx-stroke-width: 4px;
     -fx-effect: null;
 }
  
-.default-color0.chart-series-line { -fx-stroke: #e9967a; }
-.default-color1.chart-series-line { -fx-stroke: #f0e68c; }
-.default-color2.chart-series-line { -fx-stroke: #dda0dd; }
+/* We can change these colors to whatever */
+.default-color0.chart-series-line { -fx-stroke: #0000FF; }
+.default-color1.chart-series-line { -fx-stroke: #FF0000; }
+.default-color2.chart-series-line { -fx-stroke: #009900; }
+.default-color3.chart-series-line { -fx-stroke: #990099; }
+
+.default-color0.chart-line-symbol { -fx-background-color: #0000FF, white; }
+.default-color1.chart-line-symbol { -fx-background-color: #FF0000, white; }
+.default-color2.chart-line-symbol { -fx-background-color: #009900, white; }
+.default-color3.chart-line-symbol { -fx-background-color: #990099, white; }
 

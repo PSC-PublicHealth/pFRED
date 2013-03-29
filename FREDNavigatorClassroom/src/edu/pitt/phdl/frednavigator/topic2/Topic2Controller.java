@@ -1,5 +1,6 @@
 package edu.pitt.phdl.frednavigator.topic2;
 
+import edu.pitt.phdl.frednavigator.FredNavigator;
 import edu.pitt.phdl.frednavigator.FredNavigatorContext;
 import edu.pitt.phdl.frednavigator.HomepageController;
 import java.io.IOException;
@@ -220,12 +221,11 @@ public class Topic2Controller implements Initializable {
     series.setName(seriesName);
     
     String pathToExperimentDirectory =
-            FREDNavigatorTopic2.pathToFRED + "RESULTS/JOB/"
+            FredNavigator.pathToFRED + "RESULTS/JOB/"
             + FREDNavigatorTopic2.keyToJob.get("R0=" + this.r0Value + "-Immunization=" + this.immunizationValue)
             + "/DATA/REPORTS/" + variable + "_daily-0.dat";
 
-    Scanner scanner =
-            FREDNavigatorTopic2.getFileScanner(pathToExperimentDirectory);
+    Scanner scanner = FredNavigator.getFileScanner(pathToExperimentDirectory);
     for (int i = 0; i < 7; i++)
     {
       scanner.next();

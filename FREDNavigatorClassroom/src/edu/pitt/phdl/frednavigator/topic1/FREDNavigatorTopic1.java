@@ -17,8 +17,7 @@ import javafx.stage.Stage;
  * @author jackpaparian
  */
 public class FREDNavigatorTopic1 extends Application {
-//    public static String pathToFRED = "/Users/jackpaparian/Documents/FRED/";
-    public static String pathToFRED = "/Users/ddg5/FRED/";
+
     public static HashMap<String, String> keyToJob = mapKeyToJob();
      
     @Override
@@ -30,24 +29,10 @@ public class FREDNavigatorTopic1 extends Application {
         stage.show();
     }
 
-  public static Scanner getFileScanner(String filename)
-  {
-    Scanner scanner = null;
-    try
-    {
-      scanner = new Scanner(new java.io.File(filename));
-    }
-    catch (Exception e)
-    {
-      return null;
-    }
-    return scanner;
-  }
-
     private static HashMap<String, String> mapKeyToJob() 
     {
       
-      Scanner keyScanner = getFileScanner(pathToFRED + "RESULTS/KEY");
+      Scanner keyScanner = FredNavigator.getFileScanner(FredNavigator.pathToFRED + "RESULTS/KEY");
         
       FREDNavigatorTopic1.keyToJob = new HashMap<>();
 

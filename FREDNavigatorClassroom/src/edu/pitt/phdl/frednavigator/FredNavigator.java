@@ -9,6 +9,7 @@ package edu.pitt.phdl.frednavigator;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Scanner;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,6 +18,38 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class FredNavigator extends Application {
+  
+  public static final String pathToFRED = FredNavigator.getPathToFREDDirectory();
+  
+  private static String getPathToFREDDirectory()
+  {    
+    Scanner fileScanner = getFileScanner("FRED_Navigator_Settings");
+    
+    while(fileScanner.hasNext())
+    {
+      String input = fileScanner.next();
+      if(input.contains("PATH="))
+      {
+        System.out.println("input.substring(5) = [" + input.substring(5) + "]");
+        return input.substring(5);
+      }
+    }
+    return null;
+  }
+  
+  public static Scanner getFileScanner(String filename)
+  {
+    Scanner scanner = null;
+    try
+    {
+      scanner = new Scanner(new java.io.File(filename));
+    }
+    catch(Exception e)
+    {
+      return null;
+    }
+    return scanner;
+  }
   
   @Override
   public void start(Stage homepageStage) {

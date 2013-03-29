@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="520.0000999999975" prefWidth="849.0" xmlns:fx="http://javafx.com/fxml" fx:controller="edu.pitt.phdl.frednavigator.topic2.Topic2Controller">
+<AnchorPane id="AnchorPane" prefHeight="520.0000999999975" prefWidth="849.0" styleClass="" xmlns:fx="http://javafx.com/fxml" fx:controller="edu.pitt.phdl.frednavigator.topic2.Topic2Controller">
   <children>
     <MenuBar minHeight="22.0" opacity="0.83" prefHeight="28.0" prefWidth="849.0">
       <menus>
@@ -77,4 +77,7 @@
       </children>
     </HBox>
   </children>
+  <stylesheets>
+    <URL value="@topic2.css" />
+  </stylesheets>
 </AnchorPane>
