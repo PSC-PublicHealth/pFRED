@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# $Id: gaia.py,v 1.6 2013-03-09 16:08:21 stbrown Exp $ #
+# $Id: gaia.py,v 1.7 2013-04-01 13:15:41 stbrown Exp $ #
 
 # Copyright 2009, Pittsburgh Supercomputing Center (PSC).  
 # See the file 'COPYRIGHT.txt' for any restrictions.
@@ -416,7 +416,7 @@ class PlotInfo:
         return xmlString
 
 class ConfInfo:
-    def __init__(self,serverURL_="gaia.psc.edu",serverPort_="13501",logInfo_=None,debug_=False):
+    def __init__(self,serverURL_="gaia.psc.edu",serverPort_="13500",logInfo_=None,debug_=False):
         self.serverURL = serverURL_
         self.serverPort = serverPort_
         self.logInfo = logInfo_
