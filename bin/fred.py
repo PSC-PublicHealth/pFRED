@@ -137,6 +137,7 @@ class FRED_RUN:
                 for line in f:
                     #print "i = " + str(i) + " DayCount = " + str(dayCount)
                     self.outputs[outFileKey].append({})
+		    if firstRun: print str(dayCount) 
                     if firstRun: self.outputsAve.append({})
                     lineSplit = line.split()
                     for j in range(0,len(lineSplit),2):
@@ -147,6 +148,7 @@ class FRED_RUN:
                         
                         self.outputs[outFileKey][dayCount][key] = value
                         if value.isdigit():
+			    print "Day Count = " + str(dayCount)
                             if self.outputsAve[dayCount].has_key(key) is False:
                                 self.outputsAve[dayCount][key] = 0
                             self.outputsAve[dayCount][key] += float(value)
@@ -273,8 +275,7 @@ class FRED_Infection_Set:
                 infList = []
                 for i in range(1,len(lineSplit),2):
                     infList.append(lineSplit[i])
-        
-        self.infectionList.append(infList)
+        	self.infectionList.append(infList)
 
     def get(self,key,infNum):
         index = self.infectionKey[key]
