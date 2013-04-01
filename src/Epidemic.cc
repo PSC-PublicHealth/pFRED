@@ -90,16 +90,18 @@ Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
 
   place_person_list_reserve_size = 1;
   daily_infections_list.clear();
+
+  seeding_type = SEED_EXPOSED;
 }
 
 void Epidemic::setup() {
   using namespace Utils;
   Params::get_param_from_string("advanced_seeding", seeding_type_name );
-  if ( !strcmp( seeding_type_name, "random" ) ) { seeding_type = 'R'; }
-  else if ( !strcmp( seeding_type_name, "exposed" ) ) { seeding_type = 'E';}
+  if ( !strcmp( seeding_type_name, "random" ) ) { seeding_type = SEED_RANDOM; }
+  else if ( !strcmp( seeding_type_name, "exposed" ) ) { seeding_type = SEED_EXPOSED;}
   else if ( !strcmp( seeding_type_name, "infectious" ) ) {
     fraction_seeds_infectious = 1.0;
-    seeding_type = 'I';
+    seeding_type = SEED_INFECTIOUS;
   }
   // format is exposed:0.0000;infectious:0.0000
   else if ( strchr( seeding_type_name, ';' ) != NULL ) {
