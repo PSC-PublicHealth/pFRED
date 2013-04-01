@@ -63,14 +63,20 @@ Infection::Infection(Disease *disease, Person* infector, Person* host, Place* pl
   symptoms = 0.0;
 
   // chrono
+  latent_period = 0;
+  asymptomatic_period = 0;
+  symptomatic_period = 0;
+  incubation_period = 0;
+
+  infectious_date = -1;
+  symptomatic_date = -1;
+  asymptomatic_date = -1;
+  recovery_date = -1;
+
+  will_be_symptomatic = false;
+
   exposure_date = day;
   recovery_period = disease->get_days_recovered();
-
-  if (symptomatic_date != -1) {
-    will_be_symptomatic = true;
-  } else {
-    will_be_symptomatic = false;
-  }
 
   // Determine if this infection produces an immune response
   immune_response = disease->gen_immunity_infection( host->get_age() );
