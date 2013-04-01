@@ -85,8 +85,11 @@ public:
   void add_susceptibles_to_infectious_places(int day, int dis);
 
   void increment_cohort_infectee_count(int cohort_day) {
-    #pragma omp atomic
-    ++( number_infected_by_cohort[ cohort_day ] );
+    if ( cohort_day > 0 ) {
+      assert( cohort_day < Global::Days );
+      #pragma omp atomic
+      ++( number_infected_by_cohort[ cohort_day ] );
+    }
   }
 
   void get_infectious_samples(int num_samples, vector<Person *> &samples);
