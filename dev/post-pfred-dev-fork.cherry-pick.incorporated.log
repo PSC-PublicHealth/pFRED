@@ -1,0 +1,9 @@
+commit 9174f165ddb953ca7437af03b02f37dc2a85ce32
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 17:40:33 2014 +0000
+
+    Removed FredNavigator
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2185 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+
