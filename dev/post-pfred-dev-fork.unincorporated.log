@@ -1,0 +1,551 @@
+commit eca962c60eba74e99c5edae712f1318cd173c922
+Author: Jay DePasse <depasse@psc.edu>
+Date:   Thu Feb 12 14:05:48 2015 -0500
+
+    ignore vim tempfiles
+
+commit 4034b0b82d00941e1e193d2c7b453af56d4ddf2c
+Author: Jay DePasse <depasse@psc.edu>
+Date:   Thu Feb 12 10:48:15 2015 -0500
+
+    ignore stuff
+
+commit 0e41d08d972a879750a386efae10f4846d26b412
+Author: Jay DePasse <depasse@psc.edu>
+Date:   Thu Feb 12 10:47:04 2015 -0500
+
+    ignore stuff
+
+commit 5241da0093ef714bc70b54b14856b94e312a29ff
+Author: Jay DePasse <depasse@psc.edu>
+Date:   Thu Feb 12 10:46:16 2015 -0500
+
+    ignore stuff, modify make to build on darwin using g++-4.8
+
+commit b39fc13f25921433555ca57b63c575a43234ec79
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Tue Feb 3 19:27:36 2015 +0000
+
+    Improved the efficiency of the Tracker code.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2216 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 20bd227096fd5c4f08806962aa82e96aed9acd95
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Sun Jan 18 16:12:32 2015 +0000
+
+    Added a +1 to the allcation of input_file as is needed by cStrs.  This eliminates three error from valgrind.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2215 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 2335668f02d760a0037cb0388d41147ee0ad8ef3
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Jan 14 00:40:06 2015 +0000
+
+    Added a more detailed version of the data by block.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2214 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit c57bf12ed9c17f9b6865d17aa5bc461fd8c24a8a
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Dec 18 16:11:10 2014 +0000
+
+    track and output vaccinated and unvaccinated clinical cases (symptomatic infections)
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2213 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit eaeb124bd688af96d2769a9f1dc4340068870bf8
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Tue Dec 16 17:51:07 2014 +0000
+
+    observed vaccine coverage schedule for use in pittvax flu r01 modeling project
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2212 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 4145fd0131de569ca14b2f55d7c639943d662e32
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Mon Dec 15 20:55:41 2014 +0000
+
+    age-specific vaccinated/unvaccinated clinical infection reports
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2211 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 6cd6144c8029b830ca2c16c9dc9588854f109130
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Mon Dec 15 18:59:18 2014 +0000
+
+    vaccine infection tracking
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2210 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 7e4d7c278740dbedc7cba7f7b61629fbe04d9b59
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Fri Dec 12 21:48:39 2014 +0000
+
+    vaccine infection tracker
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2209 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit acbf8060c3dbef9edc795b49186fae8647eaa8b3
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Fri Dec 12 20:16:03 2014 +0000
+
+    vaccine infection tracker support
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2208 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 17651a0c2ae6a2838bbf3ce4da9ac70f78ca2080
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Nov 5 22:39:20 2014 +0000
+
+    formatting
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2207 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 5b2d886643efbdf3860b5c3ed42d89dd652308d5
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Nov 5 22:39:05 2014 +0000
+
+    Converted "Updating Census Block..." message to FRED_VERBOSE(1, ...
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2206 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 6cc1df4bd1f1ea3fe6025b4e5a552122cd82a28d
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Nov 5 19:40:34 2014 +0000
+
+    :retab
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2205 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 31abb57fd64b578252b5932ec204475f25b91dcf
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Nov 5 19:35:03 2014 +0000
+
+    ignore *.orig files genrated by astyle
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2204 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 4131e4876a90e5ee64ebe8417729f2da558542a7
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Nov 5 19:34:34 2014 +0000
+
+    ignore *.orig files genrated by astyle
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2203 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 3d755acc532ec767bcb4734dcc69780adc0126ed
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Nov 5 19:34:07 2014 +0000
+
+    no idea how the formatting of this file got so screwed up, but astyle fixed it
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2202 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit fb21781719921505b8126191ebd35205080807d7
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Nov 5 19:10:40 2014 +0000
+
+    :retab; :gg=G;
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2201 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 1d231ebbd1c0162014c31f948ccb59eae48ae97f
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Nov 5 18:25:07 2014 +0000
+
+    updated ignorefiles
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2200 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 09e12fdef7798151f4a0d79912c8390a28c7db0e
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Nov 5 18:17:03 2014 +0000
+
+    updated ignorefile
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2199 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit c8eb61c46d689d795c83b4d03580eba0b5ebb523
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Nov 5 17:37:29 2014 +0000
+
+    reverting typo (due to mgk8) from r1743
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2198 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 82bc02a2e080241d726ab169bf4e0517c7a53f76
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Tue Oct 21 20:44:39 2014 +0000
+
+    remove DB.h includes and references
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2197 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 55d1067518edd0e8e7d76da55703fc326a959c86
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Tue Oct 21 20:25:45 2014 +0000
+
+    removed doxygen html directory - this should be generated in the working copy with make and does not belong in the repo
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2196 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 4241ea80198638b9fdf6675f32dc7c202df82877
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 19:14:53 2014 +0000
+
+    svnignore
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2195 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit f11ac07facd72f6889217fb35ff1dacdbab5c0ad
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 19:13:45 2014 +0000
+
+    svnignore
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2194 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit f13c349273420afa9b834e0cb5d0499e24445a17
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 19:11:40 2014 +0000
+
+    svnignore
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2193 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 606ca8c74085f603e14c7ccf1b2afaedeb3ae71a
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 19:11:03 2014 +0000
+
+    svnignore
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2192 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit f9c2ad6923ddbe3fada567382cc1dd4faeefa86e
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 19:09:57 2014 +0000
+
+    svnignore
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2191 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit dbc634d872d3d66bbeaaa090d55d2a1d19d6d388
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 19:05:36 2014 +0000
+
+    svnignore
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2190 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 13ff5bf1332cffd3cd55df05cb3998b1de42417e
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 18:04:45 2014 +0000
+
+    remove DB/transactions and sqlite dependencies
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2187 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 619ff0fff3130ffb28f3ee489247e07f3c040b14
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 17:41:16 2014 +0000
+
+    removed sqlite source directory
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2186 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 9174f165ddb953ca7437af03b02f37dc2a85ce32
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 17:40:33 2014 +0000
+
+    Removed FredNavigator
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2185 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 4bd7ec263ad2fcb3a4a41076d25600bafa6a0f87
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 15:01:54 2014 +0000
+
+    Moved the trunk as imported from cvs into branches/ParameterDiseaseName_rev-2_8_0.  This branch includes the changes from r2152 to r2174 where disease specific params are referred to by string name rather that integer index.  The apollo-2_8_0 branch (r2030 branchpoint) was re-based as the new trunk (svn copy branches/apollo-2_8_0 trunk); The changes between r2030 and r2152 are likely harmless (still compatible with apollo), but offer little incentive to make merge worthwhile; refs #408
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2179 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 2afb02a5dcb2a11e0d6eca8374f71d703ac92b09
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Jun 25 14:50:02 2014 +0000
+
+    refs apollo issue #472
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2065 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 0392d7b7f690f31bef1abfa66a83e1fd93f797f1
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Mon Apr 28 14:44:40 2014 +0000
+
+    Added two collective operations to the Tracker class:
+    
+    1. Resetting all integer and double values to zero.
+    2. Setting one of the keys for all indexes in the Tracker to a value.
+    
+    This allows me to have a daily counter that can be printed out to the same file.
+    
+    Updated unit test to ping this feature and make sure that it is working.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1981 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 3389508cf50b270fd01acdecd53ab1415a4866aa
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Mar 12 13:12:03 2014 +0000
+
+    Enhanced increment to automatically initialize the incrememnt variable properly on first call,
+    and fixed the extraneous space at the end of the inline report output.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1934 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 4e0f70551e43f1deef61cb8e29c0e04684bae46c
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Mon Mar 10 22:01:58 2014 +0000
+
+    Added the beginnings of the a Tract_Tracker, right now it is only counting a couple values
+    but it at least shows how this could be done.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1933 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 15c3d34367e28a1b832eafa207462bc187e3e6a9
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Mon Mar 10 22:00:31 2014 +0000
+
+    Minor updates to the incrementing function and added the ability to do a csv report format.wq
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1932 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 95fa597b49079320153a6af06faeca26462f1105
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Mon Mar 10 20:42:57 2014 +0000
+
+    Ok, it isn't "Days", the index is "Day", now the RT should not have changed.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1931 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit fca9d67fb201b956fafc3437e15c97a7a8d1259e
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Mon Mar 10 19:38:52 2014 +0000
+
+    Updated Tracker class to be a template and operate a little differently than before.
+    
+    Now the class can store counts by any type one would like to use, with the caveat
+    that it can be printed.  This means at the moment, there is not a capacity to use
+    user derived types, but should be trivial to add this in the future.
+    
+    Also added a Unit test to TestSuite to test the class.  You can see that there is now
+    a main function in the TestSuite/Tracker directory that is able to easily compiler
+    without the use of FRED at all.  I added a rule to Makefile for compiling this:
+    
+    make FRED_Unit_Tracker
+    
+    Shows us a guide on how to add unit tests trivially for classes, and made it much
+    much easier to develop and debug this as an independent class.
+    wq
+    There is no change to the regression test.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1930 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 291a65e27a05838bdc85eef089bbfd82b671a3c7
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Fri Oct 11 23:49:21 2013 +0000
+
+    Fixed these so that if a meta variable has more than one line, it returns a list.  MCA's should visualize now.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1747 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 968cfdd7f3b94f41ccbb5d90db3f1afba9417adb
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Sep 4 22:45:57 2013 +0000
+
+    Fixed a minor bug preventing easy compiling on Linux.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1733 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 5e2c2f7a172835255f382f4170bceebf1f2d2bab
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Tue Jul 2 13:16:40 2013 +0000
+
+    Fixed a bug that prevented states from working.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1688 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 0c683cb7979c8aac500cfd3776611b5b04bbb101
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Tue May 21 14:06:31 2013 +0000
+
+    Updated Vaccine Manager to add a parameter to exclude symptomatics from the vaccination process.
+    
+    A new keyword, vaccinate_symptomatics (which is default false), that if false, anyone that has
+    experienced a symptomatic infection, they will reject a vaccination if offered.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1654 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 8b03dfa3c76845d4c6b9d7e52e5d100de824f508
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Sun May 5 14:28:24 2013 +0000
+
+    Whoops, forgot to uncomment a debugging feature.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1651 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 9b51ff392aadfbc827f0613211029a123e133b36
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Sun May 5 03:07:55 2013 +0000
+
+    Fixed minor type in tiawan that would preclude printing the boundaries.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1650 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 5543b12af458278c6b755a97f0ef6ca887e0b426
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Sun May 5 01:06:01 2013 +0000
+
+    Removed extraneous print statment.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1649 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit be316f33d2b9fd0c14ae1425fbdae3e7db98699a
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Fri May 3 22:06:17 2013 +0000
+
+    Used the wrong ios flag to the stream to get 2 decimal floating points, because I forgot my first year C++ like a moron.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1648 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 88f523608170827a578b2e50d10389556e3f6f88
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Fri May 3 20:39:36 2013 +0000
+
+    Hacked a quick flag into the code.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1647 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit df9910b582604bfc7b7a35cef18937bb29366db9
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed May 1 14:12:43 2013 +0000
+
+    Made the Cygwin dependent part of this file wrapped in an ifndef so that it is automatic when compiling.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1640 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit a4f9005513f29d496172c50938800884f45dc243
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed May 1 14:00:02 2013 +0000
+
+    Added a null pointer to the constructor for ihm so that there are no "uninitialized memory accesses" to it.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1639 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 0cbf675eb3336a1a9383251dabae574e58b4b8ae
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed May 1 13:38:00 2013 +0000
+
+    Minor edit to preprocess out execinfo.h if compiling on Cygwin.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1638 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 420d23749c4cb818831fefa821fd2717478ed2cc
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Apr 11 23:02:03 2013 +0000
+
+    There was an issue with the way that python was deciding whether a value was a number or not.
+    
+    This should fix it.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1614 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit f23a63499319eee5977e18682bc72a1c9db88ad1
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Apr 3 12:11:19 2013 +0000
+
+    Updating regression test after Tracker checkin.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1602 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit f1e9f832b6bb89d0bdd3b19185c5e0b157d0b1a3
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Apr 3 12:06:56 2013 +0000
+
+    Updating regression test after Tracker checkin
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1601 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit bf1a597c3606cef6ab5bff3c8e645433a2dae4f1
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Apr 3 12:06:00 2013 +0000
+
+    Updating regression test after Tracker check in.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1600 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 43091bf2f494297e119b17dde040aab42a9c8d69
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Apr 3 11:37:33 2013 +0000
+
+    Updating vaccine regression test in wake of Tracker implementation.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1598 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit e9a627fee27f059d7d0b8528b0a2140c77d4a12d
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Apr 3 01:17:55 2013 +0000
+
+    Updating regression test to conincide with the Tracker check-in.  Visually inspected for correctness.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1597 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 6e8c43e1ae6d3be10975c6637f0d2826f26f79de
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Apr 3 01:15:02 2013 +0000
+
+    Added the Tracker Class that allows one to track daily counts from anywhere in FRED.
+    
+    There are several updates to use this new functionality.
+    
+    This effects the order of the variables in out, and so I will be subsequently be checking
+    in an update to the regression test.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1596 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 48541eed07c9796c007ea419daf75c5a4bae8721
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Tue Apr 2 13:26:08 2013 +0000
+
+    Adding blank stubs for these files in preparation for a coderev.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@1594 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
