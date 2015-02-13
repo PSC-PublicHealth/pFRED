@@ -6,4 +6,12 @@ Date:   Thu Oct 16 17:40:33 2014 +0000
     
     git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2185 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
+commit 619ff0fff3130ffb28f3ee489247e07f3c040b14
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Oct 16 17:41:16 2014 +0000
+
+    removed sqlite source directory
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2186 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
 
