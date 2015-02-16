@@ -509,21 +509,30 @@ Utils::Tokens & Utils::split_by_delim( const std::string & str,
 
   while ( std::getline( ss, item, delim ) ) {
     if ( !item.empty() ) {
-      if ( item.size() > 1 && ( item.at(0) == '\"' || item.at(0) == '\'' ) ) {
-        quoted_item = item;
-        continue;
+      if ( item.size() > 1 && ( item.at(0) == '\"' || item.at(0) == '\'' ) && item.at(0)==item.at(item.size()-1)) {
+       // printf("item = |%s|\n",item.c_str());
+       item.erase(item.size()-1,1);
+       item.erase(0,1);
+       // printf("item = |%s|\n",item.c_str());
       }
-      else if ( !quoted_item.empty() ) {
-        if ( item.at(item.size()-1) != quoted_item.at(0) ) {
-          quoted_item = quoted_item + "," + item;
-          continue;
-        }
-        else {
-          item = quoted_item + "," + item;
-          item.erase(0,1);
-          item.erase(item.size()-1,1);
-          quoted_item.clear();
-        }
+      else {
+       if ( item.size() > 1 && ( item.at(0) == '\"' || item.at(0) == '\'' ) ) {
+         quoted_item = item;
+         // printf("item is quoted\n",quoted_item.c_str());
+         continue;
+       }
+       else if ( !quoted_item.empty() ) {
+         if ( item.at(item.size()-1) != quoted_item.at(0) ) {
+           quoted_item = quoted_item + "," + item;
+           continue;
+         }
+         else {
+           item = quoted_item + "," + item;
+           item.erase(0,1);
+           item.erase(item.size()-1,1);
+           quoted_item.clear();
+         }
+       }
       }
     }
     if ( !item.empty() || !collapse_consecutive_delims ) {
