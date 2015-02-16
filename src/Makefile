@@ -10,6 +10,8 @@ SNAPPY_HDR = $(SNAPPY_INC_DIR)/snappy.h
 
 INCLUDE_DIRS = -I$(DSFMT_DIR) -I$(SQLITE_DIR) -I$(SNAPPY_INC_DIR)
 
+CPP = g++ 
+# CPP = /Developer/usr/bin/g++
 
 ################   Multithreading   ###############################
 # For multithreading, NCPU should be set here or as an argument to make.
@@ -36,13 +38,11 @@ else ifeq ($(OS),Darwin)
 NCPU ?= $(shell sysctl -n hw.ncpu)
 SNAPPY_LIB = $(SNAPPY_DIR)/lib/libsnappy.dylib
 M64 = -m64
+CPP = g++-4.8
 endif
 ################   Compiler Flags   ##############################
 FRED_EXECUTABLE_NAME = FRED
 FRED_memcheck: FRED_EXECUTABLE_NAME = FRED_memcheck
-
-CPP = g++ 
-# CPP = /Developer/usr/bin/g++
 
 LOGGING_PRESET_0 = 
 LOGGING_PRESET_1 = -DFREDWARNING
