@@ -11,7 +11,6 @@ SNAPPY_HDR = $(SNAPPY_INC_DIR)/snappy.h
 INCLUDE_DIRS = -I$(DSFMT_DIR) -I$(SQLITE_DIR) -I$(SNAPPY_INC_DIR)
 
 CPP = g++ 
-# CPP = /Developer/usr/bin/g++
 
 ################   Multithreading   ###############################
 # For multithreading, NCPU should be set here or as an argument to make.
@@ -35,6 +34,7 @@ else ifeq ($(shell echo $(OS) | cut -f1 -d_),CYGWIN)
 NCPU ?=  $(shell grep -c ^processor /proc/cpuinfo)
 SNAPPY_LIB = $(SNAPPY_DIR)/lib/libsnappy.la 
 else ifeq ($(OS),Darwin)
+CPP = g++-4.8
 NCPU ?= $(shell sysctl -n hw.ncpu)
 SNAPPY_LIB = $(SNAPPY_DIR)/lib/libsnappy.dylib
 M64 = -m64
