@@ -278,6 +278,10 @@ class Population {
        masked_iterator< MaskType > end() { return blq.end(); }
        */
 
+      // reports vaccined/unvaccinated symptomatic/asymptomatic infections
+      // for the current day
+      void report_vaccine_infection_events(int day);
+
   private:
 
     struct PopFileColIndex {
@@ -437,6 +441,16 @@ class Population {
       int day;
       Update_Population_Behaviors( int d ) : day( d ) { }
       void operator() ( Person & p );
+    };
+
+    // functor for vaccine infection tracking
+    struct Update_Vaccine_Infection_Counts {
+        int day;
+        int disease;
+        std::vector< std::map< int, int > > sym;    
+        Update_Vaccine_Infection_Counts(int _day, int _disease
+                ) : day(_day), disease(_disease), sym(Global::MAX_AGE + 1) {}
+        void operator() ( Person & p );
     };
 
     fred::Mutex mutex;

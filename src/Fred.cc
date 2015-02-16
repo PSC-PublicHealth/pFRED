@@ -294,6 +294,12 @@ int main(int argc, char* argv[]) {
     if (Global::Incremental_Trace && day && !(day%Global::Incremental_Trace))
       Global::Pop.print(1, day);
 
+    if (Global::Track_vaccine_infection_events) {
+        if (Global::Enable_Vaccination) {
+            Global::Pop.report_vaccine_infection_events(day);
+        }
+    }
+
     #pragma omp parallel sections
     {
       #pragma omp section

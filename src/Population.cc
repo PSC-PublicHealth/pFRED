@@ -1205,3 +1205,34 @@ void Population::write_population_output_file(int day) {
   fflush(fp);
   fclose(fp);
 }
+
+void Population::Update_Vaccine_Infection_Counts::operator() (Person & p) {
+    Health * h = p.get_health();
+    int age = (int) p.get_age();
+    if (age > Global::MAX_AGE) {
+        age = Global::MAX_AGE;
+    }
+    if (h->get_symptomatic_date(disease) == day) {
+        if (h->is_vaccinated()) {
+            sym[age][1]++;
+        }
+        else {
+            sym[age][0]++;
+        }
+    }
+}
+
+
+void Population::report_vaccine_infection_events(int day) {
+    Update_Vaccine_Infection_Counts update_vaccine_infection_counts(day, 0);
+    this->blq.masked_apply(fred::Infectious, update_vaccine_infection_counts);
+    for (int a=0; a < Global::MAX_AGE; ++a) {
+        std::map<int,int> m = update_vaccine_infection_counts.sym[a];
+        if (!m.empty()) {
+            fprintf(Global::VaccineInfectionTrackerfp,
+                "{\"day\": %d, \"age\": %d, \"vaccinated\": %d, \"not_vaccinated\": %d}\n",
+                day, a, m[1], m[0]);
+            //std::cout << m[0] << "  " << m[1];
+        }
+    }
+}

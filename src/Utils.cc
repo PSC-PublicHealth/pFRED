@@ -134,6 +134,19 @@ void Utils::fred_open_output_files(char * directory, int run){
       Utils::fred_abort("Can't open %s\n", filename);
     }
   }
+  if (Global::Track_vaccine_infection_events) {
+      Global::VaccineInfectionTrackerfp = NULL;
+      if (strcmp(Global::VaccineInfectionTrackerfilebase, "none") != 0) {
+          sprintf(filename, "%s/%s%d.txt", directory, Global::VaccineInfectionTrackerfilebase, run);
+      }
+      else {
+          sprintf(filename, "%s/vaccinf%d.txt", directory, run);
+      }
+      Global::VaccineInfectionTrackerfp = fopen(filename, "w");
+      if (Global::VaccineInfectionTrackerfp == NULL) {
+        Utils::fred_abort("Can't open %s\n", filename);
+      }
+  }
   Global::Birthfp = NULL;
   if (Global::Enable_Births) {
     sprintf(filename, "%s/births%d.txt", directory, run);

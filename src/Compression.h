@@ -85,7 +85,7 @@ class SnappyFileCompression {
   public:
 
   SnappyFileCompression( char * _infile_name ) {
-    infile_name = new char[ std::strlen( _infile_name ) ];
+    infile_name = new char[ std::strlen( _infile_name ) + 1 ];
     std::strcpy( infile_name, _infile_name );
   }
 

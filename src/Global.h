@@ -84,6 +84,7 @@ class Global {
     static const int ADULT_AGE = 18;
     static const int SCHOOL_AGE = 5;
     static const int RETIREMENT_AGE = 67;
+    static const int MAX_AGE = 120;
     // MAX_NUM_DISEASES sets the size of stl::bitsets and static arrays used throughout FRED
     // to store disease-specific flags and pointers; set to the smallest possible value 
     // for optimal performance and memory usage
@@ -155,6 +156,7 @@ class Global {
     static char Output_directory[];
     static char Tracefilebase[];
     static char VaccineTracefilebase[];
+    static char VaccineInfectionTrackerfilebase[];
     static int Incremental_Trace;
     static int Trace_Headers;
     static int Rotate_start_date;
@@ -173,6 +175,7 @@ class Global {
     static char ErrorLogbase[];
     static int Enable_Behaviors;
     static int Track_infection_events;
+    static int Track_vaccine_infection_events;
     static int Track_age_distribution;
     static int Track_household_distribution;
     static int Track_network_stats;
@@ -234,6 +237,7 @@ class Global {
     static FILE *Tracefp;
     static FILE *Infectionfp;
     static FILE *VaccineTracefp;
+    static FILE *VaccineInfectionTrackerfp;
     static FILE *Birthfp;
     static FILE *Deathfp;
     static FILE *Prevfp;

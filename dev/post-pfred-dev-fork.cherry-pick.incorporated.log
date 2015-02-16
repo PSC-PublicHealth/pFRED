@@ -30,4 +30,78 @@ Date:   Tue Oct 21 20:44:39 2014 +0000
     
     git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2197 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
+commit 55d1067518edd0e8e7d76da55703fc326a959c86
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Tue Oct 21 20:25:45 2014 +0000
+
+    removed doxygen html directory - this should be generated in the working copy with make and does not belong in the repo
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2196 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 20bd227096fd5c4f08806962aa82e96aed9acd95
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Sun Jan 18 16:12:32 2015 +0000
+
+    Added a +1 to the allcation of input_file as is needed by cStrs.  This eliminates three error from valgrind.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2215 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 2335668f02d760a0037cb0388d41147ee0ad8ef3
+Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Wed Jan 14 00:40:06 2015 +0000
+
+    Added a more detailed version of the data by block.
+    
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2214 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit c57bf12ed9c17f9b6865d17aa5bc461fd8c24a8a
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Thu Dec 18 16:11:10 2014 +0000
+
+    track and output vaccinated and unvaccinated clinical cases (symptomatic infections)
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2213 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit eaeb124bd688af96d2769a9f1dc4340068870bf8
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Tue Dec 16 17:51:07 2014 +0000
+
+    observed vaccine coverage schedule for use in pittvax flu r01 modeling project
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2212 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 4145fd0131de569ca14b2f55d7c639943d662e32
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Mon Dec 15 20:55:41 2014 +0000
+
+    age-specific vaccinated/unvaccinated clinical infection reports
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2211 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 6cd6144c8029b830ca2c16c9dc9588854f109130
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Mon Dec 15 18:59:18 2014 +0000
+
+    vaccine infection tracking
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2210 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit 7e4d7c278740dbedc7cba7f7b61629fbe04d9b59
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Fri Dec 12 21:48:39 2014 +0000
+
+    vaccine infection tracker
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2209 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
+commit acbf8060c3dbef9edc795b49186fae8647eaa8b3
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Fri Dec 12 20:16:03 2014 +0000
+
+    vaccine infection tracker support
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2208 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
 
