@@ -153,22 +153,6 @@ Date:   Wed Nov 5 19:10:40 2014 +0000
     
     git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2201 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
-commit 1d231ebbd1c0162014c31f948ccb59eae48ae97f
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Wed Nov 5 18:25:07 2014 +0000
-
-    updated ignorefiles
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2200 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit 09e12fdef7798151f4a0d79912c8390a28c7db0e
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Wed Nov 5 18:17:03 2014 +0000
-
-    updated ignorefile
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2199 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
 commit c8eb61c46d689d795c83b4d03580eba0b5ebb523
 Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
 Date:   Wed Nov 5 17:37:29 2014 +0000
@@ -177,13 +161,13 @@ Date:   Wed Nov 5 17:37:29 2014 +0000
     
     git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2198 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
-commit 82bc02a2e080241d726ab169bf4e0517c7a53f76
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Tue Oct 21 20:44:39 2014 +0000
-
-    remove DB.h includes and references
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2197 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+#commit 82bc02a2e080241d726ab169bf4e0517c7a53f76
+#Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+#Date:   Tue Oct 21 20:44:39 2014 +0000
+#
+#    remove DB.h includes and references
+#    
+#    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2197 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
 commit 55d1067518edd0e8e7d76da55703fc326a959c86
 Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
@@ -193,55 +177,7 @@ Date:   Tue Oct 21 20:25:45 2014 +0000
     
     git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2196 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
-commit 4241ea80198638b9fdf6675f32dc7c202df82877
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Thu Oct 16 19:14:53 2014 +0000
-
-    svnignore
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2195 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit f11ac07facd72f6889217fb35ff1dacdbab5c0ad
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Thu Oct 16 19:13:45 2014 +0000
-
-    svnignore
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2194 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit f13c349273420afa9b834e0cb5d0499e24445a17
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Thu Oct 16 19:11:40 2014 +0000
-
-    svnignore
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2193 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit 606ca8c74085f603e14c7ccf1b2afaedeb3ae71a
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Thu Oct 16 19:11:03 2014 +0000
-
-    svnignore
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2192 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit f9c2ad6923ddbe3fada567382cc1dd4faeefa86e
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Thu Oct 16 19:09:57 2014 +0000
-
-    svnignore
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2191 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit dbc634d872d3d66bbeaaa090d55d2a1d19d6d388
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Thu Oct 16 19:05:36 2014 +0000
-
-    svnignore
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2190 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-#commit 13ff5bf1332cffd3cd55df05cb3998b1de42417e
+commit 13ff5bf1332cffd3cd55df05cb3998b1de42417e
 #Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
 #Date:   Thu Oct 16 18:04:45 2014 +0000
 #

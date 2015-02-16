@@ -22,4 +22,12 @@ Date:   Thu Oct 16 18:04:45 2014 +0000
     
     git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2187 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
+commit 82bc02a2e080241d726ab169bf4e0517c7a53f76
+Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+Date:   Tue Oct 21 20:44:39 2014 +0000
+
+    remove DB.h includes and references
+    
+    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2197 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+
 
