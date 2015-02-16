@@ -7,7 +7,7 @@ SNAPPY_DIR = $(SRC_DIR)/snappy
 SNAPPY_INC_DIR = $(SNAPPY_DIR)/include
 SNAPPY_HDR = $(SNAPPY_INC_DIR)/snappy.h 
 
-INCLUDE_DIRS = -I$(DSFMT_DIR) -I$(SQLITE_DIR) -I$(SNAPPY_INC_DIR)
+INCLUDE_DIRS = -I$(DSFMT_DIR) -I$(SNAPPY_INC_DIR)
 
 CPP = g++ 
 
@@ -120,7 +120,7 @@ MD5 := FRED.md5
 all: FRED FRED.tar.gz fsz $(MD5)
 
 FRED: $(SNAPPY_LIB) $(OBJ) dSFMT.o
-	$(CPP) -o $(FRED_EXECUTABLE_NAME) $(CPPFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) $(OBJ) dSFMT.o $(LFLAGS) -ldl
+	$(CPP) -o $(FRED_EXECUTABLE_NAME) $(CPPFLAGS) $(LDFLAGS) $(OBJ) dSFMT.o $(LFLAGS) -ldl
 	cp $(FRED_EXECUTABLE_NAME) ../bin
 
 FRED_memcheck: FRED
@@ -129,7 +129,7 @@ dSFMT.o:
 	$(CPP) $(DSFMT_CPPFLAGS) $(DSFMT_SRC) -c $(DSFMT_HDR) 
 
 fsz: $(SNAPPY_LIB) Compression.o Global.h fsz.cc
-	$(CPP) -o fsz $(CPPFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) Compression.o $(LFLAGS) fsz.cc
+	$(CPP) -o fsz $(CPPFLAGS) $(LDFLAGS) Compression.o $(LFLAGS) fsz.cc
 	cp fsz ../bin
 
 DEPENDS: $(SRC) $(HDR)
