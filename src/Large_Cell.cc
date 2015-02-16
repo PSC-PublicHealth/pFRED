@@ -128,12 +128,6 @@ void Large_Cell::unenroll(Person *per) {
   //--( demes[ per->get_deme_id() ] );
 }
 
-Transaction * Large_Cell::collect_cell_stats( int day, int disease_id ) {
-  Cell_Report * report = new Cell_Report( day, id, disease_id );
-  report->collect( person );
-  return report;
-}
-
 Place *Large_Cell::get_workplace_near_to_school(Place *school) {
   // printf("get_workplace_near_school entered\n"); print(); fflush(stdout);
   int size = school->get_size();

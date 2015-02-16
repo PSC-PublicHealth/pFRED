@@ -44,8 +44,6 @@
 // Size of strings (usually file names)
 #define FRED_STRING_SIZE 256
 
-class DB;
-
 class Population;
 class Place_List;
 class Grid;
@@ -172,8 +170,6 @@ class Global {
     static char US_state[];
     static char FIPS_code[];
 
-    static char DBfile[];
-
     static char ErrorLogbase[];
     static int Enable_Behaviors;
     static int Track_infection_events;
@@ -231,8 +227,6 @@ class Global {
     static Date *Sim_Current_Date;
     static Evolution *Evol;
     static Seasonality *Clim;
-
-    static DB db;
 
     // global file pointers
     static FILE *Statusfp;

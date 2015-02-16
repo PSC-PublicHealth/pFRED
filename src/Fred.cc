@@ -31,7 +31,6 @@
 #include "Epidemic.h"
 #include "Seasonality.h"
 #include "Past_Infection.h"
-#include "DB.h"
 #include "Activities.h"
 #include "Behavior.h"
 
@@ -77,8 +76,6 @@ int main(int argc, char* argv[]) {
   // get runtime parameters
   Params::read_parameters(paramfile);
   Global::get_global_parameters();
-
-  Global::db.open_database( Global::DBfile );
 
   // get runtime population parameters
   Global::Pop.get_parameters();
@@ -309,10 +306,6 @@ int main(int argc, char* argv[]) {
         // flush infections file buffer
         fflush(Global::Infectionfp);
       }
-      #pragma omp section
-      {
-        Global::db.process_transactions();
-      }
     }
  
     Utils::fred_print_wall_time("day %d finished", day);
@@ -323,8 +316,6 @@ int main(int argc, char* argv[]) {
     Global::Sim_Current_Date->advance();
   }
  
-  Global::db.close_database();
-
   fflush(Global::Infectionfp);
 
   Utils::fred_print_lap_time( &simulation_start_time,

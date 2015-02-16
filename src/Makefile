@@ -3,7 +3,6 @@
 SRC_DIR = $(shell pwd)
 PRNG_DIR = $(SRC_DIR)/PRNG__Mersenne_Twister
 DSFMT_DIR = $(PRNG_DIR)/dSFMT-src-2.2
-SQLITE_DIR = $(SRC_DIR)/sqlite
 SNAPPY_DIR = $(SRC_DIR)/snappy
 SNAPPY_INC_DIR = $(SNAPPY_DIR)/include
 SNAPPY_HDR = $(SNAPPY_INC_DIR)/snappy.h 
@@ -108,7 +107,7 @@ OBJ =   Fred.o Global.o Age_Map.o Timestep_Map.o Utils.o Params.o Date.o Random.
 	IntraHost.o DefaultIntraHost.o FixedIntraHost.o RSAIntraHost.o\
 	Abstract_Grid.o Abstract_Cell.o \
 	Seasonality_Timestep_Map.o Seasonality.o \
-	Past_Infection.o MSEvolution.o FergEvolution.o Piecewise_Linear.o \
+	Past_Infection.o MSEvolution.o Piecewise_Linear.o \
 	Compression.o
 	# ODEIntraHost.o ODE.o
 
@@ -120,17 +119,14 @@ MD5 := FRED.md5
 
 all: FRED FRED.tar.gz fsz $(MD5)
 
-FRED: $(SNAPPY_LIB) $(OBJ) dSFMT.o sqlite3.o
-	$(CPP) -o $(FRED_EXECUTABLE_NAME) $(CPPFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) $(OBJ) dSFMT.o sqlite3.o $(LFLAGS) -ldl
+FRED: $(SNAPPY_LIB) $(OBJ) dSFMT.o
+	$(CPP) -o $(FRED_EXECUTABLE_NAME) $(CPPFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) $(OBJ) dSFMT.o $(LFLAGS) -ldl
 	cp $(FRED_EXECUTABLE_NAME) ../bin
 
 FRED_memcheck: FRED
 
 dSFMT.o:
 	$(CPP) $(DSFMT_CPPFLAGS) $(DSFMT_SRC) -c $(DSFMT_HDR) 
-
-sqlite3.o:
-	cd $(SQLITE_DIR); tar --strip-components=1 -xzvf sqlite-autoconf-3071502.tar.gz; ./configure; make; cp sqlite3.o $(SRC_DIR)
 
 fsz: $(SNAPPY_LIB) Compression.o Global.h fsz.cc
 	$(CPP) -o fsz $(CPPFLAGS) $(INCLUDE_FLAGS) $(LDFLAGS) Compression.o $(LFLAGS) fsz.cc

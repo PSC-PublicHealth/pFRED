@@ -241,13 +241,13 @@ Date:   Thu Oct 16 19:05:36 2014 +0000
     
     git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2190 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
-commit 13ff5bf1332cffd3cd55df05cb3998b1de42417e
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Thu Oct 16 18:04:45 2014 +0000
-
-    remove DB/transactions and sqlite dependencies
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2187 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
+#commit 13ff5bf1332cffd3cd55df05cb3998b1de42417e
+#Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+#Date:   Thu Oct 16 18:04:45 2014 +0000
+#
+#    remove DB/transactions and sqlite dependencies
+#    
+#    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2187 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
 #commit 619ff0fff3130ffb28f3ee489247e07f3c040b14
 #Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>

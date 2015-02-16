@@ -23,7 +23,6 @@
 #include "Small_Grid.h"
 #include "Seasonality.h"
 #include "Utils.h"
-#include "DB.h"
 
 // global runtime parameters
 char Global::Synthetic_population_directory[FRED_STRING_SIZE];
@@ -46,8 +45,6 @@ char Global::City[FRED_STRING_SIZE];
 char Global::County[FRED_STRING_SIZE];
 char Global::US_state[FRED_STRING_SIZE];
 char Global::FIPS_code[FRED_STRING_SIZE];
-
-char Global::DBfile[FRED_STRING_SIZE];
 
 char Global::ErrorLogbase[FRED_STRING_SIZE];
 int Global::Enable_Behaviors = 0;
@@ -109,8 +106,6 @@ Date *Global::Sim_Current_Date = NULL;
 Evolution *Global::Evol = NULL;
 Seasonality * Global::Clim = NULL;
 
-DB Global::db;
-
 // global file pointers
 FILE *Global::Statusfp = NULL;
 FILE *Global::Outfp = NULL;
@@ -156,9 +151,6 @@ void Global::get_global_parameters() {
   Params::get_param_from_string("school_absenteeism", &Global::School_absenteeism);
   Params::get_param_from_string("seed_age_lower_bound", &Global::Seed_age_lower_bound);
   Params::get_param_from_string("seed_age_upper_bound", &Global::Seed_age_upper_bound);
-
-  // this is the default, global sqlite3 database file.  Overwritten by default.
-  Params::get_param_from_string("dbfile", Global::DBfile);
 
   //Set all of the boolean flags
   int temp_int = 0;

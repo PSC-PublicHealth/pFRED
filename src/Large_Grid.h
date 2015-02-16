@@ -23,7 +23,6 @@
 #include "Place.h"
 #include "Abstract_Grid.h"
 #include "Global.h"
-#include "DB.h"
 
 class Large_Cell;
 
@@ -42,9 +41,6 @@ public:
   void set_population_size();
   void quality_control(char * directory);
   void read_max_popsize();
-
-  void report_grid_stats( int day );
- 
 
 protected:
   Large_Cell ** grid;            // Rectangular array of grid_cells

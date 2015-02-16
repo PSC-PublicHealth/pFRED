@@ -31,7 +31,6 @@ using namespace std;
 #include "Household.h"
 #include "Population.h"
 #include "Date.h"
-#include "DB.h"
 
 Large_Grid::Large_Grid(fred::geo minlon, fred::geo minlat, fred::geo maxlon, fred::geo maxlat) {
   min_lon  = minlon;
@@ -250,18 +249,6 @@ void Large_Grid::read_max_popsize() {
     }
     fclose(fp);
     printf("finished reading %s\n", filename);
-  }
-}
-
-void Large_Grid::report_grid_stats( int day ) {
-  for ( int dis = 0; dis < Global::Diseases; ++dis ) {
-    #pragma omp parallel for schedule(runtime)
-    for ( int r = 0; r < get_rows(); ++r ) {
-      for ( int c = 0; c < get_cols(); ++c ) {
-        Global::db.enqueue_transaction(
-            grid[ r ][ c ].collect_cell_stats( day, dis ) );
-      }
-    }
   }
 }
 
