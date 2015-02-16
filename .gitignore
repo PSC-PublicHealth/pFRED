@@ -5,6 +5,8 @@ wrk/
 .*.swp
 .*.swo
 
+doc/html/
+
 bin/FRED
 bin/fsz
 populations/2005_2009_ver2_42003/

@@ -89,15 +89,15 @@ Date:   Wed Nov 5 22:39:05 2014 +0000
 #    
 #    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2197 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
-commit 55d1067518edd0e8e7d76da55703fc326a959c86
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Tue Oct 21 20:25:45 2014 +0000
+#commit 55d1067518edd0e8e7d76da55703fc326a959c86
+#Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
+#Date:   Tue Oct 21 20:25:45 2014 +0000
+#
+#    removed doxygen html directory - this should be generated in the working copy with make and does not belong in the repo
+#    
+#    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2196 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
-    removed doxygen html directory - this should be generated in the working copy with make and does not belong in the repo
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2196 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit 13ff5bf1332cffd3cd55df05cb3998b1de42417e
+#commit 13ff5bf1332cffd3cd55df05cb3998b1de42417e
 
 #Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
 #Date:   Thu Oct 16 18:04:45 2014 +0000
