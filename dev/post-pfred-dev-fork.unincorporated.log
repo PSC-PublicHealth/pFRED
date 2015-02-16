@@ -1,27 +1,3 @@
-commit eca962c60eba74e99c5edae712f1318cd173c922
-Author: Jay DePasse <depasse@psc.edu>
-Date:   Thu Feb 12 14:05:48 2015 -0500
-
-    ignore vim tempfiles
-
-commit 4034b0b82d00941e1e193d2c7b453af56d4ddf2c
-Author: Jay DePasse <depasse@psc.edu>
-Date:   Thu Feb 12 10:48:15 2015 -0500
-
-    ignore stuff
-
-commit 0e41d08d972a879750a386efae10f4846d26b412
-Author: Jay DePasse <depasse@psc.edu>
-Date:   Thu Feb 12 10:47:04 2015 -0500
-
-    ignore stuff
-
-commit 5241da0093ef714bc70b54b14856b94e312a29ff
-Author: Jay DePasse <depasse@psc.edu>
-Date:   Thu Feb 12 10:46:16 2015 -0500
-
-    ignore stuff, modify make to build on darwin using g++-4.8
-
 commit b39fc13f25921433555ca57b63c575a43234ec79
 Author: stbrown <stbrown@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
 Date:   Tue Feb 3 19:27:36 2015 +0000
@@ -97,14 +73,6 @@ Date:   Fri Dec 12 20:16:03 2014 +0000
     
     git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2208 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
-commit 17651a0c2ae6a2838bbf3ce4da9ac70f78ca2080
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Wed Nov 5 22:39:20 2014 +0000
-
-    formatting
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2207 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
 commit 5b2d886643efbdf3860b5c3ed42d89dd652308d5
 Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
 Date:   Wed Nov 5 22:39:05 2014 +0000
@@ -112,54 +80,6 @@ Date:   Wed Nov 5 22:39:05 2014 +0000
     Converted "Updating Census Block..." message to FRED_VERBOSE(1, ...
     
     git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2206 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit 6cc1df4bd1f1ea3fe6025b4e5a552122cd82a28d
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Wed Nov 5 19:40:34 2014 +0000
-
-    :retab
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2205 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit 31abb57fd64b578252b5932ec204475f25b91dcf
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Wed Nov 5 19:35:03 2014 +0000
-
-    ignore *.orig files genrated by astyle
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2204 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit 4131e4876a90e5ee64ebe8417729f2da558542a7
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Wed Nov 5 19:34:34 2014 +0000
-
-    ignore *.orig files genrated by astyle
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2203 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit 3d755acc532ec767bcb4734dcc69780adc0126ed
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Wed Nov 5 19:34:07 2014 +0000
-
-    no idea how the formatting of this file got so screwed up, but astyle fixed it
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2202 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit fb21781719921505b8126191ebd35205080807d7
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Wed Nov 5 19:10:40 2014 +0000
-
-    :retab; :gg=G;
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2201 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
-
-commit c8eb61c46d689d795c83b4d03580eba0b5ebb523
-Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
-Date:   Wed Nov 5 17:37:29 2014 +0000
-
-    reverting typo (due to mgk8) from r1743
-    
-    git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2198 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
 #commit 82bc02a2e080241d726ab169bf4e0517c7a53f76
 #Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
@@ -178,6 +98,7 @@ Date:   Tue Oct 21 20:25:45 2014 +0000
     git-svn-id: https://redmine.hindsight.psc.edu/svn/fred/trunk/FRED@2196 b93b844c-2574-459d-9dfb-c4b8cb2af1a1
 
 commit 13ff5bf1332cffd3cd55df05cb3998b1de42417e
+
 #Author: depasse <depasse@b93b844c-2574-459d-9dfb-c4b8cb2af1a1>
 #Date:   Thu Oct 16 18:04:45 2014 +0000
 #
