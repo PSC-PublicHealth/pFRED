@@ -1,0 +1,12 @@
+K 10
+svn:ignore
+V 51
+DEPENDS
+FRED.md5
+FRED.tar.gz
+FRED
+OUT
+fsz
+fsz.dSYM
+
+END
