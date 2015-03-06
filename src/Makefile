@@ -123,6 +123,11 @@ FRED: $(SNAPPY_LIB) $(OBJ) dSFMT.o
 	$(CPP) -o $(FRED_EXECUTABLE_NAME) $(CPPFLAGS) $(LDFLAGS) $(OBJ) dSFMT.o $(LFLAGS) -ldl
 	cp $(FRED_EXECUTABLE_NAME) ../bin
 
+FRED_Unit_Tracker: 
+	cd TestSuite/Tracker; $(CPP) -g -O0 -fopenmp -DUNIT_TEST=1 -I../../ Tracker_Unit_Test.cc -c -o Tracker_Unit_Test.o
+	cd TestSuite/Tracker; $(CPP) -g -O0 -fopenmp -o FRED_Unit_Tracker -DUNIT_TEST=1 -I../../ ../../Global.o Tracker_Unit_Test.o
+
+
 FRED_memcheck: FRED
 
 dSFMT.o:

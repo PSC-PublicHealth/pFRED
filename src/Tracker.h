@@ -46,6 +46,9 @@ const string allowed_typenames[] = { "double", "int", "string" };
 struct Tracker_State {
   fred::Spin_Mutex mutex;
 };
+
+//struct Tracker_State_Merge: Tracker_State {
+//  void operator() ( const Tracker
 /**
  * The Tracker Class is a class that contains maps that allow one to
  * log on a daily basis different counts of things throughout FRED
@@ -224,11 +227,14 @@ public:
 
     void increment_index_key_pair(T index, string key_name, int value) {
       int index_position = this->_index_pos(index);
+      //int index_position = 0;
+#pragma omp atomic
       this->values_map_int[key_name][index_position] += value;
     }
 
     void increment_index_key_pair(T index, string key_name, double value) {
         int index_position = this->_index_pos(index);
+#pragma omp atomic
         this->values_map_double[key_name][index_position] += value;
     }
 
@@ -263,7 +269,7 @@ public:
         if ( index_position == -1 ) {
             stringstream ss;
             ss << index;
-            ERROR_PRINT("Tracker.h::increment_index_key_pair there is no index %s\n",ss.str().c_str());
+            ERROR_PRINT("Tracker.h:reset_all_key_pairs_to_zero there is no index %s\n",ss.str().c_str());
         }
 
         for ( map < string, vector <int> > :: iterator iter=this->values_map_int.begin();

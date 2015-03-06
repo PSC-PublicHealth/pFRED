@@ -13,6 +13,7 @@
 //
 // File: Global.cc
 //
+//#include <string>
 
 #include "Global.h"
 #include "Params.h"
@@ -23,6 +24,7 @@
 #include "Small_Grid.h"
 #include "Seasonality.h"
 #include "Utils.h"
+#include "Tracker.h"
 
 // global runtime parameters
 char Global::Synthetic_population_directory[FRED_STRING_SIZE];
@@ -54,6 +56,7 @@ int Global::Track_vaccine_infection_events = 0;
 int Global::Track_age_distribution = 0;
 int Global::Track_household_distribution = 0;
 int Global::Track_network_stats = 0;
+bool Global::Report_Epidemic_Data_By_Census_Block = false;
 int Global::Verbose = 0;
 int Global::Debug = 0;
 int Global::Test = 0;
@@ -107,6 +110,7 @@ Date *Global::Sim_Start_Date = NULL;
 Date *Global::Sim_Current_Date = NULL;
 Evolution *Global::Evol = NULL;
 Seasonality * Global::Clim = NULL;
+Tracker<std::string> * Global::Block_Epi_Day_Tracker = NULL;
 
 // global file pointers
 FILE *Global::Statusfp = NULL;
@@ -115,6 +119,7 @@ FILE *Global::Tracefp = NULL;
 FILE *Global::Infectionfp = NULL;
 FILE *Global::VaccineTracefp = NULL;
 FILE *Global::VaccineInfectionTrackerfp = NULL;
+FILE *Global::BlockDayfp = NULL;
 FILE *Global::Birthfp = NULL;
 FILE *Global::Deathfp = NULL;
 FILE *Global::Prevfp = NULL;
@@ -193,7 +198,8 @@ void Global::get_global_parameters() {
   Global::Print_Household_Locations = temp_int;
   Params::get_param_from_string("assign_teachers",&temp_int);
   Global::Assign_Teachers = temp_int;
-
+  Params::get_param_from_string("report_epidemic_data_by_census_block", &temp_int);
+  Global::Report_Epidemic_Data_By_Census_Block = (temp_int == 0 ? false : true);
   // GAIA params
   Params::get_param_from_string("print_gaia_data",&Global::Print_GAIA_Data);
   if (Global::Print_GAIA_Data) Global::Enable_Small_Grid = true;

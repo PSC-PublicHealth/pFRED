@@ -46,7 +46,7 @@ Household::Household( const  char *lab, fred::geo lon,
   housemate.clear();
   adults = children = 0;
   N = 0;
- 
+  //census_block = "";
   group_quarters = false;
 }
 

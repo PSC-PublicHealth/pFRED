@@ -145,8 +145,18 @@ public:
   bool is_infectious(int disease_id) const { return (infectious.test( disease_id ) ); }
 
   bool is_infected(int disease_id) const { return active_infections.test( disease_id ); }
-
   /**
+   * Is the agent recovered for a given disease
+   *
+   * @param disease which disease
+   * @return <code>true</code> if the agent is recovered, <code>false</code> otherwise
+   */
+  
+  bool is_recovered(int disease_id) const {
+    return this->recovered_today.test(disease_id);
+  }
+
+/**
    * Is the agent symptomatic - note that this is independent of disease
    *
    * @return <code>true</code> if the agent is symptomatic, <code>false</code> otherwise
@@ -305,7 +315,7 @@ public:
    * @param av pointer to the Antiviral to take
    * @param day the simulation day
    */
-  void take(Antiviral *av, int day);
+  void take(Person* self, Antiviral *av, int day);
 
   /**
    * @return a count of the antivirals this agent has already taken
@@ -472,7 +482,7 @@ public:
   bool is_newly_symptomatic(int day, int disease_id) { return day == get_symptomatic_date(disease_id); }
 
 
-  void die() { alive = false; }
+  void die() { printf("Killing Agent"); alive = false; }
 
 private:
   

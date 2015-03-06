@@ -33,6 +33,7 @@
 #include "Past_Infection.h"
 #include "Activities.h"
 #include "Behavior.h"
+#include "Tracker.h"
 
 #include "execinfo.h"
 #include <csignal>
@@ -206,8 +207,21 @@ int main(int argc, char* argv[]) {
         (char *) Global::Sim_Start_Date->get_YYYYMMDD().c_str(), run);
   }
 
+  if(Global::Report_Epidemic_Data_By_Census_Block) {
+    //Global::Block_Tracker = new Tracker<string>("Census String Block Tracker Test","BlockGroup");
+    Global::Block_Epi_Day_Tracker = new Tracker<string>("Census Day Block String Tracker","BlockGroup");
+    
+    //Global::Pop.report_mean_hh_stats_per_census_block();
+    //Global::Pop.report_mean_hh_stats_per_census_block();
+  }
+   
   if (Global::Enable_Seasonality) {
     Global::Clim->print_summary();
+  }
+  
+  if(Global::Report_Epidemic_Data_By_Census_Block) {
+    Global::Block_Epi_Day_Tracker = new Tracker<string>("Census Day Block String Tracker","BlockGroup");
+    Global::Pop.report_disease_state_counts_by_block(0); 
   }
 
   for (int d = 0; d < Global::Diseases; ++d) {
@@ -260,6 +274,20 @@ int main(int argc, char* argv[]) {
 
     Global::Pop.report(day);
     Utils::fred_print_lap_time("day %d report population", day);
+
+        // If Block Output is desired, update this
+     if(Global::Report_Epidemic_Data_By_Census_Block) {
+       //Global::Pop.report_disease_state_counts_by_block(day);
+       Global::Block_Epi_Day_Tracker->set_all_index_for_key("Day",day);
+       bool printHeader = false;
+       if(day == 0) printHeader=true;
+       Global::Block_Epi_Day_Tracker->output_csv_report_format(Global::BlockDayfp,printHeader);
+       Global::Block_Epi_Day_Tracker->set_all_index_for_key("C",int(0));
+       Global::Block_Epi_Day_Tracker->set_all_index_for_key("Cs",int(0));
+       Global::Block_Epi_Day_Tracker->set_all_index_for_key("V",int(0));
+       Global::Block_Epi_Day_Tracker->set_all_index_for_key("Av",int(0));
+    //   Global::Block_Epi_Day_Tracker->reset_all_index_key_pairs_to_zero();
+     }
 
     // print GAIA data if desired
     if (Global::Print_GAIA_Data && run == 1) {

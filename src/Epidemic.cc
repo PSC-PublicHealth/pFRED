@@ -42,6 +42,7 @@ using namespace std;
 #include "Seasonality.h"
 #include "Evolution.h"
 #include "Workplace.h"
+#include "Tracker.h"
 
 Epidemic::Epidemic(Disease *dis, Timestep_Map* _primary_cases_map) {
   disease = dis;
@@ -122,6 +123,14 @@ void Epidemic::setup() {
   else {
     Utils::fred_abort( "Invalid advance_seeding parameter: %s!\n", seeding_type_name );
   }
+
+  tracker_state = State< Tracker<string>* > (NCPU);
+  for(int d = 0; d < NCPU; d++){
+    tracker_state(d) = new Tracker<string>("Census Day Block String Tracker","BlockGroup");
+  }
+  // for(int d = 0; d < NCPU; d++){
+  //   tracker_state[d] = Tracker<string>("Census Day Block String Tracker","BlockGroup");
+  // }
 }
 
 Epidemic::~Epidemic() {

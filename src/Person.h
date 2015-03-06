@@ -26,6 +26,7 @@ class Infection;
 class Population;
 class Transmission;
 
+
 #include "Demographics.h"
 #include "Health.h"
 #include "Behavior.h"
@@ -355,7 +356,7 @@ public:
    * @see Activities::get_household()
    */
   Place * get_household() { return activities.get_household(); }
-
+  
   Place * get_permanent_household() { return activities.get_permanent_household(); }
 
   unsigned char get_deme_id() { return activities.get_deme_id(); }
@@ -363,6 +364,16 @@ public:
   bool is_householder() { return demographics.is_householder(); }
 
   void make_householder() { demographics.make_householder(); }
+
+  /* void set_household_census_block(string * census_block_){ */
+  /*   activities.set_household_census_block(census_block_); */
+  /* } */
+
+  /* string get_household_census_block(){ */
+  /*   return *(activities.get_household_census_block()); */
+  /* } */
+  /* string get_census_block(){ */
+  //string* get_census_block(){ return (Household*)(activities.get_household())->get_census_block(); }
 
   /**
    * @return a pointer to this Person's School

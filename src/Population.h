@@ -281,7 +281,7 @@ class Population {
       // reports vaccined/unvaccinated symptomatic/asymptomatic infections
       // for the current day
       void report_vaccine_infection_events(int day);
-
+      void report_disease_state_counts_by_block(int day);
   private:
 
     struct PopFileColIndex {
@@ -451,6 +451,14 @@ class Population {
         Update_Vaccine_Infection_Counts(int _day, int _disease
                 ) : day(_day), disease(_disease), sym(Global::MAX_AGE + 1) {}
         void operator() ( Person & p );
+    };
+    
+    struct Update_Disease_State_By_Block_Counts {
+      int day;
+      int disease;
+      Update_Disease_State_By_Block_Counts(int _day, int _disease
+					   ) : day(_day),disease(_disease){}
+      void operator() (Person &p);
     };
 
     fred::Mutex mutex;

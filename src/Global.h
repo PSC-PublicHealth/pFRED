@@ -23,6 +23,7 @@
 #include <assert.h>
 #include <bitset>
 #include <map>
+#include <string>
 
 // for unit testing, use the line in Makefile: gcc -DUNITTEST ...
 #ifdef UNITTEST
@@ -52,6 +53,8 @@ class Small_Grid;
 class Date;
 class Evolution;
 class Seasonality;
+template < class T>
+class Tracker;
 
 /**
  * This class contains the static variables used by the FRED program.  The variables all have public access,
@@ -180,6 +183,7 @@ class Global {
     static int Track_household_distribution;
     static int Track_network_stats;
     static int Track_Residual_Immunity;
+    static bool Report_Epidemic_Data_By_Census_Block;
     static int Verbose;
     static int Debug;
     static int Test;
@@ -230,6 +234,7 @@ class Global {
     static Date *Sim_Current_Date;
     static Evolution *Evol;
     static Seasonality *Clim;
+static Tracker<std::string> *Block_Epi_Day_Tracker;
 
     // global file pointers
     static FILE *Statusfp;
@@ -245,6 +250,7 @@ class Global {
     static FILE *ErrorLogfp;
     static FILE *Immunityfp;
     static FILE *Householdfp;
+    static FILE *BlockDayfp;
 
     /**
      * Fills the static variables with values from the parameter file.

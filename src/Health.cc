@@ -36,6 +36,8 @@
 #include "Transmission.h"
 #include "Past_Infection.h"
 #include "Utils.h"
+#include "Tracker.h"
+#include "Household.h"
 
 int Health::nantivirals = -1; 
 char dummy_label[8];
@@ -151,6 +153,13 @@ void Health::become_exposed( Person * self, Disease *disease, Transmission & tra
         FRED_STATUS( 1, "EXPOSED person %d to disease %d\n", self->get_id(), disease->get_id() );
       }
     }
+    if(Global::Report_Epidemic_Data_By_Census_Block) {
+      Household *house = (Household *) self->get_household();
+      string block = house->get_census_block();
+      Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"S",int(-1));
+      Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"C",int(1));
+      Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"E",int(1));
+    }
   }
 }
 
@@ -168,6 +177,12 @@ void Health::become_infectious( Person * self, Disease * disease ) {
   assert(active_infections.test( disease_id ) );
   infectious.set( disease_id );
   disease->become_infectious(self);
+  if(Global::Report_Epidemic_Data_By_Census_Block) {
+    Household *house = (Household *) self->get_household();
+    string block = house->get_census_block();
+    Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"E",int(-1));
+    Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"I",int(1));
+  }
   FRED_STATUS( 1, "person %d is now INFECTIOUS for disease %d\n", self->get_id(), disease_id);
 }
 
@@ -178,6 +193,12 @@ void Health::become_symptomatic( Person * self, Disease * disease ) {
     return;
   symptomatic.set( disease_id );
   disease->become_symptomatic(self);
+  if(Global::Report_Epidemic_Data_By_Census_Block) {
+    Household *house = (Household *) self->get_household();
+    string block = house->get_census_block();
+    Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"Cs",int(1));
+    Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"Is",int(1));
+  }
   FRED_STATUS( 1, "person %d is now SYMPTOMATIC for disease %d\n", self->get_id(), disease_id );
 }
 
@@ -185,8 +206,16 @@ void Health::recover( Person * self, Disease * disease ) {
   int disease_id = disease->get_id();
   assert( active_infections.test( disease_id ) );
   FRED_STATUS( 1, "person %d is now RECOVERED for disease %d\n", self->get_id(), disease_id );
+  if(Global::Report_Epidemic_Data_By_Census_Block) {
+    Household *house = (Household *) self->get_household();
+    string block = house->get_census_block();
+    Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"I",int(-1));
+    if(self->is_symptomatic()) Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"Is",int(-1));
+    Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"R",int(1));
+  }
   become_removed( self, disease_id );
   recovered_today.set( disease_id );
+  
 }
 
 void Health::become_removed( Person * self, int disease_id ) {
@@ -205,9 +234,18 @@ void Health::become_immune( Person * self, Disease *disease ) {
   disease->become_immune( self,susceptible.test( disease_id ),
       infectious.test( disease_id ),
       symptomatic.test( disease_id ) );
+  if(Global::Report_Epidemic_Data_By_Census_Block) {
+    Household *house = (Household *) self->get_household();
+    string block = house->get_census_block();
+    if(susceptible.test(disease_id)) Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"S",int(-1));
+    if(infectious.test(disease_id)) Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"I",int(-1));
+    if(symptomatic.test(disease_id)) Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"Is",int(-1));
+    Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"M",int(1));
+  }
   susceptible.reset( disease_id );
   infectious.reset( disease_id );
   symptomatic.reset( disease_id );
+  
   FRED_STATUS( 1, "person %d is now IMMUNE for disease %d\n", self->get_id(), disease_id );
 }
 
@@ -439,6 +477,11 @@ void Health::take_vaccine( Person * self, Vaccine* vaccine, int day, Vaccine_Man
   // Is this our first dose?
   Vaccine_Health * vaccine_health_for_dose = NULL;
 
+  if(Global::Report_Epidemic_Data_By_Census_Block) {
+    Household *house = (Household *) self->get_household();
+    string block = house->get_census_block();
+    Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"V",int(1));
+  }
   if ( vaccine_health == NULL ) {
     vaccine_health = new vaccine_health_type();
   }
@@ -466,13 +509,18 @@ void Health::take_vaccine( Person * self, Vaccine* vaccine, int day, Vaccine_Man
   return;
 }
 
-void Health::take(Antiviral* av, int day) {
+void Health::take(Person * p, Antiviral* av, int day) {
   if ( checked_for_av == NULL ) {
     checked_for_av = new checked_for_av_type();
     checked_for_av->assign( nantivirals, false );
   }
   if ( av_health == NULL ) {
     av_health = new av_health_type();
+  }
+  if(Global::Report_Epidemic_Data_By_Census_Block) {
+    Household *house = (Household *) p->get_household();
+    string block = house->get_census_block();
+    Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"Av",int(1));
   }
   av_health->push_back(new AV_Health(day,av,this));
   intervention_flags[ takes_av ] = true;

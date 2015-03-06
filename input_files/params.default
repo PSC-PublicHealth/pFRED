@@ -52,6 +52,7 @@ report_age_of_infection = 0
 report_place_of_infection = 0
 report_distance_of_infection = 0
 report_presenteeism = 0
+report_epidemic_data_by_census_block = 1
 quality_control = 1
 print_household_locations = 0
 rr_delay = 10

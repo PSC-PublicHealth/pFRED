@@ -118,7 +118,7 @@ void AV_Manager::disseminate(int day){
   if(p->choose_first_negative(current_person,av->get_disease(),day) == true){
           if(Global::Debug > 3) cout << "Giving Antiviral for disease " << av->get_disease() << " to " <<ip << "\n";
           av->remove_stock(1);
-          current_person->get_health()->take(av,day);
+          current_person->get_health()->take(current_person,av,day);
         }
       }
     }

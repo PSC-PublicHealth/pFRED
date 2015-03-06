@@ -192,6 +192,15 @@ public:
 
   int gq_get_room_size() { return 3; }
 
+  string get_census_block() const {
+    return this->census_block;
+  }
+
+  void set_census_block(string _census_block) {
+    census_block = _census_block;
+  }
+  
+
 private:
 
   static double * Household_contacts_per_day;
@@ -203,6 +212,7 @@ private:
   int household_income;		      // household income
   unsigned char deme_id;	      // deme == synthetic population id
   bool group_quarters;
+  string census_block;
 
   std::vector <Person *> housemate;		// list of housemates
 

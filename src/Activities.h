@@ -346,6 +346,14 @@ public:
       size = get_favorite_place(index)->get_size();
     return size;
   }
+  
+  string * get_household_census_block(){
+    return household_census_block;
+  }
+
+  void set_household_census_block(string *census_block_){
+    household_census_block = census_block_;
+  }
 
   bool is_sick_leave_available() { return sick_leave_available; }
   int get_sick_days_absent() { return my_sick_days_absent; }
@@ -418,6 +426,8 @@ private:
   void clear_favorite_places() {
     favorite_places_map.clear();
   }
+  
+  string * household_census_block;
 
   void enroll_in_favorite_places(Person *self) {
     for (int i = 0; i < FAVORITE_PLACES; i++) {

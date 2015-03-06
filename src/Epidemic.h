@@ -24,6 +24,7 @@
 #include "Global.h"
 #include "Place.h"
 
+
 #define SEED_USER 'U'
 #define SEED_RANDOM 'R'
 #define SEED_EXPOSED 'E'
@@ -35,6 +36,8 @@ class Disease;
 class Person;
 class Timestep_Map;
 class Multistrain_Timestep_Map;
+template < class T >
+class Tracker;
 //class Place;
 
 class Epidemic {
@@ -151,6 +154,8 @@ private:
   vector <Place *> inf_schools;
   vector <Place *> inf_workplaces;
   vector <Place *> inf_offices;
+
+  State< Tracker<string>* > tracker_state;
 
   // population health state counters
   int susceptible_people;

@@ -363,6 +363,8 @@ void Place_List::read_all_places( const std::vector< Utils::Tokens > & Demes ) {
       Household * h = ( Household * ) place;
       h->set_household_income( (*itr).income );
       h->set_deme_id( (*itr).deme_id );
+      h->set_census_block((*itr).census_block);
+
       if ( itr->is_group_quarters ) {
         h->mark_as_group_quarters();
       }
@@ -531,11 +533,19 @@ void Place_List::read_household_file( unsigned char deme_id, char * location_fil
     if ( strcmp( tokens[ hh_id ], "hh_id" ) != 0 ) {
       char place_type = 'H';
       char s[80];
+      string census_block_str;
+      char census_block_str_tmp[13];
 
       sprintf( s, "%c%s", place_type, tokens[ hh_id ] );
 
+      strncpy(census_block_str_tmp, tokens[stcotrbg],12);
+      census_block_str_tmp[12] = '\0';
+      string str_tmp(census_block_str_tmp);
+      census_block_str = str_tmp;
+      
       SetInsertResultT result = pids.insert( Place_Init_Data( s, place_type,
-          tokens[ latitude ], tokens[ longitude ], deme_id, tokens[ hh_income ] ) );
+							      tokens[ latitude ], tokens[ longitude ], 
+							      deme_id, census_block_str, tokens[ hh_income ]) );
 
       if ( result.second ) {
         ++( place_type_counts[ place_type ] );
@@ -625,6 +635,8 @@ void Place_List::read_group_quarters_file( unsigned char deme_id,
   FILE * fp = Utils::fred_open_file( location_file );
   char line_str[1024];
   Utils::Tokens tokens;
+  string census_block_str  = "";
+  char census_block_str_tmp[13];
 
   for ( char * line = line_str; fgets( line, 1024, fp ); line = line_str ) {
     tokens = Utils::split_by_delim( line, ',', tokens, false );
@@ -633,13 +645,22 @@ void Place_List::read_group_quarters_file( unsigned char deme_id,
       char s[80];
       SetInsertResultT result;
       char place_type;
+      
 
       // first add as household
       place_type = 'H';
       sprintf(s, "%c%s-%s", place_type, tokens[ gq_id ], tokens[ gq_type ] );
    
+      strncpy(census_block_str_tmp, tokens[stcotrbg_b],12);
+      census_block_str_tmp[12] = '\0';
+      //sscanf(census_block_str_tmp, "%ld", &census_block);
+
+      string str_tmp(census_block_str_tmp);
+      census_block_str = str_tmp;
+
       result = pids.insert( Place_Init_Data( s, place_type, tokens[ latitude ],
-            tokens[ longitude ], deme_id, "0", true ) );
+					     tokens[ longitude ], deme_id, census_block_str, "0", 
+					     true ) );
 
       if ( result.second ) {
         ++( place_type_counts[ place_type ] );
@@ -650,7 +671,8 @@ void Place_List::read_group_quarters_file( unsigned char deme_id,
       sprintf(s, "%c%s-%s", place_type, tokens[ gq_id ], tokens[ gq_type ] );
  
       result = pids.insert( Place_Init_Data( s, place_type, tokens[ latitude ],
-            tokens[ longitude ], deme_id, "0", true ) );
+					     tokens[ longitude ], deme_id, census_block_str, 
+					     "0", true ) );
 
       if ( result.second ) {
         ++( place_type_counts[ place_type ] );

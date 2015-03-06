@@ -201,14 +201,17 @@ struct Place_Init_Data {
   unsigned char deme_id;
   fred::geo lat, lon;
   bool is_group_quarters; 
+  string census_block;
 
   void setup( char _s[], char _place_type, const char * _lat, const char * _lon,
-      unsigned char _deme_id, const char * _income, bool _is_group_quarters ) {
+	      unsigned char _deme_id, string _census_block, const char * _income, 
+	      bool _is_group_quarters) {
     place_type = _place_type;
     strcpy( s, _s );
     sscanf( _lat, "%f", &lat);
     sscanf( _lon, "%f", &lon);
     sscanf( _income, "%d", & income );
+    census_block = _census_block;
 
     if (!( lat >= -90 && lat <= 90 ) || !( lon >= -180 && lon <= 180 )) {
       printf("BAD LAT-LON: type = %c lat = %f  lon = %f  inc = %d  s = %s\n", place_type, lat, lon, income, s);
@@ -222,8 +225,9 @@ struct Place_Init_Data {
 
 
   Place_Init_Data( char _s[], char _place_type, const char * _lat, const char * _lon,
-      unsigned char _deme_id, const char * _income = "0", bool _is_group_quarters = false ) {
-      setup( _s, _place_type, _lat, _lon, _deme_id, _income, _is_group_quarters );
+		   unsigned char _deme_id, string _census_block = "",
+		   const char * _income = "0", bool _is_group_quarters = false) {
+    setup( _s, _place_type, _lat, _lon, _deme_id, _census_block, _income, _is_group_quarters);
   }
 
   bool operator< ( const Place_Init_Data & other ) const {
@@ -244,6 +248,8 @@ struct Place_Init_Data {
     ss << "Place Init Data ";
     ss << place_type << " ";
     ss << lat << " ";
+    ss << lon << " ";
+    ss << census_block << " ";
     ss << s << " ";
     ss << int( deme_id ) << std::endl;
     return ss.str();

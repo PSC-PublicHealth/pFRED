@@ -180,7 +180,15 @@ void Utils::fred_open_output_files(char * directory, int run){
       Utils::fred_abort("Can't open %s\n", filename);
     }
   }
-
+  Global::BlockDayfp = NULL;
+  if(Global::Report_Epidemic_Data_By_Census_Block) {
+    sprintf(filename,"%s/blockseday%d.txt",directory,run);
+    Global::BlockDayfp = fopen(filename,"w");
+    if (Global::BlockDayfp == NULL) {
+      Utils::fred_abort("Can't open %s\n", filename);
+    }
+  }
+  
   return;
 }
 

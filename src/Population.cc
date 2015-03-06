@@ -20,6 +20,7 @@
 #include <sstream>
 #include <fstream>
 #include <limits>
+#include <set>
 
 
 #include "Population.h"
@@ -42,6 +43,9 @@
 #include "Evolution.h"
 #include "Activities.h"
 #include "Behavior.h"
+#include "Tracker.h"
+#include "Vaccine_Health.h"
+#include "AV_Health.h"
 
 
 #include <snappy.h>
@@ -1236,3 +1240,122 @@ void Population::report_vaccine_infection_events(int day) {
         }
     }
 }
+
+void Population::Update_Disease_State_By_Block_Counts::operator() (Person & p) {
+  Health *h = p.get_health();
+  //map_test[1][2]++;
+  //Household *house = (Household *) p.get_household();
+  //string block = house->get_census_block();
+  //Global::Block_Epi_Day_Tracker->increment_index_key_pair("INDEX","N",1);
+  //if (p.get_exposure_date(disease) == day) Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"C",1);
+  // if (p.is_susceptible(disease)) Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"S",1);
+  // if (p.is_infectious(disease)) Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"I",1);
+  // if (p.is_infectious(disease) && (h->get_symptomatic_date(disease)>-1))
+  //   Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"Is",1);
+  // if ((h->get_symptomatic_date(disease) == day)) Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"Cs",1);
+  // if (p.is_infected(disease) && !p.is_infectious(disease)) Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"E",1);
+  // if (h->get_vaccine_health(0) != NULL){
+  // 	if(h->get_vaccine_health(0)->get_vaccination_day()==day){
+  // 		Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"V",1); 
+  //       }
+  // }
+  // if (h->get_number_av_taken() > 0){
+  //   	if(h->get_av_health(0)->get_av_start_day()==day){
+  // 		Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"Av",1);
+  // 	}
+  // }
+}
+
+void Population::report_disease_state_counts_by_block(int day){
+   if(day == 0){
+         std::set<string> block_set;
+	 for(int p=0; p< this->pop_size;p++){
+      
+	   if(!this->blq.is_valid_index(p)) {
+	     continue;
+	   }
+	   Person & pop_i = this->blq.get_item_reference_by_index(p);
+	   string census_block = ((Household*)pop_i.get_household())->get_census_block();
+	   //pop_i.set_household_census_block(*(census_block));
+	   block_set.insert(census_block);
+	 }
+	 
+	  for(std::set<string>::iterator census_block_itr = block_set.begin();
+	      census_block_itr != block_set.end(); ++census_block_itr) {
+	    Global::Block_Epi_Day_Tracker->add_index(*census_block_itr);
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"N",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"E",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"S",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"I",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"Is",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"R",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"C",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"Cs",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"Is",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"V",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"Av",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"M",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"N",int(0));
+	    Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"Day",int(0));
+	    
+	  }
+
+	  for(int p=0;p<this->pop_size;p++){
+	    Person & pop_i = this->blq.get_item_reference_by_index(p);
+	    string census_block = ((Household*)pop_i.get_household())->get_census_block();
+	    Global::Block_Epi_Day_Tracker->increment_index_key_pair(census_block,"N",int(1));
+	    Global::Block_Epi_Day_Tracker->increment_index_key_pair(census_block,"S",int(1));
+	  }
+   }
+	     //printf("!!!!!!!!!Day = 0, initilizing tracker\n");
+     // Global::Block_Epi_Day_Tracker->add_index("INDEX);
+   //   Global::Block_Epi_Day_Tracker->set_index_key_pair("INDEX","N",int(0));
+   //   Global::Block_Epi_Day_Tracker->set_index_key_pair("INDEX","E",int(0));
+   //   Global::Block_Epi_Day_Tracker->set_index_key_pair("INDEX","Day",int(0));
+   
+   //   for (int p=0; p < this->pop_size; p++){
+   //     Global::Block_Epi_Day_Tracker->increment_index_key_pair("INDEX","N",1);
+   //   }
+   // }
+    // std::set<string> block_set;
+  //   for(int p=0; p< this->pop_size;p++){
+      
+  //      if(!this->blq.is_valid_index(p)) {
+  // 	 continue;
+  //      }
+  //      Person & pop_i = this->blq.get_item_reference_by_index(p);
+  //      string census_block = ((Household*)pop_i.get_household())->get_census_block();
+  //      block_set.insert(census_block);
+  //   }
+    
+  //   for(std::set<string>::iterator census_block_itr = block_set.begin();
+  // 	census_block_itr != block_set.end(); ++census_block_itr) {
+  //     //int census_block_int = atoi((*census_block_itr).c_str()); 
+  //     Global::Block_Epi_Day_Tracker->add_index(*census_block_itr);
+  //     Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"C",int(0));
+  //     Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"E",int(0));
+  //     Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"I",int(0));
+  //     Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"S",int(0));
+  //     Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"R",int(0));
+  //     Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"Cs",int(0));
+  //     Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"Is",int(0));
+  //     Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"V",int(0));
+  //     Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"Av",int(0));
+  //     Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"Day",int(0));
+  //     Global::Block_Epi_Day_Tracker->set_index_key_pair(*census_block_itr,"N",int(0));
+  //   }
+  // }
+  // map< int, map<int,int> > map_test;
+  // map < int, int> map_inside;
+  // map_inside[1] = 0;
+  // map_inside[2] = 0;
+  // map_test[1] = map_inside;
+  //Update_Disease_State_By_Block_Counts update_disease_state_by_block_counts(day,0);
+  //this->blq.apply(update_disease_state_by_block_counts);
+  //printf("!!!!!!!!!!!!!!!!mapValue = %d\n",map_test[1][2]);
+  //Global::Block_Epi_Day_Tracker->copy_for_all_indices("R","N");
+  //Global::Block_Epi_Day_Tracker->subtract_for_all_indices("R","S");
+  //Global::Block_Epi_Day_Tracker->subtract_for_all_indices("R","E");
+  //Global::Block_Epi_Day_Tracker->subtract_for_all_indices("R","I");
+}
+
