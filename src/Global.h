@@ -184,6 +184,7 @@ class Global {
     static int Track_network_stats;
     static int Track_Residual_Immunity;
     static bool Report_Epidemic_Data_By_Census_Block;
+    static bool Block_Tracker_Initialized;
     static int Verbose;
     static int Debug;
     static int Test;

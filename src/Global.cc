@@ -57,6 +57,7 @@ int Global::Track_age_distribution = 0;
 int Global::Track_household_distribution = 0;
 int Global::Track_network_stats = 0;
 bool Global::Report_Epidemic_Data_By_Census_Block = false;
+bool Global::Block_Tracker_Initialized = false;
 int Global::Verbose = 0;
 int Global::Debug = 0;
 int Global::Test = 0;

@@ -157,6 +157,10 @@ int main(int argc, char* argv[]) {
   Global::Places.setup_households();
   Utils::fred_print_lap_time("Pop.setup");
 
+  if(Global::Report_Epidemic_Data_By_Census_Block) {
+    Global::Block_Epi_Day_Tracker = new Tracker<string>("Census Day Block String Tracker","BlockGroup");
+    Global::Pop.initialize_disease_state_counts_by_block(); 
+  }
   // define FRED-specific places and have each person enroll as needed
 
   // classrooms
@@ -209,7 +213,6 @@ int main(int argc, char* argv[]) {
 
   if(Global::Report_Epidemic_Data_By_Census_Block) {
     //Global::Block_Tracker = new Tracker<string>("Census String Block Tracker Test","BlockGroup");
-    Global::Block_Epi_Day_Tracker = new Tracker<string>("Census Day Block String Tracker","BlockGroup");
     
     //Global::Pop.report_mean_hh_stats_per_census_block();
     //Global::Pop.report_mean_hh_stats_per_census_block();
@@ -219,10 +222,7 @@ int main(int argc, char* argv[]) {
     Global::Clim->print_summary();
   }
   
-  if(Global::Report_Epidemic_Data_By_Census_Block) {
-    Global::Block_Epi_Day_Tracker = new Tracker<string>("Census Day Block String Tracker","BlockGroup");
-    Global::Pop.report_disease_state_counts_by_block(0); 
-  }
+  
 
   for (int d = 0; d < Global::Diseases; ++d) {
     Disease * disease = Global::Pop.get_disease( d );
@@ -277,7 +277,6 @@ int main(int argc, char* argv[]) {
 
         // If Block Output is desired, update this
      if(Global::Report_Epidemic_Data_By_Census_Block) {
-       //Global::Pop.report_disease_state_counts_by_block(day);
        Global::Block_Epi_Day_Tracker->set_all_index_for_key("Day",day);
        bool printHeader = false;
        if(day == 0) printHeader=true;
@@ -286,7 +285,6 @@ int main(int argc, char* argv[]) {
        Global::Block_Epi_Day_Tracker->set_all_index_for_key("Cs",int(0));
        Global::Block_Epi_Day_Tracker->set_all_index_for_key("V",int(0));
        Global::Block_Epi_Day_Tracker->set_all_index_for_key("Av",int(0));
-    //   Global::Block_Epi_Day_Tracker->reset_all_index_key_pairs_to_zero();
      }
 
     // print GAIA data if desired

@@ -173,6 +173,10 @@ public:
   bool is_immune(Disease* disease) const {
     return immunity.test( disease->get_id() );
   }
+ 
+  bool is_immune(int disease_id) const {
+    return immunity.test( disease_id);
+  }
 
   /**
    * Is the agent 'At Risk' to a given disease

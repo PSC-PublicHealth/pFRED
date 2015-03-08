@@ -234,7 +234,7 @@ void Health::become_immune( Person * self, Disease *disease ) {
   disease->become_immune( self,susceptible.test( disease_id ),
       infectious.test( disease_id ),
       symptomatic.test( disease_id ) );
-  if(Global::Report_Epidemic_Data_By_Census_Block) {
+  if(Global::Report_Epidemic_Data_By_Census_Block && Global::Block_Tracker_Initialized) {
     Household *house = (Household *) self->get_household();
     string block = house->get_census_block();
     if(susceptible.test(disease_id)) Global::Block_Epi_Day_Tracker->increment_index_key_pair(block,"S",int(-1));
