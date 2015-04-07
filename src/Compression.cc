@@ -174,7 +174,7 @@ bool SnappyFileCompression::check_magic_bytes() {
   memcpy( magic, begin, FSZ_MAGIC_LEN() );
   if ( std::strncmp( magic, FSZ_MAGIC(), FSZ_MAGIC_LEN() ) == 0 ) {
     begin += FSZ_MAGIC_LEN();
-    fprintf( stdout, "Is this an fsz-compressed file?  Magic bytes match.  Treat this file as fsz-compressed.\n" );
+    fprintf( stderr, "Is this an fsz-compressed file?  Magic bytes match.  Treat this file as fsz-compressed.\n" );
     return true;
   }
   else {
