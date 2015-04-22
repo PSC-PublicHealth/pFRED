@@ -5,6 +5,10 @@ wrk/
 .*.swp
 .*.swo
 
+populations/2005_2009_ver2_42065/
+populations/2010_ver1_42003/
+populations/2010_ver1_42065/
+
 doc/html/
 
 bin/FRED
