@@ -282,6 +282,21 @@ void Infection::print() const {
          symptoms);
 }
 
+void Infection::print_json() const {
+  printf("{\"person\": %i, \"disease\": %i, \"person\": %i, "
+         "\"exposed\": %i, \"infectious\": %i, \"symptomatic\": %i, "
+         "\"recovered\": %i, \"susceptible\": %i}\n",
+         host->get_id(),
+         disease->get_id(),
+         host->get_id(),
+         exposure_date,
+         get_infectious_date(),
+         get_symptomatic_date(),
+         get_recovery_date(),
+         get_susceptible_date()
+         );
+}
+
 void Infection::transmit(Person *infectee, Transmission & transmission) {
   int day = transmission.get_exposure_date() - exposure_date;
   Transmission::Loads * loads = trajectory->getInoculum( day );
@@ -292,6 +307,7 @@ void Infection::transmit(Person *infectee, Transmission & transmission) {
 void Infection::setTrajectory( Trajectory * _trajectory ) {
   trajectory = _trajectory;
   determine_transition_dates();
+  print_json();
 }
 
 void Infection::report_infection(int day) const {

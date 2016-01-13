@@ -86,6 +86,7 @@ public:
    * Print out information about this object
    */
   void print() const;
+  void print_json() const;
 
   /**
    * Print infection information to the log files

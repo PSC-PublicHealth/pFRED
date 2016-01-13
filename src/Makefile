@@ -37,7 +37,7 @@ CPP = g++-4.8
 NCPU ?= $(shell sysctl -n hw.ncpu)
 SNAPPY_LIB = $(SNAPPY_DIR)/lib/libsnappy.dylib
 M64 = -m64
-CPP = g++-4.8
+CPP = g++-5
 endif
 ################   Compiler Flags   ##############################
 FRED_EXECUTABLE_NAME = FRED
