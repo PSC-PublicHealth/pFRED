@@ -1,4 +1,7 @@
 wrk/
+RESULTS/
+
+.results.lck
 
 *.o
 *.pyc
