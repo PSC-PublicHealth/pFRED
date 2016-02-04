@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 import pandas as pd
 import json
@@ -11,7 +11,7 @@ import itertools
 import time
 
 
-# In[ ]:
+# In[2]:
 
 def read_infection_events_to_data_frame(filename='infection.events.json'):
     def read_infection_events():
@@ -23,13 +23,13 @@ def read_infection_events_to_data_frame(filename='infection.events.json'):
     return(infections)
 
 
-# In[ ]:
+# In[3]:
 
 #%%timeit -n1 -r1
 infections = read_infection_events_to_data_frame()
 
 
-# In[ ]:
+# In[4]:
 
 #%%timeit -n1 -r1
 population = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt')
@@ -38,7 +38,7 @@ workplaces = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_200
 schools = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt')
 
 
-# In[ ]:
+# In[5]:
 
 state_dict = dict(
     S = 'susceptible', E = 'exposed', I = 'infectious',
@@ -56,7 +56,7 @@ household_dict = dict(
 )
 
 
-# In[ ]:
+# In[6]:
 
 def query_population(population, households,
                      population_attributes=['age','race','sex'],
@@ -71,7 +71,7 @@ def query_population(population, households,
     return population
 
 
-# In[72]:
+# In[7]:
 
 def query_infections(infections, times, incidence=['S','E','I','Y','R','IS'], prevalence=['S','E','I','Y','R','IS'], grouping_keys={}):
     # NOTE: Can't do a join inside a Parallel for some reason, so must join infections and persons before passing!!!
@@ -121,7 +121,7 @@ def query_infections(infections, times, incidence=['S','E','I','Y','R','IS'], pr
     return pd.DataFrame(rows)
 
 
-# In[73]:
+# In[8]:
 
 def parallel_apply_query_infections(population, households, infections, times,
                                     incidence=['S','E','I','Y','R','IS'],
@@ -145,19 +145,29 @@ def parallel_apply_query_infections(population, households, infections, times,
 # check this out for a little background: http://stackoverflow.com/questions/26187759/parallelize-apply-after-pandas-groupby
 
 
-# In[74]:
+# In[10]:
 
 tic = time.time()
 
 r = parallel_apply_query_infections(population, households, infections, times=range(20,30),
-                                    incidence=['E','I'], prevalence=['S','E','I'],
-                                    group_by_keys=['age',])
+                                    incidence=['E'], prevalence=['I'],
+                                    group_by_keys=['location'])
 
 toc = time.time()
 
 print(toc-tic)
 print(len(r))
 print(r.head())
+
+
+# In[12]:
+
+len(r)
+
+
+# In[15]:
+
+r.to_csv('test_trajectories.csv',header=True,index=False)
 
 
 # In[ ]:
