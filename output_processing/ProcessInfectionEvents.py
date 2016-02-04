@@ -145,14 +145,12 @@ def parallel_apply_query_infections(population, households, infections, times,
 # check this out for a little background: http://stackoverflow.com/questions/26187759/parallelize-apply-after-pandas-groupby
 
 
-# In[10]:
 
 tic = time.time()
 
 r = parallel_apply_query_infections(population, households, infections, times=range(20,30),
-                                    incidence=['E'], prevalence=['I'],
-                                    group_by_keys=['location'])
-
+                                    incidence=['E','I','R'], prevalence=['S','E','I'],
+                                    group_by_keys=['age','sex'])
 toc = time.time()
 
 print(toc-tic)
