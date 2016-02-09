@@ -154,7 +154,7 @@ def query_infections(group_data_frame, times, incidence=['S','E','I','Y','R','IS
     return lz4.dumps(json.dumps(rows))
 
 
-# In[249]:
+# In[253]:
 
 def parallel_apply_query_infections(population, households, infections, times,
                                     incidence=['S','E','I','Y','R','IS'],
@@ -162,7 +162,7 @@ def parallel_apply_query_infections(population, households, infections, times,
                                     group_by_keys=['age','race']):
     
     #n_jobs = multiprocessing.cpu_count()
-    n_jobs = 8
+    n_jobs = 8 * 2
     
     grouped_persons = query_population(population, households).groupby(group_by_keys)
     grouping_keys = grouped_persons.grouper.names
@@ -183,7 +183,7 @@ def parallel_apply_query_infections(population, households, infections, times,
 # http://stackoverflow.com/questions/26187759/parallelize-apply-after-pandas-groupby
 
 
-# In[250]:
+# In[ ]:
 
 tic = time.time()
 
@@ -206,5 +206,5 @@ len(r)
 
 # In[ ]:
 
-
+r.to_csv('output.csv', index=False)
 
