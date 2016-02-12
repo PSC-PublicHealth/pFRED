@@ -1,12 +1,12 @@
 
 # coding: utf-8
 
-# In[60]:
+# In[70]:
 
-get_ipython().magic(u'reload_ext Cython')
+#%reload_ext Cython
 import pandas as pd
 import numpy as np
-from scipy.sparse import csr_matrix
+#from scipy.sparse import csr_matrix
 from collections import OrderedDict
 import time
 #import numba
@@ -80,6 +80,26 @@ a.fill(DTYPE(0))
 d.sample(frac=0.5).apply(get_counts, axis=1, raw=True)
 c=a+b
 print time.time()-tic
+
+
+# In[1]:
+
+import cython
+
+
+# In[2]:
+
+help(cython.inline)
+
+
+# In[5]:
+
+from Cython.Build import cythonize
+
+
+# In[6]:
+
+help(cythonize)
 
 
 # In[ ]:

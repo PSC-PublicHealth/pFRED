@@ -1,22 +1,25 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
+get_ipython().magic(u'load_ext Cython')
 import pandas as pd
 import numpy as np
 import json
-#try: import simplejson as json
-#except ImportError: import json
 from joblib import Parallel, delayed
 from joblib.pool import has_shareable_memory
 import multiprocessing
 import itertools
 import time
 import lz4
+import pandas as pd
+import numpy as np
+from collections import OrderedDict
+import time
 
 
-# In[ ]:
+# In[2]:
 
 def read_infection_events_to_data_frame(filename='infection.events.json'):
     def read_infection_events():
@@ -29,13 +32,13 @@ def read_infection_events_to_data_frame(filename='infection.events.json'):
     return(infections)
 
 
-# In[ ]:
+# In[3]:
 
 #%%timeit -n1 -r1
 infections = read_infection_events_to_data_frame()
 
 
-# In[ ]:
+# In[4]:
 
 #%%timeit -n1 -r1
 population_original = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt')
@@ -44,7 +47,7 @@ workplaces = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_200
 schools = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt')
 
 
-# In[ ]:
+# In[5]:
 
 population = population_original.copy()
 population = population.reset_index()
@@ -60,7 +63,7 @@ households['stcotr'] = (households.stcotrbg/10).astype(np.int64)
 households = pd.merge(households, apollo_locations, on='stcotr', how='inner', suffixes=('','_'), copy=True)
 
 
-# In[ ]:
+# In[6]:
 
 state_dict = dict(
     N = 'number of individuals',
@@ -85,7 +88,7 @@ household_dict = dict(
 )
 
 
-# In[ ]:
+# In[7]:
 
 def query_population(population, households, groupby_attributes): 
 
@@ -109,7 +112,7 @@ def query_population(population, households, groupby_attributes):
     return _population
 
 
-# In[ ]:
+# In[8]:
 
 def query_infections(group_data_frame, times, incidence=['N','S','E','I','Y','R','IS'],
                      prevalence=['N','S','E','I','Y','R','IS'], grouping_keys={}):
@@ -170,7 +173,7 @@ def query_infections(group_data_frame, times, incidence=['N','S','E','I','Y','R'
     return lz4.dumps(json.dumps(rows))
 
 
-# In[ ]:
+# In[9]:
 
 def apply_query_infections(population, households, times,
                            incidence=['N','S','E','I','Y','R','IS'],
@@ -214,12 +217,12 @@ def apply_query_infections(population, households, times,
 # http://stackoverflow.com/questions/26187759/parallelize-apply-after-pandas-groupby
 
 
-# In[ ]:
+# In[11]:
 
 times = range(100)
 tic = time.time()
 r = apply_query_infections(population, households, times=times,
-                           group_by_keys=['age_group','gender'],
+                           group_by_keys=['age','gender'],
                            parallel=True)
 print(time.time() - tic)
 
