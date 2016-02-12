@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[214]:
+# In[1]:
 
 import pandas as pd
 import numpy as np
@@ -15,7 +15,7 @@ import time
 import lz4
 
 
-# In[81]:
+# In[2]:
 
 def read_infection_events_to_data_frame(filename='infection.events.json'):
     def read_infection_events():
@@ -28,13 +28,13 @@ def read_infection_events_to_data_frame(filename='infection.events.json'):
     return(infections)
 
 
-# In[82]:
+# In[3]:
 
 #%%timeit -n1 -r1
 infections = read_infection_events_to_data_frame()
 
 
-# In[94]:
+# In[4]:
 
 #%%timeit -n1 -r1
 population_original = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt')
@@ -43,7 +43,7 @@ workplaces = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_200
 schools = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt')
 
 
-# In[101]:
+# In[5]:
 
 population = population_original.reset_index(level=0).reset_index(level=0)
 population.rename(columns={'index':'person'}, inplace=True)
@@ -56,7 +56,7 @@ households['stcotr'] = (households.stcotrbg/10).astype(np.int64)
 households = pd.merge(households, apollo_locations, on='stcotr', how='inner', suffixes=('','_'), copy=True)
 
 
-# In[103]:
+# In[6]:
 
 state_dict = dict(
     S = 'susceptible', E = 'exposed', I = 'infectious',
@@ -77,7 +77,7 @@ household_dict = dict(
 )
 
 
-# In[115]:
+# In[7]:
 
 def query_population(population, households,
                      population_attributes=['age','race','sex'],
@@ -97,7 +97,7 @@ def query_population(population, households,
     return population
 
 
-# In[248]:
+# In[8]:
 
 def query_infections(group_data_frame, times, incidence=['S','E','I','Y','R','IS'],
                      prevalence=['S','E','I','Y','R','IS'], grouping_keys={}):
@@ -154,7 +154,7 @@ def query_infections(group_data_frame, times, incidence=['S','E','I','Y','R','IS
     return lz4.dumps(json.dumps(rows))
 
 
-# In[249]:
+# In[9]:
 
 def parallel_apply_query_infections(population, households, infections, times,
                                     incidence=['S','E','I','Y','R','IS'],
@@ -183,7 +183,7 @@ def parallel_apply_query_infections(population, households, infections, times,
 # http://stackoverflow.com/questions/26187759/parallelize-apply-after-pandas-groupby
 
 
-# In[250]:
+# In[10]:
 
 tic = time.time()
 
@@ -199,7 +199,7 @@ print(len(r))
 print(r.head())
 
 
-# In[251]:
+# In[ ]:
 
 len(r)
 
