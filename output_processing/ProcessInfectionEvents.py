@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 import pandas as pd
 import numpy as np
@@ -9,13 +9,14 @@ import json
 #try: import simplejson as json
 #except ImportError: import json
 from joblib import Parallel, delayed
+from joblib.pool import has_shareable_memory
 import multiprocessing
 import itertools
 import time
 import lz4
 
 
-# In[2]:
+# In[ ]:
 
 def read_infection_events_to_data_frame(filename='infection.events.json'):
     def read_infection_events():
@@ -28,13 +29,13 @@ def read_infection_events_to_data_frame(filename='infection.events.json'):
     return(infections)
 
 
-# In[3]:
+# In[ ]:
 
 #%%timeit -n1 -r1
 infections = read_infection_events_to_data_frame()
 
 
-# In[4]:
+# In[ ]:
 
 #%%timeit -n1 -r1
 population_original = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt')
@@ -43,22 +44,26 @@ workplaces = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_200
 schools = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt')
 
 
-# In[5]:
+# In[ ]:
 
-population = population_original.reset_index(level=0).reset_index(level=0)
-population.rename(columns={'index':'person'}, inplace=True)
+population = population_original.copy()
+population = population.reset_index()
+population['person'] = population.index
+population['age_group'] = pd.cut(population.age, bins=range(0,120,10), include_lowest=True, right=False)
+#population['age_group'] = pd.cut(population.age, bins=[0,2,18,65,120], include_lowest=True, right=False)
 
 apollo_locations = pd.DataFrame.from_csv('ApolloLocationCode.to.FIPSstcotr.csv')
 apollo_locations.reset_index(level=0, inplace=True)
 
-households = households_original.reset_index(level=0)
+households = households_original.copy().reset_index()
 households['stcotr'] = (households.stcotrbg/10).astype(np.int64)
 households = pd.merge(households, apollo_locations, on='stcotr', how='inner', suffixes=('','_'), copy=True)
 
 
-# In[6]:
+# In[ ]:
 
 state_dict = dict(
+    N = 'number of individuals',
     S = 'susceptible', E = 'exposed', I = 'infectious',
     Y = 'symptomatic', R = 'recovered', IS = 'infectious and symptomatic'
 )
@@ -68,63 +73,72 @@ population_dict = dict(
     # is, we can't use the p_id.  Instead, see cell above for 'person' sequential id column.
     #person = 'p_id', 
     race = 'race',
+    age_group = 'age_group',
     age = 'age',
-    sex = 'sex'
+    gender = 'sex'
 )
 household_dict = dict(
     income = 'hh_income',
+    #location = 'stcotrbg',
+    #location = 'stcotr',
     location = 'apollo_location_code'
 )
 
 
-# In[7]:
+# In[ ]:
 
-def query_population(population, households,
-                     population_attributes=['age','race','sex'],
-                     household_attributes=['income','location']):
+def query_population(population, households, groupby_attributes): 
 
-    _population_attributes = [population_dict[x] for x in population_attributes] + ['person', 'hh_id']
-    _household_attributes = [household_dict[x] for x in household_attributes] + ['hh_id']
-
-    population = pd.merge(population[_population_attributes],
-                          households[_household_attributes],
-                          on='hh_id', suffixes=('', '.h'), how='left',
-                          copy=True)[list(set(_population_attributes).union(_household_attributes))]
+    _rev_population_dict = {population_dict[x]:x for x in groupby_attributes if x in population_dict}
+    _rev_population_dict.update({'person':'person'})
     
-    population.rename(columns = {v:k for k,v in dict(population_dict.items() + household_dict.items()).iteritems()},
-                      inplace = True)
+    _rev_household_dict = {household_dict[x]:x for x in groupby_attributes if x in household_dict}
+
+    _population = pd.merge(population[_rev_population_dict.keys() + ['hh_id']],
+                           households[_rev_household_dict.keys() + ['hh_id']],
+                           on='hh_id', suffixes=('', '.h'), how='inner',
+                           copy=True)[_rev_population_dict.keys() + _rev_household_dict.keys()]
     
-    return population
+    _population.rename(columns=_rev_population_dict, inplace=True, copy=False)
+    _population.rename(columns=_rev_household_dict, inplace=True, copy=False)
+
+    for k in groupby_attributes:
+        if k not in list(_population.columns):
+            raise Exception('Unable to group by key: %s' % k)
+    
+    return _population
 
 
-# In[8]:
+# In[ ]:
 
-def query_infections(group_data_frame, times, incidence=['S','E','I','Y','R','IS'],
-                     prevalence=['S','E','I','Y','R','IS'], grouping_keys={}):
+def query_infections(group_data_frame, times, incidence=['N','S','E','I','Y','R','IS'],
+                     prevalence=['N','S','E','I','Y','R','IS'], grouping_keys={}):
     
-    _infections = pd.merge(infections, group_data_frame, on='person', how='inner', suffixes=('','_'), copy=False)
+    local_infections = pd.merge(infections, group_data_frame,
+                                on='person', how='inner', suffixes=('','_'), copy=True)
+
+    total_local_persons = len(group_data_frame.index)
     
-    # NOTE: Can't do a join inside a Parallel for some reason, so must join infections and persons before passing!!!
-    total_susceptible = len(_infections.person.unique())
-    
-    def get_incidence(_infections, state, day):
+    def get_incidence(local_infections, state, day):
         if state == 'IS':
-            return len(_infections[(day == _infections.infectious) & (day == _infections.symptomatic)].index)
+            return len(local_infections[(day == local_infections.infectious) &                                         (day == local_infections.symptomatic)].index)
+        elif state == 'N':
+            return 0
         else:
             s = state_dict[state]
-            return len(_infections[_infections[s]==day].index)
+            return len(local_infections[local_infections[s]==day].index)
 
-    def get_prevalence(_infections, states, day):
+    def get_prevalence(local_infections, states, day):
         if states is not None and isinstance(states, list) and len(states) > 0:
-            mask = {'NOT_S': (day >= _infections.exposed) & (day < _infections.susceptible)}
+            mask = {'NOT_S': (day >= local_infections.exposed) &                              (day < local_infections.susceptible)}
             if set(['E','I','Y','R','IS']).intersection(set(states)):
-                mask['E'] = (mask['NOT_S'] & (day < _infections.infectious))
+                mask['E'] = (mask['NOT_S'] & (day < local_infections.infectious))
             if 'I' in states:
-                mask['I'] = (mask['NOT_S'] & (day >= _infections.infectious)) & (day < _infections.recovered)
+                mask['I'] = (mask['NOT_S'] & (day >= local_infections.infectious)) &                             (day < local_infections.recovered)
             if 'Y' in states:
-                mask['Y'] = (mask['NOT_S'] & (day >= _infections.symptomatic)) & (day < _infections.recovered)
+                mask['Y'] = (mask['NOT_S'] & (day >= local_infections.symptomatic)) &                             (day < local_infections.recovered)
             if 'R' in states:
-                mask['R'] = (mask['NOT_S'] & (day >= _infections.recovered)) & (day < _infections.susceptible)
+                mask['R'] = (mask['NOT_S'] & (day >= local_infections.recovered)) &                             (day < local_infections.susceptible)
             if 'IS' in states:
                 mask['IS'] = mask['I'] & mask['Y']
            
@@ -132,21 +146,23 @@ def query_infections(group_data_frame, times, incidence=['S','E','I','Y','R','IS
             if state is None:
                 raise Exception('No state specified!')
             elif state == 'S':
-                yield (state, total_susceptible - len(_infections[mask['NOT_S']].index))
+                yield (state, total_local_persons - len(local_infections[mask['NOT_S']].index))
+            elif state == 'N':
+                yield (state, total_local_persons)
             else:
                 try:
-                    if total_susceptible == len(_infections[mask['NOT_S']].index):
+                    if total_local_persons == len(local_infections[mask['NOT_S']].index):
                         yield (state, 0)
                     else:
-                        yield (state, len(_infections[mask[state]].index))
+                        yield (state, len(local_infections[mask[state]].index))
                 except:
                     raise Exception('Unknown prevalence state requested %s!' % state)
 
     rows = []
     for t in times:
         row = dict(day = t)
-        row.update({k + '_i': get_incidence(_infections, k, t) for k in incidence})
-        row.update({k + '_p': v for k,v in get_prevalence(_infections, prevalence, t)})
+        row.update({k + '_i': get_incidence(local_infections, k, t) for k in incidence})
+        row.update({k + '_p': v for k,v in get_prevalence(local_infections, prevalence, t)})
         if grouping_keys:
             row.update(grouping_keys)
         rows.append(row)
@@ -154,57 +170,73 @@ def query_infections(group_data_frame, times, incidence=['S','E','I','Y','R','IS
     return lz4.dumps(json.dumps(rows))
 
 
-# In[9]:
+# In[ ]:
 
-def parallel_apply_query_infections(population, households, infections, times,
-                                    incidence=['S','E','I','Y','R','IS'],
-                                    prevalence=['S','E','I','Y','R','IS'],
-                                    group_by_keys=['age','race']):
+def apply_query_infections(population, households, times,
+                           incidence=['N','S','E','I','Y','R','IS'],
+                           prevalence=['N','S','E','I','Y','R','IS'],
+                           group_by_keys=['age','race'],
+                           parallel=True):
     
-    #n_jobs = multiprocessing.cpu_count()
-    n_jobs = 8
-    
-    grouped_persons = query_population(population, households).groupby(group_by_keys)
+    pop = query_population(population, households, group_by_keys)
+    grouped_persons = pop.groupby(group_by_keys)
     grouping_keys = grouped_persons.grouper.names
+
+    if parallel:
+        n_jobs = multiprocessing.cpu_count()
+        
+        # NOTE: The "mmap_mode='c'" argument (copy-on-write) is necessary for
+        # processing groupby (which are MemeoryViews) even if you're not 
+        # writing to them! This is crazy!
+        result_list = Parallel(n_jobs=n_jobs, mmap_mode='c')(
+            delayed(query_infections)(      
+                group_data_frame,
+                times, incidence, prevalence,
+                {k:v for k,v in zip(
+                        grouping_keys,
+                        grouping_values if isinstance(grouping_values, tuple) \
+                                        else (grouping_values,))
+                }) for grouping_values, group_data_frame in grouped_persons)
+    else:
+        result_list = [query_infections(      
+                group_data_frame,
+                times, incidence, prevalence,
+                {k:v for k,v in zip(
+                        grouping_keys,
+                        grouping_values if isinstance(grouping_values, tuple) \
+                                        else (grouping_values,))
+                }) for grouping_values, group_data_frame in grouped_persons]
     
-    result_list = Parallel(n_jobs=n_jobs)(delayed(query_infections)(
-            #pd.merge(infections, group_data_frame, on='person', how='inner', suffixes=('','_'), copy=False),
-            group_data_frame,
-            times, incidence, prevalence,
-            {k:v for k,v in zip(
-                    grouping_keys, grouping_values if isinstance(grouping_values, tuple) else (grouping_values,))
-            }) for grouping_values, group_data_frame in grouped_persons)
-    
-    #return [json.loads(lz4.loads(result)) for result in result_list]
     return pd.DataFrame([row_dict for row_dict in itertools.chain(
                 *[json.loads(lz4.loads(result)) for result in result_list])])
-    #return result_list
+
 # check this out for a little background:
 # http://stackoverflow.com/questions/26187759/parallelize-apply-after-pandas-groupby
 
 
-# In[10]:
+# In[ ]:
 
+times = range(100)
 tic = time.time()
-
-r = parallel_apply_query_infections(population, households, infections,
-                                    times=range(100),
-                                    #incidence=['E'], prevalence=['I'],
-                                    group_by_keys=['location','age','sex'])
-
-toc = time.time()
-
-print(toc-tic)
-print(len(r))
-print(r.head())
+r = apply_query_infections(population, households, times=times,
+                           group_by_keys=['age_group','gender'],
+                           parallel=True)
+print(time.time() - tic)
 
 
 # In[ ]:
 
-len(r)
+def convert_columns(r):
+    # conversion of columns done as side-effect; data frame passed by ref
+    if ('gender' in r.keys() and 
+        not all([a==b for (a,b) in zip(sorted(r.gender.unique()),
+                                       sorted(['M','F']))])):
+        r.gender = pd.cut(r.gender,bins=2,labels=['M','F'])
+    return r
 
 
 # In[ ]:
 
-
+convert_columns(r).to_hdf('output.hdf5', key='AlleghenyCounty_42003_100_Days',
+                          mode='w', format='t', complevel=9, complib='bzip2')
 
