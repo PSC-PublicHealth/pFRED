@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[70]:
+# In[1]:
 
 #%reload_ext Cython
 import pandas as pd
@@ -12,7 +12,7 @@ import time
 #import numba
 
 
-# In[3]:
+# In[2]:
 
 # NOTE: Inital setting for NA; may change later when coerced to DTYPE!
 NA = -1
@@ -25,12 +25,12 @@ d_full = d_full.apply(lambda x: x.astype(DTYPE), axis=0)
 NA = DTYPE(NA)
 
 
-# In[4]:
+# In[3]:
 
 d_full.head()
 
 
-# In[65]:
+# In[4]:
 
 d = d_full
 
@@ -64,42 +64,59 @@ a.shape
 get_ipython().run_cell_magic(u'cython', u'', u"from __main__ import NA, DTYPE\nfrom __main__ import state_map, event_map, group_map\nfrom __main__ import dim_days_size, group_dims_sorted_indexes\nfrom __main__ import a\n\nlast_day = DTYPE(dim_days_size - 1)\nnum_days = DTYPE(dim_days_size)\n\nexposed = event_map['exposed']\ninfectious = event_map['infectious']\nsymptomatic = event_map['symptomatic']\nrecovered = event_map['recovered']\nsusceptible = event_map['susceptible']\n\nN_i = state_map['N_i']\nS_i = state_map['S_i']\nE_i = state_map['E_i']\nI_i = state_map['I_i']\nY_i = state_map['Y_i']\nR_i = state_map['R_i']\nIS_i = state_map['IS_i']\n\nN_p = state_map['N_p']\nS_p = state_map['S_p']\nE_p = state_map['E_p']\nI_p = state_map['I_p']\nY_p = state_map['Y_p']\nR_p = state_map['R_p']\nIS_p = state_map['IS_p']\n\ndef get_counts(r):\n    group_indexes = []\n    for g in group_dims_sorted_indexes:\n        if r[g] == NA:\n            return False\n        else:\n            group_indexes.append([r[g]])\n\n    # always increment N_p (if groupings are not null)\n    a[group_indexes + [[N_p]]] += 1\n\n    if r[exposed] == NA:\n        a[group_indexes + [[S_p]]] += 1\n    else:\n        a[group_indexes + [[E_i]] + [[r[exposed]]]] += 1\n        a[group_indexes + [[E_p]] + [range(r[exposed], r[infectious])]] += 1\n        \n        a[group_indexes + [[S_p]] + [range(0, r[exposed])]] += 1\n        if r[susceptible] != NA:\n            if r[susceptible] < last_day:\n                a[group_indexes + [[S_p]] + [range(r[susceptible], num_days)]] += 1\n            elif r[susceptible] == last_day:\n                a[group_indexes + [[S_p]] + [r[susceptible]]] += 1\n                    \n        if r[infectious] != NA:\n            a[group_indexes + [[I_i]] + [[r[infectious]]]] += 1\n            a[group_indexes + [[I_p]] + [range(r[infectious], r[recovered])]] += 1\n            \n        if r[symptomatic] != NA:\n            a[group_indexes + [[Y_i]] + [[r[symptomatic]]]] += 1\n            a[group_indexes + [[Y_p]] + [range(r[symptomatic], r[recovered])]] += 1\n            # NOTE: by default all symptomatics are infectious; this is a shortcut \n            a[group_indexes + [[IS_i]] + [[r[symptomatic]]]] += 1\n            a[group_indexes + [[IS_i]] + [range(r[symptomatic], r[recovered])]] += 1\n           \n        if r[recovered] != NA:\n            a[group_indexes + [[R_i]] + [[r[recovered]]]] += 1\n            if r[recovered] == last_day:\n                a[group_indexes + [[R_p]] + [[r[recovered]]]] += 1\n            else:\n                assert(r[recovered] < last_day)\n                a[group_indexes + [[R_p]] + [range(r[recovered], num_days)]] += 1\n                \n    return True")
 
 
-# In[67]:
+# In[13]:
 
-#%prun -l 2 d.apply(get_counts, axis=1, raw=True)
+get_ipython().magic(u'prun -l 2 d.apply(get_counts, axis=1, raw=True)')
 #test2=d.apply(get_counts, axis=1, raw=True)
 
 
-# In[68]:
+# The following cells reproduce the important bits of the cython cell magic.
+# For guidance look here:
+# - https://raw.githubusercontent.com/studer/ipython/master/IPython/extensions/cythonmagic.py
 
-tic = time.time()
-a.fill(DTYPE(0))
-d.sample(frac=0.5).apply(get_counts, axis=1, raw=True)
-b=a.copy()
-a.fill(DTYPE(0))
-d.sample(frac=0.5).apply(get_counts, axis=1, raw=True)
-c=a+b
-print time.time()-tic
+# In[20]:
 
-
-# In[1]:
-
-import cython
-
-
-# In[2]:
-
-help(cython.inline)
-
-
-# In[5]:
-
+from distutils.core import Distribution, Extension
+from distutils.command.build_ext import build_ext
 from Cython.Build import cythonize
+import os
+#os.environ["CC"] = "g++-4.7"
+#os.environ["CXX"] = "g++-4.7"
+dist = Distribution()
+build_extension = build_ext(dist)
+build_extension.finalize_options()
 
 
-# In[6]:
+# In[21]:
 
-help(cythonize)
+cyprinev_extension = Extension(
+    name = 'count_events',
+    sources = ['cyprinev/count_events.pyx'],
+    include_dirs = [np.get_include()],
+    #library_dirs = args.library_dirs,
+    #extra_compile_args = args.compile_args,
+    #extra_link_args = args.link_args,
+    #libraries = args.lib,
+    #language = 'c++' if args.cplus else 'c',
+)
+build_extension.extensions = cythonize([cyprinev_extension])
+build_extension.build_temp = 'cyprinev/build_temp'
+build_extension.build_lib  = 'cyprinev'
+
+
+# In[12]:
+
+from cyprinev.count_events import get_counts
+
+
+# In[22]:
+
+build_extension.run()
+
+
+# In[23]:
+
+reload(count_events)
 
 
 # In[ ]:
