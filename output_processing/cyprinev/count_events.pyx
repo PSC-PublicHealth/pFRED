@@ -72,3 +72,25 @@ def get_counts(r):
                 a[group_indexes + [[R_p]] + [range(r[recovered], num_days)]] += 1
                 
     return True
+
+cimport cython
+cimport openmp
+from cython.parallel import parallel, prange, threadid
+#from libc.stdlib cimport malloc, free
+
+@cython.boundscheck(False)
+cdef int test_gil():
+    cdef int start = 0
+    cdef int end = 10
+    cdef int i, x
+    #cdef int *res = <int *>malloc(end * sizeof(int))
+    with nogil, parallel(num_threads=4):
+        #for i in prange(start, end, schedule='static', chunksize=1):
+        x = openmp.omp_get_thread_num()
+        with gil:
+            print (x)
+        #res[i] = cython.parallel.threadid()
+    #for i in range(start, end):
+    #    print (i, res[i])
+    #free(res)
+    return 0
