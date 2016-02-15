@@ -28,6 +28,7 @@ Y_p = state_map['Y_p']
 R_p = state_map['R_p']
 IS_p = state_map['IS_p']
 
+
 def get_counts(r):
     group_indexes = []
     for g in group_dims_sorted_indexes:
@@ -73,24 +74,82 @@ def get_counts(r):
                 
     return True
 
+import cython
 cimport cython
-cimport openmp
-from cython.parallel import parallel, prange, threadid
-#from libc.stdlib cimport malloc, free
+import numpy as np
+cimport numpy as np
 
-@cython.boundscheck(False)
-cdef int test_gil():
-    cdef int start = 0
-    cdef int end = 10
-    cdef int i, x
-    #cdef int *res = <int *>malloc(end * sizeof(int))
-    with nogil, parallel(num_threads=4):
-        #for i in prange(start, end, schedule='static', chunksize=1):
-        x = openmp.omp_get_thread_num()
-        with gil:
-            print (x)
-        #res[i] = cython.parallel.threadid()
-    #for i in range(start, end):
-    #    print (i, res[i])
-    #free(res)
-    return 0
+import concurrent.futures
+
+cdef inline int _busy_sleep(int n) nogil:
+    cdef double tmp = 0.0
+
+    while n > 0:
+        # Do some CPU intensive useless computation to waste some time
+        tmp = (n ** 0.5) ** 0.5
+        n -= 1
+
+def busy_sleep(int n):
+    with nogil:
+        _busy_sleep(n)
+    return n
+
+def busy_sleep_nogil():
+    N = 40000000
+    n = 64
+    with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
+        # Start the load operations and mark each future with its
+        future_to_url = {executor.submit(busy_sleep, N): i for i in range(n)}
+        for future in concurrent.futures.as_completed(future_to_url):
+            url = future_to_url[future]
+            try:
+                data = future.result()
+            except Exception as exc:
+                print('%d generated an exception: %s' % (url, exc))
+            else:
+                print('%d page is %d bytes' % (url, data))
+
+###############################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
