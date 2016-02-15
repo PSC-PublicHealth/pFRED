@@ -1,85 +1,95 @@
-from __main__ import NA, DTYPE
-from __main__ import state_map, event_map, group_map
-from __main__ import dim_days_size, group_dims_sorted_indexes
-from __main__ import a
-
-last_day = DTYPE(dim_days_size - 1)
-num_days = DTYPE(dim_days_size)
-
-exposed = event_map['exposed']
-infectious = event_map['infectious']
-symptomatic = event_map['symptomatic']
-recovered = event_map['recovered']
-susceptible = event_map['susceptible']
-
-N_i = state_map['N_i']
-S_i = state_map['S_i']
-E_i = state_map['E_i']
-I_i = state_map['I_i']
-Y_i = state_map['Y_i']
-R_i = state_map['R_i']
-IS_i = state_map['IS_i']
-
-N_p = state_map['N_p']
-S_p = state_map['S_p']
-E_p = state_map['E_p']
-I_p = state_map['I_p']
-Y_p = state_map['Y_p']
-R_p = state_map['R_p']
-IS_p = state_map['IS_p']
-
-
-def get_counts(r):
-    group_indexes = []
-    for g in group_dims_sorted_indexes:
-        if r[g] == NA:
-            return False
-        else:
-            group_indexes.append([r[g]])
-
-    # always increment N_p (if groupings are not null)
-    a[group_indexes + [[N_p]]] += 1
-
-    if r[exposed] == NA:
-        a[group_indexes + [[S_p]]] += 1
-    else:
-        a[group_indexes + [[E_i]] + [[r[exposed]]]] += 1
-        a[group_indexes + [[E_p]] + [range(r[exposed], r[infectious])]] += 1
-        
-        a[group_indexes + [[S_p]] + [range(0, r[exposed])]] += 1
-        if r[susceptible] != NA:
-            if r[susceptible] < last_day:
-                a[group_indexes + [[S_p]] + [range(r[susceptible], num_days)]] += 1
-            elif r[susceptible] == last_day:
-                a[group_indexes + [[S_p]] + [r[susceptible]]] += 1
-                    
-        if r[infectious] != NA:
-            a[group_indexes + [[I_i]] + [[r[infectious]]]] += 1
-            a[group_indexes + [[I_p]] + [range(r[infectious], r[recovered])]] += 1
-            
-        if r[symptomatic] != NA:
-            a[group_indexes + [[Y_i]] + [[r[symptomatic]]]] += 1
-            a[group_indexes + [[Y_p]] + [range(r[symptomatic], r[recovered])]] += 1
-            # NOTE: by default all symptomatics are infectious; this is a shortcut 
-            a[group_indexes + [[IS_i]] + [[r[symptomatic]]]] += 1
-            a[group_indexes + [[IS_i]] + [range(r[symptomatic], r[recovered])]] += 1
-           
-        if r[recovered] != NA:
-            a[group_indexes + [[R_i]] + [[r[recovered]]]] += 1
-            if r[recovered] == last_day:
-                a[group_indexes + [[R_p]] + [[r[recovered]]]] += 1
-            else:
-                assert(r[recovered] < last_day)
-                a[group_indexes + [[R_p]] + [range(r[recovered], num_days)]] += 1
-                
-    return True
-
 import cython
 cimport cython
 import numpy as np
 cimport numpy as np
 
 import concurrent.futures
+
+from __main__ import NA, DTYPE
+from __main__ import state_map, event_map, group_map
+from __main__ import dim_days_size, group_dims_sorted_indexes
+
+cdef int exposed = event_map['exposed']
+cdef int infectious = event_map['infectious']
+cdef int symptomatic = event_map['symptomatic']
+cdef int recovered = event_map['recovered']
+cdef int susceptible = event_map['susceptible']
+
+cdef int N_i = state_map['N_i']
+cdef int S_i = state_map['S_i']
+cdef int E_i = state_map['E_i']
+cdef int I_i = state_map['I_i']
+cdef int Y_i = state_map['Y_i']
+cdef int R_i = state_map['R_i']
+cdef int IS_i = state_map['IS_i']
+
+cdef int N_p = state_map['N_p']
+cdef int S_p = state_map['S_p']
+cdef int E_p = state_map['E_p']
+cdef int I_p = state_map['I_p']
+cdef int Y_p = state_map['Y_p']
+cdef int R_p = state_map['R_p']
+cdef int IS_p = state_map['IS_p']
+
+###############################################################################
+
+cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays):
+
+    cdef np.uint32_t[:,:] a = np.zeros([ndays,14], dtype=np.uint32)
+    cdef np.uint32_t[:] r
+
+    cdef int i,d
+    cdef int start_row = 0
+    cdef int end_row = rows.shape[0]
+    cdef np.uint32_t last_day = DTYPE(ndays - 1)
+    cdef np.uint32_t num_days = DTYPE(ndays)
+    cdef np.uint32_t NA = -1
+    cdef np.uint32_t ONE = 1
+
+    with nogil:
+        for i in xrange(start_row, end_row):
+            r = rows[i,:]
+            if r[exposed] == NA:
+                for d in xrange(0, ndays): 
+                    a[d, S_p] += 1
+            else:
+                a[r[exposed], E_i] += 1
+                for d in xrange(r[exposed], r[infectious]):
+                    a[d, E_p] += 1
+                for d in xrange(0, r[exposed]):
+                    a[d, S_p] += 1
+
+                if r[susceptible] != NA:
+                    if r[susceptible] < last_day:
+                        for d in xrange(r[susceptible], num_days):
+                            a[d, S_p] += 1
+                    elif r[susceptible] == last_day:
+                        a[r[susceptible], S_p] += 1
+                            
+                if r[infectious] != NA:
+                    a[r[infectious], I_i] += 1
+                    for d in xrange(r[infectious], r[recovered]):
+                        a[d, I_p] += 1
+#                    
+                if r[symptomatic] != NA:
+                    # NOTE: by default all symptomatics are infectious; this is a shortcut 
+                    a[r[symptomatic], Y_i] += 1
+                    a[r[symptomatic], IS_i] += 1
+                    for d in xrange(r[symptomatic], r[recovered]):
+                        a[d, Y_p] += 1
+                        a[d, IS_p] += 1
+
+#                   
+#                if r[recovered] != NA:
+#                    a[group_indexes + [[R_i]] + [[r[recovered]]]] += 1
+#                    if r[recovered] == last_day:
+#                        a[group_indexes + [[R_p]] + [[r[recovered]]]] += 1
+#                    else:
+#                        assert(r[recovered] < last_day)
+#                        a[group_indexes + [[R_p]] + [range(r[recovered], num_days)]] += 1
+    return a
+
+###############################################################################
 
 cdef inline int _busy_sleep(int n) nogil:
     cdef double tmp = 0.0
@@ -107,7 +117,8 @@ def busy_sleep_nogil():
             except Exception as exc:
                 print('%d generated an exception: %s' % (url, exc))
             else:
-                print('%d page is %d bytes' % (url, data))
+                pass
+                #print('%d page is %d bytes' % (url, data))
 
 ###############################################################################
 

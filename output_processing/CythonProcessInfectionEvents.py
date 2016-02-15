@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[14]:
 
 #%reload_ext Cython
 import pandas as pd
@@ -16,7 +16,7 @@ import pyximport
 pyximport.install(reload_support=True)
 
 
-# In[2]:
+# In[15]:
 
 # NOTE: Inital setting for NA; may change later when coerced to DTYPE!
 NA = -1
@@ -29,12 +29,12 @@ d_full = d_full.apply(lambda x: x.astype(DTYPE), axis=0)
 NA = DTYPE(NA)
 
 
-# In[3]:
+# In[16]:
 
 d_full.head()
 
 
-# In[4]:
+# In[17]:
 
 grouping_keys = ['age','gender']
 d = d_full.sort_values(grouping_keys).reset_index(drop=True)
@@ -63,7 +63,7 @@ a = np.zeros(group_dims_sizes+[dim_states_size,dim_days_size], dtype=DTYPE)
 a.shape
 
 
-# In[ ]:
+# In[18]:
 
 #%prun -l 2 d.apply(get_counts, axis=1, raw=True)
 #test2=d.apply(get_counts, axis=1, raw=True)
@@ -73,15 +73,17 @@ a.shape
 # For guidance look here:
 # - https://raw.githubusercontent.com/studer/ipython/master/IPython/extensions/cythonmagic.py
 
-# In[109]:
+# In[137]:
 
 from distutils.core import Distribution, Extension
 from distutils.command.build_ext import build_ext
 from Cython.Build import cythonize
 import os
-os.environ["CC"] = "/usr/local/gcc483/bin/gcc"
-os.environ["CXX"] = "/usr/local/gcc483/bin/g++"
-os.environ["OMP_NUM_THREADS"] = "10"
+os.environ["CC"] = "gcc-5"
+os.environ["CXX"] = "g++-5"
+#os.environ["OMP_NUM_THREADS"] = "10"
+#os.environ["CFLAGS"] = ''
+os.environ["CFLAGS"] = '-I/Users/depasse/.virtualenvs/basenv27gcc/lib/python2.7/site-packages/numpy/core/include'
 dist = Distribution()
 build_extension = build_ext(dist)
 #build_extension.finalize_options()
@@ -94,7 +96,7 @@ cyprinev_extension = Extension(
     name = 'count_events',
     sources = ['cyprinev/count_events.pyx'],
     include_dirs = [np.get_include()],
-    language = 'c++',
+    language = 'c',
     #library_dirs = ['/usr/local/lib/gcc/5','/usr/local/lib'],
     extra_compile_args=['-fopenmp'],
     extra_link_args=['-fopenmp']
@@ -106,37 +108,40 @@ build_extension.build_temp = 'cyprinev/build_temp'
 build_extension.build_lib  = 'cyprinev'
 build_extension.finalize_options()
 build_extension.run()
-#import cyprinev.count_events as count_events
+import cyprinev.count_events as count_events
 reload(count_events)
 
 
-# In[82]:
+# In[39]:
+
+# TODO: this might be easier - for some reason the extension used above isn't
+# propagating/setting environment variables like "include_dirs", etc.
+#
+#pyximport.install(setup_args={"script_args":["--compiler=unix"],
+#                              "include_dirs":numpy.get_include()},
+#                  reload_support=True)
+
+
+# In[43]:
 
 dg=d.groupby(grouping_keys)
 dgda = np.asarray([dg.get_group(g).index[[0,-1]].values for g in dg.groups.keys()])
 
 
-# In[ ]:
+# In[42]:
 
-import concurrent.futures
-N = 40000000
-n = 64
-with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
-    # Start the load operations and mark each future with its
-    future_to_url = {executor.submit(count_events.busy_sleep_nogil, N): i for i in range(n)}
-    for future in concurrent.futures.as_completed(future_to_url):
-        url = future_to_url[future]
-        try:
-            data = future.result()
-        except Exception as exc:
-            print('%d generated an exception: %s' % (url, exc))
-        else:
-            print('%d page is %d bytes' % (url, data))
+# demo threading without gil using concurrent.futures
+#count_events.busy_sleep_nogil()
 
 
-# In[106]:
+# In[138]:
 
-count_events.busy_sleep_nogil()
+test=np.asarray(count_events.get_counts_from_group(dg.get_group((0,0)).values, 200))
+
+
+# In[139]:
+
+test
 
 
 # In[ ]:
