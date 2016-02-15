@@ -5,46 +5,42 @@ cimport numpy as np
 
 import concurrent.futures
 
-from __main__ import NA, DTYPE
-from __main__ import state_map, event_map, group_map
-from __main__ import dim_days_size, group_dims_sorted_indexes
-
-cdef int exposed = event_map['exposed']
-cdef int infectious = event_map['infectious']
-cdef int symptomatic = event_map['symptomatic']
-cdef int recovered = event_map['recovered']
-cdef int susceptible = event_map['susceptible']
-
-cdef int N_i = state_map['N_i']
-cdef int S_i = state_map['S_i']
-cdef int E_i = state_map['E_i']
-cdef int I_i = state_map['I_i']
-cdef int Y_i = state_map['Y_i']
-cdef int R_i = state_map['R_i']
-cdef int IS_i = state_map['IS_i']
-
-cdef int N_p = state_map['N_p']
-cdef int S_p = state_map['S_p']
-cdef int E_p = state_map['E_p']
-cdef int I_p = state_map['I_p']
-cdef int Y_p = state_map['Y_p']
-cdef int R_p = state_map['R_p']
-cdef int IS_p = state_map['IS_p']
-
 ###############################################################################
 
-cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays):
+cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
+        event_map, state_map):
 
-    cdef np.uint32_t[:,:] a = np.zeros([ndays,14], dtype=np.uint32)
+    cdef int exposed = event_map['exposed']
+    cdef int infectious = event_map['infectious']
+    cdef int symptomatic = event_map['symptomatic']
+    cdef int recovered = event_map['recovered']
+    cdef int susceptible = event_map['susceptible']
+
+    cdef int N_i = state_map['N_i']
+    cdef int S_i = state_map['S_i']
+    cdef int E_i = state_map['E_i']
+    cdef int I_i = state_map['I_i']
+    cdef int Y_i = state_map['Y_i']
+    cdef int R_i = state_map['R_i']
+    cdef int IS_i = state_map['IS_i']
+
+    cdef int N_p = state_map['N_p']
+    cdef int S_p = state_map['S_p']
+    cdef int E_p = state_map['E_p']
+    cdef int I_p = state_map['I_p']
+    cdef int Y_p = state_map['Y_p']
+    cdef int R_p = state_map['R_p']
+    cdef int IS_p = state_map['IS_p']
+
+    cdef np.uint32_t[:,:] a = np.zeros([ndays, len(state_map)], dtype=np.uint32)
     cdef np.uint32_t[:] r
 
     cdef int i,d
     cdef int start_row = 0
     cdef int end_row = rows.shape[0]
-    cdef np.uint32_t last_day = DTYPE(ndays - 1)
-    cdef np.uint32_t num_days = DTYPE(ndays)
-    cdef np.uint32_t NA = -1
-    cdef np.uint32_t ONE = 1
+    cdef np.uint32_t last_day = np.uint32(ndays - 1)
+    cdef np.uint32_t num_days = np.uint32(ndays)
+    cdef np.uint32_t NA = np.uint32(-1)
 
     with nogil:
         for i in xrange(start_row, end_row):
@@ -70,7 +66,7 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays):
                     a[r[infectious], I_i] += 1
                     for d in xrange(r[infectious], r[recovered]):
                         a[d, I_p] += 1
-#                    
+                    
                 if r[symptomatic] != NA:
                     # NOTE: by default all symptomatics are infectious; this is a shortcut 
                     a[r[symptomatic], Y_i] += 1
@@ -79,14 +75,13 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays):
                         a[d, Y_p] += 1
                         a[d, IS_p] += 1
 
-#                   
-#                if r[recovered] != NA:
-#                    a[group_indexes + [[R_i]] + [[r[recovered]]]] += 1
-#                    if r[recovered] == last_day:
-#                        a[group_indexes + [[R_p]] + [[r[recovered]]]] += 1
-#                    else:
-#                        assert(r[recovered] < last_day)
-#                        a[group_indexes + [[R_p]] + [range(r[recovered], num_days)]] += 1
+                if r[recovered] != NA:
+                    a[r[recovered], R_i] += 1
+                    if r[recovered] == last_day:
+                        a[r[recovered], R_p] += 1
+                    else:
+                        for d in xrange(r[recovered], num_days):
+                            a[d, R_p] += 1
     return a
 
 ###############################################################################

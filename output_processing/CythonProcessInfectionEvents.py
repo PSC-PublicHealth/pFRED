@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[14]:
+# In[4]:
 
 #%reload_ext Cython
 import pandas as pd
@@ -16,7 +16,7 @@ import pyximport
 pyximport.install(reload_support=True)
 
 
-# In[15]:
+# In[6]:
 
 # NOTE: Inital setting for NA; may change later when coerced to DTYPE!
 NA = -1
@@ -29,12 +29,12 @@ d_full = d_full.apply(lambda x: x.astype(DTYPE), axis=0)
 NA = DTYPE(NA)
 
 
-# In[16]:
+# In[7]:
 
 d_full.head()
 
 
-# In[17]:
+# In[8]:
 
 grouping_keys = ['age','gender']
 d = d_full.sort_values(grouping_keys).reset_index(drop=True)
@@ -63,7 +63,7 @@ a = np.zeros(group_dims_sizes+[dim_states_size,dim_days_size], dtype=DTYPE)
 a.shape
 
 
-# In[18]:
+# In[ ]:
 
 #%prun -l 2 d.apply(get_counts, axis=1, raw=True)
 #test2=d.apply(get_counts, axis=1, raw=True)
@@ -73,17 +73,17 @@ a.shape
 # For guidance look here:
 # - https://raw.githubusercontent.com/studer/ipython/master/IPython/extensions/cythonmagic.py
 
-# In[137]:
+# In[33]:
 
 from distutils.core import Distribution, Extension
 from distutils.command.build_ext import build_ext
 from Cython.Build import cythonize
 import os
-os.environ["CC"] = "gcc-5"
-os.environ["CXX"] = "g++-5"
+#os.environ["CC"] = "gcc-5"
+#os.environ["CXX"] = "g++-5"
 #os.environ["OMP_NUM_THREADS"] = "10"
-#os.environ["CFLAGS"] = ''
-os.environ["CFLAGS"] = '-I/Users/depasse/.virtualenvs/basenv27gcc/lib/python2.7/site-packages/numpy/core/include'
+#os.environ["CFLAGS"] = '-I/Users/depasse/.virtualenvs/basenv27gcc/lib/python2.7/site-packages/numpy/core/include'
+os.environ["CFLAGS"] = '-I%s' % np.get_include()
 dist = Distribution()
 build_extension = build_ext(dist)
 #build_extension.finalize_options()
@@ -98,8 +98,8 @@ cyprinev_extension = Extension(
     include_dirs = [np.get_include()],
     language = 'c',
     #library_dirs = ['/usr/local/lib/gcc/5','/usr/local/lib'],
-    extra_compile_args=['-fopenmp'],
-    extra_link_args=['-fopenmp']
+    #extra_compile_args=['-fopenmp'],
+    #extra_link_args=['-fopenmp']
     #libraries = args.lib,
     #language = 'c++' if args.cplus else 'c',
 )
@@ -112,7 +112,7 @@ import cyprinev.count_events as count_events
 reload(count_events)
 
 
-# In[39]:
+# In[ ]:
 
 # TODO: this might be easier - for some reason the extension used above isn't
 # propagating/setting environment variables like "include_dirs", etc.
@@ -122,26 +122,21 @@ reload(count_events)
 #                  reload_support=True)
 
 
-# In[43]:
+# In[13]:
 
 dg=d.groupby(grouping_keys)
 dgda = np.asarray([dg.get_group(g).index[[0,-1]].values for g in dg.groups.keys()])
 
 
-# In[42]:
+# In[ ]:
 
 # demo threading without gil using concurrent.futures
 #count_events.busy_sleep_nogil()
 
 
-# In[138]:
+# In[31]:
 
-test=np.asarray(count_events.get_counts_from_group(dg.get_group((0,0)).values, 200))
-
-
-# In[139]:
-
-test
+test=np.asarray(count_events.get_counts_from_group(dg.get_group((0,0)).values, 200, event_map, state_map))
 
 
 # In[ ]:
