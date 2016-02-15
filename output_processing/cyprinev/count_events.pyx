@@ -44,7 +44,12 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
 
     with nogil:
         for i in xrange(start_row, end_row):
+            
             r = rows[i,:]
+            
+            for d in xrange(0, ndays):
+                a[d, N_p] += 1
+
             if r[exposed] == NA:
                 for d in xrange(0, ndays): 
                     a[d, S_p] += 1

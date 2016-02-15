@@ -73,7 +73,7 @@ a.shape
 # For guidance look here:
 # - https://raw.githubusercontent.com/studer/ipython/master/IPython/extensions/cythonmagic.py
 
-# In[33]:
+# In[34]:
 
 from distutils.core import Distribution, Extension
 from distutils.command.build_ext import build_ext
