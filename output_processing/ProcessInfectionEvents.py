@@ -187,3 +187,13 @@ convert_columns(test.reset_index()).to_hdf(
     'output.hdf5', key='AlleghenyCounty_42003_100_Days',
     mode='w', format='t', complevel=9, complib='bzip2')
 
+
+# In[342]:
+
+np.get_include()
+
+
+# In[ ]:
+
+
+
