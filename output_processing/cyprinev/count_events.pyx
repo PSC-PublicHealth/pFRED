@@ -1,3 +1,6 @@
+#!python
+#cython: boundscheck=False, wraparound=False
+
 import cython
 cimport cython
 import numpy as np
@@ -43,6 +46,7 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
     cdef np.uint32_t NA = np.uint32(-1)
 
     with nogil:
+
         for i in xrange(start_row, end_row):
             
             r = rows[i,:]
@@ -73,7 +77,8 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
                         a[d, I_p] += 1
                     
                 if r[symptomatic] != NA:
-                    # NOTE: by default all symptomatics are infectious; this is a shortcut 
+                    # NOTE: by default all symptomatics are infectious; this is
+                    # a shortcut! 
                     a[r[symptomatic], Y_i] += 1
                     a[r[symptomatic], IS_i] += 1
                     for d in xrange(r[symptomatic], r[recovered]):

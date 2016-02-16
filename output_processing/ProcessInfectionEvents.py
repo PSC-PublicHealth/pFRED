@@ -114,24 +114,18 @@ def query_population(population, households, groupby_attributes):
     return _population
 
 
-# In[308]:
+# In[339]:
 
 reload(count_events)
 
 def apply_count_events(population, households, infections,
                        group_by_keys=['age','race','location','gender']):
-
-    incidence=['N','S','E','I','Y','R','IS']
-    prevalence=['N','S','E','I','Y','R','IS']
     
-    NA = -1
     DTYPE = np.uint32
-    di = infections.fillna(NA)
-    di = di.apply(lambda x: x.astype(DTYPE), axis=0)
-    # NOTE: NA may change when coerced to DTYPE!
-    NA = DTYPE(NA)
+    NA = DTYPE(-1)
     
-    d = pd.merge(di, query_population(population, households, group_by_keys),
+    d = pd.merge(infections.fillna(NA).apply(lambda x: x.astype(DTYPE), axis=0),
+                 query_population(population, households, group_by_keys),
                  on='person', how='inner', suffixes=('','_')
                 ).sort_values(group_by_keys).reset_index(drop=True)
     
@@ -164,11 +158,15 @@ def apply_count_events(population, households, infections,
     
 
 
-# In[310]:
+# In[341]:
 
 tic = time.time()
-test=apply_count_events(population, households, infections,
-                       ['age','race','location','gender'])
+test = apply_count_events(population, households, infections, [
+        'age',
+        'race',
+        'location',
+        'gender'
+    ])
 print(time.time() - tic)
 
 
@@ -188,9 +186,4 @@ def convert_columns(r):
 convert_columns(test.reset_index()).to_hdf(
     'output.hdf5', key='AlleghenyCounty_42003_100_Days',
     mode='w', format='t', complevel=9, complib='bzip2')
-
-
-# In[ ]:
-
-
 
