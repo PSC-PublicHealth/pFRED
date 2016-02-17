@@ -8,7 +8,7 @@
 diseases = 1
 
 # Length of each run
-days = 240
+days = 120 
 
 # Seed for RNG
 seed = 123456
@@ -44,15 +44,15 @@ debug = 1
 test = 0
 outdir = OUT
 tracefile = none
-track_infection_events = 1
+track_infection_events = 0
 track_age_distribution = 0
 track_household_distribution = 0
 track_network_stats = 0
-report_age_of_infection = 2
-report_place_of_infection = 1
+report_age_of_infection = 0
+report_place_of_infection = 0
 report_distance_of_infection = 0
 report_presenteeism = 0
-report_epidemic_data_by_census_block = 1
+report_epidemic_data_by_census_block = 0
 quality_control = 1
 print_household_locations = 0
 rr_delay = 10

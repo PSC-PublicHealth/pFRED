@@ -126,6 +126,17 @@ void Utils::fred_open_output_files(char * directory, int run){
       Utils::fred_abort("Can't open %s\n", filename);
     }
   }
+
+  Global::Reportfp = NULL;
+  if (1) {
+    sprintf(filename, "%s/report%d.json_lines", directory, run);
+    Global::Reportfp = fopen(filename, "w");
+    if (Global::Reportfp == NULL) {
+      Utils::fred_abort("Can't open %s\n", filename);
+    }
+  }
+
+
   Global::VaccineTracefp = NULL;
   if (strcmp(Global::VaccineTracefilebase, "none") != 0) {
     sprintf(filename, "%s/vacctr%d.txt", directory, run);
@@ -208,6 +219,7 @@ void Utils::fred_end(void){
   if (Global::Outfp != NULL) fclose(Global::Outfp);
   if (Global::Tracefp != NULL) fclose(Global::Tracefp);
   if (Global::Infectionfp != NULL) fclose(Global::Infectionfp);
+  if (Global::Reportfp != NULL) fclose(Global::Reportfp);
   if (Global::VaccineTracefp != NULL) fclose(Global::VaccineTracefp);
   if (Global::Prevfp != NULL) fclose(Global::Prevfp);
   if (Global::Incfp != NULL) fclose(Global::Incfp);

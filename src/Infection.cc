@@ -285,6 +285,17 @@ void Infection::print() const {
 }
 
 void Infection::print_json() const {
+    int place_id = -1;
+    char place_type = -1; 
+    if (place != NULL) {
+        if (place->get_container() != NULL) {
+            place_id = place->get_container()->get_id();
+            place_type = place->get_container()->get_type(); 
+        } else {
+            place_id = place->get_id();
+            place_type = place->get_type();
+        }
+    }
     json j = {
         {"event", "infection"},
         {"person", host->get_id()},
@@ -295,7 +306,8 @@ void Infection::print_json() const {
         {"recovered", recovery_date},
         {"susceptible", susceptible_date},
         {"infector", infector == NULL ? -1 : infector->get_id()},
-        {"place", place == NULL ? -1 : place->get_id()}
+        {"place", place_id},
+        {"place_type", place_type}
     };
     Global::Rpt.append(j);
 }

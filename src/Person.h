@@ -26,11 +26,15 @@ class Infection;
 class Population;
 class Transmission;
 
-
 #include "Demographics.h"
 #include "Health.h"
 #include "Behavior.h"
 #include "Activities.h"
+#include "Vaccine.h"
+#include "Report.h"
+#include "json.h"
+
+using nlohmann::json;
 
 class Person {
 public:
@@ -451,6 +455,16 @@ public:
 
   void take_vaccine( Vaccine *vacc, int day, Vaccine_Manager* vm ) {
     health.take_vaccine( this, vacc, day, vm );
+    
+    json j = {
+        {"event", "vaccination"},
+        {"day", day},
+        {"person", get_id()},
+        {"vaccine", vacc->get_ID()}
+    };
+
+    Global::Rpt.append(j);
+
   }
 
   // set up and access health behaviors

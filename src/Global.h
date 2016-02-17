@@ -254,6 +254,7 @@ static Tracker<std::string> *Block_Epi_Day_Tracker;
     static FILE *Immunityfp;
     static FILE *Householdfp;
     static FILE *BlockDayfp;
+    static FILE *Reportfp;
 
     /**
      * Fills the static variables with values from the parameter file.

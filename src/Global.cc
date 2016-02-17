@@ -130,6 +130,8 @@ FILE *Global::Incfp = NULL;
 FILE *Global::ErrorLogfp = NULL;
 FILE *Global::Immunityfp = NULL;
 FILE *Global::Householdfp = NULL;
+FILE *Global::Reportfp = NULL;
+
 
 void Global::get_global_parameters() {
   Params::get_param_from_string("verbose", &Global::Verbose);

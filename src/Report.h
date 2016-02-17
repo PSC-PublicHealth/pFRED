@@ -65,7 +65,9 @@ struct Report_State {
     fred::Spin_Lock lock( mutex );
     std::vector< json >::iterator itr;
     for (itr = report_vector.begin(); itr < report_vector.end(); ++itr) {
-      std::cout << *itr << std::endl;
+      //std::cout << *itr << std::endl;
+      fputs(itr->dump().c_str(), Global::Reportfp);
+      fputs("\n", Global::Reportfp);
     }
   }
 
