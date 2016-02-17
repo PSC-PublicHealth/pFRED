@@ -9,7 +9,7 @@ SNAPPY_HDR = $(SNAPPY_INC_DIR)/snappy.h
 
 INCLUDE_DIRS = -I$(DSFMT_DIR) -I$(SNAPPY_INC_DIR)
 
-CPP = g++ 
+CPP = g++ -std=c++11 
 
 ################   Multithreading   ###############################
 # For multithreading, NCPU should be set here or as an argument to make.
@@ -33,11 +33,10 @@ else ifeq ($(shell echo $(OS) | cut -f1 -d_),CYGWIN)
 NCPU ?=  $(shell grep -c ^processor /proc/cpuinfo)
 SNAPPY_LIB = $(SNAPPY_DIR)/lib/libsnappy.la 
 else ifeq ($(OS),Darwin)
-CPP = g++-4.8
+CPP = g++-5 -std=c++11
 NCPU ?= $(shell sysctl -n hw.ncpu)
 SNAPPY_LIB = $(SNAPPY_DIR)/lib/libsnappy.dylib
 M64 = -m64
-CPP = g++-5
 endif
 ################   Compiler Flags   ##############################
 FRED_EXECUTABLE_NAME = FRED
@@ -63,7 +62,7 @@ DSFMT_HDR = $(DSFMT_DIR)/dSFMT.h $(DSFMT_DIR)/dSFMT-params19937.h
 # Use one of these for production:
 
 ## Use this to run with multiple threads
-CPPFLAGS = -g $(M64) -O3 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer $(INCLUDE_DIRS)
+CPPFLAGS = -g $(M64) -O3 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer $(INCLUDE_DIRS) 
 FRED_memcheck: CPPFLAGS = -g $(M64) -O0 -fopenmp $(LOGGING_PRESET_3) -DNCPU=$(NCPU) -fno-omit-frame-pointer $(INCLUDE_DIRS)
 
 ## Use this to make reproducible serial runs
@@ -108,7 +107,7 @@ OBJ =   Fred.o Global.o Age_Map.o Timestep_Map.o Utils.o Params.o Date.o Random.
 	Abstract_Grid.o Abstract_Cell.o \
 	Seasonality_Timestep_Map.o Seasonality.o \
 	Past_Infection.o MSEvolution.o Piecewise_Linear.o \
-	Compression.o
+	Compression.o Report.o
 	# ODEIntraHost.o ODE.o
 
 SRC = $(OBJ:.o=.cc)

@@ -25,6 +25,7 @@
 #include "Seasonality.h"
 #include "Utils.h"
 #include "Tracker.h"
+#include "Report.h"
 
 // global runtime parameters
 char Global::Synthetic_population_directory[FRED_STRING_SIZE];
@@ -112,6 +113,7 @@ Date *Global::Sim_Current_Date = NULL;
 Evolution *Global::Evol = NULL;
 Seasonality * Global::Clim = NULL;
 Tracker<std::string> * Global::Block_Epi_Day_Tracker = NULL;
+Report Global::Rpt;
 
 // global file pointers
 FILE *Global::Statusfp = NULL;

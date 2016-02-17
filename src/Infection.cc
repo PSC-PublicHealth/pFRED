@@ -34,9 +34,11 @@
 #include "IntraHost.h"
 #include "Activities.h"
 #include "Utils.h"
+#include "Report.h"
+#include "json.h"
 
 using std::out_of_range;
-
+using nlohmann::json;
 
 Infection::Infection(Disease *disease, Person* infector, Person* host, Place* place, int day) {
  
@@ -283,18 +285,19 @@ void Infection::print() const {
 }
 
 void Infection::print_json() const {
-  printf("{\"person\": %i, \"disease\": %i, \"person\": %i, "
-         "\"exposed\": %i, \"infectious\": %i, \"symptomatic\": %i, "
-         "\"recovered\": %i, \"susceptible\": %i}\n",
-         host->get_id(),
-         disease->get_id(),
-         host->get_id(),
-         exposure_date,
-         get_infectious_date(),
-         get_symptomatic_date(),
-         get_recovery_date(),
-         get_susceptible_date()
-         );
+    json j = {
+        {"event", "infection"},
+        {"person", host->get_id()},
+        {"disease", disease->get_id()},
+        {"exposed", exposure_date},
+        {"infectious", infectious_date},
+        {"symptomatic", symptomatic_date},
+        {"recovered", recovery_date},
+        {"susceptible", susceptible_date},
+        {"infector", infector == NULL ? -1 : infector->get_id()},
+        {"place", place == NULL ? -1 : place->get_id()}
+    };
+    Global::Rpt.append(j);
 }
 
 void Infection::transmit(Person *infectee, Transmission & transmission) {

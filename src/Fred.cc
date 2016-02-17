@@ -34,6 +34,7 @@
 #include "Activities.h"
 #include "Behavior.h"
 #include "Tracker.h"
+#include "Report.h"
 
 #include "execinfo.h"
 #include <csignal>
@@ -238,6 +239,8 @@ int main(int argc, char* argv[]) {
   Utils::fred_print_lap_time("FRED initialization");
   Utils::fred_print_wall_time("FRED initialization complete");
 
+  Global::Rpt.setup();
+
   time_t simulation_start_time;
   Utils::fred_start_timer( &simulation_start_time );
 
@@ -339,13 +342,16 @@ int main(int argc, char* argv[]) {
         fflush(Global::Infectionfp);
       }
     }
- 
+
     Utils::fred_print_wall_time("day %d finished", day);
 
     Utils::fred_print_day_timer(day);
     Utils::fred_print_resource_usage(day);
 
     Global::Sim_Current_Date->advance();
+
+    Global::Rpt.print();
+    Global::Rpt.clear();
   }
  
   fflush(Global::Infectionfp);

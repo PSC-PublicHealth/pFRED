@@ -55,6 +55,7 @@ class Evolution;
 class Seasonality;
 template < class T>
 class Tracker;
+class Report;
 
 /**
  * This class contains the static variables used by the FRED program.  The variables all have public access,
@@ -235,6 +236,7 @@ class Global {
     static Date *Sim_Current_Date;
     static Evolution *Evol;
     static Seasonality *Clim;
+    static Report Rpt;
 static Tracker<std::string> *Block_Epi_Day_Tracker;
 
     // global file pointers
