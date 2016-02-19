@@ -81,7 +81,7 @@ output_population_date_match = 01-01-*
 synthetic_population_directory = /mnt/beegfs1/data/synthetic_ecosystems/rti_synthetic_populations/United_States_2005_2009_ver2
 
 # defaults to Allegheny County Population (RTI Ver 2)
-synthetic_population_id = 2005_2009_ver2_42
+synthetic_population_id = 2005_2009_ver2_42003
 
 num_demes = 1
 
