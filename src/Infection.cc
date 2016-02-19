@@ -296,15 +296,16 @@ void Infection::print_json() const {
             place_type = place->get_type();
         }
     }
+    int corrected_susceptible_date = get_susceptible_date() < Global::Days ? get_susceptible_date() : -1;
     json j = {
         {"event", "infection"},
         {"person", host->get_id()},
         {"disease", disease->get_id()},
-        {"exposed", exposure_date},
-        {"infectious", infectious_date},
-        {"symptomatic", symptomatic_date},
-        {"recovered", recovery_date},
-        {"susceptible", susceptible_date},
+        {"exposed", get_exposure_date()},
+        {"infectious", get_infectious_date()},
+        {"symptomatic", get_symptomatic_date()},
+        {"recovered", get_recovery_date()},
+        {"susceptible", corrected_susceptible_date},
         {"infector", infector == NULL ? -1 : infector->get_id()},
         {"place", place_id},
         {"place_type", place_type}

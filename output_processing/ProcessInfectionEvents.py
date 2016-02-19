@@ -1,12 +1,12 @@
 
 # coding: utf-8
 
-# In[290]:
+# In[2]:
 
 #%load_ext Cython
 import pandas as pd
 import numpy as np
-import json
+import ujson
 from joblib import Parallel, delayed
 from joblib.pool import has_shareable_memory
 import multiprocessing
@@ -22,7 +22,7 @@ pyximport.install(reload_support=True)
 import cyprinev.count_events as count_events
 
 
-# In[2]:
+# In[73]:
 
 def read_infection_events_to_data_frame(filename='infection.events.json'):
     def read_infection_events():
@@ -35,13 +35,29 @@ def read_infection_events_to_data_frame(filename='infection.events.json'):
     return(infections)
 
 
-# In[3]:
+# In[40]:
+
+import bz2, json
+import pandas as pd
+from collections import defaultdict
+
+def read_event_report(filename):
+    output_lists = defaultdict(list)
+    with bz2.BZ2File(filename) as f:
+        for line in f:
+            j = json.loads(line)
+            output_lists[j.pop('event')].append(j)
+    return {k:pd.DataFrame(v) for k,v in output_lists.iteritems()}
+
+
+# In[43]:
 
 #%%timeit -n1 -r1
-infections = read_infection_events_to_data_frame()
+events = read_event_report('42003.report1.json_lines.bz2')
+#infections = read_infection_events_to_data_frame()
 
 
-# In[4]:
+# In[5]:
 
 #%%timeit -n1 -r1
 population_original = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt')
@@ -50,7 +66,7 @@ workplaces = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_200
 schools = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt')
 
 
-# In[5]:
+# In[6]:
 
 population = population_original.copy()
 population = population.reset_index()
@@ -66,7 +82,7 @@ households['stcotr'] = (households.stcotrbg/10).astype(np.int64)
 households = pd.merge(households, apollo_locations, on='stcotr', how='inner', suffixes=('','_'), copy=True)
 
 
-# In[306]:
+# In[7]:
 
 state_dict = dict(
     N = 'number of individuals',
@@ -90,7 +106,7 @@ household_dict = dict(
 )
 
 
-# In[307]:
+# In[8]:
 
 def query_population(population, households, groupby_attributes): 
 
@@ -114,8 +130,9 @@ def query_population(population, households, groupby_attributes):
     return _population
 
 
-# In[339]:
+# In[56]:
 
+from cyprinev import count_events
 reload(count_events)
 
 def apply_count_events(population, households, infections,
@@ -124,19 +141,24 @@ def apply_count_events(population, households, infections,
     DTYPE = np.uint32
     NA = DTYPE(-1)
     
-    d = pd.merge(infections.fillna(NA).apply(lambda x: x.astype(DTYPE), axis=0),
-                 query_population(population, households, group_by_keys),
-                 on='person', how='inner', suffixes=('','_')
+    d = pd.merge(events['infection'], query_population(population, households, group_by_keys),
+                 on='person', how='right', suffixes=('','_')
                 ).sort_values(group_by_keys).reset_index(drop=True)
     
     event_map = OrderedDict(
-        exposed = d.columns.get_loc('exposed'),
-        infectious = d.columns.get_loc('infectious'),
-        symptomatic = d.columns.get_loc('symptomatic'),
-        recovered = d.columns.get_loc('recovered'),
-        susceptible = d.columns.get_loc('susceptible')
+        exposed = 0,
+        infectious = 1,
+        symptomatic = 2,
+        recovered = 3,
+        susceptible = 4
     )
-
+    
+    event_map_keys = [k for k,v in sorted(event_map.items(), key=lambda x: x[1])]
+    
+    d = d[event_map_keys + group_by_keys]
+    
+    d[event_map_keys] = d[event_map_keys].fillna(NA).apply(lambda x: x.astype(DTYPE), axis=0)
+    
     state_map = OrderedDict(
         N_i=0,S_i=2,E_i=4,I_i=6,Y_i=8,R_i=10,IS_i=12,
         N_p=1,S_p=3,E_p=5,I_p=7,Y_p=9,R_p=11,IS_p=13
@@ -158,10 +180,10 @@ def apply_count_events(population, households, infections,
     
 
 
-# In[341]:
+# In[57]:
 
 tic = time.time()
-test = apply_count_events(population, households, infections, [
+test = apply_count_events(population, households, events['infection'], [
         'age',
         'race',
         'location',
@@ -186,14 +208,4 @@ def convert_columns(r):
 convert_columns(test.reset_index()).to_hdf(
     'output.hdf5', key='AlleghenyCounty_42003_100_Days',
     mode='w', format='t', complevel=9, complib='bzip2')
-
-
-# In[342]:
-
-np.get_include()
-
-
-# In[ ]:
-
-
 

@@ -57,20 +57,24 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
             if r[exposed] == NA:
                 for d in xrange(0, ndays): 
                     a[d, S_p] += 1
+
             else:
                 a[r[exposed], E_i] += 1
+
                 for d in xrange(r[exposed], r[infectious]):
                     a[d, E_p] += 1
+
                 for d in xrange(0, r[exposed]):
                     a[d, S_p] += 1
 
                 if r[susceptible] != NA:
-                    if r[susceptible] < last_day:
-                        for d in xrange(r[susceptible], num_days):
-                            a[d, S_p] += 1
-                    elif r[susceptible] == last_day:
+                    if r[susceptible] == last_day:
                         a[r[susceptible], S_p] += 1
-                            
+                        a[r[susceptible], S_i] += 1
+                    elif r[susceptible] < last_day:
+                        for d in xrange(r[susceptible], num_days):
+                            a[d, S_p] += 1        
+
                 if r[infectious] != NA:
                     a[r[infectious], I_i] += 1
                     for d in xrange(r[infectious], r[recovered]):
