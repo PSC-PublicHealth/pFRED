@@ -1,56 +1,30 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[63]:
 
 #%load_ext Cython
 import pandas as pd
 import numpy as np
-import ujson
-from joblib import Parallel, delayed
-from joblib.pool import has_shareable_memory
-import multiprocessing
-import itertools
-import time
-import lz4
-import pandas as pd
-import numpy as np
-from collections import OrderedDict
-import time
+import ujson, time, bz2
+from collections import OrderedDict, defaultdict
 import pyximport
 pyximport.install(reload_support=True)
 import cyprinev.count_events as count_events
 
 
-# In[73]:
-
-def read_infection_events_to_data_frame(filename='infection.events.json'):
-    def read_infection_events():
-        with open(filename, 'rb') as f:
-            for line in f:
-                yield(json.loads(line))
-    infections = pd.DataFrame.from_dict(read_infection_events())
-    infections.loc[infections.symptomatic < 1, 'symptomatic'] = None
-    infections.person = infections.person.astype(np.int64)
-    return(infections)
-
-
-# In[40]:
-
-import bz2, json
-import pandas as pd
-from collections import defaultdict
+# In[64]:
 
 def read_event_report(filename):
     output_lists = defaultdict(list)
     with bz2.BZ2File(filename) as f:
         for line in f:
-            j = json.loads(line)
+            j = ujson.loads(line)
             output_lists[j.pop('event')].append(j)
     return {k:pd.DataFrame(v) for k,v in output_lists.iteritems()}
 
 
-# In[43]:
+# In[65]:
 
 #%%timeit -n1 -r1
 events = read_event_report('42003.report1.json_lines.bz2')
