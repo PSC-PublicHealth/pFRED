@@ -34,11 +34,16 @@ def main():
     parser.add_argument('-c', '--compression', required=False,
             choices=['bz2','gzip','none'], default='bz2',
             help='Format for output file')
- 
+
+    parser.add_argument('-g', '--groupconfig', required=False,
+            help=' '.join(['Optional yaml file specifying stratification groups.',
+            'If not specified, the default behavior is to stratify by integer age,',
+            'and tract-level location']))
 
     args = parser.parse_args()
 
     print args.reportfiles
+
 
 
 if __name__ == '__main__':

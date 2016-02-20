@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[63]:
+# In[1]:
 
 #%load_ext Cython
 import pandas as pd
@@ -13,7 +13,7 @@ pyximport.install(reload_support=True)
 import cyprinev.count_events as count_events
 
 
-# In[64]:
+# In[2]:
 
 def read_event_report(filename):
     output_lists = defaultdict(list)
@@ -24,39 +24,46 @@ def read_event_report(filename):
     return {k:pd.DataFrame(v) for k,v in output_lists.iteritems()}
 
 
-# In[65]:
+# In[3]:
 
 #%%timeit -n1 -r1
 events = read_event_report('42003.report1.json_lines.bz2')
 #infections = read_infection_events_to_data_frame()
 
 
-# In[5]:
+# In[4]:
 
 #%%timeit -n1 -r1
-population_original = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt')
-households_original = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_households.txt')
-workplaces = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_workplaces.txt')
-schools = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt')
+population_original = pd.DataFrame.from_csv(
+    '../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt')
+households_original = pd.DataFrame.from_csv(
+    '../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_households.txt')
+workplaces = pd.DataFrame.from_csv(
+    '../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_workplaces.txt')
+schools = pd.DataFrame.from_csv(
+    '../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt')
 
 
-# In[6]:
+# In[5]:
 
 population = population_original.copy()
 population = population.reset_index()
 population['person'] = population.index
-population['age_group'] = pd.cut(population.age, bins=range(0,120,10), include_lowest=True, right=False)
-#population['age_group'] = pd.cut(population.age, bins=[0,2,18,65,120], include_lowest=True, right=False)
+population['age_group'] = pd.cut(population.age, bins=range(0,120,10),
+                                 include_lowest=True, right=False)
+#population['age_group'] = pd.cut(population.age, bins=[0,2,18,65,120],
+#                                include_lowest=True, right=False)
 
 apollo_locations = pd.DataFrame.from_csv('ApolloLocationCode.to.FIPSstcotr.csv')
 apollo_locations.reset_index(level=0, inplace=True)
 
 households = households_original.copy().reset_index()
 households['stcotr'] = (households.stcotrbg/10).astype(np.int64)
-households = pd.merge(households, apollo_locations, on='stcotr', how='inner', suffixes=('','_'), copy=True)
+households = pd.merge(households, apollo_locations, on='stcotr',
+                      how='inner', suffixes=('','_'), copy=True)
 
 
-# In[7]:
+# In[6]:
 
 state_dict = dict(
     N = 'number of individuals',
@@ -64,10 +71,12 @@ state_dict = dict(
     Y = 'symptomatic', R = 'recovered', IS = 'infectious and symptomatic'
 )
 population_dict = dict(
-    # FRED currently just numbers persons sequentially as they are read from the synthetic population file
-    # rather than using the unique p_id provided in the synth population.  This should be changed, but until it
-    # is, we can't use the p_id.  Instead, see cell above for 'person' sequential id column.
-    #person = 'p_id', 
+    # FRED currently just numbers persons sequentially as they are read
+    # from the synthetic population file rather than using the unique 
+    # p_id provided in the synth population.  This should be changed,
+    # but until it is, we can't use the p_id.  Instead, see cell above
+    # for 'person' sequential id column.
+    # person = 'p_id', 
     race = 'race',
     age = 'age',
     gender = 'sex'
@@ -80,19 +89,20 @@ household_dict = dict(
 )
 
 
-# In[8]:
+# In[7]:
 
 def query_population(population, households, groupby_attributes): 
 
-    _rev_population_dict = {population_dict[x]:x for x in groupby_attributes if x in population_dict}
+    _rev_population_dict = {population_dict[x]:x for x in groupby_attributes                             if x in population_dict}
     _rev_population_dict.update({'person':'person'})
     
-    _rev_household_dict = {household_dict[x]:x for x in groupby_attributes if x in household_dict}
+    _rev_household_dict = {household_dict[x]:x for x in groupby_attributes                            if x in household_dict}
 
     _population = pd.merge(population[_rev_population_dict.keys() + ['hh_id']],
                            households[_rev_household_dict.keys() + ['hh_id']],
                            on='hh_id', suffixes=('', '.h'), how='inner',
-                           copy=True)[_rev_population_dict.keys() + _rev_household_dict.keys()]
+                           copy=True)[_rev_population_dict.keys() + \
+                                      _rev_household_dict.keys()]
     
     _population.rename(columns=_rev_population_dict, inplace=True, copy=False)
     _population.rename(columns=_rev_household_dict, inplace=True, copy=False)
@@ -104,7 +114,7 @@ def query_population(population, households, groupby_attributes):
     return _population
 
 
-# In[56]:
+# In[8]:
 
 from cyprinev import count_events
 reload(count_events)
@@ -154,7 +164,7 @@ def apply_count_events(population, households, infections,
     
 
 
-# In[57]:
+# In[9]:
 
 tic = time.time()
 test = apply_count_events(population, households, events['infection'], [
