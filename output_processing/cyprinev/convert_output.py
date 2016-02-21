@@ -16,15 +16,14 @@ logging.basicConfig(level=logging.DEBUG, format='[%(name)s] %(asctime)s %(messag
 
 log = logging.getLogger(__name__)
 
-def get_timer():
-    OutputCollection.tic = time.time()
-    def _timer():
-        tic = OutputCollection.tic
+class Timer():
+    def __init__(self):
+        self.tic = time.time()
+    def __call__(self):
         toc = time.time()
-        t = toc - tic
-        tic = toc
-        return int(t)
-    return _timer
+        t = '%0.1f' % (toc - self.tic)
+        self.tic = toc
+        return t
 
 def AutoDetectFile(filename):
     filetypes = [
@@ -34,17 +33,14 @@ def AutoDetectFile(filename):
     for typename, fileopen in filetypes:
         try:
             f = fileopen(filename, 'r')
-            log.info('Opened as %s' % typename)
+            log.info('Opened %s as %s' % (filename, typename))
             return f
         except:
             log.info('Unsuccessfully tried to open as %s' % typename)
     f = open(filename, 'r')
     return f
 
-
 class OutputCollection(object):
-
-    tic = None
 
     @property
     def state_dict(self):
@@ -67,6 +63,17 @@ class OutputCollection(object):
         f = os.path.join(d, 'default_group_config.yaml')
         return open(f, 'r')
 
+    @property
+    def event_map(self):
+        return OrderedDict([('exposed',0), ('infectious',1), ('symptomatic',2),
+            ('recovered',3), ('susceptible',4)])
+
+    @property
+    def state_map(self):
+        return OrderedDict(
+            N_i=0,S_i=2,E_i=4,I_i=6,Y_i=8,R_i=10,IS_i=12,
+            N_p=1,S_p=3,E_p=5,I_p=7,Y_p=9,R_p=11,IS_p=13)
+
     def __init__(self, popdir):
         log.info(yaml.load(self.default_config))
         self.popdir = popdir
@@ -74,13 +81,13 @@ class OutputCollection(object):
 
     def load_popfiles(self):
         base = os.path.basename(self.popdir)
-        timer = get_timer()
+        timer = Timer()
         self.population = pd.read_csv(
                 os.path.join(self.popdir, '%s_synth_people.txt' % base),
                 low_memory=False)
         self.population.reset_index(inplace=True)
         self.population['person'] = self.population.index
-        log.info('read population in %d seconds' % timer())
+        log.info('read population in %s seconds' % timer())
         self.households = pd.read_csv(
                 os.path.join(self.popdir, '%s_synth_households.txt' % base))
         self.households.reset_index()
@@ -89,16 +96,16 @@ class OutputCollection(object):
         apollo_locations.reset_index(level=0, inplace=True)
         self.households = pd.merge(self.households, apollo_locations,
             on='stcotr', how='inner', suffixes=('','_'))
-        log.info('read households in %d seconds' % timer())
+        log.info('read households in %s seconds' % timer())
         self.workplaces = pd.read_csv(
                 os.path.join(self.popdir, '%s_workplaces.txt' % base))
-        log.info('read workplaces in %d seconds' % timer())
+        log.info('read workplaces in %s seconds' % timer())
         self.schools = pd.read_csv(
                 os.path.join(self.popdir, '%s_schools.txt' % base))
-        log.info('read schools in %d seconds' % timer())
+        log.info('read schools in %s seconds' % timer())
 
     def query_population(self, groupby_attributes): 
-
+    
         _rev_population_dict = {self.population_dict[x]:x for x in \
                 groupby_attributes if x in self.population_dict}
         
@@ -123,45 +130,39 @@ class OutputCollection(object):
         return _population
         
     def apply_count_events(self, events, group_by_keys):
-        
+        timer = Timer() 
         DTYPE = np.uint32
         NA = DTYPE(-1)
-        
-        d = pd.merge(events['infection'], query_population(group_by_keys),
+ 
+        d_query_pop = self.query_population(group_by_keys)
+
+        log.info('Extracted groups from population data in %s seconds' % timer())
+       
+        d = pd.merge(events['infection'], d_query_pop,
                      on='person', how='right', suffixes=('','_')
                     ).sort_values(group_by_keys).reset_index(drop=True)
+
+        log.info('Merged events with population data in %s seconds' % timer())
         
-        event_map = OrderedDict(
-            exposed = 0,
-            infectious = 1,
-            symptomatic = 2,
-            recovered = 3,
-            susceptible = 4
-        )
+        d = d[self.event_map.keys() + group_by_keys]
         
-        event_map_keys = [k for k,v in sorted(event_map.items(), key=lambda x: x[1])]
-        
-        d = d[event_map_keys + group_by_keys]
-        
-        d[event_map_keys] = d[event_map_keys].fillna(NA).apply(lambda x: x.astype(DTYPE), axis=0)
-        
-        state_map = OrderedDict(
-            N_i=0,S_i=2,E_i=4,I_i=6,Y_i=8,R_i=10,IS_i=12,
-            N_p=1,S_p=3,E_p=5,I_p=7,Y_p=9,R_p=11,IS_p=13
-        )
+        d[self.event_map.keys()] = d[self.event_map.keys()].fillna(NA).apply(
+                lambda x: x.astype(DTYPE), axis=0)
 
         n_days = d.recovered[d.recovered != NA].max() + 1
 
-        colnames = [k for k,v in sorted(state_map.items(),
+        colnames = [k for k,v in sorted(self.state_map.items(),
                                         key=lambda x: x[1])]
         def convert_counts_array(g):
             a = count_events.get_counts_from_group(g.values.astype(np.uint32),
                                                    np.uint32(n_days),
-                                                   event_map, state_map)
+                                                   self.event_map, self.state_map)
             df = pd.DataFrame(np.asarray(a), columns=colnames)
             df.index.name = 'day'
             return df
-
+ 
+        log.info('Tabulated grouped event counts in %s seconds' % timer())
+ 
         return d.groupby(group_by_keys).apply(convert_counts_array)
 
     def read_event_report(self, filename):
@@ -176,7 +177,8 @@ class OutputCollection(object):
         for f in reportfiles:
             events = self.read_event_report(f)
             log.info('Read %s events from %s' % (', '.join(events.keys()), f))
-            print len(self.apply_count_events(events, ['age']))
+            counts = self.apply_count_events(events, ['age'])
+            print counts.head()
 
 
 
