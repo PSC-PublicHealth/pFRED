@@ -75,7 +75,8 @@ class OutputCollection(object):
             N_p=1,S_p=3,E_p=5,I_p=7,Y_p=9,R_p=11,IS_p=13)
 
     def __init__(self, popdir):
-        log.info(yaml.load(self.default_config))
+        log.debug('read default group config: %s' % [
+            str(yaml.load(self.default_config))])
         self.popdir = popdir
         self.load_popfiles()
 
@@ -160,10 +161,10 @@ class OutputCollection(object):
             df = pd.DataFrame(np.asarray(a), columns=colnames)
             df.index.name = 'day'
             return df
- 
+
+        grouped_counts = d.groupby(group_by_keys).apply(convert_counts_array)
         log.info('Tabulated grouped event counts in %s seconds' % timer())
- 
-        return d.groupby(group_by_keys).apply(convert_counts_array)
+        return grouped_counts 
 
     def read_event_report(self, filename):
         output_lists = defaultdict(list)
@@ -177,7 +178,7 @@ class OutputCollection(object):
         for f in reportfiles:
             events = self.read_event_report(f)
             log.info('Read %s events from %s' % (', '.join(events.keys()), f))
-            counts = self.apply_count_events(events, ['age'])
+            counts = self.apply_count_events(events, ['age', 'gender'])
             print counts.head()
 
 
