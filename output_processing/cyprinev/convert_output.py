@@ -26,7 +26,7 @@ def get_timer():
         return int(t)
     return _timer
 
-def detect_and_open_file(filename):
+def AutoDetectFile(filename):
     filetypes = [
             ('bz2', bz2.BZ2File),
             ('gzip', gzip.GzipFile),
@@ -166,7 +166,7 @@ class OutputCollection(object):
 
     def read_event_report(self, filename):
         output_lists = defaultdict(list)
-        with detect_and_open_file(filename) as f:
+        with AutoDetectFile(filename) as f:
             for line in f:
                 j = ujson.loads(line)
                 output_lists[j.pop('event')].append(j)
@@ -175,7 +175,8 @@ class OutputCollection(object):
     def count_events(self, reportfiles, groupconfig=None):
         for f in reportfiles:
             events = self.read_event_report(f)
-            print events.keys()
+            log.info('Read %s events from %s' % (', '.join(events.keys()), f))
+            print len(self.apply_count_events(events, ['age']))
 
 
 
