@@ -10,7 +10,8 @@ compressed hdf5-format data tables containing stratified disease state counts.
 
 __version__ = '0.0.0'
 
-import argparse
+import argparse, os
+from convert_output import * 
 
 def main():
     parser = argparse.ArgumentParser(description='%s\nversion %s' % (
@@ -21,7 +22,7 @@ def main():
             help='The synthetic population directory to use')
     
     parser.add_argument('-r', '--reportfiles', required=True,
-            type=file, action='store', nargs='+',
+            action='store', nargs='+',
             help='List of event report json files')
 
     parser.add_argument('-o', '--outfile', required=True,
@@ -35,14 +36,16 @@ def main():
             choices=['bz2','gzip','none'], default='bz2',
             help='Format for output file')
 
-    parser.add_argument('-g', '--groupconfig', required=False,
+    parser.add_argument('-g', '--groupconfig', type=file, required=False,
             help=' '.join(['Optional yaml file specifying stratification groups.',
             'If not specified, the default behavior is to stratify by integer age,',
             'and tract-level location']))
 
     args = parser.parse_args()
 
-    print args.reportfiles
+    output_collection = OutputCollection(args.population)
+    output_collection.count_events(args.reportfiles)
+
 
 
 

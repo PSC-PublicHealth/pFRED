@@ -12,6 +12,7 @@ extensions = [
             language = 'c',
             #library_dirs = ['/usr/local/lib/gcc/5','/usr/local/lib'],
             #extra_compile_args=['-fopenmp'],
+            extra_compile_args=['-Wno-unused-function', '-Wno-#warnings'],
             #extra_link_args=['-fopenmp']
             #libraries = args.lib,
             #language = 'c++' if args.cplus else 'c',

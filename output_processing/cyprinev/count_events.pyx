@@ -38,7 +38,7 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
     cdef np.uint32_t[:,:] a = np.zeros([ndays, len(state_map)], dtype=np.uint32)
     cdef np.uint32_t[:] r
 
-    cdef int i,d
+    cdef int i,d,n
     cdef int start_row = 0
     cdef int end_row = rows.shape[0]
     cdef np.uint32_t last_day = np.uint32(ndays - 1)
@@ -94,7 +94,11 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
                     if r[recovered] == last_day:
                         a[r[recovered], R_p] += 1
                     else:
-                        for d in xrange(r[recovered], num_days):
+                        if r[susceptible] == NA:
+                            n = num_days
+                        else:
+                            n = r[susceptible] 
+                        for d in xrange(r[recovered], n):
                             a[d, R_p] += 1
     return a
 
