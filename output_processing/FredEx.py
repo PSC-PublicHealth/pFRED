@@ -54,8 +54,8 @@ def write_params(base_string, t, outdir):
     return paramfile
 
 def qsub(paramsfile, qsubfile, jobname):
-    cmd = 'qsub -v PARAMSFILE=%s -N %s %s' % (
-        paramsfile, jobname, qsubfile)
+    cmd = 'qsub -o %s.stdout -e %s.stderr -v PARAMSFILE=%s -N %s %s' % (
+        paramsfile, paramsfile, paramsfile, jobname, qsubfile)
     print cmd
     subprocess.call(cmd, shell=True)
 
