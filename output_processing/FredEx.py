@@ -34,14 +34,14 @@ def run(config):
 
 
 def write_params(base_string, t, outdir):
-    paramfile = 'params.%s' % t[0]
+    paramfile = '%s.params' % t[0]
     paramfile = os.path.join(outdir, paramfile)
-    fred_out = os.path.join(outdir, 'OUT.%s' % t[0])
-    reportfile = os.path.join(outdir, 'report.%s' % t[0])
+    fred_out = os.path.join(outdir, '%s.outdir' % t[0])
+    reportfile = os.path.join(outdir, '%s.report' % t[0])
     with open(paramfile, 'w') as f:
         f.write(base_string)
         f.write('\n\n########## EXPERIMENT PARAMS ##########\n\n')
-        f.write('OUT = %s\n' % fred_out)
+        f.write('outdir = %s\n' % fred_out)
         f.write('event_report_file = %s\n' % reportfile)
         f.write(t[1])
         f.write('\n')
@@ -51,7 +51,7 @@ def qsub(paramsfile, qsubfile, jobname):
     cmd = 'qsub -v PARAMSFILE=%s -N %s %s' % (
         paramsfile, jobname, qsubfile)
     print cmd
-    #subprocess.call(cmd, shell=True)
+    subprocess.call(cmd, shell=True)
 
 def main():
     parser = argparse.ArgumentParser(description='%s\nversion %s' % (
