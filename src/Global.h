@@ -161,6 +161,7 @@ class Global {
     static char Tracefilebase[];
     static char VaccineTracefilebase[];
     static char VaccineInfectionTrackerfilebase[];
+    static char EventReportFile[];
     static int Incremental_Trace;
     static int Trace_Headers;
     static int Rotate_start_date;

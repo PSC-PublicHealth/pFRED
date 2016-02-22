@@ -35,6 +35,7 @@ char Global::Output_directory[FRED_STRING_SIZE];
 char Global::Tracefilebase[FRED_STRING_SIZE];
 char Global::VaccineTracefilebase[FRED_STRING_SIZE];
 char Global::VaccineInfectionTrackerfilebase[FRED_STRING_SIZE];
+char Global::EventReportFile[FRED_STRING_SIZE];
 int Global::Incremental_Trace = 0;
 int Global::Trace_Headers = 0;
 int Global::Rotate_start_date = 0;
@@ -151,6 +152,7 @@ void Global::get_global_parameters() {
   Params::get_param_from_string("track_infection_events", &Global::Track_infection_events);
   Params::get_param_from_string("track_vaccine_infection_events", &Global::Track_vaccine_infection_events);
   Params::get_param_from_string("vaccine_infection_tracker_file", Global::VaccineInfectionTrackerfilebase);
+  Params::get_param_from_string("event_report_file", Global::EventReportFile);
   Params::get_param_from_string("track_age_distribution", &Global::Track_age_distribution);
   Params::get_param_from_string("track_network_stats", &Global::Track_network_stats);
   Params::get_param_from_string("track_household_distribution", &Global::Track_household_distribution);

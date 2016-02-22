@@ -29,6 +29,7 @@ verbose = 1
 debug = 1
 test = 0
 outdir = OUT
+event_report_file = /tmp/test_event_report
 tracefile = none
 track_infection_events = 0
 track_age_distribution = 0

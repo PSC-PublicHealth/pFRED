@@ -129,10 +129,18 @@ void Utils::fred_open_output_files(char * directory, int run){
 
   Global::Reportfp = NULL;
   if (1) {
-    sprintf(filename, "%s/report%d.json_lines", directory, run);
-    Global::Reportfp = fopen(filename, "w");
-    if (Global::Reportfp == NULL) {
-      Utils::fred_abort("Can't open %s\n", filename);
+    if (strcmp(Global::EventReportFile, "none") == 0) {
+        sprintf(filename, "%s/report%d.json_lines", directory, run);
+        Global::Reportfp = fopen(filename, "w");
+        if (Global::Reportfp == NULL) {
+            Utils::fred_abort("Can't open %s\n", filename);
+        }
+    }
+    else {
+        Global::Reportfp = fopen(Global::EventReportFile, "w");
+        if (Global::Reportfp == NULL) {
+            Utils::fred_abort("Can't open %s\n", Global::EventReportFile);
+        }
     }
   }
 
