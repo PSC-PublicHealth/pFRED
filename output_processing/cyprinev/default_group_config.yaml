@@ -1,0 +1,12 @@
+age:
+  #intervals: [0, 0.5, {'from':1,'to':95,'by':1}, 100]
+  intervals: [{'from':0,'to':120,'by':1}]
+
+#income:
+#  intervals: [{'from': 0, 'to': 100000, 'by': 10000}, 200000, 400000]
+
+gender:
+
+race:
+
+

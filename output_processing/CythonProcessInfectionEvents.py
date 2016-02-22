@@ -20,15 +20,15 @@ pyximport.install(reload_support=True)
 # For guidance look here:
 # - https://raw.githubusercontent.com/studer/ipython/master/IPython/extensions/cythonmagic.py
 
-# In[12]:
+# In[4]:
 
 from distutils.core import Distribution, Extension
 from distutils.command.build_ext import build_ext
 from Cython.Build import cythonize
 import os
 
-os.environ["CC"] = "gcc-4.9"
-os.environ["CXX"] = "g++-4.9"
+os.environ["CC"] = "gcc-5"
+os.environ["CXX"] = "g++-5"
 #os.environ["OMP_NUM_THREADS"] = "10"
 os.environ["CFLAGS"] = '-I%s' % np.get_include()
 

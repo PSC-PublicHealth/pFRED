@@ -171,7 +171,7 @@ class Params {
       return err;
     }
 
-  private:
+  //private:
     static char param_name[][MAX_PARAM_SIZE];
     static char param_value[][MAX_PARAM_SIZE];
     static int param_count;

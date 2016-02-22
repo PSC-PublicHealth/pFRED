@@ -99,7 +99,7 @@ void Behavior::setup( Person * self ) {
 
   // an older child is available
   if ( person->is_adult() == false ) {
-    FRED_VERBOSE(0,"behavior_setup for child %d age %d -- minor person %d age %d will make health decisions\n",
+    FRED_VERBOSE(1,"behavior_setup for child %d age %d -- minor person %d age %d will make health decisions\n",
                  self->get_id(), self->get_age(), person->get_id(), person->get_age());
     health_decision_maker = person;
     person->become_health_decision_maker();
@@ -107,7 +107,7 @@ void Behavior::setup( Person * self ) {
   }
 
   // an adult is available
-  FRED_VERBOSE(0,"behavior_setup for child %d age %d -- adult person %d age %d will make health decisions\n",
+  FRED_VERBOSE(1,"behavior_setup for child %d age %d -- adult person %d age %d will make health decisions\n",
                self->get_id(), self->get_age(), person->get_id(), person->get_age());
   health_decision_maker = person; // no need to setup atitudes for adults
   return;

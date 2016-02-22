@@ -1,72 +1,69 @@
 
 # coding: utf-8
 
-# In[290]:
+# In[1]:
 
 #%load_ext Cython
 import pandas as pd
 import numpy as np
-import json
-from joblib import Parallel, delayed
-from joblib.pool import has_shareable_memory
-import multiprocessing
-import itertools
-import time
-import lz4
-import pandas as pd
-import numpy as np
-from collections import OrderedDict
-import time
-import pyximport
-pyximport.install(reload_support=True)
+import ujson, time, bz2
+from collections import OrderedDict, defaultdict
+#import pyximport
+#pyximport.install(reload_support=True)
 import cyprinev.count_events as count_events
 
 
 # In[2]:
 
-def read_infection_events_to_data_frame(filename='infection.events.json'):
-    def read_infection_events():
-        with open(filename, 'rb') as f:
-            for line in f:
-                yield(json.loads(line))
-    infections = pd.DataFrame.from_dict(read_infection_events())
-    infections.loc[infections.symptomatic < 1, 'symptomatic'] = None
-    infections.person = infections.person.astype(np.int64)
-    return(infections)
+def read_event_report(filename):
+    output_lists = defaultdict(list)
+    with bz2.BZ2File(filename) as f:
+        for line in f:
+            j = ujson.loads(line)
+            output_lists[j.pop('event')].append(j)
+    return {k:pd.DataFrame(v) for k,v in output_lists.iteritems()}
 
 
 # In[3]:
 
 #%%timeit -n1 -r1
-infections = read_infection_events_to_data_frame()
+events = read_event_report('42003.report1.json_lines.bz2')
+#infections = read_infection_events_to_data_frame()
 
 
-# In[4]:
+# In[8]:
 
 #%%timeit -n1 -r1
-population_original = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt')
-households_original = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_households.txt')
-workplaces = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_workplaces.txt')
-schools = pd.DataFrame.from_csv('../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt')
+population_original = pd.DataFrame.from_csv(
+    '../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_people.txt')
+households_original = pd.DataFrame.from_csv(
+    '../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_synth_households.txt')
+workplaces = pd.DataFrame.from_csv(
+    '../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_workplaces.txt')
+schools = pd.DataFrame.from_csv(
+    '../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt')
 
 
-# In[5]:
+# In[9]:
 
 population = population_original.copy()
 population = population.reset_index()
 population['person'] = population.index
-population['age_group'] = pd.cut(population.age, bins=range(0,120,10), include_lowest=True, right=False)
-#population['age_group'] = pd.cut(population.age, bins=[0,2,18,65,120], include_lowest=True, right=False)
+population['age_group'] = pd.cut(population.age, bins=range(0,120,10),
+                                 include_lowest=True, right=False)
+#population['age_group'] = pd.cut(population.age, bins=[0,2,18,65,120],
+#                                include_lowest=True, right=False)
 
 apollo_locations = pd.DataFrame.from_csv('ApolloLocationCode.to.FIPSstcotr.csv')
 apollo_locations.reset_index(level=0, inplace=True)
 
 households = households_original.copy().reset_index()
 households['stcotr'] = (households.stcotrbg/10).astype(np.int64)
-households = pd.merge(households, apollo_locations, on='stcotr', how='inner', suffixes=('','_'), copy=True)
+households = pd.merge(households, apollo_locations, on='stcotr',
+                      how='inner', suffixes=('','_'), copy=True)
 
 
-# In[306]:
+# In[10]:
 
 state_dict = dict(
     N = 'number of individuals',
@@ -74,10 +71,12 @@ state_dict = dict(
     Y = 'symptomatic', R = 'recovered', IS = 'infectious and symptomatic'
 )
 population_dict = dict(
-    # FRED currently just numbers persons sequentially as they are read from the synthetic population file
-    # rather than using the unique p_id provided in the synth population.  This should be changed, but until it
-    # is, we can't use the p_id.  Instead, see cell above for 'person' sequential id column.
-    #person = 'p_id', 
+    # FRED currently just numbers persons sequentially as they are read
+    # from the synthetic population file rather than using the unique 
+    # p_id provided in the synth population.  This should be changed,
+    # but until it is, we can't use the p_id.  Instead, see cell above
+    # for 'person' sequential id column.
+    # person = 'p_id', 
     race = 'race',
     age = 'age',
     gender = 'sex'
@@ -90,19 +89,20 @@ household_dict = dict(
 )
 
 
-# In[307]:
+# In[11]:
 
 def query_population(population, households, groupby_attributes): 
 
-    _rev_population_dict = {population_dict[x]:x for x in groupby_attributes if x in population_dict}
+    _rev_population_dict = {population_dict[x]:x for x in groupby_attributes                             if x in population_dict}
     _rev_population_dict.update({'person':'person'})
     
-    _rev_household_dict = {household_dict[x]:x for x in groupby_attributes if x in household_dict}
+    _rev_household_dict = {household_dict[x]:x for x in groupby_attributes                            if x in household_dict}
 
     _population = pd.merge(population[_rev_population_dict.keys() + ['hh_id']],
                            households[_rev_household_dict.keys() + ['hh_id']],
                            on='hh_id', suffixes=('', '.h'), how='inner',
-                           copy=True)[_rev_population_dict.keys() + _rev_household_dict.keys()]
+                           copy=True)[_rev_population_dict.keys() + \
+                                      _rev_household_dict.keys()]
     
     _population.rename(columns=_rev_population_dict, inplace=True, copy=False)
     _population.rename(columns=_rev_household_dict, inplace=True, copy=False)
@@ -114,9 +114,10 @@ def query_population(population, households, groupby_attributes):
     return _population
 
 
-# In[339]:
+# In[12]:
 
-reload(count_events)
+#from cyprinev import count_events
+#reload(count_events)
 
 def apply_count_events(population, households, infections,
                        group_by_keys=['age','race','location','gender']):
@@ -124,19 +125,24 @@ def apply_count_events(population, households, infections,
     DTYPE = np.uint32
     NA = DTYPE(-1)
     
-    d = pd.merge(infections.fillna(NA).apply(lambda x: x.astype(DTYPE), axis=0),
-                 query_population(population, households, group_by_keys),
-                 on='person', how='inner', suffixes=('','_')
+    d = pd.merge(events['infection'], query_population(population, households, group_by_keys),
+                 on='person', how='right', suffixes=('','_')
                 ).sort_values(group_by_keys).reset_index(drop=True)
     
     event_map = OrderedDict(
-        exposed = d.columns.get_loc('exposed'),
-        infectious = d.columns.get_loc('infectious'),
-        symptomatic = d.columns.get_loc('symptomatic'),
-        recovered = d.columns.get_loc('recovered'),
-        susceptible = d.columns.get_loc('susceptible')
+        exposed = 0,
+        infectious = 1,
+        symptomatic = 2,
+        recovered = 3,
+        susceptible = 4
     )
-
+    
+    event_map_keys = [k for k,v in sorted(event_map.items(), key=lambda x: x[1])]
+    
+    d = d[event_map_keys + group_by_keys]
+    
+    d[event_map_keys] = d[event_map_keys].fillna(NA).apply(lambda x: x.astype(DTYPE), axis=0)
+    
     state_map = OrderedDict(
         N_i=0,S_i=2,E_i=4,I_i=6,Y_i=8,R_i=10,IS_i=12,
         N_p=1,S_p=3,E_p=5,I_p=7,Y_p=9,R_p=11,IS_p=13
@@ -158,10 +164,10 @@ def apply_count_events(population, households, infections,
     
 
 
-# In[341]:
+# In[9]:
 
 tic = time.time()
-test = apply_count_events(population, households, infections, [
+test = apply_count_events(population, households, events['infection'], [
         'age',
         'race',
         'location',
@@ -188,9 +194,38 @@ convert_columns(test.reset_index()).to_hdf(
     mode='w', format='t', complevel=9, complib='bzip2')
 
 
-# In[342]:
+# In[4]:
 
-np.get_include()
+events.keys()
+
+
+# In[27]:
+
+d_vaccination = pd.merge(
+                         query_population(population, households, ['age']),
+                        events['vaccination'],
+                         on='person', how='left', suffixes=('','_')
+                        ).sort_values(['age']).reset_index(drop=True)
+d_infection = pd.merge(             events['infection'],
+                         query_population(population, households, ['age']),
+           
+                         on='person', how='right', suffixes=('','_')
+                        ).sort_values(['age']).reset_index(drop=True)
+
+
+# In[28]:
+
+d_infection.head()
+
+
+# In[35]:
+
+pd.merge(d_infection, pd.DataFrame(dict(person=[],vaccine_day=[])), on='person', how='left').head()
+
+
+# In[33]:
+
+events['vaccination']
 
 
 # In[ ]:

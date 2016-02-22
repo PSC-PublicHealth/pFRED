@@ -458,7 +458,7 @@ public:
     
     json j = {
         {"event", "vaccination"},
-        {"day", day},
+        {"vaccine_day", day},
         {"person", get_id()},
         {"vaccine", vacc->get_ID()}
     };
