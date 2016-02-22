@@ -88,6 +88,7 @@ def main():
     for t in run(yaml_config):
         jobname = t[0]
         paramsfile = write_params(base_string, t, outdir)
+        qsub(paramsfile, args.qsubfile, jobname)
 
 
 
