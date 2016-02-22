@@ -18,6 +18,8 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
     cdef int symptomatic = event_map['symptomatic']
     cdef int recovered = event_map['recovered']
     cdef int susceptible = event_map['susceptible']
+    cdef int vaccine = event_map['vaccine']
+    cdef int vaccine_day = event_map['vaccine_day']
 
     cdef int N_i = state_map['N_i']
     cdef int S_i = state_map['S_i']
@@ -26,6 +28,7 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
     cdef int Y_i = state_map['Y_i']
     cdef int R_i = state_map['R_i']
     cdef int IS_i = state_map['IS_i']
+    cdef int V_i = state_map['V_i']
 
     cdef int N_p = state_map['N_p']
     cdef int S_p = state_map['S_p']
@@ -34,6 +37,7 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
     cdef int Y_p = state_map['Y_p']
     cdef int R_p = state_map['R_p']
     cdef int IS_p = state_map['IS_p']
+    cdef int V_p = state_map['V_p']
 
     cdef np.uint32_t[:,:] a = np.zeros([ndays, len(state_map)], dtype=np.uint32)
     cdef np.uint32_t[:] r
@@ -53,6 +57,12 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
             
             for d in xrange(0, ndays):
                 a[d, N_p] += 1
+
+            if r[vaccine] != NA:
+                if r[vaccine_day] != NA and r[vaccine_day] <= last_day:
+                    a[r[vaccine_day], V_i] += 1
+                    for d in xrange(r[vaccine_day], ndays):
+                        a[d, V_p] += 1
 
             if r[exposed] == NA:
                 for d in xrange(0, ndays): 

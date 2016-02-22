@@ -27,16 +27,20 @@ class Timer():
 
 def AutoDetectFile(filename):
     filetypes = [
-            ('bz2', bz2.BZ2File),
-            ('gzip', gzip.GzipFile),
-            ('lzma', lzma.LZMAFile)]
-    for typename, fileopen in filetypes:
+            ('bz2', bz2.BZ2File, '\x42\x5a\x68'),
+            ('gzip', gzip.GzipFile, '\x1f\x8b\x08'),
+            ('lzma', lzma.LZMAFile, '\xfd7zXZ\x00')]
+    for typename, fileopen, magic in filetypes:
         try:
+            with open(filename, 'r') as f:
+                if f.read(len(magic)) != magic:
+                    raise Exception()
             f = fileopen(filename, 'r')
             log.info('Opened %s as %s' % (filename, typename))
             return f
         except:
-            log.info('Unsuccessfully tried to open as %s' % typename)
+            log.debug('Unsuccessfully tried to open as %s' % typename)
+    log.info('Opening as plain text file')
     f = open(filename, 'r')
     return f
 
@@ -66,13 +70,13 @@ class OutputCollection(object):
     @property
     def event_map(self):
         return OrderedDict([('exposed',0), ('infectious',1), ('symptomatic',2),
-            ('recovered',3), ('susceptible',4)])
+            ('recovered',3), ('susceptible',4), ('vaccine',5), ('vaccine_day',6)])
 
     @property
     def state_map(self):
-        return OrderedDict(
-            N_i=0,S_i=2,E_i=4,I_i=6,Y_i=8,R_i=10,IS_i=12,
-            N_p=1,S_p=3,E_p=5,I_p=7,Y_p=9,R_p=11,IS_p=13)
+        return OrderedDict([('N_i',0),('N_p',1),('S_i',2),('S_p',3),('E_i',4),
+            ('E_p',5),('I_i',6),('I_p',7),('Y_i',8),('Y_p',9),('R_i',10),
+            ('R_p',11),('IS_i',12),('IS_p',13),('V_i',14),('V_p',15)])
 
     def __init__(self, popdir):
         log.debug('read default group config: %s' % [
@@ -143,10 +147,15 @@ class OutputCollection(object):
                      on='person', how='right', suffixes=('','_')
                     ).sort_values(group_by_keys).reset_index(drop=True)
 
-        log.info('Merged events with population data in %s seconds' % timer())
-        
+        if 'vaccination' not in events:
+            d_vacc = pd.DataFrame(dict(person=[], vaccine=[], vaccine_day=[]))
+        else:
+            d_vacc = events['vaccination']
+
+        d = pd.merge(d, d_vacc, on='person', how='left')
+
         d = d[self.event_map.keys() + group_by_keys]
-        
+       
         d[self.event_map.keys()] = d[self.event_map.keys()].fillna(NA).apply(
                 lambda x: x.astype(DTYPE), axis=0)
 
@@ -162,8 +171,12 @@ class OutputCollection(object):
             df.index.name = 'day'
             return df
 
+        log.info('Merged events with population data in %s seconds' % timer())
+
         grouped_counts = d.groupby(group_by_keys).apply(convert_counts_array)
+
         log.info('Tabulated grouped event counts in %s seconds' % timer())
+        
         return grouped_counts 
 
     def read_event_report(self, filename):

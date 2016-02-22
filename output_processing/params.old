@@ -8,16 +8,30 @@
 diseases = 1
 
 # Length of each run
-days = 365 
+days = 120 
 
 # Seed for RNG
 seed = 123456
 
 # Simulation start date in the format 'YYYY-MM-DD'
-start_date = 2012-07-01
+start_date = 2012-01-02
 
 # Whether to rotate through 7 start dates on multiple runs
 rotate_start_date = 0
+
+# Day to reset seed
+reseed_day = -1
+
+##### Geographical grids
+enable_small_grid = 0
+use_mean_latitude = 0
+
+# Size of large-scale grid cells in km
+grid_large_cell_size = 20.0
+# size of normal grid cells in km
+grid_cell_size = 1.0
+# size of high resolution grid cells in km
+grid_small_cell_size = 0.1
 
 ##########################################################
 #
@@ -71,6 +85,37 @@ synthetic_population_id = 2005_2009_ver2_42003
 
 num_demes = 1
 
+#
+# If any of the following parameters are specified, they will override
+# the the synthetic_population_id parameter.
+#
+# Precedence is in the following order:
+#  FIPS code, 
+#  city name,
+#  county name, 
+#  state name
+#
+# That is, a FIPS code overrides a city name, which overrides
+# county and so on.  In all cases, the name is ultimately
+# transformed into a FIPS code.
+
+# For Allegheny County, PA:
+# fips = 42003
+fips = none
+
+# The city format is "name state_abbrevation", such as:
+# city = Pittsburgh PA
+city = none
+
+# The county format is "name state_abbrevation", such as:
+# county = Allegheny County PA
+county = none
+
+# The state format can be the state name or abbrevation, such as:
+# state = New York
+# state = NY
+state = none
+
 # The synthetic_population_version will be prepended
 # to the FIPS code to form the synthetic_population_id
 synthetic_population_version = 2005_2009_ver2
@@ -87,14 +132,32 @@ community_distance = 20
 community_prob = 0.1
 home_neighborhood_prob = 0.5
 
+# Aging, Births and Deaths
+enable_aging = 0
+enable_births = 0
+enable_deaths = 0 
+enable_mobility = 0 
+enable_migration = 0 
+yearly_mortality_rate_file = none
+# yearly_mortality_rate_file = $FRED_HOME/input_files/mortality_rate.txt
+yearly_mobility_rate_file = none
+# yearly_mobility_rate_file = $FRED_HOME/input_files/mobility_rate.txt
+yearly_birth_rate_file = none
+# yearly_birth_rate_file = $FRED_HOME/input_files/birth_rate.txt
+birth_rate_multiplier = 1
+
 ##########################################################
 #
 # SCHOOL SETUP PARAMETERS 
 #
 ##########################################################
 
+# if set, then each school within the region is assigned teachers
+# by recruiting workers from a nearby workplace
+assign_teachers = 1
+
 # set to 1 if schools closed during summer
-school_summer_schedule = 1
+school_summer_schedule = 0
 
 # summer closure dates (format MM-DD)
 school_summer_start = 06-01
@@ -146,7 +209,7 @@ cell_popfile = $FRED_HOME/input_files/cell_pop.txt
 ##########################################################
 
 # parameters for disease 0 (modify for each disease as needed)
-primary_cases_file[0] = $FRED_HOME/input_files/hack/primary_case.txt
+primary_cases_file[0] = $FRED_HOME/input_files/primary_case_schedule-0.txt
 
 # how are initial infections selected?
 seed_by_age = 0
@@ -221,7 +284,7 @@ neighborhood_prob[0] = 4 0.0048 0.0048 0.0048 0.0048
 
 # parameters for disease 0
 trans[0] = 1.0
-R0 = 1.5
+R0 = -1.0
 R0_a = 0.053589
 R0_b = 0.568486
 
@@ -253,12 +316,12 @@ at_risk_ages[0] = 0
 at_risk_values[0] = 0
 
 #### Seasonality (Seasonal Forcing)
-enable_seasonality = 1
-enable_climate = 1
-#seasonality_timestep_file = none
-seasonality_timestep_file = $FRED_HOME/input_files/hack/seasonality_timestep
-seasonality_multiplier_max[0] = 1.25
-seasonality_multiplier_min[0] = 0.75
+enable_seasonality = 0
+enable_climate = 0
+seasonality_timestep_file = none
+# seasonality_timestep_file = $FRED_HOME/input_files/seasonality_timestep
+seasonality_multiplier_max[0] = 1
+seasonality_multiplier_min[0] = 1
 seasonality_multiplier_Ka[0] = -180
 
 ##########################################################
@@ -325,6 +388,7 @@ interferon_threshold = 0.01;
 ##########################################################
 
 mutation_prob = 1 0.0
+dbfile = dbfile.txt
 
 ############ PARAMETERS FOR IntraHost/EVOLUTION BELOW ##################################
 
@@ -339,7 +403,6 @@ transmissibility[0][0] = 1
 ####################################################### IN BASELINE RUNS EVEN IF EVOLUTION
 ####################################################### FEATURES NOT USED; SHOULD PROTECT 
 ####################################################### WITH GLOBAL ENABLE FLAG
-
 enable_protection = 0
 track_residual_immunity = 0
 track_multi_strain_stats = 0
@@ -351,7 +414,9 @@ num_codons = 12
 codon_translation_file = $FRED_HOME/input_files/evolution/numAA.txt
 past_infections_strains_file = none
 past_infections_hosts_file = none
-
+#######################################################
+#######################################################
+#######################################################
 #######################################################
 
 # evolution visualization stuff
@@ -374,8 +439,16 @@ strainsfile = none
 ##########################################################
 
 #### INDIVIDUAL BEHAVIORS (EXPERIMENTAL!)
-enable_behaviors = 1
+enable_behaviors = 0
 stay_home_when_sick_enabled = 0
+keep_child_home_when_sick_enabled = 0
+accept_vaccine_enabled = 0
+accept_vaccine_dose_enabled = 0
+accept_vaccine_for_child_enabled = 0
+accept_vaccine_dose_for_child_enabled = 0
+# let individuals decide whether to take sick leave if available
+take_sick_leave_enabled = 0
+
 #### SICK LEAVE BEHAVIOR
 
 ## default sick behavior:
@@ -386,6 +459,216 @@ enable_default_sick_behavior = 1
 # on each day the agent is symptomatic
 sick_day_prob = 0.5
 
+## behavior if sick leave is available (SLA)
+SLA_absent_prob = 0.72
+SLA_mean_sick_days_absent = 2.7
+
+## behavior if sick leave is unavailable (SLA)
+SLU_absent_prob = 0.52
+SLU_mean_sick_days_absent = 2.7
+
+work_absenteeism = 0.0
+school_absenteeism = 0.0
+
+#### BEHAVIOR MARKET SEGMENTS (EXPERIMENTAL!)
+#
+# BEHAVIOR STRATEGY 0 = ALWAYS REFUSE
+# BEHAVIOR STRATEGY 1 = ALWAYS ACCEPT
+# BEHAVIOR STRATEGY 2 = FLIP WEIGHTED COIN FOR EACH DECISION
+# BEHAVIOR STRATEGY 3 = IMITATE PREVALENCE
+# BEHAVIOR STRATEGY 4 = IMITATE CONSENSUS
+# BEHAVIOR STRATEGY 5 = IMITATE COUNT
+# BEHAVIOR STRATEGY 6 = HEALTH BELIEF MODEL
+#
+# Each distribution should add up to 100
+stay_home_when_sick_strategy_distribution = 7 50 50 0 0 0 0 0
+keep_child_home_when_sick_strategy_distribution = 7 50 50 0 0 0 0 0
+accept_vaccine_strategy_distribution = 7 40 60 0 0 0 0 0
+accept_vaccine_dose_strategy_distribution = 7 40 60 0 0 0 0 0
+accept_vaccine_for_child_strategy_distribution = 7 40 60 0 0 0 0 0
+accept_vaccine_dose_for_child_strategy_distribution = 7 40 60 0 0 0 0 0
+take_sick_leave_strategy_distribution = 7 50 50 0 0 0 0 0
+
+##### FLIP/IMITATE INITIAL PROBS AND DECISION FREQUENCY
+stay_home_when_sick_min_prob = 0
+stay_home_when_sick_max_prob = 1
+stay_home_when_sick_frequency = 1
+
+keep_child_home_when_sick_min_prob = 0
+keep_child_home_when_sick_max_prob = 1
+keep_child_home_when_sick_frequency = 1
+
+accept_vaccine_min_prob = 0
+accept_vaccine_max_prob = 1
+accept_vaccine_frequency = 1
+  
+accept_vaccine_dose_min_prob = 0
+accept_vaccine_dose_max_prob = 1
+accept_vaccine_dose_frequency = 1
+
+accept_vaccine_for_child_min_prob = 0
+accept_vaccine_for_child_max_prob = 1
+accept_vaccine_for_child_frequency = 1
+  
+accept_vaccine_dose_for_child_min_prob = 0
+accept_vaccine_dose_for_child_max_prob = 1
+accept_vaccine_dose_for_child_frequency = 1
+
+take_sick_leave_min_prob = 0
+take_sick_leave_max_prob = 1
+take_sick_leave_frequency = 1
+
+#### IMITATION THRESHOLDS
+
+stay_home_when_sick_imitate_consensus_threshold = 0
+take_sick_leave_imitate_consensus_threshold = 0
+keep_child_home_when_sick_imitate_consensus_threshold = 0
+accept_vaccine_imitate_consensus_threshold = 0
+accept_vaccine_dose_imitate_consensus_threshold = 0
+accept_vaccine_for_child_imitate_consensus_threshold = 0
+accept_vaccine_dose_for_child_imitate_consensus_threshold = 0
+
+stay_home_when_sick_imitate_count_threshold = 0
+take_sick_leave_imitate_count_threshold = 0
+keep_child_home_when_sick_imitate_count_threshold = 0
+accept_vaccine_imitate_count_threshold = 0
+accept_vaccine_dose_imitate_count_threshold = 0
+accept_vaccine_for_child_imitate_count_threshold = 0
+accept_vaccine_dose_for_child_imitate_count_threshold = 0
+
+##### WEIGHTS FOR IMITATION
+## ORDER IS HOUSEHOLD NEIGHBORHOOD SCHOOL WORK ALL
+## Weights can be any real number.
+##
+stay_home_when_sick_imitate_prevalence_weights = 5 0 0 0 0 1
+take_sick_leave_imitate_prevalence_weights = 5 0 0 0 0 1
+keep_child_home_when_sick_imitate_prevalence_weights = 5 0 0 0 0 1
+accept_vaccine_imitate_prevalence_weights = 5 0 0 0 0 1
+accept_vaccine_dose_imitate_prevalence_weights = 5 0 0 0 0 1
+accept_vaccine_for_child_imitate_prevalence_weights = 5 0 0 0 0 1
+accept_vaccine_dose_for_child_imitate_prevalence_weights = 5 0 0 0 0 1
+
+stay_home_when_sick_imitate_consensus_weights = 5 0 0 0 0 1
+take_sick_leave_imitate_consensus_weights = 5 0 0 0 0 1
+keep_child_home_when_sick_imitate_consensus_weights = 5 0 0 0 0 1
+accept_vaccine_imitate_consensus_weights = 5 0 0 0 0 1
+accept_vaccine_dose_imitate_consensus_weights = 5 0 0 0 0 1
+accept_vaccine_for_child_imitate_consensus_weights = 5 0 0 0 0 1
+accept_vaccine_dose_for_child_imitate_consensus_weights = 5 0 0 0 0 1
+
+stay_home_when_sick_imitate_count_weights = 5 0 0 0 0 1
+take_sick_leave_imitate_count_weights = 5 0 0 0 0 1
+keep_child_home_when_sick_imitate_count_weights = 5 0 0 0 0 1
+accept_vaccine_imitate_count_weights = 5 0 0 0 0 1
+accept_vaccine_dose_imitate_count_weights = 5 0 0 0 0 1
+accept_vaccine_for_child_imitate_count_weights = 5 0 0 0 0 1
+accept_vaccine_dose_for_child_imitate_count_weights = 5 0 0 0 0 1
+
+#### IMITATE PREVALENCE UPDATE RATE
+stay_home_when_sick_imitate_prevalence_update_rate = 0.1
+take_sick_leave_imitate_prevalence_update_rate = 0.1
+keep_child_home_when_sick_imitate_prevalence_update_rate = 0.1
+accept_vaccine_imitate_prevalence_update_rate = 0.1
+accept_vaccine_dose_imitate_prevalence_update_rate = 0.1
+accept_vaccine_for_child_imitate_prevalence_update_rate = 0.1
+accept_vaccine_dose_for_child_imitate_prevalence_update_rate = 0.1
+
+#### IMITATE CONSENSUS UPDATE RATE
+stay_home_when_sick_imitate_consensus_update_rate = 0.1
+take_sick_leave_imitate_consensus_update_rate = 0.1
+keep_child_home_when_sick_imitate_consensus_update_rate = 0.1
+accept_vaccine_imitate_consensus_update_rate = 0.1
+accept_vaccine_dose_imitate_consensus_update_rate = 0.1
+accept_vaccine_for_child_imitate_consensus_update_rate = 0.1
+accept_vaccine_dose_for_child_imitate_consensus_update_rate = 0.1
+
+#### IMITATE COUNT UPDATE RATE
+stay_home_when_sick_imitate_count_update_rate = 0.1
+take_sick_leave_imitate_count_update_rate = 0.1
+keep_child_home_when_sick_imitate_count_update_rate = 0.1
+accept_vaccine_imitate_count_update_rate = 0.1
+accept_vaccine_dose_imitate_count_update_rate = 0.1
+accept_vaccine_for_child_imitate_count_update_rate = 0.1
+accept_vaccine_dose_for_child_imitate_count_update_rate = 0.1
+
+##### HBM 
+stay_home_when_sick_susceptibility_threshold = 2 0 0
+stay_home_when_sick_severity_threshold = 2 0 0
+stay_home_when_sick_benefits_threshold = 2 0 0
+stay_home_when_sick_barriers_threshold = 2 0 0 
+stay_home_when_sick_memory_decay = 2 0 0 
+stay_home_when_sick_base_odds_ratio = 1
+stay_home_when_sick_susceptibility_odds_ratio = 1
+stay_home_when_sick_severity_odds_ratio = 1
+stay_home_when_sick_benefits_odds_ratio = 1
+stay_home_when_sick_barriers_odds_ratio = 1
+
+take_sick_leave_susceptibility_threshold = 2 0 0
+take_sick_leave_severity_threshold = 2 0 0
+take_sick_leave_benefits_threshold = 2 0 0
+take_sick_leave_barriers_threshold = 2 0 0 
+take_sick_leave_memory_decay = 2 0 0 
+take_sick_leave_base_odds_ratio = 1
+take_sick_leave_susceptibility_odds_ratio = 1
+take_sick_leave_severity_odds_ratio = 1
+take_sick_leave_benefits_odds_ratio = 1
+take_sick_leave_barriers_odds_ratio = 1
+
+keep_child_home_when_sick_susceptibility_threshold = 2 0 0
+keep_child_home_when_sick_severity_threshold = 2 0 0
+keep_child_home_when_sick_benefits_threshold = 2 0 0
+keep_child_home_when_sick_barriers_threshold = 2 0 0 
+keep_child_home_when_sick_memory_decay = 2 0 0 
+keep_child_home_when_sick_base_odds_ratio = 1
+keep_child_home_when_sick_susceptibility_odds_ratio = 1
+keep_child_home_when_sick_severity_odds_ratio = 1
+keep_child_home_when_sick_benefits_odds_ratio = 1
+keep_child_home_when_sick_barriers_odds_ratio = 1
+
+accept_vaccine_susceptibility_threshold = 2 0 0
+accept_vaccine_severity_threshold = 2 0 0
+accept_vaccine_benefits_threshold = 2 0 0
+accept_vaccine_barriers_threshold = 2 0 0 
+accept_vaccine_memory_decay = 2 0 0 
+accept_vaccine_base_odds_ratio = 0.35
+accept_vaccine_susceptibility_odds_ratio = 3.0
+accept_vaccine_severity_odds_ratio = 1.93
+accept_vaccine_benefits_odds_ratio = 1.0
+accept_vaccine_barriers_odds_ratio = 0.65
+
+accept_vaccine_dose_susceptibility_threshold = 2 0 0
+accept_vaccine_dose_severity_threshold = 2 0 0
+accept_vaccine_dose_benefits_threshold = 2 0 0
+accept_vaccine_dose_barriers_threshold = 2 0 0 
+accept_vaccine_dose_memory_decay = 2 0 0 
+accept_vaccine_dose_base_odds_ratio = 1
+accept_vaccine_dose_susceptibility_odds_ratio = 1
+accept_vaccine_dose_severity_odds_ratio = 1
+accept_vaccine_dose_benefits_odds_ratio = 1
+accept_vaccine_dose_barriers_odds_ratio = 1
+
+accept_vaccine_for_child_susceptibility_threshold = 2 0 0
+accept_vaccine_for_child_severity_threshold = 2 0 0
+accept_vaccine_for_child_benefits_threshold = 2 0 0
+accept_vaccine_for_child_barriers_threshold = 2 0 0 
+accept_vaccine_for_child_memory_decay = 2 0 0 
+accept_vaccine_for_child_base_odds_ratio = 1
+accept_vaccine_for_child_susceptibility_odds_ratio = 1
+accept_vaccine_for_child_severity_odds_ratio = 1
+accept_vaccine_for_child_benefits_odds_ratio = 1
+accept_vaccine_for_child_barriers_odds_ratio = 1
+
+accept_vaccine_dose_for_child_susceptibility_threshold = 2 0 0
+accept_vaccine_dose_for_child_severity_threshold = 2 0 0
+accept_vaccine_dose_for_child_benefits_threshold = 2 0 0
+accept_vaccine_dose_for_child_barriers_threshold = 2 0 0 
+accept_vaccine_dose_for_child_memory_decay = 2 0 0 
+accept_vaccine_dose_for_child_base_odds_ratio = 1
+accept_vaccine_dose_for_child_susceptibility_odds_ratio = 1
+accept_vaccine_dose_for_child_severity_odds_ratio = 1
+accept_vaccine_dose_for_child_benefits_odds_ratio = 1
+accept_vaccine_dose_for_child_barriers_odds_ratio = 1
+
 ##########################################################
 #
 # DISEASE MITIGATION PARAMETERS 
@@ -395,7 +678,7 @@ sick_day_prob = 0.5
 ## SCHOOL CLOSURE POLICIES
 school_closure_policy = none
 # school_closure_policy = global
-#school_closure_policy = individual
+# school_closure_policy = individual
 
 # number of days to keep a school closed
 school_closure_period = 10
@@ -422,12 +705,29 @@ school_closure_cases = -1
 # an alias for school_closure_cases
 Cases = -1
 
-##### VACCINATION
-accept_vaccine_enabled = 1
-accept_vaccine_strategy_distribution = 7 20 80 0 0 0 0 0
+#### ANTIVIRALS
+enable_antivirals = 0
+number_antivirals = 0
 
-enable_vaccination = 1
-number_of_vaccines = 1
+## Sample Antiviral 1:
+av_disease[0] = 0
+av_initial_stock[0] = 100
+av_total_avail[0] = 1000
+av_additional_per_day[0] = 100
+av_course_length[0] = 10
+av_reduce_infectivity[0] = .70
+av_reduce_susceptibility[0] = 0.30
+av_reduce_symptomatic_period[0] = 0.7
+av_reduce_asymptomatic_period[0] = 0.0
+av_start_day[0] = 0
+av_prophylaxis[0] = 0
+av_prob_symptoms[0] = 0.677
+av_percent_symptomatics[0] = 0.50
+av_course_start_day[0] = 1 1.00000
+
+##### VACCINATION
+enable_vaccination = 0
+number_of_vaccines = 0
 vaccine_tracefile = vacctr
 vaccine_infection_tracker_file = none
 vaccine_prioritize_acip = 0
@@ -436,8 +736,8 @@ vaccine_priority_age_low = 0
 vaccine_priority_age_high = 100
 vaccine_dose_priority = 0
 vaccine_priority_only = 0
-#vaccination_capacity_file = none
-vaccination_capacity_file = $FRED_HOME/input_files/hack/vaccination_capacity.txt
+vaccination_capacity_file = none
+# vaccination_capacity_file = $FRED_HOME/input_files/vaccination_capacity-0.txt
 
 ## vaccine age-specific clinical infection monitoring
 track_vaccine_infection_events = 1
@@ -446,8 +746,8 @@ vaccine_infection_tracker_file = vaccinf
 ## Sample Definition of Vaccine #0
 vaccine_number_of_doses[0] = 1
 vaccine_total_avail[0] = 235881
-vaccine_additional_per_day[0] = 10000
-vaccine_starting_day[0] = 60
+vaccine_additional_per_day[0] = 1000000
+vaccine_starting_day[0] = 0
 
 #### Sample Vaccine #0 Dose #0
 vaccine_next_dosage_day[0][0] = 0

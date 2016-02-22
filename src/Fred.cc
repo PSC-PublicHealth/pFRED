@@ -35,6 +35,9 @@
 #include "Behavior.h"
 #include "Tracker.h"
 #include "Report.h"
+#include "json.h"
+
+using nlohmann::json;
 
 #include "execinfo.h"
 #include <csignal>
@@ -240,6 +243,16 @@ int main(int argc, char* argv[]) {
   Utils::fred_print_wall_time("FRED initialization complete");
 
   Global::Rpt.setup();
+
+  json j;
+
+  j["event"] = "parametrs";
+
+  for (int i = 0; i < Params::param_count; i++) {
+    j[Params::param_name[i]] = Params::param_value[i];
+  }
+ 
+  Global::Rpt.append(j);
 
   time_t simulation_start_time;
   Utils::fred_start_timer( &simulation_start_time );

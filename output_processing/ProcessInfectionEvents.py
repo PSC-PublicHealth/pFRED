@@ -8,8 +8,8 @@ import pandas as pd
 import numpy as np
 import ujson, time, bz2
 from collections import OrderedDict, defaultdict
-import pyximport
-pyximport.install(reload_support=True)
+#import pyximport
+#pyximport.install(reload_support=True)
 import cyprinev.count_events as count_events
 
 
@@ -31,7 +31,7 @@ events = read_event_report('42003.report1.json_lines.bz2')
 #infections = read_infection_events_to_data_frame()
 
 
-# In[4]:
+# In[8]:
 
 #%%timeit -n1 -r1
 population_original = pd.DataFrame.from_csv(
@@ -44,7 +44,7 @@ schools = pd.DataFrame.from_csv(
     '../populations/2005_2009_ver2_42003/2005_2009_ver2_42003_schools.txt')
 
 
-# In[5]:
+# In[9]:
 
 population = population_original.copy()
 population = population.reset_index()
@@ -63,7 +63,7 @@ households = pd.merge(households, apollo_locations, on='stcotr',
                       how='inner', suffixes=('','_'), copy=True)
 
 
-# In[6]:
+# In[10]:
 
 state_dict = dict(
     N = 'number of individuals',
@@ -89,7 +89,7 @@ household_dict = dict(
 )
 
 
-# In[7]:
+# In[11]:
 
 def query_population(population, households, groupby_attributes): 
 
@@ -114,10 +114,10 @@ def query_population(population, households, groupby_attributes):
     return _population
 
 
-# In[8]:
+# In[12]:
 
-from cyprinev import count_events
-reload(count_events)
+#from cyprinev import count_events
+#reload(count_events)
 
 def apply_count_events(population, households, infections,
                        group_by_keys=['age','race','location','gender']):
@@ -192,4 +192,43 @@ def convert_columns(r):
 convert_columns(test.reset_index()).to_hdf(
     'output.hdf5', key='AlleghenyCounty_42003_100_Days',
     mode='w', format='t', complevel=9, complib='bzip2')
+
+
+# In[4]:
+
+events.keys()
+
+
+# In[27]:
+
+d_vaccination = pd.merge(
+                         query_population(population, households, ['age']),
+                        events['vaccination'],
+                         on='person', how='left', suffixes=('','_')
+                        ).sort_values(['age']).reset_index(drop=True)
+d_infection = pd.merge(             events['infection'],
+                         query_population(population, households, ['age']),
+           
+                         on='person', how='right', suffixes=('','_')
+                        ).sort_values(['age']).reset_index(drop=True)
+
+
+# In[28]:
+
+d_infection.head()
+
+
+# In[35]:
+
+pd.merge(d_infection, pd.DataFrame(dict(person=[],vaccine_day=[])), on='person', how='left').head()
+
+
+# In[33]:
+
+events['vaccination']
+
+
+# In[ ]:
+
+
 
