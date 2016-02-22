@@ -34,10 +34,16 @@ def run(config):
 
 
 def write_params(base_string, t, outdir):
-    paramfile = '%s.params' % t[0]
-    paramfile = os.path.join(outdir, paramfile)
     fred_out = os.path.join(outdir, '%s.outdir' % t[0])
-    reportfile = os.path.join(outdir, '%s.report' % t[0])
+    paramfile = '%s.params' % t[0]
+    paramfile = os.path.join(fred_out, paramfile)
+    reportfile = os.path.join(fred_out, '%s.report' % t[0])
+
+    try:
+        os.mkdir(fred_out)
+    except:
+        pass
+
     with open(paramfile, 'w') as f:
         f.write(base_string)
         f.write('\n\n########## EXPERIMENT PARAMS ##########\n\n')
