@@ -48,8 +48,10 @@ def write_params(base_string, t, outdir):
     return paramfile
 
 def qsub(paramsfile, qsubfile, jobname):
-    subprocess.call('qsub -v PARAMSFILE=%s -N %s %s' % (
-        paramsfile, jobname, qsubfile), shell=True)
+    cmd = 'qsub -v PARAMSFILE=%s -N %s %s' % (
+        paramsfile, jobname, qsubfile)
+    print cmd
+    #subprocess.call(cmd, shell=True)
 
 def main():
     parser = argparse.ArgumentParser(description='%s\nversion %s' % (
