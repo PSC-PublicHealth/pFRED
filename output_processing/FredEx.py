@@ -9,7 +9,7 @@ and submits jobs via qsub
 
 __version__ = '0.0.0'
 
-import argparse, os, yaml, itertools
+import argparse, os, yaml, itertools, subprocess
 from collections import OrderedDict
 from numpy import arange
 
@@ -47,6 +47,10 @@ def write_params(base_string, t, outdir):
         f.write('\n')
     return paramfile
 
+def qsub(paramsfile, qsubfile, jobname):
+    subprocess.call('qsub -v PARAMSFILE=%s -N %s %s' % (
+        paramsfile, jobname, qsubfile), shell=True)
+
 def main():
     parser = argparse.ArgumentParser(description='%s\nversion %s' % (
         __doc__, __version__),
@@ -58,8 +62,8 @@ def main():
     parser.add_argument('-c', '--config', required=True,
             help='Experiment config file')
  
-    parser.add_argument('-q', '--qsub_base', required=True,
-            help='Base file qsub script')
+    parser.add_argument('-q', '--qsubfile', required=True,
+            help='qsub script')
  
     parser.add_argument('-o', '--outdir', required=True,
             help='Base output dir')
@@ -80,6 +84,7 @@ def main():
         yaml_config = yaml.load(f)
     
     for t in run(yaml_config):
+        jobname = t[0]
         paramsfile = write_params(base_string, t, outdir)
 
 
