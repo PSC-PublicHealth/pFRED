@@ -464,12 +464,3 @@ vaccine_strains[0] = 0
 ## additional sick days in flu season (intervention)
 flu_days = 0
 
-
-
-########## EXPERIMENT PARAMS ##########
-
-OUT = /tmp/test-1234/OUT.epidemic_offset.6.R0.1.45.seed.9
-event_report_file = /tmp/test-1234/report.epidemic_offset.6.R0.1.45.seed.9
-epidemic_offset = 6
-R0 = 1.45
-seed = 9
