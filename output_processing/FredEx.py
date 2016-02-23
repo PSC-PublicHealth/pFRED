@@ -22,7 +22,7 @@ def run(config):
                 expanded[k].extend(
                         arange(
                             config['experiment'][k][i]['from'],
-                            config['experiment'][k][i]['to'],
+                            config['experiment'][k][i]['to'] + config['experiment'][k][i]['by'],
                             config['experiment'][k][i]['by']))
             else:
                 expanded[k].append(config['experiment'][k][i])
