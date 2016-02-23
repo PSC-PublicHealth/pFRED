@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+#PBS -l nodes=1:ppn=1
+#PBS -l mem=10gb
+#PBS -l pmem=10gb
+
+cd $PBS_O_WORKDIR
+
+#workon pfred
+
+ml load openblas
+
+. /mnt/beegfs1/users/depasse/.virtualenvs/pfred/bin/activate
+
+../cyprinev/foe.py -p ../../populations/2005_2009_ver2_42003 -r `cat $RPT | xargs echo` -o $RPT.h5
+
+checkjob -vv $PBS_JOBID
