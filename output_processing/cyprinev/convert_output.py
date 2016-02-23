@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import ujson, yaml, time, bz2, gzip, os
+import ujson, yaml, time, bz2, gzip, os, re
 try:
     import lzma
 except ImportError as e:
@@ -187,12 +187,20 @@ class OutputCollection(object):
                 output_lists[j.pop('event')].append(j)
         return {k:pd.DataFrame(v) for k,v in output_lists.iteritems()}
 
-    def count_events(self, reportfiles, groupconfig=None):
+    def count_events(self, reportfiles, outfile, groupconfig=None):
+        hdf_outfile_name = '%s.h5' % outfile
+        hdf = pd.HDFStore(path=hdf_outfile_name, mode='w', complevel=9, complib='bzip2')
         for f in reportfiles:
+            k = os.path.basename(f)
+            k = re.sub(r'[-.+ ]', '_', k)
             events = self.read_event_report(f)
             log.info('Read %s events from %s' % (', '.join(events.keys()), f))
-            counts = self.apply_count_events(events, ['age', 'gender'])
-            print counts.head()
+            counts = self.apply_count_events(events, ['age', 'gender', 'race', 'location'])
+            hdf.append(k, counts)
+            hdf.put('%s/paramters', events['parametrs'])
+        hdf.close
+
+            
 
 
 

@@ -223,9 +223,9 @@ d_infection.head()
 pd.merge(d_infection, pd.DataFrame(dict(person=[],vaccine_day=[])), on='person', how='left').head()
 
 
-# In[33]:
+# In[36]:
 
-events['vaccination']
+help(pd.HDFStore)
 
 
 # In[ ]:

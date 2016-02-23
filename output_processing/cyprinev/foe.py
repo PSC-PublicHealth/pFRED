@@ -44,7 +44,7 @@ def main():
     args = parser.parse_args()
 
     output_collection = OutputCollection(args.population)
-    output_collection.count_events(args.reportfiles)
+    output_collection.count_events(args.reportfiles, args.outfile)
 
 
 
