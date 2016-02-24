@@ -197,7 +197,7 @@ class OutputCollection(object):
             log.info('Read %s events from %s' % (', '.join(events.keys()), f))
             counts = self.apply_count_events(events, ['age', 'gender', 'race', 'location'])
             hdf.append(k, counts)
-            hdf.put('%s/paramters', events['parametrs'])
+            hdf.put('%s/paramters' % k, events['parametrs'])
         hdf.close
 
             
