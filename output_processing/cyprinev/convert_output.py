@@ -187,22 +187,28 @@ class OutputCollection(object):
                 output_lists[j.pop('event')].append(j)
         return {k:pd.DataFrame(v) for k,v in output_lists.iteritems()}
 
-    def count_events(self, reportfiles, outfile, groupconfig=None):
-        hdf_outfile_name = '%s.h5' % outfile
-        hdf = pd.HDFStore(path=hdf_outfile_name, mode='w', complevel=9, complib='bzip2')
+    def count_events(self, reportfiles, groupconfig=None):
+        groups = ['age']
         for f in reportfiles:
-            k = os.path.basename(f)
-            k = re.sub(r'[-.+ ]', '_', k)
+            k_orig = os.path.basename(f)
+            k_safe = re.sub(r'[-.+ ]', '_', k_orig)
             events = self.read_event_report(f)
             log.info('Read %s events from %s' % (', '.join(events.keys()), f))
-            counts = self.apply_count_events(events, ['age', 'gender', 'race', 'location'])
-            hdf.append(k, counts)
-            hdf.put('%s/paramters' % k, events['parametrs'])
+            counts = self.apply_count_events(events, groups)
+            yield({'key': k_safe, 'name': k_orig, 'counts': counts})
+
+    def write_event_counts_to_hdf5(self, reportfiles, outfile, groupconfig=None):
+        hdf_outfile_name = '%s.h5' % outfile
+        hdf = pd.HDFStore(path=hdf_outfile_name, mode='w', complib='zlib', complevel=5)
+        keymap = []
+        for d in self.count_events(reportfiles, groupconfig):
+            hdf.append(d['key'], d.pop('counts'))
+            keymap.append(d)
+            log.info('Added %s to hdf5 file %s' % (ujson.dumps(d), hdf_outfile_name))
+            #hdf.put('%s/name' % d['key'], d['name'])
+            #hdf.put('%s/paramters' % d['key'], ujson.dumps(events['parametrs']))
         hdf.close
-
-            
-
-
+        return d
 
 
 

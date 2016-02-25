@@ -44,7 +44,7 @@ def main():
     args = parser.parse_args()
 
     output_collection = OutputCollection(args.population)
-    output_collection.count_events(args.reportfiles, args.outfile)
+    output_collection.write_event_counts_to_hdf5(args.reportfiles, args.outfile)
 
 
 
