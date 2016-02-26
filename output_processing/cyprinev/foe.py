@@ -56,7 +56,9 @@ def main():
         log.info('No grouping config file supplied, using defaults: %s' % (
             ujson.dumps(groupconfig),))
 
-    output_collection.write_event_counts_to_hdf5(args.reportfiles, args.outfile, groupconfig)
+    #output_collection.write_event_counts_to_hdf5(args.reportfiles, args.outfile, groupconfig)
+    output_collection.write_event_counts_to_csv(args.reportfiles, args.outfile, groupconfig)
+
 
 
 

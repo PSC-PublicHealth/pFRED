@@ -249,6 +249,21 @@ class OutputCollection(object):
         hdf.close
         return keymap
 
+    def write_event_counts_to_csv(self, reportfiles, outfile, groupconfig=None):
+        csv_outfile_name = '%s.csv' % outfile
+        hdr = True
+        keymap = []
+        with open(csv_outfile_name, 'w') as f:
+            for d in self.count_events(reportfiles, groupconfig):
+                df = d.pop('counts')
+                df['key'] = d['key']
+                df['name'] = d['name']
+                df.reset_index().to_csv(f, index=False, header=hdr, mode='a')
+                hdr = False
+                keymap.append(d)
+                log.info('Added %s to csv file %s' % (ujson.dumps(d), csv_outfile_name))
+        return keymap
+
 
 
 
