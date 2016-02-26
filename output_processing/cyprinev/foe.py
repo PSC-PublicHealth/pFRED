@@ -12,6 +12,10 @@ __version__ = '0.0.0'
 
 import argparse, os
 from convert_output import * 
+import yaml, ujson
+import logging
+logging.basicConfig(level=logging.DEBUG, format='[%(name)s] %(asctime)s %(message)s')
+log = logging.getLogger(__name__)
 
 def main():
     parser = argparse.ArgumentParser(description='%s\nversion %s' % (
@@ -44,7 +48,15 @@ def main():
     args = parser.parse_args()
 
     output_collection = OutputCollection(args.population)
-    output_collection.write_event_counts_to_hdf5(args.reportfiles, args.outfile)
+
+    try:
+        groupconfig = yaml.load(args.groupconfig)
+    except:
+        groupconfig = yaml.load(output_collection.default_config)
+        log.info('No grouping config file supplied, using defaults: %s' % (
+            ujson.dumps(groupconfig),))
+
+    output_collection.write_event_counts_to_hdf5(args.reportfiles, args.outfile, groupconfig)
 
 
 

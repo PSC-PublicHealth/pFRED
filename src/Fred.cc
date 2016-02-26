@@ -246,7 +246,7 @@ int main(int argc, char* argv[]) {
 
   json j;
 
-  j["event"] = "parametrs";
+  j["event"] = "parameters";
 
   for (int i = 0; i < Params::param_count; i++) {
     j[Params::param_name[i]] = Params::param_value[i];
