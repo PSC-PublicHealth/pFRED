@@ -13,11 +13,11 @@ import count_events
 import logging
 import joblib
 from numpy import arange
+import coloredlogs
 
-
-logging.basicConfig(level=logging.DEBUG, format='[%(name)s] %(asctime)s %(message)s')
-
+logging.basicConfig(level=logging.INFO, format='[%(name)s] %(asctime)s %(message)s')
 log = logging.getLogger(__name__)
+coloredlogs.install(level='INFO')
 
 class Timer():
     def __init__(self):
@@ -52,11 +52,15 @@ def expand_config(config):
     for k,c in config.iteritems():
         if c is not None and 'intervals' in c:
             x[k] = []
-            for i in c['intervals']:
-                if isinstance(i, dict):
-                    x[k].extend(arange(i['from'], i['to']+i['by'], i['by']))
-                else:
-                    x[k].append(i)
+            if isinstance(c['intervals'], list):
+                for i in c['intervals']:
+                    if isinstance(i, dict):
+                        x[k].extend(arange(i['from'], i['to']+i['by'], i['by']))
+                    else:
+                        x[k].append(i)
+            else:
+                # intervals is just the number of bins
+                x[k] = c['intervals']
         else:
             x[k] = None
     return(x)
@@ -85,7 +89,8 @@ class OutputCollection(object):
     @property
     def household_dict(self):
         return dict(income = 'hh_income', stcotrbg = 'stcotrbg',
-                stcotr = 'stcotr', location = 'apollo_location_code')
+                stcotr = 'stcotr', location = 'apollo_location_code',
+                latitude = 'latitude', longitude = 'longitude')
 
     @property
     def default_config(self):
@@ -176,7 +181,11 @@ class OutputCollection(object):
     def bin_columns(self, d, groupconfig):
         for g,i in expand_config(groupconfig).iteritems():
             if i is not None:
-                d[g] = pd.cut(d[g], bins=i, right=False, include_lowest=True)
+                if isinstance(i, list):
+                    d[g] = pd.cut(d[g], bins=i, right=False, include_lowest=True)
+                else:
+                    d[g] = pd.cut(d[g], bins=i)
+
         return(d)
 
     def apply_count_events(self, events, groupconfig):
@@ -203,7 +212,7 @@ class OutputCollection(object):
         n_days = d.recovered[d.recovered != NA].max() + 1
 
         def convert_counts_array(g):
-            a = count_events.get_counts_from_group(g.values.astype(np.uint32),
+            a = count_events.get_counts_from_group(g[self.event_map.keys()].values.astype(np.uint32),
                                                    np.uint32(n_days),
                                                    self.event_map, self.state_map)
             df = pd.DataFrame(np.asarray(a), columns=self.state_map.keys())
@@ -234,40 +243,67 @@ class OutputCollection(object):
             k_safe = re.sub(r'[-.+ ]', '_', k_orig)
             events = self.read_event_report(f)
             counts = self.apply_count_events(events, groupconfig)
-            yield({'key': k_safe, 'name': k_orig, 'counts': counts})
+            yield({'key': k_safe, 'name': k_orig, 'counts': counts, 'events': events})
 
     def write_event_counts_to_hdf5(self, reportfiles, outfile, groupconfig=None):
         hdf_outfile_name = '%s.h5' % outfile
         hdf = pd.HDFStore(path=hdf_outfile_name, mode='w', complib='zlib', complevel=5)
         keymap = []
         for d in self.count_events(reportfiles, groupconfig):
+            timer = Timer()
             hdf.append(d['key'], d.pop('counts'))
             keymap.append(d)
-            log.info('Added %s to hdf5 file %s' % (ujson.dumps(d), hdf_outfile_name))
+            log.debug('Added %s to hdf5 file %s' % (ujson.dumps(d), hdf_outfile_name))
+            log.info('Wrote counts to %s file in %s seconds' % (hdf_outfile_name, timer())) 
             #hdf.put('%s/name' % d['key'], d['name'])
             #hdf.put('%s/paramters' % d['key'], ujson.dumps(events['parameters']))
         hdf.close
         return keymap
 
-    def write_event_counts_to_csv(self, reportfiles, outfile, groupconfig=None):
+    def write_event_counts_to_csv(self, reportfiles, outfile, groupconfig=None,
+            include_school_infections=False):
+
         csv_outfile_name = '%s.csv' % outfile
+        if include_school_infections:
+            self.init_school_infections(outfile)
         hdr = True
         keymap = []
         with open(csv_outfile_name, 'w') as f:
             for d in self.count_events(reportfiles, groupconfig):
                 df = d.pop('counts')
-                df['key'] = d['key']
+                #df['key'] = d['key']
                 df['name'] = d['name']
                 df.reset_index().to_csv(f, index=False, header=hdr, mode='a')
+                if include_school_infections:
+                    self.write_school_infections(d.pop('events'), d['name'], hdr)            
                 hdr = False
                 keymap.append(d)
                 log.info('Added %s to csv file %s' % (ujson.dumps(d), csv_outfile_name))
         return keymap
 
 
+    def init_school_infections(self, outfile):
+        log.warn('INITIALIZING SCHOOL INFECTIONS')
+        self.school_outfile = open('%s_school_infections.csv' % outfile, 'w')
 
+        self._schools = self.schools[['school_id','name','address','city',
+            'zip','total','prek','kinder','gr01-gr12',
+            'latitude','longitude']].reset_index()
 
+    def write_school_infections(self, events, name, hdr):
+        log.warn('WRITING SCHOOL INFECTIONS')
 
+        school_infections = events['infection'].query(
+                'place_type == 83 and place_label != "NULL"')[
+                        ['place_label','infector','person', 'exposed']]
+
+        school_infections['school_id'] = school_infections.place_label.str.extract(
+                '\D(\d+)\D*')
+
+        r = pd.merge(school_infections, self._schools, on='school_id')
+        r['name'] = name
+        r.rename(columns={'exposed': 'day'}, inplace=True)
+        r.to_csv(self.school_outfile, index=False, header=hdr, mode='a') 
 
 
 

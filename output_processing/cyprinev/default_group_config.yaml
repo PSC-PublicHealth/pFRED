@@ -11,3 +11,11 @@ age:
 #race:
 
 place_type:
+
+longitude:
+  intervals: 20
+
+latitude:
+  intervals: 20
+
+

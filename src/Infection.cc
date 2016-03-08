@@ -286,14 +286,16 @@ void Infection::print() const {
 
 void Infection::print_json() const {
     int place_id = -1;
-    char place_type = -1; 
+    char place_type = -1;
     if (place != NULL) {
+        // TODO this logic is somehow wrong!  the container id is NOT the
+        // index in the synthetic population of schools
         if (place->get_container() != NULL) {
             place_id = place->get_container()->get_id();
-            place_type = place->get_container()->get_type(); 
+            place_type = place->get_container()->get_type();
         } else {
-            place_id = place->get_id();
             place_type = place->get_type();
+            place_id = place->get_id();
         }
     }
     int corrected_susceptible_date = get_susceptible_date() < Global::Days ? get_susceptible_date() : -1;
@@ -308,7 +310,10 @@ void Infection::print_json() const {
         {"susceptible", corrected_susceptible_date},
         {"infector", infector == NULL ? -1 : infector->get_id()},
         {"place", place_id},
-        {"place_type", place_type}
+        {"place_label", place != NULL ? std::string(place->get_label()) : "NULL"},
+        {"place_type", place_type}//,
+        //{"latitude", place->get_latitude()},
+        //{"longitude", place->get_longitude()}
     };
     Global::Rpt.append(j);
 }

@@ -33,7 +33,7 @@ def main():
             help='Base name for output file')
 
     parser.add_argument('-f', '--format', required=False,
-            choices=['hdf','csv','json'], default='hdf',
+            choices=['hdf','csv','json'], default='csv',
             help='Format for output file')
   
     parser.add_argument('-c', '--compression', required=False,
@@ -56,10 +56,10 @@ def main():
         log.info('No grouping config file supplied, using defaults: %s' % (
             ujson.dumps(groupconfig),))
 
-    #output_collection.write_event_counts_to_hdf5(args.reportfiles, args.outfile, groupconfig)
-    output_collection.write_event_counts_to_csv(args.reportfiles, args.outfile, groupconfig)
-
-
+    if args.format == 'hdf':
+        output_collection.write_event_counts_to_hdf5(args.reportfiles, args.outfile, groupconfig)
+    if args.format == 'csv': 
+        output_collection.write_event_counts_to_csv(args.reportfiles, args.outfile, groupconfig)
 
 
 
