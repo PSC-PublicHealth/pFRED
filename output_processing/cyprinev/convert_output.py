@@ -109,7 +109,7 @@ class OutputCollection(object):
             ('E_p',5),('I_i',6),('I_p',7),('Y_i',8),('Y_p',9),('R_i',10),
             ('R_p',11),('IS_i',12),('IS_p',13),('V_i',14),('V_p',15)])
 
-    def __init__(self, popdir, persist_synth_pop=False):
+    def __init__(self, popdir, persist_synth_pop=True):
         log.debug('read default group config: %s' % [
             str(yaml.load(self.default_config))])
         self.persist = persist_synth_pop
@@ -126,9 +126,11 @@ class OutputCollection(object):
             log.info('Read persisted population from hdf5')
         except:
             self.population = pd.read_csv(popfile, low_memory=False)
+            self.population.age += np.random.uniform(low=0.0, high=1.0,
+                    size=len(self.population.index))
             self.population.reset_index(inplace=True)
             self.population['person'] = self.population.index
-            if self.persis:
+            if self.persist:
                 try:
                     self.population.to_hdf('%s.h5' % popfile,
                             key='population', mode='w')
@@ -215,8 +217,10 @@ class OutputCollection(object):
             a = count_events.get_counts_from_group(g[self.event_map.keys()].values.astype(np.uint32),
                                                    np.uint32(n_days),
                                                    self.event_map, self.state_map)
-            df = pd.DataFrame(np.asarray(a), columns=self.state_map.keys())
-            df.index.name = 'day'
+            df = pd.DataFrame(
+                    np.asarray(a), columns=self.state_map.keys(),
+                    index=pd.Index(data=range(a.shape[0]), name='day'))
+            #df.index.name = 'day'
             return df
 
         log.info('Merged events with population data in %s seconds' % timer())
@@ -257,7 +261,7 @@ class OutputCollection(object):
             log.info('Wrote counts to %s file in %s seconds' % (hdf_outfile_name, timer())) 
             #hdf.put('%s/name' % d['key'], d['name'])
             #hdf.put('%s/paramters' % d['key'], ujson.dumps(events['parameters']))
-        hdf.close
+        hdf.close()
         return keymap
 
     def write_event_counts_to_csv(self, reportfiles, outfile, groupconfig=None,
@@ -281,6 +285,23 @@ class OutputCollection(object):
                 log.info('Added %s to csv file %s' % (ujson.dumps(d), csv_outfile_name))
         return keymap
 
+    def write_apollo_internal(self, reportfiles, outfile, groupconfig=None):
+        log.info('Producing apollo output format')
+        outfile_name = '%s.apollo.csv' % outfile
+        timer = Timer()
+        df_list = [r['counts'] for r in self.count_events(reportfiles, groupconfig)]
+        d1 = pd.concat(df_list)
+        log.info('Concatenated all realizations in %s seconds' % timer())
+        for d in df_list:
+            del(d)
+        del(df_list)
+        d2 = pd.DataFrame(d1.groupby(level=range(len(d1.index.levels)
+            )).mean().stack()).reset_index()
+        log.info('Calculated mean values for all groups in %s seconds' % timer())
+        d2.columns = [x for x in d2.columns[:-2]] + ['variable','count']
+        log.info('Begin writing apollo output format to %s' % outfile_name)
+        d2.to_csv(outfile_name, index=False)
+        log.info('Wrote apollo output format to disk in %s seconds' % timer())
 
     def init_school_infections(self, outfile):
         log.warn('INITIALIZING SCHOOL INFECTIONS')
@@ -304,7 +325,6 @@ class OutputCollection(object):
         r['name'] = name
         r.rename(columns={'exposed': 'day'}, inplace=True)
         r.to_csv(self.school_outfile, index=False, header=hdr, mode='a') 
-
 
 
 

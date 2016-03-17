@@ -33,7 +33,7 @@ def main():
             help='Base name for output file')
 
     parser.add_argument('-f', '--format', required=False,
-            choices=['hdf','csv','json'], default='csv',
+            choices=['hdf','csv','apollo'], default='csv',
             help='Format for output file')
   
     parser.add_argument('-c', '--compression', required=False,
@@ -60,7 +60,8 @@ def main():
         output_collection.write_event_counts_to_hdf5(args.reportfiles, args.outfile, groupconfig)
     if args.format == 'csv': 
         output_collection.write_event_counts_to_csv(args.reportfiles, args.outfile, groupconfig)
-
+    if args.format == 'apollo': 
+        output_collection.write_apollo_internal(args.reportfiles, args.outfile, groupconfig)
 
 
 if __name__ == '__main__':
