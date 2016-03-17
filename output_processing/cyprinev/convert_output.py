@@ -287,20 +287,27 @@ class OutputCollection(object):
 
     def write_apollo_internal(self, reportfiles, outfile, groupconfig=None):
         log.info('Producing apollo output format')
-        outfile_name = '%s.apollo.csv' % outfile
+        outfile_name = '%s.apollo.h5' % outfile
+        hdf = pd.HDFStore(path=outfile_name, mode='w', complib='zlib', complevel=9)
+        def reshape_thin(d):
+            ds = d.stack()
+            return pd.DataFrame(ds[ds!=0])
         timer = Timer()
-        df_list = [r['counts'] for r in self.count_events(reportfiles, groupconfig)]
-        d1 = pd.concat(df_list)
+        d1 = pd.concat([reshape_thin(r['counts']) for r in self.count_events(reportfiles, groupconfig)],
+                copy=False)
         log.info('Concatenated all realizations in %s seconds' % timer())
-        for d in df_list:
-            del(d)
-        del(df_list)
-        d2 = pd.DataFrame(d1.groupby(level=range(len(d1.index.levels)
-            )).mean().stack()).reset_index()
+        d2 = d1.groupby(level=range(len(d1.index.levels)
+            )).sum()
+        del(d1)
+        d2 /= float(len(reportfiles))
+        d2.reset_index(inplace=True)
         log.info('Calculated mean values for all groups in %s seconds' % timer())
         d2.columns = [x for x in d2.columns[:-2]] + ['variable','count']
+        d2.set_index([x for x in d2.columns[:-1]], inplace=True)
         log.info('Begin writing apollo output format to %s' % outfile_name)
-        d2.to_csv(outfile_name, index=False)
+        #d2.to_csv(outfile_name, index=False)
+        hdf.put('apollo_aggregated_counts', d2, format='table')
+        hdf.close()
         log.info('Wrote apollo output format to disk in %s seconds' % timer())
 
     def init_school_infections(self, outfile):
