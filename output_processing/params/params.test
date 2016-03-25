@@ -1,0 +1,114 @@
+### generated with qed-tools YamlCombiner ###
+# location of the synthetic population files
+synthetic_population_directory = /Users/depasse/prj/pittvax/pittvax-needle-sparing-choice/pop 
+synthetic_population_id = ExtendedMetroDC_2005_2009
+report_age_of_infection = 0
+days = 200
+track_vaccine_infection_events = 1
+vaccine_infection_tracker_file = vaccinf
+# shared vaccine configuration, disabled by default
+enable_vaccination = 0
+enable_behaviors = 1
+enable_vaccination = 1
+vaccination_capacity_file = $FRED_HOME/input_files/vaccination_unlimited_capacity.txt
+vaccine_tracefile = vacctrace
+number_of_vaccines = 4
+accept_vaccine_enabled = 1
+accept_vaccine_strategy_distribution = 7 20 80 0 0 0 0 0
+vaccine_coverage_by_age = 1
+R0 = 1.0
+start_date = 2014-08-04
+seed = 1
+primary_cases_file[0] = $FRED_HOME/input_files/primary_cases_pittvax_10_100.txt
+# vaccine: IIV IM, vaccine_id: 0
+# strategy_id: 0
+# efficacy_primary_id: 0, efficacy_id: 0
+vaccine_strains[0]            = 0
+vaccine_starting_day[0]       = 0
+vaccine_number_of_doses[0]    = 1
+vaccine_total_avail[0]        = 651528
+vaccine_additional_per_day[0] = 651528
+# note that first index in the following parameters is the
+# vaccine id, the second is the dose index
+vaccine_dose_efficacy_values[0][0]         = 7  0.59 0.59 0.59 0.59 0.59 0.59 0.59
+vaccine_dose_efficacy_ages[0][0]           = 14  0 1 2 5 6 9 10 18 19 50 51 65 66 106
+vaccine_next_dosage_day[0][0]              = 0
+vaccine_dose_efficacy_delay_ages[0][0]     = 2 0 100
+vaccine_dose_efficacy_delay_values[0][0]   = 1 14
+vaccine_number_of_doses[0]                 = 1
+vaccine_total_avail[0]                     = 2486754
+vaccine_total_additional_per_day[0]        = 0
+vaccine_starting_day[0]                    = 0
+vaccine_strains[0]                         = 0
+vaccine_coverage_age_map_ages[0]           = 14  0 1 2 5 6 9 10 18 19 50 51 65 66 106
+vaccine_coverage_age_map_values[0]         = 7  0.247808 0.32688 0.2928 0.25392 0.31331 0.44847 0.4355
+# vaccine: LAIV, vaccine_id: 1
+# strategy_id: 0
+# efficacy_primary_id: 0, efficacy_id: 0
+vaccine_strains[1]            = 0
+vaccine_starting_day[1]       = 0
+vaccine_number_of_doses[1]    = 1
+vaccine_total_avail[1]        = 651528
+vaccine_additional_per_day[1] = 651528
+# note that first index in the following parameters is the
+# vaccine id, the second is the dose index
+vaccine_dose_efficacy_values[1][0]         = 7  0.59 0.59 0.59 0.59 0.59 0.59 0.59
+vaccine_dose_efficacy_ages[1][0]           = 14  0 1 2 5 6 9 10 18 19 50 51 65 66 106
+vaccine_next_dosage_day[1][0]              = 0
+vaccine_dose_efficacy_delay_ages[1][0]     = 2 0 100
+vaccine_dose_efficacy_delay_values[1][0]   = 1 14
+vaccine_number_of_doses[1]                 = 1
+vaccine_total_avail[1]                     = 499197
+vaccine_total_additional_per_day[1]        = 0
+vaccine_starting_day[1]                    = 0
+vaccine_strains[1]                         = 0
+vaccine_coverage_age_map_ages[1]           = 14  0 1 2 5 6 9 10 18 19 50 51 65 66 106
+vaccine_coverage_age_map_values[1]         = 7  0.0 0.38662 0.3497 0.30758 0.0 0.0 0.0
+# vaccine: IIV ID, vaccine_id: 2
+# strategy_id: 0
+# efficacy_primary_id: 0, efficacy_id: 0
+vaccine_strains[2]            = 0
+vaccine_starting_day[2]       = 0
+vaccine_number_of_doses[2]    = 1
+vaccine_total_avail[2]        = 651528
+vaccine_additional_per_day[2] = 651528
+# note that first index in the following parameters is the
+# vaccine id, the second is the dose index
+vaccine_dose_efficacy_values[2][0]         = 7  0.59 0.59 0.59 0.59 0.59 0.59 0.59
+vaccine_dose_efficacy_ages[2][0]           = 14  0 1 2 5 6 9 10 18 19 50 51 65 66 106
+vaccine_next_dosage_day[2][0]              = 0
+vaccine_dose_efficacy_delay_ages[2][0]     = 2 0 100
+vaccine_dose_efficacy_delay_values[2][0]   = 1 14
+vaccine_number_of_doses[2]                 = 1
+vaccine_total_avail[2]                     = 198711
+vaccine_total_additional_per_day[2]        = 0
+vaccine_starting_day[2]                    = 0
+vaccine_strains[2]                         = 0
+vaccine_coverage_age_map_ages[2]           = 14  0 1 2 5 6 9 10 18 19 50 51 65 66 106
+vaccine_coverage_age_map_values[2]         = 7  0.0 0.0 0.0 0.0 0.04219 0.03703 0.0
+# vaccine: IIV HD, vaccine_id: 3
+# strategy_id: 0
+# efficacy_primary_id: 0, efficacy_id: 0
+vaccine_strains[3]            = 0
+vaccine_starting_day[3]       = 0
+vaccine_number_of_doses[3]    = 1
+vaccine_total_avail[3]        = 651528
+vaccine_additional_per_day[3] = 651528
+# note that first index in the following parameters is the
+# vaccine id, the second is the dose index
+vaccine_dose_efficacy_values[3][0]         = 7  0.59 0.59 0.59 0.59 0.59 0.59 0.59
+vaccine_dose_efficacy_ages[3][0]           = 14  0 1 2 5 6 9 10 18 19 50 51 65 66 106
+vaccine_next_dosage_day[3][0]              = 0
+vaccine_dose_efficacy_delay_ages[3][0]     = 2 0 100
+vaccine_dose_efficacy_delay_values[3][0]   = 1 14
+vaccine_number_of_doses[3]                 = 1
+vaccine_total_avail[3]                     = 167121
+vaccine_total_additional_per_day[3]        = 0
+vaccine_starting_day[3]                    = 0
+vaccine_strains[3]                         = 0
+vaccine_coverage_age_map_ages[3]           = 14  0 1 2 5 6 9 10 18 19 50 51 65 66 106
+vaccine_coverage_age_map_values[3]         = 7  0.0 0.0 0.0 0.0 0.0 0.0 0.2145
+
+outdir = OUT.params.test
+event_report_file = reports/params.test.report
+
