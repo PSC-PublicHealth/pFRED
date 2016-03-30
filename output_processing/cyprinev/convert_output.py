@@ -285,6 +285,29 @@ class OutputCollection(object):
                 log.info('Added %s to csv file %s' % (ujson.dumps(d), csv_outfile_name))
         return keymap
 
+    def init_school_infections(self, outfile):
+        log.warn('INITIALIZING SCHOOL INFECTIONS')
+        self.school_outfile = open('%s_school_infections.csv' % outfile, 'w')
+
+        self._schools = self.schools[['school_id','name','address','city',
+            'zip','total','prek','kinder','gr01-gr12',
+            'latitude','longitude']].reset_index()
+
+    def write_school_infections(self, events, name, hdr):
+        log.warn('WRITING SCHOOL INFECTIONS')
+
+        school_infections = events['infection'].query(
+                'place_type == 83 and place_label != "NULL"')[
+                        ['place_label','infector','person', 'exposed']]
+
+        school_infections['school_id'] = school_infections.place_label.str.extract(
+                '\D(\d+)\D*')
+
+        r = pd.merge(school_infections, self._schools, on='school_id')
+        r['name'] = name
+        r.rename(columns={'exposed': 'day'}, inplace=True)
+        r.to_csv(self.school_outfile, index=False, header=hdr, mode='a') 
+
     def write_apollo_internal(self, reportfiles, outfile, groupconfig=None):
         log.info('Producing apollo output format')
         outfile_name = '%s.apollo.h5' % outfile
@@ -309,29 +332,6 @@ class OutputCollection(object):
         hdf.put('apollo_aggregated_counts', d2, format='table')
         hdf.close()
         log.info('Wrote apollo output format to disk in %s seconds' % timer())
-
-    def init_school_infections(self, outfile):
-        log.warn('INITIALIZING SCHOOL INFECTIONS')
-        self.school_outfile = open('%s_school_infections.csv' % outfile, 'w')
-
-        self._schools = self.schools[['school_id','name','address','city',
-            'zip','total','prek','kinder','gr01-gr12',
-            'latitude','longitude']].reset_index()
-
-    def write_school_infections(self, events, name, hdr):
-        log.warn('WRITING SCHOOL INFECTIONS')
-
-        school_infections = events['infection'].query(
-                'place_type == 83 and place_label != "NULL"')[
-                        ['place_label','infector','person', 'exposed']]
-
-        school_infections['school_id'] = school_infections.place_label.str.extract(
-                '\D(\d+)\D*')
-
-        r = pd.merge(school_infections, self._schools, on='school_id')
-        r['name'] = name
-        r.rename(columns={'exposed': 'day'}, inplace=True)
-        r.to_csv(self.school_outfile, index=False, header=hdr, mode='a') 
 
 
 
