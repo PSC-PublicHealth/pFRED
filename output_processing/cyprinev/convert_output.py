@@ -285,31 +285,6 @@ class OutputCollection(object):
                 log.info('Added %s to csv file %s' % (ujson.dumps(d), csv_outfile_name))
         return keymap
 
-    def write_apollo_internal(self, reportfiles, outfile, groupconfig=None):
-        log.info('Producing apollo output format')
-        outfile_name = '%s.apollo.h5' % outfile
-        hdf = pd.HDFStore(path=outfile_name, mode='w', complib='zlib', complevel=9)
-        def reshape_thin(d):
-            ds = d.stack()
-            return pd.DataFrame(ds[ds!=0])
-        timer = Timer()
-        d1 = pd.concat([reshape_thin(r['counts']) for r in self.count_events(reportfiles, groupconfig)],
-                copy=False)
-        log.info('Concatenated all realizations in %s seconds' % timer())
-        d2 = d1.groupby(level=range(len(d1.index.levels)
-            )).sum()
-        del(d1)
-        d2 /= float(len(reportfiles))
-        d2.reset_index(inplace=True)
-        log.info('Calculated mean values for all groups in %s seconds' % timer())
-        d2.columns = [x for x in d2.columns[:-2]] + ['variable','count']
-        d2.set_index([x for x in d2.columns[:-1]], inplace=True)
-        log.info('Begin writing apollo output format to %s' % outfile_name)
-        #d2.to_csv(outfile_name, index=False)
-        hdf.put('apollo_aggregated_counts', d2, format='table')
-        hdf.close()
-        log.info('Wrote apollo output format to disk in %s seconds' % timer())
-
     def init_school_infections(self, outfile):
         log.warn('INITIALIZING SCHOOL INFECTIONS')
         self.school_outfile = open('%s_school_infections.csv' % outfile, 'w')
@@ -333,7 +308,118 @@ class OutputCollection(object):
         r.rename(columns={'exposed': 'day'}, inplace=True)
         r.to_csv(self.school_outfile, index=False, header=hdr, mode='a') 
 
+    def write_apollo_internal(self, reportfiles, outfile, groupconfig=None):
+        log.info('Producing apollo output format')
+        #outfile_name = '%s.apollo.csv.gz' % outfile
+        outfile_name = '%s.apollo.h5' % outfile
+        hdf = pd.HDFStore(path=outfile_name, mode='w', complib='zlib', complevel=9)
 
+        def reshape_thin(d):
+            ds = d.stack()
+            return pd.DataFrame(ds[ds!=0])
+        timer = Timer()
+        d1 = pd.concat([reshape_thin(r['counts']) for r in self.count_events_apollo(reportfiles, groupconfig)],
+                copy=False)
+        log.info('Concatenated all realizations in %s seconds' % timer())
+        d2 = d1.groupby(level=range(len(d1.index.levels)
+            )).sum()
+        del(d1)
+        d2 /= float(len(reportfiles))
+        d2.reset_index(inplace=True)
+        log.info('Calculated mean values for all groups in %s seconds' % timer())
+        d2.columns = [x for x in d2.columns[:-2]] + ['state_tuple','count']
+
+        d3 = d2.state_tuple.str.split(':', expand=True)
+        d3.columns = ['infection_state', 'disease_state']
+        
+        d2.drop('state_tuple', axis=1, inplace=True)
+        
+        for s in ['infection_state', 'disease_state']:
+            d2[s] = d3[s].astype('category')
+            d3.drop(s, axis=1, inplace=True)
+        del(d3)
+
+        if 'gender' in d2:
+            d2['sex'] = d2.gender.apply(lambda x: 'M' if x==1 else 'F').astype('category')
+            d2.drop('gender', axis=1, inplace=True)
+        if 'age' in d2:
+            d2.rename(columns={'age':'age_range_category_label'}, inplace=True)
+        if 'location' in d2:
+            d2.rename(columns={'location':'household_location_admin4'}, inplace=True)
+        if 'income' in d2:
+            d2.rename(columns={'income':'household_median_income_category_label'}, inplace=True)
+        if 'vaccination_status' in d2:
+            v_s_map = {0: 'noVaccination', 1: 'successfulVaccination'}
+            d2.vaccination_status = d2.vaccination_status.apply(lambda x: v_s_map[x]).astype('category')
+
+        log.info('Renamed/recast data table to apollo standard in %s seconds' % timer())
+
+        d2.set_index([x for x in d2.columns if x != 'count'], inplace=True)
+        log.info('Begin writing apollo output format to %s' % outfile_name)
+        #d2.to_csv(outfile_name, compression='gzip')
+        hdf.put('apollo_aggregated_counts', d2, format='table')
+        hdf.close()
+        log.info('Wrote apollo output format to disk in %s seconds' % timer())
+
+    def count_events_apollo(self, reportfiles, groupconfig=None):
+        for f in reportfiles:
+            k_orig = os.path.basename(f)
+            k_safe = re.sub(r'[-.+ ]', '_', k_orig)
+            events = self.read_event_report(f)
+            counts = self.apply_count_events_apollo(events, groupconfig)
+            yield({'key': k_safe, 'name': k_orig, 'counts': counts, 'events': events})
+
+    def apply_count_events_apollo(self, events, groupconfig):
+        timer = Timer()
+        group_by_keys = groupconfig.keys()
+
+        d_query_pop = self.query_population(group_by_keys)
+        log.info('Extracted groups from population data in %s seconds' % timer())
+        
+        d = pd.merge(events['infection'], d_query_pop,
+                     on='person', how='right', suffixes=('','_')
+                    ).sort_values(group_by_keys).reset_index(drop=True)
+        d = self.bin_columns(d, groupconfig)
+
+        if 'vaccination' not in events:
+            d_vacc = pd.DataFrame(dict(person=[], vaccine=[], vaccine_day=[]))
+        else:
+            d_vacc = events['vaccination']
+
+        d = pd.merge(d, d_vacc, on='person', how='left')
+        d = d[self.event_map.keys() + group_by_keys]
+        d[self.event_map.keys()] = d[self.event_map.keys()].fillna(NA).apply(
+                lambda x: x.astype(DTYPE), axis=0)
+        n_days = d.recovered[d.recovered != NA].max() + 1
+
+        def convert_counts_array(g):
+            a = count_events.get_counts_from_group_apollo(
+                    g[self.event_map.keys()].values.astype(np.uint32),
+                    np.uint32(n_days), self.event_map, self.apollo_state_map)
+            df = pd.DataFrame(
+                    np.asarray(a), columns=self.apollo_state_map.keys()+['vaccination_status'],
+                    index=pd.Index(
+                        data=range(n_days) + range(n_days),
+                        name='simulator_time'))
+            df.set_index('vaccination_status', append=True, inplace=True)
+            return df
+
+        log.info('Merged events with population data in %s seconds' % timer())
+        grouped_counts = d.groupby(group_by_keys).apply(convert_counts_array)
+        log.info('Tabulated grouped event counts in %s seconds' % timer())
+        return grouped_counts 
+
+    @property
+    def apollo_state_map(self):
+        return OrderedDict([
+            ('susceptible:recovery', 0),
+            ('latent:asymptomatic', 1),
+            ('infectious:symptomatic', 2),
+            ('infectious:asymptomatic', 3),
+            ('recovered:recovery', 4),
+            ('newly_sick:symptomatic', 5),
+            ('newly_sick:asymptomatic', 6)
+            ])
 
 
 

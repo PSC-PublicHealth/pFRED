@@ -114,6 +114,131 @@ cpdef np.uint32_t[:,:] get_counts_from_group(np.uint32_t[:,:] rows, int ndays,
 
 ###############################################################################
 
+cpdef np.uint32_t[:,:] get_counts_from_group_apollo(np.uint32_t[:,:] rows,
+        int ndays, event_map, state_map):
+
+    cdef int exposed = event_map['exposed']
+    cdef int infectious = event_map['infectious']
+    cdef int symptomatic = event_map['symptomatic']
+    cdef int recovered = event_map['recovered']
+    cdef int susceptible = event_map['susceptible']
+    cdef int vaccine = event_map['vaccine']
+    cdef int vaccine_day = event_map['vaccine_day']
+
+    cdef int s_r = state_map['susceptible:recovery']
+    cdef int l_a = state_map['latent:asymptomatic']
+    cdef int i_s = state_map['infectious:symptomatic']
+    cdef int i_a = state_map['infectious:asymptomatic']
+    cdef int r_r = state_map['recovered:recovery']
+    cdef int n_s = state_map['newly_sick:symptomatic']
+    cdef int n_a = state_map['newly_sick:asymptomatic']
+
+    cdef np.uint32_t[:,:] a = np.zeros([ndays*2, len(state_map)+1], dtype=np.uint32)
+    cdef np.uint32_t[:] r
+
+    cdef int i,d,n
+    cdef int start_row = 0
+    cdef int end_row = rows.shape[0]
+    cdef int vaccine_row_offset = ndays
+    cdef int vaccine_col_number = len(state_map)
+    cdef np.uint32_t last_day = np.uint32(ndays - 1)
+    cdef np.uint32_t num_days = np.uint32(ndays)
+    cdef np.uint32_t NA = np.uint32(-1)
+
+    for d in xrange(ndays, ndays*2):
+        a[d, vaccine_col_number] = 1
+
+    with nogil:
+        for i in xrange(start_row, end_row):
+            r = rows[i,:]
+
+            if r[exposed] == NA:
+                for d in xrange(0, ndays): 
+                    if r[vaccine_day] != NA and d >= r[vaccine_day]:
+                        a[d+vaccine_row_offset, s_r] += 1
+                    else:
+                        a[d, s_r] += 1
+
+            else:
+                for d in xrange(r[exposed], r[infectious]):
+                    if r[vaccine_day] != NA and d >= r[vaccine_day]:
+                        a[d+vaccine_row_offset, l_a] += 1
+                    else:
+                        a[d, l_a] += 1
+
+                for d in xrange(0, r[exposed]):
+                    if r[vaccine_day] != NA and d >= r[vaccine_day]:
+                        a[d+vaccine_row_offset, s_r] += 1
+                    else:
+                        a[d, s_r] += 1
+
+                if r[susceptible] != NA:
+                    if r[susceptible] == last_day:
+                        if r[vaccine_day] == r[susceptible]:
+                            a[r[susceptible]+vaccine_row_offset, s_r] += 1
+                        else:
+                            a[r[susceptible], s_r] += 1
+                    elif r[susceptible] < last_day:
+                        for d in xrange(r[susceptible], num_days):
+                            if r[vaccine_day] != NA and d >= r[vaccine_day]:
+                                a[d+vaccine_row_offset, s_r] += 1        
+                            else:
+                                a[d, s_r] += 1        
+                
+                if r[infectious] != NA:
+                    if r[symptomatic] != NA:
+                        if r[symptomatic] == r[vaccine_day]:
+                            a[r[symptomatic]+vaccine_row_offset, n_s] += 1
+                        else:
+                            a[r[symptomatic], n_s] += 1
+
+                        for d in xrange(r[symptomatic], r[recovered]):
+                            if r[vaccine_day] != NA and d >= r[vaccine_day]:
+                                a[d+vaccine_row_offset, i_s] += 1
+                            else:
+                                a[d, i_s] += 1
+
+                        if r[symptomatic] > r[infectious]:
+                            for d in xrange(r[infectious], r[symptomatic]):
+                                if r[vaccine_day] != NA and d >= r[vaccine_day]:
+                                    a[d+vaccine_row_offset, i_a] += 1
+                                else:
+                                    a[d, i_a] += 1
+                    else:
+                        if r[vaccine_day] == r[infectious]:
+                            a[r[infectious]+vaccine_row_offset, n_a] += 1
+                        else:
+                            a[r[infectious], n_a] += 1
+
+                        for d in xrange(r[infectious], r[recovered]):
+                            if r[vaccine_day] != NA and d >= r[vaccine_day]:
+                                a[d+vaccine_row_offset, i_a] += 1
+                            else:
+                                a[d, i_a] += 1
+
+                if r[recovered] != NA:
+                    if r[recovered] == last_day:
+                        if r[recovered] == r[vaccine_day]:
+                            a[r[recovered]+vaccine_row_offset, r_r] += 1
+                        else:
+                            a[r[recovered], r_r] += 1
+
+                    else:
+                        if r[susceptible] == NA:
+                            n = num_days
+                        else:
+                            n = r[susceptible] 
+                        for d in xrange(r[recovered], n):
+                            if r[vaccine_day] != NA and d >= r[vaccine_day]:
+                                a[d+vaccine_row_offset, r_r] += 1
+                            else:
+                                a[d, r_r] += 1
+
+    return a
+
+
+###############################################################################
+
 cdef inline int _busy_sleep(int n) nogil:
     cdef double tmp = 0.0
 
