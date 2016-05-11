@@ -11,7 +11,12 @@ compressed hdf5-format data tables containing stratified disease state counts.
 __version__ = '0.0.0'
 
 import argparse, os
-from convert_output import * 
+
+try:
+    from convert_output import * 
+except ImportError as e:
+    from fred_output_extractor.convert_output import *
+
 import yaml, ujson
 import logging
 logging.basicConfig(level=logging.DEBUG, format='[%(name)s] %(asctime)s %(message)s')

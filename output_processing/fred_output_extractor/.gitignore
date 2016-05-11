@@ -2,3 +2,6 @@ __init__.pyc
 build_temp/
 count_events.c
 count_events.so
+src/fred_output_extractor.egg-info/
+build/
+dist/

@@ -99,6 +99,13 @@ class OutputCollection(object):
         return open(f, 'r')
 
     @property
+    def apollo_location_lookup_filename(self):
+        d = os.path.dirname(os.path.abspath(__file__))
+        f = os.path.join(d, 'ApolloLocationCode.to.FIPSstcotr.csv')
+        return f
+
+
+    @property
     def event_map(self):
         return OrderedDict([('exposed',0), ('infectious',1), ('symptomatic',2),
             ('recovered',3), ('susceptible',4), ('vaccine',5), ('vaccine_day',6)])
@@ -143,7 +150,7 @@ class OutputCollection(object):
                 os.path.join(self.popdir, '%s_synth_households.txt' % base))
         self.households.reset_index()
         self.households['stcotr'] = (self.households.stcotrbg/10).astype(np.int64)
-        apollo_locations = pd.read_csv('ApolloLocationCode.to.FIPSstcotr.csv')
+        apollo_locations = pd.read_csv(self.apollo_location_lookup_filename)
         apollo_locations.reset_index(level=0, inplace=True)
         self.households = pd.merge(self.households, apollo_locations,
             on='stcotr', how='inner', suffixes=('','_'))
@@ -312,7 +319,7 @@ class OutputCollection(object):
         log.info('Producing apollo output format')
         #outfile_name = '%s.apollo.csv.gz' % outfile
         outfile_name = '%s.apollo.h5' % outfile
-        hdf = pd.HDFStore(path=outfile_name, mode='w', complib='zlib', complevel=9)
+        hdf = pd.HDFStore(path=outfile_name, mode='w', complib='zlib', complevel=4)
 
         def reshape_thin(d):
             ds = d.stack()

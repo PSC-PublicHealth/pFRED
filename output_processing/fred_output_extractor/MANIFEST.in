@@ -1,0 +1,3 @@
+include src/fred_output_extractor/default_group_config.yaml
+include src/fred_output_extractor/ApolloLocationCode.to.FIPSstcotr.csv
+
