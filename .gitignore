@@ -109,3 +109,5 @@ src/sqlite/sqlite3.pc
 src/sqlite/sqlite3.pc.in
 src/sqlite/sqlite3ext.h
 src/sqlite/tea/
+
+output_processing/reports/
