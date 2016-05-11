@@ -1,0 +1,5 @@
+Installs the package 'fred_output_extractor' and the command line script 'foe.py'
+
+The 'foe.py' script can be run from the bin directory where it will be installed
+by setup.py, or the location in the build directory may be added to the users
+PATH.
